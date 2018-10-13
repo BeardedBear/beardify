@@ -17,6 +17,7 @@
     "elm-live": "^3.0.6",
     "express": "^4.16.3",
     "querystring": "^0.2.0",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "spotify-web-api-node": "^4.0.0"
   }
 }

@@ -1,5 +1,6 @@
 node_modules/
 elm-stuff/
-package-lock.json
-public/app.js
 build/
+public/app.js
+package-lock.json
+elm-package.json

@@ -5,7 +5,7 @@ import Time exposing (millisToPosix, toHour, toMinute, toSecond, utc)
 
 token : String
 token =
-    "BQAGnfZHQKjGXYQbkltEMOioaPo949UTt3waDSprI8F9qUZipb4kE6JzYcfjaxjm8Lpjo_6Bl5ewzv_2Fut2nB-MWJL2EDpWrBq7uOqQkxoeal5qgJqB6xVw4yv08Tirqjk9t6Cl0i3Iv2oXHfMgqhSutPzAsfG7"
+    "BQBZFAYg7V8E8YK2lJxot037TKUnFETEMlkY4JPd0E3S3QQX56MGfepaGEn8lzJP59BNvpUbs4Z5bpjtAzY"
 
 
 durationFormat : Int -> String

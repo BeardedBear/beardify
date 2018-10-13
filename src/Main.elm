@@ -117,10 +117,6 @@ update msg ({ searchModel } as model) =
             ( model, Http.send PlayTrack <| playTrack e )
 
 
-
--- SEARCH
-
-
 search : String -> String -> Decode.Decoder a -> Request a
 search query type_ decoder =
     request
