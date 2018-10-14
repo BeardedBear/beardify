@@ -1,11 +1,6 @@
-module Utils exposing (durationFormat, releaseDateFormat, token)
+module Utils exposing (durationFormat, releaseDateFormat)
 
 import Time exposing (millisToPosix, toHour, toMinute, toSecond, utc)
-
-
-token : String
-token =
-    "BQBZFAYg7V8E8YK2lJxot037TKUnFETEMlkY4JPd0E3S3QQX56MGfepaGEn8lzJP59BNvpUbs4Z5bpjtAzY"
 
 
 durationFormat : Int -> String
