@@ -1,17 +1,22 @@
-// CORE
-// @import "./base/_variables";
-// @import "./base/_base";
-// @import "./base/_common";
-// @import "./base/_mixins";
-
-// // MODULES
-// @import "./modules/_module-call-list";
-
+@import "./_variables";
 
 @import "./modules/_topbar";
+@import "./modules/_sidebar";
+@import "./modules/_player";
+@import "./modules/_input-range";
 
 *, *::after, *::before {
     box-sizing: border-box;
+}
+
+i {
+    vertical-align: middle;
+}
+
+button {
+    &:focus {
+        outline: none;
+    }
 }
 
 body { 
@@ -30,7 +35,7 @@ body {
     }
 
     ::-webkit-scrollbar-thumb {
-        background-color: rgb(46, 125, 230);
+        background-color: $primary-color;
         border: 5px solid #11151b;
         border-radius: 20px;
     }
@@ -83,15 +88,6 @@ body {
     grid-template-rows: auto 1fr 80px;
 }
 
-.sidebar {
-    background: darken(#232B37, 5);
-}
-
-
-
-.player {
-    border-top: 1px solid red;
-}
 
 .search-cover-image {
     position: relative;

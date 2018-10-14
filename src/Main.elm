@@ -344,15 +344,74 @@ artistView data =
         ]
 
 
+sidebarView : Html Msg
+sidebarView =
+    div [ class "sidebar" ]
+        [ div [ class "logo" ] [ text "Beardify" ]
+        , div [ class "top-menu" ]
+            [ div [] [ i [ class "icon-home" ] [], text "Home" ]
+            , div [] [ i [ class "icon-bell" ] [], text "Sorties" ]
+            , div [ class "active" ] [ i [ class "icon-bookmark" ] [], text "A écouter" ]
+            ]
+        , div [ class "playlists" ]
+            [ div [ class "title" ] [ text "Playlists" ]
+            , div [ class "playlists-list" ]
+                [ div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Compil tubes de l'été 1999" ]
+                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Chansons du Club Dorothée" ]
+                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Hymnes nationaux" ]
+                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Faire du sport !" ]
+                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Chill" ]
+                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Go to the PARTY !" ]
+                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Make war, don't love !" ]
+                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Move your body" ]
+                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "En voiture Simone" ]
+                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Dodo" ]
+                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Bricolage" ]
+                ]
+            ]
+        ]
+
+
+playerView : Html Msg
+playerView =
+    div [ class "player" ]
+        [ div [ class "controls" ]
+            [ div []
+                [ button [ class "play" ] [ i [ class "icon-play" ] [] ]
+                , button [] [ i [ class "icon-to-start" ] [] ]
+                , button [] [ i [ class "icon-to-end" ] [] ]
+                , button [] [ i [ class "icon-shuffle" ] [] ]
+                , button [] [ i [ class "icon-loop" ] [] ]
+                ]
+            ]
+        , div [ class "current" ]
+            [ img [ class "cover", src "https://placekitten.com/100/100" ] []
+            , div []
+                [ div []
+                    [ span [ class "track" ] [ text "Pretty Fly (For A White Guy)" ]
+                    , span [] [ text " - " ]
+                    , span [ class "artist" ] [ text "The Offspring" ]
+                    ]
+                , div [ class "range" ]
+                    [ span [ class "time" ] [ text "2:30" ]
+                    , input [ type_ "range" ] []
+                    , span [ class "time" ] [ text "9:30" ]
+                    ]
+                ]
+            ]
+        , div [ class "options" ]
+            [ div [] [ button [] [ i [ class "icon-sound" ] [] ] ]
+            , div [] [ input [ type_ "range" ] [] ]
+            ]
+        ]
+
+
 view : Model -> Document Msg
 view model =
     { title = ""
     , body =
         [ div [ class "app" ]
-            [ div [ class "sidebar" ]
-                [ text "Sidebar"
-                , button [ onClick (Get "0OdUWJ0sBjDrqHygGUXeCF") ] [ text "get artist" ]
-                ]
+            [ sidebarView
             , div [ class "content" ]
                 [ div [ class "topbar" ]
                     [ searchView model.searchModel
@@ -360,7 +419,7 @@ view model =
                 , div [ class "drawer" ]
                     [ artistView model.drawerContent
                     ]
-                , div [ class "player" ] [ text "player" ]
+                , playerView
                 ]
             ]
         ]
