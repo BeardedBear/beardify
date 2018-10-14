@@ -1,0 +1,73 @@
+@import "../variables";
+
+.sidebar {
+    background: darken(#232B37, 5);
+    
+    .logo {
+        display: grid;
+        align-content: center;
+        padding: 20px 30px;
+        font-weight: bold;
+        font-size: 2rem;
+        border-bottom: 1px solid #222933;
+    }
+
+    .playlists {
+        padding: 20px 15px;
+
+        .title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            padding-left: 15px;
+        }
+
+        .playlist {
+            padding: 6px 12px 4px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.6;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.03);
+                opacity: 1;
+            }
+
+            i {
+                font-size: 1.1rem;
+                margin-right: 10px;
+                opacity: 0.2;
+            }
+        }   
+    }
+    
+    .top-menu {
+        padding: 20px 15px;
+        font-size: 1.1rem;
+
+        > div {
+            padding: 7px 15px 6px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.03);
+            }
+
+            &.active {
+                background: $primary-color;
+
+                i {
+                    opacity: 1;
+                }
+            }
+        }
+
+        i {
+            margin-right: 10px;
+            opacity: 0.2;
+        }
+    }
+}
