@@ -24,20 +24,44 @@ type alias Flags =
     {}
 
 
+type alias ShowArtist =
+    { artist : Artist
+    , albums : List Album
+    }
+
+
+type DrawerType
+    = DrawArtist String
+    | DrawAlbum String
+    | None
+
+
+type alias SearchModel =
+    { findArtist : List Artist
+    , findAlbum : List Album
+    , findTrack : List Track
+    , searchQuery : String
+    }
+
+
 type alias Model =
     { token : Token
-    , searchModel :
-        { findArtist : List Artist
-        , findAlbum : List Album
-        , findTrack : List Track
-        , searchQuery : String
-        }
+    , drawerContent : ShowArtist
+    , searchModel : SearchModel
     }
 
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     ( { token = { token = "" }
+      , drawerContent =
+            { artist =
+                { id = ""
+                , name = ""
+                , type_ = ""
+                }
+            , albums = []
+            }
       , searchModel =
             { findArtist = []
             , findAlbum = []
@@ -45,7 +69,9 @@ init flags url key =
             , searchQuery = ""
             }
       }
-    , Http.send GetToken <| Http.get "token.json" decodeToken
+    , Cmd.batch
+        [ Http.send GetToken <| Http.get "token.json" decodeToken
+        ]
     )
 
 
@@ -53,6 +79,9 @@ type Msg
     = UrlChanged Url
     | UrlRequested Browser.UrlRequest
     | GetToken (Result Http.Error Token)
+    | Get String
+    | GetArtist (Result Http.Error Artist)
+    | GetArtistAlbums (Result Http.Error ListAlbum)
     | FindArtist (Result Http.Error ListArtist)
     | FindAlbum (Result Http.Error ListAlbum)
     | FindTrack (Result Http.Error ListTrack)
@@ -68,7 +97,7 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ searchModel, token } as model) =
+update msg ({ searchModel, token, drawerContent } as model) =
     case msg of
         UrlChanged url ->
             ( model, Cmd.none )
@@ -79,8 +108,38 @@ update msg ({ searchModel, token } as model) =
         GetToken (Ok e) ->
             ( { model | token = e }, Cmd.none )
 
-        GetToken (Err e) ->
-            ( { model | token = { token = "oups" } }, Cmd.none )
+        GetToken (Err _) ->
+            ( model, Cmd.none )
+
+        Get e ->
+            ( model
+            , Cmd.batch
+                [ Http.send GetArtist <| getArtist e decodeArtist token
+                , Http.send GetArtistAlbums <| getArtistAlbums e decodeArtistAlbums token
+                ]
+            )
+
+        GetArtist (Ok e) ->
+            ( { model
+                | drawerContent = { drawerContent | artist = e }
+                , searchModel = { searchModel | searchQuery = "" }
+              }
+            , Cmd.none
+            )
+
+        GetArtist (Err _) ->
+            ( model, Cmd.none )
+
+        GetArtistAlbums (Ok e) ->
+            ( { model
+                | drawerContent = { drawerContent | albums = e.items }
+                , searchModel = { searchModel | searchQuery = "" }
+              }
+            , Cmd.none
+            )
+
+        GetArtistAlbums (Err _) ->
+            ( model, Cmd.none )
 
         FindArtist (Ok artist) ->
             ( { model | searchModel = { searchModel | findArtist = artist.items } }, Cmd.none )
@@ -115,9 +174,9 @@ update msg ({ searchModel, token } as model) =
         Query e ->
             ( { model | searchModel = { searchModel | searchQuery = e } }
             , Cmd.batch
-                [ Http.send FindArtist <| search e "artist" decodeListArtist token
-                , Http.send FindAlbum <| search e "album" decodeListAlbum token
-                , Http.send FindTrack <| search e "track" decodeListTrack token
+                [ Http.send FindArtist <| search e "artist" 20 decodeListArtist token
+                , Http.send FindAlbum <| search e "album" 13 decodeListAlbum token
+                , Http.send FindTrack <| search e "track" 16 decodeListTrack token
                 ]
             )
 
@@ -128,14 +187,44 @@ update msg ({ searchModel, token } as model) =
             ( model, Http.send PlayTrack <| playTrack e token )
 
 
-search : String -> String -> Decode.Decoder a -> Token -> Request a
-search query type_ decoder token =
+search : String -> String -> Int -> Decode.Decoder a -> Token -> Request a
+search query type_ limit decoder token =
     request
         { method = "GET"
         , headers =
             [ Http.header "Authorization" <| "Bearer " ++ token.token
             ]
-        , url = "https://api.spotify.com/v1/search?q=" ++ query ++ "&type=" ++ type_
+        , url = "https://api.spotify.com/v1/search?q=" ++ query ++ "&type=" ++ type_ ++ "&limit=" ++ String.fromInt limit
+        , body = Http.emptyBody
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = False
+        }
+
+
+getArtist : String -> Decode.Decoder a -> Token -> Request a
+getArtist id decoder token =
+    request
+        { method = "GET"
+        , headers =
+            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            ]
+        , url = "https://api.spotify.com/v1/artists/" ++ id
+        , body = Http.emptyBody
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = False
+        }
+
+
+getArtistAlbums : String -> Decode.Decoder a -> Token -> Request a
+getArtistAlbums id decoder token =
+    request
+        { method = "GET"
+        , headers =
+            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            ]
+        , url = "https://api.spotify.com/v1/artists/" ++ id ++ "/albums" ++ "?market=FR&album_type=album"
         , body = Http.emptyBody
         , expect = Http.expectJson decoder
         , timeout = Nothing
@@ -152,66 +241,106 @@ subscriptions model =
 -- VIEWS
 
 
-searchStyle : Style
-searchStyle =
-    Css.batch
-        [ backgroundColor (hex "123456")
+type CoverSize
+    = Small
+    | Medium
+    | Large
+
+
+coverView : CoverSize -> List Cover -> Html Msg
+coverView size cover =
+    case size of
+        Small ->
+            cover
+                |> List.reverse
+                |> List.head
+                |> Maybe.withDefault { url = "" }
+                |> (\c -> img [ src c.url ] [])
+
+        Medium ->
+            text ""
+
+        Large ->
+            cover
+                |> List.head
+                |> Maybe.withDefault { url = "" }
+                |> (\c -> img [ src c.url ] [])
+
+
+searchView : SearchModel -> Html Msg
+searchView searchModel =
+    div [ class "search" ]
+        [ div [] [ input [ placeholder "Recherche", type_ "text", onInput Query, Html.Attributes.value searchModel.searchQuery ] [] ]
+        , if searchModel.searchQuery /= "" then
+            div [ class "results" ]
+                [ div []
+                    [ div [ class "title" ] [ text "Artists" ]
+                    , List.map (\a -> li [ onClick (Get a.id) ] [ text a.name ]) searchModel.findArtist
+                        |> ul [ style "list-style" "none", style "padding" "0" ]
+                    ]
+                , div []
+                    [ div [ class "title" ] [ text "Albums" ]
+                    , searchModel.findAlbum
+                        |> List.filter (\a -> a.album_type == "album")
+                        |> List.map
+                            (\a ->
+                                li [ style "clear" "both", style "margin-bottom" "10px" ]
+                                    [ div [ class "search-cover-image", onClick (ChangePlaying a.uri) ] [ coverView Small a.images ]
+                                    , strong [] [ text <| a.name ++ " " ]
+                                    , text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")"
+                                    , br [] []
+                                    , Html.small [] (List.map (\artists -> text artists.name) a.artists)
+                                    ]
+                            )
+                        |> ul [ style "list-style" "none", style "padding" "0" ]
+                    ]
+                , div []
+                    [ div [ class "title" ] [ text "Tracks" ]
+                    , List.map
+                        (\t ->
+                            li []
+                                [ div [ onClick (ChangePlayingTrack [ t.uri ]), class "track-icon" ] [ text "🎵 " ]
+                                , strong [] [ text t.name ]
+                                , br [] []
+                                , Html.small [] (List.map (\artists -> text <| artists.name) t.artists)
+                                , span [] [ text " - " ]
+                                , Html.small [] [ text t.album.name ]
+                                , span [ style "float" "right" ]
+                                    [ text (Utils.durationFormat t.duration_ms)
+                                    ]
+                                ]
+                        )
+                        searchModel.findTrack
+                        |> ul [ style "list-style" "none", style "padding" "0" ]
+                    ]
+                ]
+
+          else
+            text ""
         ]
 
 
-coverView : List Cover -> Html Msg
-coverView cover =
+coverViewBig : List Cover -> Html Msg
+coverViewBig cover =
     cover
-        |> List.reverse
         |> List.head
         |> Maybe.withDefault { url = "" }
         |> (\c -> img [ src c.url ] [])
 
 
-searchView : Model -> Html Msg
-searchView model =
+artistView : ShowArtist -> Html Msg
+artistView data =
     div []
-        [ div [] [ input [ type_ "text", onInput Query, Html.Attributes.value model.searchModel.searchQuery ] [] ]
-        , div [ style "float" "left", style "width" "300px" ]
-            [ h2 [] [ text "Artists" ]
-            , List.map (\a -> li [] [ text a.name ]) model.searchModel.findArtist
-                |> ul [ style "list-style" "none", style "padding" "0" ]
-            ]
-        , div [ style "float" "left", style "width" "300px" ]
-            [ h2 [] [ text "Albums" ]
-            , model.searchModel.findAlbum
-                |> List.filter (\a -> a.album_type == "album")
-                |> List.map
-                    (\a ->
-                        li [ style "clear" "both", style "margin-bottom" "10px" ]
-                            [ div [ class "search-cover-image", onClick (ChangePlaying a.uri) ] [ coverView a.images ]
-                            , strong [] [ text <| a.name ++ " " ]
-                            , text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")"
-                            , br [] []
-                            , Html.small [] (List.map (\artists -> text artists.name) a.artists)
-                            ]
-                    )
-                |> ul [ style "list-style" "none", style "padding" "0" ]
-            ]
-        , div [ style "float" "left" ]
-            [ h2 [] [ text "Tracks" ]
-            , List.map
-                (\t ->
-                    li []
-                        [ div [ onClick (ChangePlayingTrack [ t.uri ]), class "track-icon" ] [ text "🎵 " ]
-                        , strong [] [ text t.name ]
-                        , br [] []
-                        , Html.small [] (List.map (\artists -> text <| artists.name) t.artists)
-                        , span [] [ text " - " ]
-                        , Html.small [] [ text t.album.name ]
-                        , span [ style "float" "right" ]
-                            [ text (Utils.durationFormat t.duration_ms)
-                            ]
+        [ div [ class "artist-name" ] [ text data.artist.name ]
+        , data.albums
+            |> List.map
+                (\a ->
+                    div [ class "album" ]
+                        [ div [] [ coverView Large a.images ]
+                        , div [] [ text a.name ]
                         ]
                 )
-                model.searchModel.findTrack
-                |> ul [ style "list-style" "none", style "padding" "0" ]
-            ]
+            |> div [ class "album-wrapper" ]
         ]
 
 
@@ -219,7 +348,21 @@ view : Model -> Document Msg
 view model =
     { title = ""
     , body =
-        [ searchView model
+        [ div [ class "app" ]
+            [ div [ class "sidebar" ]
+                [ text "Sidebar"
+                , button [ onClick (Get "0OdUWJ0sBjDrqHygGUXeCF") ] [ text "get artist" ]
+                ]
+            , div [ class "content" ]
+                [ div [ class "topbar" ]
+                    [ searchView model.searchModel
+                    ]
+                , div [ class "drawer" ]
+                    [ artistView model.drawerContent
+                    ]
+                , div [ class "player" ] [ text "player" ]
+                ]
+            ]
         ]
     }
 

@@ -7,14 +7,95 @@
 // // MODULES
 // @import "./modules/_module-call-list";
 
-body {
+
+@import "./modules/_topbar";
+
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+
+body { 
     font-family: "Roboto Condensed";
-    padding: 20px;
+    background: #11151b;
+    color: white;
+    min-height: 100vh;
+
+    // SCROLLBAR
+    ::-webkit-scrollbar {
+        width: 17px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: rgb(46, 125, 230);
+        border: 5px solid #11151b;
+        border-radius: 20px;
+    }
+}
+
+
+.app {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    height: 100vh;
+}
+
+.drawer {
+    position : relative;
+
+    > div {
+        padding: 30px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        overflow: auto;
+    }
+
+    .artist-name {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .album-wrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-gap: 30px;
+    }
+
+    .album {
+        img {
+            width: 100%;
+            display: block;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+    }
+}
+
+.content {
+    display: grid;
+    grid-template-rows: auto 1fr 80px;
+}
+
+.sidebar {
+    background: darken(#232B37, 5);
+}
+
+
+
+.player {
+    border-top: 1px solid red;
 }
 
 .search-cover-image {
     position: relative;
-    float: left;
+    float: left; 
     margin-right: 10px;
     cursor: pointer;
 

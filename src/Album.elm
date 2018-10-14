@@ -1,4 +1,4 @@
-module Album exposing (Album, Cover, ListAlbum, decodeAlbum, decodeAlbumCover, decodeListAlbum, encodeAlbum, playAlbum)
+module Album exposing (Album, Cover, ListAlbum, decodeAlbum, decodeAlbumCover, decodeArtistAlbums, decodeListAlbum, encodeAlbum, playAlbum)
 
 import Artist exposing (..)
 import Http exposing (..)
@@ -56,6 +56,12 @@ decodeListAlbum : Decode.Decoder ListAlbum
 decodeListAlbum =
     Decode.map ListAlbum
         (Decode.at [ "albums", "items" ] (Decode.list decodeAlbum))
+
+
+decodeArtistAlbums : Decode.Decoder ListAlbum
+decodeArtistAlbums =
+    Decode.map ListAlbum
+        (Decode.at [ "items" ] (Decode.list decodeAlbum))
 
 
 playAlbum : String -> Token -> Request ()
