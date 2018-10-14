@@ -1,0 +1,37 @@
+.topbar {
+    padding: 20px;
+}
+
+
+.search {
+    position: relative;
+    z-index: 999;
+
+    input {
+        background: #191f27;
+        width: 100%;
+        border: 0;
+        padding: 10px 15px;
+        color: white;
+    }
+
+    .results {
+        position: absolute;
+        right: 10px;
+        left:0;
+        background: white;
+        color : black;
+        max-height: 80vh;
+        max-width: 1000px;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        padding: 20px;
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    }
+}

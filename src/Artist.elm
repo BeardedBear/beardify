@@ -5,8 +5,14 @@ import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
 
 
+type alias ArtistImage =
+    { url : String
+    }
+
+
 type alias Artist =
-    { name : String
+    { id : String
+    , name : String
     , type_ : String
     }
 
@@ -21,9 +27,16 @@ type alias ListArtist =
 
 decodeArtist : Decode.Decoder Artist
 decodeArtist =
-    Decode.map2 Artist
+    Decode.map3 Artist
+        (Decode.field "id" Decode.string)
         (Decode.field "name" Decode.string)
         (Decode.field "type" Decode.string)
+
+
+decodeArtistImage : Decode.Decoder ArtistImage
+decodeArtistImage =
+    Decode.map ArtistImage
+        (Decode.field "url" Decode.string)
 
 
 decodeListArtist : Decode.Decoder ListArtist
