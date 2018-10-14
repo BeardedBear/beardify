@@ -1,0 +1,68 @@
+// CORE
+// @import "./base/_variables";
+// @import "./base/_base";
+// @import "./base/_common";
+// @import "./base/_mixins";
+
+// // MODULES
+// @import "./modules/_module-call-list";
+
+body {
+    font-family: "Roboto Condensed";
+    padding: 20px;
+}
+
+.search-cover-image {
+    position: relative;
+    float: left;
+    margin-right: 10px;
+    cursor: pointer;
+
+    img {
+        transition: all ease-in-out 0.15s;
+        border-radius: 5px;
+        width: 40px;
+    }
+
+    &:hover {
+        img {
+            border-radius: 50px;
+        }
+
+        &::before {
+            position: absolute;
+            content: "";
+            background: rgba(0, 0, 0, 0.6);
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1;
+            border-radius: 50px;
+            width: 40px;
+            height: 40px;
+        }
+
+        &::after {
+            position: absolute;
+            content: "🎵";
+            top: 50%;
+            left: 50%;
+            z-index: 2;
+            transform: translate(-50%, -50%)
+        }
+        
+    }
+}
+
+.track-icon {
+    opacity: 0.2;
+    float: left;
+    font-size: 1.8rem;
+    cursor: pointer;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+

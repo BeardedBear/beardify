@@ -4,3 +4,4 @@ build/
 public/app.js
 package-lock.json
 elm-package.json
+*.map
