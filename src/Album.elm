@@ -4,6 +4,7 @@ import Artist exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
+import Token exposing (..)
 import Utils
 
 
@@ -57,11 +58,11 @@ decodeListAlbum =
         (Decode.at [ "albums", "items" ] (Decode.list decodeAlbum))
 
 
-playAlbum : String -> Request ()
-playAlbum uri =
+playAlbum : String -> Token -> Request ()
+playAlbum uri token =
     request
         { method = "PUT"
-        , headers = [ Http.header "Authorization" <| "Bearer " ++ Utils.token ]
+        , headers = [ Http.header "Authorization" <| "Bearer " ++ token.token ]
         , url = "https://api.spotify.com/v1/me/player/play"
         , body = Http.jsonBody (encodeAlbum uri)
         , expect = expectStringResponse (\_ -> Ok ())

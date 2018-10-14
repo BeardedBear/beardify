@@ -13,6 +13,7 @@ import Html.Events exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
+import Token exposing (..)
 import Track exposing (..)
 import Url exposing (Url)
 import Utils
@@ -23,7 +24,8 @@ type alias Flags =
 
 
 type alias Model =
-    { searchModel :
+    { token : Token
+    , searchModel :
         { findArtist : List Artist
         , findAlbum : List Album
         , findTrack : List Track
@@ -34,20 +36,22 @@ type alias Model =
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( { searchModel =
+    ( { token = { token = "" }
+      , searchModel =
             { findArtist = []
             , findAlbum = []
             , findTrack = []
             , searchQuery = ""
             }
       }
-    , Cmd.none
+    , Http.send GetToken <| Http.get "token.json" decodeToken
     )
 
 
 type Msg
     = UrlChanged Url
     | UrlRequested Browser.UrlRequest
+    | GetToken (Result Http.Error Token)
     | FindArtist (Result Http.Error ListArtist)
     | FindAlbum (Result Http.Error ListAlbum)
     | FindTrack (Result Http.Error ListTrack)
@@ -70,6 +74,20 @@ update msg ({ searchModel } as model) =
 
         UrlRequested urlRequest ->
             ( model, Cmd.none )
+
+        GetToken (Ok e) ->
+            let
+                _ =
+                    Debug.log "e" e
+            in
+            ( { model | token = e }, Cmd.none )
+
+        GetToken (Err e) ->
+            let
+                _ =
+                    Debug.log "e" e
+            in
+            ( { model | token = { token = "oups" } }, Cmd.none )
 
         FindArtist (Ok artist) ->
             ( { model | searchModel = { searchModel | findArtist = artist.items } }, Cmd.none )
@@ -104,25 +122,25 @@ update msg ({ searchModel } as model) =
         Query e ->
             ( { model | searchModel = { searchModel | searchQuery = e } }
             , Cmd.batch
-                [ Http.send FindArtist <| search e "artist" decodeListArtist
-                , Http.send FindAlbum <| search e "album" decodeListAlbum
-                , Http.send FindTrack <| search e "track" decodeListTrack
+                [ Http.send FindArtist <| search e "artist" decodeListArtist model.token
+                , Http.send FindAlbum <| search e "album" decodeListAlbum model.token
+                , Http.send FindTrack <| search e "track" decodeListTrack model.token
                 ]
             )
 
         ChangePlaying e ->
-            ( model, Http.send PlayAlbum <| playAlbum e )
+            ( model, Http.send PlayAlbum <| playAlbum e model.token )
 
         ChangePlayingTrack e ->
-            ( model, Http.send PlayTrack <| playTrack e )
+            ( model, Http.send PlayTrack <| playTrack e model.token )
 
 
-search : String -> String -> Decode.Decoder a -> Request a
-search query type_ decoder =
+search : String -> String -> Decode.Decoder a -> Token -> Request a
+search query type_ decoder token =
     request
         { method = "GET"
         , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ Utils.token
+            [ Http.header "Authorization" <| "Bearer " ++ token.token
             ]
         , url = "https://api.spotify.com/v1/search?q=" ++ query ++ "&type=" ++ type_
         , body = Http.emptyBody
@@ -154,6 +172,7 @@ searchView : Model -> Html Msg
 searchView model =
     div []
         [ div [] [ input [ type_ "text", onInput Query, Html.Attributes.value model.searchModel.searchQuery ] [] ]
+        , span [] [ text model.token.token ]
         , div [ style "float" "left", style "width" "300px" ]
             [ h2 [] [ text "Artists" ]
             , List.map (\a -> li [] [ text a.name ]) model.searchModel.findArtist
