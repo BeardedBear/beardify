@@ -7,6 +7,7 @@ import Artist exposing (..)
 import Base64
 import Browser exposing (Document)
 import Browser.Navigation as Nav
+import Css exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -67,7 +68,7 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ searchModel } as model) =
+update msg ({ searchModel, token } as model) =
     case msg of
         UrlChanged url ->
             ( model, Cmd.none )
@@ -76,17 +77,9 @@ update msg ({ searchModel } as model) =
             ( model, Cmd.none )
 
         GetToken (Ok e) ->
-            let
-                _ =
-                    Debug.log "e" e
-            in
             ( { model | token = e }, Cmd.none )
 
         GetToken (Err e) ->
-            let
-                _ =
-                    Debug.log "e" e
-            in
             ( { model | token = { token = "oups" } }, Cmd.none )
 
         FindArtist (Ok artist) ->
@@ -122,17 +115,17 @@ update msg ({ searchModel } as model) =
         Query e ->
             ( { model | searchModel = { searchModel | searchQuery = e } }
             , Cmd.batch
-                [ Http.send FindArtist <| search e "artist" decodeListArtist model.token
-                , Http.send FindAlbum <| search e "album" decodeListAlbum model.token
-                , Http.send FindTrack <| search e "track" decodeListTrack model.token
+                [ Http.send FindArtist <| search e "artist" decodeListArtist token
+                , Http.send FindAlbum <| search e "album" decodeListAlbum token
+                , Http.send FindTrack <| search e "track" decodeListTrack token
                 ]
             )
 
         ChangePlaying e ->
-            ( model, Http.send PlayAlbum <| playAlbum e model.token )
+            ( model, Http.send PlayAlbum <| playAlbum e token )
 
         ChangePlayingTrack e ->
-            ( model, Http.send PlayTrack <| playTrack e model.token )
+            ( model, Http.send PlayTrack <| playTrack e token )
 
 
 search : String -> String -> Decode.Decoder a -> Token -> Request a
@@ -150,13 +143,20 @@ search query type_ decoder token =
         }
 
 
-
--- PLAY
-
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
+
+
+
+-- VIEWS
+
+
+searchStyle : Style
+searchStyle =
+    Css.batch
+        [ backgroundColor (hex "123456")
+        ]
 
 
 coverView : List Cover -> Html Msg
@@ -172,7 +172,6 @@ searchView : Model -> Html Msg
 searchView model =
     div []
         [ div [] [ input [ type_ "text", onInput Query, Html.Attributes.value model.searchModel.searchQuery ] [] ]
-        , span [] [ text model.token.token ]
         , div [ style "float" "left", style "width" "300px" ]
             [ h2 [] [ text "Artists" ]
             , List.map (\a -> li [] [ text a.name ]) model.searchModel.findArtist
@@ -189,7 +188,7 @@ searchView model =
                             , strong [] [ text <| a.name ++ " " ]
                             , text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")"
                             , br [] []
-                            , small [] (List.map (\artists -> text artists.name) a.artists)
+                            , Html.small [] (List.map (\artists -> text artists.name) a.artists)
                             ]
                     )
                 |> ul [ style "list-style" "none", style "padding" "0" ]
@@ -202,9 +201,9 @@ searchView model =
                         [ div [ onClick (ChangePlayingTrack [ t.uri ]), class "track-icon" ] [ text "🎵 " ]
                         , strong [] [ text t.name ]
                         , br [] []
-                        , small [] (List.map (\artists -> text <| artists.name) t.artists)
+                        , Html.small [] (List.map (\artists -> text <| artists.name) t.artists)
                         , span [] [ text " - " ]
-                        , small [] [ text t.album.name ]
+                        , Html.small [] [ text t.album.name ]
                         , span [ style "float" "right" ]
                             [ text (Utils.durationFormat t.duration_ms)
                             ]
