@@ -12,6 +12,7 @@ import Utils
 type alias Album =
     { album_type : String
     , artists : List Artists
+    , id : String
     , images : List Image
     , name : String
     , release_date : String
@@ -33,9 +34,10 @@ encodeAlbum uri =
 
 decodeAlbum : Decode.Decoder Album
 decodeAlbum =
-    Decode.map7 Album
+    Decode.map8 Album
         (Decode.field "album_type" Decode.string)
         (Decode.at [ "artists" ] (Decode.list decodeArtists))
+        (Decode.field "id" Decode.string)
         (Decode.at [ "images" ] (Decode.list decodeImage))
         (Decode.field "name" Decode.string)
         (Decode.field "release_date" Decode.string)

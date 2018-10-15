@@ -1,13 +1,10 @@
 module Main exposing (main)
 
--- import
-
 import Album exposing (..)
 import Artist exposing (..)
-import Base64
 import Browser exposing (Document)
 import Browser.Navigation as Nav
-import Css exposing (..)
+import Device exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -15,6 +12,9 @@ import Http exposing (..)
 import Image exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
+import Player exposing (..)
+import Search exposing (..)
+import Time exposing (..)
 import Token exposing (..)
 import Track exposing (..)
 import Url exposing (Url)
@@ -37,18 +37,11 @@ type DrawerType
     | None
 
 
-type alias SearchModel =
-    { findArtist : List Artist
-    , findAlbum : List Album
-    , findTrack : List Track
-    , searchQuery : String
-    }
-
-
 type alias Model =
     { token : Token
     , drawerContent : ShowArtist
-    , searchModel : SearchModel
+    , searchModel : Search
+    , player : Player
     }
 
 
@@ -71,6 +64,33 @@ init flags url key =
             , findTrack = []
             , searchQuery = ""
             }
+      , player =
+            { device =
+                { id = ""
+                , name = ""
+                , volume_percent = 0
+                }
+            , is_playing = False
+            , progress_ms = 0
+            , item =
+                { name = ""
+                , duration_ms = 0
+                , artists = []
+                , album =
+                    { album_type = ""
+                    , artists = []
+                    , id = " "
+                    , images = []
+                    , name = ""
+                    , release_date = ""
+                    , type_ = ""
+                    , uri = ""
+                    }
+                , uri = ""
+                }
+            , repeat_state = ""
+            , shuffle_state = False
+            }
       }
     , Cmd.batch
         [ Http.send GetToken <| Http.get "token.json" decodeToken
@@ -81,10 +101,20 @@ init flags url key =
 type Msg
     = UrlChanged Url
     | UrlRequested Browser.UrlRequest
+    | ClickNext
+    | ClickPrevious
+    | ClickPlay
+    | ClickPause
+    | ClickShuffleOff
+    | ClickShuffleOn
+    | ClickRepeatOff
+    | ClickRepeatOn
     | GetToken (Result Http.Error Token)
     | Get String
     | GetArtist (Result Http.Error Artist)
     | GetArtistAlbums (Result Http.Error ListAlbum)
+    | GetPlayer (Result Http.Error Player)
+    | PostControls (Result Http.Error ())
     | FindArtist (Result Http.Error ListArtist)
     | FindAlbum (Result Http.Error ListAlbum)
     | FindTrack (Result Http.Error ListTrack)
@@ -93,10 +123,7 @@ type Msg
     | Query String
     | ChangePlaying String
     | ChangePlayingTrack (List String)
-
-
-
--- | SMsg Msg
+    | SendPlayer Posix
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -107,6 +134,30 @@ update msg ({ searchModel, token, drawerContent } as model) =
 
         UrlRequested urlRequest ->
             ( model, Cmd.none )
+
+        ClickNext ->
+            ( model, Http.send PostControls <| postControls "POST" "next" token )
+
+        ClickPrevious ->
+            ( model, Http.send PostControls <| postControls "POST" "previous" token )
+
+        ClickPlay ->
+            ( model, Http.send PostControls <| postControls "PUT" "play" token )
+
+        ClickPause ->
+            ( model, Http.send PostControls <| postControls "PUT" "pause" token )
+
+        ClickShuffleOff ->
+            ( model, Http.send PostControls <| postControls "PUT" "shuffle?state=false" token )
+
+        ClickShuffleOn ->
+            ( model, Http.send PostControls <| postControls "PUT" "shuffle?state=true" token )
+
+        ClickRepeatOff ->
+            ( model, Http.send PostControls <| postControls "PUT" "repeat?state=off" token )
+
+        ClickRepeatOn ->
+            ( model, Http.send PostControls <| postControls "PUT" "repeat?state=track" token )
 
         GetToken (Ok e) ->
             ( { model | token = e }, Cmd.none )
@@ -142,6 +193,20 @@ update msg ({ searchModel, token, drawerContent } as model) =
             )
 
         GetArtistAlbums (Err _) ->
+            ( model, Cmd.none )
+
+        GetPlayer (Ok e) ->
+            ( { model | player = e }
+            , Cmd.none
+            )
+
+        GetPlayer (Err _) ->
+            ( model, Cmd.none )
+
+        PostControls (Ok e) ->
+            ( model, Cmd.none )
+
+        PostControls (Err _) ->
             ( model, Cmd.none )
 
         FindArtist (Ok artist) ->
@@ -189,62 +254,20 @@ update msg ({ searchModel, token, drawerContent } as model) =
         ChangePlayingTrack e ->
             ( model, Http.send PlayTrack <| playTrack e token )
 
-
-search : String -> String -> Int -> Decode.Decoder a -> Token -> Request a
-search query type_ limit decoder token =
-    request
-        { method = "GET"
-        , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
-            ]
-        , url = "https://api.spotify.com/v1/search?q=" ++ query ++ "&type=" ++ type_ ++ "&limit=" ++ String.fromInt limit
-        , body = Http.emptyBody
-        , expect = Http.expectJson decoder
-        , timeout = Nothing
-        , withCredentials = False
-        }
-
-
-getArtist : String -> Decode.Decoder a -> Token -> Request a
-getArtist id decoder token =
-    request
-        { method = "GET"
-        , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
-            ]
-        , url = "https://api.spotify.com/v1/artists/" ++ id
-        , body = Http.emptyBody
-        , expect = Http.expectJson decoder
-        , timeout = Nothing
-        , withCredentials = False
-        }
-
-
-getArtistAlbums : String -> Decode.Decoder a -> Token -> Request a
-getArtistAlbums id decoder token =
-    request
-        { method = "GET"
-        , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
-            ]
-        , url = "https://api.spotify.com/v1/artists/" ++ id ++ "/albums" ++ "?market=FR&album_type=album"
-        , body = Http.emptyBody
-        , expect = Http.expectJson decoder
-        , timeout = Nothing
-        , withCredentials = False
-        }
+        SendPlayer _ ->
+            ( model, Http.send GetPlayer <| getPlayer decodePlayer token )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Time.every 1000 SendPlayer
 
 
 
 -- VIEWS
 
 
-searchView : SearchModel -> Html Msg
+searchView : Search -> Html Msg
 searchView searchModel =
     let
         artistItem a =
@@ -308,14 +331,20 @@ searchView searchModel =
         ]
 
 
-artistView : ShowArtist -> Html Msg
-artistView data =
+artistView : Player -> ShowArtist -> Html Msg
+artistView player data =
     div []
         [ div [ class "artist-name" ] [ text data.artist.name ]
         , data.albums
             |> List.map
                 (\a ->
-                    div [ class "album", onClick (ChangePlaying a.uri) ]
+                    div
+                        [ classList
+                            [ ( "album", True )
+                            , ( "active", player.item.album.id == a.id )
+                            ]
+                        , onClick (ChangePlaying a.uri)
+                        ]
                         [ div [] [ imageView Large a.images ]
                         , div [] [ text a.name ]
                         ]
@@ -352,36 +381,65 @@ sidebarView =
         ]
 
 
-playerView : Html Msg
-playerView =
+playerView : Player -> Html Msg
+playerView player =
     div [ class "player" ]
         [ div [ class "controls" ]
             [ div []
-                [ button [ class "play" ] [ i [ class "icon-play" ] [] ]
-                , button [] [ i [ class "icon-to-start" ] [] ]
-                , button [] [ i [ class "icon-to-end" ] [] ]
-                , button [] [ i [ class "icon-shuffle" ] [] ]
-                , button [] [ i [ class "icon-loop" ] [] ]
+                [ if player.is_playing then
+                    button [ onClick ClickPause, class "play" ] [ i [ class "icon-pause" ] [] ]
+
+                  else
+                    button [ onClick ClickPlay, class "play" ] [ i [ class "icon-play" ] [] ]
+                , button [ onClick ClickPrevious ] [ i [ class "icon-to-start" ] [] ]
+                , button [ onClick ClickNext ] [ i [ class "icon-to-end" ] [] ]
+                , button
+                    [ classList [ ( "active", player.shuffle_state ) ]
+                    , if player.shuffle_state then
+                        onClick ClickShuffleOff
+
+                      else
+                        onClick ClickShuffleOn
+                    ]
+                    [ i [ class "icon-shuffle" ] [] ]
+                , button [] [ i [ classList [ ( "icon-loop", True ), ( "active", player.repeat_state == "on" ) ] ] [] ]
                 ]
             ]
         , div [ class "current" ]
-            [ img [ class "cover", src "https://placekitten.com/100/100" ] []
+            [ imageView Small player.item.album.images
             , div []
                 [ div []
-                    [ span [ class "track" ] [ text "Pretty Fly (For A White Guy)" ]
+                    [ span [ class "track" ] [ text player.item.name ]
                     , span [] [ text " - " ]
-                    , span [ class "artist" ] [ text "The Offspring" ]
+                    , span [ class "artist" ]
+                        (player.item.artists
+                            |> List.map (\ar -> a [ onClick (Get ar.id) ] [ text <| ar.name ])
+                        )
                     ]
                 , div [ class "range" ]
-                    [ span [ class "time" ] [ text "2:30" ]
-                    , input [ type_ "range" ] []
-                    , span [ class "time" ] [ text "9:30" ]
+                    [ span [ class "time" ] [ text <| Utils.durationFormat player.progress_ms ]
+                    , input
+                        [ type_ "range"
+                        , Html.Attributes.value <| String.fromInt player.progress_ms
+                        , Html.Attributes.min "0"
+                        , Html.Attributes.max <| String.fromInt player.item.duration_ms
+                        ]
+                        []
+                    , span [ class "time" ] [ text <| Utils.durationFormat player.item.duration_ms ]
                     ]
                 ]
             ]
         , div [ class "options" ]
             [ div [] [ button [] [ i [ class "icon-sound" ] [] ] ]
-            , div [] [ input [ type_ "range" ] [] ]
+            , div []
+                [ input
+                    [ type_ "range"
+                    , Html.Attributes.value <| String.fromInt player.device.volume_percent
+                    , Html.Attributes.min "0"
+                    , Html.Attributes.max "100"
+                    ]
+                    []
+                ]
             ]
         ]
 
@@ -397,9 +455,9 @@ view model =
                     [ searchView model.searchModel
                     ]
                 , div [ class "drawer" ]
-                    [ artistView model.drawerContent
+                    [ artistView model.player model.drawerContent
                     ]
-                , playerView
+                , playerView model.player
                 ]
             ]
         ]
