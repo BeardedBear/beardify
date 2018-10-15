@@ -10,6 +10,7 @@ type alias Artist =
     { id : String
     , images : List Image
     , name : String
+    , popularity : Int
     , type_ : String
     }
 
@@ -26,10 +27,11 @@ type alias ListArtist =
 
 decodeArtist : Decode.Decoder Artist
 decodeArtist =
-    Decode.map4 Artist
+    Decode.map5 Artist
         (Decode.field "id" Decode.string)
         (Decode.at [ "images" ] (Decode.list decodeImage))
         (Decode.field "name" Decode.string)
+        (Decode.field "popularity" Decode.int)
         (Decode.field "type" Decode.string)
 
 

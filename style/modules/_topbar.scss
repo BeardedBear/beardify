@@ -4,7 +4,6 @@
     padding: 20px;
 }
 
-
 .search {
     position: relative;
     z-index: 999;
@@ -33,16 +32,47 @@
         max-height: 80vh;
         overflow: hidden;
         display: grid;
-        grid-template-columns: 1.2fr 2fr 2.5fr;
+        grid-template-columns: 1.4fr 2fr 2.5fr;
+        grid-gap: 20px;
         padding: 20px;
         border-top: 1px solid #222933;
         border-radius: 0 0 5px 5px;
+        color: #8ea3b3;
 
         .title {
             font-size: 1.5rem;
             font-weight: bold;
             margin-bottom: 10px;
             color: $primary-color;
+        }
+
+        .artist-item {
+            display: grid;
+            grid-auto-flow: column;
+            align-items: center;
+            justify-content: left;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            padding: 10px;
+
+            &:hover {
+                background: rgba(0,0,0,0.2);
+                color: white;
+            }
+
+            .img {
+                $size : 40px;
+                margin-right: 10px;
+                height: $size;
+                width: $size;
+                
+                img {
+                    border-radius: 100px;
+                    height: $size;
+                    width: $size;
+                }
+            }
         }
     }
 }
