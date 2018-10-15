@@ -26,13 +26,21 @@ type ImageSize
 
 imageView : ImageSize -> List Image -> Html msg
 imageView size image =
+    let
+        showImage c =
+            if c.url == "" then
+                text ""
+
+            else
+                img [ src c.url ] []
+    in
     case size of
         Small ->
             image
                 |> List.reverse
                 |> List.head
                 |> Maybe.withDefault { url = "" }
-                |> (\c -> img [ src c.url ] [])
+                |> showImage
 
         Medium ->
             text ""
@@ -41,4 +49,4 @@ imageView size image =
             image
                 |> List.head
                 |> Maybe.withDefault { url = "" }
-                |> (\c -> img [ src c.url ] [])
+                |> showImage

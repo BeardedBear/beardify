@@ -60,6 +60,7 @@ init flags url key =
                 { id = ""
                 , images = []
                 , name = ""
+                , popularity = 0
                 , type_ = ""
                 }
             , albums = []
@@ -176,9 +177,9 @@ update msg ({ searchModel, token, drawerContent } as model) =
         Query e ->
             ( { model | searchModel = { searchModel | searchQuery = e } }
             , Cmd.batch
-                [ Http.send FindArtist <| search e "artist" 20 decodeListArtist token
-                , Http.send FindAlbum <| search e "album" 13 decodeListAlbum token
-                , Http.send FindTrack <| search e "track" 16 decodeListTrack token
+                [ Http.send FindArtist <| search (e ++ "*") "artist" 10 decodeListArtist token
+                , Http.send FindAlbum <| search (e ++ "*") "album" 13 decodeListAlbum token
+                , Http.send FindTrack <| search (e ++ "*") "track" 16 decodeListTrack token
                 ]
             )
 
@@ -247,7 +248,10 @@ searchView : SearchModel -> Html Msg
 searchView searchModel =
     let
         artistItem a =
-            div [ onClick (Get a.id) ] [ imageView Small a.images, text a.name ]
+            div [ class "artist-item", onClick (Get a.id) ]
+                [ div [ class "img" ] [ imageView Small a.images ]
+                , span [] [ text a.name ]
+                ]
 
         albumItem a =
             div [ style "clear" "both", style "margin-bottom" "10px" ]
@@ -311,7 +315,7 @@ artistView data =
         , data.albums
             |> List.map
                 (\a ->
-                    div [ class "album" ]
+                    div [ class "album", onClick (ChangePlaying a.uri) ]
                         [ div [] [ imageView Large a.images ]
                         , div [] [ text a.name ]
                         ]

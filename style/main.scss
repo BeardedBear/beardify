@@ -25,7 +25,6 @@ body {
     color: white;
     min-height: 100vh;
 
-    // SCROLLBAR
     ::-webkit-scrollbar {
         width: 17px;
     }
@@ -74,6 +73,17 @@ body {
     }
 
     .album {
+        cursor: pointer;
+        transition: all ease 0.15s;
+
+        &:hover {
+            transform: scale(1.02)
+        }
+
+        &:active {
+            transform: scale(0.97)
+        }
+
         img {
             width: 100%;
             display: block;
