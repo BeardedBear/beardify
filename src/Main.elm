@@ -12,6 +12,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http exposing (..)
+import Image exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
 import Token exposing (..)
@@ -57,6 +58,7 @@ init flags url key =
       , drawerContent =
             { artist =
                 { id = ""
+                , images = []
                 , name = ""
                 , type_ = ""
                 }
@@ -241,91 +243,65 @@ subscriptions model =
 -- VIEWS
 
 
-type CoverSize
-    = Small
-    | Medium
-    | Large
-
-
-coverView : CoverSize -> List Cover -> Html Msg
-coverView size cover =
-    case size of
-        Small ->
-            cover
-                |> List.reverse
-                |> List.head
-                |> Maybe.withDefault { url = "" }
-                |> (\c -> img [ src c.url ] [])
-
-        Medium ->
-            text ""
-
-        Large ->
-            cover
-                |> List.head
-                |> Maybe.withDefault { url = "" }
-                |> (\c -> img [ src c.url ] [])
-
-
 searchView : SearchModel -> Html Msg
 searchView searchModel =
+    let
+        artistItem a =
+            div [ onClick (Get a.id) ] [ imageView Small a.images, text a.name ]
+
+        albumItem a =
+            div [ style "clear" "both", style "margin-bottom" "10px" ]
+                [ div [ class "search-cover-image", onClick (ChangePlaying a.uri) ] [ imageView Small a.images ]
+                , strong [] [ text <| a.name ++ " " ]
+                , text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")"
+                , br [] []
+                , Html.small [] (List.map (\artists -> text artists.name) a.artists)
+                ]
+
+        trackItem t =
+            div []
+                [ div [ onClick (ChangePlayingTrack [ t.uri ]), class "track-icon" ] [ text "🎵 " ]
+                , strong [] [ text t.name ]
+                , br [] []
+                , Html.small [] (List.map (\artists -> text <| artists.name) t.artists)
+                , span [] [ text " - " ]
+                , Html.small [] [ text t.album.name ]
+                , span [ style "float" "right" ]
+                    [ text (Utils.durationFormat t.duration_ms)
+                    ]
+                ]
+    in
     div [ class "search" ]
         [ div [] [ input [ placeholder "Recherche", type_ "text", onInput Query, Html.Attributes.value searchModel.searchQuery ] [] ]
         , if searchModel.searchQuery /= "" then
             div [ class "results" ]
                 [ div []
                     [ div [ class "title" ] [ text "Artists" ]
-                    , List.map (\a -> li [ onClick (Get a.id) ] [ text a.name ]) searchModel.findArtist
-                        |> ul [ style "list-style" "none", style "padding" "0" ]
+                    , div []
+                        (searchModel.findArtist
+                            |> List.map artistItem
+                        )
                     ]
                 , div []
                     [ div [ class "title" ] [ text "Albums" ]
-                    , searchModel.findAlbum
-                        |> List.filter (\a -> a.album_type == "album")
-                        |> List.map
-                            (\a ->
-                                li [ style "clear" "both", style "margin-bottom" "10px" ]
-                                    [ div [ class "search-cover-image", onClick (ChangePlaying a.uri) ] [ coverView Small a.images ]
-                                    , strong [] [ text <| a.name ++ " " ]
-                                    , text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")"
-                                    , br [] []
-                                    , Html.small [] (List.map (\artists -> text artists.name) a.artists)
-                                    ]
-                            )
-                        |> ul [ style "list-style" "none", style "padding" "0" ]
+                    , div []
+                        (searchModel.findAlbum
+                            |> List.filter (\a -> a.album_type == "album")
+                            |> List.map albumItem
+                        )
                     ]
                 , div []
                     [ div [ class "title" ] [ text "Tracks" ]
-                    , List.map
-                        (\t ->
-                            li []
-                                [ div [ onClick (ChangePlayingTrack [ t.uri ]), class "track-icon" ] [ text "🎵 " ]
-                                , strong [] [ text t.name ]
-                                , br [] []
-                                , Html.small [] (List.map (\artists -> text <| artists.name) t.artists)
-                                , span [] [ text " - " ]
-                                , Html.small [] [ text t.album.name ]
-                                , span [ style "float" "right" ]
-                                    [ text (Utils.durationFormat t.duration_ms)
-                                    ]
-                                ]
+                    , div []
+                        (searchModel.findTrack
+                            |> List.map trackItem
                         )
-                        searchModel.findTrack
-                        |> ul [ style "list-style" "none", style "padding" "0" ]
                     ]
                 ]
 
           else
             text ""
         ]
-
-
-coverViewBig : List Cover -> Html Msg
-coverViewBig cover =
-    cover
-        |> List.head
-        |> Maybe.withDefault { url = "" }
-        |> (\c -> img [ src c.url ] [])
 
 
 artistView : ShowArtist -> Html Msg
@@ -336,7 +312,7 @@ artistView data =
             |> List.map
                 (\a ->
                     div [ class "album" ]
-                        [ div [] [ coverView Large a.images ]
+                        [ div [] [ imageView Large a.images ]
                         , div [] [ text a.name ]
                         ]
                 )

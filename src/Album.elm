@@ -1,7 +1,8 @@
-module Album exposing (Album, Cover, ListAlbum, decodeAlbum, decodeAlbumCover, decodeArtistAlbums, decodeListAlbum, encodeAlbum, playAlbum)
+module Album exposing (Album, ListAlbum, decodeAlbum, decodeArtistAlbums, decodeListAlbum, encodeAlbum, playAlbum)
 
 import Artist exposing (..)
 import Http exposing (..)
+import Image exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
 import Token exposing (..)
@@ -10,8 +11,8 @@ import Utils
 
 type alias Album =
     { album_type : String
-    , artists : List Artist
-    , images : List Cover
+    , artists : List Artists
+    , images : List Image
     , name : String
     , release_date : String
     , type_ : String
@@ -21,10 +22,6 @@ type alias Album =
 
 type alias ListAlbum =
     { items : List Album }
-
-
-type alias Cover =
-    { url : String }
 
 
 encodeAlbum : String -> Encode.Value
@@ -38,18 +35,12 @@ decodeAlbum : Decode.Decoder Album
 decodeAlbum =
     Decode.map7 Album
         (Decode.field "album_type" Decode.string)
-        (Decode.at [ "artists" ] (Decode.list Artist.decodeArtist))
-        (Decode.at [ "images" ] (Decode.list decodeAlbumCover))
+        (Decode.at [ "artists" ] (Decode.list decodeArtists))
+        (Decode.at [ "images" ] (Decode.list decodeImage))
         (Decode.field "name" Decode.string)
         (Decode.field "release_date" Decode.string)
         (Decode.field "type" Decode.string)
         (Decode.field "uri" Decode.string)
-
-
-decodeAlbumCover : Decode.Decoder Cover
-decodeAlbumCover =
-    Decode.map Cover
-        (Decode.field "url" Decode.string)
 
 
 decodeListAlbum : Decode.Decoder ListAlbum

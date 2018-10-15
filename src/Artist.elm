@@ -1,19 +1,22 @@
-module Artist exposing (Artist, ListArtist, decodeArtist, decodeListArtist)
+module Artist exposing (Artist, Artists, ListArtist, decodeArtist, decodeArtists, decodeListArtist)
 
 import Http exposing (..)
+import Image exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
 
 
-type alias ArtistImage =
-    { url : String
+type alias Artist =
+    { id : String
+    , images : List Image
+    , name : String
+    , type_ : String
     }
 
 
-type alias Artist =
+type alias Artists =
     { id : String
     , name : String
-    , type_ : String
     }
 
 
@@ -21,22 +24,20 @@ type alias ListArtist =
     { items : List Artist }
 
 
-
--- Artists
-
-
 decodeArtist : Decode.Decoder Artist
 decodeArtist =
-    Decode.map3 Artist
+    Decode.map4 Artist
         (Decode.field "id" Decode.string)
+        (Decode.at [ "images" ] (Decode.list decodeImage))
         (Decode.field "name" Decode.string)
         (Decode.field "type" Decode.string)
 
 
-decodeArtistImage : Decode.Decoder ArtistImage
-decodeArtistImage =
-    Decode.map ArtistImage
-        (Decode.field "url" Decode.string)
+decodeArtists : Decode.Decoder Artists
+decodeArtists =
+    Decode.map2 Artists
+        (Decode.field "id" Decode.string)
+        (Decode.field "name" Decode.string)
 
 
 decodeListArtist : Decode.Decoder ListArtist

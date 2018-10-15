@@ -1,3 +1,5 @@
+@import "../variables";
+
 .topbar {
     padding: 20px;
 }
@@ -13,25 +15,34 @@
         border: 0;
         padding: 10px 15px;
         color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        border-radius: 5px;
+
+        &:focus {
+            outline: none;
+            border-radius: 5px 5px 0 0;
+        }
     }
 
     .results {
         position: absolute;
-        right: 10px;
+        right: 0;
         left:0;
-        background: white;
-        color : black;
+        background: #191f27;
         max-height: 80vh;
-        max-width: 1000px;
         overflow: hidden;
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1.2fr 2fr 2.5fr;
         padding: 20px;
+        border-top: 1px solid #222933;
+        border-radius: 0 0 5px 5px;
 
         .title {
             font-size: 1.5rem;
             font-weight: bold;
             margin-bottom: 10px;
+            color: $primary-color;
         }
     }
 }
