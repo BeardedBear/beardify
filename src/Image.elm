@@ -43,7 +43,12 @@ imageView size image =
                 |> showImage
 
         Medium ->
-            text ""
+            image
+                |> List.take 2
+                |> List.reverse
+                |> List.head
+                |> Maybe.withDefault { url = "" }
+                |> showImage
 
         Large ->
             image

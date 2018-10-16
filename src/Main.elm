@@ -30,6 +30,8 @@ type alias ShowArtist =
     { artist : Artist
     , albums : List Album
     , videos : List Video
+    , topTracks : List Track
+    , relatedArtists : List Artist
     }
 
 
@@ -60,6 +62,8 @@ init flags url key =
                 }
             , albums = []
             , videos = []
+            , topTracks = []
+            , relatedArtists = []
             }
       , searchModel =
             { findArtist = []
@@ -116,6 +120,8 @@ type Msg
     | Get String
     | GetArtist (Result Http.Error Artist)
     | GetArtistAlbums (Result Http.Error ListAlbum)
+    | GetArtistTopTracks (Result Http.Error ArtistTopTracks)
+    | GetRelatedArtists (Result Http.Error RelatedArtists)
     | GetPlayer (Result Http.Error Player)
     | GetYoutube (Result Http.Error Youtube)
     | PostControls (Result Http.Error ())
@@ -174,6 +180,8 @@ update msg ({ searchModel, token, drawerContent } as model) =
             , Cmd.batch
                 [ Http.send GetArtist <| getArtist e decodeArtist token
                 , Http.send GetArtistAlbums <| getArtistAlbums e decodeArtistAlbums token
+                , Http.send GetArtistTopTracks <| getArtistTopTracks e token
+                , Http.send GetRelatedArtists <| getRelatedArtists e token
                 ]
             )
 
@@ -197,6 +205,18 @@ update msg ({ searchModel, token, drawerContent } as model) =
             )
 
         GetArtistAlbums (Err _) ->
+            ( model, Cmd.none )
+
+        GetArtistTopTracks (Ok e) ->
+            ( { model | drawerContent = { drawerContent | topTracks = e.tracks } }, Cmd.none )
+
+        GetArtistTopTracks (Err _) ->
+            ( model, Cmd.none )
+
+        GetRelatedArtists (Ok e) ->
+            ( { model | drawerContent = { drawerContent | relatedArtists = e.artists } }, Cmd.none )
+
+        GetRelatedArtists (Err _) ->
             ( model, Cmd.none )
 
         GetPlayer (Ok e) ->
@@ -262,7 +282,7 @@ update msg ({ searchModel, token, drawerContent } as model) =
             ( model, Http.send PlayAlbum <| playAlbum e token )
 
         ChangePlayingTrack e ->
-            ( model, Http.send PlayTrack <| playTrack e token )
+            ( model, Http.send PlayTrack <| putPlayTrack e token )
 
         SendPlayer _ ->
             ( model, Http.send GetPlayer <| getPlayer decodePlayer token )
@@ -330,9 +350,7 @@ searchView searchModel =
                 , div []
                     [ div [ class "title" ] [ text "Tracks" ]
                     , div []
-                        (searchModel.findTrack
-                            |> List.map trackItem
-                        )
+                        (searchModel.findTrack |> List.map trackItem)
                     ]
                 ]
 
@@ -343,9 +361,34 @@ searchView searchModel =
 
 artistView : Player -> ShowArtist -> Html Msg
 artistView player data =
+    let
+        trackItem t =
+            div [ class "track", onClick (ChangePlayingTrack [ t.uri ]) ]
+                [ div [] [ imageView Small t.album.images ]
+                , div [] [ text t.name ]
+                , div [] [ text (Utils.durationFormat t.duration_ms) ]
+                ]
+
+        relatedArtistItem r =
+            div [ class "related-artist", onClick (Get r.id) ]
+                [ div [] [ imageView Small r.images ]
+                , div [] [ text r.name ]
+                ]
+    in
     div []
         [ div [ class "content-wrapper" ]
             [ div [ class "artist-name" ] [ text data.artist.name ]
+            , div [ class "artist-head" ]
+                [ div [ class "top-tracks" ]
+                    [ div [ class "sub-title" ] [ text "Top tracks" ]
+                    , div [] (data.topTracks |> List.take 5 |> List.map trackItem)
+                    ]
+                , div []
+                    [ div [ class "sub-title" ] [ text "Similar artists" ]
+                    , div [ class "related-artists" ] (data.relatedArtists |> List.take 4 |> List.map relatedArtistItem)
+                    ]
+                ]
+            , div [ class "sub-title" ] [ text "Albums" ]
             , data.albums
                 |> List.map
                     (\a ->
@@ -356,14 +399,14 @@ artistView player data =
                                 ]
                             , onClick (ChangePlaying a.uri)
                             ]
-                            [ div [] [ imageView Large a.images ]
+                            [ div [] [ imageView Medium a.images ]
                             , div [] [ text a.name ]
                             ]
                     )
                 |> div [ class "album-wrapper" ]
             ]
         , div [ class "video-wrapper" ]
-            [ div [ class "artist-name" ] [ text "Videos" ]
+            [ div [ class "sub-title" ] [ text "Videos" ]
             , div []
                 (data.videos
                     |> List.map

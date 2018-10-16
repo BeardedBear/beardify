@@ -1,4 +1,4 @@
-module Artist exposing (Artist, Artists, ListArtist, decodeArtist, decodeArtists, decodeListArtist, getArtist, getArtistAlbums)
+module Artist exposing (Artist, Artists, ListArtist, RelatedArtists, decodeArtist, decodeArtistTopTracks, decodeArtists, decodeListArtist, decodeRelatedArtists, getArtist, getArtistAlbums, getRelatedArtists)
 
 import Http exposing (..)
 import Image exposing (..)
@@ -26,6 +26,16 @@ type alias ListArtist =
     { items : List Artist }
 
 
+type alias RelatedArtists =
+    { artists : List Artist }
+
+
+decodeRelatedArtists : Decode.Decoder RelatedArtists
+decodeRelatedArtists =
+    Decode.map RelatedArtists
+        (Decode.at [ "artists" ] (Decode.list decodeArtist))
+
+
 decodeArtist : Decode.Decoder Artist
 decodeArtist =
     Decode.map5 Artist
@@ -49,6 +59,12 @@ decodeListArtist =
         (Decode.at [ "artists", "items" ] (Decode.list decodeArtist))
 
 
+decodeArtistTopTracks : Decode.Decoder ListArtist
+decodeArtistTopTracks =
+    Decode.map ListArtist
+        (Decode.at [ "artists", "items" ] (Decode.list decodeArtist))
+
+
 getArtist : String -> Decode.Decoder a -> Token -> Request a
 getArtist id decoder token =
     request
@@ -59,6 +75,21 @@ getArtist id decoder token =
         , url = "https://api.spotify.com/v1/artists/" ++ id
         , body = Http.emptyBody
         , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = False
+        }
+
+
+getRelatedArtists : String -> Token -> Request RelatedArtists
+getRelatedArtists id token =
+    request
+        { method = "GET"
+        , headers =
+            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            ]
+        , url = "https://api.spotify.com/v1/artists/" ++ id ++ "/related-artists"
+        , body = Http.emptyBody
+        , expect = Http.expectJson decodeRelatedArtists
         , timeout = Nothing
         , withCredentials = False
         }
