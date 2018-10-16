@@ -1,4 +1,4 @@
-module Track exposing (ListTrack, Track, decodeListTrack, decodeTrack, encodeTrack, playTrack)
+module Track exposing (ArtistTopTracks, ListTrack, Track, decodeArtistTopTracks, decodeListTrack, decodeTrack, encodeTrack, getArtistTopTracks, putPlayTrack)
 
 import Album exposing (..)
 import Artist exposing (..)
@@ -23,15 +23,16 @@ type alias ListTrack =
     }
 
 
+type alias ArtistTopTracks =
+    { tracks : List Track
+    }
+
+
 encodeTrack : List String -> Encode.Value
 encodeTrack uris =
     Encode.object
         [ ( "uris", Encode.list Encode.string uris )
         ]
-
-
-
--- Tracks
 
 
 decodeTrack : Decode.Decoder Track
@@ -44,20 +45,41 @@ decodeTrack =
         (Decode.field "uri" Decode.string)
 
 
+decodeArtistTopTracks : Decode.Decoder ArtistTopTracks
+decodeArtistTopTracks =
+    Decode.map ArtistTopTracks
+        (Decode.at [ "tracks" ] (Decode.list decodeTrack))
+
+
 decodeListTrack : Decode.Decoder ListTrack
 decodeListTrack =
     Decode.map ListTrack
         (Decode.at [ "tracks", "items" ] (Decode.list decodeTrack))
 
 
-playTrack : List String -> Token -> Request ()
-playTrack uris token =
+putPlayTrack : List String -> Token -> Request ()
+putPlayTrack uris token =
     request
         { method = "PUT"
         , headers = [ Http.header "Authorization" <| "Bearer " ++ token.token ]
         , url = "https://api.spotify.com/v1/me/player/play"
         , body = Http.jsonBody (encodeTrack uris)
         , expect = expectStringResponse (\_ -> Ok ())
+        , timeout = Nothing
+        , withCredentials = False
+        }
+
+
+getArtistTopTracks : String -> Token -> Request ArtistTopTracks
+getArtistTopTracks id token =
+    request
+        { method = "GET"
+        , headers =
+            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            ]
+        , url = "https://api.spotify.com/v1/artists/" ++ id ++ "/top-tracks?country=FR"
+        , body = Http.emptyBody
+        , expect = Http.expectJson decodeArtistTopTracks
         , timeout = Nothing
         , withCredentials = False
         }

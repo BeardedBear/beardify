@@ -30,8 +30,65 @@
         padding-right: 30px;
     }
 
+    .related-artists {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        font-weight: bold;
+
+        .related-artist {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+
+            &:hover {
+                background: rgba(black, 0.2);
+            }
+        }
+
+        img {
+            width: 72px;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+    }
+
+    .top-tracks {
+        .track {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            padding: 2px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+
+            &:hover {
+                background: rgba(black, 0.2);
+            }
+        }
+
+        img {
+            border-radius: 5px;
+            width: 30px;
+            height: 30px;
+            margin-right: 20px;
+        }
+    }
+
+    .artist-head {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 30px;
+        margin: 50px 0;
+    }
+
     .video-wrapper {
         padding: 0 30px;
+        margin-top: 105px;
         border-left: 1px solid rgba(white, 0.05);
 
         .video-frame {
