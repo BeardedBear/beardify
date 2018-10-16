@@ -19,6 +19,7 @@ import Token exposing (..)
 import Track exposing (..)
 import Url exposing (Url)
 import Utils
+import Youtube exposing (..)
 
 
 type alias Flags =
@@ -28,6 +29,7 @@ type alias Flags =
 type alias ShowArtist =
     { artist : Artist
     , albums : List Album
+    , videos : List Video
     }
 
 
@@ -57,6 +59,7 @@ init flags url key =
                 , type_ = ""
                 }
             , albums = []
+            , videos = []
             }
       , searchModel =
             { findArtist = []
@@ -114,6 +117,7 @@ type Msg
     | GetArtist (Result Http.Error Artist)
     | GetArtistAlbums (Result Http.Error ListAlbum)
     | GetPlayer (Result Http.Error Player)
+    | GetYoutube (Result Http.Error Youtube)
     | PostControls (Result Http.Error ())
     | FindArtist (Result Http.Error ListArtist)
     | FindAlbum (Result Http.Error ListAlbum)
@@ -178,7 +182,7 @@ update msg ({ searchModel, token, drawerContent } as model) =
                 | drawerContent = { drawerContent | artist = e }
                 , searchModel = { searchModel | searchQuery = "" }
               }
-            , Cmd.none
+            , Http.send GetYoutube <| getVideos e.name
             )
 
         GetArtist (Err _) ->
@@ -201,6 +205,12 @@ update msg ({ searchModel, token, drawerContent } as model) =
             )
 
         GetPlayer (Err _) ->
+            ( model, Cmd.none )
+
+        GetYoutube (Ok e) ->
+            ( { model | drawerContent = { drawerContent | videos = e.items } }, Cmd.none )
+
+        GetYoutube (Err _) ->
             ( model, Cmd.none )
 
         PostControls (Ok e) ->
@@ -334,22 +344,38 @@ searchView searchModel =
 artistView : Player -> ShowArtist -> Html Msg
 artistView player data =
     div []
-        [ div [ class "artist-name" ] [ text data.artist.name ]
-        , data.albums
-            |> List.map
-                (\a ->
-                    div
-                        [ classList
-                            [ ( "album", True )
-                            , ( "active", player.item.album.id == a.id )
+        [ div [ class "content-wrapper" ]
+            [ div [ class "artist-name" ] [ text data.artist.name ]
+            , data.albums
+                |> List.map
+                    (\a ->
+                        div
+                            [ classList
+                                [ ( "album", True )
+                                , ( "active", player.item.album.id == a.id )
+                                ]
+                            , onClick (ChangePlaying a.uri)
                             ]
-                        , onClick (ChangePlaying a.uri)
-                        ]
-                        [ div [] [ imageView Large a.images ]
-                        , div [] [ text a.name ]
-                        ]
+                            [ div [] [ imageView Large a.images ]
+                            , div [] [ text a.name ]
+                            ]
+                    )
+                |> div [ class "album-wrapper" ]
+            ]
+        , div [ class "video-wrapper" ]
+            [ div [ class "artist-name" ] [ text "Videos" ]
+            , div []
+                (data.videos
+                    |> List.map
+                        (\v ->
+                            div [ class "video-frame" ]
+                                [ iframe [ class "video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 125, src <| "https://www.youtube.com/embed/" ++ v.id.videoId ] []
+                                , div [ class "video-title" ] [ text v.snippet.title ]
+                                , div [ class "video-channel" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ v.snippet.channelId) ] [ text v.snippet.channelTitle ] ]
+                                ]
+                        )
                 )
-            |> div [ class "album-wrapper" ]
+            ]
         ]
 
 
