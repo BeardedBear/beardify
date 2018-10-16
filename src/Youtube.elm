@@ -58,4 +58,4 @@ decodeYoutube =
 
 getVideos : String -> Http.Request Youtube
 getVideos query =
-    Http.get ("https://www.googleapis.com/youtube/v3/search?q=" ++ query ++ "&type=video&maxResults=5&part=snippet&key=AIzaSyDjlO4Gb0jCsxrot8KcNslXNSN_cIN5yqs") decodeYoutube
+    Http.get ("https://www.googleapis.com/youtube/v3/search?q=" ++ query ++ "&type=video&maxResults=5&part=snippet&key=") decodeYoutube
