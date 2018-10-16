@@ -1,53 +1,12 @@
-@import "./_variables";
+@import "./base/_base";
+@import "./base/_variables";
 
 @import "./modules/_topbar";
 @import "./modules/_sidebar";
 @import "./modules/_player";
 @import "./modules/_input-range";
+@import "./modules/_drawer";
 
-*, *::after, *::before {
-    box-sizing: border-box;
-}
-
-i {
-    vertical-align: middle;
-}
-
-button {
-    &:focus {
-        outline: none;
-    }
-}
-
-a {
-    cursor: pointer;
-
-    &:hover {
-        border-bottom: 1px solid $primary-color;
-        color: $primary-color
-    }
-}
-
-body { 
-    font-family: "Roboto Condensed";
-    background: #11151b;
-    color: white;
-    min-height: 100vh;
-
-    ::-webkit-scrollbar {
-        width: 17px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0);
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background-color: $primary-color;
-        border: 5px solid #11151b;
-        border-radius: 20px;
-    }
-}
 
 
 .app {
@@ -56,127 +15,10 @@ body {
     height: 100vh;
 }
 
-.drawer {
-    position : relative;
-
-    > div {
-        padding: 30px;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        overflow: auto;
-    }
-
-    .artist-name {
-        font-size: 3rem;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-
-    .album-wrapper {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        grid-gap: 30px;
-    }
-
-    .album {
-        cursor: pointer;
-        transition: all ease 0.15s;
-        position: relative;
-
-        &:hover {
-            transform: scale(1.02)
-        }
-
-        &:active {
-            transform: scale(0.97)
-        }
-
-        &.active {
-            img {
-                box-shadow:  0px 0px 0px 3px $primary-color;
-            }
-
-            &::after {
-                font-family: 'beardify';
-                content: "h"; 
-                position: absolute;
-                left: 50%;
-                top: 42%;
-                transform: translate(-50%, -50%);
-                color: $primary-color;
-                font-size: 4rem;
-            }
-        }
-
-        img {
-            width: 100%;
-            display: block;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-    }
-}
 
 .content {
     display: grid;
     grid-template-rows: auto 1fr 80px;
 }
 
-
-.search-cover-image {
-    position: relative;
-    float: left; 
-    margin-right: 10px;
-    cursor: pointer;
-
-    img {
-        transition: all ease-in-out 0.15s;
-        border-radius: 5px;
-        width: 40px;
-    }
-
-    &:hover {
-        img {
-            border-radius: 50px;
-        }
-
-        &::before {
-            position: absolute;
-            content: "";
-            background: rgba(0, 0, 0, 0.6);
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 1;
-            border-radius: 50px;
-            width: 40px;
-            height: 40px;
-        }
-
-        &::after {
-            position: absolute;
-            content: "🎵";
-            top: 50%;
-            left: 50%;
-            z-index: 2;
-            transform: translate(-50%, -50%)
-        }
-        
-    }
-}
-
-.track-icon {
-    opacity: 0.2;
-    float: left;
-    font-size: 1.8rem;
-    cursor: pointer;
-
-    &:hover {
-        opacity: 1;
-    }
-}
 
