@@ -11,140 +11,185 @@
         left: 0;
         overflow: auto;
         display: grid;
-        grid-template-columns: 1fr 300px;
+        align-content: flex-start;
     }
 
-    .artist-name {
+    .heading-page {
         font-size: 3rem;
         font-weight: bold;
         margin-bottom: 10px;
     }
 
-    .album-wrapper {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+
+    .artist-wrapper {
+        grid-template-columns: 1fr 300px;
         grid-gap: 30px;
-    }
 
-    .content-wrapper {
-        padding-right: 30px;
-    }
-
-    .related-artists {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        font-weight: bold;
-
-        .related-artist {
+        .related-artists {
             display: grid;
-            grid-template-columns: auto 1fr;
-            align-items: center;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 5px;
-
-            &:hover {
-                background: rgba(black, 0.2);
-            }
-        }
-
-        img {
-            width: 72px;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-    }
-
-    .top-tracks {
-        .track {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            justify-content: space-between;
-            align-items: center;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             font-weight: bold;
-            padding: 2px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-
-            &:hover {
-                background: rgba(black, 0.2);
+    
+            .related-artist {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                align-items: center;
+                cursor: pointer;
+                padding: 10px;
+                border-radius: 5px;
+    
+                &:hover {
+                    background: rgba(black, 0.2);
+                }
+            }
+    
+            img {
+                $size: 65px;
+                width: $size;
+                height: $size;
+                border-radius: 5px;
+                margin-right: 10px;
+                display: block;
             }
         }
 
-        img {
-            border-radius: 5px;
-            width: 30px;
-            height: 30px;
-            margin-right: 20px;
+        .album-list-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-gap: 30px;
+        }
+
+        .top-tracks {
+            img {
+                border-radius: 5px;
+                width: 30px;
+                height: 30px;
+                margin-right: 20px;
+                display: block;
+            }
+        }
+    
+        .artist-head {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 30px;
+            margin: 50px 0;
+        }
+    
+        .video-wrapper {
+            padding: 0 30px;
+            margin-top: 105px;
+            border-left: 1px solid rgba(white, 0.05);
+    
+            .video-frame {
+                margin-bottom: 30px;
+            }
+    
+            .video {
+                margin-bottom: 10px;
+            }
+    
+            .video-title {
+                font-weight: bold;
+            }
+    
+            .video-channel {
+                opacity: 0.6;
+                font-style: italic;
+            }
+        }
+    
+    
+        .album {
+            cursor: pointer;
+            transition: all ease 0.15s;
+            position: relative;
+    
+            &:hover {
+                transform: scale(1.02)
+            }
+    
+            &:active {
+                transform: scale(0.97)
+            }
+    
+            &.active {
+                img {
+                    box-shadow:  0px 0px 0px 3px $primary-color;
+                }
+    
+                &::after {
+                    font-family: 'beardify';
+                    content: "h"; 
+                    position: absolute;
+                    left: 50%;
+                    top: 42%;
+                    transform: translate(-50%, -50%);
+                    color: $primary-color;
+                    font-size: 4rem;
+                }
+            }
+    
+            img {
+                width: 100%;
+                display: block;
+                margin-bottom: 10px;
+                border-radius: 5px;
+            }
         }
     }
 
-    .artist-head {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-gap: 30px;
-        margin: 50px 0;
-    }
+    .album-wrapper {
+        padding: 30px 200px 0 80px;
 
-    .video-wrapper {
-        padding: 0 30px;
-        margin-top: 105px;
-        border-left: 1px solid rgba(white, 0.05);
-
-        .video-frame {
+        .album-page-head {
             margin-bottom: 30px;
         }
 
-        .video {
-            margin-bottom: 10px;
-        }
-
-        .video-title {
-            font-weight: bold;
-        }
-
-        .video-channel {
-            opacity: 0.6;
-            font-style: italic;
+        .album-page {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            grid-gap: 30px;
+            
+            img {
+                border-radius: 5px;
+            }
         }
     }
 
-
-    .album {
+    .track {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+        padding: 2px 10px;
+        border-radius: 5px;
+        padding: 5px 10px;
         cursor: pointer;
-        transition: all ease 0.15s;
-        position: relative;
 
         &:hover {
-            transform: scale(1.02)
+            background: rgba(black, 0.2);
         }
 
-        &:active {
-            transform: scale(0.97)
+        
+        &.album-page {
+            padding: 10px 15px;
+            grid-template-columns: auto 30px 1fr auto;
+            grid-gap: 10px;
+            
+            i {
+                font-size: 1.1rem;
+                margin-right: 10px;
+                opacity: 0.2;
+            }
         }
-
         &.active {
-            img {
-                box-shadow:  0px 0px 0px 3px $primary-color;
-            }
+            background: $primary-color;
 
-            &::after {
-                font-family: 'beardify';
-                content: "h"; 
-                position: absolute;
-                left: 50%;
-                top: 42%;
-                transform: translate(-50%, -50%);
-                color: $primary-color;
-                font-size: 4rem;
+            i {
+               opacity: 1;
             }
-        }
-
-        img {
-            width: 100%;
-            display: block;
-            margin-bottom: 10px;
-            border-radius: 5px;
         }
     }
 }

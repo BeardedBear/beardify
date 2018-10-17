@@ -1,4 +1,4 @@
-module Track exposing (ArtistTopTracks, ListTrack, Track, decodeArtistTopTracks, decodeListTrack, decodeTrack, encodeTrack, getArtistTopTracks, putPlayTrack)
+module Track exposing (AlbumTracks, ArtistTopTracks, ListTrack, Track, TrackSimplified, decodeAlbumTracks, decodeArtistTopTracks, decodeListTrack, decodeTrack, decodeTrackSimplified, encodeTrack, getAlbumTracks, getArtistTopTracks, putPlayTrack)
 
 import Album exposing (..)
 import Artist exposing (..)
@@ -18,6 +18,15 @@ type alias Track =
     }
 
 
+type alias TrackSimplified =
+    { name : String
+    , duration_ms : Int
+    , artists : List Artists
+    , track_number : Int
+    , uri : String
+    }
+
+
 type alias ListTrack =
     { items : List Track
     }
@@ -25,6 +34,11 @@ type alias ListTrack =
 
 type alias ArtistTopTracks =
     { tracks : List Track
+    }
+
+
+type alias AlbumTracks =
+    { items : List TrackSimplified
     }
 
 
@@ -45,10 +59,26 @@ decodeTrack =
         (Decode.field "uri" Decode.string)
 
 
+decodeTrackSimplified : Decode.Decoder TrackSimplified
+decodeTrackSimplified =
+    Decode.map5 TrackSimplified
+        (Decode.field "name" Decode.string)
+        (Decode.field "duration_ms" Decode.int)
+        (Decode.at [ "artists" ] (Decode.list decodeArtists))
+        (Decode.field "track_number" Decode.int)
+        (Decode.field "uri" Decode.string)
+
+
 decodeArtistTopTracks : Decode.Decoder ArtistTopTracks
 decodeArtistTopTracks =
     Decode.map ArtistTopTracks
         (Decode.at [ "tracks" ] (Decode.list decodeTrack))
+
+
+decodeAlbumTracks : Decode.Decoder AlbumTracks
+decodeAlbumTracks =
+    Decode.map AlbumTracks
+        (Decode.at [ "items" ] (Decode.list decodeTrackSimplified))
 
 
 decodeListTrack : Decode.Decoder ListTrack
@@ -80,6 +110,21 @@ getArtistTopTracks id token =
         , url = "https://api.spotify.com/v1/artists/" ++ id ++ "/top-tracks?country=FR"
         , body = Http.emptyBody
         , expect = Http.expectJson decodeArtistTopTracks
+        , timeout = Nothing
+        , withCredentials = False
+        }
+
+
+getAlbumTracks : String -> Token -> Request AlbumTracks
+getAlbumTracks id token =
+    request
+        { method = "GET"
+        , headers =
+            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            ]
+        , url = "https://api.spotify.com/v1/albums/" ++ id ++ "/tracks"
+        , body = Http.emptyBody
+        , expect = Http.expectJson decodeAlbumTracks
         , timeout = Nothing
         , withCredentials = False
         }
