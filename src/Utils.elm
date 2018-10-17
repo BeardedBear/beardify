@@ -1,4 +1,4 @@
-module Utils exposing (durationFormat, releaseDateFormat)
+module Utils exposing (durationFormat, durationFormatMinutes, releaseDateFormat)
 
 import Time exposing (millisToPosix, toHour, toMinute, toSecond, utc)
 
@@ -29,6 +29,20 @@ durationFormat duration =
                 String.fromInt (toTime toSecond)
     in
     hour ++ minute ++ second
+
+
+durationFormatMinutes : Int -> String
+durationFormatMinutes duration =
+    let
+        toTime unit =
+            duration
+                |> millisToPosix
+                |> unit utc
+
+        minute =
+            String.fromInt (toTime toMinute)
+    in
+    minute ++ " min"
 
 
 releaseDateFormat : String -> String

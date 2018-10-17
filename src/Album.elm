@@ -1,4 +1,4 @@
-module Album exposing (Album, ListAlbum, decodeAlbum, decodeArtistAlbums, decodeListAlbum, encodeAlbum, playAlbum)
+module Album exposing (Album, ListAlbum, decodeAlbum, decodeArtistAlbums, decodeListAlbum, encodeAlbum, getAlbum, playAlbum)
 
 import Artist exposing (..)
 import Http exposing (..)
@@ -23,6 +23,21 @@ type alias Album =
 
 type alias ListAlbum =
     { items : List Album }
+
+
+getAlbum : String -> Token -> Request Album
+getAlbum id token =
+    request
+        { method = "GET"
+        , headers =
+            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            ]
+        , url = "https://api.spotify.com/v1/albums/" ++ id
+        , body = Http.emptyBody
+        , expect = Http.expectJson decodeAlbum
+        , timeout = Nothing
+        , withCredentials = False
+        }
 
 
 encodeAlbum : String -> Encode.Value

@@ -26,7 +26,7 @@ type alias Flags =
     {}
 
 
-type alias ShowArtist =
+type alias ArtistModel =
     { artist : Artist
     , albums : List Album
     , videos : List Video
@@ -35,15 +35,24 @@ type alias ShowArtist =
     }
 
 
+type alias AlbumModel =
+    { album : Album
+    , tracks : List TrackSimplified
+    }
+
+
 type DrawerType
-    = DrawArtist String
-    | DrawAlbum String
-    | None
+    = DrawArtist
+    | DrawAlbum
+    | Home
+    | Releases
 
 
 type alias Model =
     { token : Token
-    , drawerContent : ShowArtist
+    , drawerType : DrawerType
+    , drawerArtist : ArtistModel
+    , drawerAlbum : AlbumModel
     , searchModel : Search
     , player : Player
     }
@@ -52,7 +61,8 @@ type alias Model =
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     ( { token = { token = "" }
-      , drawerContent =
+      , drawerType = Home
+      , drawerArtist =
             { artist =
                 { id = ""
                 , images = []
@@ -64,6 +74,19 @@ init flags url key =
             , videos = []
             , topTracks = []
             , relatedArtists = []
+            }
+      , drawerAlbum =
+            { album =
+                { album_type = ""
+                , artists = []
+                , id = ""
+                , images = []
+                , name = ""
+                , release_date = ""
+                , type_ = ""
+                , uri = ""
+                }
+            , tracks = []
             }
       , searchModel =
             { findArtist = []
@@ -108,15 +131,10 @@ init flags url key =
 type Msg
     = UrlChanged Url
     | UrlRequested Browser.UrlRequest
-    | ClickNext
-    | ClickPrevious
-    | ClickPlay
-    | ClickPause
-    | ClickShuffleOff
-    | ClickShuffleOn
-    | ClickRepeatOff
-    | ClickRepeatOn
     | GetToken (Result Http.Error Token)
+    | GetA String
+    | GetAlbum (Result Http.Error Album)
+    | GetAlbumTracks (Result Http.Error AlbumTracks)
     | Get String
     | GetArtist (Result Http.Error Artist)
     | GetArtistAlbums (Result Http.Error ListAlbum)
@@ -125,6 +143,14 @@ type Msg
     | GetPlayer (Result Http.Error Player)
     | GetYoutube (Result Http.Error Youtube)
     | PostControls (Result Http.Error ())
+    | ClickNext
+    | ClickPrevious
+    | ClickPlay
+    | ClickPause
+    | ClickShuffleOff
+    | ClickShuffleOn
+    | ClickRepeatOff
+    | ClickRepeatOn
     | FindArtist (Result Http.Error ListArtist)
     | FindAlbum (Result Http.Error ListAlbum)
     | FindTrack (Result Http.Error ListTrack)
@@ -137,12 +163,119 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ searchModel, token, drawerContent } as model) =
+update msg ({ searchModel, token, drawerArtist, drawerAlbum } as model) =
     case msg of
         UrlChanged url ->
             ( model, Cmd.none )
 
         UrlRequested urlRequest ->
+            ( model, Cmd.none )
+
+        GetToken (Ok e) ->
+            ( { model | token = e }, Cmd.none )
+
+        GetToken (Err _) ->
+            ( model, Cmd.none )
+
+        -- ALBUM
+        GetA e ->
+            ( model
+            , Cmd.batch
+                [ Http.send GetAlbum <| getAlbum e token
+                , Http.send GetAlbumTracks <| getAlbumTracks e token
+                ]
+            )
+
+        GetAlbum (Ok e) ->
+            ( { model
+                | drawerType = DrawAlbum
+                , drawerAlbum = { drawerAlbum | album = e }
+              }
+            , Cmd.none
+            )
+
+        GetAlbum (Err _) ->
+            ( model, Cmd.none )
+
+        GetAlbumTracks (Ok e) ->
+            ( { model
+                | drawerAlbum = { drawerAlbum | tracks = e.items }
+              }
+            , Cmd.none
+            )
+
+        GetAlbumTracks (Err e) ->
+            let
+                _ =
+                    Debug.log "error" e
+            in
+            ( model, Cmd.none )
+
+        -- ARTIST
+        Get e ->
+            ( model
+            , Cmd.batch
+                [ Http.send GetArtist <| getArtist e decodeArtist token
+                , Http.send GetArtistAlbums <| getArtistAlbums e decodeArtistAlbums token
+                , Http.send GetArtistTopTracks <| getArtistTopTracks e token
+                , Http.send GetRelatedArtists <| getRelatedArtists e token
+                ]
+            )
+
+        GetArtist (Ok e) ->
+            ( { model
+                | drawerType = DrawArtist
+                , drawerArtist = { drawerArtist | artist = e }
+                , searchModel = { searchModel | searchQuery = "" }
+              }
+            , Http.send GetYoutube <| getVideos e.name
+            )
+
+        GetArtist (Err _) ->
+            ( model, Cmd.none )
+
+        GetArtistAlbums (Ok e) ->
+            ( { model
+                | drawerArtist = { drawerArtist | albums = e.items }
+                , searchModel = { searchModel | searchQuery = "" }
+              }
+            , Cmd.none
+            )
+
+        GetArtistAlbums (Err _) ->
+            ( model, Cmd.none )
+
+        GetArtistTopTracks (Ok e) ->
+            ( { model | drawerArtist = { drawerArtist | topTracks = e.tracks } }, Cmd.none )
+
+        GetArtistTopTracks (Err _) ->
+            ( model, Cmd.none )
+
+        GetRelatedArtists (Ok e) ->
+            ( { model | drawerArtist = { drawerArtist | relatedArtists = e.artists } }, Cmd.none )
+
+        GetRelatedArtists (Err _) ->
+            ( model, Cmd.none )
+
+        GetYoutube (Ok e) ->
+            ( { model | drawerArtist = { drawerArtist | videos = e.items } }, Cmd.none )
+
+        GetYoutube (Err _) ->
+            ( model, Cmd.none )
+
+        -- PLAYER
+        GetPlayer (Ok e) ->
+            ( { model | player = e }
+            , Cmd.none
+            )
+
+        GetPlayer (Err _) ->
+            ( model, Cmd.none )
+
+        PostControls (Ok e) ->
+            ( model, Cmd.none )
+
+        PostControls (Err _) ->
             ( model, Cmd.none )
 
         ClickNext ->
@@ -169,76 +302,28 @@ update msg ({ searchModel, token, drawerContent } as model) =
         ClickRepeatOn ->
             ( model, Http.send PostControls <| postControls "PUT" "repeat?state=track" token )
 
-        GetToken (Ok e) ->
-            ( { model | token = e }, Cmd.none )
+        ChangePlaying e ->
+            ( model, Http.send PlayAlbum <| playAlbum e token )
 
-        GetToken (Err _) ->
+        ChangePlayingTrack e ->
+            ( model, Http.send PlayTrack <| putPlayTrack e token )
+
+        SendPlayer _ ->
+            ( model, Http.send GetPlayer <| getPlayer decodePlayer token )
+
+        PlayAlbum (Ok _) ->
             ( model, Cmd.none )
 
-        Get e ->
-            ( model
-            , Cmd.batch
-                [ Http.send GetArtist <| getArtist e decodeArtist token
-                , Http.send GetArtistAlbums <| getArtistAlbums e decodeArtistAlbums token
-                , Http.send GetArtistTopTracks <| getArtistTopTracks e token
-                , Http.send GetRelatedArtists <| getRelatedArtists e token
-                ]
-            )
-
-        GetArtist (Ok e) ->
-            ( { model
-                | drawerContent = { drawerContent | artist = e }
-                , searchModel = { searchModel | searchQuery = "" }
-              }
-            , Http.send GetYoutube <| getVideos e.name
-            )
-
-        GetArtist (Err _) ->
+        PlayAlbum (Err _) ->
             ( model, Cmd.none )
 
-        GetArtistAlbums (Ok e) ->
-            ( { model
-                | drawerContent = { drawerContent | albums = e.items }
-                , searchModel = { searchModel | searchQuery = "" }
-              }
-            , Cmd.none
-            )
-
-        GetArtistAlbums (Err _) ->
+        PlayTrack (Ok _) ->
             ( model, Cmd.none )
 
-        GetArtistTopTracks (Ok e) ->
-            ( { model | drawerContent = { drawerContent | topTracks = e.tracks } }, Cmd.none )
-
-        GetArtistTopTracks (Err _) ->
+        PlayTrack (Err _) ->
             ( model, Cmd.none )
 
-        GetRelatedArtists (Ok e) ->
-            ( { model | drawerContent = { drawerContent | relatedArtists = e.artists } }, Cmd.none )
-
-        GetRelatedArtists (Err _) ->
-            ( model, Cmd.none )
-
-        GetPlayer (Ok e) ->
-            ( { model | player = e }
-            , Cmd.none
-            )
-
-        GetPlayer (Err _) ->
-            ( model, Cmd.none )
-
-        GetYoutube (Ok e) ->
-            ( { model | drawerContent = { drawerContent | videos = e.items } }, Cmd.none )
-
-        GetYoutube (Err _) ->
-            ( model, Cmd.none )
-
-        PostControls (Ok e) ->
-            ( model, Cmd.none )
-
-        PostControls (Err _) ->
-            ( model, Cmd.none )
-
+        -- SEARCH
         FindArtist (Ok artist) ->
             ( { model | searchModel = { searchModel | findArtist = artist.items } }, Cmd.none )
 
@@ -257,18 +342,6 @@ update msg ({ searchModel, token, drawerContent } as model) =
         FindTrack (Err _) ->
             ( model, Cmd.none )
 
-        PlayAlbum (Ok _) ->
-            ( model, Cmd.none )
-
-        PlayAlbum (Err _) ->
-            ( model, Cmd.none )
-
-        PlayTrack (Ok _) ->
-            ( model, Cmd.none )
-
-        PlayTrack (Err _) ->
-            ( model, Cmd.none )
-
         Query e ->
             ( { model | searchModel = { searchModel | searchQuery = e } }
             , Cmd.batch
@@ -277,15 +350,6 @@ update msg ({ searchModel, token, drawerContent } as model) =
                 , Http.send FindTrack <| search (e ++ "*") "track" 16 decodeListTrack token
                 ]
             )
-
-        ChangePlaying e ->
-            ( model, Http.send PlayAlbum <| playAlbum e token )
-
-        ChangePlayingTrack e ->
-            ( model, Http.send PlayTrack <| putPlayTrack e token )
-
-        SendPlayer _ ->
-            ( model, Http.send GetPlayer <| getPlayer decodePlayer token )
 
 
 subscriptions : Model -> Sub Msg
@@ -334,10 +398,7 @@ searchView searchModel =
             div [ class "results" ]
                 [ div []
                     [ div [ class "title" ] [ text "Artists" ]
-                    , div []
-                        (searchModel.findArtist
-                            |> List.map artistItem
-                        )
+                    , div [] (searchModel.findArtist |> List.map artistItem)
                     ]
                 , div []
                     [ div [ class "title" ] [ text "Albums" ]
@@ -359,7 +420,54 @@ searchView searchModel =
         ]
 
 
-artistView : Player -> ShowArtist -> Html Msg
+albumView : Player -> AlbumModel -> Html Msg
+albumView player album =
+    let
+        trackItem t =
+            div
+                [ classList
+                    [ ( "track album-page", True )
+                    , ( "active", t.uri == player.item.uri )
+                    ]
+                , onClick (ChangePlayingTrack [ t.uri ])
+                ]
+                [ if t.uri == player.item.uri then
+                    div [] [ i [ class "icon-play" ] [] ]
+
+                  else
+                    div [] [ i [ class "icon-music" ] [] ]
+                , div [] [ text <| String.fromInt t.track_number ++ "." ]
+                , div [] [ text t.name ]
+                , div [] [ text (Utils.durationFormat t.duration_ms) ]
+                ]
+
+        trackSumDuration =
+            album.tracks
+                |> List.map (\d -> d.duration_ms)
+                |> List.sum
+    in
+    div [ class "album-wrapper" ]
+        [ div [ class "album-page-head" ]
+            [ div [ class "heading-page" ] [ text album.album.name ]
+            , div []
+                [ span [] [ text "By " ]
+                , span [] (album.album.artists |> List.map (\ar -> a [ onClick (Get ar.id) ] [ text ar.name ]))
+                ]
+            ]
+        , div [ class "album-page" ]
+            [ div []
+                [ imageView Medium album.album.images
+                , div [] [ text <| Utils.releaseDateFormat album.album.release_date ]
+                , div [] [ text <| Utils.durationFormatMinutes trackSumDuration ]
+                ]
+            , div []
+                [ div [] (album.tracks |> List.map trackItem)
+                ]
+            ]
+        ]
+
+
+artistView : Player -> ArtistModel -> Html Msg
 artistView player data =
     let
         trackItem t =
@@ -375,9 +483,10 @@ artistView player data =
                 , div [] [ text r.name ]
                 ]
     in
-    div []
-        [ div [ class "content-wrapper" ]
-            [ div [ class "artist-name" ] [ text data.artist.name ]
+    div [ class "artist-wrapper" ]
+        [ div []
+            [ div [ class "heading-page" ] [ text data.artist.name ]
+            , div [] [ a [ href ("https://fr.wikipedia.org/wiki/" ++ data.artist.name), target "_BLANK" ] [ text "Wikipedia" ] ]
             , div [ class "artist-head" ]
                 [ div [ class "top-tracks" ]
                     [ div [ class "sub-title" ] [ text "Top tracks" ]
@@ -397,13 +506,13 @@ artistView player data =
                                 [ ( "album", True )
                                 , ( "active", player.item.album.id == a.id )
                                 ]
-                            , onClick (ChangePlaying a.uri)
+                            , onClick (GetA a.id)
                             ]
                             [ div [] [ imageView Medium a.images ]
                             , div [] [ text a.name ]
                             ]
                     )
-                |> div [ class "album-wrapper" ]
+                |> div [ class "album-list-wrapper" ]
             ]
         , div [ class "video-wrapper" ]
             [ div [ class "sub-title" ] [ text "Videos" ]
@@ -475,7 +584,7 @@ playerView player =
                 ]
             ]
         , div [ class "current" ]
-            [ imageView Small player.item.album.images
+            [ div [ onClick (GetA player.item.album.id) ] [ imageView Small player.item.album.images ]
             , div []
                 [ div []
                     [ span [ class "track" ] [ text player.item.name ]
@@ -524,7 +633,15 @@ view model =
                     [ searchView model.searchModel
                     ]
                 , div [ class "drawer" ]
-                    [ artistView model.player model.drawerContent
+                    [ case model.drawerType of
+                        DrawArtist ->
+                            artistView model.player model.drawerArtist
+
+                        DrawAlbum ->
+                            albumView model.player model.drawerAlbum
+
+                        _ ->
+                            text ""
                     ]
                 , playerView model.player
                 ]
