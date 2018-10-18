@@ -46,6 +46,7 @@ type DrawerType
     | DrawAlbum
     | Home
     | Releases
+    | Listen
 
 
 type alias Model =
@@ -143,6 +144,8 @@ type Msg
     | GetPlayer (Result Http.Error Player)
     | GetYoutube (Result Http.Error Youtube)
     | PostControls (Result Http.Error ())
+    | ChangeSeek String
+    | PutSeekPosition (Result Http.Error ())
     | ClickNext
     | ClickPrevious
     | ClickPlay
@@ -160,6 +163,9 @@ type Msg
     | ChangePlaying String
     | ChangePlayingTrack (List String)
     | SendPlayer Posix
+    | GoHome
+    | GoReleases
+    | GoListen
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -278,6 +284,15 @@ update msg ({ searchModel, token, drawerArtist, drawerAlbum } as model) =
         PostControls (Err _) ->
             ( model, Cmd.none )
 
+        ChangeSeek e ->
+            ( model, Http.send PutSeekPosition <| putSeekPosition e token )
+
+        PutSeekPosition (Ok e) ->
+            ( model, Cmd.none )
+
+        PutSeekPosition (Err _) ->
+            ( model, Cmd.none )
+
         ClickNext ->
             ( model, Http.send PostControls <| postControls "POST" "next" token )
 
@@ -351,6 +366,15 @@ update msg ({ searchModel, token, drawerArtist, drawerAlbum } as model) =
                 ]
             )
 
+        GoHome ->
+            ( { model | drawerType = Home }, Cmd.none )
+
+        GoReleases ->
+            ( { model | drawerType = Releases }, Cmd.none )
+
+        GoListen ->
+            ( { model | drawerType = Listen }, Cmd.none )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -418,6 +442,11 @@ searchView searchModel =
           else
             text ""
         ]
+
+
+homeView : Html Msg
+homeView =
+    text "bienvenue ! "
 
 
 albumView : Player -> AlbumModel -> Html Msg
@@ -506,10 +535,11 @@ artistView player data =
                                 [ ( "album", True )
                                 , ( "active", player.item.album.id == a.id )
                                 ]
-                            , onClick (GetA a.id)
                             ]
-                            [ div [] [ imageView Medium a.images ]
+                            [ div [ onClick (GetA a.id) ] [ imageView Medium a.images ]
                             , div [] [ text a.name ]
+                            , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")" ]
+                            , div [ class "playing-btn", onClick (ChangePlaying a.uri) ] [ i [ class "icon-play" ] [] ]
                             ]
                     )
                 |> div [ class "album-list-wrapper" ]
@@ -531,14 +561,14 @@ artistView player data =
         ]
 
 
-sidebarView : Html Msg
-sidebarView =
+sidebarView : Model -> Html Msg
+sidebarView model =
     div [ class "sidebar" ]
         [ div [ class "logo" ] [ text "Beardify" ]
         , div [ class "top-menu" ]
-            [ div [] [ i [ class "icon-home" ] [], text "Home" ]
-            , div [] [ i [ class "icon-bell" ] [], text "Sorties" ]
-            , div [ class "active" ] [ i [ class "icon-bookmark" ] [], text "A écouter" ]
+            [ div [ onClick GoHome, classList [ ( "active", model.drawerType == Home ) ] ] [ i [ class "icon-home" ] [], text "Home" ]
+            , div [ onClick GoReleases, classList [ ( "active", model.drawerType == Releases ) ] ] [ i [ class "icon-bell" ] [], text "Sorties" ]
+            , div [ onClick GoListen, classList [ ( "active", model.drawerType == Listen ) ] ] [ i [ class "icon-bookmark" ] [], text "A écouter" ]
             ]
         , div [ class "playlists" ]
             [ div [ class "title" ] [ text "Playlists" ]
@@ -601,6 +631,7 @@ playerView player =
                         , Html.Attributes.value <| String.fromInt player.progress_ms
                         , Html.Attributes.min "0"
                         , Html.Attributes.max <| String.fromInt player.item.duration_ms
+                        , onInput ChangeSeek
                         ]
                         []
                     , span [ class "time" ] [ text <| Utils.durationFormat player.item.duration_ms ]
@@ -627,7 +658,7 @@ view model =
     { title = ""
     , body =
         [ div [ class "app" ]
-            [ sidebarView
+            [ sidebarView model
             , div [ class "content" ]
                 [ div [ class "topbar" ]
                     [ searchView model.searchModel
@@ -639,6 +670,9 @@ view model =
 
                         DrawAlbum ->
                             albumView model.player model.drawerAlbum
+
+                        Home ->
+                            homeView
 
                         _ ->
                             text ""

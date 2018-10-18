@@ -1,4 +1,4 @@
-module Player exposing (Player, decodePlayer, getPlayer, postControls)
+module Player exposing (Player, decodePlayer, getPlayer, postControls, putSeekPosition)
 
 import Device exposing (..)
 import Http exposing (..)
@@ -51,6 +51,21 @@ postControls method control token =
             [ Http.header "Authorization" <| "Bearer " ++ token.token
             ]
         , url = "https://api.spotify.com/v1/me/player/" ++ control
+        , body = Http.emptyBody
+        , expect = Http.expectStringResponse (\_ -> Ok ())
+        , timeout = Nothing
+        , withCredentials = False
+        }
+
+
+putSeekPosition : String -> Token -> Request ()
+putSeekPosition duration token =
+    request
+        { method = "PUT"
+        , headers =
+            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            ]
+        , url = "https://api.spotify.com/v1/me/player/seek?position_ms=" ++ duration
         , body = Http.emptyBody
         , expect = Http.expectStringResponse (\_ -> Ok ())
         , timeout = Nothing
