@@ -52,13 +52,15 @@
         }
 
         .range {
-            margin-top: 7px;
+            display: grid;
+            grid-auto-flow: column;
+            align-items: baseline;
         
             input[type=range] {
-                margin: 0 15px;
-                width: 400px;
+                width: 30vw;
                 position: relative;
                 top: -2px;
+                padding: 10px;
             }
 
         }
@@ -122,7 +124,8 @@
         input[type=range] {
             width: 100px;
             position: relative;
-            top: -4px 
+            top: -4px;
+            padding: 10px;
         }
     }
 }
