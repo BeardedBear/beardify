@@ -4,7 +4,6 @@ import Http exposing (..)
 import Image exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
-import Token exposing (..)
 
 
 type alias Artist =
@@ -65,12 +64,12 @@ decodeArtistTopTracks =
         (Decode.at [ "artists", "items" ] (Decode.list decodeArtist))
 
 
-getArtist : String -> Decode.Decoder a -> Token -> Request a
+getArtist : String -> Decode.Decoder a -> String -> Request a
 getArtist id decoder token =
     request
         { method = "GET"
         , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            [ Http.header "Authorization" <| "Bearer " ++ token
             ]
         , url = "https://api.spotify.com/v1/artists/" ++ id
         , body = Http.emptyBody
@@ -80,12 +79,12 @@ getArtist id decoder token =
         }
 
 
-getRelatedArtists : String -> Token -> Request RelatedArtists
+getRelatedArtists : String -> String -> Request RelatedArtists
 getRelatedArtists id token =
     request
         { method = "GET"
         , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            [ Http.header "Authorization" <| "Bearer " ++ token
             ]
         , url = "https://api.spotify.com/v1/artists/" ++ id ++ "/related-artists"
         , body = Http.emptyBody
@@ -95,12 +94,12 @@ getRelatedArtists id token =
         }
 
 
-getArtistAlbums : String -> Decode.Decoder a -> Token -> Request a
+getArtistAlbums : String -> Decode.Decoder a -> String -> Request a
 getArtistAlbums id decoder token =
     request
         { method = "GET"
         , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            [ Http.header "Authorization" <| "Bearer " ++ token
             ]
         , url = "https://api.spotify.com/v1/artists/" ++ id ++ "/albums" ++ "?market=FR&album_type=album"
         , body = Http.emptyBody

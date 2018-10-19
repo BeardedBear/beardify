@@ -5,7 +5,6 @@ import Artist exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
-import Token exposing (..)
 import Utils
 
 
@@ -87,11 +86,11 @@ decodeListTrack =
         (Decode.at [ "tracks", "items" ] (Decode.list decodeTrack))
 
 
-putPlayTrack : List String -> Token -> Request ()
+putPlayTrack : List String -> String -> Request ()
 putPlayTrack uris token =
     request
         { method = "PUT"
-        , headers = [ Http.header "Authorization" <| "Bearer " ++ token.token ]
+        , headers = [ Http.header "Authorization" <| "Bearer " ++ token ]
         , url = "https://api.spotify.com/v1/me/player/play"
         , body = Http.jsonBody (encodeTrack uris)
         , expect = expectStringResponse (\_ -> Ok ())
@@ -100,12 +99,12 @@ putPlayTrack uris token =
         }
 
 
-getArtistTopTracks : String -> Token -> Request ArtistTopTracks
+getArtistTopTracks : String -> String -> Request ArtistTopTracks
 getArtistTopTracks id token =
     request
         { method = "GET"
         , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            [ Http.header "Authorization" <| "Bearer " ++ token
             ]
         , url = "https://api.spotify.com/v1/artists/" ++ id ++ "/top-tracks?country=FR"
         , body = Http.emptyBody
@@ -115,12 +114,12 @@ getArtistTopTracks id token =
         }
 
 
-getAlbumTracks : String -> Token -> Request AlbumTracks
+getAlbumTracks : String -> String -> Request AlbumTracks
 getAlbumTracks id token =
     request
         { method = "GET"
         , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            [ Http.header "Authorization" <| "Bearer " ++ token
             ]
         , url = "https://api.spotify.com/v1/albums/" ++ id ++ "/tracks"
         , body = Http.emptyBody

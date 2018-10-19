@@ -13,9 +13,10 @@ import Image exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
 import Player exposing (..)
+import Playlist exposing (..)
 import Search exposing (..)
+import Task exposing (..)
 import Time exposing (..)
-import Token exposing (..)
 import Track exposing (..)
 import Url exposing (Url)
 import Utils
@@ -23,7 +24,12 @@ import Youtube exposing (..)
 
 
 type alias Flags =
-    {}
+    { token : String }
+
+
+type alias Config =
+    { token : String
+    }
 
 
 type alias ArtistModel =
@@ -50,7 +56,7 @@ type DrawerType
 
 
 type alias Model =
-    { token : Token
+    { config : Config
     , drawerType : DrawerType
     , drawerArtist : ArtistModel
     , drawerAlbum : AlbumModel
@@ -61,7 +67,9 @@ type alias Model =
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( { token = { token = "" }
+    ( { config =
+            { token = flags.token
+            }
       , drawerType = Home
       , drawerArtist =
             { artist =
@@ -124,15 +132,14 @@ init flags url key =
             }
       }
     , Cmd.batch
-        [ Http.send GetToken <| Http.get "token.json" decodeToken
-        ]
+        [ Http.send GetPlaylists <| getPlaylists flags.token ]
     )
 
 
 type Msg
     = UrlChanged Url
     | UrlRequested Browser.UrlRequest
-    | GetToken (Result Http.Error Token)
+    | GetPlaylists (Result Http.Error Playlistslist)
     | GetA String
     | GetAlbum (Result Http.Error Album)
     | GetAlbumTracks (Result Http.Error AlbumTracks)
@@ -169,7 +176,7 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ searchModel, token, drawerArtist, drawerAlbum } as model) =
+update msg ({ searchModel, config, drawerArtist, drawerAlbum } as model) =
     case msg of
         UrlChanged url ->
             ( model, Cmd.none )
@@ -177,18 +184,18 @@ update msg ({ searchModel, token, drawerArtist, drawerAlbum } as model) =
         UrlRequested urlRequest ->
             ( model, Cmd.none )
 
-        GetToken (Ok e) ->
-            ( { model | token = e }, Cmd.none )
+        GetPlaylists (Ok e) ->
+            ( model, Cmd.none )
 
-        GetToken (Err _) ->
+        GetPlaylists (Err _) ->
             ( model, Cmd.none )
 
         -- ALBUM
         GetA e ->
             ( model
             , Cmd.batch
-                [ Http.send GetAlbum <| getAlbum e token
-                , Http.send GetAlbumTracks <| getAlbumTracks e token
+                [ Http.send GetAlbum <| getAlbum e model.config.token
+                , Http.send GetAlbumTracks <| getAlbumTracks e model.config.token
                 ]
             )
 
@@ -221,10 +228,10 @@ update msg ({ searchModel, token, drawerArtist, drawerAlbum } as model) =
         Get e ->
             ( model
             , Cmd.batch
-                [ Http.send GetArtist <| getArtist e decodeArtist token
-                , Http.send GetArtistAlbums <| getArtistAlbums e decodeArtistAlbums token
-                , Http.send GetArtistTopTracks <| getArtistTopTracks e token
-                , Http.send GetRelatedArtists <| getRelatedArtists e token
+                [ Http.send GetArtist <| getArtist e decodeArtist model.config.token
+                , Http.send GetArtistAlbums <| getArtistAlbums e decodeArtistAlbums model.config.token
+                , Http.send GetArtistTopTracks <| getArtistTopTracks e model.config.token
+                , Http.send GetRelatedArtists <| getRelatedArtists e model.config.token
                 ]
             )
 
@@ -285,7 +292,7 @@ update msg ({ searchModel, token, drawerArtist, drawerAlbum } as model) =
             ( model, Cmd.none )
 
         ChangeSeek e ->
-            ( model, Http.send PutSeekPosition <| putSeekPosition e token )
+            ( model, Http.send PutSeekPosition <| putSeekPosition e model.config.token )
 
         PutSeekPosition (Ok e) ->
             ( model, Cmd.none )
@@ -294,37 +301,37 @@ update msg ({ searchModel, token, drawerArtist, drawerAlbum } as model) =
             ( model, Cmd.none )
 
         ClickNext ->
-            ( model, Http.send PostControls <| postControls "POST" "next" token )
+            ( model, Http.send PostControls <| postControls "POST" "next" model.config.token )
 
         ClickPrevious ->
-            ( model, Http.send PostControls <| postControls "POST" "previous" token )
+            ( model, Http.send PostControls <| postControls "POST" "previous" model.config.token )
 
         ClickPlay ->
-            ( model, Http.send PostControls <| postControls "PUT" "play" token )
+            ( model, Http.send PostControls <| postControls "PUT" "play" model.config.token )
 
         ClickPause ->
-            ( model, Http.send PostControls <| postControls "PUT" "pause" token )
+            ( model, Http.send PostControls <| postControls "PUT" "pause" model.config.token )
 
         ClickShuffleOff ->
-            ( model, Http.send PostControls <| postControls "PUT" "shuffle?state=false" token )
+            ( model, Http.send PostControls <| postControls "PUT" "shuffle?state=false" model.config.token )
 
         ClickShuffleOn ->
-            ( model, Http.send PostControls <| postControls "PUT" "shuffle?state=true" token )
+            ( model, Http.send PostControls <| postControls "PUT" "shuffle?state=true" model.config.token )
 
         ClickRepeatOff ->
-            ( model, Http.send PostControls <| postControls "PUT" "repeat?state=off" token )
+            ( model, Http.send PostControls <| postControls "PUT" "repeat?state=off" model.config.token )
 
         ClickRepeatOn ->
-            ( model, Http.send PostControls <| postControls "PUT" "repeat?state=track" token )
+            ( model, Http.send PostControls <| postControls "PUT" "repeat?state=track" model.config.token )
 
         ChangePlaying e ->
-            ( model, Http.send PlayAlbum <| playAlbum e token )
+            ( model, Http.send PlayAlbum <| playAlbum e model.config.token )
 
         ChangePlayingTrack e ->
-            ( model, Http.send PlayTrack <| putPlayTrack e token )
+            ( model, Http.send PlayTrack <| putPlayTrack e model.config.token )
 
         SendPlayer _ ->
-            ( model, Http.send GetPlayer <| getPlayer decodePlayer token )
+            ( model, Http.send GetPlayer <| getPlayer decodePlayer model.config.token )
 
         PlayAlbum (Ok _) ->
             ( model, Cmd.none )
@@ -360,9 +367,9 @@ update msg ({ searchModel, token, drawerArtist, drawerAlbum } as model) =
         Query e ->
             ( { model | searchModel = { searchModel | searchQuery = e } }
             , Cmd.batch
-                [ Http.send FindArtist <| search (e ++ "*") "artist" 10 decodeListArtist token
-                , Http.send FindAlbum <| search (e ++ "*") "album" 13 decodeListAlbum token
-                , Http.send FindTrack <| search (e ++ "*") "track" 16 decodeListTrack token
+                [ Http.send FindArtist <| search (e ++ "*") "artist" 10 decodeListArtist model.config.token
+                , Http.send FindAlbum <| search (e ++ "*") "album" 13 decodeListAlbum model.config.token
+                , Http.send FindTrack <| search (e ++ "*") "track" 16 decodeListTrack model.config.token
                 ]
             )
 
@@ -496,6 +503,27 @@ albumView player album =
         ]
 
 
+albumsGallery : Player -> List Album -> Html Msg
+albumsGallery player albums =
+    let
+        albumItem a =
+            div
+                [ classList
+                    [ ( "album", True )
+                    , ( "active", player.item.album.id == a.id )
+                    ]
+                ]
+                [ div [ onClick (GetA a.id) ] [ imageView Medium a.images ]
+                , div [] [ text a.name ]
+                , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")" ]
+                , div [ class "playing-btn", onClick (ChangePlaying a.uri) ] [ i [ class "icon-play" ] [] ]
+                ]
+    in
+    albums
+        |> List.map albumItem
+        |> div [ class "album-list-wrapper" ]
+
+
 artistView : Player -> ArtistModel -> Html Msg
 artistView player data =
     let
@@ -527,22 +555,7 @@ artistView player data =
                     ]
                 ]
             , div [ class "sub-title" ] [ text "Albums" ]
-            , data.albums
-                |> List.map
-                    (\a ->
-                        div
-                            [ classList
-                                [ ( "album", True )
-                                , ( "active", player.item.album.id == a.id )
-                                ]
-                            ]
-                            [ div [ onClick (GetA a.id) ] [ imageView Medium a.images ]
-                            , div [] [ text a.name ]
-                            , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")" ]
-                            , div [ class "playing-btn", onClick (ChangePlaying a.uri) ] [ i [ class "icon-play" ] [] ]
-                            ]
-                    )
-                |> div [ class "album-list-wrapper" ]
+            , albumsGallery player data.albums
             ]
         , div [ class "video-wrapper" ]
             [ div [ class "sub-title" ] [ text "Videos" ]
@@ -569,6 +582,15 @@ sidebarView model =
             [ div [ onClick GoHome, classList [ ( "active", model.drawerType == Home ) ] ] [ i [ class "icon-home" ] [], text "Home" ]
             , div [ onClick GoReleases, classList [ ( "active", model.drawerType == Releases ) ] ] [ i [ class "icon-bell" ] [], text "Sorties" ]
             , div [ onClick GoListen, classList [ ( "active", model.drawerType == Listen ) ] ] [ i [ class "icon-bookmark" ] [], text "A écouter" ]
+            ]
+        , div [ class "collections" ]
+            [ div [ class "title" ] [ text "Collections" ]
+            , div [ class "playlists-list" ]
+                [ div [ class "playlist" ] [ i [ class "icon-book" ] [], text "2018" ]
+                , div [ class "playlist" ] [ i [ class "icon-book" ] [], text "2017" ]
+                , div [ class "playlist" ] [ i [ class "icon-book" ] [], text "2016" ]
+                , div [ class "playlist" ] [ i [ class "icon-book" ] [], text "2015" ]
+                ]
             ]
         , div [ class "playlists" ]
             [ div [ class "title" ] [ text "Playlists" ]
@@ -655,7 +677,7 @@ playerView player =
 
 view : Model -> Document Msg
 view model =
-    { title = ""
+    { title = model.config.token
     , body =
         [ div [ class "app" ]
             [ sidebarView model

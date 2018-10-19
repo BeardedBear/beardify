@@ -4,7 +4,6 @@ import Album exposing (..)
 import Artist exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
-import Token exposing (..)
 import Track exposing (..)
 
 
@@ -16,12 +15,12 @@ type alias Search =
     }
 
 
-search : String -> String -> Int -> Decode.Decoder a -> Token -> Request a
+search : String -> String -> Int -> Decode.Decoder a -> String -> Request a
 search query type_ limit decoder token =
     request
         { method = "GET"
         , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            [ Http.header "Authorization" <| "Bearer " ++ token
             ]
         , url = "https://api.spotify.com/v1/search?q=" ++ query ++ "&type=" ++ type_ ++ "&limit=" ++ String.fromInt limit
         , body = Http.emptyBody

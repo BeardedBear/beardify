@@ -83,3 +83,9 @@
 .icon-home:before {
   content: "\70";
 }
+.icon-book:before {
+  content: "\6f";
+}
+.icon-book-1:before {
+  content: "\71";
+}

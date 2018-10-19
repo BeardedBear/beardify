@@ -3,7 +3,6 @@ module Youtube exposing (Snippet, Video, Youtube, decodeSnippet, decodeVideo, de
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
-import Token exposing (..)
 
 
 type alias VideoId =
