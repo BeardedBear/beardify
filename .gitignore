@@ -7,3 +7,4 @@ public/main.css
 package-lock.json
 elm-package.json
 *.map
+.env

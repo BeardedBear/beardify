@@ -1,25 +1,32 @@
+// const dotenv = require('dotenv').config();
+// const http = require('http');
+// const hostname = '127.0.0.1';
+// const port = 4000;
 const SpotifyWebApi = require('spotify-web-api-node');
 const fs = require('fs');
-
-const clientId = 'a05f4302858d402d873bee3d1d5e166c',
-    clientSecret = '38ed1201776d4ba2a6bbd1f1c5f57939';
+const dotenv = require('dotenv').config();
 
 // Create the api object with the credentials
 const spotifyApi = new SpotifyWebApi({
-    clientId: clientId,
-    clientSecret: clientSecret
+    clientId: process.env.SPOTIFY_CLIENT_ID,
+    clientSecret: process.env.SPOTIFY_CLIENT_SECRET
 });
 
-// Retrieve an access token.
+// const server = http.createServer((req, res) => {
+//     res.statusCode = 200;
+//     res.setHeader('Content-Type', 'text/plain');
+//     res.end('Hello World\n');
+// });
+
+// server.listen(port, hostname, () => {
+//     console.log(process.env.API_KEY)
+// });
+
 spotifyApi.clientCredentialsGrant().then(
     function (data) {
-        fs.writeFileSync(
-            'public/token.json',
-            JSON.stringify({ token: data.body['access_token'] })
-        );
+        console.log(data.body.access_token)
     },
     function (err) {
         console.log('Something went wrong when retrieving an access token', err);
-    }
+    },
 );
-

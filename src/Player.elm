@@ -3,7 +3,6 @@ module Player exposing (Player, decodePlayer, getPlayer, postControls, putSeekPo
 import Device exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
-import Token exposing (..)
 import Track exposing (..)
 
 
@@ -28,12 +27,12 @@ decodePlayer =
         (Decode.field "shuffle_state" Decode.bool)
 
 
-getPlayer : Decode.Decoder a -> Token -> Request a
+getPlayer : Decode.Decoder a -> String -> Request a
 getPlayer decoder token =
     request
         { method = "GET"
         , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            [ Http.header "Authorization" <| "Bearer " ++ token
             ]
         , url = "https://api.spotify.com/v1/me/player"
         , body = Http.emptyBody
@@ -43,12 +42,12 @@ getPlayer decoder token =
         }
 
 
-postControls : String -> String -> Token -> Request ()
+postControls : String -> String -> String -> Request ()
 postControls method control token =
     request
         { method = method
         , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            [ Http.header "Authorization" <| "Bearer " ++ token
             ]
         , url = "https://api.spotify.com/v1/me/player/" ++ control
         , body = Http.emptyBody
@@ -58,12 +57,12 @@ postControls method control token =
         }
 
 
-putSeekPosition : String -> Token -> Request ()
+putSeekPosition : String -> String -> Request ()
 putSeekPosition duration token =
     request
         { method = "PUT"
         , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            [ Http.header "Authorization" <| "Bearer " ++ token
             ]
         , url = "https://api.spotify.com/v1/me/player/seek?position_ms=" ++ duration
         , body = Http.emptyBody

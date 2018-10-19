@@ -5,7 +5,6 @@ import Http exposing (..)
 import Image exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
-import Token exposing (..)
 import Utils
 
 
@@ -25,12 +24,12 @@ type alias ListAlbum =
     { items : List Album }
 
 
-getAlbum : String -> Token -> Request Album
+getAlbum : String -> String -> Request Album
 getAlbum id token =
     request
         { method = "GET"
         , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token.token
+            [ Http.header "Authorization" <| "Bearer " ++ token
             ]
         , url = "https://api.spotify.com/v1/albums/" ++ id
         , body = Http.emptyBody
@@ -72,11 +71,11 @@ decodeArtistAlbums =
         (Decode.at [ "items" ] (Decode.list decodeAlbum))
 
 
-playAlbum : String -> Token -> Request ()
+playAlbum : String -> String -> Request ()
 playAlbum uri token =
     request
         { method = "PUT"
-        , headers = [ Http.header "Authorization" <| "Bearer " ++ token.token ]
+        , headers = [ Http.header "Authorization" <| "Bearer " ++ token ]
         , url = "https://api.spotify.com/v1/me/player/play"
         , body = Http.jsonBody (encodeAlbum uri)
         , expect = expectStringResponse (\_ -> Ok ())
