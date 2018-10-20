@@ -1,6 +1,7 @@
 module Artist exposing (Artist, Artists, ListArtist, RelatedArtists, decodeArtist, decodeArtistTopTracks, decodeArtists, decodeListArtist, decodeRelatedArtists, getArtist, getArtistAlbums, getRelatedArtists)
 
 import Http exposing (..)
+import HttpBuilder exposing (..)
 import Image exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode

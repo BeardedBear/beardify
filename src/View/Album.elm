@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Image exposing (..)
+import List.Extra as LE
 import Player exposing (..)
 import Root exposing (..)
 import Utils
@@ -14,13 +15,18 @@ import Utils
 view : Player.Model -> AlbumModel -> Html Msg
 view player album =
     let
+        listTracksUri id =
+            album.tracks
+                |> LE.dropWhile (\e -> e.uri /= id)
+                |> List.map (\k -> k.uri)
+
         trackItem t =
             div
                 [ classList
                     [ ( "track album-page", True )
                     , ( "active", t.uri == player.item.uri )
                     ]
-                , onClick (ChangePlayingTrack [ t.uri ])
+                , onClick <| ChangePlayingTrack (listTracksUri t.uri)
                 ]
                 [ if t.uri == player.item.uri then
                     div [] [ i [ class "icon-play" ] [] ]
