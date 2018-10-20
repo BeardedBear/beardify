@@ -1,4 +1,4 @@
-module Search exposing (Search, search)
+module Search exposing (Model, init, search)
 
 import Album exposing (..)
 import Artist exposing (..)
@@ -7,11 +7,19 @@ import Json.Decode as Decode exposing (..)
 import Track exposing (..)
 
 
-type alias Search =
+type alias Model =
     { findArtist : List Artist
     , findAlbum : List Album
     , findTrack : List Track
     , searchQuery : String
+    }
+
+
+init =
+    { findArtist = []
+    , findAlbum = []
+    , findTrack = []
+    , searchQuery = ""
     }
 
 

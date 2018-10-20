@@ -5,6 +5,7 @@ import Artist exposing (..)
 import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Device exposing (..)
+import Drawer exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -32,36 +33,11 @@ type alias Config =
     }
 
 
-type alias ArtistModel =
-    { artist : Artist
-    , albums : List Album
-    , videos : List Video
-    , topTracks : List Track
-    , relatedArtists : List Artist
-    }
-
-
-type alias AlbumModel =
-    { album : Album
-    , tracks : List TrackSimplified
-    }
-
-
-type DrawerType
-    = DrawArtist
-    | DrawAlbum
-    | Home
-    | Releases
-    | Listen
-
-
 type alias Model =
     { config : Config
-    , drawerType : DrawerType
-    , drawerArtist : ArtistModel
-    , drawerAlbum : AlbumModel
-    , searchModel : Search
-    , player : Player
+    , drawer : Drawer.Model
+    , searchModel : Search.Model
+    , player : Player.Model
     }
 
 
@@ -70,66 +46,9 @@ init flags url key =
     ( { config =
             { token = flags.token
             }
-      , drawerType = Home
-      , drawerArtist =
-            { artist =
-                { id = ""
-                , images = []
-                , name = ""
-                , popularity = 0
-                , type_ = ""
-                }
-            , albums = []
-            , videos = []
-            , topTracks = []
-            , relatedArtists = []
-            }
-      , drawerAlbum =
-            { album =
-                { album_type = ""
-                , artists = []
-                , id = ""
-                , images = []
-                , name = ""
-                , release_date = ""
-                , type_ = ""
-                , uri = ""
-                }
-            , tracks = []
-            }
-      , searchModel =
-            { findArtist = []
-            , findAlbum = []
-            , findTrack = []
-            , searchQuery = ""
-            }
-      , player =
-            { device =
-                { id = ""
-                , name = ""
-                , volume_percent = 0
-                }
-            , is_playing = False
-            , progress_ms = 0
-            , item =
-                { name = ""
-                , duration_ms = 0
-                , artists = []
-                , album =
-                    { album_type = ""
-                    , artists = []
-                    , id = " "
-                    , images = []
-                    , name = ""
-                    , release_date = ""
-                    , type_ = ""
-                    , uri = ""
-                    }
-                , uri = ""
-                }
-            , repeat_state = ""
-            , shuffle_state = False
-            }
+      , drawer = Drawer.init
+      , searchModel = Search.init
+      , player = Player.init
       }
     , Cmd.batch
         [ Http.send GetPlaylists <| getPlaylists flags.token ]
@@ -148,7 +67,7 @@ type Msg
     | GetArtistAlbums (Result Http.Error ListAlbum)
     | GetArtistTopTracks (Result Http.Error ArtistTopTracks)
     | GetRelatedArtists (Result Http.Error RelatedArtists)
-    | GetPlayer (Result Http.Error Player)
+    | GetPlayer (Result Http.Error Player.Model)
     | GetYoutube (Result Http.Error Youtube)
     | PostControls (Result Http.Error ())
     | ChangeSeek String
@@ -176,7 +95,14 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ searchModel, config, drawerArtist, drawerAlbum } as model) =
+update msg ({ searchModel, config, drawer } as model) =
+    let
+        catchDrawerAlbum =
+            drawer.drawerAlbum
+
+        catchDrawerArtist =
+            drawer.drawerArtist
+    in
     case msg of
         UrlChanged url ->
             ( model, Cmd.none )
@@ -200,9 +126,16 @@ update msg ({ searchModel, config, drawerArtist, drawerAlbum } as model) =
             )
 
         GetAlbum (Ok e) ->
+            let
+                album =
+                    { catchDrawerAlbum | album = e }
+            in
             ( { model
-                | drawerType = DrawAlbum
-                , drawerAlbum = { drawerAlbum | album = e }
+                | drawer =
+                    { drawer
+                        | drawerType = DrawAlbum
+                        , drawerAlbum = album
+                    }
               }
             , Cmd.none
             )
@@ -211,17 +144,17 @@ update msg ({ searchModel, config, drawerArtist, drawerAlbum } as model) =
             ( model, Cmd.none )
 
         GetAlbumTracks (Ok e) ->
+            let
+                tracks =
+                    { catchDrawerAlbum | tracks = e.items }
+            in
             ( { model
-                | drawerAlbum = { drawerAlbum | tracks = e.items }
+                | drawer = { drawer | drawerAlbum = tracks }
               }
             , Cmd.none
             )
 
-        GetAlbumTracks (Err e) ->
-            let
-                _ =
-                    Debug.log "error" e
-            in
+        GetAlbumTracks (Err _) ->
             ( model, Cmd.none )
 
         -- ARTIST
@@ -236,9 +169,16 @@ update msg ({ searchModel, config, drawerArtist, drawerAlbum } as model) =
             )
 
         GetArtist (Ok e) ->
+            let
+                artist =
+                    { catchDrawerArtist | artist = e }
+            in
             ( { model
-                | drawerType = DrawArtist
-                , drawerArtist = { drawerArtist | artist = e }
+                | drawer =
+                    { drawer
+                        | drawerType = DrawArtist
+                        , drawerArtist = artist
+                    }
                 , searchModel = { searchModel | searchQuery = "" }
               }
             , Http.send GetYoutube <| getVideos e.name
@@ -248,8 +188,12 @@ update msg ({ searchModel, config, drawerArtist, drawerAlbum } as model) =
             ( model, Cmd.none )
 
         GetArtistAlbums (Ok e) ->
+            let
+                albums =
+                    { catchDrawerArtist | albums = e.items }
+            in
             ( { model
-                | drawerArtist = { drawerArtist | albums = e.items }
+                | drawer = { drawer | drawerArtist = albums }
                 , searchModel = { searchModel | searchQuery = "" }
               }
             , Cmd.none
@@ -259,19 +203,31 @@ update msg ({ searchModel, config, drawerArtist, drawerAlbum } as model) =
             ( model, Cmd.none )
 
         GetArtistTopTracks (Ok e) ->
-            ( { model | drawerArtist = { drawerArtist | topTracks = e.tracks } }, Cmd.none )
+            let
+                topTracks =
+                    { catchDrawerArtist | topTracks = e.tracks }
+            in
+            ( { model | drawer = { drawer | drawerArtist = topTracks } }, Cmd.none )
 
         GetArtistTopTracks (Err _) ->
             ( model, Cmd.none )
 
         GetRelatedArtists (Ok e) ->
-            ( { model | drawerArtist = { drawerArtist | relatedArtists = e.artists } }, Cmd.none )
+            let
+                artists =
+                    { catchDrawerArtist | relatedArtists = e.artists }
+            in
+            ( { model | drawer = { drawer | drawerArtist = artists } }, Cmd.none )
 
         GetRelatedArtists (Err _) ->
             ( model, Cmd.none )
 
         GetYoutube (Ok e) ->
-            ( { model | drawerArtist = { drawerArtist | videos = e.items } }, Cmd.none )
+            let
+                videos =
+                    { catchDrawerArtist | videos = e.items }
+            in
+            ( { model | drawer = { drawer | drawerArtist = videos } }, Cmd.none )
 
         GetYoutube (Err _) ->
             ( model, Cmd.none )
@@ -374,13 +330,13 @@ update msg ({ searchModel, config, drawerArtist, drawerAlbum } as model) =
             )
 
         GoHome ->
-            ( { model | drawerType = Home }, Cmd.none )
+            ( { model | drawer = { drawer | drawerType = Home } }, Cmd.none )
 
         GoReleases ->
-            ( { model | drawerType = Releases }, Cmd.none )
+            ( { model | drawer = { drawer | drawerType = Releases } }, Cmd.none )
 
         GoListen ->
-            ( { model | drawerType = Listen }, Cmd.none )
+            ( { model | drawer = { drawer | drawerType = Listen } }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -392,7 +348,7 @@ subscriptions model =
 -- VIEWS
 
 
-searchView : Search -> Html Msg
+searchView : Search.Model -> Html Msg
 searchView searchModel =
     let
         artistItem a =
@@ -456,7 +412,7 @@ homeView =
     text "bienvenue ! "
 
 
-albumView : Player -> AlbumModel -> Html Msg
+albumView : Player.Model -> AlbumModel -> Html Msg
 albumView player album =
     let
         trackItem t =
@@ -503,7 +459,7 @@ albumView player album =
         ]
 
 
-albumsGallery : Player -> List Album -> Html Msg
+albumsGallery : Player.Model -> List Album -> Html Msg
 albumsGallery player albums =
     let
         albumItem a =
@@ -524,7 +480,7 @@ albumsGallery player albums =
         |> div [ class "album-list-wrapper" ]
 
 
-artistView : Player -> ArtistModel -> Html Msg
+artistView : Player.Model -> ArtistModel -> Html Msg
 artistView player data =
     let
         trackItem t =
@@ -543,7 +499,7 @@ artistView player data =
     div [ class "artist-wrapper" ]
         [ div []
             [ div [ class "heading-page" ] [ text data.artist.name ]
-            , div [] [ a [ href ("https://fr.wikipedia.org/wiki/" ++ data.artist.name), target "_BLANK" ] [ text "Wikipedia" ] ]
+            , div [] [ a [ href <| "https://fr.wikipedia.org/wiki/" ++ data.artist.name, target "_BLANK" ] [ text "Wikipedia" ], a [ href <| "https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=" ++ data.artist.name ++ "&x=0&y=0", target "_BLANK" ] [ text "Sputnik" ] ]
             , div [ class "artist-head" ]
                 [ div [ class "top-tracks" ]
                     [ div [ class "sub-title" ] [ text "Top tracks" ]
@@ -579,9 +535,9 @@ sidebarView model =
     div [ class "sidebar" ]
         [ div [ class "logo" ] [ text "Beardify" ]
         , div [ class "top-menu" ]
-            [ div [ onClick GoHome, classList [ ( "active", model.drawerType == Home ) ] ] [ i [ class "icon-home" ] [], text "Home" ]
-            , div [ onClick GoReleases, classList [ ( "active", model.drawerType == Releases ) ] ] [ i [ class "icon-bell" ] [], text "Sorties" ]
-            , div [ onClick GoListen, classList [ ( "active", model.drawerType == Listen ) ] ] [ i [ class "icon-bookmark" ] [], text "A écouter" ]
+            [ div [ onClick GoHome, classList [ ( "active", model.drawer.drawerType == Home ) ] ] [ i [ class "icon-home" ] [], text "Home" ]
+            , div [ onClick GoReleases, classList [ ( "active", model.drawer.drawerType == Releases ) ] ] [ i [ class "icon-bell" ] [], text "Sorties" ]
+            , div [ onClick GoListen, classList [ ( "active", model.drawer.drawerType == Listen ) ] ] [ i [ class "icon-bookmark" ] [], text "A écouter" ]
             ]
         , div [ class "collections" ]
             [ div [ class "title" ] [ text "Collections" ]
@@ -611,7 +567,7 @@ sidebarView model =
         ]
 
 
-playerView : Player -> Html Msg
+playerView : Player.Model -> Html Msg
 playerView player =
     div [ class "player" ]
         [ div [ class "controls" ]
@@ -686,12 +642,12 @@ view model =
                     [ searchView model.searchModel
                     ]
                 , div [ class "drawer" ]
-                    [ case model.drawerType of
+                    [ case model.drawer.drawerType of
                         DrawArtist ->
-                            artistView model.player model.drawerArtist
+                            artistView model.player model.drawer.drawerArtist
 
                         DrawAlbum ->
-                            albumView model.player model.drawerAlbum
+                            albumView model.player model.drawer.drawerAlbum
 
                         Home ->
                             homeView
