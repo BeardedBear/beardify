@@ -9,6 +9,7 @@ IMPORTANT : Read-only for now
 - Home page
 - Releases page
 - Add/Delete/modify playlists/collections/tracks
+- Routes
 
 ## Features
 - Elm 0.19 Ready
