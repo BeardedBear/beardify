@@ -42,9 +42,9 @@ view player data =
 
         videoFrame v =
             div [ class "video-frame" ]
-                [ iframe [ class "video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 125, src <| "https://www.youtube.com/embed/" ++ v.id.videoId ] []
+                [ iframe [ class "video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 140, src <| "https://www.youtube.com/embed/" ++ v.id.videoId ] []
                 , div [ class "video-title" ] [ text v.snippet.title ]
-                , div [ class "video-channel" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ v.snippet.channelId) ] [ text v.snippet.channelTitle ] ]
+                , div [ class "artist-name" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ v.snippet.channelId) ] [ text v.snippet.channelTitle ] ]
                 ]
 
         link name urlBefore urlAfter =

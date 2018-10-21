@@ -39,7 +39,7 @@ view player =
                 [ div []
                     [ span [ class "track" ] [ text player.item.name ]
                     , span [] [ text " - " ]
-                    , span [ class "artist" ]
+                    , span [ class "artist-name" ]
                         (player.item.artists
                             |> List.map (\ar -> a [ onClick (Get ar.id) ] [ text <| ar.name ++ " " ])
                         )
