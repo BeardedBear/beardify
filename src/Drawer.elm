@@ -32,6 +32,7 @@ type DrawerType
     = DrawArtist
     | DrawAlbum
     | DrawPlaylist
+    | DrawCollection
     | Home
     | Releases
     | Listen
@@ -42,6 +43,7 @@ type alias Model =
     , drawerArtist : ArtistModel
     , drawerAlbum : AlbumModel
     , drawerPlaylist : PlaylistModel
+    , drawerCollection : PlaylistModel
     }
 
 
@@ -74,6 +76,20 @@ init =
         , tracks = []
         }
     , drawerPlaylist =
+        { playlist =
+            { id = ""
+            , images = []
+            , name = ""
+            , tracks =
+                { items = []
+                }
+            , uri = ""
+            }
+        , tracks =
+            { items = []
+            }
+        }
+    , drawerCollection =
         { playlist =
             { id = ""
             , images = []

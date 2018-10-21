@@ -43,8 +43,11 @@
                 margin-right: 10px;
                 opacity: 0.2;
             }
+
             &.active {
                 background: $primary-color;
+                color: white;
+                opacity: 1;
     
                 i {
                     opacity: 1;

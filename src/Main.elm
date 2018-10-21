@@ -16,6 +16,7 @@ import Url exposing (Url)
 import Utils
 import View.Album as Album exposing (..)
 import View.Artist as Artist exposing (..)
+import View.Collection as Collection exposing (..)
 import View.Home as Home exposing (..)
 import View.Player as Player exposing (..)
 import View.Playlist as Playlist exposing (..)
@@ -67,6 +68,9 @@ view model =
 
                         DrawPlaylist ->
                             Playlist.view model.player model.drawer.drawerPlaylist
+
+                        DrawCollection ->
+                            Collection.view model.player model.drawer.drawerCollection
 
                         Home ->
                             Home.view
