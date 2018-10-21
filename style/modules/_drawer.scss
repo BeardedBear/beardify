@@ -220,18 +220,42 @@
             background: rgba(black, 0.2);
         }
 
+        i {
+            font-size: 1.1rem;
+            margin-right: 10px;
+            opacity: 0.2;
+        }
         
         &.album-page {
             padding: 10px 15px;
             grid-template-columns: auto 30px 1fr auto;
             grid-gap: 10px;
             
-            i {
-                font-size: 1.1rem;
-                margin-right: 10px;
-                opacity: 0.2;
+        }
+
+        &.playlist-page {
+            padding: 10px 15px;
+            grid-template-columns: auto auto;
+            justify-content: space-between;
+
+            a {
+                font-weight: normal;
+                opacity: 0.6;
+                font-style: italic;
+            }
+            
+            .playlist-track-left {
+                display: grid;
+                grid-template-columns: auto auto auto;
+                grid-gap: 10px;
+            }
+            .playlist-track-right {
+                display: grid;
+                grid-template-columns: auto auto;
+                grid-gap: 10px;
             }
         }
+
         &.active {
             background: $primary-color;
 

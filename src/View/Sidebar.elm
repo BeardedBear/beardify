@@ -12,33 +12,53 @@ view model =
     div [ class "sidebar" ]
         [ div [ class "logo" ] [ text "Beardify" ]
         , div [ class "top-menu" ]
-            [ div [ onClick GoHome, classList [ ( "active", model.drawer.drawerType == Home ) ] ] [ i [ class "icon-home" ] [], text "Home" ]
-            , div [ onClick GoReleases, classList [ ( "active", model.drawer.drawerType == Releases ) ] ] [ i [ class "icon-bell" ] [], text "Sorties" ]
-            , div [ onClick GoListen, classList [ ( "active", model.drawer.drawerType == Listen ) ] ] [ i [ class "icon-bookmark" ] [], text "A écouter" ]
-            ]
-        , div [ class "collections" ]
-            [ div [ class "title" ] [ text "Collections" ]
-            , div [ class "playlists-list" ]
-                [ div [ class "playlist" ] [ i [ class "icon-book" ] [], text "2018" ]
-                , div [ class "playlist" ] [ i [ class "icon-book" ] [], text "2017" ]
-                , div [ class "playlist" ] [ i [ class "icon-book" ] [], text "2016" ]
-                , div [ class "playlist" ] [ i [ class "icon-book" ] [], text "2015" ]
+            [ div
+                [ onClick GoHome
+                , classList [ ( "active", model.drawer.drawerType == Home ) ]
                 ]
+                [ i [ class "icon-home" ] [], text "Home" ]
+            , div
+                [ onClick GoReleases
+                , classList [ ( "active", model.drawer.drawerType == Releases ) ]
+                ]
+                [ i [ class "icon-bell" ] [], text "Sorties" ]
+            , div
+                [ onClick GoListen
+                , classList [ ( "active", model.drawer.drawerType == Listen ) ]
+                ]
+                [ i [ class "icon-bookmark" ] [], text "A écouter" ]
             ]
-        , div [ class "playlists" ]
-            [ div [ class "title" ] [ text "Playlists" ]
-            , div [ class "playlists-list" ]
-                [ div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Compil tubes de l'été 1999" ]
-                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Chansons du Club Dorothée" ]
-                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Hymnes nationaux" ]
-                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Faire du sport !" ]
-                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Chill" ]
-                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Go to the PARTY !" ]
-                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Make war, don't love !" ]
-                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Move your body" ]
-                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "En voiture Simone" ]
-                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Dodo" ]
-                , div [ class "playlist" ] [ i [ class "icon-music" ] [], text "Bricolage" ]
+        , div [ class "relative" ]
+            [ div [ class "fit" ]
+                [ div [ class "collections" ]
+                    [ div [ class "title" ] [ text "Collections" ]
+                    , div [ class "playlists-list" ]
+                        (model.playlists
+                            |> List.filter (\f -> String.contains "#C" f.name)
+                            |> List.map
+                                (\p ->
+                                    div [ class "playlist" ] [ i [ class "icon-book" ] [], text p.name ]
+                                )
+                        )
+                    ]
+                , div [ class "playlists" ]
+                    [ div [ class "title" ] [ text "Playlists" ]
+                    , div [ class "playlists-list" ]
+                        (model.playlists
+                            |> List.filter (\f -> not (String.contains "#C" f.name))
+                            |> List.map
+                                (\p ->
+                                    div
+                                        [ onClick <| GetP p.id
+                                        , classList
+                                            [ ( "playlist", True )
+                                            , ( "active", model.drawer.drawerPlaylist.playlist.id == p.id )
+                                            ]
+                                        ]
+                                        [ i [ class "icon-music" ] [], text p.name ]
+                                )
+                        )
+                    ]
                 ]
             ]
         ]

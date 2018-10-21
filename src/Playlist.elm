@@ -1,10 +1,14 @@
-module Playlist exposing (Playlist, PlaylistPaging, PlaylistTrack, Playlists, Playlistslist, decodePlaylist, decodePlaylistPaging, decodePlaylistTrack, decodePlaylists, decodePlaylistslist, getPlaylists)
+module Playlist exposing (Playlist, PlaylistPaging, PlaylistTrack, Playlists, Playlistslist, decodePlaylist, decodePlaylistPaging, decodePlaylistTrack, decodePlaylists, decodePlaylistslist, getPlaylist, getPlaylists, init)
 
 import Http exposing (..)
 import Image exposing (..)
 import Json.Decode as Decode exposing (..)
 import Task exposing (..)
 import Track exposing (..)
+
+
+init =
+    []
 
 
 type alias Playlistslist =
@@ -86,6 +90,21 @@ getPlaylists token =
         , url = "https://api.spotify.com/v1/me/playlists"
         , body = Http.emptyBody
         , expect = Http.expectJson decodePlaylistslist
+        , timeout = Nothing
+        , withCredentials = False
+        }
+
+
+getPlaylist : String -> String -> Request Playlist
+getPlaylist id token =
+    request
+        { method = "GET"
+        , headers =
+            [ Http.header "Authorization" <| "Bearer " ++ token
+            ]
+        , url = "https://api.spotify.com/v1/playlists/" ++ id
+        , body = Http.emptyBody
+        , expect = Http.expectJson decodePlaylist
         , timeout = Nothing
         , withCredentials = False
         }
