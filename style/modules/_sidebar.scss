@@ -2,6 +2,7 @@
 
 .sidebar {
     background: darken(#232B37, 5);
+    grid-template-rows: auto auto 1fr;
     
     .logo {
         display: grid;
@@ -29,6 +30,8 @@
             cursor: pointer;
             font-weight: bold;
             opacity: 0.6;
+            display: grid;
+            grid-template-columns: auto 1fr;
 
             &:hover {
                 background: rgba(255, 255, 255, 0.03);
@@ -40,12 +43,20 @@
                 margin-right: 10px;
                 opacity: 0.2;
             }
-        }   
+            &.active {
+                background: $primary-color;
+    
+                i {
+                    opacity: 1;
+                }
+            }
+        }
     }
     
     .top-menu {
         padding: 20px 15px;
         font-size: 1.1rem;
+        border-bottom: 1px solid #222933;
 
         > div {
             padding: 7px 15px 6px;

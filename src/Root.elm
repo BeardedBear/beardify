@@ -6,6 +6,7 @@ import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Drawer exposing (..)
 import Http exposing (..)
+import Json.Decode as Decode exposing (..)
 import Player exposing (..)
 import Playlist exposing (..)
 import Search exposing (..)
@@ -19,6 +20,7 @@ type alias Model =
     { config :
         { token : String
         }
+    , playlists : List Playlists
     , drawer : Drawer.Model
     , searchModel : Search.Model
     , player : Player.Model
@@ -29,9 +31,12 @@ type Msg
     = UrlChanged Url
     | UrlRequested Browser.UrlRequest
     | GetPlaylists (Result Http.Error Playlistslist)
+    | GetPlaylist (Result Http.Error Playlist)
+    | GetP String
     | GetA String
     | GetAlbum (Result Http.Error Album)
     | GetAlbumTracks (Result Http.Error AlbumTracks)
+    | GetPlaylistTracks (Result Http.Error PlaylistPaging)
     | Get String
     | GetArtist (Result Http.Error Artist)
     | GetArtistAlbums (Result Http.Error ListAlbum)
@@ -56,6 +61,7 @@ type Msg
     | PlayAlbum (Result Http.Error ())
     | PlayTrack (Result Http.Error ())
     | Query String
+    | ClearQuery
     | ChangePlaying String
     | ChangePlayingTrack (List String)
     | SendPlayer Posix
@@ -72,6 +78,9 @@ update msg ({ searchModel, config, drawer } as model) =
 
         catchDrawerArtist =
             drawer.drawerArtist
+
+        catchDrawerPlaylist =
+            drawer.drawerPlaylist
     in
     case msg of
         UrlChanged url ->
@@ -81,17 +90,43 @@ update msg ({ searchModel, config, drawer } as model) =
             ( model, Cmd.none )
 
         GetPlaylists (Ok e) ->
-            ( model, Cmd.none )
+            ( { model | playlists = e.items }, Cmd.none )
 
         GetPlaylists (Err _) ->
             ( model, Cmd.none )
 
-        -- ALBUM
-        GetA e ->
+        GetPlaylist (Ok e) ->
+            let
+                playlist =
+                    { catchDrawerPlaylist | playlist = e }
+            in
+            ( { model
+                | drawer =
+                    { drawer
+                        | drawerType = DrawPlaylist
+                        , drawerPlaylist = playlist
+                    }
+              }
+            , Cmd.none
+            )
+
+        GetPlaylist (Err _) ->
+            ( model, Cmd.none )
+
+        GetP e ->
             ( model
             , Cmd.batch
+                [ Http.send GetPlaylist <| getPlaylist e model.config.token
+                , Http.send GetPlaylistTracks <| getTracks "playlists" e model.config.token decodePlaylistPaging
+                ]
+            )
+
+        -- ALBUM
+        GetA e ->
+            ( { model | searchModel = { searchModel | searchQuery = "" } }
+            , Cmd.batch
                 [ Http.send GetAlbum <| getAlbum e model.config.token
-                , Http.send GetAlbumTracks <| getAlbumTracks e model.config.token
+                , Http.send GetAlbumTracks <| getTracks "albums" e model.config.token decodeAlbumTracks
                 ]
             )
 
@@ -118,13 +153,23 @@ update msg ({ searchModel, config, drawer } as model) =
                 tracks =
                     { catchDrawerAlbum | tracks = e.items }
             in
-            ( { model
-                | drawer = { drawer | drawerAlbum = tracks }
-              }
+            ( { model | drawer = { drawer | drawerAlbum = tracks } }
             , Cmd.none
             )
 
-        GetAlbumTracks (Err _) ->
+        GetAlbumTracks (Err e) ->
+            ( model, Cmd.none )
+
+        GetPlaylistTracks (Ok e) ->
+            let
+                trackss =
+                    { catchDrawerPlaylist | tracks = e }
+            in
+            ( { model | drawer = { drawer | drawerPlaylist = trackss } }
+            , Cmd.none
+            )
+
+        GetPlaylistTracks (Err _) ->
             ( model, Cmd.none )
 
         -- ARTIST
@@ -297,6 +342,11 @@ update msg ({ searchModel, config, drawer } as model) =
                 , Http.send FindAlbum <| search (e ++ "*") "album" 13 decodeListAlbum model.config.token
                 , Http.send FindTrack <| search (e ++ "*") "track" 16 decodeListTrack model.config.token
                 ]
+            )
+
+        ClearQuery ->
+            ( { model | searchModel = { searchModel | searchQuery = "" } }
+            , Cmd.none
             )
 
         GoHome ->

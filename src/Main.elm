@@ -18,6 +18,7 @@ import View.Album as Album exposing (..)
 import View.Artist as Artist exposing (..)
 import View.Home as Home exposing (..)
 import View.Player as Player exposing (..)
+import View.Playlist as Playlist exposing (..)
 import View.Search as Search exposing (..)
 import View.Sidebar as Sidebar exposing (..)
 
@@ -31,6 +32,7 @@ init flags url key =
     ( { config =
             { token = flags.token
             }
+      , playlists = Playlist.init
       , drawer = Drawer.init
       , searchModel = Search.init
       , player = Player.init
@@ -47,7 +49,7 @@ subscriptions model =
 
 view : Root.Model -> Document Msg
 view model =
-    { title = model.config.token
+    { title = "Beardify"
     , body =
         [ div [ class "app" ]
             [ Sidebar.view model
@@ -62,6 +64,9 @@ view model =
 
                         DrawAlbum ->
                             Album.view model.player model.drawer.drawerAlbum
+
+                        DrawPlaylist ->
+                            Playlist.view model.player model.drawer.drawerPlaylist
 
                         Home ->
                             Home.view

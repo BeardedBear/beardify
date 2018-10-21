@@ -1,4 +1,4 @@
-module Track exposing (AlbumTracks, ArtistTopTracks, ListTrack, Track, TrackSimplified, decodeAlbumTracks, decodeArtistTopTracks, decodeListTrack, decodeTrack, decodeTrackSimplified, encodeTrack, getAlbumTracks, getArtistTopTracks, putPlayTrack)
+module Track exposing (AlbumTracks, ArtistTopTracks, ListTrack, Track, TrackSimplified, decodeAlbumTracks, decodeArtistTopTracks, decodeListTrack, decodeTrack, decodeTrackSimplified, encodeTrack, getArtistTopTracks, getTracks, putPlayTrack)
 
 import Album exposing (..)
 import Artist exposing (..)
@@ -114,16 +114,16 @@ getArtistTopTracks id token =
         }
 
 
-getAlbumTracks : String -> String -> Request AlbumTracks
-getAlbumTracks id token =
+getTracks : String -> String -> String -> Decode.Decoder a -> Request a
+getTracks type_ id token decoder =
     request
         { method = "GET"
         , headers =
             [ Http.header "Authorization" <| "Bearer " ++ token
             ]
-        , url = "https://api.spotify.com/v1/albums/" ++ id ++ "/tracks"
+        , url = "https://api.spotify.com/v1/" ++ type_ ++ "/" ++ id ++ "/tracks"
         , body = Http.emptyBody
-        , expect = Http.expectJson decodeAlbumTracks
+        , expect = Http.expectJson decoder
         , timeout = Nothing
         , withCredentials = False
         }

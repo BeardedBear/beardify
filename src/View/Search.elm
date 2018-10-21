@@ -21,7 +21,7 @@ view searchMsg =
         albumItem a =
             div [ style "clear" "both", style "margin-bottom" "10px" ]
                 [ div [ class "search-cover-image", onClick (ChangePlaying a.uri) ] [ imageView Small a.images ]
-                , strong [] [ text <| a.name ++ " " ]
+                , strong [ onClick (GetA a.id) ] [ text <| a.name ++ " " ]
                 , text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")"
                 , br [] []
                 , Html.small [] (List.map (\artists -> text artists.name) a.artists)

@@ -1,7 +1,8 @@
-module Drawer exposing (AlbumModel, ArtistModel, DrawerType(..), Model, init)
+module Drawer exposing (AlbumModel, ArtistModel, DrawerType(..), Model, PlaylistModel, init)
 
 import Album exposing (..)
 import Artist exposing (..)
+import Playlist exposing (..)
 import Track exposing (..)
 import Youtube exposing (..)
 
@@ -21,9 +22,16 @@ type alias AlbumModel =
     }
 
 
+type alias PlaylistModel =
+    { playlist : Playlist
+    , tracks : PlaylistPaging
+    }
+
+
 type DrawerType
     = DrawArtist
     | DrawAlbum
+    | DrawPlaylist
     | Home
     | Releases
     | Listen
@@ -33,6 +41,7 @@ type alias Model =
     { drawerType : DrawerType
     , drawerArtist : ArtistModel
     , drawerAlbum : AlbumModel
+    , drawerPlaylist : PlaylistModel
     }
 
 
@@ -63,5 +72,19 @@ init =
             , uri = ""
             }
         , tracks = []
+        }
+    , drawerPlaylist =
+        { playlist =
+            { id = ""
+            , images = []
+            , name = ""
+            , tracks =
+                { items = []
+                }
+            , uri = ""
+            }
+        , tracks =
+            { items = []
+            }
         }
     }
