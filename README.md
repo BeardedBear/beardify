@@ -1,4 +1,4 @@
-# Experimental client for Spotify, in Elm.
+# Experimental Spotify client, in Elm.
 IMPORTANT : Read-only for now
 
 ## To Do
@@ -22,6 +22,8 @@ IMPORTANT : Read-only for now
 
 ## ScreenShots
 ### Collection View
-![alt text](https://ibin.co/4JsoBGzt3rtE.png "Collection View")
+![alt text](https://ibin.co/4JsvpqQSTBwX.png "Collection View")
 ### Artist View
 ![alt text](https://ibin.co/4Jsp7LUnHGqD.png "Artist View")
+### Search View
+![alt text](https://ibin.co/4JsvFJb16Z5l.png "Artist View")
