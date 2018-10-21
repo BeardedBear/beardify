@@ -32,6 +32,8 @@ type Msg
     | UrlRequested Browser.UrlRequest
     | GetPlaylists (Result Http.Error Playlistslist)
     | GetPlaylist (Result Http.Error Playlist)
+    | GetCollection (Result Http.Error Playlist)
+    | GetC String
     | GetP String
     | GetA String
     | GetAlbum (Result Http.Error Album)
@@ -81,6 +83,9 @@ update msg ({ searchModel, config, drawer } as model) =
 
         catchDrawerPlaylist =
             drawer.drawerPlaylist
+
+        catchDrawerCollection =
+            drawer.drawerCollection
     in
     case msg of
         UrlChanged url ->
@@ -113,10 +118,36 @@ update msg ({ searchModel, config, drawer } as model) =
         GetPlaylist (Err _) ->
             ( model, Cmd.none )
 
+        GetCollection (Ok e) ->
+            let
+                collection =
+                    { catchDrawerCollection | playlist = e }
+            in
+            ( { model
+                | drawer =
+                    { drawer
+                        | drawerType = DrawCollection
+                        , drawerCollection = collection
+                    }
+              }
+            , Cmd.none
+            )
+
+        GetCollection (Err _) ->
+            ( model, Cmd.none )
+
         GetP e ->
             ( model
             , Cmd.batch
                 [ Http.send GetPlaylist <| getPlaylist e model.config.token
+                , Http.send GetPlaylistTracks <| getTracks "playlists" e model.config.token decodePlaylistPaging
+                ]
+            )
+
+        GetC e ->
+            ( model
+            , Cmd.batch
+                [ Http.send GetCollection <| getPlaylist e model.config.token
                 , Http.send GetPlaylistTracks <| getTracks "playlists" e model.config.token decodePlaylistPaging
                 ]
             )

@@ -37,7 +37,14 @@ view model =
                             |> List.filter (\f -> String.contains "#C" f.name)
                             |> List.map
                                 (\p ->
-                                    div [ class "playlist" ] [ i [ class "icon-book" ] [], text p.name ]
+                                    div
+                                        [ onClick <| GetC p.id
+                                        , classList
+                                            [ ( "playlist", True )
+                                            , ( "active", model.drawer.drawerCollection.playlist.id == p.id )
+                                            ]
+                                        ]
+                                        [ i [ class "icon-book" ] [], text p.name ]
                                 )
                         )
                     ]

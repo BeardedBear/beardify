@@ -1,6 +1,7 @@
 @import "./base/_base";
 @import "./base/_variables";
 
+@import "./modules/_album-gallery";
 @import "./modules/_topbar";
 @import "./modules/_sidebar";
 @import "./modules/_player";
@@ -36,4 +37,11 @@
     height: 720px;
     overflow: auto;
     // FIXME :  EEERRKKKKKK
+}
+
+
+.artist-name {
+    opacity: 0.6;
+    font-style: italic;
+    font-weight: normal;
 }
