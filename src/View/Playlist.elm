@@ -35,7 +35,7 @@ view player playlist =
                       else
                         div [] [ i [ class "icon-music" ] [] ]
                     , div [ onClick <| ChangePlayingTrack (listTracksUri t.track.uri) ] [ text t.track.name ]
-                    , div [] (t.track.artists |> List.map (\ar -> a [ onClick (Get ar.id) ] [ text ar.name ]))
+                    , div [] (t.track.artists |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text ar.name ]))
                     ]
                 , div [ class "playlist-track-right" ]
                     [ div [] [ text (Utils.durationFormat t.track.duration_ms) ]

@@ -35,7 +35,7 @@ view player collection =
                     , ( "active", player.item.album.id == a.albumId )
                     ]
                 ]
-                [ div [ class "img", onClick (GetA a.albumId) ] [ imageView Medium a.images ]
+                [ div [ class "img", onClick (GetAlbum a.albumId) ] [ imageView Medium a.images ]
                 , div [] [ text a.album ]
                 , div [] (a.artists |> List.map (\ar -> span [ class "artist-name" ] [ text ar.name ]))
                 , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")" ]

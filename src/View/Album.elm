@@ -48,7 +48,7 @@ view player album =
             [ div [ class "heading-page" ] [ text album.album.name ]
             , div []
                 [ span [] [ text "By " ]
-                , span [ class "artist-name" ] (album.album.artists |> List.map (\ar -> a [ onClick (Get ar.id) ] [ text ar.name ]))
+                , span [ class "artist-name" ] (album.album.artists |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text ar.name ]))
                 ]
             ]
         , div [ class "album-page" ]

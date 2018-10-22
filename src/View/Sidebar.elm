@@ -38,7 +38,7 @@ view model =
                             |> List.map
                                 (\p ->
                                     div
-                                        [ onClick <| GetC p.id
+                                        [ onClick <| GetCollection p.id
                                         , classList
                                             [ ( "playlist", True )
                                             , ( "active", model.drawer.drawerCollection.playlist.id == p.id )
@@ -56,7 +56,7 @@ view model =
                             |> List.map
                                 (\p ->
                                     div
-                                        [ onClick <| GetP p.id
+                                        [ onClick <| GetPlaylist p.id
                                         , classList
                                             [ ( "playlist", True )
                                             , ( "active", model.drawer.drawerPlaylist.playlist.id == p.id )

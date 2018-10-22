@@ -13,7 +13,7 @@ view : Search.Model -> Html Msg
 view searchMsg =
     let
         artistItem a =
-            div [ class "artist-item", onClick (Get a.id) ]
+            div [ class "artist-item", onClick (GetArtist a.id) ]
                 [ div [ class "img" ] [ imageView Small a.images ]
                 , span [] [ text a.name ]
                 ]
@@ -21,7 +21,7 @@ view searchMsg =
         albumItem a =
             div [ style "clear" "both", style "margin-bottom" "10px" ]
                 [ div [ class "search-cover-image", onClick (ChangePlaying a.uri) ] [ imageView Small a.images ]
-                , strong [ onClick (GetA a.id) ] [ text <| a.name ++ " " ]
+                , strong [ onClick (GetAlbum a.id) ] [ text <| a.name ++ " " ]
                 , text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")"
                 , br [] []
                 , Html.small [] (List.map (\artists -> text artists.name) a.artists)
