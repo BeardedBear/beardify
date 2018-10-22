@@ -1,12 +1,12 @@
 module View.Collection exposing (view)
 
-import Drawer exposing (..)
+import Data.Drawer exposing (..)
+import Data.Image as Image exposing (..)
+import Data.Player as Player exposing (..)
+import Data.Playlist exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Image exposing (..)
-import Player exposing (..)
-import Playlist exposing (..)
 import Root exposing (..)
 import Utils
 import View.AlbumGallery as AlbumGallery exposing (..)

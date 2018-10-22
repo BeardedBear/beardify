@@ -1,25 +1,24 @@
 module Root exposing (Model, Msg(..), update)
 
-import Album exposing (..)
-import Artist exposing (..)
 import Browser exposing (Document)
 import Browser.Navigation as Nav
-import Drawer exposing (..)
+import Data.Album exposing (..)
+import Data.Artist exposing (..)
+import Data.Drawer as Drawer exposing (..)
+import Data.Player as Player exposing (..)
+import Data.Playlist exposing (..)
+import Data.Search as Search exposing (..)
+import Data.Track as Track exposing (..)
+import Data.Youtube exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
-import Player exposing (..)
-import Playlist exposing (..)
-import Search exposing (..)
+import Request
 import Time exposing (..)
-import Track exposing (..)
 import Url exposing (Url)
-import Youtube exposing (..)
 
 
 type alias Model =
-    { config :
-        { token : String
-        }
+    { config : { token : String }
     , playlists : List Playlists
     , drawer : Drawer.Model
     , searchModel : Search.Model
@@ -75,6 +74,9 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ searchModel, config, drawer } as model) =
     let
+        token =
+            model.config.token
+
         catchDrawerAlbum =
             drawer.drawerAlbum
 
@@ -136,19 +138,19 @@ update msg ({ searchModel, config, drawer } as model) =
         GetCollection (Err _) ->
             ( model, Cmd.none )
 
-        GetP e ->
+        GetP id ->
             ( model
             , Cmd.batch
-                [ Http.send GetPlaylist <| getPlaylist e model.config.token
-                , Http.send GetPlaylistTracks <| getTracks "playlists" e model.config.token decodePlaylistPaging
+                [ Http.send GetPlaylist <| Request.get "playlists/" id "" decodePlaylist token
+                , Http.send GetPlaylistTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging token
                 ]
             )
 
-        GetC e ->
+        GetC id ->
             ( model
             , Cmd.batch
-                [ Http.send GetCollection <| getPlaylist e model.config.token
-                , Http.send GetPlaylistTracks <| getTracks "playlists" e model.config.token decodePlaylistPaging
+                [ Http.send GetCollection <| Request.get "playlists/" id "" decodePlaylist token
+                , Http.send GetPlaylistTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging token
                 ]
             )
 
@@ -156,8 +158,8 @@ update msg ({ searchModel, config, drawer } as model) =
         GetA e ->
             ( { model | searchModel = { searchModel | searchQuery = "" } }
             , Cmd.batch
-                [ Http.send GetAlbum <| getAlbum e model.config.token
-                , Http.send GetAlbumTracks <| getTracks "albums" e model.config.token decodeAlbumTracks
+                [ Http.send GetAlbum <| Request.get "albums/" e "" decodeAlbum token
+                , Http.send GetAlbumTracks <| Request.get "albums/" e "/tracks" decodeAlbumTracks token
                 ]
             )
 
@@ -204,13 +206,13 @@ update msg ({ searchModel, config, drawer } as model) =
             ( model, Cmd.none )
 
         -- ARTIST
-        Get e ->
+        Get id ->
             ( model
             , Cmd.batch
-                [ Http.send GetArtist <| getArtist e decodeArtist model.config.token
-                , Http.send GetArtistAlbums <| getArtistAlbums e decodeArtistAlbums model.config.token
-                , Http.send GetArtistTopTracks <| getArtistTopTracks e model.config.token
-                , Http.send GetRelatedArtists <| getRelatedArtists e model.config.token
+                [ Http.send GetArtist <| Request.get "artists/" id "" decodeArtist token
+                , Http.send GetArtistAlbums <| Request.get "artists/" id "/albums?market=FR&album_type=album" decodeArtistAlbums token
+                , Http.send GetArtistTopTracks <| Request.get "artists/" id "/top-tracks?country=FR" Track.decodeArtistTopTracks token
+                , Http.send GetRelatedArtists <| Request.get "artists/" id "/related-artists" decodeRelatedArtists token
                 ]
             )
 
@@ -294,7 +296,7 @@ update msg ({ searchModel, config, drawer } as model) =
             ( model, Cmd.none )
 
         ChangeSeek e ->
-            ( model, Http.send PutSeekPosition <| putSeekPosition e model.config.token )
+            ( model, Http.send PutSeekPosition <| Request.put "seek?position_ms=" e "" token )
 
         PutSeekPosition (Ok e) ->
             ( model, Cmd.none )
@@ -303,37 +305,37 @@ update msg ({ searchModel, config, drawer } as model) =
             ( model, Cmd.none )
 
         ClickNext ->
-            ( model, Http.send PostControls <| postControls "POST" "next" model.config.token )
+            ( model, Http.send PostControls <| Request.post "" "next" "" token )
 
         ClickPrevious ->
-            ( model, Http.send PostControls <| postControls "POST" "previous" model.config.token )
+            ( model, Http.send PostControls <| Request.post "" "previous" "" token )
 
         ClickPlay ->
-            ( model, Http.send PostControls <| postControls "PUT" "play" model.config.token )
+            ( model, Http.send PostControls <| Request.put "" "play" "" token )
 
         ClickPause ->
-            ( model, Http.send PostControls <| postControls "PUT" "pause" model.config.token )
+            ( model, Http.send PostControls <| Request.put "" "pause" "" token )
 
         ClickShuffleOff ->
-            ( model, Http.send PostControls <| postControls "PUT" "shuffle?state=false" model.config.token )
+            ( model, Http.send PostControls <| Request.put "" "" "shuffle?state=false" token )
 
         ClickShuffleOn ->
-            ( model, Http.send PostControls <| postControls "PUT" "shuffle?state=true" model.config.token )
+            ( model, Http.send PostControls <| Request.put "" "" "shuffle?state=true" token )
 
         ClickRepeatOff ->
-            ( model, Http.send PostControls <| postControls "PUT" "repeat?state=off" model.config.token )
+            ( model, Http.send PostControls <| Request.put "" "" "repeat?state=off" token )
 
         ClickRepeatOn ->
-            ( model, Http.send PostControls <| postControls "PUT" "repeat?state=track" model.config.token )
+            ( model, Http.send PostControls <| Request.put "" "" "repeat?state=track" token )
 
         ChangePlaying e ->
-            ( model, Http.send PlayAlbum <| playAlbum e model.config.token )
+            ( model, Http.send PlayAlbum <| Request.play e (encodeAlbum e) token )
 
         ChangePlayingTrack e ->
-            ( model, Http.send PlayTrack <| putPlayTrack e model.config.token )
+            ( model, Http.send PlayTrack <| Request.play e (encodeTrack e) token )
 
         SendPlayer _ ->
-            ( model, Http.send GetPlayer <| getPlayer decodePlayer model.config.token )
+            ( model, Http.send GetPlayer <| Request.get "me/player" "" "" decodePlayer token )
 
         PlayAlbum (Ok _) ->
             ( model, Cmd.none )
@@ -369,9 +371,9 @@ update msg ({ searchModel, config, drawer } as model) =
         Query e ->
             ( { model | searchModel = { searchModel | searchQuery = e } }
             , Cmd.batch
-                [ Http.send FindArtist <| search (e ++ "*") "artist" 10 decodeListArtist model.config.token
-                , Http.send FindAlbum <| search (e ++ "*") "album" 13 decodeListAlbum model.config.token
-                , Http.send FindTrack <| search (e ++ "*") "track" 16 decodeListTrack model.config.token
+                [ Http.send FindArtist <| Request.get "search?q=" (e ++ "*") "&type=artist&limit=10" decodeListArtist token
+                , Http.send FindAlbum <| Request.get "search?q=" (e ++ "*") "&type=album&limit=13" decodeListAlbum token
+                , Http.send FindTrack <| Request.get "search?q=" (e ++ "*") "&type=track&limit=16" decodeListTrack token
                 ]
             )
 

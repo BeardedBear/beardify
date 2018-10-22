@@ -1,4 +1,4 @@
-module Youtube exposing (Snippet, Video, Youtube, decodeSnippet, decodeVideo, decodeYoutube, getVideos)
+module Data.Youtube exposing (Snippet, Video, Youtube, decodeSnippet, decodeVideo, decodeYoutube, getVideos)
 
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)

@@ -1,4 +1,4 @@
-module Device exposing (Device, decodeDevice)
+module Data.Device exposing (Device, decodeDevice)
 
 import Json.Decode as Decode exposing (..)
 

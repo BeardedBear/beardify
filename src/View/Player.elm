@@ -1,10 +1,10 @@
 module View.Player exposing (view)
 
+import Data.Image as Image exposing (..)
+import Data.Player as Player exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Image exposing (..)
-import Player exposing (..)
 import Root exposing (..)
 import Utils
 
