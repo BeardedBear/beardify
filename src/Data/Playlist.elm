@@ -1,10 +1,9 @@
-module Playlist exposing (Playlist, PlaylistPaging, PlaylistTrack, Playlists, Playlistslist, decodePlaylist, decodePlaylistPaging, decodePlaylistTrack, decodePlaylists, decodePlaylistslist, getPlaylist, getPlaylists, init)
+module Data.Playlist exposing (Playlist, PlaylistPaging, PlaylistTrack, Playlists, Playlistslist, decodePlaylist, decodePlaylistPaging, decodePlaylistTrack, decodePlaylists, decodePlaylistslist, init)
 
+import Data.Image exposing (..)
+import Data.Track exposing (..)
 import Http exposing (..)
-import Image exposing (..)
 import Json.Decode as Decode exposing (..)
-import Task exposing (..)
-import Track exposing (..)
 
 
 init =
@@ -78,33 +77,3 @@ decodePlaylist =
         (Decode.field "name" Decode.string)
         (Decode.field "tracks" decodePlaylistPaging)
         (Decode.field "uri" Decode.string)
-
-
-getPlaylists : String -> Request Playlistslist
-getPlaylists token =
-    request
-        { method = "GET"
-        , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token
-            ]
-        , url = "https://api.spotify.com/v1/me/playlists"
-        , body = Http.emptyBody
-        , expect = Http.expectJson decodePlaylistslist
-        , timeout = Nothing
-        , withCredentials = False
-        }
-
-
-getPlaylist : String -> String -> Request Playlist
-getPlaylist id token =
-    request
-        { method = "GET"
-        , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token
-            ]
-        , url = "https://api.spotify.com/v1/playlists/" ++ id
-        , body = Http.emptyBody
-        , expect = Http.expectJson decodePlaylist
-        , timeout = Nothing
-        , withCredentials = False
-        }

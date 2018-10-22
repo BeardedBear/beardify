@@ -1,4 +1,4 @@
-module Image exposing (Image, ImageSize(..), decodeImage, imageView)
+module Data.Image exposing (Image, ImageSize(..), decodeImage, imageView)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

@@ -1,11 +1,11 @@
 module View.AlbumGallery exposing (view)
 
-import Album exposing (..)
+import Data.Album exposing (..)
+import Data.Image exposing (..)
+import Data.Player as Player exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Image exposing (..)
-import Player exposing (..)
 import Root exposing (..)
 import Utils
 

@@ -1,6 +1,6 @@
 module View.Sidebar exposing (view)
 
-import Drawer exposing (..)
+import Data.Drawer exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)

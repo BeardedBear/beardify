@@ -2,16 +2,17 @@ module Main exposing (main)
 
 import Browser exposing (Document)
 import Browser.Navigation as Nav
-import Drawer exposing (..)
+import Data.Drawer exposing (..)
+import Data.Player as Player exposing (..)
+import Data.Playlist as Playlist exposing (..)
+import Data.Search as Search exposing (..)
+import Data.Track exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http exposing (..)
-import Player exposing (..)
-import Playlist exposing (..)
+import Request
 import Root exposing (..)
-import Search exposing (..)
 import Time exposing (..)
-import Track exposing (..)
 import Url exposing (Url)
 import Utils
 import View.Album as Album exposing (..)
@@ -34,12 +35,12 @@ init flags url key =
             { token = flags.token
             }
       , playlists = Playlist.init
-      , drawer = Drawer.init
+      , drawer = Data.Drawer.init
       , searchModel = Search.init
       , player = Player.init
       }
     , Cmd.batch
-        [ Http.send GetPlaylists <| getPlaylists flags.token ]
+        [ Http.send GetPlaylists <| Request.get "me/playlists" "" "" decodePlaylistslist flags.token ]
     )
 
 

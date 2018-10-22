@@ -1,14 +1,14 @@
 module View.Playlist exposing (view)
 
-import Album exposing (..)
-import Drawer exposing (..)
+import Data.Album exposing (..)
+import Data.Drawer exposing (..)
+import Data.Image as Image exposing (..)
+import Data.Player as Player exposing (..)
+import Data.Playlist exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Image exposing (..)
 import List.Extra as LE
-import Player exposing (..)
-import Playlist exposing (..)
 import Root exposing (..)
 import Utils
 

@@ -1,6 +1,9 @@
 # Experimental Spotify client, in Elm.
 IMPORTANT : Read-only for now
 
+## Installation
+Don't try to install it, otherwise your house will probably explode, and so will your dog. Be patient, and when it's ready I'll make smoke signals in the sky, watch for a bear symbol in the clouds.
+
 ## To Do
 - Clean Spotify authentication
 - Improve reactivity of the player
@@ -20,11 +23,13 @@ IMPORTANT : Read-only for now
 ## Future features
 - Publicly share collections
 
-
 ## ScreenShots
+
 ### Collection View
 ![alt text](https://ibin.co/4JsvpqQSTBwX.png "Collection View")
+
 ### Artist View
 ![alt text](https://ibin.co/4Jsp7LUnHGqD.png "Artist View")
+
 ### Search View
-![alt text](https://ibin.co/4JsvFJb16Z5l.png "Artist View")
+![alt text](https://ibin.co/4JsvFJb16Z5l.png "Search View")

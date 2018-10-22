@@ -1,13 +1,13 @@
 module View.Artist exposing (view)
 
-import Artist exposing (..)
-import Drawer exposing (..)
+import Data.Artist exposing (..)
+import Data.Drawer exposing (..)
+import Data.Image as Image exposing (..)
+import Data.Player as Player exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Image exposing (..)
 import List.Extra as LE
-import Player exposing (..)
 import Root exposing (..)
 import Utils
 import View.AlbumGallery as AlbumGallery exposing (..)

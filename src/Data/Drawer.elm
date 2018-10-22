@@ -1,10 +1,10 @@
-module Drawer exposing (AlbumModel, ArtistModel, DrawerType(..), Model, PlaylistModel, init)
+module Data.Drawer exposing (AlbumModel, ArtistModel, DrawerType(..), Model, PlaylistModel, init)
 
-import Album exposing (..)
-import Artist exposing (..)
-import Playlist exposing (..)
-import Track exposing (..)
-import Youtube exposing (..)
+import Data.Album exposing (..)
+import Data.Artist exposing (..)
+import Data.Playlist exposing (..)
+import Data.Track exposing (..)
+import Data.Youtube exposing (..)
 
 
 type alias ArtistModel =
@@ -47,6 +47,7 @@ type alias Model =
     }
 
 
+init : Model
 init =
     { drawerType = Home
     , drawerArtist =

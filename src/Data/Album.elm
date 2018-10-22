@@ -1,8 +1,8 @@
-module Album exposing (Album, ListAlbum, decodeAlbum, decodeArtistAlbums, decodeListAlbum, encodeAlbum, getAlbum, playAlbum)
+module Data.Album exposing (Album, ListAlbum, decodeAlbum, decodeArtistAlbums, decodeListAlbum, encodeAlbum)
 
-import Artist exposing (..)
+import Data.Artist as Artist exposing (..)
+import Data.Image as Image exposing (..)
 import Http exposing (..)
-import Image exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
 import Utils
@@ -22,21 +22,6 @@ type alias Album =
 
 type alias ListAlbum =
     { items : List Album }
-
-
-getAlbum : String -> String -> Request Album
-getAlbum id token =
-    request
-        { method = "GET"
-        , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token
-            ]
-        , url = "https://api.spotify.com/v1/albums/" ++ id
-        , body = Http.emptyBody
-        , expect = Http.expectJson decodeAlbum
-        , timeout = Nothing
-        , withCredentials = False
-        }
 
 
 encodeAlbum : String -> Encode.Value
@@ -69,16 +54,3 @@ decodeArtistAlbums : Decode.Decoder ListAlbum
 decodeArtistAlbums =
     Decode.map ListAlbum
         (Decode.at [ "items" ] (Decode.list decodeAlbum))
-
-
-playAlbum : String -> String -> Request ()
-playAlbum uri token =
-    request
-        { method = "PUT"
-        , headers = [ Http.header "Authorization" <| "Bearer " ++ token ]
-        , url = "https://api.spotify.com/v1/me/player/play"
-        , body = Http.jsonBody (encodeAlbum uri)
-        , expect = expectStringResponse (\_ -> Ok ())
-        , timeout = Nothing
-        , withCredentials = False
-        }

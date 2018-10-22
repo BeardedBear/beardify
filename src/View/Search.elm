@@ -1,11 +1,11 @@
 module View.Search exposing (view)
 
+import Data.Image as Image exposing (..)
+import Data.Search as Search exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Image exposing (..)
 import Root exposing (..)
-import Search exposing (..)
 import Utils
 
 

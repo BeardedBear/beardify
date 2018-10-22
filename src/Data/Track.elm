@@ -1,7 +1,7 @@
-module Track exposing (AlbumTracks, ArtistTopTracks, ListTrack, Track, TrackSimplified, decodeAlbumTracks, decodeArtistTopTracks, decodeListTrack, decodeTrack, decodeTrackSimplified, encodeTrack, getArtistTopTracks, getTracks, putPlayTrack)
+module Data.Track exposing (AlbumTracks, ArtistTopTracks, ListTrack, Track, TrackSimplified, decodeAlbumTracks, decodeArtistTopTracks, decodeListTrack, decodeTrack, decodeTrackSimplified, encodeTrack)
 
-import Album exposing (..)
-import Artist exposing (..)
+import Data.Album exposing (..)
+import Data.Artist exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
@@ -84,46 +84,3 @@ decodeListTrack : Decode.Decoder ListTrack
 decodeListTrack =
     Decode.map ListTrack
         (Decode.at [ "tracks", "items" ] (Decode.list decodeTrack))
-
-
-putPlayTrack : List String -> String -> Request ()
-putPlayTrack uris token =
-    request
-        { method = "PUT"
-        , headers = [ Http.header "Authorization" <| "Bearer " ++ token ]
-        , url = "https://api.spotify.com/v1/me/player/play"
-        , body = Http.jsonBody (encodeTrack uris)
-        , expect = expectStringResponse (\_ -> Ok ())
-        , timeout = Nothing
-        , withCredentials = False
-        }
-
-
-getArtistTopTracks : String -> String -> Request ArtistTopTracks
-getArtistTopTracks id token =
-    request
-        { method = "GET"
-        , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token
-            ]
-        , url = "https://api.spotify.com/v1/artists/" ++ id ++ "/top-tracks?country=FR"
-        , body = Http.emptyBody
-        , expect = Http.expectJson decodeArtistTopTracks
-        , timeout = Nothing
-        , withCredentials = False
-        }
-
-
-getTracks : String -> String -> String -> Decode.Decoder a -> Request a
-getTracks type_ id token decoder =
-    request
-        { method = "GET"
-        , headers =
-            [ Http.header "Authorization" <| "Bearer " ++ token
-            ]
-        , url = "https://api.spotify.com/v1/" ++ type_ ++ "/" ++ id ++ "/tracks"
-        , body = Http.emptyBody
-        , expect = Http.expectJson decoder
-        , timeout = Nothing
-        , withCredentials = False
-        }
