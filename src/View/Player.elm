@@ -15,33 +15,33 @@ view player =
         [ div [ class "controls" ]
             [ div []
                 [ if player.is_playing then
-                    button [ onClick ClickPause, class "play" ] [ i [ class "icon-pause" ] [] ]
+                    button [ onClick PlayerPause, class "play" ] [ i [ class "icon-pause" ] [] ]
 
                   else
-                    button [ onClick ClickPlay, class "play" ] [ i [ class "icon-play" ] [] ]
-                , button [ onClick ClickPrevious ] [ i [ class "icon-to-start" ] [] ]
-                , button [ onClick ClickNext ] [ i [ class "icon-to-end" ] [] ]
+                    button [ onClick PlayerPlay, class "play" ] [ i [ class "icon-play" ] [] ]
+                , button [ onClick PlayerPrevious ] [ i [ class "icon-to-start" ] [] ]
+                , button [ onClick PlayerNext ] [ i [ class "icon-to-end" ] [] ]
                 , button
                     [ classList [ ( "active", player.shuffle_state ) ]
                     , if player.shuffle_state then
-                        onClick ClickShuffleOff
+                        onClick PlayerShuffleOff
 
                       else
-                        onClick ClickShuffleOn
+                        onClick PlayerShuffleOn
                     ]
                     [ i [ class "icon-shuffle" ] [] ]
                 , button [] [ i [ classList [ ( "icon-loop", True ), ( "active", player.repeat_state == "on" ) ] ] [] ]
                 ]
             ]
         , div [ class "current" ]
-            [ div [ onClick (GetA player.item.album.id) ] [ imageView Small player.item.album.images ]
+            [ div [ onClick (GetAlbum player.item.album.id) ] [ imageView Small player.item.album.images ]
             , div []
                 [ div []
                     [ span [ class "track" ] [ text player.item.name ]
                     , span [] [ text " - " ]
                     , span [ class "artist-name" ]
                         (player.item.artists
-                            |> List.map (\ar -> a [ onClick (Get ar.id) ] [ text <| ar.name ++ " " ])
+                            |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text <| ar.name ++ " " ])
                         )
                     ]
                 , div [ class "range" ]
@@ -51,7 +51,7 @@ view player =
                         , Html.Attributes.value <| String.fromInt player.progress_ms
                         , Html.Attributes.min "0"
                         , Html.Attributes.max <| String.fromInt player.item.duration_ms
-                        , onInput ChangeSeek
+                        , onInput PlayerSeek
                         ]
                         []
                     , span [ class "time" ] [ text <| Utils.durationFormat player.item.duration_ms ]

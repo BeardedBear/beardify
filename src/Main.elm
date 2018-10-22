@@ -40,13 +40,13 @@ init flags url key =
       , player = Player.init
       }
     , Cmd.batch
-        [ Http.send GetPlaylists <| Request.get "me/playlists" "" "" decodePlaylistslist flags.token ]
+        [ Http.send SetPlaylists <| Request.get "me/playlists" "" "" decodePlaylistslist flags.token ]
     )
 
 
 subscriptions : Root.Model -> Sub Msg
 subscriptions model =
-    Time.every 1000 SendPlayer
+    Time.every 1000 GetPlayer
 
 
 view : Root.Model -> Document Msg

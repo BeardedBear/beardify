@@ -35,7 +35,7 @@ view player data =
                 ]
 
         relatedArtistItem r =
-            div [ class "related-artist", onClick (Get r.id) ]
+            div [ class "related-artist", onClick (GetArtist r.id) ]
                 [ div [] [ imageView Small r.images ]
                 , div [] [ text r.name ]
                 ]
