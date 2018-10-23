@@ -41,7 +41,7 @@ view model =
                                         [ onClick <| GetCollection p.id
                                         , classList
                                             [ ( "playlist", True )
-                                            , ( "active", model.drawer.drawerCollection.playlist.id == p.id )
+                                            , ( "active", model.drawer.drawerCollection.playlist.id == p.id && model.drawer.drawerType == DrawCollection )
                                             ]
                                         ]
                                         [ i [ class "icon-book" ] [], text p.name ]
@@ -59,7 +59,7 @@ view model =
                                         [ onClick <| GetPlaylist p.id
                                         , classList
                                             [ ( "playlist", True )
-                                            , ( "active", model.drawer.drawerPlaylist.playlist.id == p.id )
+                                            , ( "active", model.drawer.drawerPlaylist.playlist.id == p.id && model.drawer.drawerType == DrawPlaylist )
                                             ]
                                         ]
                                         [ i [ class "icon-music" ] [], text p.name ]
