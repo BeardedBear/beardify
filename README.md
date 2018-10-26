@@ -5,7 +5,7 @@ IMPORTANT : Read-only for now
 Don't try to install it, otherwise your house will probably explode, and so will your dog. Be patient, and when it's ready I'll make smoke signals in the sky, watch for a bear symbol in the clouds.
 
 ## To Do
-- Clean Spotify authentication
+- Cleaner Spotify authentication
 - Improve reactivity of the player
 - Logo
 - Paging playlists
