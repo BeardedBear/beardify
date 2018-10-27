@@ -13,9 +13,15 @@ view model =
         div []
             [ div [ class "overlay" ] []
             , div [ class "modal" ]
-                [ div [ class "title" ] [ text "Add in a collection" ]
-                , viewCollections model.drawer model.playlists False
-                , button [ onClick ModalClear ] [ text "Cancel" ]
+                [ div [ class "head" ]
+                    [ div [ class "title" ] [ text "Add in a collection" ]
+                    ]
+                , div [ class "chest" ]
+                    [ viewCollections model.drawer model.playlists False
+                    ]
+                , div [ class "foot" ]
+                    [ button [ class "button", onClick ModalClear ] [ text "Cancel" ]
+                    ]
                 ]
             ]
 
