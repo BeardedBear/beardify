@@ -43,7 +43,7 @@ init flags url key =
       , modal = Modal.init
       }
     , Cmd.batch
-        [ Http.send SetPlaylists <| Request.get "me/playlists" "" "" decodePlaylistslist flags.token ]
+        [ Http.send SetPlaylists <| Request.get "me/playlists" "" "?limit=50" decodePlaylistslist flags.token ]
     )
 
 
@@ -77,7 +77,7 @@ view model =
                             Collection.view model.player model.drawer.drawerCollection
 
                         Home ->
-                            Home.view
+                            Home.view model
 
                         _ ->
                             text ""

@@ -33,3 +33,6 @@ Don't try to install it, otherwise your house will probably explode, and so will
 
 ### Search View
 ![alt text](https://ibin.co/4JsvFJb16Z5l.png "Search View")
+
+### Album View
+![alt text](https://ibin.co/4KZy10yFOw8r.png "Album View")
