@@ -11,7 +11,7 @@ Don't try to install it, otherwise your house will probably explode, and so will
 - Paging playlists
 - Home page
 - Releases page
-- Add/Delete/modify playlists/collections/tracks
+- Add/Delete/modify playlists/tracks
 - Routes
 
 ## Features
