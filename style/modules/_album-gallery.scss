@@ -21,11 +21,14 @@
         left: 0;
         overflow: hidden;
         z-index: -1;
-        filter: blur(50px);
+        filter: blur(10px);
         opacity: 0.1;
         
         img {
             width: 100%;
+            transform: translateY(-50%);
+            top: 50%;
+            position: absolute;
         }
 
     }
@@ -37,6 +40,8 @@
         padding-right: 10vw;
         
         img {
+            width: 100%;
+            display: block;
             border-radius: 5px;
         }
     }
