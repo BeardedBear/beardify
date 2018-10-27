@@ -77,31 +77,6 @@ encodeDelCollectionAlbum uri =
         ]
 
 
-
--- tom : String -> Encode.Value
--- tom uri =
---     Encode.object
---         [ ( "tracks", Encode.list <| Encode.object [ ( "uri", Encode.string "uri" ) ] )
---         ]
--- {"tracks":["spotify:track:15UhjrCRVwApJcUMTCEpw3"]}
--- {
---   "tracks": [
---     {
---       "uri": "spotify:track:2DB2zVP1LVu6jjyrvqD44z",
---       "positions": [
---         0
---       ]
---     },
---     {
---       "uri": "spotify:track:5ejwTEOCsaDEjvhZTcU6lg",
---       "positions": [
---         1
---       ]
---     }
---   ]
--- }
-
-
 encodeTrack : List String -> Encode.Value
 encodeTrack uris =
     Encode.object

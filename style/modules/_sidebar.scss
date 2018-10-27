@@ -3,6 +3,12 @@
 .sidebar {
     background: darken(#232B37, 5);
     grid-template-rows: auto auto 1fr;
+
+    ::-webkit-scrollbar-thumb {
+        background-color: rgba(white, 0.1);
+        border: 5px solid darken(#232B37, 5);
+        border-radius: 20px;
+    }
     
     .logo {
         display: grid;

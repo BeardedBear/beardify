@@ -44,7 +44,8 @@ view player album =
                 |> List.sum
     in
     div [ class "album-wrapper" ]
-        [ div [ class "album-page-head" ]
+        [ div [ class "bg-cover" ] [ imageView Large album.album.images ]
+        , div [ class "album-page-head" ]
             [ div [ class "heading-page" ] [ text album.album.name ]
             , div []
                 [ span [] [ text "By " ]
