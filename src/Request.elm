@@ -1,4 +1,4 @@
-module Request exposing (get, play, post, put)
+module Request exposing (delete, get, play, post, put)
 
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
@@ -47,8 +47,23 @@ post urlBefore e urlAfter token =
         , headers =
             [ Http.header "Authorization" <| "Bearer " ++ token
             ]
-        , url = apiUrl ++ "me/player/" ++ urlBefore ++ e ++ urlAfter
+        , url = apiUrl ++ urlBefore ++ e ++ urlAfter
         , body = Http.emptyBody
+        , expect = Http.expectStringResponse (\_ -> Ok ())
+        , timeout = Nothing
+        , withCredentials = False
+        }
+
+
+delete : String -> String -> String -> Encode.Value -> String -> Request ()
+delete urlBefore e urlAfter encoder token =
+    request
+        { method = "DELETE"
+        , headers =
+            [ Http.header "Authorization" <| "Bearer " ++ token
+            ]
+        , url = apiUrl ++ urlBefore ++ e ++ urlAfter
+        , body = Http.jsonBody encoder
         , expect = Http.expectStringResponse (\_ -> Ok ())
         , timeout = Nothing
         , withCredentials = False

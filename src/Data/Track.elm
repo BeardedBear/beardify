@@ -1,4 +1,17 @@
-module Data.Track exposing (AlbumTracks, ArtistTopTracks, ListTrack, Track, TrackSimplified, decodeAlbumTracks, decodeArtistTopTracks, decodeListTrack, decodeTrack, decodeTrackSimplified, encodeTrack)
+module Data.Track exposing
+    ( AlbumTracks
+    , ArtistTopTracks
+    , ListTrack
+    , Track
+    , TrackSimplified
+    , decodeAlbumTracks
+    , decodeArtistTopTracks
+    , decodeListTrack
+    , decodeTrack
+    , decodeTrackSimplified
+    , encodeDelCollectionAlbum
+    , encodeTrack
+    )
 
 import Data.Album exposing (..)
 import Data.Artist exposing (..)
@@ -36,9 +49,57 @@ type alias ArtistTopTracks =
     }
 
 
+type alias TracksForDel =
+    { uri : String
+    }
+
+
+type alias DelTracks =
+    { tracks : List TracksForDel }
+
+
 type alias AlbumTracks =
     { items : List TrackSimplified
     }
+
+
+encodeDelCollectionAlbumInner : String -> Encode.Value
+encodeDelCollectionAlbumInner uri =
+    Encode.object
+        [ ( "uri", Encode.string uri )
+        ]
+
+
+encodeDelCollectionAlbum : List String -> Encode.Value
+encodeDelCollectionAlbum uri =
+    Encode.object
+        [ ( "tracks", Encode.list encodeDelCollectionAlbumInner uri )
+        ]
+
+
+
+-- tom : String -> Encode.Value
+-- tom uri =
+--     Encode.object
+--         [ ( "tracks", Encode.list <| Encode.object [ ( "uri", Encode.string "uri" ) ] )
+--         ]
+-- {"tracks":["spotify:track:15UhjrCRVwApJcUMTCEpw3"]}
+-- {
+--   "tracks": [
+--     {
+--       "uri": "spotify:track:2DB2zVP1LVu6jjyrvqD44z",
+--       "positions": [
+--         0
+--       ]
+--     },
+--     {
+--       "uri": "spotify:track:5ejwTEOCsaDEjvhZTcU6lg",
+--       "positions": [
+--         1
+--       ]
+--     }
+--   ]
+-- }
 
 
 encodeTrack : List String -> Encode.Value

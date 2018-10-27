@@ -25,6 +25,7 @@ view player collection =
                         , albumUri = a.track.album.uri
                         , release_date = a.track.album.release_date
                         , images = a.track.album.images
+                        , trackUri = a.track.uri
                         }
                     )
 
@@ -40,6 +41,8 @@ view player collection =
                 , div [] (a.artists |> List.map (\ar -> span [ class "artist-name" ] [ text ar.name ]))
                 , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")" ]
                 , div [ class "playing-btn", onClick (ChangePlaying a.albumUri) ] [ i [ class "icon-play" ] [] ]
+                , div [ class "add-btn", onClick <| ModalGetTrack a.albumId ] [ i [ class "icon-plus-square" ] [] ]
+                , div [ class "del-btn", onClick <| DelCollectionAlbum collection.playlist.id (String.words a.trackUri) ] [ i [ class "icon-minus-square" ] [] ]
                 ]
     in
     div []

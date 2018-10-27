@@ -3,6 +3,7 @@ module Main exposing (main)
 import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Data.Drawer exposing (..)
+import Data.Modal as Modal exposing (..)
 import Data.Player as Player exposing (..)
 import Data.Playlist as Playlist exposing (..)
 import Data.Search as Search exposing (..)
@@ -19,6 +20,7 @@ import View.Album as Album exposing (..)
 import View.Artist as Artist exposing (..)
 import View.Collection as Collection exposing (..)
 import View.Home as Home exposing (..)
+import View.Modal as Modal exposing (..)
 import View.Player as Player exposing (..)
 import View.Playlist as Playlist exposing (..)
 import View.Search as Search exposing (..)
@@ -38,6 +40,7 @@ init flags url key =
       , drawer = Data.Drawer.init
       , searchModel = Search.init
       , player = Player.init
+      , modal = Modal.init
       }
     , Cmd.batch
         [ Http.send SetPlaylists <| Request.get "me/playlists" "" "" decodePlaylistslist flags.token ]
@@ -81,6 +84,7 @@ view model =
                     ]
                 , Player.view model.player
                 ]
+            , Modal.view model
             ]
         ]
     }

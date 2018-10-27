@@ -4,6 +4,7 @@ import Browser exposing (Document)
 import Data.Album exposing (..)
 import Data.Artist exposing (..)
 import Data.Drawer as Drawer exposing (..)
+import Data.Modal as Modal exposing (..)
 import Data.Player as Player exposing (..)
 import Data.Playlist exposing (..)
 import Data.Search as Search exposing (..)
@@ -21,12 +22,14 @@ type alias Model =
     , drawer : Drawer.Model
     , searchModel : Search.Model
     , player : Player.Model
+    , modal : Modal.Model
     }
 
 
 type Msg
     = UrlChanged Url
     | UrlRequested Browser.UrlRequest
+    | NoOp
     | SetPlaylists (Result Http.Error Playlistslist)
     | SetPlaylist (Result Http.Error Playlist)
     | SetCollection (Result Http.Error Playlist)
@@ -65,10 +68,16 @@ type Msg
     | GoHome
     | GoReleases
     | GoListen
+    | ModalOpen (Result Http.Error AlbumTracks)
+    | ModalGetTrack String
+    | ModalAddTrack String
+    | SetModalTrack (Result Http.Error ())
+    | ModalClear
+    | DelCollectionAlbum String (List String)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ searchModel, config, drawer } as model) =
+update msg ({ searchModel, config, drawer, modal } as model) =
     let
         token =
             model.config.token
@@ -90,6 +99,9 @@ update msg ({ searchModel, config, drawer } as model) =
             ( model, Cmd.none )
 
         UrlRequested urlRequest ->
+            ( model, Cmd.none )
+
+        NoOp ->
             ( model, Cmd.none )
 
         --  PLAYLIST/COLLECTION
@@ -297,10 +309,10 @@ update msg ({ searchModel, config, drawer } as model) =
             ( model, Http.send PlayerControl <| Request.put "seek?position_ms=" e "" token )
 
         PlayerNext ->
-            ( model, Http.send PlayerControl <| Request.post "" "next" "" token )
+            ( model, Http.send PlayerControl <| Request.post "me/player/" "next" "" token )
 
         PlayerPrevious ->
-            ( model, Http.send PlayerControl <| Request.post "" "previous" "" token )
+            ( model, Http.send PlayerControl <| Request.post "me/player/" "previous" "" token )
 
         PlayerPlay ->
             ( model, Http.send PlayerControl <| Request.put "" "play" "" token )
@@ -373,3 +385,57 @@ update msg ({ searchModel, config, drawer } as model) =
 
         GoListen ->
             ( { model | drawer = { drawer | drawerType = Listen } }, Cmd.none )
+
+        ModalOpen (Ok e) ->
+            let
+                firstTrack =
+                    e.items
+                        |> List.map (\f -> f.uri)
+                        |> List.take 1
+            in
+            ( { model
+                | modal =
+                    { modal
+                        | isOpen = True
+                        , inPocket = firstTrack
+                    }
+              }
+            , Cmd.none
+            )
+
+        ModalOpen (Err _) ->
+            ( model, Cmd.none )
+
+        ModalGetTrack e ->
+            ( model
+            , Cmd.batch
+                [ Http.send ModalOpen <| Request.get "albums/" e "/tracks" decodeAlbumTracks token
+                ]
+            )
+
+        ModalAddTrack e ->
+            let
+                listTracks =
+                    String.concat model.modal.inPocket
+            in
+            ( model, Http.send SetModalTrack <| Request.post "playlists/" e ("/tracks?position=0&uris=" ++ listTracks) token )
+
+        SetModalTrack (Ok e) ->
+            ( { model | modal = { modal | isOpen = False } }
+            , Cmd.none
+            )
+
+        SetModalTrack (Err e) ->
+            ( model, Cmd.none )
+
+        ModalClear ->
+            ( { model | modal = { modal | isOpen = False } }
+            , Cmd.none
+            )
+
+        DelCollectionAlbum p e ->
+            ( model
+            , Cmd.batch
+                [ Http.send Play <| Request.delete "playlists/" p "/tracks" (encodeDelCollectionAlbum e) token
+                ]
+            )
