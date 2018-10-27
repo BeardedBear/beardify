@@ -89,3 +89,9 @@
 .icon-book-1:before {
   content: "\71";
 }
+.icon-plus-square:before {
+  content: "\73";
+}
+.icon-minus-square:before {
+  content: "\74";
+}

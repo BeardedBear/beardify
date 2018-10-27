@@ -24,36 +24,6 @@
             padding-left: 15px;
         }
 
-        .playlist {
-            padding: 6px 12px 4px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            opacity: 0.6;
-            display: grid;
-            grid-template-columns: auto 1fr;
-
-            &:hover {
-                background: rgba(255, 255, 255, 0.03);
-                opacity: 1;
-            }
-
-            i {
-                font-size: 1.1rem;
-                margin-right: 10px;
-                opacity: 0.2;
-            }
-
-            &.active {
-                background: $primary-color;
-                color: white;
-                opacity: 1;
-    
-                i {
-                    opacity: 1;
-                }
-            }
-        }
     }
     
     .top-menu {
@@ -83,6 +53,37 @@
         i {
             margin-right: 10px;
             opacity: 0.2;
+        }
+    }
+}
+
+.playlist {
+    padding: 6px 12px 4px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    opacity: 0.6;
+    display: grid;
+    grid-template-columns: auto 1fr;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.03);
+        opacity: 1;
+    }
+
+    i {
+        font-size: 1.1rem;
+        margin-right: 10px;
+        opacity: 0.2;
+    }
+
+    &.active {
+        background: $primary-color;
+        color: white;
+        opacity: 1;
+
+        i {
+            opacity: 1;
         }
     }
 }

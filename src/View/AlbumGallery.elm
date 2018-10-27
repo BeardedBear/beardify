@@ -24,6 +24,7 @@ view player albums =
                 , div [] [ text a.name ]
                 , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")" ]
                 , div [ class "playing-btn", onClick (ChangePlaying a.uri) ] [ i [ class "icon-play" ] [] ]
+                , div [ class "add-btn", onClick <| ModalGetTrack a.id ] [ i [ class "icon-plus-square" ] [] ]
                 ]
     in
     albums

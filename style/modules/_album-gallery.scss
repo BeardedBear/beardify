@@ -33,7 +33,9 @@
     &:hover {
         transform: scale(1.02);
 
-        > .playing-btn {
+        > .playing-btn,
+        > .add-btn,
+        > .del-btn {
             visibility: visible;
         }
     }
@@ -79,6 +81,42 @@
                 border-radius: 5px;
             }
         }
+    }
+
+    .add-btn,
+    .del-btn {
+        position: absolute;
+        top: 0;
+        padding: 10px;
+        visibility: hidden;
+        font-size: 1.7rem;
+        transition: all ease 0.15s;
+        transform: scale(1);
+        color: black;
+
+        &:before {
+            $inset: 15px;
+            background: white;
+            position: absolute;
+            top: $inset;
+            left: $inset;
+            right: $inset;
+            bottom: $inset + 5px;
+            content: "";
+            z-index: -1;
+        }
+    
+        &:hover {
+            transform: scale(1.1);
+        }
+    }
+
+    .add-btn {
+        right: 0;
+    }
+
+    .del-btn {
+        left: 0;
     }
 
     .playing-btn {

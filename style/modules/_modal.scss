@@ -1,0 +1,35 @@
+.overlay {
+    position: absolute;
+    content: "";
+    top: 0; 
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(black, 0.8);
+    z-index: 9;
+}
+.modal {
+    position: absolute;
+    background: #090a0c;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.2);
+    border-radius: 5px;
+    z-index: 10;
+    
+    .head {
+        font-weight: bold;
+        font-size: 1.2rem;
+        padding: 15px;
+        border-bottom: 1px solid #20242b;
+    }
+    
+    .chest {
+        padding: 20px 30px;
+    }
+
+    .foot {
+        border-top: 1px solid #20242b;
+        padding: 15px;
+    }
+}
