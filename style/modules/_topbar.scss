@@ -9,16 +9,19 @@
     z-index: 8;
 
     input {
-        background: rgba(#191f27, 0.8);
+        border: 1px solid #343b46;
         width: 100%;
-        border: 0;
         padding: 10px 15px;
         color: white;
         font-weight: bold;
         font-size: 1.2rem;
         border-radius: 5px;
-
-        &:focus {
+        background: rgba(black, 0);
+        transition: all ease .25s;
+        
+        &:focus,
+        &:hover {
+            background: #191f27;
             outline: none;
             border-radius: 5px 5px 0 0;
         }

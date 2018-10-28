@@ -70,7 +70,7 @@ viewFolders drawer playlists isClickable =
                                             , ( "active", drawer.drawerPlaylist.playlist.id == fe.id && drawer.drawerType == DrawPlaylist )
                                             ]
                                         ]
-                                        [ i [ class "icon-music" ] [], text fe.name ]
+                                        [ i [ class "icon-list" ] [], text fe.name ]
                                 )
                             |> ul []
                         ]
@@ -107,7 +107,7 @@ viewPlaylists drawer playlists isClickable =
                         , ( "active", drawer.drawerPlaylist.playlist.id == title.id && drawer.drawerType == DrawPlaylist )
                         ]
                     ]
-                    [ i [ class "icon-music" ] [], text title.name ]
+                    [ i [ class "icon-list" ] [], text title.name ]
             )
         |> div [ class "playlists-list" ]
 
