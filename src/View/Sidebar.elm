@@ -5,6 +5,7 @@ import Data.Playlist exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import List.Extra as LE
 import Root exposing (..)
 
 
@@ -31,26 +32,83 @@ viewCollections drawer playlists isClickable =
         |> div [ class "playlists-list" ]
 
 
+viewFolders : Drawer.Model -> List Playlists -> Bool -> Html Msg
+viewFolders drawer playlists isClickable =
+    let
+        formatName n =
+            n
+                |> String.toLower
+                |> String.left 3
+
+        test =
+            playlists
+                |> List.filter (\f -> not <| String.contains "#C" f.name)
+                |> LE.groupWhile (\a b -> formatName a.name == formatName b.name)
+                |> List.filter (\( k, l ) -> not (List.isEmpty l))
+    in
+    test
+        |> List.map
+            (\( title, f ) ->
+                div []
+                    [ ul []
+                        [ li [ class "folder-title" ]
+                            [ i [ class "icon-folder" ] []
+                            , label [ Html.Attributes.for title.name ] [ text title.name ]
+                            ]
+                        , input [ type_ "checkbox", id title.name ] []
+                        , f
+                            |> List.map
+                                (\fe ->
+                                    li
+                                        [ if isClickable then
+                                            onClick <| GetPlaylist fe.id
+
+                                          else
+                                            onClick NoOp
+                                        , classList
+                                            [ ( "playlist", True )
+                                            , ( "active", drawer.drawerPlaylist.playlist.id == fe.id && drawer.drawerType == DrawPlaylist )
+                                            ]
+                                        ]
+                                        [ i [ class "icon-music" ] [], text fe.name ]
+                                )
+                            |> ul []
+                        ]
+                    ]
+            )
+        |> div [ class "playlists-list" ]
+
+
 viewPlaylists : Drawer.Model -> List Playlists -> Bool -> Html Msg
 viewPlaylists drawer playlists isClickable =
     let
-        playlistItem p =
-            div
-                [ if isClickable then
-                    onClick <| GetPlaylist p.id
+        formatName n =
+            n
+                |> String.toLower
+                |> String.left 3
 
-                  else
-                    onClick NoOp
-                , classList
-                    [ ( "playlist", True )
-                    , ( "active", drawer.drawerPlaylist.playlist.id == p.id && drawer.drawerType == DrawPlaylist )
-                    ]
-                ]
-                [ i [ class "icon-music" ] [], text p.name ]
+        test =
+            playlists
+                |> List.filter (\f -> not <| String.contains "#C" f.name)
+                |> LE.groupWhile (\a b -> formatName a.name == formatName b.name)
+                |> List.filter (\( k, l ) -> List.isEmpty l)
     in
-    playlists
-        |> List.filter (\f -> not (String.contains "#C" f.name))
-        |> List.map playlistItem
+    test
+        |> List.map
+            (\( title, _ ) ->
+                div
+                    [ if isClickable then
+                        onClick <| GetPlaylist title.id
+
+                      else
+                        onClick NoOp
+                    , classList
+                        [ ( "playlist", True )
+                        , ( "active", drawer.drawerPlaylist.playlist.id == title.id && drawer.drawerType == DrawPlaylist )
+                        ]
+                    ]
+                    [ i [ class "icon-music" ] [], text title.name ]
+            )
         |> div [ class "playlists-list" ]
 
 
@@ -77,6 +135,10 @@ view model =
                 [ div [ class "collections" ]
                     [ div [ class "title" ] [ text "Collections" ]
                     , viewCollections model.drawer model.playlists True
+                    ]
+                , div [ class "folders" ]
+                    [ div [ class "title" ] [ text "Folders" ]
+                    , viewFolders model.drawer model.playlists True
                     ]
                 , div [ class "playlists" ]
                     [ div [ class "title" ] [ text "Playlists" ]

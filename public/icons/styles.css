@@ -95,3 +95,6 @@
 .icon-minus-square:before {
   content: "\74";
 }
+.icon-folder:before {
+  content: "\72";
+}

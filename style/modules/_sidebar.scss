@@ -20,14 +20,64 @@
     }
 
     .playlists,
-    .collections {
+    .collections,
+    .folders {
         padding: 20px 15px;
+        font-weight: bold;
 
         .title {
-            font-weight: bold;
             font-size: 1.1rem;
             margin-bottom: 15px;
             padding-left: 15px;
+        }
+        
+        .folder-title {
+            display: grid;
+            grid-template-columns: auto 1fr;    
+            border-radius: 5px;
+            opacity: 0.6;
+            
+            &:hover {
+                background: rgba(255, 255, 255, 0.03);
+                opacity: 1;
+            }
+        }
+        
+        ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            
+
+            ul {
+                padding-left: 13px;
+                display: none;
+            }
+            
+            label {
+                display: block;
+                cursor: pointer;
+            }
+
+            input {
+                display: none;
+
+                &:checked  {
+                    + ul {
+                        display: block;
+                    }
+                }
+            }
+        }
+
+        .folder-title {
+            padding: 6px 12px 4px 14px;
+        }
+
+        i {
+            font-size: 1.1rem;
+            margin-right: 10px;
+            opacity: 0.2;
         }
 
     }
@@ -77,6 +127,7 @@
         opacity: 1;
     }
 
+    
     i {
         font-size: 1.1rem;
         margin-right: 10px;
