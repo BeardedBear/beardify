@@ -77,24 +77,24 @@
 .icon-mic:before {
   content: "\6d";
 }
-.icon-music:before {
-  content: "\6e";
-}
 .icon-home:before {
   content: "\70";
 }
 .icon-book:before {
   content: "\6f";
 }
-.icon-book-1:before {
-  content: "\71";
-}
-.icon-plus-square:before {
+.icon-add:before {
   content: "\73";
-}
-.icon-minus-square:before {
-  content: "\74";
 }
 .icon-folder:before {
   content: "\72";
+}
+.icon-music:before {
+  content: "\75";
+}
+.icon-list:before {
+  content: "\76";
+}
+.icon-del:before {
+  content: "\6e";
 }
