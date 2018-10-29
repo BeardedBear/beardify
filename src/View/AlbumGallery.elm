@@ -20,7 +20,9 @@ view player albums =
                     , ( "active", player.item.album.id == a.id )
                     ]
                 ]
-                [ div [ class "img", onClick (GetAlbum a.id) ] [ imageView Medium a.images ]
+                [ div [ class "img", onClick (GetAlbum a.id) ]
+                    [ imageView Medium a.images
+                    ]
                 , div [] [ text a.name ]
                 , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")" ]
                 , div [ class "playing-btn", onClick (ChangePlaying a.uri) ] [ i [ class "icon-play" ] [] ]

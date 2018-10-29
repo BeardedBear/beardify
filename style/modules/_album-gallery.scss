@@ -13,21 +13,20 @@
 
     .bg-cover {
         position: absolute;
-        transform: translateZ(0);
         top: 0;
         right: 0;
         bottom: 0;
         left: 0;
         overflow: hidden;
         z-index: -1;
-        filter: blur(10px);
         opacity: 0.1;
         
         img {
             width: 100%;
-            transform: translateY(-50%);
+            transform: translateY(-50%) translateZ(0);
             top: 50%;
             position: absolute;
+            filter: blur(10px);
         }
 
     }
@@ -56,16 +55,15 @@
     &:hover {
         transform: scale(1.02);
 
-        > .playing-btn,
-        > .add-btn,
-        > .del-btn {
+        .playing-btn,
+        .add-btn,
+        .del-btn {
             visibility: visible;
         }
     }
 
     &:active {
         transform: scale(0.97);
-
     }
 
     .img {
@@ -74,6 +72,7 @@
     }
     
     &.active {
+
         > .playing-btn {
             visibility: hidden;
         }
@@ -127,6 +126,7 @@
             bottom: $inset + 5px;
             content: "";
             z-index: -1;
+            border-radius: 10px;
         }
     
         &:hover {
