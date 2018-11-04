@@ -42,13 +42,10 @@
         if (!beardifyToken) {
             setToken();
         } else if (new Date().getTime().toString() - JSON.parse(beardifyToken).timestamp >= 3600000) {
-            let tokenTimestamp = JSON.parse(beardifyToken).timestamp;
-            let tokenValue = JSON.parse(beardifyToken).value;
-            let now = new Date().getTime().toString();
-
             localStorage.removeItem(tokenName);
-            setToken();
+            window.location.assign(defaultUrl);
         } else {
+            window.location.assign(defaultUrl + "/#/");
             const app = Elm.Main.init({
                 flags: { token: JSON.parse(beardifyToken).value }
             });
