@@ -98,3 +98,18 @@
 .icon-del:before {
   content: "\71";
 }
+.icon-sputnik:before {
+  content: "\6e";
+}
+.icon-wikipedia:before {
+  content: "\74";
+}
+.icon-allmusic:before {
+  content: "\77";
+}
+.icon-lastfm:before {
+  content: "\78";
+}
+.icon-discogs:before {
+  content: "\79";
+}
