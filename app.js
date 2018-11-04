@@ -8590,6 +8590,13 @@ var author$project$View$Sidebar$view = function (model) {
 					]),
 				_List_fromArray(
 					[
+						A2(
+						elm$html$Html$img,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$src('./img/logo.png')
+							]),
+						_List_Nil),
 						elm$html$Html$text('Beardify')
 					])),
 				A2(
