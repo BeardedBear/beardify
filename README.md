@@ -1,3 +1,5 @@
+![alt text](http://i.imgur.com/2HRvcVq.png "Logo")
+
 # Experimental Spotify client, in Elm.
 IMPORTANT : Read-only for now
 
@@ -25,13 +27,13 @@ Don't try to install it, otherwise your house will probably explode, and so will
 ## ScreenShots
 
 ### Collection View
-![alt text](https://ibin.co/4JsvpqQSTBwX.png "Collection View")
+![alt text](http://i.imgur.com/28Rub6A.png "Collection View")
 
 ### Artist View
-![alt text](https://ibin.co/4Jsp7LUnHGqD.png "Artist View")
+![alt text](http://i.imgur.com/N5fTWGJ.png "Artist View")
 
 ### Search View
-![alt text](https://ibin.co/4JsvFJb16Z5l.png "Search View")
+![alt text](http://i.imgur.com/sMd1IW6.png "Search View")
 
 ### Album View
-![alt text](https://ibin.co/4KZy10yFOw8r.png "Album View")
+![alt text](http://i.imgur.com/EYDyCtA.png "Album View")
