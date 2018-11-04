@@ -47,15 +47,18 @@ view player data =
                 , div [ class "artist-name" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ v.snippet.channelId) ] [ text v.snippet.channelTitle ] ]
                 ]
 
-        link name urlBefore urlAfter =
-            a [ href <| urlBefore ++ data.artist.name ++ urlAfter, target "_BLANK" ] [ text name ]
+        link name urlBefore urlAfter icon =
+            a [ href <| urlBefore ++ data.artist.name ++ urlAfter, target "_BLANK" ] [ i [ class <| "icon-" ++ icon ] [], text name ]
     in
     div [ class "artist-wrapper" ]
         [ div []
             [ div [ class "heading-page" ] [ text data.artist.name ]
-            , div []
-                [ link "Wikipedia" "https://fr.wikipedia.org/wiki/" ""
-                , link "Sputnik" "https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=" "&x=0&y=0"
+            , div [ class "links" ]
+                [ link "Wikipedia" "https://fr.wikipedia.org/wiki/" "" "wikipedia"
+                , link "Sputnik" "https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=" "&x=0&y=0" "sputnik"
+                , link "Discogs" "https://www.discogs.com/fr/search/?q=" "&type=artist&strict=true" "discogs"
+                , link "LastFM" "https://www.last.fm/fr/music/" "" "lastfm"
+                , link "Allmusic" "https://www.allmusic.com/search/artists/" "" "allmusic"
                 ]
             , div [ class "artist-head" ]
                 [ div [ class "top-tracks" ]
