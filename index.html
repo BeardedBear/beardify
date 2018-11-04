@@ -15,7 +15,7 @@
     <script src="app.js"></script>
     <script>
         const tokenName = "beardifyToken";
-        const defaultUrl = window.location.host
+        const defaultUrl = window.location.protocol + "//" + window.location.host + window.location.pathname.slice(0, -1)
         const scopes = "user-read-private user-read-birthdate user-read-email user-modify-playback-state user-read-playback-state user-read-currently-playing app-remote-control streaming playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-follow-modify user-follow-read user-top-read user-read-recently-played user-library-read user-library-modify";
         const authUrl = "https://accounts.spotify.com/authorize?client_id=a05f4302858d402d873bee3d1d5e166c&redirect_uri=" + defaultUrl + "&scope=" + scopes + "&response_type=token"
         const beardifyToken = localStorage.getItem(tokenName);
