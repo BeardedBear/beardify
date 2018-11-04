@@ -26,6 +26,23 @@
         grid-template-columns: 1fr 300px;
         grid-gap: 30px;
 
+        .links {
+            a {
+                margin-right: 15px;
+                opacity: 0.5;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+
+            i {
+                position: relative;
+                top: 2px;
+                margin-right: 5px;
+            }
+        }
+
         .related-artists {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
