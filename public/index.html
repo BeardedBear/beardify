@@ -9,6 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" rel="stylesheet" />
     <link href="./icons/styles.css" rel="stylesheet">
     <link href="main.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="./img/logo.png" />
 </head>
 
 <body>
@@ -46,12 +47,6 @@
             window.location.assign(defaultUrl);
         } else {
             window.location.assign(defaultUrl + "/#/");
-            function millisToMinutesAndSeconds(millis) {
-                var minutes = Math.floor(millis / 60000);
-                var seconds = ((millis % 60000) / 1000).toFixed(0);
-                return minutes + "m" + (seconds < 10 ? '0' : '') + seconds + "s";
-            }
-            console.log(millisToMinutesAndSeconds(3600000 - (new Date().getTime().toString() - JSON.parse(beardifyToken).timestamp)));
             const app = Elm.Main.init({
                 flags: { token: JSON.parse(beardifyToken).value }
             });

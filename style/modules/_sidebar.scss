@@ -11,12 +11,17 @@
     }
     
     .logo {
-        display: grid;
-        align-content: center;
         padding: 20px 30px;
         font-weight: bold;
         font-size: 2rem;
         border-bottom: 1px solid #222933;
+
+        img {
+            width: 30px;
+            position: relative;
+            top: 3px;
+            margin-right: 5px;
+        }
     }
 
     .playlists,
