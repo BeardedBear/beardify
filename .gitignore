@@ -1,9 +1,9 @@
 node_modules/
 elm-stuff/
 build/
-public/app.js
+# public/app.js
 public/token.json
-public/main.css
+# public/main.css
 package-lock.json
 elm-package.json
 *.map
