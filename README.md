@@ -7,7 +7,6 @@ Don't try to install it, otherwise your house will probably explode, and so will
 ## To Do
 - Cleaner Spotify authentication
 - Improve reactivity of the player
-- Logo
 - Paging playlists
 - Home page
 - Releases page
