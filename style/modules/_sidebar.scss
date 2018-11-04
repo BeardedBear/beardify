@@ -15,6 +15,7 @@
         font-weight: bold;
         font-size: 2rem;
         border-bottom: 1px solid #222933;
+        font-family: 'Exo 2';
 
         img {
             width: 30px;
@@ -31,9 +32,11 @@
         font-weight: bold;
 
         .title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             margin-bottom: 15px;
             padding-left: 15px;
+            font-family: 'Exo 2';
+            color: $primary-color;
         }
         
         .folder-title {
@@ -89,8 +92,9 @@
     
     .top-menu {
         padding: 20px 15px;
-        font-size: 1.1rem;
+        font-size: 1rem;
         border-bottom: 1px solid #222933;
+        font-family: 'Exo 2';
 
         > div {
             padding: 7px 15px 6px;
