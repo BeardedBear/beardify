@@ -124,7 +124,11 @@ topMenuItem msg drawer page icon label =
 view : Root.Model -> Html Msg
 view model =
     div [ class "sidebar" ]
-        [ div [ class "logo" ] [ img [ src "./img/logo.png" ] [], text "Beardify" ]
+        [ div [ class "logo" ]
+            [ img [ src "./img/logo.png" ] []
+            , text "Beardify"
+            , span [ style "font-size" "0.9rem", style "opacity" "0.3" ] [ text " alpha" ]
+            ]
         , div [ class "top-menu" ]
             [ topMenuItem GoHome model.drawer Home "icon-home" "Home"
             , topMenuItem GoReleases model.drawer Releases "icon-bell" "Sorties"

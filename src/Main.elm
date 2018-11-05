@@ -1,6 +1,7 @@
 module Main exposing (main)
 
 import Browser exposing (Document)
+import Browser.Events
 import Browser.Navigation as Nav
 import Data.Drawer exposing (..)
 import Data.Modal as Modal exposing (..)
@@ -11,6 +12,8 @@ import Data.Track exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http exposing (..)
+import Json.Decode as Decode exposing (..)
+import Keyboard.Event
 import Request
 import Root exposing (..)
 import Time exposing (..)
@@ -49,7 +52,10 @@ init flags url key =
 
 subscriptions : Root.Model -> Sub Msg
 subscriptions model =
-    Time.every 1000 GetPlayer
+    Sub.batch
+        [ Time.every 1000 GetPlayer
+        , Browser.Events.onKeyDown (Decode.map HandleKeyboardEvent Keyboard.Event.decodeKeyboardEvent)
+        ]
 
 
 view : Root.Model -> Document Msg
