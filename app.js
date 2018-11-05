@@ -8112,21 +8112,40 @@ var author$project$View$Sidebar$viewCollections = F3(
 						elm$html$Html$text(p.name)
 					]));
 		};
-		return A2(
+		return elm$core$List$length(playlists) ? A2(
 			elm$html$Html$div,
 			_List_fromArray(
 				[
-					elm$html$Html$Attributes$class('playlists-list')
+					elm$html$Html$Attributes$class('collections')
 				]),
-			A2(
-				elm$core$List$map,
-				collectionItem,
-				A2(
-					elm$core$List$filter,
-					function (f) {
-						return A2(elm$core$String$contains, '#C', f.name);
-					},
-					playlists)));
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$div,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('title')
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('Collections')
+						])),
+					A2(
+					elm$html$Html$div,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('playlists-list')
+						]),
+					A2(
+						elm$core$List$map,
+						collectionItem,
+						A2(
+							elm$core$List$filter,
+							function (f) {
+								return A2(elm$core$String$contains, '#C', f.name);
+							},
+							playlists)))
+				])) : elm$html$Html$text('');
 	});
 var elm$html$Html$button = _VirtualDom_node('button');
 var author$project$View$Modal$view = function (model) {
@@ -9100,99 +9119,118 @@ var author$project$View$Sidebar$viewFolders = F3(
 						return !A2(elm$core$String$contains, '#C', f.name);
 					},
 					playlists)));
-		return A2(
+		return elm$core$List$length(test) ? A2(
 			elm$html$Html$div,
 			_List_fromArray(
 				[
-					elm$html$Html$Attributes$class('playlists-list')
+					elm$html$Html$Attributes$class('folders')
 				]),
-			A2(
-				elm$core$List$map,
-				function (_n0) {
-					var title = _n0.a;
-					var f = _n0.b;
-					return A2(
-						elm$html$Html$div,
-						_List_Nil,
-						_List_fromArray(
-							[
-								A2(
-								elm$html$Html$ul,
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$div,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('title')
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('Folders')
+						])),
+					A2(
+					elm$html$Html$div,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('playlists-list')
+						]),
+					A2(
+						elm$core$List$map,
+						function (_n0) {
+							var title = _n0.a;
+							var f = _n0.b;
+							return A2(
+								elm$html$Html$div,
 								_List_Nil,
 								_List_fromArray(
 									[
 										A2(
-										elm$html$Html$li,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('folder-title')
-											]),
+										elm$html$Html$ul,
+										_List_Nil,
 										_List_fromArray(
 											[
 												A2(
-												elm$html$Html$i,
+												elm$html$Html$li,
 												_List_fromArray(
 													[
-														elm$html$Html$Attributes$class('icon-folder')
+														elm$html$Html$Attributes$class('folder-title')
+													]),
+												_List_fromArray(
+													[
+														A2(
+														elm$html$Html$i,
+														_List_fromArray(
+															[
+																elm$html$Html$Attributes$class('icon-folder')
+															]),
+														_List_Nil),
+														A2(
+														elm$html$Html$label,
+														_List_fromArray(
+															[
+																elm$html$Html$Attributes$for(title.name)
+															]),
+														_List_fromArray(
+															[
+																elm$html$Html$text(title.name)
+															]))
+													])),
+												A2(
+												elm$html$Html$input,
+												_List_fromArray(
+													[
+														elm$html$Html$Attributes$type_('checkbox'),
+														elm$html$Html$Attributes$id(title.name)
 													]),
 												_List_Nil),
 												A2(
-												elm$html$Html$label,
-												_List_fromArray(
-													[
-														elm$html$Html$Attributes$for(title.name)
-													]),
-												_List_fromArray(
-													[
-														elm$html$Html$text(title.name)
-													]))
-											])),
-										A2(
-										elm$html$Html$input,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$type_('checkbox'),
-												elm$html$Html$Attributes$id(title.name)
-											]),
-										_List_Nil),
-										A2(
-										elm$html$Html$ul,
-										_List_Nil,
-										A2(
-											elm$core$List$map,
-											function (fe) {
-												return A2(
-													elm$html$Html$li,
-													_List_fromArray(
-														[
-															isClickable ? elm$html$Html$Events$onClick(
-															author$project$Root$GetPlaylist(fe.id)) : elm$html$Html$Events$onClick(author$project$Root$NoOp),
-															elm$html$Html$Attributes$classList(
+												elm$html$Html$ul,
+												_List_Nil,
+												A2(
+													elm$core$List$map,
+													function (fe) {
+														return A2(
+															elm$html$Html$li,
 															_List_fromArray(
 																[
-																	_Utils_Tuple2('playlist', true),
-																	_Utils_Tuple2(
-																	'active',
-																	_Utils_eq(drawer.drawerPlaylist.playlist.id, fe.id) && _Utils_eq(drawer.drawerType, author$project$Data$Drawer$DrawPlaylist))
-																]))
-														]),
-													_List_fromArray(
-														[
-															A2(
-															elm$html$Html$i,
-															_List_fromArray(
-																[
-																	elm$html$Html$Attributes$class('icon-list')
+																	isClickable ? elm$html$Html$Events$onClick(
+																	author$project$Root$GetPlaylist(fe.id)) : elm$html$Html$Events$onClick(author$project$Root$NoOp),
+																	elm$html$Html$Attributes$classList(
+																	_List_fromArray(
+																		[
+																			_Utils_Tuple2('playlist', true),
+																			_Utils_Tuple2(
+																			'active',
+																			_Utils_eq(drawer.drawerPlaylist.playlist.id, fe.id) && _Utils_eq(drawer.drawerType, author$project$Data$Drawer$DrawPlaylist))
+																		]))
 																]),
-															_List_Nil),
-															elm$html$Html$text(fe.name)
-														]));
-											},
-											f))
-									]))
-							]));
-				},
-				test));
+															_List_fromArray(
+																[
+																	A2(
+																	elm$html$Html$i,
+																	_List_fromArray(
+																		[
+																			elm$html$Html$Attributes$class('icon-list')
+																		]),
+																	_List_Nil),
+																	elm$html$Html$text(fe.name)
+																]));
+													},
+													f))
+											]))
+									]));
+						},
+						test))
+				])) : elm$html$Html$text('');
 	});
 var author$project$View$Sidebar$viewPlaylists = F3(
 	function (drawer, playlists, isClickable) {
@@ -9327,46 +9365,8 @@ var author$project$View$Sidebar$view = function (model) {
 							]),
 						_List_fromArray(
 							[
-								A2(
-								elm$html$Html$div,
-								_List_fromArray(
-									[
-										elm$html$Html$Attributes$class('collections')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										elm$html$Html$div,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('title')
-											]),
-										_List_fromArray(
-											[
-												elm$html$Html$text('Collections')
-											])),
-										A3(author$project$View$Sidebar$viewCollections, model.drawer, model.playlists, true)
-									])),
-								A2(
-								elm$html$Html$div,
-								_List_fromArray(
-									[
-										elm$html$Html$Attributes$class('folders')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										elm$html$Html$div,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('title')
-											]),
-										_List_fromArray(
-											[
-												elm$html$Html$text('Folders')
-											])),
-										A3(author$project$View$Sidebar$viewFolders, model.drawer, model.playlists, true)
-									])),
+								A3(author$project$View$Sidebar$viewCollections, model.drawer, model.playlists, true),
+								A3(author$project$View$Sidebar$viewFolders, model.drawer, model.playlists, true),
 								A2(
 								elm$html$Html$div,
 								_List_fromArray(
