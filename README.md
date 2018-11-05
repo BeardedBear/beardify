@@ -1,7 +1,7 @@
 ![alt text](http://i.imgur.com/2HRvcVq.png "Logo")
 
 # Experimental Spotify client, in Elm.
-IMPORTANT : Read-only for now
+IMPORTANT : At this time, only add/remove albums in collections, play songs/albums, view and play your playlists and view Spotify data.
 
 ## Installation
 Don't try to install it, otherwise your house will probably explode, and so will your dog. Be patient, and when it's ready I'll make smoke signals in the sky, watch for a bear symbol in the clouds.
@@ -19,7 +19,7 @@ Don't try to install it, otherwise your house will probably explode, and so will
 - Elm 0.19 Ready
 - Added __Collections__, which are playlists containing keywords in the title (`#C` or `#Collection`), which lists the albums it contains rather than a list of songs. 
 - Adding a list of __associated videos__ on an artist's page
-- Added a list of __useful links__ about the artist (Wikipedia, Sputnik...)
+- Added a list of __useful links__ about the artist (Wikipedia, Sputnik, LastFM, Discogs...)
 
 ## Future features
 - Publicly share collections
@@ -27,7 +27,7 @@ Don't try to install it, otherwise your house will probably explode, and so will
 ## ScreenShots
 
 ### Collection View
-![alt text](http://i.imgur.com/28Rub6A.png "Collection View")
+![alt text](http://i.imgur.com/AUuStbT.png "Collection View")
 
 ### Artist View
 ![alt text](http://i.imgur.com/N5fTWGJ.png "Artist View")
