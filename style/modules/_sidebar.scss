@@ -2,6 +2,7 @@
 
 .sidebar {
     background: darken(#232B37, 5);
+    display: grid;
     grid-template-rows: auto auto 1fr;
 
     ::-webkit-scrollbar-thumb {

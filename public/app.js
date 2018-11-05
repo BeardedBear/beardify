@@ -8597,7 +8597,18 @@ var author$project$View$Sidebar$view = function (model) {
 								elm$html$Html$Attributes$src('./img/logo.png')
 							]),
 						_List_Nil),
-						elm$html$Html$text('Beardify')
+						elm$html$Html$text('Beardify'),
+						A2(
+						elm$html$Html$span,
+						_List_fromArray(
+							[
+								A2(elm$html$Html$Attributes$style, 'font-size', '0.9rem'),
+								A2(elm$html$Html$Attributes$style, 'opacity', '0.3')
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text(' alpha')
+							]))
 					])),
 				A2(
 				elm$html$Html$div,
