@@ -11,6 +11,7 @@ import Data.Search as Search exposing (..)
 import Data.Track as Track exposing (..)
 import Data.Youtube exposing (..)
 import Http exposing (..)
+import Keyboard.Event
 import Request
 import Time exposing (..)
 import Url exposing (Url)
@@ -61,7 +62,6 @@ type Msg
     | FindTrack (Result Http.Error ListTrack)
     | Play (Result Http.Error ())
     | Query String
-    | ClearQuery
     | ChangePlaying String
     | ChangePlayingTrack (List String)
     | GetPlayer Posix
@@ -74,6 +74,7 @@ type Msg
     | SetModalTrack (Result Http.Error ())
     | ModalClear
     | DelCollectionAlbum String (List String)
+    | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -373,9 +374,6 @@ update msg ({ searchModel, config, drawer, modal } as model) =
                 ]
             )
 
-        ClearQuery ->
-            ( { model | searchModel = { searchModel | searchQuery = "" } }, Cmd.none )
-
         -- DRAWER
         GoHome ->
             ( { model | drawer = { drawer | drawerType = Home } }, Cmd.none )
@@ -439,3 +437,19 @@ update msg ({ searchModel, config, drawer, modal } as model) =
                 [ Http.send Play <| Request.delete "playlists/" p "/tracks" (encodeDelCollectionAlbum e) token
                 ]
             )
+
+        HandleKeyboardEvent event ->
+            case event.key of
+                Just "Escape" ->
+                    ( { model
+                        | searchModel = { searchModel | searchQuery = "" }
+                        , modal = { modal | isOpen = False }
+                      }
+                    , Cmd.none
+                    )
+
+                Just _ ->
+                    ( model, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
