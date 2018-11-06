@@ -34,7 +34,7 @@ Don't try to install it, otherwise your house will probably explode, and so will
 ![alt text](http://i.imgur.com/N5fTWGJ.png "Artist View")
 
 ### Search View
-![alt text](http://i.imgur.com/sMd1IW6.png "Search View")
+![alt text](http://i.imgur.com/9FhnUTT.png "Search View")
 
 ### Album and playlist View
 ![alt text](http://i.imgur.com/EYDyCtA.png "Album View")
