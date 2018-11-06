@@ -1,7 +1,7 @@
 @import "../base/_variables";
 
 .topbar {
-    padding: 20px;
+    padding: 20px 30px 20px 20px;
 }
 
 .search {
@@ -40,19 +40,20 @@
         padding: 20px;
         border-top: 1px solid #222933;
         border-radius: 0 0 5px 5px;
-        color: #8ea3b3;
 
         .title {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: $primary-color;
+            font-family: 'Exo 2';
         }
 
         .artist-item {
             display: grid;
             grid-auto-flow: column;
             align-items: center;
+            grid-gap: 15px;
             justify-content: left;
             font-weight: bold;
             cursor: pointer;
@@ -66,7 +67,6 @@
 
             .img {
                 $size : 40px;
-                margin-right: 10px;
                 height: $size;
                 width: $size;
                 
@@ -77,61 +77,47 @@
                 }
             }
         }
+
+        .album-item {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+
+            img {
+                transition: all ease-in-out 0.15s;
+                border-radius: 5px;
+                width: 53px;
+                cursor: pointer;
+                display: block;
+                transition: transform ease .15s;
+
+                &:hover {
+                    transform: scale(1.1);
+                }
+            }
+        }
+
+        .track-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            grid-gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+
+            .track-icon {
+                opacity: 0.2;
+                float: left;
+                font-size: 1.8rem;
+                cursor: pointer;
+            
+                &:hover {
+                    opacity: 1;
+                }
+            }
+        }
     }
 }
 
 
-
-.search-cover-image {
-    position: relative;
-    float: left; 
-    margin-right: 10px;
-    cursor: pointer;
-
-    img {
-        transition: all ease-in-out 0.15s;
-        border-radius: 5px;
-        width: 40px;
-    }
-
-    &:hover {
-        img {
-            border-radius: 50px;
-        }
-
-        &::before {
-            position: absolute;
-            content: "";
-            background: rgba(0, 0, 0, 0.6);
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 1;
-            border-radius: 50px;
-            width: 40px;
-            height: 40px;
-        }
-
-        &::after {
-            position: absolute;
-            content: "🎵";
-            top: 50%;
-            left: 50%;
-            z-index: 2;
-            transform: translate(-50%, -50%)
-        }
-        
-    }
-}
-
-.track-icon {
-    opacity: 0.2;
-    float: left;
-    font-size: 1.8rem;
-    cursor: pointer;
-
-    &:hover {
-        opacity: 1;
-    }
-}

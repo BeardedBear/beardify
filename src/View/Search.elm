@@ -18,24 +18,30 @@ view searchMsg =
                 , span [] [ text a.name ]
                 ]
 
-        albumItem a =
-            div [ style "clear" "both", style "margin-bottom" "10px" ]
-                [ div [ class "search-cover-image", onClick (ChangePlaying a.uri) ] [ imageView Small a.images ]
-                , strong [ onClick (GetAlbum a.id) ] [ text <| a.name ++ " " ]
-                , text <| "(" ++ Utils.releaseDateFormat a.release_date ++ ")"
-                , br [] []
-                , Html.small [] (List.map (\artists -> text artists.name) a.artists)
+        albumItem al =
+            div [ class "album-item" ]
+                [ div [ class "search-cover-image", onClick (GetAlbum al.id) ] [ imageView Small al.images ]
+                , div []
+                    [ strong [ onClick (GetAlbum al.id) ] [ text <| al.name ++ " " ]
+                    , text <| "(" ++ Utils.releaseDateFormat al.release_date ++ ")"
+                    , al.artists
+                        |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text ar.name ])
+                        |> List.intersperse (span [] [ text ", " ])
+                        |> div [ class "artist-name" ]
+                    ]
                 ]
 
         trackItem t =
-            div []
-                [ div [ onClick (ChangePlayingTrack [ t.uri ]), class "track-icon" ] [ text "🎵 " ]
-                , strong [] [ text t.name ]
-                , br [] []
-                , Html.small [] (List.map (\artists -> text <| artists.name) t.artists)
-                , span [] [ text " - " ]
-                , Html.small [] [ text t.album.name ]
-                , span [ style "float" "right" ]
+            div [ class "track-item" ]
+                [ div [ onClick (ChangePlayingTrack [ t.uri ]), class "track-icon" ] [ i [ class "icon-play" ] [] ]
+                , div []
+                    [ strong [] [ text t.name ]
+                    , t.artists
+                        |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text ar.name ])
+                        |> List.intersperse (span [] [ text ", " ])
+                        |> div [ class "artist-name" ]
+                    ]
+                , div []
                     [ text (Utils.durationFormat t.duration_ms)
                     ]
                 ]

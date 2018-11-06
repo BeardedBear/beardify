@@ -344,7 +344,11 @@ update msg ({ searchModel, config, drawer, modal } as model) =
             ( model, Http.send Play <| Request.play e (encodeAlbum e) token )
 
         ChangePlayingTrack e ->
-            ( model, Http.send Play <| Request.play e (encodeTrack e) token )
+            ( { model
+                | searchModel = { searchModel | searchQuery = "" }
+              }
+            , Http.send Play <| Request.play e (encodeTrack e) token
+            )
 
         -- SEARCH
         FindArtist (Ok artist) ->
@@ -369,8 +373,8 @@ update msg ({ searchModel, config, drawer, modal } as model) =
             ( { model | searchModel = { searchModel | searchQuery = e } }
             , Cmd.batch
                 [ Http.send FindArtist <| Request.get "search?q=" (e ++ "*") "&type=artist&limit=10" decodeListArtist token
-                , Http.send FindAlbum <| Request.get "search?q=" (e ++ "*") "&type=album&limit=13" decodeListAlbum token
-                , Http.send FindTrack <| Request.get "search?q=" (e ++ "*") "&type=track&limit=16" decodeListTrack token
+                , Http.send FindAlbum <| Request.get "search?q=" (e ++ "*") "&type=album&limit=9" decodeListAlbum token
+                , Http.send FindTrack <| Request.get "search?q=" (e ++ "*") "&type=track&limit=12" decodeListTrack token
                 ]
             )
 
