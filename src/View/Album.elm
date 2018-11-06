@@ -54,9 +54,15 @@ view player album =
             ]
         , div [ class "album-page" ]
             [ div []
-                [ imageView Medium album.album.images
-                , div [] [ text <| Utils.releaseDateFormat album.album.release_date ]
-                , div [] [ text <| Utils.durationFormatMinutes trackSumDuration ]
+                [ div [ class "album" ]
+                    [ div [ class "img" ]
+                        [ imageView Medium album.album.images
+                        ]
+                    , div [ class "playing-btn", onClick (ChangePlaying album.album.uri) ] [ i [ class "icon-play" ] [] ]
+                    , div [ class "add-btn", onClick <| ModalGetTrack album.album.id ] [ i [ class "icon-add" ] [] ]
+                    , div [] [ text <| Utils.releaseDateFormat album.album.release_date ]
+                    , div [] [ text <| Utils.durationFormatMinutes trackSumDuration ]
+                    ]
                 ]
             , div []
                 [ div [] (album.tracks |> List.map trackItem)
