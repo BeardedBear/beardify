@@ -8230,9 +8230,12 @@ var author$project$Root$PlayerSeek = function (a) {
 };
 var author$project$Root$PlayerShuffleOff = {$: 'PlayerShuffleOff'};
 var author$project$Root$PlayerShuffleOn = {$: 'PlayerShuffleOn'};
+var elm$core$String$fromFloat = _String_fromNumber;
 var elm$html$Html$input = _VirtualDom_node('input');
 var elm$html$Html$Attributes$max = elm$html$Html$Attributes$stringProperty('max');
 var elm$html$Html$Attributes$min = elm$html$Html$Attributes$stringProperty('min');
+var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
 var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
 var elm$html$Html$Attributes$value = elm$html$Html$Attributes$stringProperty('value');
 var elm$html$Html$Events$alwaysStop = function (x) {
@@ -8501,6 +8504,26 @@ var author$project$View$Player$view = function (player) {
 											[
 												elm$html$Html$text(
 												author$project$Utils$durationFormat(player.item.duration_ms))
+											])),
+										A2(
+										elm$html$Html$div,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$class('progress')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												elm$html$Html$div,
+												_List_fromArray(
+													[
+														A2(
+														elm$html$Html$Attributes$style,
+														'width',
+														elm$core$String$fromFloat((player.progress_ms / player.item.duration_ms) * 100) + '%'),
+														elm$html$Html$Attributes$class('progress-current')
+													]),
+												_List_Nil)
 											]))
 									]))
 							]))
@@ -8744,8 +8767,6 @@ var elm$html$Html$br = _VirtualDom_node('br');
 var elm$html$Html$small = _VirtualDom_node('small');
 var elm$html$Html$strong = _VirtualDom_node('strong');
 var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
-var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
 var author$project$View$Search$view = function (searchMsg) {
 	var trackItem = function (t) {
 		return A2(

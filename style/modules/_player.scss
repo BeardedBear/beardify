@@ -11,6 +11,28 @@
         align-self: center;
     }
 
+    .progress {
+        position: absolute;
+        background: rgba(black, 0.15);
+        left: 37px;
+        right: 37px;
+        height: 8px;
+        z-index: -1;
+        border-radius: 10px;
+        top: 14px;
+
+        .progress-current {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            border-radius: 10px;
+            background:$primary-color;
+            transition: width linear 1s;
+        }
+    }
+
     .cover {
         width: 60px;
         display: block;
@@ -41,6 +63,13 @@
             display: grid;
             grid-auto-flow: column;
             align-items: baseline;
+            position: relative;
+
+            &:hover {
+                input[type=range] {
+                    opacity: 1;
+                }
+            }
         
             input[type=range] {
                 width: 30vw;
@@ -48,6 +77,8 @@
                 top: -2px;
                 padding: 10px;
                 padding-bottom: 5px;
+                transition: opacity ease .15s;
+                opacity: 0;
             }
         }
     }

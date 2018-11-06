@@ -55,6 +55,13 @@ view player =
                         ]
                         []
                     , span [ class "time" ] [ text <| Utils.durationFormat player.item.duration_ms ]
+                    , div [ class "progress" ]
+                        [ div
+                            [ style "width" <| String.fromFloat (toFloat player.progress_ms / toFloat player.item.duration_ms * 100) ++ "%"
+                            , class "progress-current"
+                            ]
+                            []
+                        ]
                     ]
                 ]
             ]
