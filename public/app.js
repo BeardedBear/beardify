@@ -7954,6 +7954,13 @@ var author$project$Root$DelCollectionAlbum = F2(
 	function (a, b) {
 		return {$: 'DelCollectionAlbum', a: a, b: b};
 	});
+var elm$core$String$replace = F3(
+	function (before, after, string) {
+		return A2(
+			elm$core$String$join,
+			after,
+			A2(elm$core$String$split, before, string));
+	});
 var elm$core$String$words = _String_words;
 var author$project$View$Collection$view = F2(
 	function (player, collection) {
@@ -8101,7 +8108,8 @@ var author$project$View$Collection$view = F2(
 						]),
 					_List_fromArray(
 						[
-							elm$html$Html$text(collection.playlist.name)
+							elm$html$Html$text(
+							A3(elm$core$String$replace, '#Collection ', '', collection.playlist.name))
 						])),
 					A2(
 					elm$html$Html$div,
@@ -8163,7 +8171,8 @@ var author$project$View$Sidebar$viewCollections = F3(
 								elm$html$Html$Attributes$class('icon-book')
 							]),
 						_List_Nil),
-						elm$html$Html$text(p.name)
+						elm$html$Html$text(
+						A3(elm$core$String$replace, '#Collection ', '', p.name))
 					]));
 		};
 		return elm$core$List$length(playlists) ? A2(
@@ -8196,7 +8205,7 @@ var author$project$View$Sidebar$viewCollections = F3(
 						A2(
 							elm$core$List$filter,
 							function (f) {
-								return A2(elm$core$String$contains, '#C', f.name);
+								return A2(elm$core$String$contains, '#Collection', f.name);
 							},
 							playlists)))
 				])) : elm$html$Html$text('');
