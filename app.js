@@ -7073,11 +7073,17 @@ var author$project$Data$Image$imageView = F2(
 						elm$core$List$head(image)));
 		}
 	});
+var author$project$Root$ChangePlaying = function (a) {
+	return {$: 'ChangePlaying', a: a};
+};
 var author$project$Root$ChangePlayingTrack = function (a) {
 	return {$: 'ChangePlayingTrack', a: a};
 };
 var author$project$Root$GetArtist = function (a) {
 	return {$: 'GetArtist', a: a};
+};
+var author$project$Root$ModalGetTrack = function (a) {
+	return {$: 'ModalGetTrack', a: a};
 };
 var elm$core$Basics$modBy = _Basics_modBy;
 var elm$time$Time$flooredDiv = F2(
@@ -7436,22 +7442,76 @@ var author$project$View$Album$view = F2(
 							_List_Nil,
 							_List_fromArray(
 								[
-									A2(author$project$Data$Image$imageView, author$project$Data$Image$Medium, album.album.images),
 									A2(
 									elm$html$Html$div,
-									_List_Nil,
 									_List_fromArray(
 										[
-											elm$html$Html$text(
-											author$project$Utils$releaseDateFormat(album.album.release_date))
-										])),
-									A2(
-									elm$html$Html$div,
-									_List_Nil,
+											elm$html$Html$Attributes$class('album')
+										]),
 									_List_fromArray(
 										[
-											elm$html$Html$text(
-											author$project$Utils$durationFormatMinutes(trackSumDuration))
+											A2(
+											elm$html$Html$div,
+											_List_fromArray(
+												[
+													elm$html$Html$Attributes$class('img')
+												]),
+											_List_fromArray(
+												[
+													A2(author$project$Data$Image$imageView, author$project$Data$Image$Medium, album.album.images)
+												])),
+											A2(
+											elm$html$Html$div,
+											_List_fromArray(
+												[
+													elm$html$Html$Attributes$class('playing-btn'),
+													elm$html$Html$Events$onClick(
+													author$project$Root$ChangePlaying(album.album.uri))
+												]),
+											_List_fromArray(
+												[
+													A2(
+													elm$html$Html$i,
+													_List_fromArray(
+														[
+															elm$html$Html$Attributes$class('icon-play')
+														]),
+													_List_Nil)
+												])),
+											A2(
+											elm$html$Html$div,
+											_List_fromArray(
+												[
+													elm$html$Html$Attributes$class('add-btn'),
+													elm$html$Html$Events$onClick(
+													author$project$Root$ModalGetTrack(album.album.id))
+												]),
+											_List_fromArray(
+												[
+													A2(
+													elm$html$Html$i,
+													_List_fromArray(
+														[
+															elm$html$Html$Attributes$class('icon-add')
+														]),
+													_List_Nil)
+												])),
+											A2(
+											elm$html$Html$div,
+											_List_Nil,
+											_List_fromArray(
+												[
+													elm$html$Html$text(
+													author$project$Utils$releaseDateFormat(album.album.release_date))
+												])),
+											A2(
+											elm$html$Html$div,
+											_List_Nil,
+											_List_fromArray(
+												[
+													elm$html$Html$text(
+													author$project$Utils$durationFormatMinutes(trackSumDuration))
+												]))
 										]))
 								])),
 							A2(
@@ -7468,14 +7528,8 @@ var author$project$View$Album$view = F2(
 				]));
 	});
 var author$project$Data$Image$Small = {$: 'Small'};
-var author$project$Root$ChangePlaying = function (a) {
-	return {$: 'ChangePlaying', a: a};
-};
 var author$project$Root$GetAlbum = function (a) {
 	return {$: 'GetAlbum', a: a};
-};
-var author$project$Root$ModalGetTrack = function (a) {
-	return {$: 'ModalGetTrack', a: a};
 };
 var author$project$View$AlbumGallery$view = F2(
 	function (player, albums) {
