@@ -37,7 +37,8 @@ view player playlist =
                     , div [ onClick <| ChangePlayingTrack (listTracksUri t.track.uri) ] [ text t.track.name ]
                     , div []
                         (t.track.artists
-                            |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text ar.name ])
+                            |> List.map (\ar -> a [ class "artist-name", onClick (GetArtist ar.id) ] [ text ar.name ])
+                            |> List.intersperse (span [ class "artist-name" ] [ text ", " ])
                         )
                     ]
                 , div [ class "playlist-track-right" ]

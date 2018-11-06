@@ -24,13 +24,13 @@ viewCollections drawer playlists isClickable =
                     , ( "active", drawer.drawerCollection.playlist.id == p.id && drawer.drawerType == DrawCollection )
                     ]
                 ]
-                [ i [ class "icon-book" ] [], text p.name ]
+                [ i [ class "icon-book" ] [], text <| String.replace "#Collection " "" p.name ]
     in
     if List.length playlists /= 0 then
         div [ class "collections" ]
             [ div [ class "title" ] [ text "Collections" ]
             , playlists
-                |> List.filter (\f -> String.contains "#C" f.name)
+                |> List.filter (\f -> String.contains "#Collection" f.name)
                 |> List.map collectionItem
                 |> div [ class "playlists-list" ]
             ]

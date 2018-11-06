@@ -7073,11 +7073,17 @@ var author$project$Data$Image$imageView = F2(
 						elm$core$List$head(image)));
 		}
 	});
+var author$project$Root$ChangePlaying = function (a) {
+	return {$: 'ChangePlaying', a: a};
+};
 var author$project$Root$ChangePlayingTrack = function (a) {
 	return {$: 'ChangePlayingTrack', a: a};
 };
 var author$project$Root$GetArtist = function (a) {
 	return {$: 'GetArtist', a: a};
+};
+var author$project$Root$ModalGetTrack = function (a) {
+	return {$: 'ModalGetTrack', a: a};
 };
 var elm$core$Basics$modBy = _Basics_modBy;
 var elm$time$Time$flooredDiv = F2(
@@ -7436,22 +7442,76 @@ var author$project$View$Album$view = F2(
 							_List_Nil,
 							_List_fromArray(
 								[
-									A2(author$project$Data$Image$imageView, author$project$Data$Image$Medium, album.album.images),
 									A2(
 									elm$html$Html$div,
-									_List_Nil,
 									_List_fromArray(
 										[
-											elm$html$Html$text(
-											author$project$Utils$releaseDateFormat(album.album.release_date))
-										])),
-									A2(
-									elm$html$Html$div,
-									_List_Nil,
+											elm$html$Html$Attributes$class('album')
+										]),
 									_List_fromArray(
 										[
-											elm$html$Html$text(
-											author$project$Utils$durationFormatMinutes(trackSumDuration))
+											A2(
+											elm$html$Html$div,
+											_List_fromArray(
+												[
+													elm$html$Html$Attributes$class('img')
+												]),
+											_List_fromArray(
+												[
+													A2(author$project$Data$Image$imageView, author$project$Data$Image$Medium, album.album.images)
+												])),
+											A2(
+											elm$html$Html$div,
+											_List_fromArray(
+												[
+													elm$html$Html$Attributes$class('playing-btn'),
+													elm$html$Html$Events$onClick(
+													author$project$Root$ChangePlaying(album.album.uri))
+												]),
+											_List_fromArray(
+												[
+													A2(
+													elm$html$Html$i,
+													_List_fromArray(
+														[
+															elm$html$Html$Attributes$class('icon-play')
+														]),
+													_List_Nil)
+												])),
+											A2(
+											elm$html$Html$div,
+											_List_fromArray(
+												[
+													elm$html$Html$Attributes$class('add-btn'),
+													elm$html$Html$Events$onClick(
+													author$project$Root$ModalGetTrack(album.album.id))
+												]),
+											_List_fromArray(
+												[
+													A2(
+													elm$html$Html$i,
+													_List_fromArray(
+														[
+															elm$html$Html$Attributes$class('icon-add')
+														]),
+													_List_Nil)
+												])),
+											A2(
+											elm$html$Html$div,
+											_List_Nil,
+											_List_fromArray(
+												[
+													elm$html$Html$text(
+													author$project$Utils$releaseDateFormat(album.album.release_date))
+												])),
+											A2(
+											elm$html$Html$div,
+											_List_Nil,
+											_List_fromArray(
+												[
+													elm$html$Html$text(
+													author$project$Utils$durationFormatMinutes(trackSumDuration))
+												]))
 										]))
 								])),
 							A2(
@@ -7468,14 +7528,8 @@ var author$project$View$Album$view = F2(
 				]));
 	});
 var author$project$Data$Image$Small = {$: 'Small'};
-var author$project$Root$ChangePlaying = function (a) {
-	return {$: 'ChangePlaying', a: a};
-};
 var author$project$Root$GetAlbum = function (a) {
 	return {$: 'GetAlbum', a: a};
-};
-var author$project$Root$ModalGetTrack = function (a) {
-	return {$: 'ModalGetTrack', a: a};
 };
 var author$project$View$AlbumGallery$view = F2(
 	function (player, albums) {
@@ -7900,6 +7954,13 @@ var author$project$Root$DelCollectionAlbum = F2(
 	function (a, b) {
 		return {$: 'DelCollectionAlbum', a: a, b: b};
 	});
+var elm$core$String$replace = F3(
+	function (before, after, string) {
+		return A2(
+			elm$core$String$join,
+			after,
+			A2(elm$core$String$split, before, string));
+	});
 var elm$core$String$words = _String_words;
 var author$project$View$Collection$view = F2(
 	function (player, collection) {
@@ -8047,7 +8108,8 @@ var author$project$View$Collection$view = F2(
 						]),
 					_List_fromArray(
 						[
-							elm$html$Html$text(collection.playlist.name)
+							elm$html$Html$text(
+							A3(elm$core$String$replace, '#Collection ', '', collection.playlist.name))
 						])),
 					A2(
 					elm$html$Html$div,
@@ -8109,7 +8171,8 @@ var author$project$View$Sidebar$viewCollections = F3(
 								elm$html$Html$Attributes$class('icon-book')
 							]),
 						_List_Nil),
-						elm$html$Html$text(p.name)
+						elm$html$Html$text(
+						A3(elm$core$String$replace, '#Collection ', '', p.name))
 					]));
 		};
 		return elm$core$List$length(playlists) ? A2(
@@ -8142,7 +8205,7 @@ var author$project$View$Sidebar$viewCollections = F3(
 						A2(
 							elm$core$List$filter,
 							function (f) {
-								return A2(elm$core$String$contains, '#C', f.name);
+								return A2(elm$core$String$contains, '#Collection', f.name);
 							},
 							playlists)))
 				])) : elm$html$Html$text('');
@@ -8230,6 +8293,24 @@ var author$project$Root$PlayerSeek = function (a) {
 };
 var author$project$Root$PlayerShuffleOff = {$: 'PlayerShuffleOff'};
 var author$project$Root$PlayerShuffleOn = {$: 'PlayerShuffleOn'};
+var elm$core$List$intersperse = F2(
+	function (sep, xs) {
+		if (!xs.b) {
+			return _List_Nil;
+		} else {
+			var hd = xs.a;
+			var tl = xs.b;
+			var step = F2(
+				function (x, rest) {
+					return A2(
+						elm$core$List$cons,
+						sep,
+						A2(elm$core$List$cons, x, rest));
+				});
+			var spersed = A3(elm$core$List$foldr, step, _List_Nil, tl);
+			return A2(elm$core$List$cons, hd, spersed);
+		}
+	});
 var elm$core$String$fromFloat = _String_fromNumber;
 var elm$html$Html$input = _VirtualDom_node('input');
 var elm$html$Html$Attributes$max = elm$html$Html$Attributes$stringProperty('max');
@@ -8446,21 +8527,30 @@ var author$project$View$Player$view = function (player) {
 												elm$html$Html$Attributes$class('artist-name')
 											]),
 										A2(
-											elm$core$List$map,
-											function (ar) {
-												return A2(
-													elm$html$Html$a,
-													_List_fromArray(
-														[
-															elm$html$Html$Events$onClick(
-															author$project$Root$GetArtist(ar.id))
-														]),
-													_List_fromArray(
-														[
-															elm$html$Html$text(ar.name + ' ')
-														]));
-											},
-											player.item.artists))
+											elm$core$List$intersperse,
+											A2(
+												elm$html$Html$span,
+												_List_Nil,
+												_List_fromArray(
+													[
+														elm$html$Html$text(', ')
+													])),
+											A2(
+												elm$core$List$map,
+												function (ar) {
+													return A2(
+														elm$html$Html$a,
+														_List_fromArray(
+															[
+																elm$html$Html$Events$onClick(
+																author$project$Root$GetArtist(ar.id))
+															]),
+														_List_fromArray(
+															[
+																elm$html$Html$text(ar.name + ' ')
+															]));
+												},
+												player.item.artists)))
 									])),
 								A2(
 								elm$html$Html$div,
@@ -8662,21 +8752,34 @@ var author$project$View$Playlist$view = F2(
 								elm$html$Html$div,
 								_List_Nil,
 								A2(
-									elm$core$List$map,
-									function (ar) {
-										return A2(
-											elm$html$Html$a,
-											_List_fromArray(
-												[
-													elm$html$Html$Events$onClick(
-													author$project$Root$GetArtist(ar.id))
-												]),
-											_List_fromArray(
-												[
-													elm$html$Html$text(ar.name)
-												]));
-									},
-									t.track.artists))
+									elm$core$List$intersperse,
+									A2(
+										elm$html$Html$span,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$class('artist-name')
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text(', ')
+											])),
+									A2(
+										elm$core$List$map,
+										function (ar) {
+											return A2(
+												elm$html$Html$a,
+												_List_fromArray(
+													[
+														elm$html$Html$Attributes$class('artist-name'),
+														elm$html$Html$Events$onClick(
+														author$project$Root$GetArtist(ar.id))
+													]),
+												_List_fromArray(
+													[
+														elm$html$Html$text(ar.name)
+													]));
+										},
+										t.track.artists)))
 							])),
 						A2(
 						elm$html$Html$div,

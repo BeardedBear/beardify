@@ -13,7 +13,7 @@
 
     .progress {
         position: absolute;
-        background: rgba(black, 0.15);
+        background: rgba(black, 0.45);
         left: 37px;
         right: 37px;
         height: 8px;
@@ -29,7 +29,6 @@
             width: 100px;
             border-radius: 10px;
             background:$primary-color;
-            transition: width linear 1s;
         }
     }
 
