@@ -8311,6 +8311,39 @@ var elm$core$List$intersperse = F2(
 			return A2(elm$core$List$cons, hd, spersed);
 		}
 	});
+var author$project$View$Artist$artistList = function (artists) {
+	return A2(
+		elm$html$Html$span,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('artist-name')
+			]),
+		A2(
+			elm$core$List$intersperse,
+			A2(
+				elm$html$Html$span,
+				_List_Nil,
+				_List_fromArray(
+					[
+						elm$html$Html$text(', ')
+					])),
+			A2(
+				elm$core$List$map,
+				function (ar) {
+					return A2(
+						elm$html$Html$a,
+						_List_fromArray(
+							[
+								elm$html$Html$Events$onClick(
+								author$project$Root$GetArtist(ar.id))
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text(ar.name)
+							]));
+				},
+				artists)));
+};
 var elm$core$String$fromFloat = _String_fromNumber;
 var elm$html$Html$input = _VirtualDom_node('input');
 var elm$html$Html$Attributes$max = elm$html$Html$Attributes$stringProperty('max');
@@ -8520,37 +8553,7 @@ var author$project$View$Player$view = function (player) {
 											[
 												elm$html$Html$text(' - ')
 											])),
-										A2(
-										elm$html$Html$span,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('artist-name')
-											]),
-										A2(
-											elm$core$List$intersperse,
-											A2(
-												elm$html$Html$span,
-												_List_Nil,
-												_List_fromArray(
-													[
-														elm$html$Html$text(', ')
-													])),
-											A2(
-												elm$core$List$map,
-												function (ar) {
-													return A2(
-														elm$html$Html$a,
-														_List_fromArray(
-															[
-																elm$html$Html$Events$onClick(
-																author$project$Root$GetArtist(ar.id))
-															]),
-														_List_fromArray(
-															[
-																elm$html$Html$text(ar.name + ' ')
-															]));
-												},
-												player.item.artists)))
+										author$project$View$Artist$artistList(player.item.artists)
 									])),
 								A2(
 								elm$html$Html$div,
@@ -8751,35 +8754,10 @@ var author$project$View$Playlist$view = F2(
 								A2(
 								elm$html$Html$div,
 								_List_Nil,
-								A2(
-									elm$core$List$intersperse,
-									A2(
-										elm$html$Html$span,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('artist-name')
-											]),
-										_List_fromArray(
-											[
-												elm$html$Html$text(', ')
-											])),
-									A2(
-										elm$core$List$map,
-										function (ar) {
-											return A2(
-												elm$html$Html$a,
-												_List_fromArray(
-													[
-														elm$html$Html$Attributes$class('artist-name'),
-														elm$html$Html$Events$onClick(
-														author$project$Root$GetArtist(ar.id))
-													]),
-												_List_fromArray(
-													[
-														elm$html$Html$text(ar.name)
-													]));
-										},
-										t.track.artists)))
+								_List_fromArray(
+									[
+										author$project$View$Artist$artistList(t.track.artists)
+									]))
 							])),
 						A2(
 						elm$html$Html$div,
@@ -8866,15 +8844,16 @@ var author$project$View$Playlist$view = F2(
 var author$project$Root$Query = function (a) {
 	return {$: 'Query', a: a};
 };
-var elm$html$Html$br = _VirtualDom_node('br');
-var elm$html$Html$small = _VirtualDom_node('small');
 var elm$html$Html$strong = _VirtualDom_node('strong');
 var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
 var author$project$View$Search$view = function (searchMsg) {
 	var trackItem = function (t) {
 		return A2(
 			elm$html$Html$div,
-			_List_Nil,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('track-item')
+				]),
 			_List_fromArray(
 				[
 					A2(
@@ -8889,45 +8868,37 @@ var author$project$View$Search$view = function (searchMsg) {
 						]),
 					_List_fromArray(
 						[
-							elm$html$Html$text('🎵 ')
+							A2(
+							elm$html$Html$i,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('icon-play')
+								]),
+							_List_Nil)
 						])),
 					A2(
-					elm$html$Html$strong,
+					elm$html$Html$div,
 					_List_Nil,
 					_List_fromArray(
 						[
-							elm$html$Html$text(t.name)
-						])),
-					A2(elm$html$Html$br, _List_Nil, _List_Nil),
-					A2(
-					elm$html$Html$small,
-					_List_Nil,
-					A2(
-						elm$core$List$map,
-						function (artists) {
-							return elm$html$Html$text(artists.name);
-						},
-						t.artists)),
-					A2(
-					elm$html$Html$span,
-					_List_Nil,
-					_List_fromArray(
-						[
-							elm$html$Html$text(' - ')
+							A2(
+							elm$html$Html$strong,
+							_List_Nil,
+							_List_fromArray(
+								[
+									elm$html$Html$text(t.name)
+								])),
+							A2(
+							elm$html$Html$div,
+							_List_Nil,
+							_List_fromArray(
+								[
+									author$project$View$Artist$artistList(t.artists)
+								]))
 						])),
 					A2(
-					elm$html$Html$small,
+					elm$html$Html$div,
 					_List_Nil,
-					_List_fromArray(
-						[
-							elm$html$Html$text(t.album.name)
-						])),
-					A2(
-					elm$html$Html$span,
-					_List_fromArray(
-						[
-							A2(elm$html$Html$Attributes$style, 'float', 'right')
-						]),
 					_List_fromArray(
 						[
 							elm$html$Html$text(
@@ -8965,13 +8936,12 @@ var author$project$View$Search$view = function (searchMsg) {
 						]))
 				]));
 	};
-	var albumItem = function (a) {
+	var albumItem = function (al) {
 		return A2(
 			elm$html$Html$div,
 			_List_fromArray(
 				[
-					A2(elm$html$Html$Attributes$style, 'clear', 'both'),
-					A2(elm$html$Html$Attributes$style, 'margin-bottom', '10px')
+					elm$html$Html$Attributes$class('album-item')
 				]),
 			_List_fromArray(
 				[
@@ -8981,35 +8951,38 @@ var author$project$View$Search$view = function (searchMsg) {
 						[
 							elm$html$Html$Attributes$class('search-cover-image'),
 							elm$html$Html$Events$onClick(
-							author$project$Root$ChangePlaying(a.uri))
+							author$project$Root$GetAlbum(al.id))
 						]),
 					_List_fromArray(
 						[
-							A2(author$project$Data$Image$imageView, author$project$Data$Image$Small, a.images)
+							A2(author$project$Data$Image$imageView, author$project$Data$Image$Small, al.images)
 						])),
 					A2(
-					elm$html$Html$strong,
-					_List_fromArray(
-						[
-							elm$html$Html$Events$onClick(
-							author$project$Root$GetAlbum(a.id))
-						]),
-					_List_fromArray(
-						[
-							elm$html$Html$text(a.name + ' ')
-						])),
-					elm$html$Html$text(
-					'(' + (author$project$Utils$releaseDateFormat(a.release_date) + ')')),
-					A2(elm$html$Html$br, _List_Nil, _List_Nil),
-					A2(
-					elm$html$Html$small,
+					elm$html$Html$div,
 					_List_Nil,
-					A2(
-						elm$core$List$map,
-						function (artists) {
-							return elm$html$Html$text(artists.name);
-						},
-						a.artists))
+					_List_fromArray(
+						[
+							A2(
+							elm$html$Html$strong,
+							_List_fromArray(
+								[
+									elm$html$Html$Events$onClick(
+									author$project$Root$GetAlbum(al.id))
+								]),
+							_List_fromArray(
+								[
+									elm$html$Html$text(al.name + ' ')
+								])),
+							elm$html$Html$text(
+							'(' + (author$project$Utils$releaseDateFormat(al.release_date) + ')')),
+							A2(
+							elm$html$Html$div,
+							_List_Nil,
+							_List_fromArray(
+								[
+									author$project$View$Artist$artistList(al.artists)
+								]))
+						]))
 				]));
 	};
 	return A2(
@@ -10496,7 +10469,13 @@ var author$project$Root$update = F2(
 			case 'ChangePlayingTrack':
 				var e = msg.a;
 				return _Utils_Tuple2(
-					model,
+					_Utils_update(
+						model,
+						{
+							searchModel: _Utils_update(
+								searchModel,
+								{searchQuery: ''})
+						}),
 					A2(
 						elm$http$Http$send,
 						author$project$Root$Play,
@@ -10570,11 +10549,11 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$FindAlbum,
-								A5(author$project$Request$get, 'search?q=', e + '*', '&type=album&limit=13', author$project$Data$Album$decodeListAlbum, token)),
+								A5(author$project$Request$get, 'search?q=', e + '*', '&type=album&limit=9', author$project$Data$Album$decodeListAlbum, token)),
 								A2(
 								elm$http$Http$send,
 								author$project$Root$FindTrack,
-								A5(author$project$Request$get, 'search?q=', e + '*', '&type=track&limit=16', author$project$Data$Track$decodeListTrack, token))
+								A5(author$project$Request$get, 'search?q=', e + '*', '&type=track&limit=12', author$project$Data$Track$decodeListTrack, token))
 							])));
 			case 'GoHome':
 				return _Utils_Tuple2(
