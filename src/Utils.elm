@@ -1,4 +1,8 @@
-module Utils exposing (durationFormat, durationFormatMinutes, releaseDateFormat)
+module Utils exposing
+    ( durationFormat
+    , durationFormatMinutes
+    , releaseDateFormat
+    )
 
 import Time exposing (millisToPosix, toHour, toMinute, toSecond, utc)
 

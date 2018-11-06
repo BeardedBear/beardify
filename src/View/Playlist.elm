@@ -11,6 +11,7 @@ import Html.Events exposing (..)
 import List.Extra as LE
 import Root exposing (..)
 import Utils
+import View.Artist exposing (..)
 
 
 view : Player.Model -> PlaylistModel -> Html Msg
@@ -35,11 +36,7 @@ view player playlist =
                       else
                         div [] [ i [ class "icon-music" ] [] ]
                     , div [ onClick <| ChangePlayingTrack (listTracksUri t.track.uri) ] [ text t.track.name ]
-                    , div []
-                        (t.track.artists
-                            |> List.map (\ar -> a [ class "artist-name", onClick (GetArtist ar.id) ] [ text ar.name ])
-                            |> List.intersperse (span [ class "artist-name" ] [ text ", " ])
-                        )
+                    , div [] [ artistList t.track.artists ]
                     ]
                 , div [ class "playlist-track-right" ]
                     [ div [] [ text (Utils.durationFormat t.track.duration_ms) ]

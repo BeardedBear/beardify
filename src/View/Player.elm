@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Root exposing (..)
 import Utils
+import View.Artist exposing (..)
 
 
 view : Player.Model -> Html Msg
@@ -39,11 +40,7 @@ view player =
                 [ div []
                     [ span [ class "track" ] [ text player.item.name ]
                     , span [] [ text " - " ]
-                    , span [ class "artist-name" ]
-                        (player.item.artists
-                            |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text <| ar.name ++ " " ])
-                            |> List.intersperse (span [] [ text ", " ])
-                        )
+                    , artistList player.item.artists
                     ]
                 , div [ class "range" ]
                     [ span [ class "time" ] [ text <| Utils.durationFormat player.progress_ms ]

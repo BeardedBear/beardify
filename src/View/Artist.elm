@@ -1,4 +1,4 @@
-module View.Artist exposing (view)
+module View.Artist exposing (artistList, view)
 
 import Data.Artist exposing (..)
 import Data.Drawer exposing (..)
@@ -11,6 +11,14 @@ import List.Extra as LE
 import Root exposing (..)
 import Utils
 import View.AlbumGallery as AlbumGallery exposing (..)
+
+
+artistList : List Artists -> Html Msg
+artistList artists =
+    artists
+        |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text ar.name ])
+        |> List.intersperse (span [] [ text ", " ])
+        |> span [ class "artist-name" ]
 
 
 view : Player.Model -> ArtistModel -> Html Msg

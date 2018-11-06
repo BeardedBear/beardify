@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Root exposing (..)
 import Utils
+import View.Artist exposing (..)
 
 
 view : Search.Model -> Html Msg
@@ -24,10 +25,7 @@ view searchMsg =
                 , div []
                     [ strong [ onClick (GetAlbum al.id) ] [ text <| al.name ++ " " ]
                     , text <| "(" ++ Utils.releaseDateFormat al.release_date ++ ")"
-                    , al.artists
-                        |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text ar.name ])
-                        |> List.intersperse (span [] [ text ", " ])
-                        |> div [ class "artist-name" ]
+                    , div [] [ artistList al.artists ]
                     ]
                 ]
 
@@ -36,10 +34,7 @@ view searchMsg =
                 [ div [ onClick (ChangePlayingTrack [ t.uri ]), class "track-icon" ] [ i [ class "icon-play" ] [] ]
                 , div []
                     [ strong [] [ text t.name ]
-                    , t.artists
-                        |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text ar.name ])
-                        |> List.intersperse (span [] [ text ", " ])
-                        |> div [ class "artist-name" ]
+                    , div [] [ artistList t.artists ]
                     ]
                 , div []
                     [ text (Utils.durationFormat t.duration_ms)
