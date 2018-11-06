@@ -6,7 +6,7 @@
 // Version 1.5.1
 // MIT License
 
-$track-color: $primary-color !default;
+$track-color: rgba(black, 0.45) !default;
 $thumb-color: white !default;
 
 $thumb-radius: 12px !default;
@@ -40,6 +40,8 @@ $ie-bottom-track-color: darken($track-color, $contrast) !default;
   height: $track-height;
   transition: all .2s ease;
   width: $track-width;
+  position: relative;
+  left: -6px;
 }
 
 @mixin thumb($adjustment: 0) {
