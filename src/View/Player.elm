@@ -42,6 +42,7 @@ view player =
                     , span [ class "artist-name" ]
                         (player.item.artists
                             |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text <| ar.name ++ " " ])
+                            |> List.intersperse (span [] [ text ", " ])
                         )
                     ]
                 , div [ class "range" ]

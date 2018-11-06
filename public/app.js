@@ -8293,6 +8293,24 @@ var author$project$Root$PlayerSeek = function (a) {
 };
 var author$project$Root$PlayerShuffleOff = {$: 'PlayerShuffleOff'};
 var author$project$Root$PlayerShuffleOn = {$: 'PlayerShuffleOn'};
+var elm$core$List$intersperse = F2(
+	function (sep, xs) {
+		if (!xs.b) {
+			return _List_Nil;
+		} else {
+			var hd = xs.a;
+			var tl = xs.b;
+			var step = F2(
+				function (x, rest) {
+					return A2(
+						elm$core$List$cons,
+						sep,
+						A2(elm$core$List$cons, x, rest));
+				});
+			var spersed = A3(elm$core$List$foldr, step, _List_Nil, tl);
+			return A2(elm$core$List$cons, hd, spersed);
+		}
+	});
 var elm$core$String$fromFloat = _String_fromNumber;
 var elm$html$Html$input = _VirtualDom_node('input');
 var elm$html$Html$Attributes$max = elm$html$Html$Attributes$stringProperty('max');
@@ -8509,21 +8527,30 @@ var author$project$View$Player$view = function (player) {
 												elm$html$Html$Attributes$class('artist-name')
 											]),
 										A2(
-											elm$core$List$map,
-											function (ar) {
-												return A2(
-													elm$html$Html$a,
-													_List_fromArray(
-														[
-															elm$html$Html$Events$onClick(
-															author$project$Root$GetArtist(ar.id))
-														]),
-													_List_fromArray(
-														[
-															elm$html$Html$text(ar.name + ' ')
-														]));
-											},
-											player.item.artists))
+											elm$core$List$intersperse,
+											A2(
+												elm$html$Html$span,
+												_List_Nil,
+												_List_fromArray(
+													[
+														elm$html$Html$text(', ')
+													])),
+											A2(
+												elm$core$List$map,
+												function (ar) {
+													return A2(
+														elm$html$Html$a,
+														_List_fromArray(
+															[
+																elm$html$Html$Events$onClick(
+																author$project$Root$GetArtist(ar.id))
+															]),
+														_List_fromArray(
+															[
+																elm$html$Html$text(ar.name + ' ')
+															]));
+												},
+												player.item.artists)))
 									])),
 								A2(
 								elm$html$Html$div,
@@ -8725,21 +8752,34 @@ var author$project$View$Playlist$view = F2(
 								elm$html$Html$div,
 								_List_Nil,
 								A2(
-									elm$core$List$map,
-									function (ar) {
-										return A2(
-											elm$html$Html$a,
-											_List_fromArray(
-												[
-													elm$html$Html$Events$onClick(
-													author$project$Root$GetArtist(ar.id))
-												]),
-											_List_fromArray(
-												[
-													elm$html$Html$text(ar.name)
-												]));
-									},
-									t.track.artists))
+									elm$core$List$intersperse,
+									A2(
+										elm$html$Html$span,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$class('artist-name')
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text(', ')
+											])),
+									A2(
+										elm$core$List$map,
+										function (ar) {
+											return A2(
+												elm$html$Html$a,
+												_List_fromArray(
+													[
+														elm$html$Html$Attributes$class('artist-name'),
+														elm$html$Html$Events$onClick(
+														author$project$Root$GetArtist(ar.id))
+													]),
+												_List_fromArray(
+													[
+														elm$html$Html$text(ar.name)
+													]));
+										},
+										t.track.artists)))
 							])),
 						A2(
 						elm$html$Html$div,
