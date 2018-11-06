@@ -8311,6 +8311,39 @@ var elm$core$List$intersperse = F2(
 			return A2(elm$core$List$cons, hd, spersed);
 		}
 	});
+var author$project$View$Artist$artistList = function (artists) {
+	return A2(
+		elm$html$Html$span,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('artist-name')
+			]),
+		A2(
+			elm$core$List$intersperse,
+			A2(
+				elm$html$Html$span,
+				_List_Nil,
+				_List_fromArray(
+					[
+						elm$html$Html$text(', ')
+					])),
+			A2(
+				elm$core$List$map,
+				function (ar) {
+					return A2(
+						elm$html$Html$a,
+						_List_fromArray(
+							[
+								elm$html$Html$Events$onClick(
+								author$project$Root$GetArtist(ar.id))
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text(ar.name)
+							]));
+				},
+				artists)));
+};
 var elm$core$String$fromFloat = _String_fromNumber;
 var elm$html$Html$input = _VirtualDom_node('input');
 var elm$html$Html$Attributes$max = elm$html$Html$Attributes$stringProperty('max');
@@ -8520,37 +8553,7 @@ var author$project$View$Player$view = function (player) {
 											[
 												elm$html$Html$text(' - ')
 											])),
-										A2(
-										elm$html$Html$span,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('artist-name')
-											]),
-										A2(
-											elm$core$List$intersperse,
-											A2(
-												elm$html$Html$span,
-												_List_Nil,
-												_List_fromArray(
-													[
-														elm$html$Html$text(', ')
-													])),
-											A2(
-												elm$core$List$map,
-												function (ar) {
-													return A2(
-														elm$html$Html$a,
-														_List_fromArray(
-															[
-																elm$html$Html$Events$onClick(
-																author$project$Root$GetArtist(ar.id))
-															]),
-														_List_fromArray(
-															[
-																elm$html$Html$text(ar.name + ' ')
-															]));
-												},
-												player.item.artists)))
+										author$project$View$Artist$artistList(player.item.artists)
 									])),
 								A2(
 								elm$html$Html$div,
@@ -8751,35 +8754,10 @@ var author$project$View$Playlist$view = F2(
 								A2(
 								elm$html$Html$div,
 								_List_Nil,
-								A2(
-									elm$core$List$intersperse,
-									A2(
-										elm$html$Html$span,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('artist-name')
-											]),
-										_List_fromArray(
-											[
-												elm$html$Html$text(', ')
-											])),
-									A2(
-										elm$core$List$map,
-										function (ar) {
-											return A2(
-												elm$html$Html$a,
-												_List_fromArray(
-													[
-														elm$html$Html$Attributes$class('artist-name'),
-														elm$html$Html$Events$onClick(
-														author$project$Root$GetArtist(ar.id))
-													]),
-												_List_fromArray(
-													[
-														elm$html$Html$text(ar.name)
-													]));
-										},
-										t.track.artists)))
+								_List_fromArray(
+									[
+										author$project$View$Artist$artistList(t.track.artists)
+									]))
 							])),
 						A2(
 						elm$html$Html$div,
@@ -8912,35 +8890,11 @@ var author$project$View$Search$view = function (searchMsg) {
 								])),
 							A2(
 							elm$html$Html$div,
+							_List_Nil,
 							_List_fromArray(
 								[
-									elm$html$Html$Attributes$class('artist-name')
-								]),
-							A2(
-								elm$core$List$intersperse,
-								A2(
-									elm$html$Html$span,
-									_List_Nil,
-									_List_fromArray(
-										[
-											elm$html$Html$text(', ')
-										])),
-								A2(
-									elm$core$List$map,
-									function (ar) {
-										return A2(
-											elm$html$Html$a,
-											_List_fromArray(
-												[
-													elm$html$Html$Events$onClick(
-													author$project$Root$GetArtist(ar.id))
-												]),
-											_List_fromArray(
-												[
-													elm$html$Html$text(ar.name)
-												]));
-									},
-									t.artists)))
+									author$project$View$Artist$artistList(t.artists)
+								]))
 						])),
 					A2(
 					elm$html$Html$div,
@@ -9023,35 +8977,11 @@ var author$project$View$Search$view = function (searchMsg) {
 							'(' + (author$project$Utils$releaseDateFormat(al.release_date) + ')')),
 							A2(
 							elm$html$Html$div,
+							_List_Nil,
 							_List_fromArray(
 								[
-									elm$html$Html$Attributes$class('artist-name')
-								]),
-							A2(
-								elm$core$List$intersperse,
-								A2(
-									elm$html$Html$span,
-									_List_Nil,
-									_List_fromArray(
-										[
-											elm$html$Html$text(', ')
-										])),
-								A2(
-									elm$core$List$map,
-									function (ar) {
-										return A2(
-											elm$html$Html$a,
-											_List_fromArray(
-												[
-													elm$html$Html$Events$onClick(
-													author$project$Root$GetArtist(ar.id))
-												]),
-											_List_fromArray(
-												[
-													elm$html$Html$text(ar.name)
-												]));
-									},
-									al.artists)))
+									author$project$View$Artist$artistList(al.artists)
+								]))
 						]))
 				]));
 	};
