@@ -12,6 +12,7 @@ import Data.Track as Track exposing (..)
 import Data.Youtube exposing (..)
 import Http exposing (..)
 import Keyboard.Event
+import Ports
 import Request
 import Time exposing (..)
 import Url exposing (Url)
@@ -295,7 +296,7 @@ update msg ({ searchModel, config, drawer, modal } as model) =
             ( { model | player = e }, Cmd.none )
 
         SetPlayer (Err _) ->
-            ( model, Cmd.none )
+            ( model, Ports.refreshToken () )
 
         GetPlayer _ ->
             ( model, Http.send SetPlayer <| Request.get "me/player" "" "" decodePlayer token )
