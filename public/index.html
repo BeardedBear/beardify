@@ -48,10 +48,16 @@
             window.location.assign(defaultUrl);
         } else {
             window.location.assign(defaultUrl + "/#/");
+            console.log(new Date().getTime().toString() - JSON.parse(beardifyToken).timestamp)
             const app = Elm.Main.init({
                 flags: { token: JSON.parse(beardifyToken).value }
             });
+
+            app.ports.refreshToken.subscribe(function () {
+                window.location.assign(authUrl);
+            });
         }
+
     </script>
 </body>
 
