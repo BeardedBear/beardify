@@ -9907,6 +9907,12 @@ var elm$http$Http$get = F2(
 var author$project$Data$Youtube$getVideos = function (query) {
 	return A2(elm$http$Http$get, 'https://www.googleapis.com/youtube/v3/search?q=' + (query + '&type=video&maxResults=4&part=snippet&key=AIzaSyDjlO4Gb0jCsxrot8KcNslXNSN_cIN5yqs'), author$project$Data$Youtube$decodeYoutube);
 };
+var elm$json$Json$Encode$null = _Json_encodeNull;
+var author$project$Ports$refreshToken = _Platform_outgoingPort(
+	'refreshToken',
+	function ($) {
+		return elm$json$Json$Encode$null;
+	});
 var elm$http$Http$Internal$StringBody = F2(
 	function (a, b) {
 		return {$: 'StringBody', a: a, b: b};
@@ -10367,7 +10373,9 @@ var author$project$Root$update = F2(
 							{player: e}),
 						elm$core$Platform$Cmd$none);
 				} else {
-					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(
+						model,
+						author$project$Ports$refreshToken(_Utils_Tuple0));
 				}
 			case 'GetPlayer':
 				return _Utils_Tuple2(
