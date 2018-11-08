@@ -53,9 +53,9 @@
                 flags: { token: JSON.parse(beardifyToken).value }
             });
 
-            // app.ports.refreshToken.subscribe(function () {
-            //     window.location.assign(authUrl);
-            // });
+            app.ports.refreshToken.subscribe(function () {
+                window.location.assign(authUrl);
+            });
         }
 
     </script>
