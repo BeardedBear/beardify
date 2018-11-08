@@ -221,7 +221,7 @@ update msg ({ searchModel, config, drawer, modal } as model) =
             ( model
             , Cmd.batch
                 [ Http.send SetArtist <| Request.get "artists/" id "" decodeArtist token
-                , Http.send SetArtistAlbums <| Request.get "artists/" id "/albums?market=FR&album_type=album" decodeArtistAlbums token
+                , Http.send SetArtistAlbums <| Request.get "artists/" id "/albums?include_groups=album&market=from_token&limit=50" decodeArtistAlbums token
                 , Http.send SetArtistTopTracks <| Request.get "artists/" id "/top-tracks?country=FR" Track.decodeArtistTopTracks token
                 , Http.send SetRelatedArtists <| Request.get "artists/" id "/related-artists" decodeRelatedArtists token
                 ]
