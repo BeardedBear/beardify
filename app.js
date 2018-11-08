@@ -6876,7 +6876,7 @@ var author$project$Main$subscriptions = function (model) {
 				A2(elm$json$Json$Decode$map, author$project$Root$HandleKeyboardEvent, Gizra$elm_keyboard_event$Keyboard$Event$decodeKeyboardEvent))
 			]));
 };
-var author$project$Data$Image$Medium = {$: 'Medium'};
+var author$project$Data$Image$Large = {$: 'Large'};
 var elm$core$List$head = function (list) {
 	if (list.b) {
 		var x = list.a;
@@ -7373,7 +7373,7 @@ var author$project$View$Album$view = F2(
 						]),
 					_List_fromArray(
 						[
-							A2(author$project$Data$Image$imageView, author$project$Data$Image$Medium, album.album.images)
+							A2(author$project$Data$Image$imageView, author$project$Data$Image$Large, album.album.images)
 						])),
 					A2(
 					elm$html$Html$div,
@@ -7458,7 +7458,7 @@ var author$project$View$Album$view = F2(
 												]),
 											_List_fromArray(
 												[
-													A2(author$project$Data$Image$imageView, author$project$Data$Image$Medium, album.album.images)
+													A2(author$project$Data$Image$imageView, author$project$Data$Image$Large, album.album.images)
 												])),
 											A2(
 											elm$html$Html$div,
@@ -7528,6 +7528,7 @@ var author$project$View$Album$view = F2(
 				]));
 	});
 var author$project$Data$Image$Small = {$: 'Small'};
+var author$project$Data$Image$Medium = {$: 'Medium'};
 var author$project$Root$GetAlbum = function (a) {
 	return {$: 'GetAlbum', a: a};
 };
