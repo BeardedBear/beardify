@@ -44,7 +44,7 @@ view player album =
                 |> List.sum
     in
     div [ class "album-wrapper" ]
-        [ div [ class "bg-cover" ] [ imageView Medium album.album.images ]
+        [ div [ class "bg-cover" ] [ imageView Large album.album.images ]
         , div [ class "album-page-head" ]
             [ div [ class "heading-page" ] [ text album.album.name ]
             , div []
@@ -56,7 +56,7 @@ view player album =
             [ div []
                 [ div [ class "album" ]
                     [ div [ class "img" ]
-                        [ imageView Medium album.album.images
+                        [ imageView Large album.album.images
                         ]
                     , div [ class "playing-btn", onClick (ChangePlaying album.album.uri) ] [ i [ class "icon-play" ] [] ]
                     , div [ class "add-btn", onClick <| ModalGetTrack album.album.id ] [ i [ class "icon-add" ] [] ]
