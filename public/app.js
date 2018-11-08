@@ -10255,7 +10255,7 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$SetArtistAlbums,
-								A5(author$project$Request$get, 'artists/', id, '/albums?include_groups=album&market=from_token&limit=50', author$project$Data$Album$decodeArtistAlbums, token)),
+								A5(author$project$Request$get, 'artists/', id, '/albums?market=FR&album_type=album', author$project$Data$Album$decodeArtistAlbums, token)),
 								A2(
 								elm$http$Http$send,
 								author$project$Root$SetArtistTopTracks,
