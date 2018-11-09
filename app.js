@@ -5140,6 +5140,7 @@ var author$project$Data$Playlist$decodePlaylistslist = A2(
 			['items']),
 		elm$json$Json$Decode$list(author$project$Data$Playlist$decodePlaylists)));
 var author$project$Data$Playlist$init = _List_Nil;
+var author$project$Data$Releases$init = {releaseList: _List_Nil};
 var author$project$Data$Search$init = {findAlbum: _List_Nil, findArtist: _List_Nil, findTrack: _List_Nil, searchQuery: ''};
 var author$project$Request$apiUrl = 'https://api.spotify.com/v1/';
 var elm$http$Http$Internal$EmptyBody = {$: 'EmptyBody'};
@@ -5882,6 +5883,7 @@ var author$project$Main$init = F3(
 				modal: author$project$Data$Modal$init,
 				player: author$project$Data$Player$init,
 				playlists: author$project$Data$Playlist$init,
+				releases: author$project$Data$Releases$init,
 				searchModel: author$project$Data$Search$init
 			},
 			elm$core$Platform$Cmd$batch(
@@ -8669,6 +8671,7 @@ var author$project$View$Player$view = function (player) {
 					]))
 			]));
 };
+var elm$html$Html$Attributes$title = elm$html$Html$Attributes$stringProperty('title');
 var author$project$View$Playlist$view = F2(
 	function (player, playlist) {
 		var trackSumDuration = elm$core$List$sum(
@@ -8692,6 +8695,59 @@ var author$project$View$Playlist$view = F2(
 					playlist.tracks.items));
 		};
 		var trackItem = function (t) {
+			var releaseType = function (r) {
+				switch (r) {
+					case 'album':
+						return A2(
+							elm$html$Html$i,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('icon-discogs')
+								]),
+							_List_Nil);
+					case 'single':
+						return A2(
+							elm$html$Html$i,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('icon-pizza')
+								]),
+							_List_Nil);
+					default:
+						return A2(
+							elm$html$Html$i,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('icon-music')
+								]),
+							_List_Nil);
+				}
+			};
+			var icon = _Utils_eq(t.track.uri, player.item.uri) ? A2(
+				elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						elm$html$Html$i,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('icon-play')
+							]),
+						_List_Nil)
+					])) : A2(
+				elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						elm$html$Html$i,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('icon-music')
+							]),
+						_List_Nil)
+					]));
 			return A2(
 				elm$html$Html$div,
 				_List_fromArray(
@@ -8707,75 +8763,54 @@ var author$project$View$Playlist$view = F2(
 					]),
 				_List_fromArray(
 					[
+						icon,
 						A2(
 						elm$html$Html$div,
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('playlist-track-left')
+								elm$html$Html$Events$onClick(
+								author$project$Root$ChangePlayingTrack(
+									listTracksUri(t.track.uri)))
 							]),
 						_List_fromArray(
 							[
-								_Utils_eq(t.track.uri, player.item.uri) ? A2(
-								elm$html$Html$div,
-								_List_Nil,
-								_List_fromArray(
-									[
-										A2(
-										elm$html$Html$i,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('icon-play')
-											]),
-										_List_Nil)
-									])) : A2(
-								elm$html$Html$div,
-								_List_Nil,
-								_List_fromArray(
-									[
-										A2(
-										elm$html$Html$i,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('icon-music')
-											]),
-										_List_Nil)
-									])),
-								A2(
-								elm$html$Html$div,
-								_List_fromArray(
-									[
-										elm$html$Html$Events$onClick(
-										author$project$Root$ChangePlayingTrack(
-											listTracksUri(t.track.uri)))
-									]),
-								_List_fromArray(
-									[
-										elm$html$Html$text(t.track.name)
-									])),
-								A2(
-								elm$html$Html$div,
-								_List_Nil,
-								_List_fromArray(
-									[
-										author$project$View$Artist$artistList(t.track.artists)
-									]))
+								elm$html$Html$text(t.track.name)
+							])),
+						A2(
+						elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								author$project$View$Artist$artistList(t.track.artists)
 							])),
 						A2(
 						elm$html$Html$div,
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('playlist-track-right')
+								elm$html$Html$Attributes$title(t.track.album.album_type)
 							]),
 						_List_fromArray(
 							[
+								releaseType(t.track.album.album_type),
 								A2(
-								elm$html$Html$div,
-								_List_Nil,
+								elm$html$Html$a,
 								_List_fromArray(
 									[
-										elm$html$Html$text(
-										author$project$Utils$durationFormat(t.track.duration_ms))
+										elm$html$Html$Events$onClick(
+										author$project$Root$GetAlbum(t.track.album.id))
+									]),
+								_List_fromArray(
+									[
+										elm$html$Html$text(t.track.album.name)
 									]))
+							])),
+						A2(
+						elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								elm$html$Html$text(
+								author$project$Utils$durationFormat(t.track.duration_ms))
 							]))
 					]));
 		};
@@ -8840,6 +8875,22 @@ var author$project$View$Playlist$view = F2(
 									A2(elm$core$List$map, trackItem, playlist.tracks.items))
 								]))
 						]))
+				]));
+	});
+var author$project$View$Releases$view = F2(
+	function (player, model) {
+		var test = A2(
+			elm$core$List$filter,
+			function (e) {
+				return (e.release_date === '2018-09-28') && (e.album_type === 'album');
+			},
+			model.releases.releaseList);
+		return A2(
+			elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(author$project$View$AlbumGallery$view, player, test)
 				]));
 	});
 var author$project$Root$Query = function (a) {
@@ -9541,6 +9592,8 @@ var author$project$Main$view = function (model) {
 												return A2(author$project$View$Collection$view, model.player, model.drawer.drawerCollection);
 											case 'Home':
 												return author$project$View$Home$view(model);
+											case 'Releases':
+												return A2(author$project$View$Releases$view, model.player, model);
 											default:
 												return elm$html$Html$text('');
 										}
@@ -10059,6 +10112,9 @@ var author$project$Root$SetPlaylistTracks = function (a) {
 var author$project$Root$SetRelatedArtists = function (a) {
 	return {$: 'SetRelatedArtists', a: a};
 };
+var author$project$Root$SetReleases = function (a) {
+	return {$: 'SetReleases', a: a};
+};
 var author$project$Root$SetYoutube = function (a) {
 	return {$: 'SetYoutube', a: a};
 };
@@ -10072,6 +10128,7 @@ var author$project$Root$update = F2(
 		var config = model.config;
 		var drawer = model.drawer;
 		var modal = model.modal;
+		var releases = model.releases;
 		var token = model.config.token;
 		var catchDrawerPlaylist = drawer.drawerPlaylist;
 		var catchDrawerCollection = drawer.drawerCollection;
@@ -10574,6 +10631,21 @@ var author$project$Root$update = F2(
 								{drawerType: author$project$Data$Drawer$Home})
 						}),
 					elm$core$Platform$Cmd$none);
+			case 'SetReleases':
+				if (msg.a.$ === 'Ok') {
+					var e = msg.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								releases: _Utils_update(
+									releases,
+									{releaseList: e.items})
+							}),
+						elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				}
 			case 'GoReleases':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -10583,7 +10655,14 @@ var author$project$Root$update = F2(
 								drawer,
 								{drawerType: author$project$Data$Drawer$Releases})
 						}),
-					elm$core$Platform$Cmd$none);
+					elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								A2(
+								elm$http$Http$send,
+								author$project$Root$SetReleases,
+								A5(author$project$Request$get, 'search?q=', 'year:2018', '&type=album&limit=50', author$project$Data$Album$decodeListAlbum, token))
+							])));
 			case 'GoListen':
 				return _Utils_Tuple2(
 					_Utils_update(
