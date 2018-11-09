@@ -12,7 +12,6 @@ Don't try to install it, otherwise your house will probably explode, and so will
 - Paging playlists
 - Rearrange order of playlists
 - Home page
-- Releases page
 - Add/Delete/modify playlists/tracks
 - Routes
 
@@ -24,6 +23,7 @@ Don't try to install it, otherwise your house will probably explode, and so will
 
 ## Future features
 - Publicly share collections
+- More sources for releases
 
 ## Screenshots
 

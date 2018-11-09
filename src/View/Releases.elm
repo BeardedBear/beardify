@@ -10,11 +10,21 @@ import View.AlbumGallery as AlbumGallery exposing (..)
 
 view : Player.Model -> Root.Model -> Html Msg
 view player model =
-    let
-        test =
-            model.releases.releaseList
-                |> List.filter (\e -> e.release_date == "2018-09-28" && e.album_type == "album")
-    in
     div []
-        [ AlbumGallery.view player test
+        [ h1 [] [ text "The PRP" ]
+        , model.releases.thePrp
+            |> List.filter (\f -> not <| String.contains "Vinyl" f.album)
+            |> List.filter (\f -> not <| String.contains "Deluxe" f.album)
+            |> List.filter (\f -> not <| String.contains "Reissue" f.album)
+            |> List.filter (\f -> not <| String.contains "Anniversary" f.album)
+            |> List.filter (\f -> not <| String.contains "Remastered" f.album)
+            |> List.map
+                (\e ->
+                    div []
+                        [ text e.date
+                        , text " - "
+                        , a [ onClick <| Query (e.artist ++ " - " ++ e.album) ] [ text e.artist, text " - ", text e.album ]
+                        ]
+                )
+            |> div []
         ]
