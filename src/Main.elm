@@ -15,6 +15,7 @@ import Html.Attributes exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 import Keyboard.Event
+import Ports
 import Request
 import Root exposing (..)
 import Time exposing (..)
@@ -58,6 +59,7 @@ subscriptions model =
     Sub.batch
         [ Time.every 1000 GetPlayer
         , Browser.Events.onKeyDown (Decode.map HandleKeyboardEvent Keyboard.Event.decodeKeyboardEvent)
+        , Ports.thePrpReleases AddReleaseThePrp
         ]
 
 

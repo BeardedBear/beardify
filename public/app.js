@@ -5140,7 +5140,7 @@ var author$project$Data$Playlist$decodePlaylistslist = A2(
 			['items']),
 		elm$json$Json$Decode$list(author$project$Data$Playlist$decodePlaylists)));
 var author$project$Data$Playlist$init = _List_Nil;
-var author$project$Data$Releases$init = {releaseList: _List_Nil};
+var author$project$Data$Releases$init = {releaseList: _List_Nil, thePrp: _List_Nil};
 var author$project$Data$Search$init = {findAlbum: _List_Nil, findArtist: _List_Nil, findTrack: _List_Nil, searchQuery: ''};
 var author$project$Request$apiUrl = 'https://api.spotify.com/v1/';
 var elm$http$Http$Internal$EmptyBody = {$: 'EmptyBody'};
@@ -6229,6 +6229,10 @@ var Gizra$elm_keyboard_event$Keyboard$Event$decodeKeyboardEvent = A8(
 	A2(elm$json$Json$Decode$field, 'metaKey', elm$json$Json$Decode$bool),
 	A2(elm$json$Json$Decode$field, 'repeat', elm$json$Json$Decode$bool),
 	A2(elm$json$Json$Decode$field, 'shiftKey', elm$json$Json$Decode$bool));
+var author$project$Ports$thePrpReleases = _Platform_incomingPort('thePrpReleases', elm$json$Json$Decode$string);
+var author$project$Root$AddReleaseThePrp = function (a) {
+	return {$: 'AddReleaseThePrp', a: a};
+};
 var author$project$Root$GetPlayer = function (a) {
 	return {$: 'GetPlayer', a: a};
 };
@@ -6875,7 +6879,8 @@ var author$project$Main$subscriptions = function (model) {
 			[
 				A2(elm$time$Time$every, 1000, author$project$Root$GetPlayer),
 				elm$browser$Browser$Events$onKeyDown(
-				A2(elm$json$Json$Decode$map, author$project$Root$HandleKeyboardEvent, Gizra$elm_keyboard_event$Keyboard$Event$decodeKeyboardEvent))
+				A2(elm$json$Json$Decode$map, author$project$Root$HandleKeyboardEvent, Gizra$elm_keyboard_event$Keyboard$Event$decodeKeyboardEvent)),
+				author$project$Ports$thePrpReleases(author$project$Root$AddReleaseThePrp)
 			]));
 };
 var author$project$Data$Image$Large = {$: 'Large'};
@@ -8877,25 +8882,81 @@ var author$project$View$Playlist$view = F2(
 						]))
 				]));
 	});
+var author$project$Root$Query = function (a) {
+	return {$: 'Query', a: a};
+};
+var elm$core$Basics$not = _Basics_not;
+var elm$html$Html$h1 = _VirtualDom_node('h1');
 var author$project$View$Releases$view = F2(
 	function (player, model) {
-		var test = A2(
-			elm$core$List$filter,
-			function (e) {
-				return (e.release_date === '2018-09-28') && (e.album_type === 'album');
-			},
-			model.releases.releaseList);
 		return A2(
 			elm$html$Html$div,
 			_List_Nil,
 			_List_fromArray(
 				[
-					A2(author$project$View$AlbumGallery$view, player, test)
+					A2(
+					elm$html$Html$h1,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text('The PRP')
+						])),
+					A2(
+					elm$html$Html$div,
+					_List_Nil,
+					A2(
+						elm$core$List$map,
+						function (e) {
+							return A2(
+								elm$html$Html$div,
+								_List_Nil,
+								_List_fromArray(
+									[
+										elm$html$Html$text(e.date),
+										elm$html$Html$text(' - '),
+										A2(
+										elm$html$Html$a,
+										_List_fromArray(
+											[
+												elm$html$Html$Events$onClick(
+												author$project$Root$Query(e.artist + (' - ' + e.album)))
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text(e.artist),
+												elm$html$Html$text(' - '),
+												elm$html$Html$text(e.album)
+											]))
+									]));
+						},
+						A2(
+							elm$core$List$filter,
+							function (f) {
+								return !A2(elm$core$String$contains, 'Remastered', f.album);
+							},
+							A2(
+								elm$core$List$filter,
+								function (f) {
+									return !A2(elm$core$String$contains, 'Anniversary', f.album);
+								},
+								A2(
+									elm$core$List$filter,
+									function (f) {
+										return !A2(elm$core$String$contains, 'Reissue', f.album);
+									},
+									A2(
+										elm$core$List$filter,
+										function (f) {
+											return !A2(elm$core$String$contains, 'Deluxe', f.album);
+										},
+										A2(
+											elm$core$List$filter,
+											function (f) {
+												return !A2(elm$core$String$contains, 'Vinyl', f.album);
+											},
+											model.releases.thePrp)))))))
 				]));
 	});
-var author$project$Root$Query = function (a) {
-	return {$: 'Query', a: a};
-};
 var elm$html$Html$strong = _VirtualDom_node('strong');
 var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
 var author$project$View$Search$view = function (searchMsg) {
@@ -9177,7 +9238,6 @@ var author$project$Root$GetPlaylist = function (a) {
 	return {$: 'GetPlaylist', a: a};
 };
 var author$project$Root$NoOp = {$: 'NoOp'};
-var elm$core$Basics$not = _Basics_not;
 var elm$core$List$isEmpty = function (xs) {
 	if (!xs.b) {
 		return true;
@@ -9815,6 +9875,16 @@ var author$project$Data$Playlist$decodePlaylist = A6(
 	A2(elm$json$Json$Decode$field, 'name', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'tracks', author$project$Data$Playlist$decodePlaylistPaging),
 	A2(elm$json$Json$Decode$field, 'uri', elm$json$Json$Decode$string));
+var author$project$Data$Releases$ThePrpReleases = F3(
+	function (artist, album, date) {
+		return {album: album, artist: artist, date: date};
+	});
+var author$project$Data$Releases$decodeThePrpReleases = A4(
+	elm$json$Json$Decode$map3,
+	author$project$Data$Releases$ThePrpReleases,
+	A2(elm$json$Json$Decode$field, 'artist', elm$json$Json$Decode$string),
+	A2(elm$json$Json$Decode$field, 'album', elm$json$Json$Decode$string),
+	A2(elm$json$Json$Decode$field, 'date', elm$json$Json$Decode$string));
 var author$project$Data$Track$AlbumTracks = function (items) {
 	return {items: items};
 };
@@ -9962,6 +10032,11 @@ var author$project$Data$Youtube$getVideos = function (query) {
 	return A2(elm$http$Http$get, 'https://www.googleapis.com/youtube/v3/search?q=' + (query + '&type=video&maxResults=4&part=snippet&key=AIzaSyDjlO4Gb0jCsxrot8KcNslXNSN_cIN5yqs'), author$project$Data$Youtube$decodeYoutube);
 };
 var elm$json$Json$Encode$null = _Json_encodeNull;
+var author$project$Ports$getReleasesThePRP = _Platform_outgoingPort(
+	'getReleasesThePRP',
+	function ($) {
+		return elm$json$Json$Encode$null;
+	});
 var author$project$Ports$refreshToken = _Platform_outgoingPort(
 	'refreshToken',
 	function ($) {
@@ -10119,6 +10194,15 @@ var author$project$Root$SetYoutube = function (a) {
 	return {$: 'SetYoutube', a: a};
 };
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
+var elm$core$Result$withDefault = F2(
+	function (def, result) {
+		if (result.$ === 'Ok') {
+			var a = result.a;
+			return a;
+		} else {
+			return def;
+		}
+	});
 var elm$core$String$concat = function (strings) {
 	return A2(elm$core$String$join, '', strings);
 };
@@ -10661,7 +10745,8 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$SetReleases,
-								A5(author$project$Request$get, 'search?q=', 'year:2018', '&type=album&limit=50', author$project$Data$Album$decodeListAlbum, token))
+								A5(author$project$Request$get, 'search?q=', 'year:2018', '&type=album&limit=50', author$project$Data$Album$decodeListAlbum, token)),
+								author$project$Ports$getReleasesThePRP(_Utils_Tuple0)
 							])));
 			case 'GoListen':
 				return _Utils_Tuple2(
@@ -10763,7 +10848,7 @@ var author$project$Root$update = F2(
 									author$project$Data$Track$encodeDelCollectionAlbum(e),
 									token))
 							])));
-			default:
+			case 'HandleKeyboardEvent':
 				var event = msg.a;
 				var _n1 = event.key;
 				if (_n1.$ === 'Just') {
@@ -10786,6 +10871,23 @@ var author$project$Root$update = F2(
 				} else {
 					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 				}
+			default:
+				var e = msg.a;
+				var releaseList = A2(
+					elm$json$Json$Decode$decodeString,
+					elm$json$Json$Decode$list(author$project$Data$Releases$decodeThePrpReleases),
+					e);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							releases: _Utils_update(
+								releases,
+								{
+									thePrp: A2(elm$core$Result$withDefault, _List_Nil, releaseList)
+								})
+						}),
+					elm$core$Platform$Cmd$none);
 		}
 	});
 var elm$browser$Browser$application = _Browser_application;

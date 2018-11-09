@@ -12,6 +12,7 @@ import Data.Search as Search exposing (..)
 import Data.Track as Track exposing (..)
 import Data.Youtube exposing (..)
 import Http exposing (..)
+import Json.Decode as Decode exposing (..)
 import Keyboard.Event
 import Ports
 import Request
@@ -79,6 +80,7 @@ type Msg
     | ModalClear
     | DelCollectionAlbum String (List String)
     | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
+    | AddReleaseThePrp String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -396,6 +398,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
             ( { model | drawer = { drawer | drawerType = Releases } }
             , Cmd.batch
                 [ Http.send SetReleases <| Request.get "search?q=" "year:2018" "&type=album&limit=50" decodeListAlbum token
+                , Ports.getReleasesThePRP ()
                 ]
             )
 
@@ -471,3 +474,10 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
 
                 Nothing ->
                     ( model, Cmd.none )
+
+        AddReleaseThePrp e ->
+            let
+                releaseList =
+                    Decode.decodeString (Decode.list Releases.decodeThePrpReleases) e
+            in
+            ( { model | releases = { releases | thePrp = Result.withDefault [] releaseList } }, Cmd.none )
