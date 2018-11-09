@@ -11,6 +11,8 @@
     <link href="./icons/styles.css" rel="stylesheet">
     <link href="main.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="./img/logo.png" />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -48,13 +50,32 @@
             window.location.assign(defaultUrl);
         } else {
             window.location.assign(defaultUrl + "/#/");
-            console.log(new Date().getTime().toString() - JSON.parse(beardifyToken).timestamp)
             const app = Elm.Main.init({
                 flags: { token: JSON.parse(beardifyToken).value }
             });
 
+            // PORTS
+
             app.ports.refreshToken.subscribe(function () {
                 window.location.assign(authUrl);
+            });
+
+            app.ports.getReleasesThePRP.subscribe(function () {
+                $.getJSON('https://allorigins.me/get?url=https://www.theprp.com/releases/&callback=?', function (data) {
+                    dom = new DOMParser().parseFromString(data.contents, "text/html");
+
+                    let array = []
+                    dom.body.querySelectorAll(".rel_table .rel_row").forEach(
+                        function (currentValue) {
+                            let obj = new Object();
+                            obj.artist = currentValue.querySelector(".col_artist").textContent;
+                            obj.album = currentValue.querySelector(".col_title").textContent;
+                            obj.date = currentValue.querySelector(".col_date").textContent;
+                            array.push(obj)
+                        },
+                    );
+                    app.ports.thePrpReleases.send(JSON.stringify(array));
+                });
             });
         }
 
