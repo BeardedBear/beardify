@@ -7,6 +7,7 @@ import Data.Drawer as Drawer exposing (..)
 import Data.Modal as Modal exposing (..)
 import Data.Player as Player exposing (..)
 import Data.Playlist exposing (..)
+import Data.Releases as Releases exposing (..)
 import Data.Search as Search exposing (..)
 import Data.Track as Track exposing (..)
 import Data.Youtube exposing (..)
@@ -25,6 +26,7 @@ type alias Model =
     , searchModel : Search.Model
     , player : Player.Model
     , modal : Modal.Model
+    , releases : Releases.Model
     }
 
 
@@ -67,6 +69,7 @@ type Msg
     | ChangePlayingTrack (List String)
     | GetPlayer Posix
     | GoHome
+    | SetReleases (Result Http.Error ListAlbum)
     | GoReleases
     | GoListen
     | ModalOpen (Result Http.Error AlbumTracks)
@@ -79,7 +82,7 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ searchModel, config, drawer, modal } as model) =
+update msg ({ searchModel, config, drawer, modal, releases } as model) =
     let
         token =
             model.config.token
@@ -383,8 +386,18 @@ update msg ({ searchModel, config, drawer, modal } as model) =
         GoHome ->
             ( { model | drawer = { drawer | drawerType = Home } }, Cmd.none )
 
+        SetReleases (Ok e) ->
+            ( { model | releases = { releases | releaseList = e.items } }, Cmd.none )
+
+        SetReleases (Err _) ->
+            ( model, Cmd.none )
+
         GoReleases ->
-            ( { model | drawer = { drawer | drawerType = Releases } }, Cmd.none )
+            ( { model | drawer = { drawer | drawerType = Releases } }
+            , Cmd.batch
+                [ Http.send SetReleases <| Request.get "search?q=" "year:2018" "&type=album&limit=50" decodeListAlbum token
+                ]
+            )
 
         GoListen ->
             ( { model | drawer = { drawer | drawerType = Listen } }, Cmd.none )
