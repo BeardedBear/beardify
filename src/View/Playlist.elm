@@ -23,24 +23,39 @@ view player playlist =
                 |> List.map (\k -> k.track.uri)
 
         trackItem t =
+            let
+                icon =
+                    if t.track.uri == player.item.uri then
+                        div [] [ i [ class "icon-play" ] [] ]
+
+                    else
+                        div [] [ i [ class "icon-music" ] [] ]
+
+                releaseType r =
+                    case r of
+                        "album" ->
+                            i [ class "icon-discogs" ] []
+
+                        "single" ->
+                            i [ class "icon-pizza" ] []
+
+                        _ ->
+                            i [ class "icon-music" ] []
+            in
             div
                 [ classList
                     [ ( "track playlist-page", True )
                     , ( "active", t.track.uri == player.item.uri )
                     ]
                 ]
-                [ div [ class "playlist-track-left" ]
-                    [ if t.track.uri == player.item.uri then
-                        div [] [ i [ class "icon-play" ] [] ]
-
-                      else
-                        div [] [ i [ class "icon-music" ] [] ]
-                    , div [ onClick <| ChangePlayingTrack (listTracksUri t.track.uri) ] [ text t.track.name ]
-                    , div [] [ artistList t.track.artists ]
+                [ icon
+                , div [ onClick <| ChangePlayingTrack (listTracksUri t.track.uri) ] [ text t.track.name ]
+                , div [] [ artistList t.track.artists ]
+                , div [ title t.track.album.album_type ]
+                    [ releaseType t.track.album.album_type
+                    , a [ onClick (GetAlbum t.track.album.id) ] [ text t.track.album.name ]
                     ]
-                , div [ class "playlist-track-right" ]
-                    [ div [] [ text (Utils.durationFormat t.track.duration_ms) ]
-                    ]
+                , div [] [ text (Utils.durationFormat t.track.duration_ms) ]
                 ]
 
         trackSumDuration =

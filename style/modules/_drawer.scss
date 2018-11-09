@@ -130,6 +130,15 @@
             font-size: 1.1rem;
             margin-right: 10px;
             opacity: 0.2;
+
+            &.icon-discogs {
+                color: rgb(37, 114, 202);
+                opacity: 1;
+            }
+            &.icon-pizza {
+                color: rgb(97, 202, 37);
+                opacity: 1;
+            }
         }
         
         &.album-page {
@@ -141,20 +150,8 @@
 
         &.playlist-page {
             padding: 10px 15px;
-            grid-template-columns: auto auto;
+            grid-template-columns: auto 1fr 1fr 1fr auto;
             justify-content: space-between;
-            
-            .playlist-track-left {
-                display: grid;
-                grid-template-columns: auto auto auto;
-                grid-gap: 10px;
-            }
-
-            .playlist-track-right {
-                display: grid;
-                grid-template-columns: auto auto;
-                grid-gap: 10px;
-            }
         }
 
         &.active {

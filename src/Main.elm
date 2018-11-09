@@ -7,6 +7,7 @@ import Data.Drawer exposing (..)
 import Data.Modal as Modal exposing (..)
 import Data.Player as Player exposing (..)
 import Data.Playlist as Playlist exposing (..)
+import Data.Releases as Releases exposing (..)
 import Data.Search as Search exposing (..)
 import Data.Track exposing (..)
 import Html exposing (..)
@@ -26,6 +27,7 @@ import View.Home as Home exposing (..)
 import View.Modal as Modal exposing (..)
 import View.Player as Player exposing (..)
 import View.Playlist as Playlist exposing (..)
+import View.Releases as Releases
 import View.Search as Search exposing (..)
 import View.Sidebar as Sidebar exposing (..)
 
@@ -44,6 +46,7 @@ init flags url key =
       , searchModel = Search.init
       , player = Player.init
       , modal = Modal.init
+      , releases = Releases.init
       }
     , Cmd.batch
         [ Http.send SetPlaylists <| Request.get "me/playlists" "" "?limit=50" decodePlaylistslist flags.token ]
@@ -84,6 +87,9 @@ view model =
 
                         Home ->
                             Home.view model
+
+                        Releases ->
+                            Releases.view model.player model
 
                         _ ->
                             text ""
