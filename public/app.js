@@ -9722,25 +9722,6 @@ var author$project$Data$Album$decodeAlbum = A9(
 	A2(elm$json$Json$Decode$field, 'release_date', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'type', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'uri', elm$json$Json$Decode$string));
-var author$project$Data$Album$ListAlbum = function (items) {
-	return {items: items};
-};
-var author$project$Data$Album$decodeArtistAlbums = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Album$ListAlbum,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['items']),
-		elm$json$Json$Decode$list(author$project$Data$Album$decodeAlbum)));
-var author$project$Data$Album$decodeListAlbum = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Album$ListAlbum,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['albums', 'items']),
-		elm$json$Json$Decode$list(author$project$Data$Album$decodeAlbum)));
 var elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
 		A3(
@@ -10419,7 +10400,17 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$SetArtistAlbums,
-								A5(author$project$Request$get, 'artists/', id, '/albums?market=FR&album_type=album', author$project$Data$Album$decodeArtistAlbums, token)),
+								A5(
+									author$project$Request$get,
+									'artists/',
+									id,
+									'/albums?market=FR&album_type=album',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['items']),
+										elm$json$Json$Decode$list(author$project$Data$Album$decodeAlbum)),
+									token)),
 								A2(
 								elm$http$Http$send,
 								author$project$Root$SetArtistTopTracks,
@@ -10458,7 +10449,7 @@ var author$project$Root$update = F2(
 					var e = msg.a.a;
 					var albums = _Utils_update(
 						catchDrawerArtist,
-						{albums: e.items});
+						{albums: e});
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -10680,7 +10671,7 @@ var author$project$Root$update = F2(
 							{
 								searchModel: _Utils_update(
 									searchModel,
-									{findAlbum: album.items})
+									{findAlbum: album})
 							}),
 						elm$core$Platform$Cmd$none);
 				} else {
@@ -10721,7 +10712,17 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$FindAlbum,
-								A5(author$project$Request$get, 'search?q=', e + '*', '&type=album&limit=9', author$project$Data$Album$decodeListAlbum, token)),
+								A5(
+									author$project$Request$get,
+									'search?q=',
+									e + '*',
+									'&type=album&limit=9',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['albums', 'items']),
+										elm$json$Json$Decode$list(author$project$Data$Album$decodeAlbum)),
+									token)),
 								A2(
 								elm$http$Http$send,
 								author$project$Root$FindTrack,
@@ -10749,7 +10750,7 @@ var author$project$Root$update = F2(
 							{
 								releases: _Utils_update(
 									releases,
-									{releaseList: e.items})
+									{releaseList: e})
 							}),
 						elm$core$Platform$Cmd$none);
 				} else {
@@ -10773,7 +10774,17 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$SetReleases,
-								A5(author$project$Request$get, 'search?q=', 'year:2018', '&type=album&limit=50', author$project$Data$Album$decodeListAlbum, token)),
+								A5(
+									author$project$Request$get,
+									'search?q=',
+									'year:2018',
+									'&type=album&limit=50',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['albums', 'items']),
+										elm$json$Json$Decode$list(author$project$Data$Album$decodeAlbum)),
+									token)),
 								author$project$Ports$getReleasesThePRP(_Utils_Tuple0)
 							])));
 			case 'GoListen':
