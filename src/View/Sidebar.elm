@@ -9,7 +9,7 @@ import List.Extra as LE
 import Root exposing (..)
 
 
-viewCollections : Drawer.Model -> List Playlists -> Bool -> Html Msg
+viewCollections : Drawer.Model -> List PlaylistSimplified -> Bool -> Html Msg
 viewCollections drawer playlists isClickable =
     let
         collectionItem p =
@@ -39,7 +39,7 @@ viewCollections drawer playlists isClickable =
         text ""
 
 
-viewFolders : Drawer.Model -> List Playlists -> Bool -> Html Msg
+viewFolders : Drawer.Model -> List PlaylistSimplified -> Bool -> Html Msg
 viewFolders drawer playlists isClickable =
     let
         formatName n =
@@ -93,7 +93,7 @@ viewFolders drawer playlists isClickable =
         text ""
 
 
-viewPlaylists : Drawer.Model -> List Playlists -> Bool -> Html Msg
+viewPlaylists : Drawer.Model -> List PlaylistSimplified -> Bool -> Html Msg
 viewPlaylists drawer playlists isClickable =
     let
         formatName n =

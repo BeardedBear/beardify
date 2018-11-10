@@ -52,7 +52,9 @@ init flags url key =
       , releases = Releases.init
       }
     , Cmd.batch
-        [ Http.send SetPlaylists <| Request.get "me/playlists" "" "?limit=50" decodePlaylistslist flags.token ]
+        [ Http.send SetPlaylists <|
+            Request.get "me/playlists" "" "?limit=50" (Decode.at [ "items" ] (Decode.list decodePlaylistSimplified)) flags.token
+        ]
     )
 
 

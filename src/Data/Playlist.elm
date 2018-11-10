@@ -1,14 +1,12 @@
 module Data.Playlist exposing
     ( Playlist
     , PlaylistPaging
+    , PlaylistSimplified
     , PlaylistTrack
-    , Playlists
-    , Playlistslist
     , decodePlaylist
     , decodePlaylistPaging
+    , decodePlaylistSimplified
     , decodePlaylistTrack
-    , decodePlaylists
-    , decodePlaylistslist
     , init
     )
 
@@ -27,16 +25,6 @@ type alias Playlist =
     }
 
 
-decodePlaylist : Decode.Decoder Playlist
-decodePlaylist =
-    Decode.map5 Playlist
-        (Decode.field "id" Decode.string)
-        (Decode.at [ "images" ] (Decode.list decodeImage))
-        (Decode.field "name" Decode.string)
-        (Decode.field "tracks" decodePlaylistPaging)
-        (Decode.field "uri" Decode.string)
-
-
 init : Playlist
 init =
     { id = ""
@@ -47,18 +35,17 @@ init =
     }
 
 
-type alias Playlistslist =
-    { items : List Playlists
-    }
+decodePlaylist : Decode.Decoder Playlist
+decodePlaylist =
+    Decode.map5 Playlist
+        (Decode.field "id" Decode.string)
+        (Decode.at [ "images" ] (Decode.list decodeImage))
+        (Decode.field "name" Decode.string)
+        (Decode.field "tracks" decodePlaylistPaging)
+        (Decode.field "uri" Decode.string)
 
 
-decodePlaylistslist : Decode.Decoder Playlistslist
-decodePlaylistslist =
-    Decode.map Playlistslist
-        (Decode.at [ "items" ] (Decode.list decodePlaylists))
-
-
-type alias Playlists =
+type alias PlaylistSimplified =
     { id : String
     , images : List Image
     , name : String
@@ -66,9 +53,9 @@ type alias Playlists =
     }
 
 
-decodePlaylists : Decode.Decoder Playlists
-decodePlaylists =
-    Decode.map4 Playlists
+decodePlaylistSimplified : Decode.Decoder PlaylistSimplified
+decodePlaylistSimplified =
+    Decode.map4 PlaylistSimplified
         (Decode.field "id" Decode.string)
         (Decode.at [ "images" ] (Decode.list decodeImage))
         (Decode.field "name" Decode.string)

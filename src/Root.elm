@@ -25,7 +25,7 @@ type alias Model =
         { token : String
         , openedMenu : Bool
         }
-    , playlists : List Playlists
+    , playlists : List PlaylistSimplified
     , drawer : Drawer.Model
     , searchModel : Search.Model
     , player : Player.Model
@@ -38,7 +38,7 @@ type Msg
     = UrlChanged Url
     | UrlRequested Browser.UrlRequest
     | NoOp
-    | SetPlaylists (Result Http.Error Playlistslist)
+    | SetPlaylists (Result Http.Error (List PlaylistSimplified))
     | SetPlaylist (Result Http.Error Playlist)
     | SetCollection (Result Http.Error Playlist)
     | GetCollection String
@@ -117,7 +117,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
 
         --  PLAYLIST/COLLECTION
         SetPlaylists (Ok e) ->
-            ( { model | playlists = e.items }, Cmd.none )
+            ( { model | playlists = e }, Cmd.none )
 
         SetPlaylists (Err _) ->
             ( model, Cmd.none )

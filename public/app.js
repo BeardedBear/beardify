@@ -4625,9 +4625,6 @@ var author$project$Data$Modal$init = {inPocket: _List_Nil, isOpen: false};
 var author$project$Data$Device$init = {id: '', name: '', volume_percent: 0};
 var author$project$Data$Track$init = {album: author$project$Data$Album$init, artists: _List_Nil, duration_ms: 0, name: '', uri: ''};
 var author$project$Data$Player$init = {device: author$project$Data$Device$init, is_playing: false, item: author$project$Data$Track$init, progress_ms: 0, repeat_state: '', shuffle_state: false};
-var author$project$Data$Playlist$Playlistslist = function (items) {
-	return {items: items};
-};
 var author$project$Data$Image$Image = function (url) {
 	return {url: url};
 };
@@ -5032,7 +5029,7 @@ var author$project$Data$Image$decodeImage = A2(
 	elm$json$Json$Decode$map,
 	author$project$Data$Image$Image,
 	A2(elm$json$Json$Decode$field, 'url', elm$json$Json$Decode$string));
-var author$project$Data$Playlist$Playlists = F4(
+var author$project$Data$Playlist$PlaylistSimplified = F4(
 	function (id, images, name, uri) {
 		return {id: id, images: images, name: name, uri: uri};
 	});
@@ -5097,9 +5094,9 @@ var elm$json$Json$Decode$at = F2(
 	});
 var elm$json$Json$Decode$list = _Json_decodeList;
 var elm$json$Json$Decode$map4 = _Json_map4;
-var author$project$Data$Playlist$decodePlaylists = A5(
+var author$project$Data$Playlist$decodePlaylistSimplified = A5(
 	elm$json$Json$Decode$map4,
-	author$project$Data$Playlist$Playlists,
+	author$project$Data$Playlist$PlaylistSimplified,
 	A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$string),
 	A2(
 		elm$json$Json$Decode$at,
@@ -5108,14 +5105,6 @@ var author$project$Data$Playlist$decodePlaylists = A5(
 		elm$json$Json$Decode$list(author$project$Data$Image$decodeImage)),
 	A2(elm$json$Json$Decode$field, 'name', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'uri', elm$json$Json$Decode$string));
-var author$project$Data$Playlist$decodePlaylistslist = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Playlist$Playlistslist,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['items']),
-		elm$json$Json$Decode$list(author$project$Data$Playlist$decodePlaylists)));
 var author$project$Data$Releases$init = {releaseList: _List_Nil, thePrp: _List_Nil};
 var author$project$Data$Search$init = {findAlbum: _List_Nil, findArtist: _List_Nil, findTrack: _List_Nil, searchQuery: ''};
 var author$project$Request$apiUrl = 'https://api.spotify.com/v1/';
@@ -5868,7 +5857,17 @@ var author$project$Main$init = F3(
 						A2(
 						elm$http$Http$send,
 						author$project$Root$SetPlaylists,
-						A5(author$project$Request$get, 'me/playlists', '', '?limit=50', author$project$Data$Playlist$decodePlaylistslist, flags.token))
+						A5(
+							author$project$Request$get,
+							'me/playlists',
+							'',
+							'?limit=50',
+							A2(
+								elm$json$Json$Decode$at,
+								_List_fromArray(
+									['items']),
+								elm$json$Json$Decode$list(author$project$Data$Playlist$decodePlaylistSimplified)),
+							flags.token))
 					])));
 	});
 var Gizra$elm_keyboard_event$Keyboard$Event$KeyboardEvent = F7(
@@ -10184,7 +10183,7 @@ var author$project$Root$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{playlists: e.items}),
+							{playlists: e}),
 						elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
