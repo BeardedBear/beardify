@@ -1,12 +1,6 @@
 module Data.Track exposing
-    ( AlbumTracks
-    , ArtistTopTracks
-    , ListTrack
-    , Track
+    ( Track
     , TrackSimplified
-    , decodeAlbumTracks
-    , decodeArtistTopTracks
-    , decodeListTrack
     , decodeTrack
     , decodeTrackSimplified
     , encodeDelCollectionAlbum
@@ -22,15 +16,6 @@ import Json.Encode as Encode
 import Utils
 
 
-type alias Track =
-    { name : String
-    , duration_ms : Int
-    , artists : List ArtistSimplified
-    , album : Album
-    , uri : String
-    }
-
-
 init : Track
 init =
     { name = ""
@@ -38,39 +23,6 @@ init =
     , artists = []
     , album = Album.init
     , uri = ""
-    }
-
-
-type alias TrackSimplified =
-    { name : String
-    , duration_ms : Int
-    , artists : List ArtistSimplified
-    , track_number : Int
-    , uri : String
-    }
-
-
-type alias ListTrack =
-    { items : List Track
-    }
-
-
-type alias ArtistTopTracks =
-    { tracks : List Track
-    }
-
-
-type alias TracksForDel =
-    { uri : String
-    }
-
-
-type alias DelTracks =
-    { tracks : List TracksForDel }
-
-
-type alias AlbumTracks =
-    { items : List TrackSimplified
     }
 
 
@@ -95,6 +47,15 @@ encodeTrack uris =
         ]
 
 
+type alias Track =
+    { name : String
+    , duration_ms : Int
+    , artists : List ArtistSimplified
+    , album : Album
+    , uri : String
+    }
+
+
 decodeTrack : Decode.Decoder Track
 decodeTrack =
     Decode.map5 Track
@@ -105,6 +66,15 @@ decodeTrack =
         (Decode.field "uri" Decode.string)
 
 
+type alias TrackSimplified =
+    { name : String
+    , duration_ms : Int
+    , artists : List ArtistSimplified
+    , track_number : Int
+    , uri : String
+    }
+
+
 decodeTrackSimplified : Decode.Decoder TrackSimplified
 decodeTrackSimplified =
     Decode.map5 TrackSimplified
@@ -113,21 +83,3 @@ decodeTrackSimplified =
         (Decode.at [ "artists" ] (Decode.list decodeArtistSimplified))
         (Decode.field "track_number" Decode.int)
         (Decode.field "uri" Decode.string)
-
-
-decodeArtistTopTracks : Decode.Decoder ArtistTopTracks
-decodeArtistTopTracks =
-    Decode.map ArtistTopTracks
-        (Decode.at [ "tracks" ] (Decode.list decodeTrack))
-
-
-decodeAlbumTracks : Decode.Decoder AlbumTracks
-decodeAlbumTracks =
-    Decode.map AlbumTracks
-        (Decode.at [ "items" ] (Decode.list decodeTrackSimplified))
-
-
-decodeListTrack : Decode.Decoder ListTrack
-decodeListTrack =
-    Decode.map ListTrack
-        (Decode.at [ "tracks", "items" ] (Decode.list decodeTrack))

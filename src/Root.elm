@@ -45,12 +45,12 @@ type Msg
     | GetPlaylist String
     | GetAlbum String
     | SetAlbum (Result Http.Error Album)
-    | SetAlbumTracks (Result Http.Error AlbumTracks)
+    | SetAlbumTracks (Result Http.Error (List TrackSimplified))
     | SetPlaylistTracks (Result Http.Error PlaylistPaging)
     | GetArtist String
     | SetArtist (Result Http.Error Artist)
     | SetArtistAlbums (Result Http.Error (List Album))
-    | SetArtistTopTracks (Result Http.Error ArtistTopTracks)
+    | SetArtistTopTracks (Result Http.Error (List Track))
     | SetRelatedArtists (Result Http.Error (List Artist))
     | SetPlayer (Result Http.Error Player.Model)
     | SetYoutube (Result Http.Error Youtube)
@@ -66,7 +66,7 @@ type Msg
     | PlayerRepeatOn
     | FindArtist (Result Http.Error (List Artist))
     | FindAlbum (Result Http.Error (List Album))
-    | FindTrack (Result Http.Error ListTrack)
+    | FindTrack (Result Http.Error (List Track))
     | Play (Result Http.Error ())
     | Query String
     | ChangePlaying String
@@ -76,7 +76,7 @@ type Msg
     | SetReleases (Result Http.Error (List Album))
     | GoReleases
     | GoListen
-    | ModalOpen (Result Http.Error AlbumTracks)
+    | ModalOpen (Result Http.Error (List TrackSimplified))
     | ModalGetTrack String
     | ModalAddTrack String
     | SetModalTrack (Result Http.Error ())
@@ -181,7 +181,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
             ( { model | searchModel = { searchModel | searchQuery = "" } }
             , Cmd.batch
                 [ Http.send SetAlbum <| Request.get "albums/" e "" decodeAlbum token
-                , Http.send SetAlbumTracks <| Request.get "albums/" e "/tracks" decodeAlbumTracks token
+                , Http.send SetAlbumTracks <| Request.get "albums/" e "/tracks" (Decode.at [ "items" ] (Decode.list decodeTrackSimplified)) token
                 ]
             )
 
@@ -206,7 +206,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
         SetAlbumTracks (Ok e) ->
             let
                 tracks =
-                    { catchDrawerAlbum | tracks = e.items }
+                    { catchDrawerAlbum | tracks = e }
             in
             ( { model | drawer = { drawer | drawerAlbum = tracks } }
             , Cmd.none
@@ -236,7 +236,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
                 , Http.send SetArtistAlbums <|
                     Request.get "artists/" id "/albums?market=FR&album_type=album" (Decode.at [ "items" ] (Decode.list decodeAlbum)) token
                 , Http.send SetArtistTopTracks <|
-                    Request.get "artists/" id "/top-tracks?country=FR" Track.decodeArtistTopTracks token
+                    Request.get "artists/" id "/top-tracks?country=FR" (Decode.at [ "tracks" ] (Decode.list decodeTrack)) token
                 , Http.send SetRelatedArtists <|
                     Request.get "artists/" id "/related-artists" (Decode.at [ "artists" ] (Decode.list decodeArtist)) token
                 ]
@@ -279,7 +279,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
         SetArtistTopTracks (Ok e) ->
             let
                 topTracks =
-                    { catchDrawerArtist | topTracks = e.tracks }
+                    { catchDrawerArtist | topTracks = e }
             in
             ( { model | drawer = { drawer | drawerArtist = topTracks } }, Cmd.none )
 
@@ -380,7 +380,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
             ( model, Cmd.none )
 
         FindTrack (Ok track) ->
-            ( { model | searchModel = { searchModel | findTrack = track.items } }, Cmd.none )
+            ( { model | searchModel = { searchModel | findTrack = track } }, Cmd.none )
 
         FindTrack (Err _) ->
             ( model, Cmd.none )
@@ -393,7 +393,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
                 , Http.send FindAlbum <|
                     Request.get "search?q=" (e ++ "*") "&type=album&limit=9" (Decode.at [ "albums", "items" ] (Decode.list decodeAlbum)) token
                 , Http.send FindTrack <|
-                    Request.get "search?q=" (e ++ "*") "&type=track&limit=12" decodeListTrack token
+                    Request.get "search?q=" (e ++ "*") "&type=track&limit=12" (Decode.at [ "tracks", "items" ] (Decode.list decodeTrack)) token
                 ]
             )
 
@@ -435,7 +435,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
         ModalOpen (Ok e) ->
             let
                 firstTrack =
-                    e.items
+                    e
                         |> List.map (\f -> f.uri)
                         |> List.take 1
             in
@@ -455,7 +455,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
         ModalGetTrack e ->
             ( model
             , Cmd.batch
-                [ Http.send ModalOpen <| Request.get "albums/" e "/tracks" decodeAlbumTracks token
+                [ Http.send ModalOpen <| Request.get "albums/" e "/tracks" (Decode.at [ "items" ] (Decode.list decodeTrackSimplified)) token
                 ]
             )
 
