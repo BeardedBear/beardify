@@ -5878,7 +5878,7 @@ var author$project$Main$init = F3(
 	function (flags, url, key) {
 		return _Utils_Tuple2(
 			{
-				config: {token: flags.token},
+				config: {openedMenu: false, token: flags.token},
 				drawer: author$project$Data$Drawer$init,
 				modal: author$project$Data$Modal$init,
 				player: author$project$Data$Player$init,
@@ -6883,6 +6883,7 @@ var author$project$Main$subscriptions = function (model) {
 				author$project$Ports$thePrpReleases(author$project$Root$AddReleaseThePrp)
 			]));
 };
+var author$project$Root$ToggleMenu = {$: 'ToggleMenu'};
 var author$project$Data$Image$Large = {$: 'Large'};
 var elm$core$List$head = function (list) {
 	if (list.b) {
@@ -7857,8 +7858,7 @@ var author$project$View$Artist$view = F2(
 									A4(link, 'Wikipedia', 'https://fr.wikipedia.org/wiki/', '', 'wikipedia'),
 									A4(link, 'Sputnik', 'https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=', '&x=0&y=0', 'sputnik'),
 									A4(link, 'Discogs', 'https://www.discogs.com/fr/search/?q=', '&type=artist&strict=true', 'discogs'),
-									A4(link, 'LastFM', 'https://www.last.fm/fr/music/', '', 'lastfm'),
-									A4(link, 'Allmusic', 'https://www.allmusic.com/search/artists/', '', 'allmusic')
+									A4(link, 'LastFM', 'https://www.last.fm/fr/music/', '', 'lastfm')
 								])),
 							A2(
 							elm$html$Html$div,
@@ -9514,7 +9514,12 @@ var author$project$View$Sidebar$view = function (model) {
 		elm$html$Html$div,
 		_List_fromArray(
 			[
-				elm$html$Html$Attributes$class('sidebar')
+				elm$html$Html$Attributes$classList(
+				_List_fromArray(
+					[
+						_Utils_Tuple2('sidebar', true),
+						_Utils_Tuple2('opened', model.config.openedMenu)
+					]))
 			]),
 		_List_fromArray(
 			[
@@ -9629,6 +9634,17 @@ var author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
+										A2(
+										elm$html$Html$button,
+										_List_fromArray(
+											[
+												elm$html$Html$Events$onClick(author$project$Root$ToggleMenu),
+												elm$html$Html$Attributes$class('menu')
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('menu')
+											])),
 										author$project$View$Search$view(model.searchModel)
 									])),
 								A2(
@@ -10248,6 +10264,9 @@ var author$project$Root$update = F2(
 						_Utils_update(
 							model,
 							{
+								config: _Utils_update(
+									config,
+									{openedMenu: false}),
 								drawer: _Utils_update(
 									drawer,
 									{drawerPlaylist: playlist, drawerType: author$project$Data$Drawer$DrawPlaylist})
@@ -10266,6 +10285,9 @@ var author$project$Root$update = F2(
 						_Utils_update(
 							model,
 							{
+								config: _Utils_update(
+									config,
+									{openedMenu: false}),
 								drawer: _Utils_update(
 									drawer,
 									{drawerCollection: collection, drawerType: author$project$Data$Drawer$DrawCollection})
@@ -10710,6 +10732,9 @@ var author$project$Root$update = F2(
 					_Utils_update(
 						model,
 						{
+							config: _Utils_update(
+								config,
+								{openedMenu: false}),
 							drawer: _Utils_update(
 								drawer,
 								{drawerType: author$project$Data$Drawer$Home})
@@ -10735,6 +10760,9 @@ var author$project$Root$update = F2(
 					_Utils_update(
 						model,
 						{
+							config: _Utils_update(
+								config,
+								{openedMenu: false}),
 							drawer: _Utils_update(
 								drawer,
 								{drawerType: author$project$Data$Drawer$Releases})
@@ -10753,6 +10781,9 @@ var author$project$Root$update = F2(
 					_Utils_update(
 						model,
 						{
+							config: _Utils_update(
+								config,
+								{openedMenu: false}),
 							drawer: _Utils_update(
 								drawer,
 								{drawerType: author$project$Data$Drawer$Listen})
@@ -10871,7 +10902,7 @@ var author$project$Root$update = F2(
 				} else {
 					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 				}
-			default:
+			case 'AddReleaseThePrp':
 				var e = msg.a;
 				var releaseList = A2(
 					elm$json$Json$Decode$decodeString,
@@ -10886,6 +10917,16 @@ var author$project$Root$update = F2(
 								{
 									thePrp: A2(elm$core$Result$withDefault, _List_Nil, releaseList)
 								})
+						}),
+					elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							config: _Utils_update(
+								config,
+								{openedMenu: true})
 						}),
 					elm$core$Platform$Cmd$none);
 		}
