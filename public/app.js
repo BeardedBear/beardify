@@ -9761,17 +9761,6 @@ var author$project$Data$Artist$decodeArtist = A6(
 	A2(elm$json$Json$Decode$field, 'name', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'popularity', elm$json$Json$Decode$int),
 	A2(elm$json$Json$Decode$field, 'type', elm$json$Json$Decode$string));
-var author$project$Data$Artist$ListArtist = function (items) {
-	return {items: items};
-};
-var author$project$Data$Artist$decodeListArtist = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Artist$ListArtist,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['artists', 'items']),
-		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtist)));
 var author$project$Data$Drawer$DrawAlbum = {$: 'DrawAlbum'};
 var author$project$Data$Drawer$DrawArtist = {$: 'DrawArtist'};
 var author$project$Data$Device$Device = F3(
@@ -10655,7 +10644,7 @@ var author$project$Root$update = F2(
 							{
 								searchModel: _Utils_update(
 									searchModel,
-									{findArtist: artist.items})
+									{findArtist: artist})
 							}),
 						elm$core$Platform$Cmd$none);
 				} else {
@@ -10707,7 +10696,17 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$FindArtist,
-								A5(author$project$Request$get, 'search?q=', e + '*', '&type=artist&limit=10', author$project$Data$Artist$decodeListArtist, token)),
+								A5(
+									author$project$Request$get,
+									'search?q=',
+									e + '*',
+									'&type=artist&limit=10',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['artists', 'items']),
+										elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtist)),
+									token)),
 								A2(
 								elm$http$Http$send,
 								author$project$Root$FindAlbum,

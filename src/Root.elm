@@ -64,7 +64,7 @@ type Msg
     | PlayerShuffleOn
     | PlayerRepeatOff
     | PlayerRepeatOn
-    | FindArtist (Result Http.Error ListArtist)
+    | FindArtist (Result Http.Error (List Artist))
     | FindAlbum (Result Http.Error (List Album))
     | FindTrack (Result Http.Error ListTrack)
     | Play (Result Http.Error ())
@@ -368,7 +368,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
 
         -- SEARCH
         FindArtist (Ok artist) ->
-            ( { model | searchModel = { searchModel | findArtist = artist.items } }, Cmd.none )
+            ( { model | searchModel = { searchModel | findArtist = artist } }, Cmd.none )
 
         FindArtist (Err _) ->
             ( model, Cmd.none )
@@ -389,7 +389,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
             ( { model | searchModel = { searchModel | searchQuery = e } }
             , Cmd.batch
                 [ Http.send FindArtist <|
-                    Request.get "search?q=" (e ++ "*") "&type=artist&limit=10" decodeListArtist token
+                    Request.get "search?q=" (e ++ "*") "&type=artist&limit=10" (Decode.at [ "artists", "items" ] (Decode.list decodeArtist)) token
                 , Http.send FindAlbum <|
                     Request.get "search?q=" (e ++ "*") "&type=album&limit=9" (Decode.at [ "albums", "items" ] (Decode.list decodeAlbum)) token
                 , Http.send FindTrack <|

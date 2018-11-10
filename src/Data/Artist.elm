@@ -1,4 +1,4 @@
-module Data.Artist exposing (Artist, Artists, ListArtist, decodeArtist, decodeArtistTopTracks, decodeArtists, decodeListArtist)
+module Data.Artist exposing (Artist, Artists, decodeArtist, decodeArtists)
 
 import Data.Image exposing (..)
 import Json.Decode as Decode exposing (..)
@@ -20,10 +20,6 @@ type alias Artists =
     }
 
 
-type alias ListArtist =
-    { items : List Artist }
-
-
 decodeArtist : Decode.Decoder Artist
 decodeArtist =
     Decode.map5 Artist
@@ -39,15 +35,3 @@ decodeArtists =
     Decode.map2 Artists
         (Decode.field "id" Decode.string)
         (Decode.field "name" Decode.string)
-
-
-decodeListArtist : Decode.Decoder ListArtist
-decodeListArtist =
-    Decode.map ListArtist
-        (Decode.at [ "artists", "items" ] (Decode.list decodeArtist))
-
-
-decodeArtistTopTracks : Decode.Decoder ListArtist
-decodeArtistTopTracks =
-    Decode.map ListArtist
-        (Decode.at [ "artists", "items" ] (Decode.list decodeArtist))
