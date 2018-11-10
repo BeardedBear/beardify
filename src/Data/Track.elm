@@ -11,9 +11,10 @@ module Data.Track exposing
     , decodeTrackSimplified
     , encodeDelCollectionAlbum
     , encodeTrack
+    , init
     )
 
-import Data.Album exposing (..)
+import Data.Album as Album exposing (..)
 import Data.Artist exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
@@ -27,6 +28,16 @@ type alias Track =
     , artists : List ArtistSimplified
     , album : Album
     , uri : String
+    }
+
+
+init : Track
+init =
+    { name = ""
+    , duration_ms = 0
+    , artists = []
+    , album = Album.init
+    , uri = ""
     }
 
 

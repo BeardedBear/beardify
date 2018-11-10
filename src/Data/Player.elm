@@ -1,7 +1,7 @@
 module Data.Player exposing (Model, decodePlayer, init)
 
-import Data.Device exposing (..)
-import Data.Track exposing (..)
+import Data.Device as Device exposing (..)
+import Data.Track as Track exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 
@@ -18,29 +18,10 @@ type alias Model =
 
 init : Model
 init =
-    { device =
-        { id = ""
-        , name = ""
-        , volume_percent = 0
-        }
+    { device = Device.init
     , is_playing = False
     , progress_ms = 0
-    , item =
-        { name = ""
-        , duration_ms = 0
-        , artists = []
-        , album =
-            { album_type = ""
-            , artists = []
-            , id = " "
-            , images = []
-            , name = ""
-            , release_date = ""
-            , type_ = ""
-            , uri = ""
-            }
-        , uri = ""
-        }
+    , item = Track.init
     , repeat_state = ""
     , shuffle_state = False
     }

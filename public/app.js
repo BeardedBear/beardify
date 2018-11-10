@@ -4622,20 +4622,9 @@ var author$project$Data$Drawer$init = {
 };
 var elm$core$Basics$False = {$: 'False'};
 var author$project$Data$Modal$init = {inPocket: _List_Nil, isOpen: false};
-var author$project$Data$Player$init = {
-	device: {id: '', name: '', volume_percent: 0},
-	is_playing: false,
-	item: {
-		album: {album_type: '', artists: _List_Nil, id: ' ', images: _List_Nil, name: '', release_date: '', type_: '', uri: ''},
-		artists: _List_Nil,
-		duration_ms: 0,
-		name: '',
-		uri: ''
-	},
-	progress_ms: 0,
-	repeat_state: '',
-	shuffle_state: false
-};
+var author$project$Data$Device$init = {id: '', name: '', volume_percent: 0};
+var author$project$Data$Track$init = {album: author$project$Data$Album$init, artists: _List_Nil, duration_ms: 0, name: '', uri: ''};
+var author$project$Data$Player$init = {device: author$project$Data$Device$init, is_playing: false, item: author$project$Data$Track$init, progress_ms: 0, repeat_state: '', shuffle_state: false};
 var author$project$Data$Playlist$Playlistslist = function (items) {
 	return {items: items};
 };

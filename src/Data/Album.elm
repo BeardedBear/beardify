@@ -11,6 +11,18 @@ import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
 
 
+type alias Album =
+    { album_type : String
+    , artists : List ArtistSimplified
+    , id : String
+    , images : List Image
+    , name : String
+    , release_date : String
+    , type_ : String
+    , uri : String
+    }
+
+
 init : Album
 init =
     { album_type = ""
@@ -21,18 +33,6 @@ init =
     , release_date = ""
     , type_ = ""
     , uri = ""
-    }
-
-
-type alias Album =
-    { album_type : String
-    , artists : List ArtistSimplified
-    , id : String
-    , images : List Image
-    , name : String
-    , release_date : String
-    , type_ : String
-    , uri : String
     }
 
 

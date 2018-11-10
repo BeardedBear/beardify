@@ -10,6 +10,15 @@ import Data.Image exposing (..)
 import Json.Decode as Decode exposing (..)
 
 
+type alias Artist =
+    { id : String
+    , images : List Image
+    , name : String
+    , popularity : Int
+    , type_ : String
+    }
+
+
 init : Artist
 init =
     { id = ""
@@ -17,15 +26,6 @@ init =
     , name = ""
     , popularity = 0
     , type_ = ""
-    }
-
-
-type alias Artist =
-    { id : String
-    , images : List Image
-    , name : String
-    , popularity : Int
-    , type_ : String
     }
 
 

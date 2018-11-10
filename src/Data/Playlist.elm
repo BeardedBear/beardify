@@ -18,14 +18,31 @@ import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 
 
+type alias Playlist =
+    { id : String
+    , images : List Image
+    , name : String
+    , tracks : PlaylistPaging
+    , uri : String
+    }
+
+
+decodePlaylist : Decode.Decoder Playlist
+decodePlaylist =
+    Decode.map5 Playlist
+        (Decode.field "id" Decode.string)
+        (Decode.at [ "images" ] (Decode.list decodeImage))
+        (Decode.field "name" Decode.string)
+        (Decode.field "tracks" decodePlaylistPaging)
+        (Decode.field "uri" Decode.string)
+
+
 init : Playlist
 init =
     { id = ""
     , images = []
     , name = ""
-    , tracks =
-        { items = []
-        }
+    , tracks = { items = [] }
     , uri = ""
     }
 
@@ -78,22 +95,3 @@ decodePlaylistPaging : Decode.Decoder PlaylistPaging
 decodePlaylistPaging =
     Decode.map PlaylistPaging
         (Decode.at [ "items" ] (Decode.list decodePlaylistTrack))
-
-
-type alias Playlist =
-    { id : String
-    , images : List Image
-    , name : String
-    , tracks : PlaylistPaging
-    , uri : String
-    }
-
-
-decodePlaylist : Decode.Decoder Playlist
-decodePlaylist =
-    Decode.map5 Playlist
-        (Decode.field "id" Decode.string)
-        (Decode.at [ "images" ] (Decode.list decodeImage))
-        (Decode.field "name" Decode.string)
-        (Decode.field "tracks" decodePlaylistPaging)
-        (Decode.field "uri" Decode.string)
