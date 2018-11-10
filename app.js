@@ -4517,7 +4517,6 @@ function _Time_getZoneName()
 		callback(_Scheduler_succeed(name));
 	});
 }
-var author$project$Data$Drawer$Home = {$: 'Home'};
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$LT = {$: 'LT'};
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4598,36 +4597,25 @@ var elm$core$Set$toList = function (_n0) {
 	var dict = _n0.a;
 	return elm$core$Dict$keys(dict);
 };
+var author$project$Data$Album$init = {album_type: '', artists: _List_Nil, id: '', images: _List_Nil, name: '', release_date: '', type_: '', uri: ''};
+var author$project$Data$Artist$init = {id: '', images: _List_Nil, name: '', popularity: 0, type_: ''};
+var author$project$Data$Drawer$Home = {$: 'Home'};
+var author$project$Data$Playlist$init = {
+	id: '',
+	images: _List_Nil,
+	name: '',
+	tracks: {items: _List_Nil},
+	uri: ''
+};
 var author$project$Data$Drawer$init = {
-	drawerAlbum: {
-		album: {album_type: '', artists: _List_Nil, id: '', images: _List_Nil, name: '', release_date: '', type_: '', uri: ''},
-		tracks: _List_Nil
-	},
-	drawerArtist: {
-		albums: _List_Nil,
-		artist: {id: '', images: _List_Nil, name: '', popularity: 0, type_: ''},
-		relatedArtists: _List_Nil,
-		topTracks: _List_Nil,
-		videos: _List_Nil
-	},
+	drawerAlbum: {album: author$project$Data$Album$init, tracks: _List_Nil},
+	drawerArtist: {albums: _List_Nil, artist: author$project$Data$Artist$init, relatedArtists: _List_Nil, topTracks: _List_Nil, videos: _List_Nil},
 	drawerCollection: {
-		playlist: {
-			id: '',
-			images: _List_Nil,
-			name: '',
-			tracks: {items: _List_Nil},
-			uri: ''
-		},
+		playlist: author$project$Data$Playlist$init,
 		tracks: {items: _List_Nil}
 	},
 	drawerPlaylist: {
-		playlist: {
-			id: '',
-			images: _List_Nil,
-			name: '',
-			tracks: {items: _List_Nil},
-			uri: ''
-		},
+		playlist: author$project$Data$Playlist$init,
 		tracks: {items: _List_Nil}
 	},
 	drawerType: author$project$Data$Drawer$Home
@@ -5139,7 +5127,6 @@ var author$project$Data$Playlist$decodePlaylistslist = A2(
 		_List_fromArray(
 			['items']),
 		elm$json$Json$Decode$list(author$project$Data$Playlist$decodePlaylists)));
-var author$project$Data$Playlist$init = _List_Nil;
 var author$project$Data$Releases$init = {releaseList: _List_Nil, thePrp: _List_Nil};
 var author$project$Data$Search$init = {findAlbum: _List_Nil, findArtist: _List_Nil, findTrack: _List_Nil, searchQuery: ''};
 var author$project$Request$apiUrl = 'https://api.spotify.com/v1/';
@@ -5882,7 +5869,7 @@ var author$project$Main$init = F3(
 				drawer: author$project$Data$Drawer$init,
 				modal: author$project$Data$Modal$init,
 				player: author$project$Data$Player$init,
-				playlists: author$project$Data$Playlist$init,
+				playlists: _List_Nil,
 				releases: author$project$Data$Releases$init,
 				searchModel: author$project$Data$Search$init
 			},
@@ -9693,13 +9680,13 @@ var author$project$Data$Album$Album = F8(
 	function (album_type, artists, id, images, name, release_date, type_, uri) {
 		return {album_type: album_type, artists: artists, id: id, images: images, name: name, release_date: release_date, type_: type_, uri: uri};
 	});
-var author$project$Data$Artist$Artists = F2(
+var author$project$Data$Artist$ArtistSimplified = F2(
 	function (id, name) {
 		return {id: id, name: name};
 	});
-var author$project$Data$Artist$decodeArtists = A3(
+var author$project$Data$Artist$decodeArtistSimplified = A3(
 	elm$json$Json$Decode$map2,
-	author$project$Data$Artist$Artists,
+	author$project$Data$Artist$ArtistSimplified,
 	A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'name', elm$json$Json$Decode$string));
 var elm$json$Json$Decode$map8 = _Json_map8;
@@ -9711,7 +9698,7 @@ var author$project$Data$Album$decodeAlbum = A9(
 		elm$json$Json$Decode$at,
 		_List_fromArray(
 			['artists']),
-		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtists)),
+		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtistSimplified)),
 	A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$string),
 	A2(
 		elm$json$Json$Decode$at,
@@ -9791,7 +9778,7 @@ var author$project$Data$Track$decodeTrack = A6(
 		elm$json$Json$Decode$at,
 		_List_fromArray(
 			['artists']),
-		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtists)),
+		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtistSimplified)),
 	A2(
 		elm$json$Json$Decode$at,
 		_List_fromArray(
@@ -9876,7 +9863,7 @@ var author$project$Data$Track$decodeTrackSimplified = A6(
 		elm$json$Json$Decode$at,
 		_List_fromArray(
 			['artists']),
-		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtists)),
+		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtistSimplified)),
 	A2(elm$json$Json$Decode$field, 'track_number', elm$json$Json$Decode$int),
 	A2(elm$json$Json$Decode$field, 'uri', elm$json$Json$Decode$string));
 var author$project$Data$Track$decodeAlbumTracks = A2(
