@@ -5,6 +5,11 @@
     box-sizing: border-box;
 }
 
+body, html {
+    min-height: 100%;
+    overflow-x: hidden;
+}
+
 i {
     vertical-align: middle;
 }
@@ -30,7 +35,6 @@ body {
     font-family: "Roboto Condensed";
     background: #11151b;
     color: white;
-    min-height: 100vh;
 
     ::-webkit-scrollbar {
         width: 17px;

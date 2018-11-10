@@ -3,9 +3,13 @@
     grid-template-columns: auto 1fr auto;
     justify-content: space-between;
     justify-items: center;
-    padding: 0 10px;
+    padding: 10px;
     border-top: 1px solid #191f27;
     position: relative;
+
+    @media (max-width: 500px) {
+        display: block;
+    }
 
     > div {
         align-self: center;
@@ -40,7 +44,7 @@
 
     .current {
         display: grid;
-        grid-auto-flow: column;
+        grid-template-columns: auto 1fr;
         align-items: end;
 
         img {
@@ -136,6 +140,10 @@
         top: 4px;
         position: relative;
         padding-right: 10px;
+
+        @media (max-width: 500px) {
+            display: none;
+        }
         
         input[type=range] {
             width: 100px;

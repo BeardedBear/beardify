@@ -16,13 +16,32 @@
     display: grid;
     grid-template-columns: 300px 1fr;
     height: 100vh;
+    
+    @media (max-width: 500px) {
+        grid-template-columns: 0 1fr;
+        
+    }
 }
 
 
 .content {
     display: grid;
-    grid-template-rows: 0 1fr 80px;
+    grid-template-rows: 0 1fr auto;
+
+
+    @media (max-width: 500px) {
+        display: grid;
+        grid-template-rows: 0 1fr auto;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
 }
+
+
 
 
 .sub-title {

@@ -137,7 +137,7 @@ topMenuItem msg drawer page icon label =
 
 view : Root.Model -> Html Msg
 view model =
-    div [ class "sidebar" ]
+    div [ classList [ ( "sidebar", True ), ( "opened", model.config.openedMenu ) ] ]
         [ div [ class "logo" ]
             [ img [ src "./img/logo.png" ] []
             , text "Beardify"

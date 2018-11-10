@@ -66,7 +66,6 @@ view player data =
                 , link "Sputnik" "https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=" "&x=0&y=0" "sputnik"
                 , link "Discogs" "https://www.discogs.com/fr/search/?q=" "&type=artist&strict=true" "discogs"
                 , link "LastFM" "https://www.last.fm/fr/music/" "" "lastfm"
-                , link "Allmusic" "https://www.allmusic.com/search/artists/" "" "allmusic"
                 ]
             , div [ class "artist-head" ]
                 [ div [ class "top-tracks" ]

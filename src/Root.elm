@@ -21,7 +21,10 @@ import Url exposing (Url)
 
 
 type alias Model =
-    { config : { token : String }
+    { config :
+        { token : String
+        , openedMenu : Bool
+        }
     , playlists : List Playlists
     , drawer : Drawer.Model
     , searchModel : Search.Model
@@ -81,6 +84,7 @@ type Msg
     | DelCollectionAlbum String (List String)
     | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
     | AddReleaseThePrp String
+    | ToggleMenu
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -129,6 +133,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
                         | drawerType = DrawPlaylist
                         , drawerPlaylist = playlist
                     }
+                , config = { config | openedMenu = False }
               }
             , Cmd.none
             )
@@ -147,6 +152,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
                         | drawerType = DrawCollection
                         , drawerCollection = collection
                     }
+                , config = { config | openedMenu = False }
               }
             , Cmd.none
             )
@@ -386,7 +392,12 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
 
         -- DRAWER
         GoHome ->
-            ( { model | drawer = { drawer | drawerType = Home } }, Cmd.none )
+            ( { model
+                | drawer = { drawer | drawerType = Home }
+                , config = { config | openedMenu = False }
+              }
+            , Cmd.none
+            )
 
         SetReleases (Ok e) ->
             ( { model | releases = { releases | releaseList = e.items } }, Cmd.none )
@@ -395,7 +406,10 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
             ( model, Cmd.none )
 
         GoReleases ->
-            ( { model | drawer = { drawer | drawerType = Releases } }
+            ( { model
+                | drawer = { drawer | drawerType = Releases }
+                , config = { config | openedMenu = False }
+              }
             , Cmd.batch
                 [ Http.send SetReleases <| Request.get "search?q=" "year:2018" "&type=album&limit=50" decodeListAlbum token
                 , Ports.getReleasesThePRP ()
@@ -403,7 +417,12 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
             )
 
         GoListen ->
-            ( { model | drawer = { drawer | drawerType = Listen } }, Cmd.none )
+            ( { model
+                | drawer = { drawer | drawerType = Listen }
+                , config = { config | openedMenu = False }
+              }
+            , Cmd.none
+            )
 
         ModalOpen (Ok e) ->
             let
@@ -481,3 +500,6 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
                     Decode.decodeString (Decode.list Releases.decodeThePrpReleases) e
             in
             ( { model | releases = { releases | thePrp = Result.withDefault [] releaseList } }, Cmd.none )
+
+        ToggleMenu ->
+            ( { model | config = { config | openedMenu = True } }, Cmd.none )
