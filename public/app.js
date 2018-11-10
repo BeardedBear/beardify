@@ -4517,7 +4517,6 @@ function _Time_getZoneName()
 		callback(_Scheduler_succeed(name));
 	});
 }
-var author$project$Data$Drawer$Home = {$: 'Home'};
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$LT = {$: 'LT'};
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4598,59 +4597,34 @@ var elm$core$Set$toList = function (_n0) {
 	var dict = _n0.a;
 	return elm$core$Dict$keys(dict);
 };
+var author$project$Data$Album$init = {album_type: '', artists: _List_Nil, id: '', images: _List_Nil, name: '', release_date: '', type_: '', uri: ''};
+var author$project$Data$Artist$init = {id: '', images: _List_Nil, name: '', popularity: 0, type_: ''};
+var author$project$Data$Drawer$Home = {$: 'Home'};
+var author$project$Data$Playlist$init = {
+	id: '',
+	images: _List_Nil,
+	name: '',
+	tracks: {items: _List_Nil},
+	uri: ''
+};
 var author$project$Data$Drawer$init = {
-	drawerAlbum: {
-		album: {album_type: '', artists: _List_Nil, id: '', images: _List_Nil, name: '', release_date: '', type_: '', uri: ''},
-		tracks: _List_Nil
-	},
-	drawerArtist: {
-		albums: _List_Nil,
-		artist: {id: '', images: _List_Nil, name: '', popularity: 0, type_: ''},
-		relatedArtists: _List_Nil,
-		topTracks: _List_Nil,
-		videos: _List_Nil
-	},
+	drawerAlbum: {album: author$project$Data$Album$init, tracks: _List_Nil},
+	drawerArtist: {albums: _List_Nil, artist: author$project$Data$Artist$init, relatedArtists: _List_Nil, topTracks: _List_Nil, videos: _List_Nil},
 	drawerCollection: {
-		playlist: {
-			id: '',
-			images: _List_Nil,
-			name: '',
-			tracks: {items: _List_Nil},
-			uri: ''
-		},
+		playlist: author$project$Data$Playlist$init,
 		tracks: {items: _List_Nil}
 	},
 	drawerPlaylist: {
-		playlist: {
-			id: '',
-			images: _List_Nil,
-			name: '',
-			tracks: {items: _List_Nil},
-			uri: ''
-		},
+		playlist: author$project$Data$Playlist$init,
 		tracks: {items: _List_Nil}
 	},
 	drawerType: author$project$Data$Drawer$Home
 };
 var elm$core$Basics$False = {$: 'False'};
 var author$project$Data$Modal$init = {inPocket: _List_Nil, isOpen: false};
-var author$project$Data$Player$init = {
-	device: {id: '', name: '', volume_percent: 0},
-	is_playing: false,
-	item: {
-		album: {album_type: '', artists: _List_Nil, id: ' ', images: _List_Nil, name: '', release_date: '', type_: '', uri: ''},
-		artists: _List_Nil,
-		duration_ms: 0,
-		name: '',
-		uri: ''
-	},
-	progress_ms: 0,
-	repeat_state: '',
-	shuffle_state: false
-};
-var author$project$Data$Playlist$Playlistslist = function (items) {
-	return {items: items};
-};
+var author$project$Data$Device$init = {id: '', name: '', volume_percent: 0};
+var author$project$Data$Track$init = {album: author$project$Data$Album$init, artists: _List_Nil, duration_ms: 0, name: '', uri: ''};
+var author$project$Data$Player$init = {device: author$project$Data$Device$init, is_playing: false, item: author$project$Data$Track$init, progress_ms: 0, repeat_state: '', shuffle_state: false};
 var author$project$Data$Image$Image = function (url) {
 	return {url: url};
 };
@@ -5055,7 +5029,7 @@ var author$project$Data$Image$decodeImage = A2(
 	elm$json$Json$Decode$map,
 	author$project$Data$Image$Image,
 	A2(elm$json$Json$Decode$field, 'url', elm$json$Json$Decode$string));
-var author$project$Data$Playlist$Playlists = F4(
+var author$project$Data$Playlist$PlaylistSimplified = F4(
 	function (id, images, name, uri) {
 		return {id: id, images: images, name: name, uri: uri};
 	});
@@ -5120,9 +5094,9 @@ var elm$json$Json$Decode$at = F2(
 	});
 var elm$json$Json$Decode$list = _Json_decodeList;
 var elm$json$Json$Decode$map4 = _Json_map4;
-var author$project$Data$Playlist$decodePlaylists = A5(
+var author$project$Data$Playlist$decodePlaylistSimplified = A5(
 	elm$json$Json$Decode$map4,
-	author$project$Data$Playlist$Playlists,
+	author$project$Data$Playlist$PlaylistSimplified,
 	A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$string),
 	A2(
 		elm$json$Json$Decode$at,
@@ -5131,15 +5105,6 @@ var author$project$Data$Playlist$decodePlaylists = A5(
 		elm$json$Json$Decode$list(author$project$Data$Image$decodeImage)),
 	A2(elm$json$Json$Decode$field, 'name', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'uri', elm$json$Json$Decode$string));
-var author$project$Data$Playlist$decodePlaylistslist = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Playlist$Playlistslist,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['items']),
-		elm$json$Json$Decode$list(author$project$Data$Playlist$decodePlaylists)));
-var author$project$Data$Playlist$init = _List_Nil;
 var author$project$Data$Releases$init = {releaseList: _List_Nil, thePrp: _List_Nil};
 var author$project$Data$Search$init = {findAlbum: _List_Nil, findArtist: _List_Nil, findTrack: _List_Nil, searchQuery: ''};
 var author$project$Request$apiUrl = 'https://api.spotify.com/v1/';
@@ -5882,7 +5847,7 @@ var author$project$Main$init = F3(
 				drawer: author$project$Data$Drawer$init,
 				modal: author$project$Data$Modal$init,
 				player: author$project$Data$Player$init,
-				playlists: author$project$Data$Playlist$init,
+				playlists: _List_Nil,
 				releases: author$project$Data$Releases$init,
 				searchModel: author$project$Data$Search$init
 			},
@@ -5892,7 +5857,17 @@ var author$project$Main$init = F3(
 						A2(
 						elm$http$Http$send,
 						author$project$Root$SetPlaylists,
-						A5(author$project$Request$get, 'me/playlists', '', '?limit=50', author$project$Data$Playlist$decodePlaylistslist, flags.token))
+						A5(
+							author$project$Request$get,
+							'me/playlists',
+							'',
+							'?limit=50',
+							A2(
+								elm$json$Json$Decode$at,
+								_List_fromArray(
+									['items']),
+								elm$json$Json$Decode$list(author$project$Data$Playlist$decodePlaylistSimplified)),
+							flags.token))
 					])));
 	});
 var Gizra$elm_keyboard_event$Keyboard$Event$KeyboardEvent = F7(
@@ -9693,13 +9668,13 @@ var author$project$Data$Album$Album = F8(
 	function (album_type, artists, id, images, name, release_date, type_, uri) {
 		return {album_type: album_type, artists: artists, id: id, images: images, name: name, release_date: release_date, type_: type_, uri: uri};
 	});
-var author$project$Data$Artist$Artists = F2(
+var author$project$Data$Artist$ArtistSimplified = F2(
 	function (id, name) {
 		return {id: id, name: name};
 	});
-var author$project$Data$Artist$decodeArtists = A3(
+var author$project$Data$Artist$decodeArtistSimplified = A3(
 	elm$json$Json$Decode$map2,
-	author$project$Data$Artist$Artists,
+	author$project$Data$Artist$ArtistSimplified,
 	A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'name', elm$json$Json$Decode$string));
 var elm$json$Json$Decode$map8 = _Json_map8;
@@ -9711,7 +9686,7 @@ var author$project$Data$Album$decodeAlbum = A9(
 		elm$json$Json$Decode$at,
 		_List_fromArray(
 			['artists']),
-		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtists)),
+		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtistSimplified)),
 	A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$string),
 	A2(
 		elm$json$Json$Decode$at,
@@ -9722,25 +9697,6 @@ var author$project$Data$Album$decodeAlbum = A9(
 	A2(elm$json$Json$Decode$field, 'release_date', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'type', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'uri', elm$json$Json$Decode$string));
-var author$project$Data$Album$ListAlbum = function (items) {
-	return {items: items};
-};
-var author$project$Data$Album$decodeArtistAlbums = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Album$ListAlbum,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['items']),
-		elm$json$Json$Decode$list(author$project$Data$Album$decodeAlbum)));
-var author$project$Data$Album$decodeListAlbum = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Album$ListAlbum,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['albums', 'items']),
-		elm$json$Json$Decode$list(author$project$Data$Album$decodeAlbum)));
 var elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
 		A3(
@@ -9780,28 +9736,6 @@ var author$project$Data$Artist$decodeArtist = A6(
 	A2(elm$json$Json$Decode$field, 'name', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'popularity', elm$json$Json$Decode$int),
 	A2(elm$json$Json$Decode$field, 'type', elm$json$Json$Decode$string));
-var author$project$Data$Artist$ListArtist = function (items) {
-	return {items: items};
-};
-var author$project$Data$Artist$decodeListArtist = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Artist$ListArtist,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['artists', 'items']),
-		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtist)));
-var author$project$Data$Artist$RelatedArtists = function (artists) {
-	return {artists: artists};
-};
-var author$project$Data$Artist$decodeRelatedArtists = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Artist$RelatedArtists,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['artists']),
-		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtist)));
 var author$project$Data$Drawer$DrawAlbum = {$: 'DrawAlbum'};
 var author$project$Data$Drawer$DrawArtist = {$: 'DrawArtist'};
 var author$project$Data$Device$Device = F3(
@@ -9832,7 +9766,7 @@ var author$project$Data$Track$decodeTrack = A6(
 		elm$json$Json$Decode$at,
 		_List_fromArray(
 			['artists']),
-		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtists)),
+		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtistSimplified)),
 	A2(
 		elm$json$Json$Decode$at,
 		_List_fromArray(
@@ -9901,9 +9835,6 @@ var author$project$Data$Releases$decodeThePrpReleases = A4(
 	A2(elm$json$Json$Decode$field, 'artist', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'album', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'date', elm$json$Json$Decode$string));
-var author$project$Data$Track$AlbumTracks = function (items) {
-	return {items: items};
-};
 var author$project$Data$Track$TrackSimplified = F5(
 	function (name, duration_ms, artists, track_number, uri) {
 		return {artists: artists, duration_ms: duration_ms, name: name, track_number: track_number, uri: uri};
@@ -9917,39 +9848,9 @@ var author$project$Data$Track$decodeTrackSimplified = A6(
 		elm$json$Json$Decode$at,
 		_List_fromArray(
 			['artists']),
-		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtists)),
+		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtistSimplified)),
 	A2(elm$json$Json$Decode$field, 'track_number', elm$json$Json$Decode$int),
 	A2(elm$json$Json$Decode$field, 'uri', elm$json$Json$Decode$string));
-var author$project$Data$Track$decodeAlbumTracks = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Track$AlbumTracks,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['items']),
-		elm$json$Json$Decode$list(author$project$Data$Track$decodeTrackSimplified)));
-var author$project$Data$Track$ArtistTopTracks = function (tracks) {
-	return {tracks: tracks};
-};
-var author$project$Data$Track$decodeArtistTopTracks = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Track$ArtistTopTracks,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['tracks']),
-		elm$json$Json$Decode$list(author$project$Data$Track$decodeTrack)));
-var author$project$Data$Track$ListTrack = function (items) {
-	return {items: items};
-};
-var author$project$Data$Track$decodeListTrack = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Track$ListTrack,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['tracks', 'items']),
-		elm$json$Json$Decode$list(author$project$Data$Track$decodeTrack)));
 var author$project$Data$Track$encodeDelCollectionAlbumInner = function (uri) {
 	return elm$json$Json$Encode$object(
 		_List_fromArray(
@@ -10249,7 +10150,7 @@ var author$project$Root$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{playlists: e.items}),
+							{playlists: e}),
 						elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
@@ -10348,7 +10249,17 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$SetAlbumTracks,
-								A5(author$project$Request$get, 'albums/', e, '/tracks', author$project$Data$Track$decodeAlbumTracks, token))
+								A5(
+									author$project$Request$get,
+									'albums/',
+									e,
+									'/tracks',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['items']),
+										elm$json$Json$Decode$list(author$project$Data$Track$decodeTrackSimplified)),
+									token))
 							])));
 			case 'SetAlbum':
 				if (msg.a.$ === 'Ok') {
@@ -10373,7 +10284,7 @@ var author$project$Root$update = F2(
 					var e = msg.a.a;
 					var tracks = _Utils_update(
 						catchDrawerAlbum,
-						{tracks: e.items});
+						{tracks: e});
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -10419,15 +10330,45 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$SetArtistAlbums,
-								A5(author$project$Request$get, 'artists/', id, '/albums?market=FR&album_type=album', author$project$Data$Album$decodeArtistAlbums, token)),
+								A5(
+									author$project$Request$get,
+									'artists/',
+									id,
+									'/albums?market=FR&album_type=album',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['items']),
+										elm$json$Json$Decode$list(author$project$Data$Album$decodeAlbum)),
+									token)),
 								A2(
 								elm$http$Http$send,
 								author$project$Root$SetArtistTopTracks,
-								A5(author$project$Request$get, 'artists/', id, '/top-tracks?country=FR', author$project$Data$Track$decodeArtistTopTracks, token)),
+								A5(
+									author$project$Request$get,
+									'artists/',
+									id,
+									'/top-tracks?country=FR',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['tracks']),
+										elm$json$Json$Decode$list(author$project$Data$Track$decodeTrack)),
+									token)),
 								A2(
 								elm$http$Http$send,
 								author$project$Root$SetRelatedArtists,
-								A5(author$project$Request$get, 'artists/', id, '/related-artists', author$project$Data$Artist$decodeRelatedArtists, token))
+								A5(
+									author$project$Request$get,
+									'artists/',
+									id,
+									'/related-artists',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['artists']),
+										elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtist)),
+									token))
 							])));
 			case 'SetArtist':
 				if (msg.a.$ === 'Ok') {
@@ -10458,7 +10399,7 @@ var author$project$Root$update = F2(
 					var e = msg.a.a;
 					var albums = _Utils_update(
 						catchDrawerArtist,
-						{albums: e.items});
+						{albums: e});
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -10479,7 +10420,7 @@ var author$project$Root$update = F2(
 					var e = msg.a.a;
 					var topTracks = _Utils_update(
 						catchDrawerArtist,
-						{topTracks: e.tracks});
+						{topTracks: e});
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -10497,7 +10438,7 @@ var author$project$Root$update = F2(
 					var e = msg.a.a;
 					var artists = _Utils_update(
 						catchDrawerArtist,
-						{relatedArtists: e.artists});
+						{relatedArtists: e});
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -10665,7 +10606,7 @@ var author$project$Root$update = F2(
 							{
 								searchModel: _Utils_update(
 									searchModel,
-									{findArtist: artist.items})
+									{findArtist: artist})
 							}),
 						elm$core$Platform$Cmd$none);
 				} else {
@@ -10680,7 +10621,7 @@ var author$project$Root$update = F2(
 							{
 								searchModel: _Utils_update(
 									searchModel,
-									{findAlbum: album.items})
+									{findAlbum: album})
 							}),
 						elm$core$Platform$Cmd$none);
 				} else {
@@ -10695,7 +10636,7 @@ var author$project$Root$update = F2(
 							{
 								searchModel: _Utils_update(
 									searchModel,
-									{findTrack: track.items})
+									{findTrack: track})
 							}),
 						elm$core$Platform$Cmd$none);
 				} else {
@@ -10717,15 +10658,45 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$FindArtist,
-								A5(author$project$Request$get, 'search?q=', e + '*', '&type=artist&limit=10', author$project$Data$Artist$decodeListArtist, token)),
+								A5(
+									author$project$Request$get,
+									'search?q=',
+									e + '*',
+									'&type=artist&limit=10',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['artists', 'items']),
+										elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtist)),
+									token)),
 								A2(
 								elm$http$Http$send,
 								author$project$Root$FindAlbum,
-								A5(author$project$Request$get, 'search?q=', e + '*', '&type=album&limit=9', author$project$Data$Album$decodeListAlbum, token)),
+								A5(
+									author$project$Request$get,
+									'search?q=',
+									e + '*',
+									'&type=album&limit=9',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['albums', 'items']),
+										elm$json$Json$Decode$list(author$project$Data$Album$decodeAlbum)),
+									token)),
 								A2(
 								elm$http$Http$send,
 								author$project$Root$FindTrack,
-								A5(author$project$Request$get, 'search?q=', e + '*', '&type=track&limit=12', author$project$Data$Track$decodeListTrack, token))
+								A5(
+									author$project$Request$get,
+									'search?q=',
+									e + '*',
+									'&type=track&limit=12',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['tracks', 'items']),
+										elm$json$Json$Decode$list(author$project$Data$Track$decodeTrack)),
+									token))
 							])));
 			case 'GoHome':
 				return _Utils_Tuple2(
@@ -10749,7 +10720,7 @@ var author$project$Root$update = F2(
 							{
 								releases: _Utils_update(
 									releases,
-									{releaseList: e.items})
+									{releaseList: e})
 							}),
 						elm$core$Platform$Cmd$none);
 				} else {
@@ -10773,7 +10744,17 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$SetReleases,
-								A5(author$project$Request$get, 'search?q=', 'year:2018', '&type=album&limit=50', author$project$Data$Album$decodeListAlbum, token)),
+								A5(
+									author$project$Request$get,
+									'search?q=',
+									'year:2018',
+									'&type=album&limit=50',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['albums', 'items']),
+										elm$json$Json$Decode$list(author$project$Data$Album$decodeAlbum)),
+									token)),
 								author$project$Ports$getReleasesThePRP(_Utils_Tuple0)
 							])));
 			case 'GoListen':
@@ -10800,7 +10781,7 @@ var author$project$Root$update = F2(
 							function (f) {
 								return f.uri;
 							},
-							e.items));
+							e));
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -10823,7 +10804,17 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$ModalOpen,
-								A5(author$project$Request$get, 'albums/', e, '/tracks', author$project$Data$Track$decodeAlbumTracks, token))
+								A5(
+									author$project$Request$get,
+									'albums/',
+									e,
+									'/tracks',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['items']),
+										elm$json$Json$Decode$list(author$project$Data$Track$decodeTrackSimplified)),
+									token))
 							])));
 			case 'ModalAddTrack':
 				var e = msg.a;

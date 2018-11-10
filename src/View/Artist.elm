@@ -13,7 +13,7 @@ import Utils
 import View.AlbumGallery as AlbumGallery exposing (..)
 
 
-artistList : List Artists -> Html Msg
+artistList : List ArtistSimplified -> Html Msg
 artistList artists =
     artists
         |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text ar.name ])

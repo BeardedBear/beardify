@@ -1,4 +1,8 @@
-module Data.Device exposing (Device, decodeDevice)
+module Data.Device exposing
+    ( Device
+    , decodeDevice
+    , init
+    )
 
 import Json.Decode as Decode exposing (..)
 
@@ -7,6 +11,14 @@ type alias Device =
     { id : String
     , name : String
     , volume_percent : Int
+    }
+
+
+init : Device
+init =
+    { id = ""
+    , name = ""
+    , volume_percent = 0
     }
 
 

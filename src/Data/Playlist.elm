@@ -1,4 +1,14 @@
-module Data.Playlist exposing (Playlist, PlaylistPaging, PlaylistTrack, Playlists, Playlistslist, decodePlaylist, decodePlaylistPaging, decodePlaylistTrack, decodePlaylists, decodePlaylistslist, init)
+module Data.Playlist exposing
+    ( Playlist
+    , PlaylistPaging
+    , PlaylistSimplified
+    , PlaylistTrack
+    , decodePlaylist
+    , decodePlaylistPaging
+    , decodePlaylistSimplified
+    , decodePlaylistTrack
+    , init
+    )
 
 import Data.Image exposing (..)
 import Data.Track exposing (..)
@@ -6,22 +16,36 @@ import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 
 
+init : Playlist
 init =
-    []
-
-
-type alias Playlistslist =
-    { items : List Playlists
+    { id = ""
+    , images = []
+    , name = ""
+    , tracks = { items = [] }
+    , uri = ""
     }
 
 
-decodePlaylistslist : Decode.Decoder Playlistslist
-decodePlaylistslist =
-    Decode.map Playlistslist
-        (Decode.at [ "items" ] (Decode.list decodePlaylists))
+type alias Playlist =
+    { id : String
+    , images : List Image
+    , name : String
+    , tracks : PlaylistPaging
+    , uri : String
+    }
 
 
-type alias Playlists =
+decodePlaylist : Decode.Decoder Playlist
+decodePlaylist =
+    Decode.map5 Playlist
+        (Decode.field "id" Decode.string)
+        (Decode.at [ "images" ] (Decode.list decodeImage))
+        (Decode.field "name" Decode.string)
+        (Decode.field "tracks" decodePlaylistPaging)
+        (Decode.field "uri" Decode.string)
+
+
+type alias PlaylistSimplified =
     { id : String
     , images : List Image
     , name : String
@@ -29,9 +53,9 @@ type alias Playlists =
     }
 
 
-decodePlaylists : Decode.Decoder Playlists
-decodePlaylists =
-    Decode.map4 Playlists
+decodePlaylistSimplified : Decode.Decoder PlaylistSimplified
+decodePlaylistSimplified =
+    Decode.map4 PlaylistSimplified
         (Decode.field "id" Decode.string)
         (Decode.at [ "images" ] (Decode.list decodeImage))
         (Decode.field "name" Decode.string)
@@ -58,22 +82,3 @@ decodePlaylistPaging : Decode.Decoder PlaylistPaging
 decodePlaylistPaging =
     Decode.map PlaylistPaging
         (Decode.at [ "items" ] (Decode.list decodePlaylistTrack))
-
-
-type alias Playlist =
-    { id : String
-    , images : List Image
-    , name : String
-    , tracks : PlaylistPaging
-    , uri : String
-    }
-
-
-decodePlaylist : Decode.Decoder Playlist
-decodePlaylist =
-    Decode.map5 Playlist
-        (Decode.field "id" Decode.string)
-        (Decode.at [ "images" ] (Decode.list decodeImage))
-        (Decode.field "name" Decode.string)
-        (Decode.field "tracks" decodePlaylistPaging)
-        (Decode.field "uri" Decode.string)

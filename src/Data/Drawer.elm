@@ -1,10 +1,35 @@
 module Data.Drawer exposing (AlbumModel, ArtistModel, DrawerType(..), Model, PlaylistModel, init)
 
-import Data.Album exposing (..)
-import Data.Artist exposing (..)
-import Data.Playlist exposing (..)
-import Data.Track exposing (..)
+import Data.Album as Album exposing (..)
+import Data.Artist as Artist exposing (..)
+import Data.Playlist as Playlist exposing (..)
+import Data.Track as Track exposing (..)
 import Data.Youtube exposing (..)
+
+
+init : Model
+init =
+    { drawerType = Home
+    , drawerArtist =
+        { artist = Artist.init
+        , albums = []
+        , videos = []
+        , topTracks = []
+        , relatedArtists = []
+        }
+    , drawerAlbum =
+        { album = Album.init
+        , tracks = []
+        }
+    , drawerPlaylist =
+        { playlist = Playlist.init
+        , tracks = { items = [] }
+        }
+    , drawerCollection =
+        { playlist = Playlist.init
+        , tracks = { items = [] }
+        }
+    }
 
 
 type alias ArtistModel =
@@ -44,64 +69,4 @@ type alias Model =
     , drawerAlbum : AlbumModel
     , drawerPlaylist : PlaylistModel
     , drawerCollection : PlaylistModel
-    }
-
-
-init : Model
-init =
-    { drawerType = Home
-    , drawerArtist =
-        { artist =
-            { id = ""
-            , images = []
-            , name = ""
-            , popularity = 0
-            , type_ = ""
-            }
-        , albums = []
-        , videos = []
-        , topTracks = []
-        , relatedArtists = []
-        }
-    , drawerAlbum =
-        { album =
-            { album_type = ""
-            , artists = []
-            , id = ""
-            , images = []
-            , name = ""
-            , release_date = ""
-            , type_ = ""
-            , uri = ""
-            }
-        , tracks = []
-        }
-    , drawerPlaylist =
-        { playlist =
-            { id = ""
-            , images = []
-            , name = ""
-            , tracks =
-                { items = []
-                }
-            , uri = ""
-            }
-        , tracks =
-            { items = []
-            }
-        }
-    , drawerCollection =
-        { playlist =
-            { id = ""
-            , images = []
-            , name = ""
-            , tracks =
-                { items = []
-                }
-            , uri = ""
-            }
-        , tracks =
-            { items = []
-            }
-        }
     }
