@@ -2,6 +2,18 @@
 
 .topbar {
     padding: 20px 30px 20px 20px;
+    display: grid;
+    grid-auto-flow: column;
+
+    .menu {
+        display: none;
+        position: relative;
+        z-index: 1;
+
+        @media (max-width: 500px) {
+            display: block;
+        }
+    }
 }
 
 .search {
@@ -40,6 +52,14 @@
         padding: 20px;
         border-top: 1px solid #222933;
         border-radius: 0 0 5px 5px;
+
+        @media (max-width: 500px) {
+            display: block;
+            position: fixed;
+            left: 20px;
+            right: 20px;
+            overflow: auto;
+        }
 
         .title {
             font-size: 1.2rem;

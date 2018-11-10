@@ -12,6 +12,7 @@ import Data.Search as Search exposing (..)
 import Data.Track exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 import Keyboard.Event
@@ -41,6 +42,7 @@ init : Flags -> Url -> Nav.Key -> ( Root.Model, Cmd Msg )
 init flags url key =
     ( { config =
             { token = flags.token
+            , openedMenu = False
             }
       , playlists = Playlist.init
       , drawer = Data.Drawer.init
@@ -71,7 +73,8 @@ view model =
             [ Sidebar.view model
             , div [ class "content" ]
                 [ div [ class "topbar" ]
-                    [ Search.view model.searchModel
+                    [ button [ onClick ToggleMenu, class "menu" ] [ text "menu" ]
+                    , Search.view model.searchModel
                     ]
                 , div [ class "drawer" ]
                     [ case model.drawer.drawerType of

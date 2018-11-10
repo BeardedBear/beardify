@@ -13,6 +13,10 @@
         display: grid;
         align-content: flex-start;
         padding-top: 100px;
+
+        @media (max-width: 500px) {
+            padding: 10px;
+        }
     }
 
     .heading-page {
@@ -20,11 +24,19 @@
         font-weight: bold;
         margin-bottom: 10px;
         font-family: 'Exo 2';
+        
+        @media (max-width: 500px) {
+            margin-top: 70px;
+        }
     }
 
     .artist-wrapper {
         grid-template-columns: 1fr 300px;
         grid-gap: 30px;
+        
+        @media (max-width: 500px) {
+            grid-template-columns: 1fr ;
+        }
 
         .links {
             a {
@@ -86,11 +98,19 @@
             grid-template-columns: 1fr 1fr;
             grid-gap: 30px;
             margin: 50px 0;
+
+            @media (max-width: 500px) {
+                display: block;
+            }
         }
     
         .video-wrapper {
             padding: 0 30px;
             border-left: 1px solid rgba(white, 0.05);
+
+            @media (max-width: 500px) {
+                display: none;
+            }
     
             .video-frame {
                 margin-bottom: 30px;

@@ -4,6 +4,21 @@
     background: darken(#232B37, 5);
     display: grid;
     grid-template-rows: auto auto 1fr;
+    transition: all ease 0.15s;
+
+    @media (max-width: 500px) {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 9;
+        left: 0;
+        transform: translateX(-100%);
+
+        &.opened {
+            transform: translateX(0);
+        }
+    }
 
     ::-webkit-scrollbar-thumb {
         background-color: rgba(white, 0.1);

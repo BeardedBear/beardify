@@ -3,6 +3,11 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     grid-gap: 30px;
+
+    @media (max-width: 500px) {
+        grid-gap: 15px;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
 }
 
 .album-wrapper {
@@ -35,12 +40,19 @@
         display: grid;
         grid-template-columns: 300px 1fr;
         grid-gap: 30px;
+
+        @media (max-width: 500px) {
+            display: block;
+        }
         
         img {
             width: 100%;
             display: block;
             border-radius: 5px;
             margin-bottom: 10px;
+            @media (max-width: 500px) {
+                    display: none;
+            }
         }
     }
 }
@@ -58,6 +70,12 @@
         .add-btn,
         .del-btn {
             visibility: visible;
+        }
+
+        @media (max-width: 500px) {
+            .playing-btn {
+                display: none;
+            }
         }
     }
 
