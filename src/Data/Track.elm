@@ -24,7 +24,7 @@ import Utils
 type alias Track =
     { name : String
     , duration_ms : Int
-    , artists : List Artists
+    , artists : List ArtistSimplified
     , album : Album
     , uri : String
     }
@@ -33,7 +33,7 @@ type alias Track =
 type alias TrackSimplified =
     { name : String
     , duration_ms : Int
-    , artists : List Artists
+    , artists : List ArtistSimplified
     , track_number : Int
     , uri : String
     }
@@ -89,7 +89,7 @@ decodeTrack =
     Decode.map5 Track
         (Decode.field "name" Decode.string)
         (Decode.field "duration_ms" Decode.int)
-        (Decode.at [ "artists" ] (Decode.list decodeArtists))
+        (Decode.at [ "artists" ] (Decode.list decodeArtistSimplified))
         (Decode.at [ "album" ] decodeAlbum)
         (Decode.field "uri" Decode.string)
 
@@ -99,7 +99,7 @@ decodeTrackSimplified =
     Decode.map5 TrackSimplified
         (Decode.field "name" Decode.string)
         (Decode.field "duration_ms" Decode.int)
-        (Decode.at [ "artists" ] (Decode.list decodeArtists))
+        (Decode.at [ "artists" ] (Decode.list decodeArtistSimplified))
         (Decode.field "track_number" Decode.int)
         (Decode.field "uri" Decode.string)
 

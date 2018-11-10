@@ -3,7 +3,7 @@ module Main exposing (main)
 import Browser exposing (Document)
 import Browser.Events
 import Browser.Navigation as Nav
-import Data.Drawer exposing (..)
+import Data.Drawer as Drawer exposing (..)
 import Data.Modal as Modal exposing (..)
 import Data.Player as Player exposing (..)
 import Data.Playlist as Playlist exposing (..)
@@ -44,8 +44,8 @@ init flags url key =
             { token = flags.token
             , openedMenu = False
             }
-      , playlists = Playlist.init
-      , drawer = Data.Drawer.init
+      , playlists = []
+      , drawer = Drawer.init
       , searchModel = Search.init
       , player = Player.init
       , modal = Modal.init

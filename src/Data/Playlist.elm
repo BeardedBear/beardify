@@ -1,4 +1,16 @@
-module Data.Playlist exposing (Playlist, PlaylistPaging, PlaylistTrack, Playlists, Playlistslist, decodePlaylist, decodePlaylistPaging, decodePlaylistTrack, decodePlaylists, decodePlaylistslist, init)
+module Data.Playlist exposing
+    ( Playlist
+    , PlaylistPaging
+    , PlaylistTrack
+    , Playlists
+    , Playlistslist
+    , decodePlaylist
+    , decodePlaylistPaging
+    , decodePlaylistTrack
+    , decodePlaylists
+    , decodePlaylistslist
+    , init
+    )
 
 import Data.Image exposing (..)
 import Data.Track exposing (..)
@@ -6,8 +18,16 @@ import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 
 
+init : Playlist
 init =
-    []
+    { id = ""
+    , images = []
+    , name = ""
+    , tracks =
+        { items = []
+        }
+    , uri = ""
+    }
 
 
 type alias Playlistslist =
