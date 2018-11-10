@@ -7,6 +7,31 @@ import Data.Track as Track exposing (..)
 import Data.Youtube exposing (..)
 
 
+init : Model
+init =
+    { drawerType = Home
+    , drawerArtist =
+        { artist = Artist.init
+        , albums = []
+        , videos = []
+        , topTracks = []
+        , relatedArtists = []
+        }
+    , drawerAlbum =
+        { album = Album.init
+        , tracks = []
+        }
+    , drawerPlaylist =
+        { playlist = Playlist.init
+        , tracks = { items = [] }
+        }
+    , drawerCollection =
+        { playlist = Playlist.init
+        , tracks = { items = [] }
+        }
+    }
+
+
 type alias ArtistModel =
     { artist : Artist
     , albums : List Album
@@ -44,29 +69,4 @@ type alias Model =
     , drawerAlbum : AlbumModel
     , drawerPlaylist : PlaylistModel
     , drawerCollection : PlaylistModel
-    }
-
-
-init : Model
-init =
-    { drawerType = Home
-    , drawerArtist =
-        { artist = Artist.init
-        , albums = []
-        , videos = []
-        , topTracks = []
-        , relatedArtists = []
-        }
-    , drawerAlbum =
-        { album = Album.init
-        , tracks = []
-        }
-    , drawerPlaylist =
-        { playlist = Playlist.init
-        , tracks = { items = [] }
-        }
-    , drawerCollection =
-        { playlist = Playlist.init
-        , tracks = { items = [] }
-        }
     }

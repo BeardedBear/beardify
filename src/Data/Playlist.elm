@@ -16,15 +16,6 @@ import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 
 
-type alias Playlist =
-    { id : String
-    , images : List Image
-    , name : String
-    , tracks : PlaylistPaging
-    , uri : String
-    }
-
-
 init : Playlist
 init =
     { id = ""
@@ -32,6 +23,15 @@ init =
     , name = ""
     , tracks = { items = [] }
     , uri = ""
+    }
+
+
+type alias Playlist =
+    { id : String
+    , images : List Image
+    , name : String
+    , tracks : PlaylistPaging
+    , uri : String
     }
 
 

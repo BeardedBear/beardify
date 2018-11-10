@@ -6,16 +6,6 @@ import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 
 
-type alias Model =
-    { device : Device
-    , is_playing : Bool
-    , progress_ms : Int
-    , item : Track
-    , repeat_state : String
-    , shuffle_state : Bool
-    }
-
-
 init : Model
 init =
     { device = Device.init
@@ -24,6 +14,16 @@ init =
     , item = Track.init
     , repeat_state = ""
     , shuffle_state = False
+    }
+
+
+type alias Model =
+    { device : Device
+    , is_playing : Bool
+    , progress_ms : Int
+    , item : Track
+    , repeat_state : String
+    , shuffle_state : Bool
     }
 
 
