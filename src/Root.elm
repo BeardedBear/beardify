@@ -51,7 +51,7 @@ type Msg
     | SetArtist (Result Http.Error Artist)
     | SetArtistAlbums (Result Http.Error (List Album))
     | SetArtistTopTracks (Result Http.Error ArtistTopTracks)
-    | SetRelatedArtists (Result Http.Error RelatedArtists)
+    | SetRelatedArtists (Result Http.Error (List Artist))
     | SetPlayer (Result Http.Error Player.Model)
     | SetYoutube (Result Http.Error Youtube)
     | PlayerControl (Result Http.Error ())
@@ -238,7 +238,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
                 , Http.send SetArtistTopTracks <|
                     Request.get "artists/" id "/top-tracks?country=FR" Track.decodeArtistTopTracks token
                 , Http.send SetRelatedArtists <|
-                    Request.get "artists/" id "/related-artists" decodeRelatedArtists token
+                    Request.get "artists/" id "/related-artists" (Decode.at [ "artists" ] (Decode.list decodeArtist)) token
                 ]
             )
 
@@ -289,7 +289,7 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
         SetRelatedArtists (Ok e) ->
             let
                 artists =
-                    { catchDrawerArtist | relatedArtists = e.artists }
+                    { catchDrawerArtist | relatedArtists = e }
             in
             ( { model | drawer = { drawer | drawerArtist = artists } }, Cmd.none )
 

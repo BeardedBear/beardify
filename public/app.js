@@ -9772,17 +9772,6 @@ var author$project$Data$Artist$decodeListArtist = A2(
 		_List_fromArray(
 			['artists', 'items']),
 		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtist)));
-var author$project$Data$Artist$RelatedArtists = function (artists) {
-	return {artists: artists};
-};
-var author$project$Data$Artist$decodeRelatedArtists = A2(
-	elm$json$Json$Decode$map,
-	author$project$Data$Artist$RelatedArtists,
-	A2(
-		elm$json$Json$Decode$at,
-		_List_fromArray(
-			['artists']),
-		elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtist)));
 var author$project$Data$Drawer$DrawAlbum = {$: 'DrawAlbum'};
 var author$project$Data$Drawer$DrawArtist = {$: 'DrawArtist'};
 var author$project$Data$Device$Device = F3(
@@ -10418,7 +10407,17 @@ var author$project$Root$update = F2(
 								A2(
 								elm$http$Http$send,
 								author$project$Root$SetRelatedArtists,
-								A5(author$project$Request$get, 'artists/', id, '/related-artists', author$project$Data$Artist$decodeRelatedArtists, token))
+								A5(
+									author$project$Request$get,
+									'artists/',
+									id,
+									'/related-artists',
+									A2(
+										elm$json$Json$Decode$at,
+										_List_fromArray(
+											['artists']),
+										elm$json$Json$Decode$list(author$project$Data$Artist$decodeArtist)),
+									token))
 							])));
 			case 'SetArtist':
 				if (msg.a.$ === 'Ok') {
@@ -10488,7 +10487,7 @@ var author$project$Root$update = F2(
 					var e = msg.a.a;
 					var artists = _Utils_update(
 						catchDrawerArtist,
-						{relatedArtists: e.artists});
+						{relatedArtists: e});
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
