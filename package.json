@@ -1,21 +1,23 @@
 {
-  "name": "spot",
+  "name": "Beardify",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "nm": "./node_modules/.bin/",
   "scripts": {
-    "install": "./node_modules/.bin/elm make src/Main.elm",
+    "install": "$npm_package_nm/elm make src/Main.elm",
     "sass": "node-sass-chokidar style/ -o public --output-style compressed --source-map true --include-path node_modules/ -w",
-    "live": "./node_modules/.bin/elm-live src/Main.elm --port=3000 --dir=public/ -- --output=public/app.js",
-    "build": "rm -rf build && mkdir build && node-sass-chokidar style/ -o build --output-style compressed --include-path node_modules/ && cp -r public/* build && ./node_modules/.bin/elm make src/Main.elm --optimize --output=build/app.js && uglifyjs build/app.js -c -m -o build/app.js",
-    "start": "./node_modules/.bin/run-p sass live",
-    "publish": "git subtree push --prefix build origin gh-pages"
+    "live": "$npm_package_nm/elm-live src/Main.elm --port=3000 --dir=public/ -- --output=public/app.js",
+    "build": "rm -rf build && mkdir build && node-sass-chokidar style/ -o build --output-style compressed --include-path node_modules/ && cp -r public/* build && $npm_package_nm/elm make src/Main.elm --optimize --output=build/app.js && uglifyjs build/app.js -c -m -o build/app.js",
+    "start": "$npm_package_nm/run-p sass live",
+    "publish": "$npm_package_nm/gh-pages -d build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "elm": "^0.19.0-bugfix2",
     "elm-live": "^3.1.0",
+    "gh-pages": "^2.0.1",
     "node-sass-chokidar": "^1.3.4",
     "npm-run-all": "^4.1.3",
     "uglify-js": "^3.4.9"
