@@ -1,6 +1,7 @@
 module Root exposing (Model, Msg(..), update)
 
 import Browser exposing (Document)
+import Browser.Dom as Dom
 import Data.Album exposing (..)
 import Data.Artist exposing (..)
 import Data.Drawer as Drawer exposing (..)
@@ -16,6 +17,7 @@ import Json.Decode as Decode exposing (..)
 import Keyboard.Event
 import Ports
 import Request
+import Task
 import Time exposing (..)
 import Url exposing (Url)
 
@@ -90,7 +92,7 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ searchModel, config, drawer, modal, releases } as model) =
+update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
     let
         token =
             model.config.token
@@ -495,8 +497,8 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
             )
 
         HandleKeyboardEvent event ->
-            case event.key of
-                Just "Escape" ->
+            case ( event.shiftKey, event.key ) of
+                ( _, Just "Escape" ) ->
                     ( { model
                         | searchModel = { searchModel | searchQuery = "" }
                         , modal = { modal | isOpen = False }
@@ -504,10 +506,17 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
                     , Cmd.none
                     )
 
-                Just _ ->
-                    ( model, Cmd.none )
+                ( _, Just " " ) ->
+                    if player.is_playing then
+                        ( model, Http.send PlayerControl <| Request.put "" "pause" "" token )
 
-                Nothing ->
+                    else
+                        ( model, Http.send PlayerControl <| Request.put "" "play" "" token )
+
+                ( True, Just "F" ) ->
+                    ( model, Task.attempt (\_ -> NoOp) (Dom.focus "search") )
+
+                ( _, _ ) ->
                     ( model, Cmd.none )
 
         AddReleaseThePrp e ->

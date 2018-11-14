@@ -16,9 +16,48 @@
     }
 }
 
+.help {
+    position: relative;
+
+    i {
+        font-size: 1.8rem;
+        color: rgba(white,0.2);
+        cursor: pointer;
+        line-height: 0;
+
+        &:hover {
+            color: rgba(white,0.4);
+
+            ~ .popup {
+                display: block;
+            }
+        }
+    }
+
+    .popup {
+        position: absolute;
+        top: 100%;
+        right: 20px;
+        padding: 20px;
+        border-radius: 5px;
+        background: darken(#232B37, 5);
+        white-space: nowrap;
+        display: none;
+
+        .title {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+    }
+}
+
 .search {
     position: relative;
     z-index: 8;
+    align-items: center;
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: 1fr auto;
 
     input {
         border: 1px solid #343b46;
@@ -43,6 +82,7 @@
         position: absolute;
         right: 0;
         left:0;
+        top: 43px;
         background: #191f27;
         max-height: 80vh;
         overflow: hidden;

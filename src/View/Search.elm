@@ -42,28 +42,45 @@ view searchMsg =
                 ]
     in
     div [ class "search" ]
-        [ div [] [ input [ placeholder "Recherche", type_ "text", onInput Query, Html.Attributes.value searchMsg.searchQuery ] [] ]
-        , if searchMsg.searchQuery /= "" then
-            div [ class "results" ]
-                [ div []
-                    [ div [ class "title" ] [ text "Artists" ]
-                    , div [] (searchMsg.findArtist |> List.map artistItem)
-                    ]
-                , div []
-                    [ div [ class "title" ] [ text "Albums" ]
-                    , div []
-                        (searchMsg.findAlbum
-                            |> List.filter (\a -> a.album_type == "album")
-                            |> List.map albumItem
-                        )
-                    ]
-                , div []
-                    [ div [ class "title" ] [ text "Tracks" ]
-                    , div []
-                        (searchMsg.findTrack |> List.map trackItem)
-                    ]
+        [ div []
+            [ input
+                [ id "search"
+                , placeholder "Recherche"
+                , type_ "text"
+                , onInput Query
+                , Html.Attributes.value searchMsg.searchQuery
                 ]
+                []
+            , if searchMsg.searchQuery /= "" then
+                div [ class "results" ]
+                    [ div []
+                        [ div [ class "title" ] [ text "Artists" ]
+                        , div [] (searchMsg.findArtist |> List.map artistItem)
+                        ]
+                    , div []
+                        [ div [ class "title" ] [ text "Albums" ]
+                        , div []
+                            (searchMsg.findAlbum
+                                |> List.filter (\a -> a.album_type == "album")
+                                |> List.map albumItem
+                            )
+                        ]
+                    , div []
+                        [ div [ class "title" ] [ text "Tracks" ]
+                        , div []
+                            (searchMsg.findTrack |> List.map trackItem)
+                        ]
+                    ]
 
-          else
-            text ""
+              else
+                text ""
+            ]
+        , div [ class "help" ]
+            [ i [ class "icon-question" ] []
+            , div [ class "popup" ]
+                [ div [ class "title" ] [ text "Raccourcis" ]
+                , div [] [ text "SHIFT + F : Focus search bar" ]
+                , div [] [ text "SPACEBAR : Play/Pause player" ]
+                ]
+            ]
         ]
