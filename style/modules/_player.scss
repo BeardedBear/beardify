@@ -15,11 +15,34 @@
         align-self: center;
     }
 
+    .range {
+        display: grid;
+        grid-auto-flow: column;
+        align-items: baseline;
+        position: relative;
+
+        &:hover {
+            input[type=range] {
+                opacity: 1;
+            }
+        }
+    
+        input[type=range] {
+            width: 30vw;
+            position: relative;
+            top: -2px;
+            padding: 10px;
+            padding-bottom: 5px;
+            transition: opacity ease .15s;
+            opacity: 0;
+        }
+    }
+
     .progress {
         position: absolute;
         background: rgba(black, 0.45);
-        left: 37px;
-        right: 37px;
+        left: 10px;
+        right: 20px;
         height: 8px;
         z-index: -1;
         border-radius: 10px;
@@ -54,36 +77,18 @@
             border-radius: 5px;
         }
 
+        .progress {
+            left: 37px;
+            right: 37px;
+        }
+
         .track {
             font-weight: bold;
         }
 
         .time {
             opacity: 0.6;
-        }
-
-        .range {
-            display: grid;
-            grid-auto-flow: column;
-            align-items: baseline;
-            position: relative;
-
-            &:hover {
-                input[type=range] {
-                    opacity: 1;
-                }
-            }
-        
-            input[type=range] {
-                width: 30vw;
-                position: relative;
-                top: -2px;
-                padding: 10px;
-                padding-bottom: 5px;
-                transition: opacity ease .15s;
-                opacity: 0;
-            }
-        }
+        }        
     }
 
     .controls {
