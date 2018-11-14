@@ -64,15 +64,33 @@ view player =
                 ]
             ]
         , div [ class "options" ]
-            [ div [] [ button [] [ i [ class "icon-sound" ] [] ] ]
-            , div []
+            [ div []
+                [ button
+                    [ classList [ ( "active", player.device.volume_percent == 0 ) ]
+                    , if player.device.volume_percent > 0 then
+                        onClick <| PlayerVolumeToogleMute "0"
+
+                      else
+                        onClick <| PlayerVolumeToogleMute "100"
+                    ]
+                    [ i [ class "icon-sound" ] [] ]
+                ]
+            , div [ class "range" ]
                 [ input
                     [ type_ "range"
                     , Html.Attributes.value <| String.fromInt player.device.volume_percent
                     , Html.Attributes.min "0"
                     , Html.Attributes.max "100"
+                    , onInput PlayerVolume
                     ]
                     []
+                , div [ class "progress" ]
+                    [ div
+                        [ style "width" <| String.fromFloat (toFloat player.device.volume_percent) ++ "%"
+                        , class "progress-current"
+                        ]
+                        []
+                    ]
                 ]
             ]
         ]

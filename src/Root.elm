@@ -56,6 +56,8 @@ type Msg
     | SetYoutube (Result Http.Error Youtube)
     | PlayerControl (Result Http.Error ())
     | PlayerSeek String
+    | PlayerVolume String
+    | PlayerVolumeToogleMute String
     | PlayerNext
     | PlayerPrevious
     | PlayerPlay
@@ -324,6 +326,12 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
 
         PlayerSeek e ->
             ( model, Http.send PlayerControl <| Request.put "seek?position_ms=" e "" token )
+
+        PlayerVolume e ->
+            ( model, Http.send PlayerControl <| Request.put "volume?volume_percent=" e "" token )
+
+        PlayerVolumeToogleMute e ->
+            ( model, Http.send PlayerControl <| Request.put "volume?volume_percent=" e "" token )
 
         PlayerNext ->
             ( model, Http.send PlayerControl <| Request.post "me/player/" "next" "" token )

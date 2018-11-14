@@ -1,6 +1,6 @@
 {
-  "name": "Beardify",
-  "version": "1.0.0",
+  "name": "beardify",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "nm": "./node_modules/.bin/",
@@ -12,11 +12,11 @@
     "start": "$npm_package_nm/run-p sass live",
     "publish": "$npm_package_nm/gh-pages -d build"
   },
-  "author": "",
+  "author": "BeardedBear <beardedbearbear@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "elm": "^0.19.0-bugfix2",
-    "elm-live": "^3.1.0",
+    "elm-live": "^3.2.3",
     "gh-pages": "^2.0.1",
     "node-sass-chokidar": "^1.3.4",
     "npm-run-all": "^4.1.3",

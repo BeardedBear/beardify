@@ -6,7 +6,7 @@
 // Version 1.5.1
 // MIT License
 
-$track-color: rgba(black, 0.45) !default;
+$track-color: rgba(black, 0) !default;
 $thumb-color: white !default;
 
 $thumb-radius: 12px !default;
@@ -36,12 +36,12 @@ $ie-bottom-track-color: darken($track-color, $contrast) !default;
 }
 
 @mixin track {
-  cursor: default;
   height: $track-height;
   transition: all .2s ease;
   width: $track-width;
   position: relative;
   left: -6px;
+  cursor: pointer;
 }
 
 @mixin thumb($adjustment: 0) {
@@ -53,6 +53,7 @@ $ie-bottom-track-color: darken($track-color, $contrast) !default;
   width: $thumb-width + $adjustment;
   position: relative;
   top: 2px;
+  cursor: pointer;
 }
 
 @mixin disabled {
@@ -64,6 +65,7 @@ $ie-bottom-track-color: darken($track-color, $contrast) !default;
   background: transparent;
   margin: $thumb-height / 2 0;
   width: $track-width;
+  cursor: pointer;
 
   &::-moz-focus-outer {
     border: 0;
