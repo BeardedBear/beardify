@@ -42,7 +42,7 @@ view searchMsg =
                 ]
     in
     div [ class "search" ]
-        [ div [] [ input [ placeholder "Recherche", type_ "text", onInput Query, Html.Attributes.value searchMsg.searchQuery ] [] ]
+        [ div [] [ input [ id "search", placeholder "Recherche", type_ "text", onInput Query, Html.Attributes.value searchMsg.searchQuery ] [] ]
         , if searchMsg.searchQuery /= "" then
             div [ class "results" ]
                 [ div []
