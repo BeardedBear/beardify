@@ -18,7 +18,8 @@ Don't try to install it, otherwise your house will probably explode, and so will
 ## Features
 - Elm 0.19 Ready
 - Responsive
-- Added __Collections__, which are playlists containing keywords in the title (`#C` or `#Collection`), which lists the albums it contains rather than a list of songs. 
+- Fast
+- Added __Collections__, which are playlists containing keywords in the title (`#Collection`), which lists the albums it contains rather than a list of songs. 
 - Adding a list of __associated videos__ on an artist's page
 - Added a list of __useful links__ about the artist (Wikipedia, Sputnik, LastFM, Discogs...)
 
