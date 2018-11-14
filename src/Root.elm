@@ -90,7 +90,7 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ searchModel, config, drawer, modal, releases } as model) =
+update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
     let
         token =
             model.config.token
@@ -503,6 +503,13 @@ update msg ({ searchModel, config, drawer, modal, releases } as model) =
                       }
                     , Cmd.none
                     )
+
+                Just " " ->
+                    if player.is_playing then
+                        ( model, Http.send PlayerControl <| Request.put "" "pause" "" token )
+
+                    else
+                        ( model, Http.send PlayerControl <| Request.put "" "play" "" token )
 
                 Just _ ->
                     ( model, Cmd.none )
