@@ -95,7 +95,16 @@
         }
 
         .folder-title {
-            padding: 6px 12px 4px 14px;
+            padding: 0 12px 0 14px;
+            
+            label {
+                padding: 6px 0 4px 0;
+            }
+
+            i {
+                position: relative;
+                top: 6px;
+            }
         }
 
         i {
