@@ -179,8 +179,9 @@
 
         i {
             position: relative;
-            top: 4px;
-            left: 2px;
+            display: grid;
+            align-items: center;
+            justify-items: center;
         }
 
         &:hover {
