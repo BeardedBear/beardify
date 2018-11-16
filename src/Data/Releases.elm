@@ -20,7 +20,7 @@ init =
 type alias ThePrpReleases =
     { artist : String
     , album : String
-    , date : String
+    , date : Int
     }
 
 
@@ -29,4 +29,4 @@ decodeThePrpReleases =
     Decode.map3 ThePrpReleases
         (Decode.field "artist" Decode.string)
         (Decode.field "album" Decode.string)
-        (Decode.field "date" Decode.string)
+        (Decode.field "date" Decode.int)

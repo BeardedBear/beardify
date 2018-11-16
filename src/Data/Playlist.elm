@@ -21,7 +21,10 @@ init =
     { id = ""
     , images = []
     , name = ""
-    , tracks = { items = [] }
+    , tracks =
+        { items = []
+        , next = ""
+        }
     , uri = ""
     }
 
@@ -75,10 +78,12 @@ decodePlaylistTrack =
 
 type alias PlaylistPaging =
     { items : List PlaylistTrack
+    , next : String
     }
 
 
 decodePlaylistPaging : Decode.Decoder PlaylistPaging
 decodePlaylistPaging =
-    Decode.map PlaylistPaging
+    Decode.map2 PlaylistPaging
         (Decode.at [ "items" ] (Decode.list decodePlaylistTrack))
+        (Decode.field "next" (Decode.oneOf [ string, null "" ]))

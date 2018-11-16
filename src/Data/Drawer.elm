@@ -23,11 +23,17 @@ init =
         }
     , drawerPlaylist =
         { playlist = Playlist.init
-        , tracks = { items = [] }
+        , tracks =
+            { items = []
+            , next = ""
+            }
         }
     , drawerCollection =
         { playlist = Playlist.init
-        , tracks = { items = [] }
+        , tracks =
+            { items = []
+            , next = ""
+            }
         }
     }
 
