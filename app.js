@@ -9024,29 +9024,37 @@ var elm$core$List$member = F2(
 			},
 			xs);
 	});
+var elm$html$Html$b = _VirtualDom_node('b');
 var elm$html$Html$h1 = _VirtualDom_node('h1');
 var author$project$View$Releases$view = F2(
 	function (player, model) {
 		var year = function (e) {
-			return elm$core$String$fromInt(
-				A2(
-					elm$time$Time$toYear,
-					elm$time$Time$utc,
-					elm$time$Time$millisToPosix(e)));
+			return A2(
+				elm$time$Time$toYear,
+				elm$time$Time$utc,
+				elm$time$Time$millisToPosix(e));
+		};
+		var releaseQuery = function (e) {
+			return author$project$Root$Query(e.artist + (' - ' + e.album));
 		};
 		var month = function (e) {
-			return elm$core$Debug$toString(
-				A2(
-					elm$time$Time$toMonth,
-					elm$time$Time$utc,
-					elm$time$Time$millisToPosix(e)));
+			return A2(
+				elm$time$Time$toMonth,
+				elm$time$Time$utc,
+				elm$time$Time$millisToPosix(e));
 		};
 		var day = function (e) {
-			return elm$core$String$fromInt(
-				A2(
-					elm$time$Time$toDay,
-					elm$time$Time$utc,
-					elm$time$Time$millisToPosix(e)));
+			return A2(
+				elm$time$Time$toDay,
+				elm$time$Time$utc,
+				elm$time$Time$millisToPosix(e));
+		};
+		var release = function (e) {
+			return elm$html$Html$text(
+				elm$core$String$fromInt(
+					day(e.date)) + (' ' + (elm$core$Debug$toString(
+					month(e.date)) + (' ' + (elm$core$String$fromInt(
+					year(e.date)) + (' - ' + (e.artist + (' - ' + e.album))))))));
 		};
 		var currentArtists = A2(
 			elm$core$List$map,
@@ -9066,7 +9074,22 @@ var author$project$View$Releases$view = F2(
 						[
 							elm$html$Html$text('The PRP')
 						])),
-					A2(
+					_Utils_eq(model.releases.thePrp, _List_Nil) ? A2(
+					elm$html$Html$span,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('loader')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							elm$html$Html$i,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('icon-loader')
+								]),
+							_List_Nil)
+						])) : A2(
 					elm$html$Html$div,
 					_List_Nil,
 					A2(
@@ -9087,62 +9110,89 @@ var author$project$View$Releases$view = F2(
 								_List_fromArray(
 									[
 										(_Utils_cmp(
-										A2(
-											elm$time$Time$toDay,
-											elm$time$Time$utc,
-											elm$time$Time$millisToPosix(e.date)),
-										model.config.currentDate.day) < 1) ? A2(
+										day(e.date),
+										model.config.currentDate.day) < 0) ? A2(
+										elm$html$Html$a,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$class('previous-release'),
+												elm$html$Html$Events$onClick(
+												releaseQuery(e))
+											]),
+										_List_fromArray(
+											[
+												release(e)
+											])) : (_Utils_eq(
+										day(e.date),
+										model.config.currentDate.day) ? A2(
 										elm$html$Html$a,
 										_List_fromArray(
 											[
 												elm$html$Html$Events$onClick(
-												author$project$Root$Query(e.artist + (' - ' + e.album)))
+												releaseQuery(e))
 											]),
 										_List_fromArray(
 											[
-												elm$html$Html$text(
-												day(e.date) + (' ' + (month(e.date) + (' ' + (year(e.date) + ' - '))))),
-												elm$html$Html$text(e.artist + (' - ' + e.album))
+												A2(
+												elm$html$Html$b,
+												_List_Nil,
+												_List_fromArray(
+													[
+														release(e)
+													]))
 											])) : A2(
 										elm$html$Html$span,
 										_List_fromArray(
 											[
-												A2(elm$html$Html$Attributes$style, 'opacity', '0.3')
+												elm$html$Html$Attributes$class('next-release')
 											]),
 										_List_fromArray(
 											[
-												elm$html$Html$text(
-												day(e.date) + (' ' + (month(e.date) + (' ' + (year(e.date) + ' - '))))),
-												elm$html$Html$text(e.artist + (' - ' + e.album))
-											]))
+												release(e)
+											])))
 									]));
 						},
 						A2(
 							elm$core$List$filter,
 							function (f) {
-								return !A2(elm$core$String$contains, 'Remastered', f.album);
+								return !A2(elm$core$String$contains, '12', f.album);
 							},
 							A2(
 								elm$core$List$filter,
 								function (f) {
-									return !A2(elm$core$String$contains, 'Anniversary', f.album);
+									return !A2(elm$core$String$contains, '7', f.album);
 								},
 								A2(
 									elm$core$List$filter,
 									function (f) {
-										return !A2(elm$core$String$contains, 'Reissue', f.album);
+										return !A2(elm$core$String$contains, 'Platinum', f.album);
 									},
 									A2(
 										elm$core$List$filter,
 										function (f) {
-											return !A2(elm$core$String$contains, 'Deluxe', f.album);
+											return !A2(elm$core$String$contains, 'Remastered', f.album);
 										},
 										A2(
 											elm$core$List$filter,
 											function (f) {
-												return !A2(elm$core$String$contains, 'Vinyl', f.album);
+												return !A2(elm$core$String$contains, 'Anniversary', f.album);
 											},
-											model.releases.thePrp)))))))
+											A2(
+												elm$core$List$filter,
+												function (f) {
+													return !A2(elm$core$String$contains, 'Reissue', f.album);
+												},
+												A2(
+													elm$core$List$filter,
+													function (f) {
+														return !A2(elm$core$String$contains, 'Deluxe', f.album);
+													},
+													A2(
+														elm$core$List$filter,
+														function (f) {
+															return !A2(elm$core$String$contains, 'Vinyl', f.album);
+														},
+														model.releases.thePrp))))))))))
 				]));
 	});
 var elm$html$Html$strong = _VirtualDom_node('strong');
@@ -9304,6 +9354,11 @@ var author$project$View$Search$view = function (searchMsg) {
 						elm$html$Html$input,
 						_List_fromArray(
 							[
+								elm$html$Html$Attributes$classList(
+								_List_fromArray(
+									[
+										_Utils_Tuple2('active', searchMsg.searchQuery !== '')
+									])),
 								elm$html$Html$Attributes$id('search'),
 								elm$html$Html$Attributes$placeholder('Recherche'),
 								elm$html$Html$Attributes$type_('text'),
