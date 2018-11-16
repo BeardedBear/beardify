@@ -70,6 +70,7 @@
         background: rgba(black, 0);
         transition: all ease .25s;
         
+        &.active,
         &:focus,
         &:hover {
             background: #191f27;
