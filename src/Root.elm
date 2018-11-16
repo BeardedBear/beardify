@@ -1,9 +1,10 @@
-module Root exposing (Date, Model, Msg(..), update)
+module Root exposing (Model, Msg(..), update)
 
 import Browser exposing (Document)
 import Browser.Dom as Dom
 import Data.Album exposing (..)
 import Data.Artist exposing (..)
+import Data.Date exposing (..)
 import Data.Drawer as Drawer exposing (..)
 import Data.Modal as Modal exposing (..)
 import Data.Player as Player exposing (..)
@@ -20,17 +21,6 @@ import Request
 import Task
 import Time exposing (..)
 import Url exposing (Url)
-
-
-type alias Date =
-    { year : Int
-    , month : Month
-    , day : Int
-    , hour : Int
-    , minute : Int
-    , second : Int
-    , milliSecond : Int
-    }
 
 
 type alias Model =

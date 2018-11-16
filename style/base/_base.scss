@@ -34,7 +34,7 @@ a {
 
 body { 
     font-family: "Roboto Condensed";
-    background: #11151b;
+    background: $bg-color;
     color: white;
 
     ::-webkit-scrollbar {

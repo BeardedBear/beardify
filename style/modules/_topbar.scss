@@ -67,7 +67,7 @@
         font-weight: bold;
         font-size: 1.2rem;
         border-radius: 5px;
-        background: rgba(black, 0);
+        background: rgba($bg-color, 0.95);
         transition: all ease .25s;
         
         &.active,
