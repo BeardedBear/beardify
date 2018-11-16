@@ -35,14 +35,29 @@ import View.Sidebar as Sidebar exposing (..)
 
 
 type alias Flags =
-    { token : String }
+    { token : String
+    , now : Int
+    }
 
 
 init : Flags -> Url -> Nav.Key -> ( Root.Model, Cmd Msg )
 init flags url key =
+    let
+        timestamp =
+            Time.millisToPosix flags.now
+    in
     ( { config =
             { token = flags.token
             , openedMenu = False
+            , currentDate =
+                { year = Time.toYear utc timestamp
+                , month = Time.toMonth utc timestamp
+                , day = Time.toDay utc timestamp
+                , hour = Time.toHour utc timestamp
+                , minute = Time.toMinute utc timestamp
+                , second = Time.toSecond utc timestamp
+                , milliSecond = Time.toMillis utc timestamp
+                }
             }
       , playlists = []
       , drawer = Drawer.init

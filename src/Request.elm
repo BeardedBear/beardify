@@ -1,4 +1,11 @@
-module Request exposing (delete, get, play, post, put)
+module Request exposing
+    ( delete
+    , get
+    , getPaging
+    , play
+    , post
+    , put
+    )
 
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
@@ -18,6 +25,21 @@ get urlBefore id urlAfter decoder token =
             [ Http.header "Authorization" <| "Bearer " ++ token
             ]
         , url = apiUrl ++ urlBefore ++ id ++ urlAfter
+        , body = Http.emptyBody
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = False
+        }
+
+
+getPaging : String -> Decode.Decoder a -> String -> Request a
+getPaging url decoder token =
+    request
+        { method = "GET"
+        , headers =
+            [ Http.header "Authorization" <| "Bearer " ++ token
+            ]
+        , url = url
         , body = Http.emptyBody
         , expect = Http.expectJson decoder
         , timeout = Nothing

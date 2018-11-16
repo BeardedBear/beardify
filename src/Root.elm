@@ -1,4 +1,4 @@
-module Root exposing (Model, Msg(..), update)
+module Root exposing (Date, Model, Msg(..), update)
 
 import Browser exposing (Document)
 import Browser.Dom as Dom
@@ -22,10 +22,22 @@ import Time exposing (..)
 import Url exposing (Url)
 
 
+type alias Date =
+    { year : Int
+    , month : Month
+    , day : Int
+    , hour : Int
+    , minute : Int
+    , second : Int
+    , milliSecond : Int
+    }
+
+
 type alias Model =
     { config :
         { token : String
         , openedMenu : Bool
+        , currentDate : Date
         }
     , playlists : List PlaylistSimplified
     , drawer : Drawer.Model
@@ -149,6 +161,9 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
             let
                 collection =
                     { catchDrawerCollection | playlist = e }
+
+                -- _ =
+                --     Debug.log "e" ( e, model.drawer.drawerCollection.playlist.id )
             in
             ( { model
                 | drawer =
@@ -158,7 +173,11 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
                     }
                 , config = { config | openedMenu = False }
               }
-            , Cmd.none
+            , if 1 == 1 then
+                Cmd.batch []
+
+              else
+                Cmd.batch []
             )
 
         SetCollection (Err _) ->
@@ -223,10 +242,21 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
             let
                 trackss =
                     { catchDrawerPlaylist | tracks = e }
+
+                -- _ =
+                --     Debug.log "SetPlaylistTracks" e
             in
-            ( { model | drawer = { drawer | drawerPlaylist = trackss } }
-            , Cmd.none
-            )
+            if e.next == "" then
+                ( { model | drawer = { drawer | drawerPlaylist = trackss } }
+                , Cmd.none
+                )
+
+            else
+                ( model
+                , Cmd.batch
+                    [ Http.send SetPlaylistTracks <| Request.getPaging e.next decodePlaylistPaging token
+                    ]
+                )
 
         SetPlaylistTracks (Err _) ->
             ( model, Cmd.none )
@@ -507,7 +537,7 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
                     )
 
                 ( _, Just " " ) ->
-                    if player.is_playing then
+                    if player.is_playing && model.searchModel.searchQuery == "" then
                         ( model, Http.send PlayerControl <| Request.put "" "pause" "" token )
 
                     else

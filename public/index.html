@@ -51,7 +51,10 @@
         } else {
             window.location.assign(defaultUrl + "/#/");
             const app = Elm.Main.init({
-                flags: { token: JSON.parse(beardifyToken).value }
+                flags: {
+                    token: JSON.parse(beardifyToken).value,
+                    now: new Date().getTime()
+                }
             });
 
             // PORTS
@@ -70,7 +73,7 @@
                             let obj = new Object();
                             obj.artist = currentValue.querySelector(".col_artist").textContent;
                             obj.album = currentValue.querySelector(".col_title").textContent;
-                            obj.date = currentValue.querySelector(".col_date").textContent;
+                            obj.date = Date.parse(new Date(currentValue.querySelector(".col_date").textContent)) + 86400000;
                             array.push(obj)
                         },
                     );
