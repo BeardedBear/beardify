@@ -44,7 +44,8 @@ view searchMsg =
     div [ class "search" ]
         [ div []
             [ input
-                [ id "search"
+                [ classList [ ( "active", searchMsg.searchQuery /= "" ) ]
+                , id "search"
                 , placeholder "Recherche"
                 , type_ "text"
                 , onInput Query

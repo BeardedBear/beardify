@@ -162,14 +162,14 @@
         }
         
         &.album-page {
-            padding: 10px 15px;
+            padding: 7px 10px;
             grid-template-columns: auto 30px 1fr auto;
             grid-gap: 10px;
             
         }
 
         &.playlist-page {
-            padding: 10px 15px;
+            padding: 7px 10px;
             grid-template-columns: auto 1fr 1fr 1fr auto;
             justify-content: space-between;
         }

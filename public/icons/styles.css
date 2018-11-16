@@ -119,3 +119,6 @@
 .icon-question:before {
   content: "\41";
 }
+.icon-loader:before {
+  content: "\42";
+}

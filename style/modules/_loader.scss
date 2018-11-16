@@ -1,0 +1,25 @@
+.loader {
+    $size: 30px;
+    display: inline-block;
+    width: $size;
+    height: $size;
+    i {
+        animation: rotating 0.4s linear infinite;
+        transform-origin: center;
+        display: inline-block;
+        font-size: 1.6rem;
+        width: $size;
+        height: $size;
+    }
+}
+
+
+
+@keyframes rotating {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
