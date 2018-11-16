@@ -1,5 +1,6 @@
 module View.Releases exposing (view)
 
+import Data.Date exposing (..)
 import Data.Player as Player exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -29,7 +30,7 @@ view player model =
             text <|
                 (String.fromInt <| day e.date)
                     ++ " "
-                    ++ (Debug.toString <| month e.date)
+                    ++ (monthToString <| month e.date)
                     ++ " "
                     ++ (String.fromInt <| year e.date)
                     ++ " - "
