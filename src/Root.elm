@@ -161,9 +161,6 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
             let
                 collection =
                     { catchDrawerCollection | playlist = e }
-
-                -- _ =
-                --     Debug.log "e" ( e, model.drawer.drawerCollection.playlist.id )
             in
             ( { model
                 | drawer =
@@ -242,9 +239,6 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
             let
                 trackss =
                     { catchDrawerPlaylist | tracks = e }
-
-                -- _ =
-                --     Debug.log "SetPlaylistTracks" e
             in
             if e.next == "" then
                 ( { model | drawer = { drawer | drawerPlaylist = trackss } }
