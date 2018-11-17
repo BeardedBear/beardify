@@ -16,7 +16,7 @@ view : Player.Model -> PlaylistModel -> Html Msg
 view player collection =
     let
         albums =
-            collection.playlist.tracks.items
+            collection.tracks.items
                 |> List.map
                     (\a ->
                         { artists = a.track.artists

@@ -21,10 +21,6 @@ init =
     { id = ""
     , images = []
     , name = ""
-    , tracks =
-        { items = []
-        , next = ""
-        }
     , uri = ""
     }
 
@@ -33,18 +29,16 @@ type alias Playlist =
     { id : String
     , images : List Image
     , name : String
-    , tracks : PlaylistPaging
     , uri : String
     }
 
 
 decodePlaylist : Decode.Decoder Playlist
 decodePlaylist =
-    Decode.map5 Playlist
+    Decode.map4 Playlist
         (Decode.field "id" Decode.string)
         (Decode.at [ "images" ] (Decode.list decodeImage))
         (Decode.field "name" Decode.string)
-        (Decode.field "tracks" decodePlaylistPaging)
         (Decode.field "uri" Decode.string)
 
 
