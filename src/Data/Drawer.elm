@@ -1,10 +1,18 @@
-module Data.Drawer exposing (AlbumModel, ArtistModel, DrawerType(..), Model, PlaylistModel, init)
+module Data.Drawer exposing
+    ( AlbumModel
+    , ArtistModel
+    , DrawerType(..)
+    , Model
+    , PlaylistModel
+    , init
+    )
 
 import Data.Album as Album exposing (..)
 import Data.Artist as Artist exposing (..)
 import Data.Playlist as Playlist exposing (..)
 import Data.Track as Track exposing (..)
 import Data.Youtube exposing (..)
+import Json.Decode as Decode exposing (..)
 
 
 init : Model

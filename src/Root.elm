@@ -51,6 +51,7 @@ type Msg
     | SetAlbum (Result Http.Error Album)
     | SetAlbumTracks (Result Http.Error (List TrackSimplified))
     | SetPlaylistTracks (Result Http.Error PlaylistPaging)
+    | SetCollectionTracks (Result Http.Error PlaylistPaging)
     | GetArtist String
     | SetArtist (Result Http.Error Artist)
     | SetArtistAlbums (Result Http.Error (List Album))
@@ -151,6 +152,9 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
             let
                 collection =
                     { catchDrawerCollection | playlist = e }
+
+                _ =
+                    Debug.log "SetCollection" e
             in
             ( { model
                 | drawer =
@@ -160,21 +164,45 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
                     }
                 , config = { config | openedMenu = False }
               }
-            , if 1 == 1 then
-                Cmd.batch []
-
-              else
-                Cmd.batch []
+            , Cmd.none
             )
 
-        SetCollection (Err _) ->
+        SetCollection (Err e) ->
+            let
+                _ =
+                    Debug.log "SetCollection" e
+            in
+            ( model, Cmd.none )
+
+        SetPlaylistTracks (Ok e) ->
+            let
+                trackss =
+                    { catchDrawerPlaylist | tracks = e }
+            in
+            ( { model | drawer = { drawer | drawerPlaylist = trackss } }
+            , Cmd.none
+            )
+
+        SetPlaylistTracks (Err _) ->
+            ( model, Cmd.none )
+
+        SetCollectionTracks (Ok e) ->
+            let
+                trackss =
+                    { catchDrawerCollection | tracks = e }
+            in
+            ( { model | drawer = { drawer | drawerCollection = trackss } }
+            , Cmd.none
+            )
+
+        SetCollectionTracks (Err _) ->
             ( model, Cmd.none )
 
         GetPlaylist id ->
             ( model
             , Cmd.batch
-                [ Http.send SetPlaylist <| Request.get "playlists/" id "" decodePlaylist token
-                , Http.send SetPlaylistTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging token
+                [ Http.send SetPlaylistTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging token
+                , Http.send SetPlaylist <| Request.get "playlists/" id "" decodePlaylist token
                 ]
             )
 
@@ -182,7 +210,7 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
             ( model
             , Cmd.batch
                 [ Http.send SetCollection <| Request.get "playlists/" id "" decodePlaylist token
-                , Http.send SetPlaylistTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging token
+                , Http.send SetCollectionTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging token
                 ]
             )
 
@@ -223,26 +251,6 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
             )
 
         SetAlbumTracks (Err e) ->
-            ( model, Cmd.none )
-
-        SetPlaylistTracks (Ok e) ->
-            let
-                trackss =
-                    { catchDrawerPlaylist | tracks = e }
-            in
-            if e.next == "" then
-                ( { model | drawer = { drawer | drawerPlaylist = trackss } }
-                , Cmd.none
-                )
-
-            else
-                ( model
-                , Cmd.batch
-                    [ Http.send SetPlaylistTracks <| Request.getPaging e.next decodePlaylistPaging token
-                    ]
-                )
-
-        SetPlaylistTracks (Err _) ->
             ( model, Cmd.none )
 
         -- ARTIST
