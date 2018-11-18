@@ -51,6 +51,7 @@ type Msg
     | SetAlbum (Result Http.Error Album)
     | SetAlbumTracks (Result Http.Error (List TrackSimplified))
     | SetPlaylistTracks (Result Http.Error PlaylistPaging)
+    | SetPlaylistTracksPaging (Result Http.Error PlaylistPaging)
     | SetCollectionTracks (Result Http.Error PlaylistPaging)
     | SetCollectionTracksPaging (Result Http.Error PlaylistPaging)
     | GetArtist String
@@ -168,13 +169,49 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
         SetCollection (Err e) ->
             ( model, Cmd.none )
 
+        SetPlaylistTracksPaging (Ok e) ->
+            let
+                concat =
+                    model.drawer.drawerPlaylist.tracks.items ++ e.items
+            in
+            ( { model
+                | drawer =
+                    { drawer
+                        | drawerPlaylist =
+                            { playlist =
+                                { id = ""
+                                , images = []
+                                , name = ""
+                                , uri = ""
+                                }
+                            , tracks =
+                                { items = concat
+                                , next = ""
+                                }
+                            }
+                    }
+              }
+            , if e.next /= "" then
+                Cmd.batch [ Http.send SetPlaylistTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
+
+              else
+                Cmd.none
+            )
+
+        SetPlaylistTracksPaging (Err _) ->
+            ( model, Cmd.none )
+
         SetPlaylistTracks (Ok e) ->
             let
                 trackss =
                     { catchDrawerPlaylist | tracks = e }
             in
             ( { model | drawer = { drawer | drawerPlaylist = trackss } }
-            , Cmd.none
+            , if e.next /= "" then
+                Cmd.batch [ Http.send SetPlaylistTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
+
+              else
+                Cmd.none
             )
 
         SetPlaylistTracks (Err _) ->
