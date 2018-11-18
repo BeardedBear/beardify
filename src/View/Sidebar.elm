@@ -93,23 +93,48 @@ viewFolders drawer playlists isClickable =
         text ""
 
 
+
+-- viewPlaylists : Drawer.Model -> List PlaylistSimplified -> Bool -> Html Msg
+-- viewPlaylists drawer playlists isClickable =
+--     let
+--         formatName n =
+--             n
+--                 |> String.toLower
+--                 |> String.left 3
+--         test =
+--             playlists
+--                 |> List.filter (\f -> not <| String.contains "#Collection" f.name)
+--                 |> LE.groupWhile (\a b -> formatName a.name == formatName b.name)
+--                 |> List.filter (\( k, l ) -> List.isEmpty l)
+--     in
+--     test
+--         |> List.map
+--             (\( title, _ ) ->
+--                 div
+--                     [ if isClickable then
+--                         onClick <| GetPlaylist title.id
+--                       else
+--                         onClick NoOp
+--                     , classList
+--                         [ ( "playlist", True )
+--                         , ( "active", drawer.drawerPlaylist.playlist.id == title.id && drawer.drawerType == DrawPlaylist )
+--                         ]
+--                     ]
+--                     [ i [ class "icon-list" ] [], text title.name ]
+--             )
+--         |> div [ class "playlists-list" ]
+
+
 viewPlaylists : Drawer.Model -> List PlaylistSimplified -> Bool -> Html Msg
 viewPlaylists drawer playlists isClickable =
     let
-        formatName n =
-            n
-                |> String.toLower
-                |> String.left 3
-
         test =
             playlists
-                |> List.filter (\f -> not <| String.contains "#C" f.name)
-                |> LE.groupWhile (\a b -> formatName a.name == formatName b.name)
-                |> List.filter (\( k, l ) -> List.isEmpty l)
+                |> List.filter (\f -> not <| String.contains "#Collection" f.name)
     in
     test
         |> List.map
-            (\( title, _ ) ->
+            (\title ->
                 div
                     [ if isClickable then
                         onClick <| GetPlaylist title.id
@@ -151,7 +176,8 @@ view model =
         , div [ class "relative" ]
             [ div [ class "fit" ]
                 [ viewCollections model.drawer model.playlists True
-                , viewFolders model.drawer model.playlists True
+
+                -- , viewFolders model.drawer model.playlists True
                 , div [ class "playlists" ]
                     [ div [ class "title" ] [ text "Playlists" ]
                     , viewPlaylists model.drawer model.playlists True

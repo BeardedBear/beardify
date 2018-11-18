@@ -42,7 +42,8 @@ type Msg
     = UrlChanged Url
     | UrlRequested Browser.UrlRequest
     | NoOp
-    | SetPlaylists (Result Http.Error (List PlaylistSimplified))
+    | SetPlaylists (Result Http.Error PlaylistPagingSimplified)
+    | SetPlaylistsPaging (Result Http.Error PlaylistPagingSimplified)
     | SetPlaylist (Result Http.Error Playlist)
     | SetCollection (Result Http.Error Playlist)
     | GetCollection String
@@ -51,7 +52,9 @@ type Msg
     | SetAlbum (Result Http.Error Album)
     | SetAlbumTracks (Result Http.Error (List TrackSimplified))
     | SetPlaylistTracks (Result Http.Error PlaylistPaging)
+    | SetPlaylistTracksPaging (Result Http.Error PlaylistPaging)
     | SetCollectionTracks (Result Http.Error PlaylistPaging)
+    | SetCollectionTracksPaging (Result Http.Error PlaylistPaging)
     | GetArtist String
     | SetArtist (Result Http.Error Artist)
     | SetArtistAlbums (Result Http.Error (List Album))
@@ -123,8 +126,30 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
             ( model, Cmd.none )
 
         --  PLAYLIST/COLLECTION
+        SetPlaylistsPaging (Ok e) ->
+            let
+                concat =
+                    model.playlists ++ e.items
+            in
+            ( { model | playlists = concat }
+            , if e.next /= "" then
+                Cmd.batch [ Http.send SetPlaylistsPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
+
+              else
+                Cmd.none
+            )
+
+        SetPlaylistsPaging (Err _) ->
+            ( model, Cmd.none )
+
         SetPlaylists (Ok e) ->
-            ( { model | playlists = e }, Cmd.none )
+            ( { model | playlists = e.items }
+            , if e.next /= "" then
+                Cmd.batch [ Http.send SetPlaylistsPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
+
+              else
+                Cmd.none
+            )
 
         SetPlaylists (Err _) ->
             ( model, Cmd.none )
@@ -152,9 +177,6 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
             let
                 collection =
                     { catchDrawerCollection | playlist = e }
-
-                _ =
-                    Debug.log "SetCollection" e
             in
             ( { model
                 | drawer =
@@ -168,10 +190,38 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
             )
 
         SetCollection (Err e) ->
+            ( model, Cmd.none )
+
+        SetPlaylistTracksPaging (Ok e) ->
             let
-                _ =
-                    Debug.log "SetCollection" e
+                concat =
+                    model.drawer.drawerPlaylist.tracks.items ++ e.items
             in
+            ( { model
+                | drawer =
+                    { drawer
+                        | drawerPlaylist =
+                            { playlist =
+                                { id = ""
+                                , images = []
+                                , name = model.drawer.drawerPlaylist.playlist.name
+                                , uri = ""
+                                }
+                            , tracks =
+                                { items = concat
+                                , next = ""
+                                }
+                            }
+                    }
+              }
+            , if e.next /= "" then
+                Cmd.batch [ Http.send SetPlaylistTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
+
+              else
+                Cmd.none
+            )
+
+        SetPlaylistTracksPaging (Err _) ->
             ( model, Cmd.none )
 
         SetPlaylistTracks (Ok e) ->
@@ -180,10 +230,46 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
                     { catchDrawerPlaylist | tracks = e }
             in
             ( { model | drawer = { drawer | drawerPlaylist = trackss } }
-            , Cmd.none
+            , if e.next /= "" then
+                Cmd.batch [ Http.send SetPlaylistTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
+
+              else
+                Cmd.none
             )
 
         SetPlaylistTracks (Err _) ->
+            ( model, Cmd.none )
+
+        SetCollectionTracksPaging (Ok e) ->
+            let
+                concat =
+                    model.drawer.drawerCollection.tracks.items ++ e.items
+            in
+            ( { model
+                | drawer =
+                    { drawer
+                        | drawerCollection =
+                            { playlist =
+                                { id = ""
+                                , images = []
+                                , name = model.drawer.drawerCollection.playlist.name
+                                , uri = ""
+                                }
+                            , tracks =
+                                { items = concat
+                                , next = ""
+                                }
+                            }
+                    }
+              }
+            , if e.next /= "" then
+                Cmd.batch [ Http.send SetCollectionTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
+
+              else
+                Cmd.none
+            )
+
+        SetCollectionTracksPaging (Err _) ->
             ( model, Cmd.none )
 
         SetCollectionTracks (Ok e) ->
@@ -192,7 +278,11 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
                     { catchDrawerCollection | tracks = e }
             in
             ( { model | drawer = { drawer | drawerCollection = trackss } }
-            , Cmd.none
+            , if e.next /= "" then
+                Cmd.batch [ Http.send SetCollectionTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
+
+              else
+                Cmd.none
             )
 
         SetCollectionTracks (Err _) ->

@@ -9,7 +9,6 @@ Don't try to install it, otherwise your house will probably explode, and so will
 ## To-Do for v1
 - Cleaner Spotify authentication
 - Improve reactivity of the player
-- Paging playlists
 - Rearrange order of playlists
 - Home page
 - Add/Delete/modify playlists/tracks
