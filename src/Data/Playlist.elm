@@ -1,10 +1,12 @@
 module Data.Playlist exposing
     ( Playlist
     , PlaylistPaging
+    , PlaylistPagingSimplified
     , PlaylistSimplified
     , PlaylistTrack
     , decodePlaylist
     , decodePlaylistPaging
+    , decodePlaylistPagingSimplified
     , decodePlaylistSimplified
     , decodePlaylistTrack
     , init
@@ -57,6 +59,21 @@ decodePlaylistSimplified =
         (Decode.at [ "images" ] (Decode.list decodeImage))
         (Decode.field "name" Decode.string)
         (Decode.field "uri" Decode.string)
+
+
+type alias PlaylistPagingSimplified =
+    { items : List PlaylistSimplified
+    , next : String
+    }
+
+
+decodePlaylistPagingSimplified : Decode.Decoder PlaylistPagingSimplified
+decodePlaylistPagingSimplified =
+    Decode.map2 PlaylistPagingSimplified
+        (Decode.at [ "items" ] (Decode.list decodePlaylistSimplified))
+        (Decode.field "next"
+            (Decode.oneOf [ string, null "" ])
+        )
 
 
 type alias PlaylistTrack =

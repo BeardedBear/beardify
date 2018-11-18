@@ -42,7 +42,8 @@ type Msg
     = UrlChanged Url
     | UrlRequested Browser.UrlRequest
     | NoOp
-    | SetPlaylists (Result Http.Error (List PlaylistSimplified))
+    | SetPlaylists (Result Http.Error PlaylistPagingSimplified)
+    | SetPlaylistsPaging (Result Http.Error PlaylistPagingSimplified)
     | SetPlaylist (Result Http.Error Playlist)
     | SetCollection (Result Http.Error Playlist)
     | GetCollection String
@@ -125,8 +126,34 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
             ( model, Cmd.none )
 
         --  PLAYLIST/COLLECTION
+        SetPlaylistsPaging (Ok e) ->
+            let
+                concat =
+                    model.playlists ++ e.items
+            in
+            ( { model | playlists = concat }
+            , if e.next /= "" then
+                Cmd.batch [ Http.send SetPlaylistsPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
+
+              else
+                Cmd.none
+            )
+
+        SetPlaylistsPaging (Err _) ->
+            ( model, Cmd.none )
+
         SetPlaylists (Ok e) ->
-            ( { model | playlists = e }, Cmd.none )
+            let
+                _ =
+                    Debug.log "e" e
+            in
+            ( { model | playlists = e.items }
+            , if e.next /= "" then
+                Cmd.batch [ Http.send SetPlaylistsPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
+
+              else
+                Cmd.none
+            )
 
         SetPlaylists (Err _) ->
             ( model, Cmd.none )
