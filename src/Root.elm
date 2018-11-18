@@ -143,10 +143,6 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
             ( model, Cmd.none )
 
         SetPlaylists (Ok e) ->
-            let
-                _ =
-                    Debug.log "e" e
-            in
             ( { model | playlists = e.items }
             , if e.next /= "" then
                 Cmd.batch [ Http.send SetPlaylistsPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
