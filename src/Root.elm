@@ -202,10 +202,10 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
                     { drawer
                         | drawerPlaylist =
                             { playlist =
-                                { id = ""
+                                { id = model.drawer.drawerPlaylist.playlist.id
                                 , images = []
                                 , name = model.drawer.drawerPlaylist.playlist.name
-                                , uri = ""
+                                , uri = model.drawer.drawerPlaylist.playlist.uri
                                 }
                             , tracks =
                                 { items = concat
@@ -250,10 +250,10 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
                     { drawer
                         | drawerCollection =
                             { playlist =
-                                { id = ""
+                                { id = model.drawer.drawerCollection.playlist.id
                                 , images = []
                                 , name = model.drawer.drawerCollection.playlist.name
-                                , uri = ""
+                                , uri = model.drawer.drawerCollection.playlist.uri
                                 }
                             , tracks =
                                 { items = concat
