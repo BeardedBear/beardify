@@ -47,7 +47,6 @@ view player collection =
     in
     div []
         [ div [ class "heading-page" ] [ text <| String.replace "#Collection " "" collection.playlist.name ]
-        , div [] [ text <| Debug.toString collection.tracks.next ]
         , div []
             [ albums
                 |> List.map albumItem
