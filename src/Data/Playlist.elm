@@ -80,4 +80,6 @@ decodePlaylistPaging : Decode.Decoder PlaylistPaging
 decodePlaylistPaging =
     Decode.map2 PlaylistPaging
         (Decode.at [ "items" ] (Decode.list decodePlaylistTrack))
-        (Decode.field "next" (Decode.oneOf [ string, null "" ]))
+        (Decode.field "next"
+            (Decode.oneOf [ string, null "" ])
+        )
