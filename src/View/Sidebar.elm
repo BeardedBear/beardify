@@ -9,8 +9,8 @@ import List.Extra as LE
 import Root exposing (..)
 
 
-viewCollections : Drawer.Model -> List PlaylistSimplified -> Bool -> Html Msg
-viewCollections drawer playlists isClickable =
+viewCollections : Drawer.Model -> List PlaylistSimplified -> Bool -> Bool -> Html Msg
+viewCollections drawer playlists isClickable hasTitle =
     let
         collectionItem p =
             div
@@ -28,7 +28,11 @@ viewCollections drawer playlists isClickable =
     in
     if List.length playlists /= 0 then
         div [ class "collections" ]
-            [ div [ class "title" ] [ text "Collections" ]
+            [ if hasTitle then
+                div [ class "title" ] [ text "Collections" ]
+
+              else
+                text ""
             , playlists
                 |> List.filter (\f -> String.contains "#Collection" f.name)
                 |> List.map collectionItem
@@ -175,7 +179,7 @@ view model =
             ]
         , div [ class "relative" ]
             [ div [ class "fit" ]
-                [ viewCollections model.drawer model.playlists True
+                [ viewCollections model.drawer model.playlists True True
 
                 -- , viewFolders model.drawer model.playlists True
                 , div [ class "playlists" ]
