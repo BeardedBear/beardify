@@ -53,6 +53,7 @@
         padding: 20px 15px;
         font-weight: bold;
         overflow: auto;
+        border-bottom: 1px solid #222933;
 
         .title {
             font-size: 1rem;
@@ -119,8 +120,12 @@
             margin-right: 10px;
             opacity: 0.2;
         }
-
     }
+
+    .playlists {
+        border-bottom: 0;
+    }
+
     
     .top-menu {
         padding: 20px 15px;
