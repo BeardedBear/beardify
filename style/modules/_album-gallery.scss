@@ -4,7 +4,7 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     grid-gap: 30px;
 
-    @media (max-width: 500px) {
+    @media (max-width: $mobile) {
         grid-gap: 15px;
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
@@ -41,7 +41,7 @@
         grid-template-columns: 300px 1fr;
         grid-gap: 30px;
 
-        @media (max-width: 500px) {
+        @media (max-width: $mobile) {
             display: block;
         }
         
@@ -51,7 +51,7 @@
             border-radius: 5px;
             margin-bottom: 10px;
             
-            @media (max-width: 500px) {
+            @media (max-width: $mobile) {
                 display: none;
             }
         }
@@ -73,7 +73,7 @@
             visibility: visible;
         }
 
-        @media (max-width: 500px) {
+        @media (max-width: $mobile) {
             .playing-btn {
                 display: none;
             }

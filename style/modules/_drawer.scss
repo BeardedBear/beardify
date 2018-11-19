@@ -14,7 +14,7 @@
         align-content: flex-start;
         padding-top: 100px;
 
-        @media (max-width: 500px) {
+        @media (max-width: $mobile) {
             padding: 10px;
         }
     }
@@ -25,7 +25,7 @@
         margin-bottom: 10px;
         font-family: 'Exo 2';
         
-        @media (max-width: 500px) {
+        @media (max-width: $mobile) {
             margin-top: 70px;
         }
     }
@@ -34,7 +34,7 @@
         grid-template-columns: 1fr 300px;
         grid-gap: 30px;
         
-        @media (max-width: 500px) {
+        @media (max-width: $mobile) {
             grid-template-columns: 1fr ;
         }
 
@@ -99,7 +99,7 @@
             grid-gap: 30px;
             margin: 50px 0;
 
-            @media (max-width: 500px) {
+            @media (max-width: $mobile) {
                 display: block;
             }
         }
@@ -108,7 +108,7 @@
             padding: 0 30px;
             border-left: 1px solid rgba(white, 0.05);
 
-            @media (max-width: 500px) {
+            @media (max-width: $mobile) {
                 display: none;
             }
     
