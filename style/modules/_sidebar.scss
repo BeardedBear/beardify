@@ -5,6 +5,7 @@
     display: grid;
     grid-template-rows: auto auto 1fr;
     transition: all ease 0.15s;
+    transform: translateZ(0);
 
     .fit {
         display: grid;
