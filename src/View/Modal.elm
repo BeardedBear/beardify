@@ -17,7 +17,7 @@ view model =
                     [ div [ class "title" ] [ text "Add in a collection" ]
                     ]
                 , div [ class "chest" ]
-                    [ viewCollections model.drawer model.playlists False
+                    [ viewCollections model.drawer model.playlists False False
                     ]
                 , div [ class "foot" ]
                     [ button [ class "button", onClick ModalClear ] [ text "Cancel" ]

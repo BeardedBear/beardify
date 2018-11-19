@@ -5,8 +5,15 @@
     display: grid;
     grid-template-rows: auto auto 1fr;
     transition: all ease 0.15s;
+    transform: translateZ(0);
+    will-change: transform;
 
-    @media (max-width: 500px) {
+    .fit {
+        display: grid;
+        grid-auto-flow: row;
+    }
+    
+    @media (max-width: $mobile) {
         position: absolute;
         right: 0;
         top: 0;
@@ -46,6 +53,8 @@
     .folders {
         padding: 20px 15px;
         font-weight: bold;
+        overflow: auto;
+        border-bottom: 1px solid #222933;
 
         .title {
             font-size: 1rem;
@@ -112,8 +121,12 @@
             margin-right: 10px;
             opacity: 0.2;
         }
-
     }
+
+    .playlists {
+        border-bottom: 0;
+    }
+
     
     .top-menu {
         padding: 20px 15px;

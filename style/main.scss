@@ -19,7 +19,7 @@
     grid-template-columns: 300px 1fr;
     height: 100vh;
     
-    @media (max-width: 500px) {
+    @media (max-width: $mobile) {
         grid-template-columns: 0 1fr;
         
     }
@@ -31,7 +31,7 @@
     grid-template-rows: 0 1fr auto;
 
 
-    @media (max-width: 500px) {
+    @media (max-width: $mobile) {
         display: grid;
         grid-template-rows: 0 1fr auto;
         width: 100%;

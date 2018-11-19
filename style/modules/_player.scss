@@ -7,7 +7,7 @@
     border-top: 1px solid #191f27;
     position: relative;
 
-    @media (max-width: 500px) {
+    @media (max-width: $tablet) {
         display: block;
     }
 
@@ -96,6 +96,10 @@
         display: grid;
         grid-auto-flow: column;
         align-items: center;
+        
+        @media (max-width: $tablet) {
+            justify-content: center;
+        }
     }
 
 
@@ -134,8 +138,14 @@
                 border: 1px solid rgba(255,255,255, 0); 
                 background: rgba(255,255,255, 0.1);
             }
-        }
 
+            @media (max-width: $tablet) {
+                $size : 50px;
+                font-size: 2rem;
+                height: $size;
+                width: $size;
+            }
+        }
     }
 
     .options {
@@ -146,7 +156,7 @@
         position: relative;
         padding-right: 10px;
 
-        @media (max-width: 500px) {
+        @media (max-width: $tablet) {
             display: none;
         }
         

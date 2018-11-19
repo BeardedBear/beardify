@@ -203,7 +203,7 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
                         | drawerPlaylist =
                             { playlist =
                                 { id = model.drawer.drawerPlaylist.playlist.id
-                                , images = []
+                                , images = model.drawer.drawerCollection.playlist.images
                                 , name = model.drawer.drawerPlaylist.playlist.name
                                 , uri = model.drawer.drawerPlaylist.playlist.uri
                                 }
@@ -251,7 +251,7 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
                         | drawerCollection =
                             { playlist =
                                 { id = model.drawer.drawerCollection.playlist.id
-                                , images = []
+                                , images = model.drawer.drawerCollection.playlist.images
                                 , name = model.drawer.drawerCollection.playlist.name
                                 , uri = model.drawer.drawerCollection.playlist.uri
                                 }

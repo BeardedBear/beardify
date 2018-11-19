@@ -13,7 +13,7 @@
     background: #090a0c;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(1.2);
+    transform: translate3d(-50%, -50%, 0) scale(1.2);
     border-radius: 5px;
     z-index: 10;
     
@@ -25,7 +25,9 @@
     }
     
     .chest {
-        padding: 20px 30px;
+        padding: 15px 10px;
+        max-height: 40vh;
+        overflow: auto;
     }
 
     .foot {
