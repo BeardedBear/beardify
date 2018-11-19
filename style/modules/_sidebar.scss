@@ -6,6 +6,11 @@
     grid-template-rows: auto auto 1fr;
     transition: all ease 0.15s;
 
+    .fit {
+        display: grid;
+        grid-auto-flow: row;
+    }
+    
     @media (max-width: 500px) {
         position: absolute;
         right: 0;
@@ -46,6 +51,7 @@
     .folders {
         padding: 20px 15px;
         font-weight: bold;
+        overflow: auto;
 
         .title {
             font-size: 1rem;
