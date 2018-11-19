@@ -175,7 +175,8 @@ view model =
         , div [ class "top-menu" ]
             [ topMenuItem GoHome model.drawer Home "icon-home" "Home"
             , topMenuItem GoReleases model.drawer Releases "icon-bell" "Sorties"
-            , topMenuItem GoListen model.drawer Listen "icon-bookmark" "A écouter"
+
+            -- , topMenuItem GoListen model.drawer Listen "icon-bookmark" "A écouter"
             ]
         , div [ class "relative" ]
             [ div [ class "fit" ]
