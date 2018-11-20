@@ -17,7 +17,7 @@
 
     .range {
         display: grid;
-        grid-auto-flow: column;
+        grid-template-columns: auto 1fr auto;
         align-items: baseline;
         position: relative;
 
@@ -35,6 +35,10 @@
             padding-bottom: 5px;
             transition: opacity ease .15s;
             opacity: 0;
+
+            @media (max-width: $tablet) {
+                width: 100%;
+            }
         }
     }
 
@@ -157,7 +161,8 @@
         padding-right: 10px;
 
         @media (max-width: $tablet) {
-            display: none;
+            position: absolute;
+            right: 0;
         }
         
         input[type=range] {
