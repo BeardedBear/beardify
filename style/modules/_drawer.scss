@@ -17,6 +17,11 @@
         @media (max-width: $mobile) {
             padding: 10px;
         }
+
+        @media (max-width: $tablet) {
+            padding: 20px;
+            padding-top: 100px;
+        }
     }
 
     .heading-page {
@@ -28,7 +33,7 @@
         @media (max-width: $mobile) {
             margin-top: 70px;
         }
-    }
+    }   
 
     .artist-wrapper {
         grid-template-columns: 1fr 300px;
