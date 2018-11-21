@@ -149,9 +149,13 @@
         position: relative;
 
         .toggle-pocket {
-            background: #000;
             position: absolute;
             right: 100%;
+
+            .icon-checked {
+                opacity: 1;
+                color: rgba($secondary-color, 0.8)
+            }
         }
 
         .track-artist,

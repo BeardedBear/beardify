@@ -54,7 +54,12 @@ view pocket player playlist =
                     [ onClick <| PocketAdd t.track.uri
                     , class "toggle-pocket"
                     ]
-                    [ text "ADD" ]
+                    [ if List.member t.track.uri pocket.tracks then
+                        i [ class "icon-checked" ] []
+
+                      else
+                        i [ class "icon-check-empty" ] []
+                    ]
                 , icon
                 , div
                     [ class "track-title"

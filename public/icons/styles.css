@@ -122,3 +122,9 @@
 .icon-loader:before {
   content: "\42";
 }
+.icon-check-empty:before {
+  content: "\43";
+}
+.icon-checked:before {
+  content: "\44";
+}

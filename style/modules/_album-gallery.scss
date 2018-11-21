@@ -39,7 +39,7 @@
     .album-page {
         display: grid;
         grid-template-columns: 300px 1fr;
-        grid-gap: 30px;
+        grid-gap: 40px;
 
         @media (max-width: $mobile) {
             display: block;
