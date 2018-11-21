@@ -144,7 +144,7 @@ viewPlaylists drawer playlists isClickable =
                         onClick <| GetPlaylist title.id
 
                       else
-                        onClick NoOp
+                        onClick <| PocketAddToPlaylist title.id
                     , classList
                         [ ( "playlist", True )
                         , ( "active", drawer.drawerPlaylist.playlist.id == title.id && drawer.drawerType == DrawPlaylist )

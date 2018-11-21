@@ -146,6 +146,17 @@
         border-radius: 5px;
         padding: 5px 10px;
         cursor: pointer;
+        position: relative;
+
+        .toggle-pocket {
+            position: absolute;
+            right: 100%;
+
+            .icon-checked {
+                opacity: 1;
+                color: rgba($secondary-color, 0.8)
+            }
+        }
 
         .track-artist,
         .track-album,
@@ -197,6 +208,10 @@
             i {
                opacity: 1;
             }
+        }
+
+        &.selected {
+            background: rgba($secondary-color, 0.2);
         }
     }
 }

@@ -5,6 +5,7 @@ import Data.Drawer exposing (..)
 import Data.Image as Image exposing (..)
 import Data.Player as Player exposing (..)
 import Data.Playlist exposing (..)
+import Data.Pocket as Pocket exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -14,8 +15,8 @@ import Utils
 import View.Artist exposing (..)
 
 
-view : Player.Model -> PlaylistModel -> Html Msg
-view player playlist =
+view : Pocket.Model -> Player.Model -> PlaylistModel -> Html Msg
+view pocket player playlist =
     let
         listTracksUri id =
             playlist.tracks.items
@@ -46,9 +47,20 @@ view player playlist =
                 [ classList
                     [ ( "track playlist-page", True )
                     , ( "active", t.track.uri == player.item.uri )
+                    , ( "selected", List.member t.track.uri (pocket.tracks |> List.map (\tr -> tr.uri)) )
                     ]
                 ]
-                [ icon
+                [ div
+                    [ onClick <| PocketAdd (PocketTrack (t.track.artists |> List.map (\yo -> yo.name) |> List.take 1 |> String.concat) t.track.name t.track.uri)
+                    , class "toggle-pocket"
+                    ]
+                    [ if List.member t.track.uri (pocket.tracks |> List.map (\tr -> tr.uri)) then
+                        i [ class "icon-checked" ] []
+
+                      else
+                        i [ class "icon-check-empty" ] []
+                    ]
+                , icon
                 , div
                     [ class "track-title"
                     , title t.track.name

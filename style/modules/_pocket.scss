@@ -1,0 +1,66 @@
+.pocket {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: darken($bg-color, 2);
+    border-radius: 5px;
+    z-index: 999;
+    display: none;
+
+    &.active {
+        display: block;
+    }
+    
+    .pocket-head {
+        padding: 13px 15px;
+        background: darken($primary-color, 10);
+        border-radius: 5px;
+        font-family: 'Exo 2';
+        font-weight: bold;
+        display: grid;
+        justify-content: space-between;
+        grid-auto-flow: column;
+
+        &:hover {
+            border-radius: 5px 5px 0 0;
+
+            ~ .pocket-content {
+                visibility: visible;
+                height: auto;
+                overflow: inherit;
+            }
+        }
+    }
+
+    .pocket-tracks {
+        padding: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(white, 0.1);
+    }
+
+    .pocket-track {
+        margin-bottom: 10px;
+
+        .track-name {
+            font-weight: bold;
+        }
+    }
+
+    .pocket-content {
+        visibility: hidden;
+        height: 0;
+        overflow: hidden;
+
+        &:hover  {
+            visibility: visible;
+            height: auto;
+            overflow: inherit;
+        }
+    }
+
+    .playlists-list {
+        max-height: 400px;
+        overflow: auto;
+        padding: 20px;
+    }
+}

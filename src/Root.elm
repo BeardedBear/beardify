@@ -9,6 +9,7 @@ import Data.Drawer as Drawer exposing (..)
 import Data.Modal as Modal exposing (..)
 import Data.Player as Player exposing (..)
 import Data.Playlist exposing (..)
+import Data.Pocket as Pocket exposing (..)
 import Data.Releases as Releases exposing (..)
 import Data.Search as Search exposing (..)
 import Data.Track as Track exposing (..)
@@ -35,6 +36,7 @@ type alias Model =
     , player : Player.Model
     , modal : Modal.Model
     , releases : Releases.Model
+    , pocket : Pocket.Model
     }
 
 
@@ -95,10 +97,14 @@ type Msg
     | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
     | AddReleaseThePrp String
     | ToggleMenu
+    | PocketResult (Result Http.Error ())
+    | PocketAdd PocketTrack
+    | PocketClear
+    | PocketAddToPlaylist String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
+update msg ({ searchModel, config, drawer, modal, releases, player, pocket } as model) =
     let
         token =
             model.config.token
@@ -640,3 +646,36 @@ update msg ({ searchModel, config, drawer, modal, releases, player } as model) =
 
         ToggleMenu ->
             ( { model | config = { config | openedMenu = True } }, Cmd.none )
+
+        PocketResult (Ok e) ->
+            ( { model | pocket = { pocket | tracks = [] } }
+            , Cmd.none
+            )
+
+        PocketResult (Err e) ->
+            ( model, Cmd.none )
+
+        PocketAdd e ->
+            let
+                concat =
+                    e :: model.pocket.tracks
+            in
+            ( { model | pocket = { pocket | tracks = concat } }
+            , Cmd.none
+            )
+
+        PocketClear ->
+            ( { model | pocket = { pocket | tracks = [] } }
+            , Cmd.none
+            )
+
+        PocketAddToPlaylist playlistId ->
+            let
+                listTracks =
+                    model.pocket.tracks |> List.map (\t -> t.uri)
+            in
+            ( model
+            , Cmd.batch
+                [ Http.send PocketResult <| Request.post "playlists/" playlistId ("/tracks?uris=" ++ String.join "," listTracks) token
+                ]
+            )

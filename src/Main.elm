@@ -7,6 +7,7 @@ import Data.Drawer as Drawer exposing (..)
 import Data.Modal as Modal exposing (..)
 import Data.Player as Player exposing (..)
 import Data.Playlist as Playlist exposing (..)
+import Data.Pocket as Pocket exposing (..)
 import Data.Releases as Releases exposing (..)
 import Data.Search as Search exposing (..)
 import Data.Track exposing (..)
@@ -65,6 +66,7 @@ init flags url key =
       , player = Player.init
       , modal = Modal.init
       , releases = Releases.init
+      , pocket = Pocket.init
       }
     , Cmd.batch
         [ Http.send SetPlaylists <|
@@ -89,7 +91,31 @@ view model =
         [ div [ class "app" ]
             [ Sidebar.view model
             , div [ class "content" ]
-                [ div [ class "topbar" ]
+                [ div
+                    [ classList
+                        [ ( "pocket", True )
+                        , ( "active", not <| List.isEmpty model.pocket.tracks )
+                        ]
+                    ]
+                    [ div [ class "pocket-head" ]
+                        [ span [] [ text ((List.length model.pocket.tracks |> String.fromInt) ++ " tracks in your pocket") ]
+                        , button [ onClick PocketClear ] [ text "Clear" ]
+                        ]
+                    , div [ class "pocket-content" ]
+                        [ div [ class "pocket-tracks" ]
+                            (model.pocket.tracks
+                                |> List.map
+                                    (\y ->
+                                        div [ class "pocket-track" ]
+                                            [ div [ class "track-name" ] [ text y.track ]
+                                            , div [ class "artist-name" ] [ text y.artist ]
+                                            ]
+                                    )
+                            )
+                        , viewPlaylists model.drawer model.playlists False
+                        ]
+                    ]
+                , div [ class "topbar" ]
                     [ button [ onClick ToggleMenu, class "menu" ] [ text "menu" ]
                     , Search.view model.searchModel
                     ]
@@ -102,7 +128,7 @@ view model =
                             Album.view model.player model.drawer.drawerAlbum
 
                         DrawPlaylist ->
-                            Playlist.view model.player model.drawer.drawerPlaylist
+                            Playlist.view model.pocket model.player model.drawer.drawerPlaylist
 
                         DrawCollection ->
                             Collection.view model.player model.drawer.drawerCollection
