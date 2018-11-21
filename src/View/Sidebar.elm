@@ -171,6 +171,14 @@ view model =
             [ img [ src "./img/logo.png" ] []
             , text "Beardify"
             , span [ style "font-size" "0.9rem", style "opacity" "0.3" ] [ text " alpha" ]
+            , div [ class "help" ]
+                [ i [ class "icon-question" ] []
+                , div [ class "popup" ]
+                    [ div [ class "title" ] [ text "Raccourcis" ]
+                    , div [] [ text "SHIFT + F : Focus search bar" ]
+                    , div [] [ text "SPACEBAR : Play/Pause player" ]
+                    ]
+                ]
             ]
         , div [ class "top-menu" ]
             [ topMenuItem GoHome model.drawer Home "icon-home" "Home"

@@ -147,6 +147,15 @@
         padding: 5px 10px;
         cursor: pointer;
 
+        .track-artist,
+        .track-album,
+        .track-title {
+            width: 13vw;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         &:hover {
             background: rgba(black, 0.2);
         }
@@ -157,13 +166,15 @@
             opacity: 0.2;
 
             &.icon-discogs {
-                color: rgb(37, 114, 202);
+                color: $primary-color;
                 opacity: 1;
             }
+
             &.icon-pizza {
-                color: rgb(97, 202, 37);
+                color: #dec32f;
                 opacity: 1;
             }
+
         }
         
         &.album-page {

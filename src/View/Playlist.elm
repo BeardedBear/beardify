@@ -49,9 +49,14 @@ view player playlist =
                     ]
                 ]
                 [ icon
-                , div [ onClick <| ChangePlayingTrack (listTracksUri t.track.uri) ] [ text t.track.name ]
-                , div [] [ artistList t.track.artists ]
-                , div [ title t.track.album.album_type ]
+                , div
+                    [ class "track-title"
+                    , title t.track.name
+                    , onClick <| ChangePlayingTrack (listTracksUri t.track.uri)
+                    ]
+                    [ text t.track.name ]
+                , div [ class "track-artist" ] [ artistList t.track.artists ]
+                , div [ class "track-album", title t.track.album.name ]
                     [ releaseType t.track.album.album_type
                     , a [ onClick (GetAlbum t.track.album.id) ] [ text t.track.album.name ]
                     ]
