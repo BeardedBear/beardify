@@ -1,8 +1,15 @@
-module Data.Pocket exposing (Model, init)
+module Data.Pocket exposing (Model, PocketTrack, init)
 
 
 type alias Model =
-    { tracks : List String
+    { tracks : List PocketTrack
+    }
+
+
+type alias PocketTrack =
+    { artist : String
+    , track : String
+    , uri : String
     }
 
 

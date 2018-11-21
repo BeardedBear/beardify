@@ -97,9 +97,21 @@ view model =
                         , ( "active", not <| List.isEmpty model.pocket.tracks )
                         ]
                     ]
-                    [ div [ class "pocket-head" ] [ text "Add to playlist" ]
+                    [ div [ class "pocket-head" ]
+                        [ span [] [ text ((List.length model.pocket.tracks |> String.fromInt) ++ " tracks in your pocket") ]
+                        , button [ onClick PocketClear ] [ text "Clear" ]
+                        ]
                     , div [ class "pocket-content" ]
-                        [ div [] [ text <| Debug.toString model.pocket ]
+                        [ div [ class "pocket-tracks" ]
+                            (model.pocket.tracks
+                                |> List.map
+                                    (\y ->
+                                        div [ class "pocket-track" ]
+                                            [ div [ class "track-name" ] [ text y.track ]
+                                            , div [ class "artist-name" ] [ text y.artist ]
+                                            ]
+                                    )
+                            )
                         , viewPlaylists model.drawer model.playlists False
                         ]
                     ]

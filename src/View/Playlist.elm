@@ -47,14 +47,14 @@ view pocket player playlist =
                 [ classList
                     [ ( "track playlist-page", True )
                     , ( "active", t.track.uri == player.item.uri )
-                    , ( "selected", List.member t.track.uri pocket.tracks )
+                    , ( "selected", List.member t.track.uri (pocket.tracks |> List.map (\tr -> tr.uri)) )
                     ]
                 ]
                 [ div
-                    [ onClick <| PocketAdd t.track.uri
+                    [ onClick <| PocketAdd (PocketTrack (t.track.artists |> List.map (\yo -> yo.name) |> List.take 1 |> String.concat) t.track.name t.track.uri)
                     , class "toggle-pocket"
                     ]
-                    [ if List.member t.track.uri pocket.tracks then
+                    [ if List.member t.track.uri (pocket.tracks |> List.map (\tr -> tr.uri)) then
                         i [ class "icon-checked" ] []
 
                       else

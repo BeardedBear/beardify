@@ -98,7 +98,8 @@ type Msg
     | AddReleaseThePrp String
     | ToggleMenu
     | PocketResult (Result Http.Error ())
-    | PocketAdd String
+    | PocketAdd PocketTrack
+    | PocketClear
     | PocketAddToPlaylist String
 
 
@@ -663,14 +664,18 @@ update msg ({ searchModel, config, drawer, modal, releases, player, pocket } as 
             , Cmd.none
             )
 
-        PocketAddToPlaylist playlistId ->
-            ( model
-            , Cmd.batch
-                [ Http.send PocketResult <| Request.post "playlists/" playlistId ("/tracks?uris=" ++ String.join "," model.pocket.tracks) token
-                ]
+        PocketClear ->
+            ( { model | pocket = { pocket | tracks = [] } }
+            , Cmd.none
             )
 
-
-
--- curl -i -X POST "https://api.spotify.com/v1/playlists/7oi0w0SLbJ4YyjrOxhZbUv/tracks?uris=spotify%3Atrack%3A4iV5W9uYEdYUVa79Axb7Rh,spotify%3Atrack%3A1301WleyT98MSxVHPZCA6M" -H "Authorization: Bearer {your access token}" -H "Accept: application/json"
--- BadStatus { url = "https://api.spotify.com/v1/playlists/1GFdLoiGHeF9piwkRZUrEItracks?uris=spotify:track:6MpskE9Q5XEp5pMOy18SIxspotify:track:7hVivPlFPhtiLU2uli9j66", status = { code = 405, message = "" }, headers = Dict.fromList [("cache-control","private, max-age=0")], body = "" }
+        PocketAddToPlaylist playlistId ->
+            let
+                listTracks =
+                    model.pocket.tracks |> List.map (\t -> t.uri)
+            in
+            ( model
+            , Cmd.batch
+                [ Http.send PocketResult <| Request.post "playlists/" playlistId ("/tracks?uris=" ++ String.join "," listTracks) token
+                ]
+            )
