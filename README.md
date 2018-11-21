@@ -11,7 +11,9 @@ Don't try to install it, otherwise your house will probably explode, and so will
 - Improve reactivity of the player
 - Rearrange order of playlists
 - Home page
-- Add/Delete/modify playlists/tracks
+- Create/modify Playlist
+- Create/modify Collection
+- Delete Tracks
 - Routes
 
 ## Features
