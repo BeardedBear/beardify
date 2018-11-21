@@ -5,6 +5,7 @@ import Data.Drawer exposing (..)
 import Data.Image as Image exposing (..)
 import Data.Player as Player exposing (..)
 import Data.Playlist exposing (..)
+import Data.Pocket as Pocket exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -14,8 +15,8 @@ import Utils
 import View.Artist exposing (..)
 
 
-view : Player.Model -> PlaylistModel -> Html Msg
-view player playlist =
+view : Pocket.Model -> Player.Model -> PlaylistModel -> Html Msg
+view pocket player playlist =
     let
         listTracksUri id =
             playlist.tracks.items
@@ -46,9 +47,15 @@ view player playlist =
                 [ classList
                     [ ( "track playlist-page", True )
                     , ( "active", t.track.uri == player.item.uri )
+                    , ( "selected", List.member t.track.uri pocket.tracks )
                     ]
                 ]
-                [ icon
+                [ div
+                    [ onClick <| PocketAdd t.track.uri
+                    , class "toggle-pocket"
+                    ]
+                    [ text "ADD" ]
+                , icon
                 , div
                     [ class "track-title"
                     , title t.track.name

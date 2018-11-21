@@ -146,6 +146,13 @@
         border-radius: 5px;
         padding: 5px 10px;
         cursor: pointer;
+        position: relative;
+
+        .toggle-pocket {
+            background: #000;
+            position: absolute;
+            right: 100%;
+        }
 
         .track-artist,
         .track-album,
@@ -197,6 +204,10 @@
             i {
                opacity: 1;
             }
+        }
+
+        &.selected {
+            background: rgba($secondary-color, 0.2);
         }
     }
 }

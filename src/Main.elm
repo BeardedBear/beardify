@@ -7,6 +7,7 @@ import Data.Drawer as Drawer exposing (..)
 import Data.Modal as Modal exposing (..)
 import Data.Player as Player exposing (..)
 import Data.Playlist as Playlist exposing (..)
+import Data.Pocket as Pocket exposing (..)
 import Data.Releases as Releases exposing (..)
 import Data.Search as Search exposing (..)
 import Data.Track exposing (..)
@@ -65,6 +66,7 @@ init flags url key =
       , player = Player.init
       , modal = Modal.init
       , releases = Releases.init
+      , pocket = Pocket.init
       }
     , Cmd.batch
         [ Http.send SetPlaylists <|
@@ -89,7 +91,19 @@ view model =
         [ div [ class "app" ]
             [ Sidebar.view model
             , div [ class "content" ]
-                [ div [ class "topbar" ]
+                [ div
+                    [ classList
+                        [ ( "pocket", True )
+                        , ( "active", not <| List.isEmpty model.pocket.tracks )
+                        ]
+                    ]
+                    [ div [ class "pocket-head" ] [ text "Add to playlist" ]
+                    , div [ class "pocket-content" ]
+                        [ div [] [ text <| Debug.toString model.pocket ]
+                        , viewPlaylists model.drawer model.playlists False
+                        ]
+                    ]
+                , div [ class "topbar" ]
                     [ button [ onClick ToggleMenu, class "menu" ] [ text "menu" ]
                     , Search.view model.searchModel
                     ]
@@ -102,7 +116,7 @@ view model =
                             Album.view model.player model.drawer.drawerAlbum
 
                         DrawPlaylist ->
-                            Playlist.view model.player model.drawer.drawerPlaylist
+                            Playlist.view model.pocket model.player model.drawer.drawerPlaylist
 
                         DrawCollection ->
                             Collection.view model.player model.drawer.drawerCollection
