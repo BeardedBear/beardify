@@ -1,5 +1,45 @@
 @import "../base/_variables";
 
+
+.help {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 1rem;
+
+    i {
+        font-size: 1.3rem;
+        color: rgba(white,0.2);
+        cursor: pointer;
+        line-height: 0;
+
+        &:hover {
+            color: rgba(white,0.4);
+
+            ~ .popup {
+                display: block;
+            }
+        }
+    }
+
+    .popup {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        padding: 20px;
+        border-radius: 5px;
+        background: darken(#232B37, 5);
+        white-space: nowrap;
+        display: none;
+        border: 1px solid rgba(white, 0.2);
+
+        .title {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+    }
+}
+
 .sidebar {
     background: darken(#232B37, 5);
     display: grid;

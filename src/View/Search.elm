@@ -76,12 +76,4 @@ view searchMsg =
               else
                 text ""
             ]
-        , div [ class "help" ]
-            [ i [ class "icon-question" ] []
-            , div [ class "popup" ]
-                [ div [ class "title" ] [ text "Raccourcis" ]
-                , div [] [ text "SHIFT + F : Focus search bar" ]
-                , div [] [ text "SPACEBAR : Play/Pause player" ]
-                ]
-            ]
         ]
