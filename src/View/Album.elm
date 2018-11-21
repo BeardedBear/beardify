@@ -10,6 +10,7 @@ import Html.Events exposing (..)
 import List.Extra as LE
 import Root exposing (..)
 import Utils
+import View.Artist exposing (..)
 
 
 view : Player.Model -> AlbumModel -> Html Msg
@@ -49,7 +50,7 @@ view player album =
             [ div [ class "heading-page" ] [ text album.album.name ]
             , div []
                 [ span [] [ text "By " ]
-                , span [ class "artist-name" ] (album.album.artists |> List.map (\ar -> a [ onClick (GetArtist ar.id) ] [ text ar.name ]))
+                , artistList album.album.artists
                 ]
             ]
         , div [ class "album-page" ]
