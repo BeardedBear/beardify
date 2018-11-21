@@ -147,6 +147,15 @@
         padding: 5px 10px;
         cursor: pointer;
 
+        .track-artist,
+        .track-album,
+        .track-title {
+            width: 14vw;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         &:hover {
             background: rgba(black, 0.2);
         }
