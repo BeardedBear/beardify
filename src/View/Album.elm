@@ -31,7 +31,7 @@ view pocket player album =
                     , ( "selected", List.member t.uri (pocket.tracks |> List.map .uri) )
                     ]
                 ]
-                [ View.Pocket.btn2 pocket t
+                [ View.Pocket.btnTrackSimplified pocket t
                 , if t.uri == player.item.uri then
                     div [] [ i [ class "icon-play" ] [] ]
 

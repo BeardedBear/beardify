@@ -4,6 +4,7 @@ import Data.Artist exposing (..)
 import Data.Drawer exposing (..)
 import Data.Image as Image exposing (..)
 import Data.Player as Player exposing (..)
+import Data.Pocket as Pocket exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -11,6 +12,7 @@ import List.Extra as LE
 import Root exposing (..)
 import Utils
 import View.AlbumGallery as AlbumGallery exposing (..)
+import View.Pocket exposing (..)
 
 
 artistList : List ArtistSimplified -> Html Msg
@@ -21,8 +23,8 @@ artistList artists =
         |> span [ class "artist-name" ]
 
 
-view : Player.Model -> ArtistModel -> Html Msg
-view player data =
+view : Pocket.Model -> Player.Model -> ArtistModel -> Html Msg
+view pocket player data =
     let
         listTracksUri id =
             data.topTracks
@@ -34,11 +36,12 @@ view player data =
                 [ classList
                     [ ( "track", True )
                     , ( "active", t.uri == player.item.uri )
+                    , ( "selected", List.member t.uri (pocket.tracks |> List.map .uri) )
                     ]
-                , onClick (ChangePlayingTrack (listTracksUri t.uri))
                 ]
-                [ div [] [ imageView Small t.album.images ]
-                , div [] [ text t.name ]
+                [ View.Pocket.btnTrack pocket t
+                , div [] [ imageView Small t.album.images ]
+                , div [ onClick (ChangePlayingTrack (listTracksUri t.uri)) ] [ text t.name ]
                 , div [] [ text (Utils.durationFormat t.duration_ms) ]
                 ]
 

@@ -51,7 +51,7 @@ view pocket player playlist =
                     , ( "selected", List.member t.track.uri (pocket.tracks |> List.map .uri) )
                     ]
                 ]
-                [ View.Pocket.btn pocket t
+                [ View.Pocket.btnTrack pocket t.track
                 , icon
                 , div
                     [ class "track-title"
