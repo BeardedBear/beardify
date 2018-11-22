@@ -13,6 +13,7 @@ import List.Extra as LE
 import Root exposing (..)
 import Utils
 import View.Artist exposing (..)
+import View.Pocket
 
 
 view : Pocket.Model -> Player.Model -> PlaylistModel -> Html Msg
@@ -47,19 +48,10 @@ view pocket player playlist =
                 [ classList
                     [ ( "track playlist-page", True )
                     , ( "active", t.track.uri == player.item.uri )
-                    , ( "selected", List.member t.track.uri (pocket.tracks |> List.map (\tr -> tr.uri)) )
+                    , ( "selected", List.member t.track.uri (pocket.tracks |> List.map .uri) )
                     ]
                 ]
-                [ div
-                    [ onClick <| PocketAdd (PocketTrack (t.track.artists |> List.map (\yo -> yo.name) |> List.take 1 |> String.concat) t.track.name t.track.uri)
-                    , class "toggle-pocket"
-                    ]
-                    [ if List.member t.track.uri (pocket.tracks |> List.map (\tr -> tr.uri)) then
-                        i [ class "icon-checked" ] []
-
-                      else
-                        i [ class "icon-check-empty" ] []
-                    ]
+                [ View.Pocket.btnTrack pocket t.track
                 , icon
                 , div
                     [ class "track-title"

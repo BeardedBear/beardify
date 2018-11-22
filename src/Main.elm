@@ -122,10 +122,10 @@ view model =
                 , div [ class "drawer" ]
                     [ case model.drawer.drawerType of
                         DrawArtist ->
-                            Artist.view model.player model.drawer.drawerArtist
+                            Artist.view model.pocket model.player model.drawer.drawerArtist
 
                         DrawAlbum ->
-                            Album.view model.player model.drawer.drawerAlbum
+                            Album.view model.pocket model.player model.drawer.drawerAlbum
 
                         DrawPlaylist ->
                             Playlist.view model.pocket model.player model.drawer.drawerPlaylist
