@@ -27,7 +27,7 @@ view player data =
         listTracksUri id =
             data.topTracks
                 |> LE.dropWhile (\e -> e.uri /= id)
-                |> List.map (\k -> k.uri)
+                |> List.map .uri
 
         trackItem t =
             div
