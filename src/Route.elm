@@ -11,6 +11,7 @@ import Url.Parser as Parser exposing ((</>), Parser)
 type Route
     = Home
     | Counter
+    | Collection String
 
 
 parser : Parser (Route -> a) a
@@ -18,6 +19,7 @@ parser =
     Parser.oneOf
         [ Parser.map Home Parser.top
         , Parser.map Counter (Parser.s "second-page")
+        , Parser.map Collection (Parser.s "collection" </> Parser.string)
         ]
 
 
@@ -47,5 +49,8 @@ toString route =
 
                 Counter ->
                     [ "second-page" ]
+
+                Collection id ->
+                    [ "collection", id ]
     in
     "#/" ++ String.join "/" pieces

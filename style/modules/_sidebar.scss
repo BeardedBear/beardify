@@ -167,34 +167,33 @@
         border-bottom: 0;
     }
 
+    a {
+        padding: 7px 15px 6px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-weight: bold;
+        display: block;
+        border: 0;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: white;
+        }
+
+        &.active {
+            background: $primary-color;
+
+            i {
+                opacity: 1;
+            }
+        }
+    }
     
     .top-menu {
         padding: 20px 15px;
         font-size: 1rem;
         border-bottom: 1px solid #222933;
         font-family: 'Exo 2';
-
-        > .menu-item {
-            padding: 7px 15px 6px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-weight: bold;
-            display: block;
-            border: 0;
-
-            &:hover {
-                background: rgba(255, 255, 255, 0.03);
-                color: white;
-            }
-
-            &.active {
-                background: $primary-color;
-
-                i {
-                    opacity: 1;
-                }
-            }
-        }
 
         i {
             margin-right: 10px;

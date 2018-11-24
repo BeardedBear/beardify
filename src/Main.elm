@@ -7,6 +7,7 @@ import Data.Playlist exposing (..)
 import Data.Session exposing (Session)
 import Html.Styled as Html exposing (..)
 import Http
+import Page.Collection as Collection
 import Page.Counter as Counter
 import Page.Home as Home
 import Request.Request as Request
@@ -27,6 +28,7 @@ type Page
     = Blank
     | HomePage Home.Model
     | CounterPage Counter.Model
+    | CollectionPage Collection.Model
     | NotFound
 
 
@@ -43,6 +45,7 @@ type alias Model =
 type Msg
     = HomeMsg Home.Msg
     | CounterMsg Counter.Msg
+    | CollectionMsg Collection.Msg
     | UrlChanged Url
     | UrlRequested Browser.UrlRequest
     | InitPlaylist (Result Http.Error PlaylistPagingSimplified)
@@ -72,6 +75,9 @@ setRoute maybeRoute model =
 
         Just Route.Counter ->
             toPage CounterPage Counter.init CounterMsg
+
+        Just (Route.Collection id) ->
+            toPage CollectionPage Collection.init CollectionMsg
 
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -131,6 +137,9 @@ update msg ({ page, session } as model) =
 
         ( CounterMsg counterMsg, CounterPage counterModel ) ->
             toPage CounterPage CounterMsg (Counter.update session) counterMsg counterModel
+
+        ( CollectionMsg collectionMsg, CollectionPage collectionModel ) ->
+            toPage CollectionPage CollectionMsg (Collection.update session) collectionMsg collectionModel
 
         ( UrlRequested urlRequest, _ ) ->
             case urlRequest of
@@ -198,6 +207,9 @@ subscriptions model =
         CounterPage _ ->
             Sub.none
 
+        CollectionPage _ ->
+            Sub.none
+
         NotFound ->
             Sub.none
 
@@ -224,6 +236,11 @@ view model =
             Counter.view model.session counterModel
                 |> mapMsg CounterMsg
                 |> Page.frame (pageConfig Root.Counter)
+
+        CollectionPage collectionModel ->
+            Collection.view model.session collectionModel
+                |> mapMsg CollectionMsg
+                |> Page.frame (pageConfig Root.Collection)
 
         NotFound ->
             ( "Not Found", [ Html.text "Not found" ] )

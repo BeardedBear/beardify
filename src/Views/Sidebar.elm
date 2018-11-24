@@ -15,10 +15,9 @@ viewCollections : List PlaylistSimplified -> Bool -> Bool -> Html msg
 viewCollections playlists isClickable hasTitle =
     let
         collectionItem p =
-            div
-                [ classList
-                    [ ( "playlist", True )
-                    ]
+            a
+                [ classList [ ( "playlist", True ) ]
+                , Route.href <| Route.Collection p.id
                 ]
                 [ i [ class "icon-book" ] [], text <| String.replace "#Collection " "" p.name ]
     in
