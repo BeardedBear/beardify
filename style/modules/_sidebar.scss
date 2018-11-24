@@ -174,14 +174,17 @@
         border-bottom: 1px solid #222933;
         font-family: 'Exo 2';
 
-        > div {
+        > .menu-item {
             padding: 7px 15px 6px;
             cursor: pointer;
             border-radius: 5px;
             font-weight: bold;
+            display: block;
+            border: 0;
 
             &:hover {
                 background: rgba(255, 255, 255, 0.03);
+                color: white;
             }
 
             &.active {

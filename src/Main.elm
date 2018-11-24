@@ -1,38 +1,20 @@
 module Main exposing (main)
 
 import Browser exposing (Document)
-import Browser.Events
 import Browser.Navigation as Nav
-import Data.Drawer as Drawer exposing (..)
-import Data.Modal as Modal exposing (..)
-import Data.Player as Player exposing (..)
-import Data.Playlist as Playlist exposing (..)
-import Data.Pocket as Pocket exposing (..)
-import Data.Releases as Releases exposing (..)
-import Data.Search as Search exposing (..)
-import Data.Track exposing (..)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Http exposing (..)
-import Json.Decode as Decode exposing (..)
-import Keyboard.Event
-import Ports
-import Request
-import Root exposing (..)
+import Data.Date as Date exposing (Date)
+import Data.Playlist exposing (..)
+import Data.Session exposing (Session)
+import Html.Styled as Html exposing (..)
+import Http
+import Page.Counter as Counter
+import Page.Home as Home
+import Request.Request as Request
+import Route exposing (Route)
 import Time exposing (..)
 import Url exposing (Url)
-import Utils
-import View.Album as Album exposing (..)
-import View.Artist as Artist exposing (..)
-import View.Collection as Collection exposing (..)
-import View.Home as Home exposing (..)
-import View.Modal as Modal exposing (..)
-import View.Player as Player exposing (..)
-import View.Playlist as Playlist exposing (..)
-import View.Releases as Releases
-import View.Search as Search exposing (..)
-import View.Sidebar as Sidebar exposing (..)
+import Views.Page as Page
+import Views.Root as Root
 
 
 type alias Flags =
@@ -41,121 +23,223 @@ type alias Flags =
     }
 
 
-init : Flags -> Url -> Nav.Key -> ( Root.Model, Cmd Msg )
-init flags url key =
+type Page
+    = Blank
+    | HomePage Home.Model
+    | CounterPage Counter.Model
+    | NotFound
+
+
+type alias Model =
+    { config :
+        { token : String
+        , currentDate : Date
+        }
+    , page : Page
+    , session : Session
+    }
+
+
+type Msg
+    = HomeMsg Home.Msg
+    | CounterMsg Counter.Msg
+    | UrlChanged Url
+    | UrlRequested Browser.UrlRequest
+    | InitPlaylist (Result Http.Error PlaylistPagingSimplified)
+    | InitPlaylistPaging (Result Http.Error PlaylistPagingSimplified)
+
+
+setRoute : Maybe Route -> Model -> ( Model, Cmd Msg )
+setRoute maybeRoute model =
     let
+        toPage page subInit subMsg =
+            let
+                ( subModel, subCmds ) =
+                    subInit model.session
+            in
+            ( { model | page = page subModel }
+            , Cmd.map subMsg subCmds
+            )
+    in
+    case maybeRoute of
+        Nothing ->
+            ( { model | page = NotFound }
+            , Cmd.none
+            )
+
+        Just Route.Home ->
+            toPage HomePage Home.init HomeMsg
+
+        Just Route.Counter ->
+            toPage CounterPage Counter.init CounterMsg
+
+
+init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
+init flags url navKey =
+    let
+        session =
+            { navKey = navKey
+            , playlists = []
+            }
+
         timestamp =
             Time.millisToPosix flags.now
-    in
-    ( { config =
-            { token = flags.token
-            , openedMenu = False
-            , currentDate =
-                { year = Time.toYear utc timestamp
-                , month = Time.toMonth utc timestamp
-                , day = Time.toDay utc timestamp
-                , hour = Time.toHour utc timestamp
-                , minute = Time.toMinute utc timestamp
-                , second = Time.toSecond utc timestamp
-                , milliSecond = Time.toMillis utc timestamp
+
+        ( model, _ ) =
+            setRoute (Route.fromUrl url)
+                { config =
+                    { token = flags.token
+                    , currentDate =
+                        { year = Time.toYear utc timestamp
+                        , month = Time.toMonth utc timestamp
+                        , day = Time.toDay utc timestamp
+                        , hour = Time.toHour utc timestamp
+                        , minute = Time.toMinute utc timestamp
+                        , second = Time.toSecond utc timestamp
+                        , milliSecond = Time.toMillis utc timestamp
+                        }
+                    }
+                , page = Blank
+                , session = session
                 }
-            }
-      , playlists = []
-      , drawer = Drawer.init
-      , searchModel = Search.init
-      , player = Player.init
-      , modal = Modal.init
-      , releases = Releases.init
-      , pocket = Pocket.init
-      }
+    in
+    ( model
     , Cmd.batch
-        [ Http.send SetPlaylists <|
-            Request.get "me/playlists" "" "?limit=50" decodePlaylistPagingSimplified flags.token
+        [ Http.send InitPlaylist <| Request.get "me/playlists" "" "?limit=50" decodePlaylistPagingSimplified flags.token
         ]
     )
 
 
-subscriptions : Root.Model -> Sub Msg
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg ({ page, session } as model) =
+    let
+        toPage toModel toMsg subUpdate subMsg subModel =
+            let
+                ( newModel, newCmd ) =
+                    subUpdate subMsg subModel
+            in
+            ( { model | page = toModel newModel }
+            , Cmd.map toMsg newCmd
+            )
+
+        token =
+            model.config.token
+    in
+    case ( msg, page ) of
+        ( HomeMsg homeMsg, HomePage homeModel ) ->
+            toPage HomePage HomeMsg (Home.update session) homeMsg homeModel
+
+        ( CounterMsg counterMsg, CounterPage counterModel ) ->
+            toPage CounterPage CounterMsg (Counter.update session) counterMsg counterModel
+
+        ( UrlRequested urlRequest, _ ) ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model, Nav.pushUrl session.navKey (Url.toString url) )
+
+                Browser.External href ->
+                    ( model, Nav.load href )
+
+        ( UrlChanged url, _ ) ->
+            setRoute (Route.fromUrl url) model
+
+        ( _, NotFound ) ->
+            ( { model | page = NotFound }, Cmd.none )
+
+        ( InitPlaylistPaging (Ok e), _ ) ->
+            let
+                sessionModel =
+                    model.session
+
+                concat =
+                    model.session.playlists ++ e.items
+            in
+            ( { model | session = { sessionModel | playlists = concat } }
+            , if e.next /= "" then
+                Cmd.batch [ Http.send InitPlaylistPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
+
+              else
+                Cmd.none
+            )
+
+        ( InitPlaylistPaging (Err _), _ ) ->
+            ( model, Cmd.none )
+
+        ( InitPlaylist (Ok e), _ ) ->
+            let
+                sessionModel =
+                    model.session
+            in
+            ( { model | session = { sessionModel | playlists = e.items } }
+            , if e.next /= "" then
+                Cmd.batch [ Http.send InitPlaylistPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
+
+              else
+                Cmd.none
+            )
+
+        ( InitPlaylist (Err e), _ ) ->
+            let
+                _ =
+                    Debug.log "e" e
+            in
+            ( model, Cmd.none )
+
+        ( _, _ ) ->
+            ( model, Cmd.none )
+
+
+subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch
-        [ Time.every 1000 GetPlayer
-        , Browser.Events.onKeyDown (Decode.map HandleKeyboardEvent Keyboard.Event.decodeKeyboardEvent)
-        , Ports.thePrpReleases AddReleaseThePrp
-        ]
+    case model.page of
+        HomePage _ ->
+            Sub.none
+
+        CounterPage _ ->
+            Sub.none
+
+        NotFound ->
+            Sub.none
+
+        Blank ->
+            Sub.none
 
 
-view : Root.Model -> Document Msg
+view : Model -> Document Msg
 view model =
-    { title = "Beardify"
-    , body =
-        [ div [ class "app" ]
-            [ Sidebar.view model
-            , div [ class "content" ]
-                [ div
-                    [ classList
-                        [ ( "pocket", True )
-                        , ( "active", not <| List.isEmpty model.pocket.tracks )
-                        ]
-                    ]
-                    [ div [ class "pocket-head" ]
-                        [ span [] [ text ((List.length model.pocket.tracks |> String.fromInt) ++ " tracks in your pocket") ]
-                        , button [ onClick PocketClear ] [ text "Clear" ]
-                        ]
-                    , div [ class "pocket-content" ]
-                        [ div [ class "pocket-tracks" ]
-                            (model.pocket.tracks
-                                |> List.map
-                                    (\y ->
-                                        div [ class "pocket-track" ]
-                                            [ div [ class "track-name" ] [ text y.track ]
-                                            , div [ class "artist-name" ] [ text y.artist ]
-                                            ]
-                                    )
-                            )
-                        , viewPlaylists model.drawer model.playlists False
-                        ]
-                    ]
-                , div [ class "topbar" ]
-                    [ button [ onClick ToggleMenu, class "menu" ] [ text "menu" ]
-                    , Search.view model.searchModel
-                    ]
-                , div [ class "drawer" ]
-                    [ case model.drawer.drawerType of
-                        DrawArtist ->
-                            Artist.view model.pocket model.player model.drawer.drawerArtist
+    let
+        pageConfig =
+            Root.Config model.session
 
-                        DrawAlbum ->
-                            Album.view model.pocket model.player model.drawer.drawerAlbum
+        mapMsg msg ( title, content ) =
+            ( title, content |> List.map (Html.map msg) )
+    in
+    case model.page of
+        HomePage homeModel ->
+            Home.view model.session homeModel
+                |> mapMsg HomeMsg
+                |> Page.frame (pageConfig Root.Home)
 
-                        DrawPlaylist ->
-                            Playlist.view model.pocket model.player model.drawer.drawerPlaylist
+        CounterPage counterModel ->
+            Counter.view model.session counterModel
+                |> mapMsg CounterMsg
+                |> Page.frame (pageConfig Root.Counter)
 
-                        DrawCollection ->
-                            Collection.view model.player model.drawer.drawerCollection
+        NotFound ->
+            ( "Not Found", [ Html.text "Not found" ] )
+                |> Page.frame (pageConfig Root.Other)
 
-                        Home ->
-                            Home.view model
-
-                        Releases ->
-                            Releases.view model.player model
-
-                        _ ->
-                            text ""
-                    ]
-                , Player.view model.player
-                ]
-            , Modal.view model
-            ]
-        ]
-    }
+        Blank ->
+            ( "", [] )
+                |> Page.frame (pageConfig Root.Other)
 
 
-main : Program Flags Root.Model Msg
+main : Program Flags Model Msg
 main =
     Browser.application
         { init = init
         , view = view
-        , update = Root.update
+        , update = update
         , subscriptions = subscriptions
         , onUrlChange = UrlChanged
         , onUrlRequest = UrlRequested
