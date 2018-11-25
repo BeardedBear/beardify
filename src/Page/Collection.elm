@@ -29,8 +29,7 @@ init session =
       }
     , Cmd.batch
         [ Http.send SetCollection <| Request.get "playlists/" (getId session.url) "" decodePlaylist session.token
-
-        -- , Http.send SetCollectionTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging session.token
+        , Http.send SetCollectionTracks <| Request.get "playlists/" (getId session.url) "/tracks" decodePlaylistPaging session.token
         ]
     )
 
@@ -47,15 +46,12 @@ getId url =
 
 type Msg
     = SetCollection (Result Http.Error Playlist)
-
-
-
--- | SetCollectionTracks (Result Http.Error PlaylistPaging)
--- | SetCollectionTracksPaging (Result Http.Error PlaylistPaging)
+    | SetCollectionTracks (Result Http.Error PlaylistPaging)
+    | SetCollectionTracksPaging (Result Http.Error PlaylistPaging)
 
 
 update : Session -> Msg -> Model -> ( Model, Cmd Msg )
-update _ msg model =
+update session msg model =
     case msg of
         SetCollection (Ok e) ->
             ( { model | collection = e }
@@ -65,61 +61,55 @@ update _ msg model =
         SetCollection (Err e) ->
             ( model, Cmd.none )
 
+        SetCollectionTracks (Ok e) ->
+            ( { model | albums = e }
+            , if e.next /= "" then
+                Cmd.batch
+                    [ Http.send SetCollectionTracksPaging <| Request.getPaging e.next decodePlaylistPaging session.token
+                    ]
 
+              else
+                Cmd.none
+            )
 
--- SetCollectionTracksPaging (Ok e) ->
---     let
---         concat =
---             model.drawer.drawerCollection.tracks.items ++ e.items
---     in
---     ( { model
---         | drawer =
---             { drawer
---                 | drawerCollection =
---                     { playlist =
---                         { id = model.drawer.drawerCollection.playlist.id
---                         , images = model.drawer.drawerCollection.playlist.images
---                         , name = model.drawer.drawerCollection.playlist.name
---                         , uri = model.drawer.drawerCollection.playlist.uri
---                         }
---                     , tracks =
---                         { items = concat
---                         , next = ""
---                         }
---                     }
---             }
---       }
---     , if e.next /= "" then
---         Cmd.batch [ Http.send SetCollectionTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
---       else
---         Cmd.none
---     )
--- SetCollectionTracksPaging (Err _) ->
---     ( model, Cmd.none )
--- SetCollectionTracks (Ok e) ->
---     let
---         trackss =
---             { catchDrawerCollection | tracks = e }
---     in
---     ( { model | drawer = { drawer | drawerCollection = trackss } }
---     , if e.next /= "" then
---         Cmd.batch [ Http.send SetCollectionTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
---       else
---         Cmd.none
---     )
--- SetCollectionTracks (Err _) ->
---     ( model, Cmd.none )
+        SetCollectionTracks (Err _) ->
+            ( model, Cmd.none )
+
+        SetCollectionTracksPaging (Ok e) ->
+            let
+                concat =
+                    model.albums.items ++ e.items
+            in
+            ( { model
+                | albums =
+                    { items = concat
+                    , next = ""
+                    }
+              }
+            , if e.next /= "" then
+                Cmd.batch [ Http.send SetCollectionTracksPaging <| Request.getPaging e.next decodePlaylistPaging session.token ]
+
+              else
+                Cmd.none
+            )
+
+        SetCollectionTracksPaging (Err _) ->
+            ( model, Cmd.none )
 
 
 view : Session -> Model -> ( String, List (Html Msg) )
 view session model =
     let
         _ =
-            Debug.log "url" model
+            Debug.log "url" model.albums.items
     in
     ( "Collection"
     , [ div []
-            [ div [] [ text "Collection" ]
+            [ div []
+                [ text "Collection"
+                , div []
+                    (model.albums.items |> List.map (\e -> div [] [ text e.track.album.name ]))
+                ]
             ]
       , div [ class "topbar" ] [ text "" ]
       , div [ class "player" ] [ text "player" ]
