@@ -9,4 +9,5 @@ type alias Session =
     { navKey : Nav.Key
     , playlists : List PlaylistSimplified
     , url : Url
+    , token : String
     }

@@ -87,6 +87,7 @@ init flags url navKey =
             { navKey = navKey
             , playlists = []
             , url = url
+            , token = flags.token
             }
 
         timestamp =
