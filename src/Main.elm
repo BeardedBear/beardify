@@ -86,6 +86,7 @@ init flags url navKey =
         session =
             { navKey = navKey
             , playlists = []
+            , url = url
             }
 
         timestamp =
@@ -144,7 +145,7 @@ update msg ({ page, session } as model) =
         ( UrlRequested urlRequest, _ ) ->
             case urlRequest of
                 Browser.Internal url ->
-                    ( model, Nav.pushUrl session.navKey (Url.toString url) )
+                    ( { model | session = { session | url = url } }, Nav.pushUrl session.navKey (Url.toString url) )
 
                 Browser.External href ->
                     ( model, Nav.load href )
@@ -188,10 +189,6 @@ update msg ({ page, session } as model) =
             )
 
         ( InitPlaylist (Err e), _ ) ->
-            let
-                _ =
-                    Debug.log "e" e
-            in
             ( model, Cmd.none )
 
         ( _, _ ) ->

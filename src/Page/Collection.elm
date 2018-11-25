@@ -7,7 +7,7 @@ import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
 import Route
-import Url
+import Url exposing (percentDecode)
 import Url.Parser as Parser exposing ((</>), Parser)
 
 
@@ -43,11 +43,14 @@ update _ msg model =
 
 
 view : Session -> Model -> ( String, List (Html Msg) )
-view _ model =
+view session model =
+    let
+        _ =
+            Debug.log "url" session.url
+    in
     ( "Collection"
     , [ div []
             [ div [] [ text "Collection" ]
-            , div [] [ text <| Debug.toString Parser.string ]
             ]
       , div [ class "topbar" ] [ text "" ]
       , div [ class "player" ] [ text "player" ]
