@@ -1,10 +1,22 @@
 module Utils exposing
     ( durationFormat
     , durationFormatMinutes
+    , getId
     , releaseDateFormat
     )
 
 import Time exposing (millisToPosix, toHour, toMinute, toSecond, utc)
+import Url exposing (Url)
+
+
+getId : Url -> String
+getId url =
+    case url.fragment of
+        Just e ->
+            e |> String.split "/" |> List.take 3 |> List.drop 2 |> String.concat
+
+        _ ->
+            String.fromFloat e
 
 
 durationFormat : Int -> String

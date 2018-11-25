@@ -12,6 +12,7 @@ import Request.Request as Request
 import Route
 import Url exposing (Url, percentDecode)
 import Url.Parser as Parser exposing ((</>), Parser)
+import Utils
 import Views.Collection as Collection exposing (..)
 
 
@@ -24,20 +25,10 @@ init session =
             }
       }
     , Cmd.batch
-        [ Http.send SetCollection <| Request.get "playlists/" (getId session.url) "" decodePlaylist session.token
-        , Http.send SetCollectionTracks <| Request.get "playlists/" (getId session.url) "/tracks" decodePlaylistPaging session.token
+        [ Http.send SetCollection <| Request.get "playlists/" (Utils.getId session.url) "" decodePlaylist session.token
+        , Http.send SetCollectionTracks <| Request.get "playlists/" (Utils.getId session.url) "/tracks" decodePlaylistPaging session.token
         ]
     )
-
-
-getId : Url -> String
-getId url =
-    case url.fragment of
-        Just e ->
-            e |> String.split "/" |> List.take 3 |> List.drop 2 |> String.concat
-
-        _ ->
-            String.fromFloat e
 
 
 type Msg

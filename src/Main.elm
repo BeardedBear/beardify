@@ -2,12 +2,14 @@ module Main exposing (main)
 
 import Browser exposing (Document)
 import Browser.Navigation as Nav
+import Data.Album
 import Data.Collection
 import Data.Date as Date exposing (Date)
 import Data.Playlist exposing (..)
 import Data.Session exposing (Session)
 import Html.Styled as Html exposing (..)
 import Http
+import Page.Album as Album
 import Page.Collection as Collection
 import Page.Counter as Counter
 import Page.Home as Home
@@ -30,6 +32,7 @@ type Page
     | HomePage Home.Model
     | CounterPage Counter.Model
     | CollectionPage Data.Collection.Model
+    | AlbumPage Data.Album.Model
     | NotFound
 
 
@@ -47,6 +50,7 @@ type Msg
     = HomeMsg Home.Msg
     | CounterMsg Counter.Msg
     | CollectionMsg Collection.Msg
+    | AlbumMsg Album.Msg
     | UrlChanged Url
     | UrlRequested Browser.UrlRequest
     | InitPlaylist (Result Http.Error PlaylistPagingSimplified)
@@ -79,6 +83,9 @@ setRoute maybeRoute model =
 
         Just (Route.Collection id) ->
             toPage CollectionPage Collection.init CollectionMsg
+
+        Just (Route.Album id) ->
+            toPage AlbumPage Album.init AlbumMsg
 
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -145,6 +152,9 @@ update msg ({ page, session } as model) =
         ( CollectionMsg collectionMsg, CollectionPage collectionModel ) ->
             toPage CollectionPage CollectionMsg (Collection.update session) collectionMsg collectionModel
 
+        ( AlbumMsg albumMsg, AlbumPage albumModel ) ->
+            toPage AlbumPage AlbumMsg (Album.update session) albumMsg albumModel
+
         ( UrlRequested urlRequest, _ ) ->
             case urlRequest of
                 Browser.Internal url ->
@@ -210,6 +220,9 @@ subscriptions model =
         CollectionPage _ ->
             Sub.none
 
+        AlbumPage _ ->
+            Sub.none
+
         NotFound ->
             Sub.none
 
@@ -241,6 +254,11 @@ view model =
             Collection.view model.session collectionModel
                 |> mapMsg CollectionMsg
                 |> Page.frame (pageConfig Root.Collection)
+
+        AlbumPage albumModel ->
+            Album.view model.session albumModel
+                |> mapMsg AlbumMsg
+                |> Page.frame (pageConfig Root.Album)
 
         NotFound ->
             ( "Not Found", [ Html.text "Not found" ] )

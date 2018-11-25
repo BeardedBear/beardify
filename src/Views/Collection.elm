@@ -10,6 +10,7 @@ import Data.Playlist exposing (..)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
+import Route
 import Utils
 
 
@@ -35,10 +36,9 @@ view model =
                     )
 
         albumItem al =
-            div
-                [ classList
-                    [ ( "album", True )
-                    ]
+            a
+                [ classList [ ( "album", True ) ]
+                , Route.href (Route.Album al.albumId)
                 ]
                 [ div [ class "img" ] [ imageView Medium al.images ]
                 , div [] [ text al.album ]

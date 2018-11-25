@@ -1,5 +1,5 @@
 module Data.Album exposing
-    ( Album
+    ( Model
     , decodeAlbum
     , encodeAlbum
     , init
@@ -11,7 +11,7 @@ import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
 
 
-init : Album
+init : Model
 init =
     { album_type = ""
     , artists = []
@@ -24,7 +24,7 @@ init =
     }
 
 
-type alias Album =
+type alias Model =
     { album_type : String
     , artists : List ArtistSimplified
     , id : String
@@ -36,9 +36,9 @@ type alias Album =
     }
 
 
-decodeAlbum : Decode.Decoder Album
+decodeAlbum : Decode.Decoder Model
 decodeAlbum =
-    Decode.map8 Album
+    Decode.map8 Model
         (Decode.field "album_type" Decode.string)
         (Decode.at [ "artists" ] (Decode.list decodeArtistSimplified))
         (Decode.field "id" Decode.string)
