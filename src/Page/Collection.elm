@@ -1,6 +1,7 @@
-module Page.Collection exposing (Model, Msg, init, update, view)
+module Page.Collection exposing (Msg, init, update, view)
 
 import Css exposing (fontSize, marginRight)
+import Data.Collection
 import Data.Playlist as Playlist exposing (..)
 import Data.Session exposing (Session)
 import Html.Styled as Html exposing (..)
@@ -11,16 +12,15 @@ import Request.Request as Request
 import Route
 import Url exposing (Url, percentDecode)
 import Url.Parser as Parser exposing ((</>), Parser)
+import Views.Collection as Collection exposing (..)
 
 
-type alias Model =
-    { collection : Playlist
-    , albums : PlaylistPaging
-    }
-
-
-init : Session -> ( Model, Cmd Msg )
+init : Session -> ( Data.Collection.Model, Cmd Msg )
 init session =
+    let
+        _ =
+            Debug.log "session" session
+    in
     ( { collection = Playlist.init
       , albums =
             { items = []
@@ -50,7 +50,7 @@ type Msg
     | SetCollectionTracksPaging (Result Http.Error PlaylistPaging)
 
 
-update : Session -> Msg -> Model -> ( Model, Cmd Msg )
+update : Session -> Msg -> Data.Collection.Model -> ( Data.Collection.Model, Cmd Msg )
 update session msg model =
     case msg of
         SetCollection (Ok e) ->
@@ -72,7 +72,7 @@ update session msg model =
                 Cmd.none
             )
 
-        SetCollectionTracks (Err _) ->
+        SetCollectionTracks (Err e) ->
             ( model, Cmd.none )
 
         SetCollectionTracksPaging (Ok e) ->
@@ -97,21 +97,11 @@ update session msg model =
             ( model, Cmd.none )
 
 
-view : Session -> Model -> ( String, List (Html Msg) )
+view : Session -> Data.Collection.Model -> ( String, List (Html Msg) )
 view session model =
-    let
-        _ =
-            Debug.log "url" model.albums.items
-    in
     ( "Collection"
-    , [ div []
-            [ div []
-                [ text "Collection"
-                , div []
-                    (model.albums.items |> List.map (\e -> div [] [ text e.track.album.name ]))
-                ]
-            ]
-      , div [ class "topbar" ] [ text "" ]
+    , [ div [ class "topbar" ] [ text "" ]
+      , div [ class "drawer" ] [ Collection.view model ]
       , div [ class "player" ] [ text "player" ]
       ]
     )

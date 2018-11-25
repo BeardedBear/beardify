@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Browser exposing (Document)
 import Browser.Navigation as Nav
+import Data.Collection
 import Data.Date as Date exposing (Date)
 import Data.Playlist exposing (..)
 import Data.Session exposing (Session)
@@ -28,7 +29,7 @@ type Page
     = Blank
     | HomePage Home.Model
     | CounterPage Counter.Model
-    | CollectionPage Collection.Model
+    | CollectionPage Data.Collection.Model
     | NotFound
 
 
@@ -93,7 +94,7 @@ init flags url navKey =
         timestamp =
             Time.millisToPosix flags.now
 
-        ( model, _ ) =
+        ( model, cmds ) =
             setRoute (Route.fromUrl url)
                 { config =
                     { token = flags.token
@@ -113,7 +114,8 @@ init flags url navKey =
     in
     ( model
     , Cmd.batch
-        [ Http.send InitPlaylist <| Request.get "me/playlists" "" "?limit=50" decodePlaylistPagingSimplified flags.token
+        [ cmds
+        , Http.send InitPlaylist <| Request.get "me/playlists" "" "?limit=50" decodePlaylistPagingSimplified flags.token
         ]
     )
 
