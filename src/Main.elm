@@ -154,7 +154,7 @@ update msg ({ page, session } as model) =
                     ( model, Nav.load href )
 
         ( UrlChanged url, _ ) ->
-            setRoute (Route.fromUrl url) model
+            setRoute (Route.fromUrl url) { model | session = { session | url = url } }
 
         ( _, NotFound ) ->
             ( { model | page = NotFound }, Cmd.none )

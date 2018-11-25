@@ -17,10 +17,6 @@ import Views.Collection as Collection exposing (..)
 
 init : Session -> ( Data.Collection.Model, Cmd Msg )
 init session =
-    let
-        _ =
-            Debug.log "session" session
-    in
     ( { collection = Playlist.init
       , albums =
             { items = []
