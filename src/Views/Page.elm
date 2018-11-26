@@ -5,6 +5,7 @@ import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, css, href, src)
 import Route
+import Views.Player
 import Views.Root as Root exposing (..)
 import Views.Sidebar as Sidebar exposing (..)
 import Views.Theme exposing (Element, defaultCss)
@@ -20,7 +21,7 @@ frame config ( title, content ) =
             , div [ class "content" ]
                 [ div [ class "topbar" ] [ text "" ]
                 , div [ class "drawer" ] content
-                , div [ class "player" ] [ text "player" ]
+                , Views.Player.view config.session.player
                 ]
             ]
             |> toUnstyled

@@ -41,29 +41,29 @@ type alias Model =
 
 
 type Msg
-    = UrlChanged Url
-    | UrlRequested Browser.UrlRequest
-    | NoOp
-    | SetPlaylists (Result Http.Error PlaylistPagingSimplified)
-    | SetPlaylistsPaging (Result Http.Error PlaylistPagingSimplified)
-    | SetPlaylist (Result Http.Error Playlist)
-    | SetCollection (Result Http.Error Playlist)
-    | GetCollection String
-    | GetPlaylist String
-    | GetAlbum String
-    | SetAlbum (Result Http.Error Album)
-    | SetAlbumTracks (Result Http.Error (List TrackSimplified))
-    | SetPlaylistTracks (Result Http.Error PlaylistPaging)
-    | SetPlaylistTracksPaging (Result Http.Error PlaylistPaging)
-    | SetCollectionTracks (Result Http.Error PlaylistPaging)
-    | SetCollectionTracksPaging (Result Http.Error PlaylistPaging)
-    | GetArtist String
-    | SetArtist (Result Http.Error Artist)
-    | SetArtistAlbums (Result Http.Error (List Album))
-    | SetArtistTopTracks (Result Http.Error (List Track))
-    | SetRelatedArtists (Result Http.Error (List Artist))
-    | SetPlayer (Result Http.Error Player.Model)
-    | SetYoutube (Result Http.Error Youtube)
+    -- = UrlChanged Url
+    -- | UrlRequested Browser.UrlRequest
+    -- | NoOp
+    -- | SetPlaylists (Result Http.Error PlaylistPagingSimplified)
+    -- | SetPlaylistsPaging (Result Http.Error PlaylistPagingSimplified)
+    -- | SetPlaylist (Result Http.Error Playlist)
+    -- | SetCollection (Result Http.Error Playlist)
+    -- | GetCollection String
+    -- | GetPlaylist String
+    -- | GetAlbum String
+    -- | SetAlbum (Result Http.Error Album)
+    -- | SetAlbumTracks (Result Http.Error (List TrackSimplified))
+    -- | SetPlaylistTracks (Result Http.Error PlaylistPaging)
+    -- | SetPlaylistTracksPaging (Result Http.Error PlaylistPaging)
+    -- | SetCollectionTracks (Result Http.Error PlaylistPaging)
+    -- | SetCollectionTracksPaging (Result Http.Error PlaylistPaging)
+    -- | GetArtist String
+    -- | SetArtist (Result Http.Error Artist)
+    -- | SetArtistAlbums (Result Http.Error (List Album))
+    -- | SetArtistTopTracks (Result Http.Error (List Track))
+    -- | SetRelatedArtists (Result Http.Error (List Artist))
+    -- | SetPlayer (Result Http.Error Player.Model)
+    -- | SetYoutube (Result Http.Error Youtube)
     | PlayerControl (Result Http.Error ())
     | PlayerSeek String
     | PlayerVolume String
@@ -83,8 +83,8 @@ type Msg
     | Query String
     | ChangePlaying String
     | ChangePlayingTrack (List String)
-    | GetPlayer Posix
-    | GoHome
+    -- | GetPlayer Posix
+    -- | GoHome
     | SetReleases (Result Http.Error (List Album))
     | GoReleases
     | GoListen
@@ -122,321 +122,321 @@ update msg ({ searchModel, config, drawer, modal, releases, player, pocket } as 
             drawer.drawerCollection
     in
     case msg of
-        UrlChanged url ->
-            ( model, Cmd.none )
+        -- UrlChanged url ->
+        --     ( model, Cmd.none )
 
-        UrlRequested urlRequest ->
-            ( model, Cmd.none )
+        -- UrlRequested urlRequest ->
+        --     ( model, Cmd.none )
 
-        NoOp ->
-            ( model, Cmd.none )
+        -- NoOp ->
+        --     ( model, Cmd.none )
 
         --  PLAYLIST/COLLECTION
-        SetPlaylistsPaging (Ok e) ->
-            let
-                concat =
-                    model.playlists ++ e.items
-            in
-            ( { model | playlists = concat }
-            , if e.next /= "" then
-                Cmd.batch [ Http.send SetPlaylistsPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
+        -- SetPlaylistsPaging (Ok e) ->
+        --     let
+        --         concat =
+        --             model.playlists ++ e.items
+        --     in
+        --     ( { model | playlists = concat }
+        --     , if e.next /= "" then
+        --         Cmd.batch [ Http.send SetPlaylistsPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
 
-              else
-                Cmd.none
-            )
+        --       else
+        --         Cmd.none
+        --     )
 
-        SetPlaylistsPaging (Err _) ->
-            ( model, Cmd.none )
+        -- SetPlaylistsPaging (Err _) ->
+        --     ( model, Cmd.none )
 
-        SetPlaylists (Ok e) ->
-            ( { model | playlists = e.items }
-            , if e.next /= "" then
-                Cmd.batch [ Http.send SetPlaylistsPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
+        -- SetPlaylists (Ok e) ->
+        --     ( { model | playlists = e.items }
+        --     , if e.next /= "" then
+        --         Cmd.batch [ Http.send SetPlaylistsPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
 
-              else
-                Cmd.none
-            )
+        --       else
+        --         Cmd.none
+        --     )
 
-        SetPlaylists (Err _) ->
-            ( model, Cmd.none )
+        -- SetPlaylists (Err _) ->
+        --     ( model, Cmd.none )
 
-        SetPlaylist (Ok e) ->
-            let
-                playlist =
-                    { catchDrawerPlaylist | playlist = e }
-            in
-            ( { model
-                | drawer =
-                    { drawer
-                        | drawerType = DrawPlaylist
-                        , drawerPlaylist = playlist
-                    }
-                , config = { config | openedMenu = False }
-              }
-            , Cmd.none
-            )
+        -- SetPlaylist (Ok e) ->
+        --     let
+        --         playlist =
+        --             { catchDrawerPlaylist | playlist = e }
+        --     in
+        --     ( { model
+        --         | drawer =
+        --             { drawer
+        --                 | drawerType = DrawPlaylist
+        --                 , drawerPlaylist = playlist
+        --             }
+        --         , config = { config | openedMenu = False }
+        --       }
+        --     , Cmd.none
+        --     )
 
-        SetPlaylist (Err _) ->
-            ( model, Cmd.none )
+        -- SetPlaylist (Err _) ->
+        --     ( model, Cmd.none )
 
-        SetCollection (Ok e) ->
-            let
-                collection =
-                    { catchDrawerCollection | playlist = e }
-            in
-            ( { model
-                | drawer =
-                    { drawer
-                        | drawerType = DrawCollection
-                        , drawerCollection = collection
-                    }
-                , config = { config | openedMenu = False }
-              }
-            , Cmd.none
-            )
+        -- SetCollection (Ok e) ->
+        --     let
+        --         collection =
+        --             { catchDrawerCollection | playlist = e }
+        --     in
+        --     ( { model
+        --         | drawer =
+        --             { drawer
+        --                 | drawerType = DrawCollection
+        --                 , drawerCollection = collection
+        --             }
+        --         , config = { config | openedMenu = False }
+        --       }
+        --     , Cmd.none
+        --     )
 
-        SetCollection (Err e) ->
-            ( model, Cmd.none )
+        -- SetCollection (Err e) ->
+        --     ( model, Cmd.none )
 
-        SetPlaylistTracksPaging (Ok e) ->
-            let
-                concat =
-                    model.drawer.drawerPlaylist.tracks.items ++ e.items
-            in
-            ( { model
-                | drawer =
-                    { drawer
-                        | drawerPlaylist =
-                            { playlist =
-                                { id = model.drawer.drawerPlaylist.playlist.id
-                                , images = model.drawer.drawerCollection.playlist.images
-                                , name = model.drawer.drawerPlaylist.playlist.name
-                                , uri = model.drawer.drawerPlaylist.playlist.uri
-                                }
-                            , tracks =
-                                { items = concat
-                                , next = ""
-                                }
-                            }
-                    }
-              }
-            , if e.next /= "" then
-                Cmd.batch [ Http.send SetPlaylistTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
+        -- SetPlaylistTracksPaging (Ok e) ->
+        --     let
+        --         concat =
+        --             model.drawer.drawerPlaylist.tracks.items ++ e.items
+        --     in
+        --     ( { model
+        --         | drawer =
+        --             { drawer
+        --                 | drawerPlaylist =
+        --                     { playlist =
+        --                         { id = model.drawer.drawerPlaylist.playlist.id
+        --                         , images = model.drawer.drawerCollection.playlist.images
+        --                         , name = model.drawer.drawerPlaylist.playlist.name
+        --                         , uri = model.drawer.drawerPlaylist.playlist.uri
+        --                         }
+        --                     , tracks =
+        --                         { items = concat
+        --                         , next = ""
+        --                         }
+        --                     }
+        --             }
+        --       }
+        --     , if e.next /= "" then
+        --         Cmd.batch [ Http.send SetPlaylistTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
 
-              else
-                Cmd.none
-            )
+        --       else
+        --         Cmd.none
+        --     )
 
-        SetPlaylistTracksPaging (Err _) ->
-            ( model, Cmd.none )
+        -- SetPlaylistTracksPaging (Err _) ->
+        --     ( model, Cmd.none )
 
-        SetPlaylistTracks (Ok e) ->
-            let
-                trackss =
-                    { catchDrawerPlaylist | tracks = e }
-            in
-            ( { model | drawer = { drawer | drawerPlaylist = trackss } }
-            , if e.next /= "" then
-                Cmd.batch [ Http.send SetPlaylistTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
+        -- SetPlaylistTracks (Ok e) ->
+        --     let
+        --         trackss =
+        --             { catchDrawerPlaylist | tracks = e }
+        --     in
+        --     ( { model | drawer = { drawer | drawerPlaylist = trackss } }
+        --     , if e.next /= "" then
+        --         Cmd.batch [ Http.send SetPlaylistTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
 
-              else
-                Cmd.none
-            )
+        --       else
+        --         Cmd.none
+        --     )
 
-        SetPlaylistTracks (Err _) ->
-            ( model, Cmd.none )
+        -- SetPlaylistTracks (Err _) ->
+        --     ( model, Cmd.none )
 
-        SetCollectionTracksPaging (Ok e) ->
-            let
-                concat =
-                    model.drawer.drawerCollection.tracks.items ++ e.items
-            in
-            ( { model
-                | drawer =
-                    { drawer
-                        | drawerCollection =
-                            { playlist =
-                                { id = model.drawer.drawerCollection.playlist.id
-                                , images = model.drawer.drawerCollection.playlist.images
-                                , name = model.drawer.drawerCollection.playlist.name
-                                , uri = model.drawer.drawerCollection.playlist.uri
-                                }
-                            , tracks =
-                                { items = concat
-                                , next = ""
-                                }
-                            }
-                    }
-              }
-            , if e.next /= "" then
-                Cmd.batch [ Http.send SetCollectionTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
+        -- SetCollectionTracksPaging (Ok e) ->
+        --     let
+        --         concat =
+        --             model.drawer.drawerCollection.tracks.items ++ e.items
+        --     in
+        --     ( { model
+        --         | drawer =
+        --             { drawer
+        --                 | drawerCollection =
+        --                     { playlist =
+        --                         { id = model.drawer.drawerCollection.playlist.id
+        --                         , images = model.drawer.drawerCollection.playlist.images
+        --                         , name = model.drawer.drawerCollection.playlist.name
+        --                         , uri = model.drawer.drawerCollection.playlist.uri
+        --                         }
+        --                     , tracks =
+        --                         { items = concat
+        --                         , next = ""
+        --                         }
+        --                     }
+        --             }
+        --       }
+        --     , if e.next /= "" then
+        --         Cmd.batch [ Http.send SetCollectionTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
 
-              else
-                Cmd.none
-            )
+        --       else
+        --         Cmd.none
+        --     )
 
-        SetCollectionTracksPaging (Err _) ->
-            ( model, Cmd.none )
+        -- SetCollectionTracksPaging (Err _) ->
+        --     ( model, Cmd.none )
 
-        SetCollectionTracks (Ok e) ->
-            let
-                trackss =
-                    { catchDrawerCollection | tracks = e }
-            in
-            ( { model | drawer = { drawer | drawerCollection = trackss } }
-            , if e.next /= "" then
-                Cmd.batch [ Http.send SetCollectionTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
+        -- SetCollectionTracks (Ok e) ->
+        --     let
+        --         trackss =
+        --             { catchDrawerCollection | tracks = e }
+        --     in
+        --     ( { model | drawer = { drawer | drawerCollection = trackss } }
+        --     , if e.next /= "" then
+        --         Cmd.batch [ Http.send SetCollectionTracksPaging <| Request.getPaging e.next decodePlaylistPaging token ]
 
-              else
-                Cmd.none
-            )
+        --       else
+        --         Cmd.none
+        --     )
 
-        SetCollectionTracks (Err _) ->
-            ( model, Cmd.none )
+        -- SetCollectionTracks (Err _) ->
+        --     ( model, Cmd.none )
 
-        GetPlaylist id ->
-            ( model
-            , Cmd.batch
-                [ Http.send SetPlaylistTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging token
-                , Http.send SetPlaylist <| Request.get "playlists/" id "" decodePlaylist token
-                ]
-            )
+        -- GetPlaylist id ->
+        --     ( model
+        --     , Cmd.batch
+        --         [ Http.send SetPlaylistTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging token
+        --         , Http.send SetPlaylist <| Request.get "playlists/" id "" decodePlaylist token
+        --         ]
+        --     )
 
-        GetCollection id ->
-            ( model
-            , Cmd.batch
-                [ Http.send SetCollection <| Request.get "playlists/" id "" decodePlaylist token
-                , Http.send SetCollectionTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging token
-                ]
-            )
+        -- GetCollection id ->
+        --     ( model
+        --     , Cmd.batch
+        --         [ Http.send SetCollection <| Request.get "playlists/" id "" decodePlaylist token
+        --         , Http.send SetCollectionTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging token
+        --         ]
+        --     )
 
         -- ALBUM
-        GetAlbum e ->
-            ( { model | searchModel = { searchModel | searchQuery = "" } }
-            , Cmd.batch
-                [ Http.send SetAlbum <| Request.get "albums/" e "" decodeAlbum token
-                , Http.send SetAlbumTracks <| Request.get "albums/" e "/tracks" (Decode.at [ "items" ] (Decode.list decodeTrackSimplified)) token
-                ]
-            )
+        -- GetAlbum e ->
+        --     ( { model | searchModel = { searchModel | searchQuery = "" } }
+        --     , Cmd.batch
+        --         [ Http.send SetAlbum <| Request.get "albums/" e "" decodeAlbum token
+        --         , Http.send SetAlbumTracks <| Request.get "albums/" e "/tracks" (Decode.at [ "items" ] (Decode.list decodeTrackSimplified)) token
+        --         ]
+        --     )
 
-        SetAlbum (Ok e) ->
-            let
-                album =
-                    { catchDrawerAlbum | album = e }
-            in
-            ( { model
-                | drawer =
-                    { drawer
-                        | drawerType = DrawAlbum
-                        , drawerAlbum = album
-                    }
-              }
-            , Cmd.none
-            )
+        -- SetAlbum (Ok e) ->
+        --     let
+        --         album =
+        --             { catchDrawerAlbum | album = e }
+        --     in
+        --     ( { model
+        --         | drawer =
+        --             { drawer
+        --                 | drawerType = DrawAlbum
+        --                 , drawerAlbum = album
+        --             }
+        --       }
+        --     , Cmd.none
+        --     )
 
-        SetAlbum (Err _) ->
-            ( model, Cmd.none )
+        -- SetAlbum (Err _) ->
+        --     ( model, Cmd.none )
 
-        SetAlbumTracks (Ok e) ->
-            let
-                tracks =
-                    { catchDrawerAlbum | tracks = e }
-            in
-            ( { model | drawer = { drawer | drawerAlbum = tracks } }
-            , Cmd.none
-            )
+        -- SetAlbumTracks (Ok e) ->
+        --     let
+        --         tracks =
+        --             { catchDrawerAlbum | tracks = e }
+        --     in
+        --     ( { model | drawer = { drawer | drawerAlbum = tracks } }
+        --     , Cmd.none
+        --     )
 
-        SetAlbumTracks (Err e) ->
-            ( model, Cmd.none )
+        -- SetAlbumTracks (Err e) ->
+        --     ( model, Cmd.none )
 
         -- ARTIST
-        GetArtist id ->
-            ( model
-            , Cmd.batch
-                [ Http.send SetArtist <|
-                    Request.get "artists/" id "" decodeArtist token
-                , Http.send SetArtistAlbums <|
-                    Request.get "artists/" id "/albums?market=FR&album_type=album" (Decode.at [ "items" ] (Decode.list decodeAlbum)) token
-                , Http.send SetArtistTopTracks <|
-                    Request.get "artists/" id "/top-tracks?country=FR" (Decode.at [ "tracks" ] (Decode.list decodeTrack)) token
-                , Http.send SetRelatedArtists <|
-                    Request.get "artists/" id "/related-artists" (Decode.at [ "artists" ] (Decode.list decodeArtist)) token
-                ]
-            )
+        -- GetArtist id ->
+        --     ( model
+        --     , Cmd.batch
+        --         [ Http.send SetArtist <|
+        --             Request.get "artists/" id "" decodeArtist token
+        --         , Http.send SetArtistAlbums <|
+        --             Request.get "artists/" id "/albums?market=FR&album_type=album" (Decode.at [ "items" ] (Decode.list decodeAlbum)) token
+        --         , Http.send SetArtistTopTracks <|
+        --             Request.get "artists/" id "/top-tracks?country=FR" (Decode.at [ "tracks" ] (Decode.list decodeTrack)) token
+        --         , Http.send SetRelatedArtists <|
+        --             Request.get "artists/" id "/related-artists" (Decode.at [ "artists" ] (Decode.list decodeArtist)) token
+        --         ]
+        --     )
 
-        SetArtist (Ok e) ->
-            let
-                artist =
-                    { catchDrawerArtist | artist = e }
-            in
-            ( { model
-                | drawer =
-                    { drawer
-                        | drawerType = DrawArtist
-                        , drawerArtist = artist
-                    }
-                , searchModel = { searchModel | searchQuery = "" }
-              }
-            , Http.send SetYoutube <| getVideos e.name
-            )
+        -- SetArtist (Ok e) ->
+        --     let
+        --         artist =
+        --             { catchDrawerArtist | artist = e }
+        --     in
+        --     ( { model
+        --         | drawer =
+        --             { drawer
+        --                 | drawerType = DrawArtist
+        --                 , drawerArtist = artist
+        --             }
+        --         , searchModel = { searchModel | searchQuery = "" }
+        --       }
+        --     , Http.send SetYoutube <| getVideos e.name
+        --     )
 
-        SetArtist (Err _) ->
-            ( model, Cmd.none )
+        -- SetArtist (Err _) ->
+        --     ( model, Cmd.none )
 
-        SetArtistAlbums (Ok e) ->
-            let
-                albums =
-                    { catchDrawerArtist | albums = e }
-            in
-            ( { model
-                | drawer = { drawer | drawerArtist = albums }
-                , searchModel = { searchModel | searchQuery = "" }
-              }
-            , Cmd.none
-            )
+        -- SetArtistAlbums (Ok e) ->
+        --     let
+        --         albums =
+        --             { catchDrawerArtist | albums = e }
+        --     in
+        --     ( { model
+        --         | drawer = { drawer | drawerArtist = albums }
+        --         , searchModel = { searchModel | searchQuery = "" }
+        --       }
+        --     , Cmd.none
+        --     )
 
-        SetArtistAlbums (Err _) ->
-            ( model, Cmd.none )
+        -- SetArtistAlbums (Err _) ->
+        --     ( model, Cmd.none )
 
-        SetArtistTopTracks (Ok e) ->
-            let
-                topTracks =
-                    { catchDrawerArtist | topTracks = e }
-            in
-            ( { model | drawer = { drawer | drawerArtist = topTracks } }, Cmd.none )
+        -- SetArtistTopTracks (Ok e) ->
+        --     let
+        --         topTracks =
+        --             { catchDrawerArtist | topTracks = e }
+        --     in
+        --     ( { model | drawer = { drawer | drawerArtist = topTracks } }, Cmd.none )
 
-        SetArtistTopTracks (Err _) ->
-            ( model, Cmd.none )
+        -- SetArtistTopTracks (Err _) ->
+        --     ( model, Cmd.none )
 
-        SetRelatedArtists (Ok e) ->
-            let
-                artists =
-                    { catchDrawerArtist | relatedArtists = e }
-            in
-            ( { model | drawer = { drawer | drawerArtist = artists } }, Cmd.none )
+        -- SetRelatedArtists (Ok e) ->
+        --     let
+        --         artists =
+        --             { catchDrawerArtist | relatedArtists = e }
+        --     in
+        --     ( { model | drawer = { drawer | drawerArtist = artists } }, Cmd.none )
 
-        SetRelatedArtists (Err _) ->
-            ( model, Cmd.none )
+        -- SetRelatedArtists (Err _) ->
+        --     ( model, Cmd.none )
 
-        SetYoutube (Ok e) ->
-            let
-                videos =
-                    { catchDrawerArtist | videos = e.items }
-            in
-            ( { model | drawer = { drawer | drawerArtist = videos } }, Cmd.none )
+        -- SetYoutube (Ok e) ->
+        --     let
+        --         videos =
+        --             { catchDrawerArtist | videos = e.items }
+        --     in
+        --     ( { model | drawer = { drawer | drawerArtist = videos } }, Cmd.none )
 
-        SetYoutube (Err _) ->
-            ( model, Cmd.none )
+        -- SetYoutube (Err _) ->
+        --     ( model, Cmd.none )
 
         -- PLAYER
-        SetPlayer (Ok e) ->
-            ( { model | player = e }, Cmd.none )
+        -- SetPlayer (Ok e) ->
+        --     ( { model | player = e }, Cmd.none )
 
-        SetPlayer (Err _) ->
-            ( model, Ports.refreshToken () )
+        -- SetPlayer (Err _) ->
+        --     ( model, Ports.refreshToken () )
 
-        GetPlayer _ ->
-            ( model, Http.send SetPlayer <| Request.get "me/player" "" "" decodePlayer token )
+        -- GetPlayer _ ->
+        --     ( model, Http.send SetPlayer <| Request.get "me/player" "" "" decodePlayer token )
 
         PlayerControl (Ok e) ->
             ( model, Cmd.none )

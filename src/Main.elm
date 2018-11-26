@@ -4,6 +4,7 @@ import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Data.Album
 import Data.Date as Date exposing (Date)
+import Data.Player
 import Data.Playlist exposing (..)
 import Data.Root
 import Data.Session exposing (Session)
@@ -61,6 +62,8 @@ type Msg
     | UrlRequested Browser.UrlRequest
     | InitPlaylist (Result Http.Error PlaylistPagingSimplified)
     | InitPlaylistPaging (Result Http.Error PlaylistPagingSimplified)
+    | SetPlayer (Result Http.Error Data.Player.Model)
+    | GetPlayer Posix
 
 
 setRoute : Maybe Route -> Model -> ( Model, Cmd Msg )
@@ -108,6 +111,7 @@ init flags url navKey =
             , playlists = []
             , url = url
             , token = flags.token
+            , player = Data.Player.init
             }
 
         timestamp =
@@ -219,6 +223,15 @@ update msg ({ page, session } as model) =
                 Cmd.none
             )
 
+        ( SetPlayer (Ok e), _ ) ->
+            ( { model | session = { session | player = e } }, Cmd.none )
+
+        ( SetPlayer (Err _), _ ) ->
+            ( model, Cmd.none )
+
+        ( GetPlayer _, _ ) ->
+            ( model, Http.send SetPlayer <| Request.get "me/player" "" "" Data.Player.decodePlayer token )
+
         ( InitPlaylist (Err e), _ ) ->
             ( model, Cmd.none )
 
@@ -228,30 +241,34 @@ update msg ({ page, session } as model) =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
+    let
+        commonSubs =
+            Time.every 1000 GetPlayer
+    in
     case model.page of
         HomePage _ ->
-            Sub.none
+            Sub.batch [ commonSubs ]
 
         CounterPage _ ->
-            Sub.none
+            Sub.batch [ commonSubs ]
 
         CollectionPage _ ->
-            Sub.none
+            Sub.batch [ commonSubs ]
 
         PlaylistPage _ ->
-            Sub.none
+            Sub.batch [ commonSubs ]
 
         AlbumPage _ ->
-            Sub.none
+            Sub.batch [ commonSubs ]
 
         ArtistPage _ ->
-            Sub.none
+            Sub.batch [ commonSubs ]
 
         NotFound ->
-            Sub.none
+            Sub.batch [ commonSubs ]
 
         Blank ->
-            Sub.none
+            Sub.batch [ commonSubs ]
 
 
 view : Model -> Document Msg
