@@ -8,6 +8,7 @@ type ActivePage
     | Counter
     | Collection
     | Album
+    | Artist
     | Other
 
 

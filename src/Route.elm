@@ -13,6 +13,7 @@ type Route
     | Counter
     | Collection String
     | Album String
+    | Artist String
 
 
 parser : Parser (Route -> a) a
@@ -22,6 +23,7 @@ parser =
         , Parser.map Counter (Parser.s "second-page")
         , Parser.map Collection (Parser.s "collection" </> Parser.string)
         , Parser.map Album (Parser.s "album" </> Parser.string)
+        , Parser.map Artist (Parser.s "artist" </> Parser.string)
         ]
 
 
@@ -57,5 +59,8 @@ toString route =
 
                 Album id ->
                     [ "album", id ]
+
+                Artist id ->
+                    [ "artist", id ]
     in
     "#/" ++ String.join "/" pieces

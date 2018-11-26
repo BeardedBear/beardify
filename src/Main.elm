@@ -10,6 +10,7 @@ import Data.Session exposing (Session)
 import Html.Styled as Html exposing (..)
 import Http
 import Page.Album as Album
+import Page.Artist as Artist
 import Page.Collection as Collection
 import Page.Counter as Counter
 import Page.Home as Home
@@ -18,7 +19,7 @@ import Route exposing (Route)
 import Time exposing (..)
 import Url exposing (Url)
 import Views.Page as Page
-import Views.Root as Root
+import Views.Root
 
 
 type alias Flags =
@@ -33,6 +34,7 @@ type Page
     | CounterPage Counter.Model
     | CollectionPage Data.Root.CollectionModel
     | AlbumPage Data.Root.AlbumModel
+    | ArtistPage Data.Root.ArtistModel
     | NotFound
 
 
@@ -51,6 +53,7 @@ type Msg
     | CounterMsg Counter.Msg
     | CollectionMsg Collection.Msg
     | AlbumMsg Album.Msg
+    | ArtistMsg Artist.Msg
     | UrlChanged Url
     | UrlRequested Browser.UrlRequest
     | InitPlaylist (Result Http.Error PlaylistPagingSimplified)
@@ -86,6 +89,9 @@ setRoute maybeRoute model =
 
         Just (Route.Album id) ->
             toPage AlbumPage Album.init AlbumMsg
+
+        Just (Route.Artist id) ->
+            toPage ArtistPage Artist.init ArtistMsg
 
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -155,6 +161,9 @@ update msg ({ page, session } as model) =
         ( AlbumMsg albumMsg, AlbumPage albumModel ) ->
             toPage AlbumPage AlbumMsg (Album.update session) albumMsg albumModel
 
+        ( ArtistMsg artistMsg, ArtistPage artistModel ) ->
+            toPage ArtistPage ArtistMsg (Artist.update session) artistMsg artistModel
+
         ( UrlRequested urlRequest, _ ) ->
             case urlRequest of
                 Browser.Internal url ->
@@ -223,6 +232,9 @@ subscriptions model =
         AlbumPage _ ->
             Sub.none
 
+        ArtistPage _ ->
+            Sub.none
+
         NotFound ->
             Sub.none
 
@@ -234,7 +246,7 @@ view : Model -> Document Msg
 view model =
     let
         pageConfig =
-            Root.Config model.session
+            Views.Root.Config model.session
 
         mapMsg msg ( title, content ) =
             ( title, content |> List.map (Html.map msg) )
@@ -243,30 +255,35 @@ view model =
         HomePage homeModel ->
             Home.view model.session homeModel
                 |> mapMsg HomeMsg
-                |> Page.frame (pageConfig Root.Home)
+                |> Page.frame (pageConfig Views.Root.Home)
 
         CounterPage counterModel ->
             Counter.view model.session counterModel
                 |> mapMsg CounterMsg
-                |> Page.frame (pageConfig Root.Counter)
+                |> Page.frame (pageConfig Views.Root.Counter)
 
         CollectionPage collectionModel ->
             Collection.view model.session collectionModel
                 |> mapMsg CollectionMsg
-                |> Page.frame (pageConfig Root.Collection)
+                |> Page.frame (pageConfig Views.Root.Collection)
 
         AlbumPage albumModel ->
             Album.view model.session albumModel
                 |> mapMsg AlbumMsg
-                |> Page.frame (pageConfig Root.Album)
+                |> Page.frame (pageConfig Views.Root.Album)
+
+        ArtistPage artistModel ->
+            Artist.view model.session artistModel
+                |> mapMsg ArtistMsg
+                |> Page.frame (pageConfig Views.Root.Artist)
 
         NotFound ->
             ( "Not Found", [ Html.text "Not found" ] )
-                |> Page.frame (pageConfig Root.Other)
+                |> Page.frame (pageConfig Views.Root.Other)
 
         Blank ->
             ( "", [] )
-                |> Page.frame (pageConfig Root.Other)
+                |> Page.frame (pageConfig Views.Root.Other)
 
 
 main : Program Flags Model Msg

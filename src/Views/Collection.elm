@@ -28,13 +28,20 @@ view model =
                     )
 
         albumItem al =
-            a
-                [ classList [ ( "album", True ) ]
-                , Route.href (Route.Album al.albumId)
-                ]
-                [ div [ class "img" ] [ imageView Medium al.images ]
+            div [ classList [ ( "album", True ) ] ]
+                [ a [ Route.href (Route.Album al.albumId), class "img" ] [ imageView Medium al.images ]
                 , div [] [ text al.album ]
-                , div [] (al.artists |> List.map (\ar -> a [ class "artist-name" ] [ text ar.name ]))
+                , div []
+                    (al.artists
+                        |> List.map
+                            (\ar ->
+                                a
+                                    [ Route.href (Route.Artist ar.id)
+                                    , class "artist-name"
+                                    ]
+                                    [ text ar.name ]
+                            )
+                    )
                 , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat al.release_date ++ ")" ]
                 , div [ class "playing-btn" ] [ i [ class "icon-play" ] [] ]
                 , div [ class "add-btn" ] [ i [ class "icon-add" ] [] ]
