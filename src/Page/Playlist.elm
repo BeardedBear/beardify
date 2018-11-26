@@ -14,6 +14,7 @@ import Route
 import Url exposing (Url, percentDecode)
 import Url.Parser as Parser exposing ((</>), Parser)
 import Utils
+import Views.Playlist
 
 
 
@@ -50,7 +51,7 @@ view : Session -> Data.Root.PlaylistModel -> ( String, List (Html Msg) )
 view session model =
     ( "model.album.name"
     , [ div [ class "topbar" ] [ text "" ]
-      , div [ class "drawer" ] [ text "playlist" ]
+      , div [ class "drawer" ] [ Views.Playlist.view model ]
       , div [ class "player" ] [ text "player" ]
       ]
     )
