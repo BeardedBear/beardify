@@ -12,7 +12,7 @@ import Views.Theme exposing (Element, defaultCss)
 
 frame : Root.Config -> ( String, List (Html msg) ) -> Document msg
 frame config ( title, content ) =
-    { title = title ++ " | elm-kitchen"
+    { title = title ++ " - Beardify"
     , body =
         [ div [ class "app" ]
             [ defaultCss

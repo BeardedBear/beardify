@@ -20,16 +20,6 @@ import Utils
 import Views.Artist
 
 
-
--- type alias ArtistModel =
---     { artist : Data.Artist.Artist
---     , albums : List Data.Album.Album
---     , videos : List Data.Youtube.Video
---     , topTracks : List Data.Track.Track
---     , relatedArtists : List Data.Artist.Artist
---     }
-
-
 init : Session -> ( Data.Root.ArtistModel, Cmd Msg )
 init session =
     ( { artist = Data.Artist.init
@@ -101,7 +91,7 @@ update session msg model =
 
 view : Session -> Data.Root.ArtistModel -> ( String, List (Html Msg) )
 view session model =
-    ( "Artist"
+    ( model.artist.name
     , [ div [ class "topbar" ] [ text "" ]
       , div [ class "drawer" ] [ Views.Artist.view model ]
       , div [ class "player" ] [ text "player" ]
