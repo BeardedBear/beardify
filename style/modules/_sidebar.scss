@@ -80,6 +80,11 @@
         border-bottom: 1px solid #222933;
         font-family: 'Exo 2';
 
+        span {
+            font-size: 1rem;
+            opacity: 0.2;
+        }
+
         img {
             width: 30px;
             position: relative;
@@ -167,7 +172,7 @@
         border-bottom: 0;
     }
 
-    a {
+    .menu-item {
         padding: 7px 15px 6px;
         cursor: pointer;
         border-radius: 5px;
