@@ -48,8 +48,10 @@ viewPlaylists playlists isClickable =
     test
         |> List.map
             (\title ->
-                div
-                    [ classList [ ( "playlist", True ) ] ]
+                a
+                    [ classList [ ( "playlist", True ) ]
+                    , Route.href <| Route.Playlist title.id
+                    ]
                     [ i [ class "icon-list" ] [], text title.name ]
             )
         |> div [ class "playlists-list" ]
