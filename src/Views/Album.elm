@@ -7,6 +7,7 @@ import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
 import List.Extra as LE
 import Utils
+import Views.Artist
 
 
 view : Data.Root.AlbumModel -> Html msg
@@ -40,7 +41,7 @@ view model =
             [ div [ class "heading-page" ] [ text model.album.name ]
             , div []
                 [ span [] [ text "By " ]
-                , span [] [ text <| Debug.toString model.album.artists ]
+                , span [] [ Views.Artist.artistList model.album.artists ]
                 ]
             ]
         , div [ class "album-page" ]
