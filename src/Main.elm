@@ -3,9 +3,9 @@ module Main exposing (main)
 import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Data.Album
-import Data.Collection
 import Data.Date as Date exposing (Date)
 import Data.Playlist exposing (..)
+import Data.Root
 import Data.Session exposing (Session)
 import Html.Styled as Html exposing (..)
 import Http
@@ -31,8 +31,8 @@ type Page
     = Blank
     | HomePage Home.Model
     | CounterPage Counter.Model
-    | CollectionPage Data.Collection.Model
-    | AlbumPage Data.Album.Model
+    | CollectionPage Data.Root.CollectionModel
+    | AlbumPage Data.Root.AlbumModel
     | NotFound
 
 

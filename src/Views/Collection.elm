@@ -1,12 +1,8 @@
 module Views.Collection exposing (view)
 
--- import Data.Drawer exposing (..)
--- import Data.Player as Player exposing (..)
--- import Root exposing (..)
-
-import Data.Collection
 import Data.Image as Image exposing (..)
 import Data.Playlist exposing (..)
+import Data.Root
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
@@ -14,11 +10,7 @@ import Route
 import Utils
 
 
-
--- import View.AlbumGallery as AlbumGallery exposing (..)
-
-
-view : Data.Collection.Model -> Html msg
+view : Data.Root.CollectionModel -> Html msg
 view model =
     let
         albums =
@@ -57,7 +49,3 @@ view model =
                 |> div [ class "album-list-wrapper" ]
             ]
         ]
-
-
-
--- (model.albums.items |> List.map (\e -> div [] [ text e.track.album.name ]))

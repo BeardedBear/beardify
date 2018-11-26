@@ -51,7 +51,7 @@ type alias Track =
     { name : String
     , duration_ms : Int
     , artists : List ArtistSimplified
-    , album : Album.Model
+    , album : Album
     , uri : String
     }
 

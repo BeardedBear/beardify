@@ -1,8 +1,8 @@
 module Page.Collection exposing (Msg, init, update, view)
 
 import Css exposing (fontSize, marginRight)
-import Data.Collection
 import Data.Playlist as Playlist exposing (..)
+import Data.Root
 import Data.Session exposing (Session)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -16,7 +16,7 @@ import Utils
 import Views.Collection as Collection exposing (..)
 
 
-init : Session -> ( Data.Collection.Model, Cmd Msg )
+init : Session -> ( Data.Root.CollectionModel, Cmd Msg )
 init session =
     ( { collection = Playlist.init
       , albums =
@@ -37,7 +37,7 @@ type Msg
     | SetCollectionTracksPaging (Result Http.Error PlaylistPaging)
 
 
-update : Session -> Msg -> Data.Collection.Model -> ( Data.Collection.Model, Cmd Msg )
+update : Session -> Msg -> Data.Root.CollectionModel -> ( Data.Root.CollectionModel, Cmd Msg )
 update session msg model =
     case msg of
         SetCollection (Ok e) ->
@@ -84,7 +84,7 @@ update session msg model =
             ( model, Cmd.none )
 
 
-view : Session -> Data.Collection.Model -> ( String, List (Html Msg) )
+view : Session -> Data.Root.CollectionModel -> ( String, List (Html Msg) )
 view session model =
     ( "Collection"
     , [ div [ class "topbar" ] [ text "" ]
