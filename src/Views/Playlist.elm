@@ -41,8 +41,7 @@ view model =
                     [ ( "track playlist-page", True )
                     ]
                 ]
-                [ span [] []
-                , icon
+                [ icon
                 , div
                     [ class "track-title"
                     , title t.track.name

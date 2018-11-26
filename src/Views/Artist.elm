@@ -34,8 +34,7 @@ view model =
                     [ ( "track", True )
                     ]
                 ]
-                [ div [] []
-                , div [] [ imageView Small t.album.images ]
+                [ div [] [ imageView Small t.album.images ]
                 , div [] [ text t.name ]
                 , div [] [ text (Utils.durationFormat t.duration_ms) ]
                 ]
