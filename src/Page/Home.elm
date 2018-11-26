@@ -38,8 +38,8 @@ update _ msg model =
 
 
 view : Session -> Model -> ( String, List (Html Msg) )
-view _ model =
+view session model =
     ( "Home"
-    , [ div [] [ text "home" ]
+    , [ div [] [ text <| Debug.toString session.search ]
       ]
     )

@@ -7,6 +7,7 @@ import Html.Styled.Attributes exposing (class, css, href, src)
 import Route
 import Views.Player
 import Views.Root as Root exposing (..)
+import Views.Search
 import Views.Sidebar as Sidebar exposing (..)
 import Views.Theme exposing (Element, defaultCss)
 
@@ -19,7 +20,7 @@ frame config ( title, content ) =
             [ defaultCss
             , Sidebar.view config
             , div [ class "content" ]
-                [ div [ class "topbar" ] [ text "" ]
+                [ div [ class "topbar" ] [ Views.Search.view config.session.search ]
                 , div [ class "drawer" ] content
                 , Views.Player.view config.session.player
                 ]

@@ -76,11 +76,11 @@ type Msg
     | PlayerShuffleOn
     | PlayerRepeatOff
     | PlayerRepeatOn
-    | FindArtist (Result Http.Error (List Artist))
-    | FindAlbum (Result Http.Error (List Album))
-    | FindTrack (Result Http.Error (List Track))
+    -- | FindArtist (Result Http.Error (List Artist))
+    -- | FindAlbum (Result Http.Error (List Album))
+    -- | FindTrack (Result Http.Error (List Track))
+    -- | Query String
     | Play (Result Http.Error ())
-    | Query String
     | ChangePlaying String
     | ChangePlayingTrack (List String)
     -- | GetPlayer Posix
@@ -495,44 +495,44 @@ update msg ({ searchModel, config, drawer, modal, releases, player, pocket } as 
             )
 
         -- SEARCH
-        FindArtist (Ok artist) ->
-            ( { model | searchModel = { searchModel | findArtist = artist } }, Cmd.none )
+        -- FindArtist (Ok artist) ->
+        --     ( { model | searchModel = { searchModel | findArtist = artist } }, Cmd.none )
 
-        FindArtist (Err _) ->
-            ( model, Cmd.none )
+        -- FindArtist (Err _) ->
+        --     ( model, Cmd.none )
 
-        FindAlbum (Ok album) ->
-            ( { model | searchModel = { searchModel | findAlbum = album } }, Cmd.none )
+        -- FindAlbum (Ok album) ->
+        --     ( { model | searchModel = { searchModel | findAlbum = album } }, Cmd.none )
 
-        FindAlbum (Err _) ->
-            ( model, Cmd.none )
+        -- FindAlbum (Err _) ->
+        --     ( model, Cmd.none )
 
-        FindTrack (Ok track) ->
-            ( { model | searchModel = { searchModel | findTrack = track } }, Cmd.none )
+        -- FindTrack (Ok track) ->
+        --     ( { model | searchModel = { searchModel | findTrack = track } }, Cmd.none )
 
-        FindTrack (Err _) ->
-            ( model, Cmd.none )
+        -- FindTrack (Err _) ->
+        --     ( model, Cmd.none )
 
-        Query e ->
-            ( { model | searchModel = { searchModel | searchQuery = e } }
-            , Cmd.batch
-                [ Http.send FindArtist <|
-                    Request.get "search?q=" (e ++ "*") "&type=artist&limit=10" (Decode.at [ "artists", "items" ] (Decode.list decodeArtist)) token
-                , Http.send FindAlbum <|
-                    Request.get "search?q=" (e ++ "*") "&type=album&limit=9" (Decode.at [ "albums", "items" ] (Decode.list decodeAlbum)) token
-                , Http.send FindTrack <|
-                    Request.get "search?q=" (e ++ "*") "&type=track&limit=12" (Decode.at [ "tracks", "items" ] (Decode.list decodeTrack)) token
-                ]
-            )
+        -- Query e ->
+        --     ( { model | searchModel = { searchModel | searchQuery = e } }
+        --     , Cmd.batch
+        --         [ Http.send FindArtist <|
+        --             Request.get "search?q=" (e ++ "*") "&type=artist&limit=10" (Decode.at [ "artists", "items" ] (Decode.list decodeArtist)) token
+        --         , Http.send FindAlbum <|
+        --             Request.get "search?q=" (e ++ "*") "&type=album&limit=9" (Decode.at [ "albums", "items" ] (Decode.list decodeAlbum)) token
+        --         , Http.send FindTrack <|
+        --             Request.get "search?q=" (e ++ "*") "&type=track&limit=12" (Decode.at [ "tracks", "items" ] (Decode.list decodeTrack)) token
+        --         ]
+        --     )
 
         -- DRAWER
-        GoHome ->
-            ( { model
-                | drawer = { drawer | drawerType = Home }
-                , config = { config | openedMenu = False }
-              }
-            , Cmd.none
-            )
+        -- GoHome ->
+        --     ( { model
+        --         | drawer = { drawer | drawerType = Home }
+        --         , config = { config | openedMenu = False }
+        --       }
+        --     , Cmd.none
+        --     )
 
         SetReleases (Ok e) ->
             ( { model | releases = { releases | releaseList = e } }, Cmd.none )

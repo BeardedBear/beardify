@@ -3,13 +3,17 @@ module Main exposing (main)
 import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Data.Album
+import Data.Artist
 import Data.Date as Date exposing (Date)
 import Data.Player
 import Data.Playlist exposing (..)
 import Data.Root
+import Data.Search
 import Data.Session exposing (Session)
+import Data.Track
 import Html.Styled as Html exposing (..)
 import Http
+import Json.Decode as Decode exposing (..)
 import Page.Album as Album
 import Page.Artist as Artist
 import Page.Collection as Collection
@@ -64,6 +68,10 @@ type Msg
     | InitPlaylistPaging (Result Http.Error PlaylistPagingSimplified)
     | SetPlayer (Result Http.Error Data.Player.Model)
     | GetPlayer Posix
+    | FindArtist (Result Http.Error (List Data.Artist.Artist))
+    | FindAlbum (Result Http.Error (List Data.Album.Album))
+    | FindTrack (Result Http.Error (List Data.Track.Track))
+    | Query String
 
 
 setRoute : Maybe Route -> Model -> ( Model, Cmd Msg )
@@ -112,6 +120,7 @@ init flags url navKey =
             , url = url
             , token = flags.token
             , player = Data.Player.init
+            , search = Data.Search.init
             }
 
         timestamp =
@@ -157,6 +166,9 @@ update msg ({ page, session } as model) =
 
         token =
             model.config.token
+
+        search =
+            model.session.search
     in
     case ( msg, page ) of
         ( HomeMsg homeMsg, HomePage homeModel ) ->
@@ -193,13 +205,10 @@ update msg ({ page, session } as model) =
 
         ( InitPlaylistPaging (Ok e), _ ) ->
             let
-                sessionModel =
-                    model.session
-
                 concat =
                     model.session.playlists ++ e.items
             in
-            ( { model | session = { sessionModel | playlists = concat } }
+            ( { model | session = { session | playlists = concat } }
             , if e.next /= "" then
                 Cmd.batch [ Http.send InitPlaylistPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
 
@@ -211,17 +220,16 @@ update msg ({ page, session } as model) =
             ( model, Cmd.none )
 
         ( InitPlaylist (Ok e), _ ) ->
-            let
-                sessionModel =
-                    model.session
-            in
-            ( { model | session = { sessionModel | playlists = e.items } }
+            ( { model | session = { session | playlists = e.items } }
             , if e.next /= "" then
                 Cmd.batch [ Http.send InitPlaylistPaging <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
 
               else
                 Cmd.none
             )
+
+        ( InitPlaylist (Err e), _ ) ->
+            ( model, Cmd.none )
 
         ( SetPlayer (Ok e), _ ) ->
             ( { model | session = { session | player = e } }, Cmd.none )
@@ -232,8 +240,38 @@ update msg ({ page, session } as model) =
         ( GetPlayer _, _ ) ->
             ( model, Http.send SetPlayer <| Request.get "me/player" "" "" Data.Player.decodePlayer token )
 
-        ( InitPlaylist (Err e), _ ) ->
+        ( FindArtist (Ok artist), _ ) ->
+            ( { model | session = { session | search = { search | findArtist = artist } } }
+            , Cmd.none
+            )
+
+        ( FindArtist (Err _), _ ) ->
             ( model, Cmd.none )
+
+        ( FindAlbum (Ok album), _ ) ->
+            ( { model | session = { session | search = { search | findAlbum = album } } }
+            , Cmd.none
+            )
+
+        ( FindAlbum (Err _), _ ) ->
+            ( model, Cmd.none )
+
+        ( FindTrack (Ok track), _ ) ->
+            ( { model | session = { session | search = { search | findTrack = track } } }
+            , Cmd.none
+            )
+
+        ( FindTrack (Err _), _ ) ->
+            ( model, Cmd.none )
+
+        ( Query e, _ ) ->
+            ( { model | session = { session | search = { search | searchQuery = e } } }
+            , Cmd.batch
+                [ Http.send FindArtist <| Request.get "search?q=" (e ++ "*") "&type=artist&limit=10" (Decode.at [ "artists", "items" ] (Decode.list Data.Artist.decodeArtist)) token
+                , Http.send FindAlbum <| Request.get "search?q=" (e ++ "*") "&type=album&limit=9" (Decode.at [ "albums", "items" ] (Decode.list Data.Album.decodeAlbum)) token
+                , Http.send FindTrack <| Request.get "search?q=" (e ++ "*") "&type=track&limit=12" (Decode.at [ "tracks", "items" ] (Decode.list Data.Track.decodeTrack)) token
+                ]
+            )
 
         ( _, _ ) ->
             ( model, Cmd.none )
