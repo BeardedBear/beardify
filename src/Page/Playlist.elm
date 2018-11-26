@@ -86,9 +86,4 @@ update session msg model =
 
 view : Session -> Data.Root.PlaylistModel -> ( String, List (Html Msg) )
 view session model =
-    ( "model.album.name"
-    , [ div [ class "topbar" ] [ text "" ]
-      , div [ class "drawer" ] [ Views.Playlist.view model ]
-      , div [ class "player" ] [ text "player" ]
-      ]
-    )
+    ( "model.album.name", [ Views.Playlist.view model ] )

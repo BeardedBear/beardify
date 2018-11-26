@@ -86,9 +86,4 @@ update session msg model =
 
 view : Session -> Data.Root.CollectionModel -> ( String, List (Html Msg) )
 view session model =
-    ( model.collection.name
-    , [ div [ class "topbar" ] [ text "" ]
-      , div [ class "drawer" ] [ Collection.view model ]
-      , div [ class "player" ] [ text "player" ]
-      ]
-    )
+    ( model.collection.name, [ Collection.view model ] )

@@ -91,9 +91,4 @@ update session msg model =
 
 view : Session -> Data.Root.ArtistModel -> ( String, List (Html Msg) )
 view session model =
-    ( model.artist.name
-    , [ div [ class "topbar" ] [ text "" ]
-      , div [ class "drawer" ] [ Views.Artist.view model ]
-      , div [ class "player" ] [ text "player" ]
-      ]
-    )
+    ( model.artist.name, [ Views.Artist.view model ] )

@@ -17,7 +17,11 @@ frame config ( title, content ) =
         [ div [ class "app" ]
             [ defaultCss
             , Sidebar.view config
-            , div [ class "content" ] content
+            , div [ class "content" ]
+                [ div [ class "topbar" ] [ text "" ]
+                , div [ class "drawer" ] content
+                , div [ class "player" ] [ text "player" ]
+                ]
             ]
             |> toUnstyled
         ]

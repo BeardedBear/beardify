@@ -34,7 +34,7 @@ view : Session -> Model -> ( String, List (Html Msg) )
 view _ model =
     ( "Second Page"
     , [ div [] [ text "content" ]
-      , div [ class "topbar" ] [ text "topbar" ]
+      , div [ class "topbar" ] [ text "zddzddz" ]
       , div [ class "player" ] [ text "player" ]
       ]
     )
