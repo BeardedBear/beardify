@@ -14,6 +14,7 @@ import Page.Artist as Artist
 import Page.Collection as Collection
 import Page.Counter as Counter
 import Page.Home as Home
+import Page.Playlist as Playlist
 import Request.Request as Request
 import Route exposing (Route)
 import Time exposing (..)
@@ -33,6 +34,7 @@ type Page
     | HomePage Home.Model
     | CounterPage Counter.Model
     | CollectionPage Data.Root.CollectionModel
+    | PlaylistPage Data.Root.PlaylistModel
     | AlbumPage Data.Root.AlbumModel
     | ArtistPage Data.Root.ArtistModel
     | NotFound
@@ -52,6 +54,7 @@ type Msg
     = HomeMsg Home.Msg
     | CounterMsg Counter.Msg
     | CollectionMsg Collection.Msg
+    | PlaylistMsg Playlist.Msg
     | AlbumMsg Album.Msg
     | ArtistMsg Artist.Msg
     | UrlChanged Url
@@ -86,6 +89,9 @@ setRoute maybeRoute model =
 
         Just (Route.Collection id) ->
             toPage CollectionPage Collection.init CollectionMsg
+
+        Just (Route.Playlist id) ->
+            toPage PlaylistPage Playlist.init PlaylistMsg
 
         Just (Route.Album id) ->
             toPage AlbumPage Album.init AlbumMsg
@@ -158,6 +164,9 @@ update msg ({ page, session } as model) =
         ( CollectionMsg collectionMsg, CollectionPage collectionModel ) ->
             toPage CollectionPage CollectionMsg (Collection.update session) collectionMsg collectionModel
 
+        ( PlaylistMsg playlistMsg, PlaylistPage playlistModel ) ->
+            toPage PlaylistPage PlaylistMsg (Playlist.update session) playlistMsg playlistModel
+
         ( AlbumMsg albumMsg, AlbumPage albumModel ) ->
             toPage AlbumPage AlbumMsg (Album.update session) albumMsg albumModel
 
@@ -229,6 +238,9 @@ subscriptions model =
         CollectionPage _ ->
             Sub.none
 
+        PlaylistPage _ ->
+            Sub.none
+
         AlbumPage _ ->
             Sub.none
 
@@ -266,6 +278,11 @@ view model =
             Collection.view model.session collectionModel
                 |> mapMsg CollectionMsg
                 |> Page.frame (pageConfig Views.Root.Collection)
+
+        PlaylistPage playlistModel ->
+            Playlist.view model.session playlistModel
+                |> mapMsg PlaylistMsg
+                |> Page.frame (pageConfig Views.Root.Playlist)
 
         AlbumPage albumModel ->
             Album.view model.session albumModel

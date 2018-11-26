@@ -2,6 +2,7 @@ module Data.Root exposing
     ( AlbumModel
     , ArtistModel
     , CollectionModel
+    , PlaylistModel
     )
 
 import Data.Album
@@ -14,6 +15,12 @@ import Data.Youtube
 type alias CollectionModel =
     { collection : Data.Playlist.Playlist
     , albums : Data.Playlist.PlaylistPaging
+    }
+
+
+type alias PlaylistModel =
+    { playlist : Data.Playlist.Playlist
+    , tracks : Data.Playlist.PlaylistPaging
     }
 
 

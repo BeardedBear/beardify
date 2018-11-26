@@ -7,6 +7,7 @@ type ActivePage
     = Home
     | Counter
     | Collection
+    | Playlist
     | Album
     | Artist
     | Other

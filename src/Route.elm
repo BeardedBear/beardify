@@ -12,6 +12,7 @@ type Route
     = Home
     | Counter
     | Collection String
+    | Playlist String
     | Album String
     | Artist String
 
@@ -22,6 +23,7 @@ parser =
         [ Parser.map Home Parser.top
         , Parser.map Counter (Parser.s "second-page")
         , Parser.map Collection (Parser.s "collection" </> Parser.string)
+        , Parser.map Playlist (Parser.s "playlist" </> Parser.string)
         , Parser.map Album (Parser.s "album" </> Parser.string)
         , Parser.map Artist (Parser.s "artist" </> Parser.string)
         ]
@@ -56,6 +58,9 @@ toString route =
 
                 Collection id ->
                     [ "collection", id ]
+
+                Playlist id ->
+                    [ "playlist", id ]
 
                 Album id ->
                     [ "album", id ]
