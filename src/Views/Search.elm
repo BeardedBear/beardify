@@ -5,12 +5,13 @@ import Data.Search as Search exposing (..)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick, onInput)
+import Meta
 import Route
 import Utils
 import Views.Artist
 
 
-view : Search.Model -> Html msg
+view : Search.Model -> Html Meta.Msg
 view searchMsg =
     let
         artistItem ar =
@@ -49,8 +50,7 @@ view searchMsg =
                 , placeholder "Recherche"
                 , type_ "text"
                 , Html.Styled.Attributes.value searchMsg.searchQuery
-
-                -- , onInput Query
+                , onInput Meta.Query
                 ]
                 []
             , if searchMsg.searchQuery /= "" then

@@ -1,4 +1,4 @@
-module Data.Root exposing
+module Data.Meta exposing
     ( AlbumModel
     , ArtistModel
     , CollectionModel
@@ -37,11 +37,3 @@ type alias ArtistModel =
     , topTracks : List Data.Track.Track
     , relatedArtists : List Data.Artist.Artist
     }
-
-
-
--- type Msg
---     = FindArtist (Result Http.Error (List Data.Artist.Artist))
---     | FindAlbum (Result Http.Error (List Data.Album.Album))
---     | FindTrack (Result Http.Error (List Data.Track.Track))
---     | Query String

@@ -1,7 +1,7 @@
 module Views.Album exposing (view)
 
 import Data.Image as Image exposing (..)
-import Data.Root
+import Data.Meta
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
@@ -10,7 +10,7 @@ import Utils
 import Views.Artist
 
 
-view : Data.Root.AlbumModel -> Html msg
+view : Data.Meta.AlbumModel -> Html msg
 view model =
     let
         listTracksUri id =

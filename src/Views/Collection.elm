@@ -1,8 +1,8 @@
 module Views.Collection exposing (view)
 
 import Data.Image as Image exposing (..)
+import Data.Meta
 import Data.Playlist exposing (..)
-import Data.Root
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
@@ -10,7 +10,7 @@ import Route
 import Utils
 
 
-view : Data.Root.CollectionModel -> Html msg
+view : Data.Meta.CollectionModel -> Html msg
 view model =
     let
         albums =

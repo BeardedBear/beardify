@@ -2,8 +2,8 @@ module Page.Artist exposing (Msg, init, update, view)
 
 import Data.Album
 import Data.Artist
+import Data.Meta
 import Data.Playlist as Playlist exposing (..)
-import Data.Root
 import Data.Session exposing (Session)
 import Data.Track
 import Data.Youtube
@@ -20,7 +20,7 @@ import Utils
 import Views.Artist
 
 
-init : Session -> ( Data.Root.ArtistModel, Cmd Msg )
+init : Session -> ( Data.Meta.ArtistModel, Cmd Msg )
 init session =
     ( { artist = Data.Artist.init
       , albums = []
@@ -46,7 +46,7 @@ type Msg
     | SetYoutube (Result Http.Error Data.Youtube.Youtube)
 
 
-update : Session -> Msg -> Data.Root.ArtistModel -> ( Data.Root.ArtistModel, Cmd Msg )
+update : Session -> Msg -> Data.Meta.ArtistModel -> ( Data.Meta.ArtistModel, Cmd Msg )
 update session msg model =
     case msg of
         NoOp ->
@@ -89,6 +89,6 @@ update session msg model =
             ( model, Cmd.none )
 
 
-view : Session -> Data.Root.ArtistModel -> ( String, List (Html Msg) )
+view : Session -> Data.Meta.ArtistModel -> ( String, List (Html Msg) )
 view session model =
     ( model.artist.name, [ Views.Artist.view model ] )

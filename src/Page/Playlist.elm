@@ -1,7 +1,7 @@
 module Page.Playlist exposing (Msg, init, update, view)
 
+import Data.Meta
 import Data.Playlist
-import Data.Root
 import Data.Session exposing (Session)
 import Data.Track
 import Html.Styled as Html exposing (..)
@@ -17,7 +17,7 @@ import Utils
 import Views.Playlist
 
 
-init : Session -> ( Data.Root.PlaylistModel, Cmd Msg )
+init : Session -> ( Data.Meta.PlaylistModel, Cmd Msg )
 init session =
     ( { playlist = Data.Playlist.init
       , tracks =
@@ -39,7 +39,7 @@ type Msg
     | SetPlaylistTracksPaging (Result Http.Error Data.Playlist.PlaylistPaging)
 
 
-update : Session -> Msg -> Data.Root.PlaylistModel -> ( Data.Root.PlaylistModel, Cmd Msg )
+update : Session -> Msg -> Data.Meta.PlaylistModel -> ( Data.Meta.PlaylistModel, Cmd Msg )
 update session msg model =
     case msg of
         NoOp ->
@@ -84,6 +84,6 @@ update session msg model =
             ( model, Cmd.none )
 
 
-view : Session -> Data.Root.PlaylistModel -> ( String, List (Html Msg) )
+view : Session -> Data.Meta.PlaylistModel -> ( String, List (Html Msg) )
 view session model =
     ( model.playlist.name, [ Views.Playlist.view model ] )

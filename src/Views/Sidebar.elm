@@ -7,7 +7,7 @@ import Data.Session exposing (Session)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, classList, css, href, src)
 import Route
-import Views.Root as Root exposing (..)
+import Views.Meta
 import Views.Theme exposing (Element, defaultCss)
 
 
@@ -57,7 +57,7 @@ viewPlaylists playlists isClickable =
         |> div [ class "playlists-list" ]
 
 
-view : Root.Config -> Html msg
+view : Views.Meta.Config -> Html msg
 view { activePage, session } =
     let
         linkIf page route caption icon =
@@ -82,8 +82,8 @@ view { activePage, session } =
                 ]
             ]
         , div [ class "top-menu" ]
-            [ linkIf Home Route.Home "Home" "icon-home"
-            , linkIf Counter Route.Counter "Second page" "icon-bell"
+            [ linkIf Views.Meta.Home Route.Home "Home" "icon-home"
+            , linkIf Views.Meta.Counter Route.Counter "Second page" "icon-bell"
             ]
         , div [ class "relative" ]
             [ div [ class "fit" ]

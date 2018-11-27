@@ -1,8 +1,8 @@
 module Views.Playlist exposing (view)
 
 import Data.Image as Image exposing (..)
+import Data.Meta
 import Data.Playlist exposing (..)
-import Data.Root
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
@@ -12,7 +12,7 @@ import Utils
 import Views.Artist
 
 
-view : Data.Root.PlaylistModel -> Html msg
+view : Data.Meta.PlaylistModel -> Html msg
 view model =
     let
         listTracksUri id =

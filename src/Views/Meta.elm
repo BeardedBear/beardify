@@ -1,4 +1,4 @@
-module Views.Root exposing (ActivePage(..), Config)
+module Views.Meta exposing (ActivePage(..), Config)
 
 import Data.Session exposing (Session)
 

@@ -2,7 +2,7 @@ module Views.Artist exposing (artistList, view)
 
 import Data.Artist
 import Data.Image as Image exposing (..)
-import Data.Root
+import Data.Meta
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
@@ -20,7 +20,7 @@ artistList artists =
         |> span [ class "artist-name" ]
 
 
-view : Data.Root.ArtistModel -> Html msg
+view : Data.Meta.ArtistModel -> Html msg
 view model =
     let
         listTracksUri id =
