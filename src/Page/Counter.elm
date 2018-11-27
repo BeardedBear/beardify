@@ -1,11 +1,9 @@
 module Page.Counter exposing (Model, Msg, init, update, view)
 
-import Css exposing (fontSize, marginRight)
 import Data.Session exposing (Session)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
-import Route
 
 
 type alias Model =

@@ -1,10 +1,8 @@
 module Page.Home exposing (Model, Msg(..), init, update, view)
 
-import Browser exposing (Document)
 import Data.Session exposing (Session)
 import Html.Styled as Html exposing (..)
 import Http
-import Task
 
 
 type alias Model =

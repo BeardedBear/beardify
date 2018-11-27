@@ -2,7 +2,6 @@ module Page.Album exposing (Msg, init, update, view)
 
 import Data.Album
 import Data.Meta
-import Data.Playlist as Playlist exposing (..)
 import Data.Session exposing (Session)
 import Data.Track
 import Html.Styled as Html exposing (..)
@@ -12,8 +11,6 @@ import Http
 import Json.Decode as Decode exposing (..)
 import Request.Request as Request
 import Route
-import Url exposing (Url, percentDecode)
-import Url.Parser as Parser exposing ((</>), Parser)
 import Utils
 import Views.Album
 

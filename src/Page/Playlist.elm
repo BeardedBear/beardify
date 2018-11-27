@@ -8,11 +8,7 @@ import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
 import Http
-import Json.Decode as Decode exposing (..)
 import Request.Request as Request
-import Route
-import Url exposing (Url, percentDecode)
-import Url.Parser as Parser exposing ((</>), Parser)
 import Utils
 import Views.Playlist
 
