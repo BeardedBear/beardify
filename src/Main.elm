@@ -1,6 +1,7 @@
 module Main exposing (main)
 
 import Browser exposing (Document)
+import Browser.Events
 import Browser.Navigation as Nav
 import Data.Album
 import Data.Artist
@@ -14,6 +15,7 @@ import Data.Track
 import Html.Styled as Html exposing (..)
 import Http
 import Json.Decode as Decode exposing (..)
+import Keyboard.Event
 import Meta
 import Page.Album as Album
 import Page.Artist as Artist
@@ -80,32 +82,34 @@ subscriptions : Meta.Model -> Sub Meta.Msg
 subscriptions model =
     let
         commonSubs =
-            Time.every 1000 Meta.GetPlayer
+            [ Time.every 1000 Meta.GetPlayer
+            , Browser.Events.onKeyDown (Decode.map Meta.HandleKeyboardEvent Keyboard.Event.decodeKeyboardEvent)
+            ]
     in
     case model.page of
         Meta.HomePage _ ->
-            Sub.batch [ commonSubs ]
+            Sub.batch commonSubs
 
         Meta.CounterPage _ ->
-            Sub.batch [ commonSubs ]
+            Sub.batch commonSubs
 
         Meta.CollectionPage _ ->
-            Sub.batch [ commonSubs ]
+            Sub.batch commonSubs
 
         Meta.PlaylistPage _ ->
-            Sub.batch [ commonSubs ]
+            Sub.batch commonSubs
 
         Meta.AlbumPage _ ->
-            Sub.batch [ commonSubs ]
+            Sub.batch commonSubs
 
         Meta.ArtistPage _ ->
-            Sub.batch [ commonSubs ]
+            Sub.batch commonSubs
 
         Meta.NotFound ->
-            Sub.batch [ commonSubs ]
+            Sub.batch commonSubs
 
         Meta.Blank ->
-            Sub.batch [ commonSubs ]
+            Sub.batch commonSubs
 
 
 view : Meta.Model -> Document Meta.Msg

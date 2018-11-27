@@ -1,6 +1,7 @@
 module Meta exposing (Model, Msg(..), Page(..), setRoute, update)
 
 import Browser exposing (Document)
+import Browser.Dom
 import Browser.Navigation as Nav
 import Data.Album
 import Data.Artist
@@ -14,6 +15,7 @@ import Data.Track
 import Html.Styled as Html exposing (..)
 import Http
 import Json.Decode as Decode exposing (..)
+import Keyboard.Event
 import Page.Album
 import Page.Artist
 import Page.Collection
@@ -22,6 +24,7 @@ import Page.Home
 import Page.Playlist
 import Request.Request as Request
 import Route
+import Task
 import Time exposing (..)
 import Url exposing (Url)
 
@@ -85,7 +88,8 @@ type alias Model =
 
 
 type Msg
-    = HomeMsg Page.Home.Msg
+    = NoOp
+    | HomeMsg Page.Home.Msg
     | CounterMsg Page.Counter.Msg
     | CollectionMsg Page.Collection.Msg
     | PlaylistMsg Page.Playlist.Msg
@@ -104,6 +108,12 @@ type Msg
     | FindAlbum (Result Http.Error (List Data.Album.Album))
     | FindTrack (Result Http.Error (List Data.Track.Track))
     | Query String
+      -- KEYBOARD
+    | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
+      -- PLAYING
+    | Play (Result Http.Error ())
+    | ChangePlaying String
+    | ChangePlayingTrack (List String)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -125,6 +135,9 @@ update msg ({ page, session } as model) =
             model.session.search
     in
     case ( msg, page ) of
+        ( NoOp, _ ) ->
+            ( model, Cmd.none )
+
         ( HomeMsg homeMsg, HomePage homeModel ) ->
             toPage HomePage HomeMsg (Page.Home.update session) homeMsg homeModel
 
@@ -228,6 +241,44 @@ update msg ({ page, session } as model) =
                 , Http.send FindAlbum <| Request.get "search?q=" (e ++ "*") "&type=album&limit=9" (Decode.at [ "albums", "items" ] (Decode.list Data.Album.decodeAlbum)) token
                 , Http.send FindTrack <| Request.get "search?q=" (e ++ "*") "&type=track&limit=12" (Decode.at [ "tracks", "items" ] (Decode.list Data.Track.decodeTrack)) token
                 ]
+            )
+
+        -- KEYBOARD
+        ( HandleKeyboardEvent event, _ ) ->
+            case ( event.shiftKey, event.key ) of
+                ( _, Just "Escape" ) ->
+                    ( { model
+                        | session = { session | search = { search | searchQuery = "" } }
+
+                        -- , modal = { modal | isOpen = False }
+                      }
+                    , Cmd.none
+                    )
+
+                -- ( _, Just " " ) ->
+                --     if player.is_playing && model.searchModel.searchQuery == "" then
+                --         ( model, Http.send PlayerControl <| Request.put "" "pause" "" token )
+                --     else
+                --         ( model, Http.send PlayerControl <| Request.put "" "play" "" token )
+                ( True, Just "F" ) ->
+                    ( model, Task.attempt (\_ -> NoOp) (Browser.Dom.focus "search") )
+
+                ( _, _ ) ->
+                    ( model, Cmd.none )
+
+        -- PLAYING
+        ( Play (Ok e), _ ) ->
+            ( model, Cmd.none )
+
+        ( Play (Err _), _ ) ->
+            ( model, Cmd.none )
+
+        ( ChangePlaying e, _ ) ->
+            ( model, Http.send Play <| Request.play e (Data.Album.encodeAlbum e) token )
+
+        ( ChangePlayingTrack e, _ ) ->
+            ( { model | session = { session | search = { search | searchQuery = "" } } }
+            , Http.send Play <| Request.play e (Data.Track.encodeTrack e) token
             )
 
         ( _, _ ) ->

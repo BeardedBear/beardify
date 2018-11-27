@@ -22,17 +22,17 @@ view searchMsg =
 
         albumItem al =
             div [ class "album-item" ]
-                [ div [ class "search-cover-image" ] [ imageView Small al.images ]
+                [ a [ Route.href (Route.Album al.id), class "search-cover-image" ] [ imageView Small al.images ]
                 , div []
                     [ strong [] [ text <| al.name ++ " " ]
                     , text <| "(" ++ Utils.releaseDateFormat al.release_date ++ ")"
-                    , a [ Route.href (Route.Album al.id) ] [ Views.Artist.artistList al.artists ]
+                    , a [ Route.href (Route.Artist al.id) ] [ Views.Artist.artistList al.artists ]
                     ]
                 ]
 
         trackItem t =
             div [ class "track-item" ]
-                [ div [ class "track-icon" ] [ i [ class "icon-play" ] [] ]
+                [ div [ onClick (Meta.ChangePlayingTrack [ t.uri ]), class "track-icon" ] [ i [ class "icon-play" ] [] ]
                 , div []
                     [ strong [] [ text t.name ]
                     , div [] [ Views.Artist.artistList t.artists ]

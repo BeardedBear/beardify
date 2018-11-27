@@ -80,9 +80,9 @@ type Msg
     -- | FindAlbum (Result Http.Error (List Album))
     -- | FindTrack (Result Http.Error (List Track))
     -- | Query String
-    | Play (Result Http.Error ())
-    | ChangePlaying String
-    | ChangePlayingTrack (List String)
+    -- | Play (Result Http.Error ())
+    -- | ChangePlaying String
+    -- | ChangePlayingTrack (List String)
     -- | GetPlayer Posix
     -- | GoHome
     | SetReleases (Result Http.Error (List Album))
@@ -94,7 +94,7 @@ type Msg
     | SetModalTrack (Result Http.Error ())
     | ModalClear
     | DelCollectionAlbum String (List String)
-    | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
+    -- | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
     | AddReleaseThePrp String
     | ToggleMenu
     | PocketResult (Result Http.Error ())
@@ -478,21 +478,21 @@ update msg ({ searchModel, config, drawer, modal, releases, player, pocket } as 
             ( model, Http.send PlayerControl <| Request.put "" "" "repeat?state=track" token )
 
         --  PLAY
-        Play (Ok e) ->
-            ( model, Cmd.none )
+        -- Play (Ok e) ->
+        --     ( model, Cmd.none )
 
-        Play (Err _) ->
-            ( model, Cmd.none )
+        -- Play (Err _) ->
+        --     ( model, Cmd.none )
 
-        ChangePlaying e ->
-            ( model, Http.send Play <| Request.play e (encodeAlbum e) token )
+        -- ChangePlaying e ->
+        --     ( model, Http.send Play <| Request.play e (encodeAlbum e) token )
 
-        ChangePlayingTrack e ->
-            ( { model
-                | searchModel = { searchModel | searchQuery = "" }
-              }
-            , Http.send Play <| Request.play e (encodeTrack e) token
-            )
+        -- ChangePlayingTrack e ->
+        --     ( { model
+        --         | searchModel = { searchModel | searchQuery = "" }
+        --       }
+        --     , Http.send Play <| Request.play e (encodeTrack e) token
+        --     )
 
         -- SEARCH
         -- FindArtist (Ok artist) ->
@@ -614,28 +614,28 @@ update msg ({ searchModel, config, drawer, modal, releases, player, pocket } as 
                 ]
             )
 
-        HandleKeyboardEvent event ->
-            case ( event.shiftKey, event.key ) of
-                ( _, Just "Escape" ) ->
-                    ( { model
-                        | searchModel = { searchModel | searchQuery = "" }
-                        , modal = { modal | isOpen = False }
-                      }
-                    , Cmd.none
-                    )
+        -- HandleKeyboardEvent event ->
+        --     case ( event.shiftKey, event.key ) of
+        --         ( _, Just "Escape" ) ->
+        --             ( { model
+        --                 | searchModel = { searchModel | searchQuery = "" }
+        --                 , modal = { modal | isOpen = False }
+        --               }
+        --             , Cmd.none
+        --             )
 
-                ( _, Just " " ) ->
-                    if player.is_playing && model.searchModel.searchQuery == "" then
-                        ( model, Http.send PlayerControl <| Request.put "" "pause" "" token )
+        --         ( _, Just " " ) ->
+        --             if player.is_playing && model.searchModel.searchQuery == "" then
+        --                 ( model, Http.send PlayerControl <| Request.put "" "pause" "" token )
 
-                    else
-                        ( model, Http.send PlayerControl <| Request.put "" "play" "" token )
+        --             else
+        --                 ( model, Http.send PlayerControl <| Request.put "" "play" "" token )
 
-                ( True, Just "F" ) ->
-                    ( model, Task.attempt (\_ -> NoOp) (Dom.focus "search") )
+        --         ( True, Just "F" ) ->
+        --             ( model, Task.attempt (\_ -> NoOp) (Dom.focus "search") )
 
-                ( _, _ ) ->
-                    ( model, Cmd.none )
+        --         ( _, _ ) ->
+        --             ( model, Cmd.none )
 
         AddReleaseThePrp e ->
             let
