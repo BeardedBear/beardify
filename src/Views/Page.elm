@@ -13,7 +13,7 @@ import Views.Sidebar as Sidebar exposing (..)
 import Views.Theme exposing (Element, defaultCss)
 
 
-frame : Views.Meta.Config -> ( String, List (Html Meta.Msg) ) -> Document Meta.Msg
+frame : Views.Meta.Config -> ( String, List (Html msg) ) -> Document msg
 frame config ( title, content ) =
     { title = title ++ " - Beardify"
     , body =

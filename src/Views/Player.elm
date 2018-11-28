@@ -5,6 +5,7 @@ import Data.Player
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
+import Meta
 import Route
 import Utils
 import Views.Artist

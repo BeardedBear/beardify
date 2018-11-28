@@ -11,7 +11,7 @@ import Utils
 import Views.Artist
 
 
-view : Search.Model -> Html Meta.Msg
+view : Search.Model -> Html msg
 view searchMsg =
     let
         artistItem ar =
@@ -32,7 +32,8 @@ view searchMsg =
 
         trackItem t =
             div [ class "track-item" ]
-                [ div [ onClick (Meta.ChangePlayingTrack [ t.uri ]), class "track-icon" ] [ i [ class "icon-play" ] [] ]
+                [ -- div [ onClick (Meta.ChangePlayingTrack [ t.uri ]), class "track-icon" ] [ i [ class "icon-play" ] [] ]
+                  div [ class "track-icon" ] [ i [ class "icon-play" ] [] ]
                 , div []
                     [ strong [] [ text t.name ]
                     , div [] [ Views.Artist.artistList t.artists ]
@@ -50,7 +51,8 @@ view searchMsg =
                 , placeholder "Recherche"
                 , type_ "text"
                 , Html.Styled.Attributes.value searchMsg.searchQuery
-                , onInput Meta.Query
+
+                -- , onInput Meta.Query
                 ]
                 []
             , if searchMsg.searchQuery /= "" then

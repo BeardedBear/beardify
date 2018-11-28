@@ -1,4 +1,4 @@
-module Page.Album exposing (Msg, init, update, view)
+module Page.Album exposing (Msg(..), init, update, view)
 
 import Data.Album
 import Data.Meta
@@ -9,6 +9,7 @@ import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
 import Http
 import Json.Decode as Decode exposing (..)
+import Meta
 import Request.Request as Request
 import Route
 import Utils
@@ -28,17 +29,13 @@ init session =
 
 
 type Msg
-    = NoOp
-    | SetAlbum (Result Http.Error Data.Album.Album)
+    = SetAlbum (Result Http.Error Data.Album.Album)
     | SetAlbumTracks (Result Http.Error (List Data.Track.TrackSimplified))
 
 
 update : Session -> Msg -> Data.Meta.AlbumModel -> ( Data.Meta.AlbumModel, Cmd Msg )
 update session msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
-
         SetAlbum (Ok e) ->
             ( { model | album = e }
             , Cmd.none
@@ -56,6 +53,6 @@ update session msg model =
             ( model, Cmd.none )
 
 
-view : Session -> Data.Meta.AlbumModel -> ( String, List (Html Msg) )
+view : Session -> Data.Meta.AlbumModel -> ( String, List (Html msg) )
 view session model =
     ( model.album.name, [ Views.Album.view model ] )
