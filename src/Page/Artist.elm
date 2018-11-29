@@ -2,6 +2,7 @@ module Page.Artist exposing (Msg, init, update, view)
 
 import Data.Album
 import Data.Artist
+import Data.Image
 import Data.Meta
 import Data.Session
 import Data.Track
@@ -11,9 +12,11 @@ import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
 import Http
 import Json.Decode as Decode exposing (..)
+import List.Extra as LE
 import Request.Request as Request
 import Route
 import Utils
+import Views.AlbumGallery
 import Views.Artist
 
 
@@ -84,4 +87,66 @@ update session msg model =
 
 view : Data.Session.Session -> Data.Meta.ArtistModel -> ( String, List (Html Msg) )
 view session model =
-    ( model.artist.name, [ Views.Artist.view model ] )
+    let
+        listTracksUri id =
+            model.topTracks
+                |> LE.dropWhile (\e -> e.uri /= id)
+                |> List.map .uri
+
+        trackItem t =
+            div
+                [ classList
+                    [ ( "track", True )
+                    ]
+                ]
+                [ div [] [ Data.Image.imageView Data.Image.Small t.album.images ]
+                , div [] [ text t.name ]
+                , div [] [ text (Utils.durationFormat t.duration_ms) ]
+                ]
+
+        relatedArtistItem r =
+            a [ class "related-artist", Route.href (Route.Artist r.id) ]
+                [ div [] [ Data.Image.imageView Data.Image.Small r.images ]
+                , div [] [ text r.name ]
+                ]
+
+        videoFrame v =
+            div [ class "video-frame" ]
+                [ iframe [ class "video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 140, src <| "https://www.youtube.com/embed/" ++ v.id.videoId ] []
+                , div [ class "video-title" ] [ text v.snippet.title ]
+                , div [ class "artist-name" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ v.snippet.channelId) ] [ text v.snippet.channelTitle ] ]
+                ]
+
+        link name urlBefore urlAfter icon =
+            a [ href <| urlBefore ++ model.artist.name ++ urlAfter, target "_BLANK" ] [ i [ class <| "icon-" ++ icon ] [], text name ]
+    in
+    ( model.artist.name
+    , [ div [ class "artist-wrapper" ]
+            [ div []
+                [ div [ class "heading-page" ] [ text model.artist.name ]
+                , div [ class "links" ]
+                    [ link "Wikipedia" "https://fr.wikipedia.org/wiki/" "" "wikipedia"
+                    , link "Sputnik" "https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=" "&x=0&y=0" "sputnik"
+                    , link "Discogs" "https://www.discogs.com/fr/search/?q=" "&type=artist&strict=true" "discogs"
+                    , link "LastFM" "https://www.last.fm/fr/music/" "" "lastfm"
+                    ]
+                , div [ class "artist-head" ]
+                    [ div [ class "top-tracks" ]
+                        [ div [ class "sub-title" ] [ text "Top tracks" ]
+                        , div [] (model.topTracks |> List.take 5 |> List.map trackItem)
+                        ]
+                    , div []
+                        [ div [ class "sub-title" ] [ text "Similar artists" ]
+                        , div [ class "related-artists" ] (model.relatedArtists |> List.take 4 |> List.map relatedArtistItem)
+                        ]
+                    ]
+                , div [ class "sub-title" ] [ text "Albums" ]
+                , Views.AlbumGallery.view model.albums
+                ]
+            , div [ class "video-wrapper" ]
+                [ div [ class "sub-title" ] [ text "Videos" ]
+                , div [] (model.videos |> List.map videoFrame)
+                ]
+            ]
+      ]
+    )

@@ -1,5 +1,6 @@
 module Page.Collection exposing (Msg, init, update, view)
 
+import Data.Image
 import Data.Meta
 import Data.Playlist
 import Data.Session
@@ -10,7 +11,6 @@ import Http
 import Request.Request as Request
 import Route
 import Utils
-import Views.Collection
 
 
 init : Data.Session.Session -> ( Data.Meta.CollectionModel, Cmd Msg )
@@ -68,4 +68,50 @@ update session msg model =
 
 view : Data.Session.Session -> Data.Meta.CollectionModel -> ( String, List (Html Msg) )
 view session model =
-    ( model.collection.name, [ Views.Collection.view model ] )
+    let
+        albums =
+            model.albums.items
+                |> List.map
+                    (\a ->
+                        { artists = a.track.artists
+                        , album = a.track.album.name
+                        , albumId = a.track.album.id
+                        , albumUri = a.track.album.uri
+                        , release_date = a.track.album.release_date
+                        , images = a.track.album.images
+                        , trackUri = a.track.uri
+                        }
+                    )
+
+        albumItem al =
+            div [ classList [ ( "album", True ) ] ]
+                [ a [ Route.href (Route.Album al.albumId), class "img" ] [ Data.Image.imageView Data.Image.Medium al.images ]
+                , div [] [ text al.album ]
+                , div []
+                    (al.artists
+                        |> List.map
+                            (\ar ->
+                                a
+                                    [ Route.href (Route.Artist ar.id)
+                                    , class "artist-name"
+                                    ]
+                                    [ text ar.name ]
+                            )
+                    )
+                , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat al.release_date ++ ")" ]
+                , div [ class "playing-btn" ] [ i [ class "icon-play" ] [] ]
+                , div [ class "add-btn" ] [ i [ class "icon-add" ] [] ]
+                , div [ class "del-btn" ] [ i [ class "icon-del" ] [] ]
+                ]
+    in
+    ( model.collection.name
+    , [ div []
+            [ div [ class "heading-page" ] [ text <| String.replace "#Collection " "" model.collection.name ]
+            , div []
+                [ albums
+                    |> List.map albumItem
+                    |> div [ class "album-list-wrapper" ]
+                ]
+            ]
+      ]
+    )

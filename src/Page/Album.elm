@@ -1,6 +1,7 @@
 module Page.Album exposing (Msg(..), init, update, view)
 
 import Data.Album
+import Data.Image as Image exposing (..)
 import Data.Meta
 import Data.Session
 import Data.Track
@@ -9,11 +10,12 @@ import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
 import Http
 import Json.Decode as Decode exposing (..)
+import List.Extra as LE
 import Meta
 import Request.Request as Request
 import Route
 import Utils
-import Views.Album
+import Views.Artist
 
 
 init : Data.Session.Session -> ( Data.Meta.AlbumModel, Cmd Msg )
@@ -53,6 +55,57 @@ update session msg model =
             ( model, Cmd.none )
 
 
-view : Data.Session.Session -> Data.Meta.AlbumModel -> ( String, List (Html msg) )
+view : Data.Session.Session -> Data.Meta.AlbumModel -> ( String, List (Html Msg) )
 view session model =
-    ( model.album.name, [ Views.Album.view model ] )
+    let
+        listTracksUri id =
+            model.tracks
+                |> LE.dropWhile (\e -> e.uri /= id)
+                |> List.map (\k -> k.uri)
+
+        trackItem t =
+            div
+                [ classList
+                    [ ( "track album-page", True )
+                    ]
+                ]
+                [ div [] []
+                , div [] [ text <| String.fromInt t.track_number ++ "." ]
+                , div [] [ text t.name ]
+                , div [] [ text (Utils.durationFormat t.duration_ms) ]
+                ]
+
+        trackSumDuration =
+            model.tracks
+                |> List.map (\d -> d.duration_ms)
+                |> List.sum
+    in
+    ( model.album.name
+    , [ div [ class "album-wrapper" ]
+            [ div [ class "bg-cover" ] [ imageView Large model.album.images ]
+            , div [ class "album-page-head" ]
+                [ div [ class "heading-page" ] [ text model.album.name ]
+                , div []
+                    [ span [] [ text "By " ]
+                    , span [] [ Views.Artist.artistList model.album.artists ]
+                    ]
+                ]
+            , div [ class "album-page" ]
+                [ div []
+                    [ div [ class "album" ]
+                        [ div [ class "img" ]
+                            [ imageView Large model.album.images
+                            ]
+                        , div [ class "playing-btn" ] [ i [ class "icon-play" ] [] ]
+                        , div [ class "add-btn" ] [ i [ class "icon-add" ] [] ]
+                        , div [] [ text <| Utils.releaseDateFormat model.album.release_date ]
+                        , div [] [ text <| Utils.durationFormatMinutes trackSumDuration ]
+                        ]
+                    ]
+                , div []
+                    [ div [] (model.tracks |> List.map trackItem)
+                    ]
+                ]
+            ]
+      ]
+    )
