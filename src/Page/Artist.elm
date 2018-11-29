@@ -3,7 +3,7 @@ module Page.Artist exposing (Msg, init, update, view)
 import Data.Album
 import Data.Artist
 import Data.Meta
-import Data.Session exposing (Session)
+import Data.Session
 import Data.Track
 import Data.Youtube
 import Html.Styled as Html exposing (..)
@@ -17,7 +17,7 @@ import Utils
 import Views.Artist
 
 
-init : Session -> ( Data.Meta.ArtistModel, Cmd Msg )
+init : Data.Session.Session -> ( Data.Meta.ArtistModel, Cmd Msg )
 init session =
     ( { artist = Data.Artist.init
       , albums = []
@@ -35,20 +35,16 @@ init session =
 
 
 type Msg
-    = NoOp
-    | SetArtist (Result Http.Error Data.Artist.Artist)
+    = SetArtist (Result Http.Error Data.Artist.Artist)
     | SetArtistAlbums (Result Http.Error (List Data.Album.Album))
     | SetArtistTopTracks (Result Http.Error (List Data.Track.Track))
     | SetRelatedArtists (Result Http.Error (List Data.Artist.Artist))
     | SetYoutube (Result Http.Error Data.Youtube.Youtube)
 
 
-update : Session -> Msg -> Data.Meta.ArtistModel -> ( Data.Meta.ArtistModel, Cmd Msg )
+update : Data.Session.Session -> Msg -> Data.Meta.ArtistModel -> ( Data.Meta.ArtistModel, Cmd Msg )
 update session msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
-
         SetArtist (Ok e) ->
             ( { model | artist = e }
             , Cmd.batch
@@ -86,6 +82,6 @@ update session msg model =
             ( model, Cmd.none )
 
 
-view : Session -> Data.Meta.ArtistModel -> ( String, List (Html Msg) )
+view : Data.Session.Session -> Data.Meta.ArtistModel -> ( String, List (Html Msg) )
 view session model =
     ( model.artist.name, [ Views.Artist.view model ] )

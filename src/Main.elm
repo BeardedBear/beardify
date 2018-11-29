@@ -132,7 +132,6 @@ type Msg
     | ArtistMsg Page.Artist.Msg
       -- SIDEBAR PLAYLISTS
     | InitPlaylist (Result Http.Error Data.Playlist.PlaylistPagingSimplified)
-    | InitPlaylistPaging (Result Http.Error Data.Playlist.PlaylistPagingSimplified)
       -- PLAYER
     | SetPlayer (Result Http.Error Data.Player.Model)
     | GetPlayer Posix
@@ -195,26 +194,14 @@ update msg ({ page, session } as model) =
             toPage Meta.ArtistPage ArtistMsg (Page.Artist.update session) artistMsg artistModel
 
         -- -- SIDEBAR PLAYLISTS
-        ( InitPlaylistPaging (Ok e), _ ) ->
+        ( InitPlaylist (Ok e), _ ) ->
             let
                 concat =
                     model.session.playlists ++ e.items
             in
             ( { model | session = { session | playlists = concat } }
             , if e.next /= "" then
-                Cmd.batch [ Http.send InitPlaylistPaging <| Request.getPaging e.next Data.Playlist.decodePlaylistPagingSimplified token ]
-
-              else
-                Cmd.none
-            )
-
-        ( InitPlaylistPaging (Err _), _ ) ->
-            ( model, Cmd.none )
-
-        ( InitPlaylist (Ok e), _ ) ->
-            ( { model | session = { session | playlists = e.items } }
-            , if e.next /= "" then
-                Cmd.batch [ Http.send InitPlaylistPaging <| Request.getPaging e.next Data.Playlist.decodePlaylistPagingSimplified token ]
+                Cmd.batch [ Http.send InitPlaylist <| Request.getPaging e.next Data.Playlist.decodePlaylistPagingSimplified token ]
 
               else
                 Cmd.none

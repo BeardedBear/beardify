@@ -2,7 +2,7 @@ module Page.Playlist exposing (Msg, init, update, view)
 
 import Data.Meta
 import Data.Playlist
-import Data.Session exposing (Session)
+import Data.Session
 import Data.Track
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -13,7 +13,7 @@ import Utils
 import Views.Playlist
 
 
-init : Session -> ( Data.Meta.PlaylistModel, Cmd Msg )
+init : Data.Session.Session -> ( Data.Meta.PlaylistModel, Cmd Msg )
 init session =
     ( { playlist = Data.Playlist.init
       , tracks =
@@ -29,18 +29,13 @@ init session =
 
 
 type Msg
-    = NoOp
-    | SetPlaylist (Result Http.Error Data.Playlist.Playlist)
+    = SetPlaylist (Result Http.Error Data.Playlist.Playlist)
     | SetPlaylistTracks (Result Http.Error Data.Playlist.PlaylistPaging)
-    | SetPlaylistTracksPaging (Result Http.Error Data.Playlist.PlaylistPaging)
 
 
-update : Session -> Msg -> Data.Meta.PlaylistModel -> ( Data.Meta.PlaylistModel, Cmd Msg )
+update : Data.Session.Session -> Msg -> Data.Meta.PlaylistModel -> ( Data.Meta.PlaylistModel, Cmd Msg )
 update session msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
-
         SetPlaylist (Ok e) ->
             ( { model | playlist = e }
             , Cmd.none
@@ -49,7 +44,7 @@ update session msg model =
         SetPlaylist (Err _) ->
             ( model, Cmd.none )
 
-        SetPlaylistTracksPaging (Ok e) ->
+        SetPlaylistTracks (Ok e) ->
             let
                 concat =
                     model.tracks.items ++ e.items
@@ -58,19 +53,7 @@ update session msg model =
                 | tracks = { items = concat, next = "" }
               }
             , if e.next /= "" then
-                Cmd.batch [ Http.send SetPlaylistTracksPaging <| Request.getPaging e.next Data.Playlist.decodePlaylistPaging session.token ]
-
-              else
-                Cmd.none
-            )
-
-        SetPlaylistTracksPaging (Err _) ->
-            ( model, Cmd.none )
-
-        SetPlaylistTracks (Ok e) ->
-            ( { model | tracks = e }
-            , if e.next /= "" then
-                Cmd.batch [ Http.send SetPlaylistTracksPaging <| Request.getPaging e.next Data.Playlist.decodePlaylistPaging session.token ]
+                Cmd.batch [ Http.send SetPlaylistTracks <| Request.getPaging e.next Data.Playlist.decodePlaylistPaging session.token ]
 
               else
                 Cmd.none
@@ -80,6 +63,6 @@ update session msg model =
             ( model, Cmd.none )
 
 
-view : Session -> Data.Meta.PlaylistModel -> ( String, List (Html Msg) )
+view : Data.Session.Session -> Data.Meta.PlaylistModel -> ( String, List (Html Msg) )
 view session model =
     ( model.playlist.name, [ Views.Playlist.view model ] )

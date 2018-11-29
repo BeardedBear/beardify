@@ -2,7 +2,7 @@ module Page.Album exposing (Msg(..), init, update, view)
 
 import Data.Album
 import Data.Meta
-import Data.Session exposing (Session)
+import Data.Session
 import Data.Track
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -16,7 +16,7 @@ import Utils
 import Views.Album
 
 
-init : Session -> ( Data.Meta.AlbumModel, Cmd Msg )
+init : Data.Session.Session -> ( Data.Meta.AlbumModel, Cmd Msg )
 init session =
     ( { album = Data.Album.init
       , tracks = []
@@ -33,7 +33,7 @@ type Msg
     | SetAlbumTracks (Result Http.Error (List Data.Track.TrackSimplified))
 
 
-update : Session -> Msg -> Data.Meta.AlbumModel -> ( Data.Meta.AlbumModel, Cmd Msg )
+update : Data.Session.Session -> Msg -> Data.Meta.AlbumModel -> ( Data.Meta.AlbumModel, Cmd Msg )
 update session msg model =
     case msg of
         SetAlbum (Ok e) ->
@@ -53,6 +53,6 @@ update session msg model =
             ( model, Cmd.none )
 
 
-view : Session -> Data.Meta.AlbumModel -> ( String, List (Html msg) )
+view : Data.Session.Session -> Data.Meta.AlbumModel -> ( String, List (Html msg) )
 view session model =
     ( model.album.name, [ Views.Album.view model ] )
