@@ -1,8 +1,7 @@
 module Views.AlbumGallery exposing (view)
 
-import Data.Album exposing (..)
-import Data.Image exposing (..)
-import Data.Player as Player exposing (..)
+import Data.Album
+import Data.Image
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
@@ -10,7 +9,7 @@ import Route
 import Utils
 
 
-view : List Album -> Html msg
+view : List Data.Album.Album -> Html msg
 view albums =
     let
         albumItem ar =
@@ -23,7 +22,7 @@ view albums =
                     [ class "img"
                     , Route.href (Route.Album ar.id)
                     ]
-                    [ imageView Medium ar.images
+                    [ Data.Image.imageView Data.Image.Medium ar.images
                     ]
                 , div [] [ text ar.name ]
                 , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat ar.release_date ++ ")" ]

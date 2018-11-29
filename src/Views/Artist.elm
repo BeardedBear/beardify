@@ -1,7 +1,7 @@
 module Views.Artist exposing (artistList, view)
 
 import Data.Artist
-import Data.Image as Image exposing (..)
+import Data.Image
 import Data.Meta
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -34,14 +34,14 @@ view model =
                     [ ( "track", True )
                     ]
                 ]
-                [ div [] [ imageView Small t.album.images ]
+                [ div [] [ Data.Image.imageView Data.Image.Small t.album.images ]
                 , div [] [ text t.name ]
                 , div [] [ text (Utils.durationFormat t.duration_ms) ]
                 ]
 
         relatedArtistItem r =
             a [ class "related-artist", Route.href (Route.Artist r.id) ]
-                [ div [] [ imageView Small r.images ]
+                [ div [] [ Data.Image.imageView Data.Image.Small r.images ]
                 , div [] [ text r.name ]
                 ]
 

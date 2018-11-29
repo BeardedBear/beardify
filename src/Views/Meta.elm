@@ -1,6 +1,6 @@
 module Views.Meta exposing (ActivePage(..), Config)
 
-import Data.Session exposing (Session)
+import Data.Session
 
 
 type ActivePage
@@ -14,6 +14,6 @@ type ActivePage
 
 
 type alias Config =
-    { session : Session
+    { session : Data.Session.Session
     , activePage : ActivePage
     }

@@ -1,14 +1,12 @@
 module Views.Sidebar exposing (view)
 
 import Browser exposing (Document)
-import Css exposing (..)
 import Data.Playlist exposing (..)
 import Data.Session exposing (Session)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, classList, css, href, src)
 import Route
 import Views.Meta
-import Views.Theme exposing (Element, defaultCss)
 
 
 viewCollections : List PlaylistSimplified -> Bool -> Bool -> Html msg

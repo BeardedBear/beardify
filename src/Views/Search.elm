@@ -1,7 +1,7 @@
 module Views.Search exposing (view)
 
-import Data.Image as Image exposing (..)
-import Data.Search as Search exposing (..)
+import Data.Image
+import Data.Search
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick, onInput)
@@ -11,18 +11,18 @@ import Utils
 import Views.Artist
 
 
-view : Search.Model -> Html msg
+view : Data.Search.Model -> Html msg
 view searchMsg =
     let
         artistItem ar =
             div [ class "artist-item" ]
-                [ div [ class "img" ] [ imageView Small ar.images ]
+                [ div [ class "img" ] [ Data.Image.imageView Data.Image.Small ar.images ]
                 , a [ Route.href (Route.Artist ar.id) ] [ text ar.name ]
                 ]
 
         albumItem al =
             div [ class "album-item" ]
-                [ a [ Route.href (Route.Album al.id), class "search-cover-image" ] [ imageView Small al.images ]
+                [ a [ Route.href (Route.Album al.id), class "search-cover-image" ] [ Data.Image.imageView Data.Image.Small al.images ]
                 , div []
                     [ strong [] [ text <| al.name ++ " " ]
                     , text <| "(" ++ Utils.releaseDateFormat al.release_date ++ ")"

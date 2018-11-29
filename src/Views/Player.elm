@@ -1,6 +1,6 @@
 module Views.Player exposing (view)
 
-import Data.Image as Image exposing (..)
+import Data.Image
 import Data.Player
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -31,7 +31,7 @@ view player =
                 ]
             ]
         , div [ class "current" ]
-            [ a [ Route.href (Route.Album player.item.album.id) ] [ imageView Small player.item.album.images ]
+            [ a [ Route.href (Route.Album player.item.album.id) ] [ Data.Image.imageView Data.Image.Small player.item.album.images ]
             , div []
                 [ div []
                     [ span [ class "track" ] [ text player.item.name ]

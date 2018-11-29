@@ -1,8 +1,8 @@
 module Views.Playlist exposing (view)
 
-import Data.Image as Image exposing (..)
+import Data.Image
 import Data.Meta
-import Data.Playlist exposing (..)
+import Data.Playlist
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
@@ -66,7 +66,7 @@ view model =
             ]
         , div [ class "album-page" ]
             [ div []
-                [ imageView Medium model.playlist.images
+                [ Data.Image.imageView Data.Image.Medium model.playlist.images
                 , div [] [ text <| Utils.durationFormatMinutes trackSumDuration ]
                 ]
             , div []

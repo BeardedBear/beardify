@@ -1,8 +1,7 @@
 module Views.Collection exposing (view)
 
-import Data.Image as Image exposing (..)
+import Data.Image
 import Data.Meta
-import Data.Playlist exposing (..)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
@@ -29,7 +28,7 @@ view model =
 
         albumItem al =
             div [ classList [ ( "album", True ) ] ]
-                [ a [ Route.href (Route.Album al.albumId), class "img" ] [ imageView Medium al.images ]
+                [ a [ Route.href (Route.Album al.albumId), class "img" ] [ Data.Image.imageView Data.Image.Medium al.images ]
                 , div [] [ text al.album ]
                 , div []
                     (al.artists

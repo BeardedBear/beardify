@@ -1,11 +1,13 @@
-module Meta exposing (Model, MsgTest(..), Page(..), updateTest)
+module Meta exposing (Model, Msg(..), Page(..), update)
 
 import Browser exposing (Document)
 import Browser.Dom
 import Browser.Navigation as Nav
 import Data.Album
 import Data.Artist
+import Data.Counter
 import Data.Date as Date exposing (Date)
+import Data.Home
 import Data.Meta
 import Data.Player
 import Data.Playlist
@@ -16,9 +18,6 @@ import Html.Styled as Html exposing (..)
 import Http
 import Json.Decode as Decode exposing (..)
 import Keyboard.Event
-import Page.Counter
-import Page.Home
-import Page.Playlist
 import Request.Request as Request
 import Route
 import Task
@@ -38,8 +37,8 @@ type alias Model =
 
 type Page
     = Blank
-    | HomePage Page.Home.Model
-    | CounterPage Page.Counter.Model
+    | HomePage Data.Home.Model
+    | CounterPage Data.Counter.Model
     | CollectionPage Data.Meta.CollectionModel
     | PlaylistPage Data.Meta.PlaylistModel
     | AlbumPage Data.Meta.AlbumModel
@@ -47,8 +46,8 @@ type Page
     | NotFound
 
 
-type MsgTest
-    = NoOpTest
+type Msg
+    = NoOp
       -- SEARCH
     | FindArtist (Result Http.Error (List Data.Artist.Artist))
     | FindAlbum (Result Http.Error (List Data.Album.Album))
@@ -60,8 +59,8 @@ type MsgTest
     | ChangePlayingTrack (List String)
 
 
-updateTest : MsgTest -> Model -> ( Model, Cmd MsgTest )
-updateTest msg ({ page, session, config } as model) =
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg ({ session } as model) =
     let
         token =
             model.config.token
@@ -70,8 +69,8 @@ updateTest msg ({ page, session, config } as model) =
             model.session.search
     in
     case msg of
-        NoOpTest ->
-            ( { model | config = { config | token = "bite" } }, Cmd.none )
+        NoOp ->
+            ( model, Cmd.none )
 
         -- SEARCH
         FindArtist (Ok artist) ->

@@ -7,37 +7,37 @@ module Data.Drawer exposing
     , init
     )
 
-import Data.Album as Album exposing (..)
-import Data.Artist as Artist exposing (..)
-import Data.Playlist as Playlist exposing (..)
-import Data.Track as Track exposing (..)
-import Data.Youtube exposing (..)
-import Json.Decode as Decode exposing (..)
+import Data.Album
+import Data.Artist
+import Data.Playlist
+import Data.Track
+import Data.Youtube
+import Json.Decode
 
 
 init : Model
 init =
     { drawerType = Home
     , drawerArtist =
-        { artist = Artist.init
+        { artist = Data.Artist.init
         , albums = []
         , videos = []
         , topTracks = []
         , relatedArtists = []
         }
     , drawerAlbum =
-        { album = Album.init
+        { album = Data.Album.init
         , tracks = []
         }
     , drawerPlaylist =
-        { playlist = Playlist.init
+        { playlist = Data.Playlist.init
         , tracks =
             { items = []
             , next = ""
             }
         }
     , drawerCollection =
-        { playlist = Playlist.init
+        { playlist = Data.Playlist.init
         , tracks =
             { items = []
             , next = ""
@@ -47,23 +47,23 @@ init =
 
 
 type alias ArtistModel =
-    { artist : Artist
-    , albums : List Album
-    , videos : List Video
-    , topTracks : List Track
-    , relatedArtists : List Artist
+    { artist : Data.Artist.Artist
+    , albums : List Data.Album.Album
+    , videos : List Data.Youtube.Video
+    , topTracks : List Data.Track.Track
+    , relatedArtists : List Data.Artist.Artist
     }
 
 
 type alias AlbumModel =
-    { album : Album
-    , tracks : List TrackSimplified
+    { album : Data.Album.Album
+    , tracks : List Data.Track.TrackSimplified
     }
 
 
 type alias PlaylistModel =
-    { playlist : Playlist
-    , tracks : PlaylistPaging
+    { playlist : Data.Playlist.Playlist
+    , tracks : Data.Playlist.PlaylistPaging
     }
 
 

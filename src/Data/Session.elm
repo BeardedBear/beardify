@@ -2,14 +2,14 @@ module Data.Session exposing (Session)
 
 import Browser.Navigation as Nav
 import Data.Player
-import Data.Playlist exposing (..)
+import Data.Playlist
 import Data.Search
 import Url exposing (Url)
 
 
 type alias Session =
     { navKey : Nav.Key
-    , playlists : List PlaylistSimplified
+    , playlists : List Data.Playlist.PlaylistSimplified
     , url : Url
     , token : String
     , player : Data.Player.Model

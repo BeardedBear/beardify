@@ -12,8 +12,8 @@ module Data.Playlist exposing
     , init
     )
 
-import Data.Image exposing (..)
-import Data.Track exposing (..)
+import Data.Image
+import Data.Track
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 
@@ -29,7 +29,7 @@ init =
 
 type alias Playlist =
     { id : String
-    , images : List Image
+    , images : List Data.Image.Image
     , name : String
     , uri : String
     }
@@ -39,14 +39,14 @@ decodePlaylist : Decode.Decoder Playlist
 decodePlaylist =
     Decode.map4 Playlist
         (Decode.field "id" Decode.string)
-        (Decode.at [ "images" ] (Decode.list decodeImage))
+        (Decode.at [ "images" ] (Decode.list Data.Image.decodeImage))
         (Decode.field "name" Decode.string)
         (Decode.field "uri" Decode.string)
 
 
 type alias PlaylistSimplified =
     { id : String
-    , images : List Image
+    , images : List Data.Image.Image
     , name : String
     , uri : String
     }
@@ -56,7 +56,7 @@ decodePlaylistSimplified : Decode.Decoder PlaylistSimplified
 decodePlaylistSimplified =
     Decode.map4 PlaylistSimplified
         (Decode.field "id" Decode.string)
-        (Decode.at [ "images" ] (Decode.list decodeImage))
+        (Decode.at [ "images" ] (Decode.list Data.Image.decodeImage))
         (Decode.field "name" Decode.string)
         (Decode.field "uri" Decode.string)
 
@@ -77,14 +77,14 @@ decodePlaylistPagingSimplified =
 
 
 type alias PlaylistTrack =
-    { track : Track
+    { track : Data.Track.Track
     }
 
 
 decodePlaylistTrack : Decode.Decoder PlaylistTrack
 decodePlaylistTrack =
     Decode.map PlaylistTrack
-        (Decode.field "track" decodeTrack)
+        (Decode.field "track" Data.Track.decodeTrack)
 
 
 type alias PlaylistPaging =

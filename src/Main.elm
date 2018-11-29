@@ -139,7 +139,7 @@ type Msg
       -- KEYBOARD
     | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
       -- COMMON
-    | Test Meta.MsgTest
+    | MetaMsg Meta.Msg
 
 
 update : Msg -> Meta.Model -> ( Meta.Model, Cmd Msg )
@@ -257,13 +257,13 @@ update msg ({ page, session } as model) =
                     ( model, Cmd.none )
 
         -- COMMON
-        ( Test e, _ ) ->
+        ( MetaMsg e, _ ) ->
             let
                 ( _, newCmd ) =
-                    Meta.updateTest e model
+                    Meta.update e model
             in
             ( model
-            , Cmd.map Test newCmd
+            , Cmd.map MetaMsg newCmd
             )
 
         ( _, _ ) ->

@@ -11,24 +11,6 @@ import Utils
 import Views.Artist
 
 
-type Msg
-    = Test Meta.MsgTest
-
-
-update : Msg -> Meta.Model -> ( Meta.Model, Cmd Msg )
-update msg model =
-    case msg of
-        -- COMMON
-        Test e ->
-            let
-                ( _, newCmd ) =
-                    Meta.updateTest e model
-            in
-            ( model
-            , Cmd.map Test newCmd
-            )
-
-
 view : Data.Meta.AlbumModel -> Html msg
 view model =
     let
