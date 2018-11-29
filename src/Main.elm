@@ -26,6 +26,7 @@ import Page.Collection
 import Page.Counter
 import Page.Home
 import Page.Playlist
+import Ports
 import Request.Request as Request
 import Route exposing (Route)
 import Task
@@ -215,7 +216,7 @@ update msg ({ page, session } as model) =
             ( { model | session = { session | player = e } }, Cmd.none )
 
         ( SetPlayer (Err _), _ ) ->
-            ( model, Cmd.none )
+            ( model, Ports.refreshToken () )
 
         ( GetPlayer _, _ ) ->
             ( model, Http.send SetPlayer <| Request.get "me/player" "" "" Data.Player.decodePlayer token )

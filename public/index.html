@@ -16,12 +16,53 @@
 <body>
     <script src="app.js"></script>
     <script>
-        const app = Elm.Main.init({
-            flags: {
-                token: "BQAnp7J02VSmoTiopooMAwYz4SJ1oqOquwzziMrD94Z4PFSxCDuK6VnJ94mnyFWL6RRPjNQGl_QlZlgB4aXc5dtNpzV3c8YtlOgjQOYXgybr2Ti6ASCCOvJeDiWtrBd3sjyWtqBm-GG_oyltecn4gn4vtz3AIm4KThyduoSeILXPbAPVa6bdqsU2MztklOhPgOm_AcK0LDPVLzgd6gsjktFeu6tEzW6HZ-mVO0qWllXXNZFejMRxuKX_WHrqsTJwp9CUVITzwtENixz_KdRR6Tk_c7Wfcw",
-                now: new Date().getTime()
+        const tokenName = "beardifyToken";
+        const defaultUrl = window.location.protocol + "//" + window.location.host + window.location.pathname.slice(0, -1)
+        const scopes = "user-read-private user-read-birthdate user-read-email user-modify-playback-state user-read-playback-state user-read-currently-playing app-remote-control streaming playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-follow-modify user-follow-read user-top-read user-read-recently-played user-library-read user-library-modify";
+        const authUrl = "https://accounts.spotify.com/authorize?client_id=a05f4302858d402d873bee3d1d5e166c&redirect_uri=" + defaultUrl + "&scope=" + scopes + "&response_type=token"
+        const beardifyToken = localStorage.getItem(tokenName);
+        let redirectUrl = window.location.href
+
+        function getHashParams() {
+            let hashParams = {};
+            let e, r = /([^&;=]+)=?([^&;]*)/g;
+            let q = window.location.hash.substring(1);
+            while (e = r.exec(q)) {
+                hashParams[e[1]] = decodeURIComponent(e[2]);
             }
-        });
+            return hashParams;
+        }
+        let params = getHashParams();
+
+        function setToken() {
+            window.location.assign(authUrl);
+            if (Object.getOwnPropertyNames(params).length != 0) {
+                let object = { value: params.access_token, timestamp: new Date().getTime() }
+                localStorage.setItem(tokenName, JSON.stringify(object));
+            }
+        }
+
+        if (!beardifyToken) {
+            setToken();
+        } else if (new Date().getTime().toString() - JSON.parse(beardifyToken).timestamp >= 3600000) {
+            localStorage.removeItem(tokenName);
+            window.location.assign(defaultUrl);
+        } else {
+            window.location.assign(defaultUrl + "/#/");
+            const app = Elm.Main.init({
+                flags: {
+                    token: JSON.parse(beardifyToken).value,
+                    now: new Date().getTime()
+                }
+            });
+
+            // PORTS
+
+            app.ports.refreshToken.subscribe(function () {
+                window.location.assign(authUrl);
+            });
+
+        }
     </script>
 </body>
 
