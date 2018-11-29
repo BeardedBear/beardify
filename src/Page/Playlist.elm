@@ -10,7 +10,7 @@ import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
 import Http
 import List.Extra as LE
-import Request.Request as Request
+import Request
 import Utils
 import Views.Artist
 

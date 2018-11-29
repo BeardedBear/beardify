@@ -1,7 +1,6 @@
 module Route exposing (Route(..), fromUrl, href, pushUrl)
 
-import Browser exposing (Document)
-import Browser.Navigation as Nav
+import Browser.Navigation
 import Html.Styled exposing (Attribute)
 import Html.Styled.Attributes as Attr
 import Url exposing (Url)
@@ -40,9 +39,9 @@ href route =
     Attr.href (toString route)
 
 
-pushUrl : Nav.Key -> Route -> Cmd msg
+pushUrl : Browser.Navigation.Key -> Route -> Cmd msg
 pushUrl key route =
-    Nav.pushUrl key (toString route)
+    Browser.Navigation.pushUrl key (toString route)
 
 
 toString : Route -> String

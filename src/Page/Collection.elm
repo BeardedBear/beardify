@@ -8,7 +8,7 @@ import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
 import Http
-import Request.Request as Request
+import Request
 import Route
 import Utils
 

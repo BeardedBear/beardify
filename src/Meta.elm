@@ -1,34 +1,23 @@
 module Meta exposing (Model, Msg(..), Page(..), update)
 
-import Browser exposing (Document)
-import Browser.Dom
-import Browser.Navigation as Nav
 import Data.Album
 import Data.Artist
 import Data.Counter
-import Data.Date as Date exposing (Date)
+import Data.Date
 import Data.Home
 import Data.Meta
-import Data.Player
-import Data.Playlist
-import Data.Search
 import Data.Session
 import Data.Track
 import Html.Styled as Html exposing (..)
 import Http
 import Json.Decode as Decode exposing (..)
-import Keyboard.Event
-import Request.Request as Request
-import Route
-import Task
-import Time exposing (..)
-import Url exposing (Url)
+import Request
 
 
 type alias Model =
     { config :
         { token : String
-        , currentDate : Date
+        , currentDate : Data.Date.Date
         }
     , page : Page
     , session : Data.Session.Session

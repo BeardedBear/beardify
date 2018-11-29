@@ -13,7 +13,7 @@ import Html.Styled.Events exposing (onClick)
 import Http
 import Json.Decode as Decode exposing (..)
 import List.Extra as LE
-import Request.Request as Request
+import Request
 import Route
 import Utils
 import Views.AlbumGallery

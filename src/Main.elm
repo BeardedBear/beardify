@@ -1,18 +1,12 @@
 module Main exposing (main)
 
-import Browser exposing (Document)
+import Browser
 import Browser.Dom
 import Browser.Events
-import Browser.Navigation as Nav
-import Data.Album
-import Data.Artist
-import Data.Date as Date exposing (Date)
-import Data.Meta
+import Browser.Navigation
 import Data.Player
-import Data.Playlist exposing (..)
+import Data.Playlist
 import Data.Search
-import Data.Session exposing (Session)
-import Data.Track
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
@@ -27,13 +21,13 @@ import Page.Counter
 import Page.Home
 import Page.Playlist
 import Ports
-import Request.Request as Request
-import Route exposing (Route)
+import Request
+import Route
 import Task
-import Time exposing (..)
+import Time
 import Url exposing (Url)
 import Views.Meta
-import Views.Page as Page
+import Views.Page
 
 
 type alias Flags =
@@ -42,7 +36,7 @@ type alias Flags =
     }
 
 
-init : Flags -> Url -> Nav.Key -> ( Meta.Model, Cmd Msg )
+init : Flags -> Url -> Browser.Navigation.Key -> ( Meta.Model, Cmd Msg )
 init flags url navKey =
     let
         session =
@@ -62,13 +56,13 @@ init flags url navKey =
                 { config =
                     { token = flags.token
                     , currentDate =
-                        { year = Time.toYear utc timestamp
-                        , month = Time.toMonth utc timestamp
-                        , day = Time.toDay utc timestamp
-                        , hour = Time.toHour utc timestamp
-                        , minute = Time.toMinute utc timestamp
-                        , second = Time.toSecond utc timestamp
-                        , milliSecond = Time.toMillis utc timestamp
+                        { year = Time.toYear Time.utc timestamp
+                        , month = Time.toMonth Time.utc timestamp
+                        , day = Time.toDay Time.utc timestamp
+                        , hour = Time.toHour Time.utc timestamp
+                        , minute = Time.toMinute Time.utc timestamp
+                        , second = Time.toSecond Time.utc timestamp
+                        , milliSecond = Time.toMillis Time.utc timestamp
                         }
                     }
                 , page = Meta.Blank
@@ -78,7 +72,7 @@ init flags url navKey =
     ( model
     , Cmd.batch
         [ cmds
-        , Http.send InitPlaylist <| Request.get "me/playlists" "" "?limit=50" decodePlaylistPagingSimplified flags.token
+        , Http.send InitPlaylist <| Request.get "me/playlists" "" "?limit=50" Data.Playlist.decodePlaylistPagingSimplified flags.token
         ]
     )
 
@@ -135,7 +129,7 @@ type Msg
     | InitPlaylist (Result Http.Error Data.Playlist.PlaylistPagingSimplified)
       -- PLAYER
     | SetPlayer (Result Http.Error Data.Player.Model)
-    | GetPlayer Posix
+    | GetPlayer Time.Posix
       -- KEYBOARD
     | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
       -- COMMON
@@ -168,10 +162,10 @@ update msg ({ page, session } as model) =
         ( UrlRequested urlRequest, _ ) ->
             case urlRequest of
                 Browser.Internal url ->
-                    ( { model | session = { session | url = url } }, Nav.pushUrl session.navKey (Url.toString url) )
+                    ( { model | session = { session | url = url } }, Browser.Navigation.pushUrl session.navKey (Url.toString url) )
 
                 Browser.External href ->
-                    ( model, Nav.load href )
+                    ( model, Browser.Navigation.load href )
 
         ( UrlChanged url, _ ) ->
             setRoute (Route.fromUrl url) { model | session = { session | url = url } }
@@ -292,7 +286,7 @@ subscriptions model =
             Sub.batch commonSubs
 
 
-view : Meta.Model -> Document Msg
+view : Meta.Model -> Browser.Document Msg
 view model =
     let
         pageConfig =
@@ -305,40 +299,40 @@ view model =
         Meta.HomePage homeModel ->
             Page.Home.view model.session homeModel
                 |> mapMsg HomeMsg
-                |> Page.frame (pageConfig Views.Meta.Home)
+                |> Views.Page.frame (pageConfig Views.Meta.Home)
 
         Meta.CounterPage counterModel ->
             Page.Counter.view model.session counterModel
                 |> mapMsg CounterMsg
-                |> Page.frame (pageConfig Views.Meta.Counter)
+                |> Views.Page.frame (pageConfig Views.Meta.Counter)
 
         Meta.CollectionPage collectionModel ->
             Page.Collection.view model.session collectionModel
                 |> mapMsg CollectionMsg
-                |> Page.frame (pageConfig Views.Meta.Collection)
+                |> Views.Page.frame (pageConfig Views.Meta.Collection)
 
         Meta.PlaylistPage playlistModel ->
             Page.Playlist.view model.session playlistModel
                 |> mapMsg PlaylistMsg
-                |> Page.frame (pageConfig Views.Meta.Playlist)
+                |> Views.Page.frame (pageConfig Views.Meta.Playlist)
 
         Meta.AlbumPage albumModel ->
             Page.Album.view model.session albumModel
                 |> mapMsg AlbumMsg
-                |> Page.frame (pageConfig Views.Meta.Album)
+                |> Views.Page.frame (pageConfig Views.Meta.Album)
 
         Meta.ArtistPage artistModel ->
             Page.Artist.view model.session artistModel
                 |> mapMsg ArtistMsg
-                |> Page.frame (pageConfig Views.Meta.Artist)
+                |> Views.Page.frame (pageConfig Views.Meta.Artist)
 
         Meta.NotFound ->
             ( "Not Found", [ Html.text "Not found" ] )
-                |> Page.frame (pageConfig Views.Meta.Other)
+                |> Views.Page.frame (pageConfig Views.Meta.Other)
 
         Meta.Blank ->
             ( "", [] )
-                |> Page.frame (pageConfig Views.Meta.Other)
+                |> Views.Page.frame (pageConfig Views.Meta.Other)
 
 
 main : Program Flags Meta.Model Msg

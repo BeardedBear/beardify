@@ -1,4 +1,4 @@
-module Request.Request exposing
+module Request exposing
     ( delete
     , get
     , getPaging
