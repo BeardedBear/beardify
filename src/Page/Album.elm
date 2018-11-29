@@ -14,6 +14,7 @@ import List.Extra as LE
 import Meta
 import Request
 import Route
+import Time
 import Utils
 import Views.Artist
 
@@ -33,6 +34,7 @@ init session =
 type Msg
     = SetAlbum (Result Http.Error Data.Album.Album)
     | SetAlbumTracks (Result Http.Error (List Data.Track.TrackSimplified))
+    | MetaMsg Meta.Msg
 
 
 update : Data.Session.Session -> Msg -> Data.Meta.AlbumModel -> ( Data.Meta.AlbumModel, Cmd Msg )
@@ -54,6 +56,33 @@ update session msg model =
         SetAlbumTracks (Err e) ->
             ( model, Cmd.none )
 
+        MetaMsg e ->
+            let
+                timestamp =
+                    Time.millisToPosix 1
+
+                ( _, newCmd ) =
+                    Meta.update e
+                        { config =
+                            { token = session.token
+                            , currentDate =
+                                { year = Time.toYear Time.utc timestamp
+                                , month = Time.toMonth Time.utc timestamp
+                                , day = Time.toDay Time.utc timestamp
+                                , hour = Time.toHour Time.utc timestamp
+                                , minute = Time.toMinute Time.utc timestamp
+                                , second = Time.toSecond Time.utc timestamp
+                                , milliSecond = Time.toMillis Time.utc timestamp
+                                }
+                            }
+                        , page = Meta.AlbumPage model
+                        , session = session
+                        }
+            in
+            ( model
+            , Cmd.map MetaMsg newCmd
+            )
+
 
 view : Data.Session.Session -> Data.Meta.AlbumModel -> ( String, List (Html Msg) )
 view session model =
@@ -72,7 +101,7 @@ view session model =
                 ]
                 [ div [] []
                 , div [] [ text <| String.fromInt t.track_number ++ "." ]
-                , div [] [ text t.name ]
+                , div [ onClick <| MetaMsg (Meta.ChangePlayingTrack (listTracksUri t.uri)) ] [ text t.name ]
                 , div [] [ text (Utils.durationFormat t.duration_ms) ]
                 ]
 
@@ -82,7 +111,7 @@ view session model =
                 |> List.sum
     in
     ( model.album.name
-    , [ div [ class "album-wrapper" ]
+    , [ div [ onClick (MetaMsg Meta.NoOp), class "album-wrapper" ]
             [ div [ class "bg-cover" ] [ imageView Large model.album.images ]
             , div [ class "album-page-head" ]
                 [ div [ class "heading-page" ] [ text model.album.name ]
@@ -97,7 +126,7 @@ view session model =
                         [ div [ class "img" ]
                             [ imageView Large model.album.images
                             ]
-                        , div [ class "playing-btn" ] [ i [ class "icon-play" ] [] ]
+                        , div [ class "playing-btn", onClick <| MetaMsg (Meta.ChangePlaying model.album.uri) ] [ i [ class "icon-play" ] [] ]
                         , div [ class "add-btn" ] [ i [ class "icon-add" ] [] ]
                         , div [] [ text <| Utils.releaseDateFormat model.album.release_date ]
                         , div [] [ text <| Utils.durationFormatMinutes trackSumDuration ]

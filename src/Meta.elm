@@ -59,6 +59,10 @@ update msg ({ session } as model) =
     in
     case msg of
         NoOp ->
+            let
+                _ =
+                    Debug.log "ONLOJZNLZIFJNZFLI" token
+            in
             ( model, Cmd.none )
 
         -- SEARCH
