@@ -97,6 +97,7 @@ view session model =
             div
                 [ classList
                     [ ( "track", True )
+                    , ( "active", t.uri == session.player.item.uri )
                     ]
                 ]
                 [ div [] [ Data.Image.imageView Data.Image.Small t.album.images ]
@@ -141,7 +142,7 @@ view session model =
                         ]
                     ]
                 , div [ class "sub-title" ] [ text "Albums" ]
-                , Views.AlbumGallery.view model.albums
+                , Views.AlbumGallery.view session.player model.albums
                 ]
             , div [ class "video-wrapper" ]
                 [ div [ class "sub-title" ] [ text "Videos" ]

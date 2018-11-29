@@ -67,6 +67,7 @@ view session model =
             div
                 [ classList
                     [ ( "track album-page", True )
+                    , ( "active", t.uri == session.player.item.uri )
                     ]
                 ]
                 [ div [] []

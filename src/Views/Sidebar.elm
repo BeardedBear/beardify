@@ -6,15 +6,19 @@ import Data.Session exposing (Session)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, classList, css, href, src)
 import Route
+import Utils
 import Views.Meta
 
 
-viewCollections : List PlaylistSimplified -> Bool -> Bool -> Html msg
-viewCollections playlists isClickable hasTitle =
+viewCollections : Data.Session.Session -> List PlaylistSimplified -> Bool -> Bool -> Html msg
+viewCollections session playlists isClickable hasTitle =
     let
         collectionItem p =
             a
-                [ classList [ ( "playlist", True ) ]
+                [ classList
+                    [ ( "playlist", True )
+                    , ( "active", Utils.getId session.url == p.id )
+                    ]
                 , Route.href <| Route.Collection p.id
                 ]
                 [ i [ class "icon-book" ] [], text <| String.replace "#Collection " "" p.name ]
@@ -36,8 +40,8 @@ viewCollections playlists isClickable hasTitle =
         text ""
 
 
-viewPlaylists : List PlaylistSimplified -> Bool -> Html msg
-viewPlaylists playlists isClickable =
+viewPlaylists : Data.Session.Session -> List PlaylistSimplified -> Bool -> Html msg
+viewPlaylists session playlists isClickable =
     let
         test =
             playlists
@@ -47,7 +51,10 @@ viewPlaylists playlists isClickable =
         |> List.map
             (\title ->
                 a
-                    [ classList [ ( "playlist", True ) ]
+                    [ classList
+                        [ ( "playlist", True )
+                        , ( "active", Utils.getId session.url == title.id )
+                        ]
                     , Route.href <| Route.Playlist title.id
                     ]
                     [ i [ class "icon-list" ] [], text title.name ]
@@ -85,10 +92,10 @@ view { activePage, session } =
             ]
         , div [ class "relative" ]
             [ div [ class "fit" ]
-                [ viewCollections session.playlists True True
+                [ viewCollections session session.playlists True True
                 , div [ class "playlists" ]
                     [ div [ class "title" ] [ text "Playlists" ]
-                    , viewPlaylists session.playlists True
+                    , viewPlaylists session session.playlists True
                     ]
                 ]
             ]
