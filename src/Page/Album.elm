@@ -22,23 +22,26 @@ import Views.Artist
 init : Data.Session.Session -> ( Data.Meta.AlbumModel, Cmd Msg )
 init session =
     ( { album = Data.Album.init
-      , tracks = []
+      , tracks =
+            { items = []
+            , next = ""
+            }
       }
     , Cmd.batch
         [ Http.send SetAlbum <| Request.get "albums/" (Utils.getId session.url) "" Data.Album.decodeAlbum session.token
-        , Http.send SetAlbumTracks <| Request.get "albums/" (Utils.getId session.url) "/tracks" (Decode.at [ "items" ] (Decode.list Data.Track.decodeTrackSimplified)) session.token
+        , Http.send SetAlbumTracks <| Request.get "albums/" (Utils.getId session.url) "/tracks" Data.Track.decodeTrackSimplifiedPaging session.token
         ]
     )
 
 
 type Msg
     = SetAlbum (Result Http.Error Data.Album.Album)
-    | SetAlbumTracks (Result Http.Error (List Data.Track.TrackSimplified))
+    | SetAlbumTracks (Result Http.Error Data.Track.TrackSimplifiedPaging)
     | MetaMsg Meta.Msg
 
 
 update : Data.Session.Session -> Msg -> Data.Meta.AlbumModel -> ( Data.Meta.AlbumModel, Cmd Msg )
-update session msg model =
+update session msg ({ tracks } as model) =
     case msg of
         SetAlbum (Ok e) ->
             ( { model | album = e }
@@ -49,8 +52,16 @@ update session msg model =
             ( model, Cmd.none )
 
         SetAlbumTracks (Ok e) ->
-            ( { model | tracks = e }
-            , Cmd.none
+            let
+                concat =
+                    model.tracks.items ++ e.items
+            in
+            ( { model | tracks = { tracks | items = concat } }
+            , if e.next /= "" then
+                Cmd.batch [ Http.send SetAlbumTracks <| Request.getPaging e.next Data.Track.decodeTrackSimplifiedPaging session.token ]
+
+              else
+                Cmd.none
             )
 
         SetAlbumTracks (Err e) ->
@@ -88,7 +99,7 @@ view : Data.Session.Session -> Data.Meta.AlbumModel -> ( String, List (Html Msg)
 view session model =
     let
         listTracksUri id =
-            model.tracks
+            model.tracks.items
                 |> LE.dropWhile (\e -> e.uri /= id)
                 |> List.map (\k -> k.uri)
 
@@ -106,7 +117,7 @@ view session model =
                 ]
 
         trackSumDuration =
-            model.tracks
+            model.tracks.items
                 |> List.map (\d -> d.duration_ms)
                 |> List.sum
     in
@@ -133,7 +144,7 @@ view session model =
                         ]
                     ]
                 , div []
-                    [ div [] (model.tracks |> List.map trackItem)
+                    [ div [] (model.tracks.items |> List.map trackItem)
                     ]
                 ]
             ]

@@ -1,9 +1,12 @@
 module Data.Track exposing
     ( Track
     , TrackSimplified
+    , TrackSimplifiedPaging
     , decodeTrack
     , decodeTrackSimplified
+    , decodeTrackSimplifiedPaging
     , encodeDelCollectionAlbum
+    , encodeDelCollectionAlbumInner
     , encodeTrack
     , init
     )
@@ -83,3 +86,18 @@ decodeTrackSimplified =
         (Decode.at [ "artists" ] (Decode.list Data.Artist.decodeArtistSimplified))
         (Decode.field "track_number" Decode.int)
         (Decode.field "uri" Decode.string)
+
+
+type alias TrackSimplifiedPaging =
+    { items : List TrackSimplified
+    , next : String
+    }
+
+
+decodeTrackSimplifiedPaging : Decode.Decoder TrackSimplifiedPaging
+decodeTrackSimplifiedPaging =
+    Decode.map2 TrackSimplifiedPaging
+        (Decode.at [ "items" ] (Decode.list decodeTrackSimplified))
+        (Decode.field "next"
+            (Decode.oneOf [ string, null "" ])
+        )

@@ -26,7 +26,7 @@ type alias PlaylistModel =
 
 type alias AlbumModel =
     { album : Data.Album.Album
-    , tracks : List Data.Track.TrackSimplified
+    , tracks : Data.Track.TrackSimplifiedPaging
     }
 
 
