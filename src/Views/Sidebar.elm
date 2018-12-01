@@ -13,6 +13,8 @@ import Views.Meta
 viewCollections : Data.Session.Session -> List PlaylistSimplified -> Bool -> Bool -> Html msg
 viewCollections session playlists isClickable hasTitle =
     let
+        -- _ =
+        --     Debug.log "route" playlists
         collectionItem p =
             a
                 [ classList
@@ -65,6 +67,9 @@ viewPlaylists session playlists isClickable =
 view : Views.Meta.Config -> Html msg
 view { activePage, session } =
     let
+        _ =
+            Debug.log "activePage" activePage
+
         linkIf page route caption icon =
             if page == activePage then
                 span [ class "menu-item active" ] [ i [ class icon ] [], text caption ]

@@ -1,14 +1,56 @@
 module Views.Search exposing (view)
 
+import Data.Album
+import Data.Artist
 import Data.Image
 import Data.Search
+import Data.Track
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick, onInput)
-import Meta
+import Http
+import Json.Decode as Decode exposing (..)
+import Request
 import Route
 import Utils
 import Views.Artist
+
+
+
+-- type Msg
+--     = FindArtist (Result Http.Error (List Data.Artist.Artist))
+--     | FindAlbum (Result Http.Error (List Data.Album.Album))
+--     | FindTrack (Result Http.Error (List Data.Track.Track))
+--     | Query String String
+-- update : Msg -> Data.Search.Model -> ( Data.Search.Model, Cmd Msg )
+-- update msg model =
+--     case msg of
+--         FindArtist (Ok artist) ->
+--             ( { model | findArtist = artist }
+--             , Cmd.none
+--             )
+--         FindArtist (Err _) ->
+--             ( model, Cmd.none )
+--         FindAlbum (Ok album) ->
+--             ( { model | findAlbum = album }
+--             , Cmd.none
+--             )
+--         FindAlbum (Err _) ->
+--             ( model, Cmd.none )
+--         FindTrack (Ok track) ->
+--             ( { model | findTrack = track }
+--             , Cmd.none
+--             )
+--         FindTrack (Err _) ->
+--             ( model, Cmd.none )
+--         Query token e ->
+--             ( { model | searchQuery = e }
+--             , Cmd.batch
+--                 [ Http.send FindArtist <| Request.get "search?q=" (e ++ "*") "&type=artist&limit=10" (Decode.at [ "artists", "items" ] (Decode.list Data.Artist.decodeArtist)) token
+--                 , Http.send FindAlbum <| Request.get "search?q=" (e ++ "*") "&type=album&limit=9" (Decode.at [ "albums", "items" ] (Decode.list Data.Album.decodeAlbum)) token
+--                 , Http.send FindTrack <| Request.get "search?q=" (e ++ "*") "&type=track&limit=12" (Decode.at [ "tracks", "items" ] (Decode.list Data.Track.decodeTrack)) token
+--                 ]
+--             )
 
 
 view : Data.Search.Model -> Html msg
@@ -52,7 +94,7 @@ view searchMsg =
                 , type_ "text"
                 , Html.Styled.Attributes.value searchMsg.searchQuery
 
-                -- , onInput Meta.Query
+                -- , onInput (Query token)
                 ]
                 []
             , if searchMsg.searchQuery /= "" then

@@ -15,8 +15,8 @@ import Utils
 import Views.Artist
 
 
-init : Data.Session.Session -> ( Data.Meta.PlaylistModel, Cmd Msg )
-init session =
+init : String -> Data.Session.Session -> ( Data.Meta.PlaylistModel, Cmd Msg )
+init id session =
     ( { playlist = Data.Playlist.init
       , tracks =
             { items = []
@@ -24,8 +24,8 @@ init session =
             }
       }
     , Cmd.batch
-        [ Http.send SetPlaylistTracks <| Request.get "playlists/" (Utils.getId session.url) "/tracks" Data.Playlist.decodePlaylistPaging session.token
-        , Http.send SetPlaylist <| Request.get "playlists/" (Utils.getId session.url) "" Data.Playlist.decodePlaylist session.token
+        [ Http.send SetPlaylistTracks <| Request.get "playlists/" id "/tracks" Data.Playlist.decodePlaylistPaging session.token
+        , Http.send SetPlaylist <| Request.get "playlists/" id "" Data.Playlist.decodePlaylist session.token
         ]
     )
 

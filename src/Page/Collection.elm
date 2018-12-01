@@ -1,4 +1,4 @@
-module Page.Collection exposing (Msg, init, update, view)
+module Page.Collection exposing (Msg(..), init, update, view)
 
 import Data.Image
 import Data.Meta
@@ -13,8 +13,8 @@ import Route
 import Utils
 
 
-init : Data.Session.Session -> ( Data.Meta.CollectionModel, Cmd Msg )
-init session =
+init : String -> Data.Session.Session -> ( Data.Meta.CollectionModel, Cmd Msg )
+init id session =
     ( { collection = Data.Playlist.init
       , albums =
             { items = []
@@ -22,8 +22,8 @@ init session =
             }
       }
     , Cmd.batch
-        [ Http.send SetCollection <| Request.get "playlists/" (Utils.getId session.url) "" Data.Playlist.decodePlaylist session.token
-        , Http.send SetCollectionTracks <| Request.get "playlists/" (Utils.getId session.url) "/tracks" Data.Playlist.decodePlaylistPaging session.token
+        [ Http.send SetCollection <| Request.get "playlists/" id "" Data.Playlist.decodePlaylist session.token
+        , Http.send SetCollectionTracks <| Request.get "playlists/" id "/tracks" Data.Playlist.decodePlaylistPaging session.token
         ]
     )
 
@@ -31,6 +31,7 @@ init session =
 type Msg
     = SetCollection (Result Http.Error Data.Playlist.Playlist)
     | SetCollectionTracks (Result Http.Error Data.Playlist.PlaylistPaging)
+    | PlayAlbum String
 
 
 update : Data.Session.Session -> Msg -> Data.Meta.CollectionModel -> ( Data.Meta.CollectionModel, Cmd Msg )
@@ -63,6 +64,9 @@ update session msg model =
             )
 
         SetCollectionTracks (Err e) ->
+            ( model, Cmd.none )
+
+        PlayAlbum _ ->
             ( model, Cmd.none )
 
 
@@ -99,7 +103,7 @@ view session model =
                             )
                     )
                 , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat al.release_date ++ ")" ]
-                , div [ class "playing-btn" ] [ i [ class "icon-play" ] [] ]
+                , div [ class "playing-btn", onClick <| PlayAlbum al.albumUri ] [ i [ class "icon-play" ] [] ]
                 , div [ class "add-btn" ] [ i [ class "icon-add" ] [] ]
                 , div [ class "del-btn" ] [ i [ class "icon-del" ] [] ]
                 ]

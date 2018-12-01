@@ -20,8 +20,8 @@ import Views.AlbumGallery
 import Views.Artist
 
 
-init : Data.Session.Session -> ( Data.Meta.ArtistModel, Cmd Msg )
-init session =
+init : String -> Data.Session.Session -> ( Data.Meta.ArtistModel, Cmd Msg )
+init id session =
     ( { artist = Data.Artist.init
       , albums = []
       , videos = []
@@ -29,10 +29,10 @@ init session =
       , relatedArtists = []
       }
     , Cmd.batch
-        [ Http.send SetArtist <| Request.get "artists/" (Utils.getId session.url) "" Data.Artist.decodeArtist session.token
-        , Http.send SetArtistAlbums <| Request.get "artists/" (Utils.getId session.url) "/albums?market=FR&album_type=album" (Decode.at [ "items" ] (Decode.list Data.Album.decodeAlbum)) session.token
-        , Http.send SetArtistTopTracks <| Request.get "artists/" (Utils.getId session.url) "/top-tracks?country=FR" (Decode.at [ "tracks" ] (Decode.list Data.Track.decodeTrack)) session.token
-        , Http.send SetRelatedArtists <| Request.get "artists/" (Utils.getId session.url) "/related-artists" (Decode.at [ "artists" ] (Decode.list Data.Artist.decodeArtist)) session.token
+        [ Http.send SetArtist <| Request.get "artists/" id "" Data.Artist.decodeArtist session.token
+        , Http.send SetArtistAlbums <| Request.get "artists/" id "/albums?market=FR&album_type=album" (Decode.at [ "items" ] (Decode.list Data.Album.decodeAlbum)) session.token
+        , Http.send SetArtistTopTracks <| Request.get "artists/" id "/top-tracks?country=FR" (Decode.at [ "tracks" ] (Decode.list Data.Track.decodeTrack)) session.token
+        , Http.send SetRelatedArtists <| Request.get "artists/" id "/related-artists" (Decode.at [ "artists" ] (Decode.list Data.Artist.decodeArtist)) session.token
         ]
     )
 

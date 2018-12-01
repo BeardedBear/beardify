@@ -3,7 +3,6 @@ module Views.Page exposing (frame)
 import Browser exposing (Document)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, css, href, src)
-import Meta
 import Route
 import Views.Meta
 import Views.Player
