@@ -235,7 +235,12 @@ update msg ({ page, session } as model) =
                     toPage CollectionPage CollectionMsg (Page.Collection.update session) collectionMsg collectionModel
 
         ( PlaylistMsg playlistMsg, PlaylistPage playlistModel ) ->
-            toPage PlaylistPage PlaylistMsg (Page.Playlist.update session) playlistMsg playlistModel
+            case playlistMsg of
+                Page.Playlist.PlayTracks e ->
+                    ( model, Http.send NoOpResult <| Request.play e (Data.Track.encodeTrack e) token )
+
+                _ ->
+                    toPage PlaylistPage PlaylistMsg (Page.Playlist.update session) playlistMsg playlistModel
 
         ( AlbumMsg albumMsg, AlbumPage albumModel ) ->
             case albumMsg of
@@ -249,7 +254,12 @@ update msg ({ page, session } as model) =
                     toPage AlbumPage AlbumMsg (Page.Album.update session) albumMsg albumModel
 
         ( ArtistMsg artistMsg, ArtistPage artistModel ) ->
-            toPage ArtistPage ArtistMsg (Page.Artist.update session) artistMsg artistModel
+            case artistMsg of
+                Page.Artist.PlayTracks e ->
+                    ( model, Http.send NoOpResult <| Request.play e (Data.Track.encodeTrack e) token )
+
+                _ ->
+                    toPage ArtistPage ArtistMsg (Page.Artist.update session) artistMsg artistModel
 
         -- SIDEBAR PLAYLISTS
         ( InitPlaylist (Ok e), _ ) ->

@@ -1,4 +1,4 @@
-module Page.Playlist exposing (Msg, init, update, view)
+module Page.Playlist exposing (Msg(..), init, update, view)
 
 import Data.Image
 import Data.Meta
@@ -33,6 +33,7 @@ init id session =
 type Msg
     = SetPlaylist (Result Http.Error Data.Playlist.Playlist)
     | SetPlaylistTracks (Result Http.Error Data.Playlist.PlaylistPaging)
+    | PlayTracks (List String)
 
 
 update : Data.Session.Session -> Msg -> Data.Meta.PlaylistModel -> ( Data.Meta.PlaylistModel, Cmd Msg )
@@ -64,6 +65,9 @@ update session msg model =
         SetPlaylistTracks (Err _) ->
             ( model, Cmd.none )
 
+        PlayTracks _ ->
+            ( model, Cmd.none )
+
 
 view : Data.Session.Session -> Data.Meta.PlaylistModel -> ( String, List (Html Msg) )
 view session model =
@@ -92,12 +96,14 @@ view session model =
             div
                 [ classList
                     [ ( "track playlist-page", True )
+                    , ( "active", t.track.uri == session.player.item.uri )
                     ]
                 ]
                 [ icon
                 , div
                     [ class "track-title"
                     , title t.track.name
+                    , onClick <| PlayTracks (listTracksUri t.track.uri)
                     ]
                     [ text t.track.name ]
                 , div [ class "track-artist" ] [ Views.Artist.artistList t.track.artists ]

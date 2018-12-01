@@ -1,4 +1,4 @@
-module Page.Artist exposing (Msg, init, update, view)
+module Page.Artist exposing (Msg(..), init, update, view)
 
 import Data.Album
 import Data.Artist
@@ -43,6 +43,8 @@ type Msg
     | SetArtistTopTracks (Result Http.Error (List Data.Track.Track))
     | SetRelatedArtists (Result Http.Error (List Data.Artist.Artist))
     | SetYoutube (Result Http.Error Data.Youtube.Youtube)
+    | PlayTracks (List String)
+    | PlayAlbum String
 
 
 update : Data.Session.Session -> Msg -> Data.Meta.ArtistModel -> ( Data.Meta.ArtistModel, Cmd Msg )
@@ -84,6 +86,12 @@ update session msg model =
         SetYoutube (Err _) ->
             ( model, Cmd.none )
 
+        PlayTracks _ ->
+            ( model, Cmd.none )
+
+        PlayAlbum _ ->
+            ( model, Cmd.none )
+
 
 view : Data.Session.Session -> Data.Meta.ArtistModel -> ( String, List (Html Msg) )
 view session model =
@@ -101,7 +109,7 @@ view session model =
                     ]
                 ]
                 [ div [] [ Data.Image.imageView Data.Image.Small t.album.images ]
-                , div [] [ text t.name ]
+                , div [ onClick <| PlayTracks (listTracksUri t.uri) ] [ text t.name ]
                 , div [] [ text (Utils.durationFormat t.duration_ms) ]
                 ]
 
