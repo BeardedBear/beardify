@@ -16,7 +16,6 @@ import List.Extra as LE
 import Request
 import Route
 import Utils
-import Views.AlbumGallery
 import Views.Artist
 
 
@@ -126,6 +125,25 @@ view session model =
                 , div [ class "artist-name" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ v.snippet.channelId) ] [ text v.snippet.channelTitle ] ]
                 ]
 
+        albumItem ar =
+            div
+                [ classList
+                    [ ( "album", True )
+                    , ( "active", session.player.item.album.id == ar.id )
+                    ]
+                ]
+                [ a
+                    [ class "img"
+                    , Route.href (Route.Album ar.id)
+                    ]
+                    [ Data.Image.imageView Data.Image.Medium ar.images
+                    ]
+                , div [] [ text ar.name ]
+                , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat ar.release_date ++ ")" ]
+                , div [ class "playing-btn", onClick <| PlayAlbum ar.uri ] [ i [ class "icon-play" ] [] ]
+                , div [ class "add-btn" ] [ i [ class "icon-add" ] [] ]
+                ]
+
         link name urlBefore urlAfter icon =
             a [ href <| urlBefore ++ model.artist.name ++ urlAfter, target "_BLANK" ] [ i [ class <| "icon-" ++ icon ] [], text name ]
     in
@@ -150,7 +168,9 @@ view session model =
                         ]
                     ]
                 , div [ class "sub-title" ] [ text "Albums" ]
-                , Views.AlbumGallery.view session.player model.albums
+                , model.albums
+                    |> List.map albumItem
+                    |> div [ class "album-list-wrapper" ]
                 ]
             , div [ class "video-wrapper" ]
                 [ div [ class "sub-title" ] [ text "Videos" ]

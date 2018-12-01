@@ -258,6 +258,9 @@ update msg ({ page, session } as model) =
                 Page.Artist.PlayTracks e ->
                     ( model, Http.send NoOpResult <| Request.play e (Data.Track.encodeTrack e) token )
 
+                Page.Artist.PlayAlbum e ->
+                    ( model, Http.send NoOpResult <| Request.play e (Data.Album.encodeAlbum e) token )
+
                 _ ->
                     toPage ArtistPage ArtistMsg (Page.Artist.update session) artistMsg artistModel
 
