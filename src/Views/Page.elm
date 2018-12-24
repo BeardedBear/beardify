@@ -9,7 +9,6 @@ import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (class, classList, css, href, src)
 import Route
 import Utils
-import Views.Meta
 import Views.Player
 import Views.Search
 import Views.Theme
