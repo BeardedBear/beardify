@@ -1,4 +1,4 @@
-module Views.Player exposing (view)
+module Views.Player exposing (Model, Msg(..), update, view)
 
 import Data.Image
 import Data.Player
@@ -10,13 +10,36 @@ import Utils
 import Views.Artist
 
 
-view : Data.Player.Model -> Html msg
+type alias Model =
+    Data.Player.Model
+
+
+type Msg
+    = Play
+    | Pause
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        Play ->
+            let
+                _ =
+                    Debug.log "bonjour" "bonjour"
+            in
+            ( model, Cmd.none )
+
+        Pause ->
+            ( model, Cmd.none )
+
+
+view : Model -> Html Msg
 view player =
     div [ class "player" ]
         [ div [ class "controls" ]
             [ div []
                 [ if player.is_playing then
-                    button [ class "play" ] [ i [ class "icon-pause" ] [] ]
+                    button [ onClick Play, class "play" ] [ i [ class "icon-pause" ] [] ]
 
                   else
                     button [ class "play" ] [ i [ class "icon-play" ] [] ]

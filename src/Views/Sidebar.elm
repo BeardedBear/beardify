@@ -64,14 +64,14 @@ viewPlaylists session playlists isClickable =
         |> div [ class "playlists-list" ]
 
 
-view : Views.Meta.Config -> Html msg
-view { activePage, session } =
+view : Data.Session.Session -> Html msg
+view session =
     let
         _ =
-            Debug.log "activePage" activePage
+            Debug.log "activePage" session.navKey
 
         linkIf page route caption icon =
-            if page == activePage then
+            if page == session.activePage then
                 span [ class "menu-item active" ] [ i [ class icon ] [], text caption ]
 
             else
@@ -92,8 +92,8 @@ view { activePage, session } =
                 ]
             ]
         , div [ class "top-menu" ]
-            [ linkIf Views.Meta.Home Route.Home "Home" "icon-home"
-            , linkIf Views.Meta.Counter Route.Counter "Second page" "icon-bell"
+            [ linkIf Views.Page.Home Route.Home "Home" "icon-home"
+            , linkIf Views.Page.Counter Route.Counter "Second page" "icon-bell"
             ]
         , div [ class "relative" ]
             [ div [ class "fit" ]

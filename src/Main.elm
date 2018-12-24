@@ -35,6 +35,7 @@ import Time
 import Url exposing (Url)
 import Views.Meta
 import Views.Page
+import Views.Player
 
 
 type Page
@@ -171,6 +172,7 @@ type Msg
       -- PLAYER
     | SetPlayer (Result Http.Error Data.Player.Model)
     | GetPlayer Time.Posix
+    | PlayerMsg Views.Player.Msg
       -- KEYBOARD
     | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
       -- SEARCH
@@ -390,7 +392,7 @@ view : Model -> Browser.Document Msg
 view model =
     let
         pageConfig =
-            Views.Meta.Config model.session
+            Views.Page.Config model.session
 
         mapMsg msg ( title, content ) =
             ( title, content |> List.map (Html.map msg) )
@@ -399,40 +401,40 @@ view model =
         HomePage homeModel ->
             Page.Home.view model.session homeModel
                 |> mapMsg HomeMsg
-                |> Views.Page.frame (pageConfig Views.Meta.Home)
+                |> Views.Page.frame (pageConfig Views.Page.Home (Views.Player.view model.session.player))
 
         CounterPage counterModel ->
             Page.Counter.view model.session counterModel
                 |> mapMsg CounterMsg
-                |> Views.Page.frame (pageConfig Views.Meta.Counter)
+                |> Views.Page.frame (pageConfig Views.Page.Counter (Views.Player.view model.session.player))
 
         CollectionPage collectionModel ->
             Page.Collection.view model.session collectionModel
                 |> mapMsg CollectionMsg
-                |> Views.Page.frame (pageConfig Views.Meta.Collection)
+                |> Views.Page.frame (pageConfig Views.Page.Collection (Views.Player.view model.session.player))
 
         PlaylistPage playlistModel ->
             Page.Playlist.view model.session playlistModel
                 |> mapMsg PlaylistMsg
-                |> Views.Page.frame (pageConfig Views.Meta.Playlist)
+                |> Views.Page.frame (pageConfig Views.Page.Playlist (Views.Player.view model.session.player))
 
         AlbumPage albumModel ->
             Page.Album.view model.session albumModel
                 |> mapMsg AlbumMsg
-                |> Views.Page.frame (pageConfig Views.Meta.Album)
+                |> Views.Page.frame (pageConfig Views.Page.Album (Views.Player.view model.session.player))
 
         ArtistPage artistModel ->
             Page.Artist.view model.session artistModel
                 |> mapMsg ArtistMsg
-                |> Views.Page.frame (pageConfig Views.Meta.Artist)
+                |> Views.Page.frame (pageConfig Views.Page.Artist (Views.Player.view model.session.player))
 
         NotFound ->
             ( "Not Found", [ Html.text "Not found" ] )
-                |> Views.Page.frame (pageConfig Views.Meta.Other)
+                |> Views.Page.frame (pageConfig Views.Page.Other (Views.Player.view model.session.player))
 
         Blank ->
             ( "", [] )
-                |> Views.Page.frame (pageConfig Views.Meta.Other)
+                |> Views.Page.frame (pageConfig Views.Page.Other (Views.Player.view model.session.player))
 
 
 main : Program Flags Model Msg
