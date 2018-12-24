@@ -25,14 +25,13 @@ type ActivePage
     | Other
 
 
-type alias Config msg =
+type alias Config =
     { session : Data.Session.Session
     , activePage : ActivePage
-    , player : msg
     }
 
 
-frame : Config msg -> Html msg -> ( String, List (Html msg) ) -> Document msg
+frame : Config -> Html msg -> ( String, List (Html msg) ) -> Document msg
 frame config player ( title, content ) =
     { title = title ++ " - Beardify"
     , body =
@@ -104,7 +103,7 @@ playlistView session playlists isClickable =
         |> div [ class "playlists-list" ]
 
 
-sidebarView : Config msg -> Html msg
+sidebarView : Config -> Html msg
 sidebarView config =
     let
         _ =
