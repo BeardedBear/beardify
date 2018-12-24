@@ -2,10 +2,14 @@ module Views.Player exposing (Model, Msg(..), update, view)
 
 import Data.Image
 import Data.Player
+import Data.Session exposing (Session)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
+import Http
+import Request as Request
 import Route
+import Task
 import Utils
 import Views.Artist
 
@@ -17,19 +21,24 @@ type alias Model =
 type Msg
     = Play
     | Pause
+    | NoOp (Result Http.Error ())
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Session -> Msg -> Model -> ( Model, Cmd Msg )
+update ({ token } as session) msg model =
     case msg of
         Play ->
-            let
-                _ =
-                    Debug.log "bonjour" "bonjour"
-            in
-            ( model, Cmd.none )
+            ( model
+            , Http.send NoOp <| Request.put "" "play" "" token
+            )
 
         Pause ->
+            ( model, Http.send NoOp <| Request.put "" "pause" "" token )
+
+        NoOp (Ok _) ->
+            ( model, Cmd.none )
+
+        NoOp (Err _) ->
             ( model, Cmd.none )
 
 
@@ -39,10 +48,10 @@ view player =
         [ div [ class "controls" ]
             [ div []
                 [ if player.is_playing then
-                    button [ onClick Play, class "play" ] [ i [ class "icon-pause" ] [] ]
+                    button [ onClick Pause, class "play" ] [ i [ class "icon-pause" ] [] ]
 
                   else
-                    button [ class "play" ] [ i [ class "icon-play" ] [] ]
+                    button [ onClick Play, class "play" ] [ i [ class "icon-play" ] [] ]
                 , button [] [ i [ class "icon-to-start" ] [] ]
                 , button [] [ i [ class "icon-to-end" ] [] ]
                 , button

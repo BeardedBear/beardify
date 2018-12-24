@@ -341,6 +341,13 @@ update msg ({ page, session } as model) =
         ( FindTrack (Err _), _ ) ->
             ( model, Cmd.none )
 
+        ( PlayerMsg playerMsg, _ ) ->
+            let
+                ( playerModel, playerCmds ) =
+                    Views.Player.update session playerMsg model.session.player
+            in
+            ( model, playerCmds |> Cmd.map PlayerMsg )
+
         ( Query e, _ ) ->
             ( { model | session = { session | search = { search | searchQuery = e } } }
             , Cmd.batch
@@ -401,7 +408,7 @@ view model =
         HomePage homeModel ->
             Page.Home.view model.session homeModel
                 |> mapMsg HomeMsg
-                |> Views.Page.frame (pageConfig Views.Page.Home) (Views.Player.view model.session.player |> Html.map PlayerMsg)
+                |> Views.Page.frame (pageConfig Views.Page.Home) (Html.map PlayerMsg (Views.Player.view model.session.player))
 
         CounterPage counterModel ->
             Page.Counter.view model.session counterModel
