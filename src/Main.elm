@@ -398,6 +398,9 @@ subscriptions model =
 view : Model -> Browser.Document Msg
 view model =
     let
+        player =
+            Views.Player.view model.session.player |> Html.map PlayerMsg
+
         pageConfig =
             Views.Page.Config model.session
 
@@ -408,40 +411,40 @@ view model =
         HomePage homeModel ->
             Page.Home.view model.session homeModel
                 |> mapMsg HomeMsg
-                |> Views.Page.frame (pageConfig Views.Page.Home) (Html.map PlayerMsg (Views.Player.view model.session.player))
+                |> Views.Page.frame (pageConfig Views.Page.Home) player
 
         CounterPage counterModel ->
             Page.Counter.view model.session counterModel
                 |> mapMsg CounterMsg
-                |> Views.Page.frame (pageConfig Views.Page.Counter) (Views.Player.view model.session.player |> Html.map PlayerMsg)
+                |> Views.Page.frame (pageConfig Views.Page.Counter) player
 
         CollectionPage collectionModel ->
             Page.Collection.view model.session collectionModel
                 |> mapMsg CollectionMsg
-                |> Views.Page.frame (pageConfig Views.Page.Collection) (Views.Player.view model.session.player |> Html.map PlayerMsg)
+                |> Views.Page.frame (pageConfig Views.Page.Collection) player
 
         PlaylistPage playlistModel ->
             Page.Playlist.view model.session playlistModel
                 |> mapMsg PlaylistMsg
-                |> Views.Page.frame (pageConfig Views.Page.Playlist) (Views.Player.view model.session.player |> Html.map PlayerMsg)
+                |> Views.Page.frame (pageConfig Views.Page.Playlist) player
 
         AlbumPage albumModel ->
             Page.Album.view model.session albumModel
                 |> mapMsg AlbumMsg
-                |> Views.Page.frame (pageConfig Views.Page.Album) (Views.Player.view model.session.player |> Html.map PlayerMsg)
+                |> Views.Page.frame (pageConfig Views.Page.Album) player
 
         ArtistPage artistModel ->
             Page.Artist.view model.session artistModel
                 |> mapMsg ArtistMsg
-                |> Views.Page.frame (pageConfig Views.Page.Artist) (Views.Player.view model.session.player |> Html.map PlayerMsg)
+                |> Views.Page.frame (pageConfig Views.Page.Artist) player
 
         NotFound ->
             ( "Not Found", [ Html.text "Not found" ] )
-                |> Views.Page.frame (pageConfig Views.Page.Other) (Views.Player.view model.session.player |> Html.map PlayerMsg)
+                |> Views.Page.frame (pageConfig Views.Page.Other) player
 
         Blank ->
             ( "", [] )
-                |> Views.Page.frame (pageConfig Views.Page.Other) (Views.Player.view model.session.player |> Html.map PlayerMsg)
+                |> Views.Page.frame (pageConfig Views.Page.Other) player
 
 
 main : Program Flags Model Msg
