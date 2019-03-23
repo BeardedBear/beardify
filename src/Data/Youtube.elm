@@ -1,8 +1,7 @@
 module Data.Youtube exposing (Snippet, Video, Youtube, decodeSnippet, decodeVideo, decodeYoutube, getVideos)
 
-import Http exposing (..)
-import Json.Decode as Decode exposing (..)
-import Json.Encode as Encode
+import Http exposing (get)
+import Json.Decode as Decode exposing (Decoder(..), at, field)
 
 
 type alias VideoId =

@@ -3,8 +3,6 @@ module Data.Search exposing (Model, init)
 import Data.Album
 import Data.Artist
 import Data.Track
-import Http exposing (..)
-import Json.Decode as Decode exposing (..)
 
 
 type alias Model =

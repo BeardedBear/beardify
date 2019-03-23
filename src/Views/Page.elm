@@ -49,9 +49,8 @@ frame config player ( title, content ) =
 
 
 collectionView : Data.Session.Session -> List PlaylistSimplified -> Bool -> Bool -> Html msg
-collectionView session playlists isClickable hasTitle =
+collectionView session playlists _ hasTitle =
     let
-        -- _ =
         --     Debug.log "route" playlists
         collectionItem p =
             a
@@ -81,7 +80,7 @@ collectionView session playlists isClickable hasTitle =
 
 
 playlistView : Data.Session.Session -> List PlaylistSimplified -> Bool -> Html msg
-playlistView session playlists isClickable =
+playlistView session playlists _ =
     let
         test =
             playlists
@@ -105,9 +104,6 @@ playlistView session playlists isClickable =
 sidebarView : Config -> Html msg
 sidebarView config =
     let
-        _ =
-            Debug.log "activePage" config.session.navKey
-
         linkIf page route caption icon =
             if page == config.activePage then
                 span [ class "menu-item active" ] [ i [ class icon ] [], text caption ]

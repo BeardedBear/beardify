@@ -13,10 +13,8 @@ module Data.Track exposing
 
 import Data.Album
 import Data.Artist
-import Http exposing (..)
-import Json.Decode as Decode exposing (..)
+import Json.Decode as Decode exposing (Decoder(..), at, field, null, string)
 import Json.Encode as Encode
-import Utils
 
 
 init : Track

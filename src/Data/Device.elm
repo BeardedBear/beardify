@@ -4,7 +4,7 @@ module Data.Device exposing
     , init
     )
 
-import Json.Decode as Decode exposing (..)
+import Json.Decode as Decode exposing (Decoder(..), field)
 
 
 type alias Device =

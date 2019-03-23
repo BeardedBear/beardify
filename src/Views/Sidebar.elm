@@ -11,7 +11,7 @@ import Views.Meta
 
 
 viewCollections : Data.Session.Session -> List PlaylistSimplified -> Bool -> Bool -> Html msg
-viewCollections session playlists isClickable hasTitle =
+viewCollections session playlists _ hasTitle =
     let
         collectionItem p =
             a

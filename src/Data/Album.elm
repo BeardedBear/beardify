@@ -7,7 +7,7 @@ module Data.Album exposing
 
 import Data.Artist
 import Data.Image
-import Json.Decode as Decode exposing (..)
+import Json.Decode as Decode exposing (Decoder(..), at, field)
 import Json.Encode as Encode
 
 

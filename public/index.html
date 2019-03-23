@@ -5,14 +5,15 @@
     <meta charset="utf-8">
     <title>Beardify</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Exo+2:400,400i,500,500i,600,600i,700,700i,800,800i,900|Roboto+Condensed:300,300i,400,400i,700,700i"
+    <link
+        href="https://fonts.googleapis.com/css?family=Exo+2:400,400i,500,500i,600,600i,700,700i,800,800i,900|Roboto+Condensed:300,300i,400,400i,700,700i"
         rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" rel="stylesheet" />
     <link href="./icons/styles.css" rel="stylesheet">
     <link href="main.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="./img/logo.png" />
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -64,23 +65,23 @@
                 window.location.assign(authUrl);
             });
 
-            // app.ports.getReleasesThePRP.subscribe(function () {
-            //     $.getJSON('https://allorigins.me/get?url=https://www.theprp.com/releases/&callback=?', function (data) {
-            //         dom = new DOMParser().parseFromString(data.contents, "text/html");
+            app.ports.getReleasesThePRP.subscribe(function () {
+                $.getJSON('https://allorigins.ml/get?url=https://www.theprp.com/releases/&callback=?', function (data) {
+                    dom = new DOMParser().parseFromString(data.contents, "text/html");
 
-            //         let array = []
-            //         dom.body.querySelectorAll(".rel_table .rel_row").forEach(
-            //             function (currentValue) {
-            //                 let obj = new Object();
-            //                 obj.artist = currentValue.querySelector(".col_artist").textContent;
-            //                 obj.album = currentValue.querySelector(".col_title").textContent;
-            //                 obj.date = Date.parse(new Date(currentValue.querySelector(".col_date").textContent)) + 86400000;
-            //                 array.push(obj)
-            //             },
-            //         );
-            //         app.ports.thePrpReleases.send(JSON.stringify(array));
-            //     });
-            // });
+                    let array = []
+                    dom.body.querySelectorAll(".rel_table .rel_row").forEach(
+                        function (currentValue) {
+                            let obj = new Object();
+                            obj.artist = currentValue.querySelector(".col_artist").textContent;
+                            obj.album = currentValue.querySelector(".col_title").textContent;
+                            obj.date = Date.parse(new Date(currentValue.querySelector(".col_date").textContent)) + 86400000;
+                            array.push(obj)
+                        },
+                    );
+                    app.ports.thePrpReleases.send(JSON.stringify(array));
+                });
+            });
 
         }
     </script>

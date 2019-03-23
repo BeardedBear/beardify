@@ -2,8 +2,7 @@ module Data.Player exposing (Model, decodePlayer, init)
 
 import Data.Device
 import Data.Track
-import Http exposing (..)
-import Json.Decode as Decode exposing (..)
+import Json.Decode as Decode exposing (Decoder(..), at, field)
 
 
 init : Model

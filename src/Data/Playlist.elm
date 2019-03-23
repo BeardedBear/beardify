@@ -14,8 +14,7 @@ module Data.Playlist exposing
 
 import Data.Image
 import Data.Track
-import Http exposing (..)
-import Json.Decode as Decode exposing (..)
+import Json.Decode as Decode exposing (Decoder(..), at, field, null, string)
 
 
 init : Playlist

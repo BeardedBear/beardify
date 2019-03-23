@@ -1,7 +1,7 @@
 module Data.Releases exposing (Model, ThePrpReleases, decodeThePrpReleases, init)
 
 import Data.Album
-import Json.Decode as Decode exposing (..)
+import Json.Decode as Decode exposing (Decoder(..), field)
 
 
 type alias Model =

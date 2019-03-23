@@ -7,7 +7,7 @@ module Data.Artist exposing
     )
 
 import Data.Image
-import Json.Decode as Decode exposing (..)
+import Json.Decode as Decode exposing (Decoder(..), at, field)
 
 
 init : Artist

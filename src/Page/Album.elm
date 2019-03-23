@@ -1,7 +1,7 @@
 module Page.Album exposing (Msg(..), init, update, view)
 
 import Data.Album
-import Data.Image as Image exposing (..)
+import Data.Image exposing (..)
 import Data.Meta
 import Data.Session
 import Data.Track
@@ -12,8 +12,6 @@ import Http
 import Json.Decode as Decode exposing (..)
 import List.Extra as LE
 import Request
-import Route
-import Time
 import Utils
 import Views.Artist
 
