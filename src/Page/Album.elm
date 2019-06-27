@@ -14,6 +14,7 @@ import List.Extra as LE
 import Request
 import Utils
 import Views.Artist
+import Views.Modal
 
 
 init : String -> Data.Session.Session -> ( Data.Meta.AlbumModel, Cmd Msg )
@@ -22,6 +23,10 @@ init id session =
       , tracks =
             { items = []
             , next = ""
+            }
+      , modal =
+            { isOpen = False
+            , inPocket = []
             }
       }
     , Cmd.batch
@@ -36,10 +41,15 @@ type Msg
     | SetAlbumTracks (Result Http.Error Data.Track.TrackSimplifiedPaging)
     | PlayTracks (List String)
     | PlayAlbum String
+    | ModalOpen (Result Http.Error (List Data.Track.TrackSimplified))
+    | ModalGetTrack String
+    | ModalAddTrack String
+    | SetModalTrack (Result Http.Error ())
+    | ModalClear
 
 
 update : Data.Session.Session -> Msg -> Data.Meta.AlbumModel -> ( Data.Meta.AlbumModel, Cmd Msg )
-update session msg ({ tracks } as model) =
+update session msg ({ tracks, modal } as model) =
     case msg of
         SetAlbum (Ok e) ->
             ( { model | album = e }
@@ -71,6 +81,62 @@ update session msg ({ tracks } as model) =
         PlayAlbum _ ->
             ( model, Cmd.none )
 
+        ModalOpen (Ok e) ->
+            let
+                firstTrack =
+                    e
+                        |> List.map (\f -> f.uri)
+                        |> List.take 1
+            in
+            ( { model | modal = { modal | isOpen = True, inPocket = firstTrack } }
+            , Cmd.none
+            )
+
+        -- ModalOpen (Ok e) ->
+        --     let
+        --         firstTrack =
+        --             e
+        --                 |> List.map (\f -> f.uri)
+        --                 |> List.take 1
+        --     in
+        --     ( { session | modal =
+        --             { modal
+        --                 | isOpen = True
+        --                 , inPocket = firstTrack
+        --             }
+        --       }
+        --     , Cmd.none
+        --     )
+        ModalOpen (Err _) ->
+            ( model, Cmd.none )
+
+        ModalGetTrack e ->
+            ( model
+            , Cmd.batch
+                [ Http.send ModalOpen <| Request.get "albums/" e "/tracks" (Decode.at [ "items" ] (Decode.list Data.Track.decodeTrackSimplified)) session.token
+                ]
+            )
+
+        ModalAddTrack e ->
+            let
+                listTracks =
+                    String.concat model.modal.inPocket
+            in
+            ( model, Http.send SetModalTrack <| Request.post "playlists/" e ("/tracks?position=0&uris=" ++ listTracks) session.token )
+
+        SetModalTrack (Ok e) ->
+            ( { model | modal = { modal | isOpen = False } }
+            , Cmd.none
+            )
+
+        SetModalTrack (Err e) ->
+            ( model, Cmd.none )
+
+        ModalClear ->
+            ( { model | modal = { modal | isOpen = False } }
+            , Cmd.none
+            )
+
 
 view : Data.Session.Session -> Data.Meta.AlbumModel -> ( String, List (Html Msg) )
 view session model =
@@ -99,7 +165,12 @@ view session model =
                 |> List.sum
     in
     ( model.album.name
-    , [ div [ class "album-wrapper" ]
+    , [ Views.Modal.view
+            { isOpen = model.modal.isOpen
+            , session = session
+            , close = ModalClear
+            }
+      , div [ class "album-wrapper" ]
             [ div [ class "bg-cover" ] [ imageView Large model.album.images ]
             , div [ class "album-page-head" ]
                 [ div [ class "heading-page" ] [ text model.album.name ]
@@ -115,9 +186,11 @@ view session model =
                             [ imageView Large model.album.images
                             ]
                         , div [ class "playing-btn", onClick <| PlayAlbum model.album.uri ] [ i [ class "icon-play" ] [] ]
-                        , div [ class "add-btn" ] [ i [ class "icon-add" ] [] ]
+                        , div [ class "add-btn", onClick <| ModalGetTrack model.album.id ] [ i [ class "icon-add" ] [] ]
                         , div [] [ text <| Utils.releaseDateFormat model.album.release_date ]
                         , div [] [ text <| Utils.durationFormatMinutes trackSumDuration ]
+                        , div [] [ text <| Debug.toString model.modal.isOpen ]
+                        , div [] [ text <| Debug.toString model.modal.inPocket ]
                         ]
                     ]
                 , div []

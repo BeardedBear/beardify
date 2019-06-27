@@ -1,4 +1,4 @@
-module Views.Sidebar exposing (view)
+module Views.Sidebar exposing (view, viewCollections)
 
 import Browser exposing (Document)
 import Data.Playlist exposing (..)
@@ -7,11 +7,21 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, classList, css, href, src)
 import Route
 import Utils
-import Views.Meta
 
 
-viewCollections : Data.Session.Session -> List PlaylistSimplified -> Bool -> Bool -> Html msg
-viewCollections session playlists _ hasTitle =
+
+-- import Views.Meta
+
+
+type alias ViewCollectionsConfig =
+    { session : Data.Session.Session
+    , playlists : List PlaylistSimplified
+    , hasTitle : Bool
+    }
+
+
+viewCollections : ViewCollectionsConfig -> Html msg
+viewCollections ({ session, playlists, hasTitle } as viewCollectionsConfig) =
     let
         collectionItem p =
             a
@@ -67,13 +77,6 @@ view session =
     let
         _ =
             Debug.log "activePage" session.navKey
-
-        linkIf page route caption icon =
-            if page == session.activePage then
-                span [ class "menu-item active" ] [ i [ class icon ] [], text caption ]
-
-            else
-                a [ class "menu-item", Route.href route ] [ i [ class icon ] [], text caption ]
     in
     div [ class "sidebar" ]
         [ div [ class "logo" ]
@@ -89,13 +92,13 @@ view session =
                     ]
                 ]
             ]
-        , div [ class "top-menu" ]
-            [ linkIf Views.Page.Home Route.Home "Home" "icon-home"
-            , linkIf Views.Page.Counter Route.Counter "Second page" "icon-bell"
-            ]
         , div [ class "relative" ]
             [ div [ class "fit" ]
-                [ viewCollections session session.playlists True True
+                [ viewCollections
+                    { session = session
+                    , playlists = session.playlists
+                    , hasTitle = True
+                    }
                 , div [ class "playlists" ]
                     [ div [ class "title" ] [ text "Playlists" ]
                     , viewPlaylists session session.playlists True

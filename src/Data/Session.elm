@@ -1,6 +1,7 @@
 module Data.Session exposing (Session)
 
 import Browser.Navigation as Nav
+import Data.Modal
 import Data.Player
 import Data.Playlist
 import Data.Search
@@ -14,4 +15,6 @@ type alias Session =
     , token : String
     , player : Data.Player.Model
     , search : Data.Search.Model
+
+    -- , modal : Data.Modal.Model
     }

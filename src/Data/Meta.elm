@@ -7,6 +7,7 @@ module Data.Meta exposing
 
 import Data.Album
 import Data.Artist
+import Data.Modal
 import Data.Playlist
 import Data.Track
 import Data.Youtube
@@ -27,6 +28,7 @@ type alias PlaylistModel =
 type alias AlbumModel =
     { album : Data.Album.Album
     , tracks : Data.Track.TrackSimplifiedPaging
+    , modal : Data.Modal.Model
     }
 
 
