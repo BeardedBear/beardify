@@ -155,7 +155,7 @@ view session model =
                     [ link "Wikipedia" "https://fr.wikipedia.org/wiki/" "" "wikipedia"
                     , link "Sputnik" "https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=" "&x=0&y=0" "sputnik"
                     , link "Discogs" "https://www.discogs.com/fr/search/?q=" "&type=artist&strict=true" "discogs"
-                    , link "LastFM" "https://www.last.fm/fr/music/" "" "lastfm"
+                    , link "Google" "https://www.google.com/search?q=" "" "magnifying-glass"
                     ]
                 , div [ class "artist-head" ]
                     [ div [ class "top-tracks" ]
