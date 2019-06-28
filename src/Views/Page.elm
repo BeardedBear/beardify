@@ -9,8 +9,10 @@ import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (class, classList, css, href, src)
 import Route
 import Utils
+import Views.Collection
 import Views.Player
 import Views.Search
+import Views.Sidebar
 import Views.Theme
 
 
@@ -46,37 +48,6 @@ frame config player ( title, content ) =
             |> toUnstyled
         ]
     }
-
-
-collectionView : Data.Session.Session -> List PlaylistSimplified -> Bool -> Bool -> Html msg
-collectionView session playlists _ hasTitle =
-    let
-        --     Debug.log "route" playlists
-        collectionItem p =
-            a
-                [ classList
-                    [ ( "playlist", True )
-                    , ( "active", Utils.getId session.url == p.id )
-                    ]
-                , Route.href <| Route.Collection p.id
-                ]
-                [ i [ class "icon-book" ] [], text <| String.replace "#Collection " "" p.name ]
-    in
-    if List.length playlists /= 0 then
-        div [ class "collections" ]
-            [ if hasTitle then
-                div [ class "title" ] [ text "Collections" ]
-
-              else
-                text ""
-            , playlists
-                |> List.filter (\f -> String.contains "#Collection" f.name)
-                |> List.map collectionItem
-                |> div [ class "playlists-list" ]
-            ]
-
-    else
-        text ""
 
 
 playlistView : Data.Session.Session -> List PlaylistSimplified -> Bool -> Html msg
@@ -131,7 +102,11 @@ sidebarView config =
             ]
         , div [ class "relative" ]
             [ div [ class "fit" ]
-                [ collectionView config.session config.session.playlists True True
+                [ Views.Collection.view
+                    { session = config.session
+                    , playlists = config.session.playlists
+                    , hasTitle = False
+                    }
                 , div [ class "playlists" ]
                     [ div [ class "title" ] [ text "Playlists" ]
                     , playlistView config.session config.session.playlists True

@@ -1,4 +1,4 @@
-module Views.Sidebar exposing (view, viewCollections)
+module Views.Sidebar exposing (view)
 
 import Browser exposing (Document)
 import Data.Playlist exposing (..)
@@ -7,47 +7,11 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, classList, css, href, src)
 import Route
 import Utils
+import Views.Collection
 
 
 
 -- import Views.Meta
-
-
-type alias ViewCollectionsConfig =
-    { session : Data.Session.Session
-    , playlists : List PlaylistSimplified
-    , hasTitle : Bool
-    }
-
-
-viewCollections : ViewCollectionsConfig -> Html msg
-viewCollections ({ session, playlists, hasTitle } as viewCollectionsConfig) =
-    let
-        collectionItem p =
-            a
-                [ classList
-                    [ ( "playlist", True )
-                    , ( "active", Utils.getId session.url == p.id )
-                    ]
-                , Route.href <| Route.Collection p.id
-                ]
-                [ i [ class "icon-book" ] [], text <| String.replace "#Collection " "" p.name ]
-    in
-    if List.length playlists /= 0 then
-        div [ class "collections" ]
-            [ if hasTitle then
-                div [ class "title" ] [ text "Collections" ]
-
-              else
-                text ""
-            , playlists
-                |> List.filter (\f -> String.contains "#Collection" f.name)
-                |> List.map collectionItem
-                |> div [ class "playlists-list" ]
-            ]
-
-    else
-        text ""
 
 
 viewPlaylists : Data.Session.Session -> List PlaylistSimplified -> Bool -> Html msg
@@ -94,7 +58,7 @@ view session =
             ]
         , div [ class "relative" ]
             [ div [ class "fit" ]
-                [ viewCollections
+                [ Views.Collection.view
                     { session = session
                     , playlists = session.playlists
                     , hasTitle = True
