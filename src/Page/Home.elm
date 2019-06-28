@@ -34,6 +34,6 @@ update _ msg model =
 view : Data.Session.Session -> Data.Home.Model -> ( String, List (Html Msg) )
 view session model =
     ( "Home"
-    , [ div [] [ text <| Debug.toString session.search ]
+    , [ div [] [ text "" ]
       ]
     )

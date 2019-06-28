@@ -13,7 +13,6 @@ import Views.Collection
 import Views.Player
 import Views.Search
 import Views.Sidebar
-import Views.Theme
 
 
 type ActivePage
@@ -32,15 +31,14 @@ type alias Config =
     }
 
 
-frame : Config -> Html msg -> ( String, List (Html msg) ) -> Document msg
-frame config player ( title, content ) =
+frame : Config -> Html msg -> Html msg -> ( String, List (Html msg) ) -> Document msg
+frame config player search ( title, content ) =
     { title = title ++ " - Beardify"
     , body =
         [ div [ class "app" ]
-            [ Views.Theme.defaultCss
-            , sidebarView config
+            [ sidebarView config
             , div [ class "content" ]
-                [ div [ class "topbar" ] [ Views.Search.view config.session.search ]
+                [ div [ class "topbar" ] [ search ]
                 , div [ class "drawer" ] content
                 , player
                 ]

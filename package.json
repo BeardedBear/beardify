@@ -7,7 +7,7 @@
   "scripts": {
     "install": "$npm_package_nm/elm make src/Main.elm",
     "sass": "node-sass-chokidar style/ -o public --output-style compressed --source-map true --include-path node_modules/ -w",
-    "live": "$npm_package_nm/elm-live src/Main.elm --port=3000 --dir=public/ -- --output=public/app.js",
+    "live": "elm-live src/Main.elm --port=3000 --dir=public/ -- --output=public/app.js",
     "build": "rm -rf build && mkdir build && node-sass-chokidar style/ -o build --output-style compressed --include-path node_modules/ && cp -r public/* build && $npm_package_nm/elm make src/Main.elm --optimize --output=build/app.js && uglifyjs build/app.js -c -m -o build/app.js",
     "start": "$npm_package_nm/run-p sass live",
     "publish": "$npm_package_nm/gh-pages -d build"

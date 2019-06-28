@@ -179,8 +179,6 @@ view session model =
                         , div [ class "add-btn", onClick <| ModalGetTrack model.album.id ] [ i [ class "icon-add" ] [] ]
                         , div [] [ text <| Utils.releaseDateFormat model.album.release_date ]
                         , div [] [ text <| Utils.durationFormatMinutes trackSumDuration ]
-                        , div [] [ text <| Debug.toString model.modal.isOpen ]
-                        , div [] [ text <| Debug.toString model.modal.inPocket ]
                         ]
                     ]
                 , div []

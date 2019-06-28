@@ -10,10 +10,6 @@ import Utils
 import Views.Collection
 
 
-
--- import Views.Meta
-
-
 viewPlaylists : Data.Session.Session -> List PlaylistSimplified -> Bool -> Html msg
 viewPlaylists session playlists isClickable =
     let
@@ -38,10 +34,6 @@ viewPlaylists session playlists isClickable =
 
 view : Data.Session.Session -> Html msg
 view session =
-    let
-        _ =
-            Debug.log "activePage" session.navKey
-    in
     div [ class "sidebar" ]
         [ div [ class "logo" ]
             [ img [ src "./img/logo.png" ] []

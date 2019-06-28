@@ -35,6 +35,7 @@ import Time
 import Url exposing (Url)
 import Views.Page
 import Views.Player
+import Views.Search
 
 
 type Page
@@ -172,13 +173,9 @@ type Msg
     | SetPlayer (Result Http.Error Data.Player.Model)
     | GetPlayer Time.Posix
     | PlayerMsg Views.Player.Msg
+    | SearchMsg Views.Search.Msg
       -- KEYBOARD
     | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
-      -- SEARCH
-    | FindArtist (Result Http.Error (List Data.Artist.Artist))
-    | FindAlbum (Result Http.Error (List Data.Album.Album))
-    | FindTrack (Result Http.Error (List Data.Track.Track))
-    | Query String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -295,7 +292,7 @@ update msg ({ page, session } as model) =
         -- KEYBOARD
         ( HandleKeyboardEvent event, _ ) ->
             case ( event.shiftKey, event.key ) of
-                ( True, Just "Escape" ) ->
+                ( _, Just "Escape" ) ->
                     ( { model
                         | session = { session | search = { search | searchQuery = "" } }
 
@@ -315,31 +312,6 @@ update msg ({ page, session } as model) =
                 ( _, _ ) ->
                     ( model, Cmd.none )
 
-        -- SEARCH
-        ( FindArtist (Ok artist), _ ) ->
-            ( { model | session = { session | search = { search | findArtist = artist } } }
-            , Cmd.none
-            )
-
-        ( FindArtist (Err _), _ ) ->
-            ( model, Cmd.none )
-
-        ( FindAlbum (Ok album), _ ) ->
-            ( { model | session = { session | search = { search | findAlbum = album } } }
-            , Cmd.none
-            )
-
-        ( FindAlbum (Err _), _ ) ->
-            ( model, Cmd.none )
-
-        ( FindTrack (Ok track), _ ) ->
-            ( { model | session = { session | search = { search | findTrack = track } } }
-            , Cmd.none
-            )
-
-        ( FindTrack (Err _), _ ) ->
-            ( model, Cmd.none )
-
         ( PlayerMsg playerMsg, _ ) ->
             let
                 ( playerModel, playerCmds ) =
@@ -347,14 +319,20 @@ update msg ({ page, session } as model) =
             in
             ( model, playerCmds |> Cmd.map PlayerMsg )
 
-        ( Query e, _ ) ->
-            ( { model | session = { session | search = { search | searchQuery = e } } }
-            , Cmd.batch
-                [ Http.send FindArtist <| Request.get "search?q=" (e ++ "*") "&type=artist&limit=10" (Decode.at [ "artists", "items" ] (Decode.list Data.Artist.decodeArtist)) token
-                , Http.send FindAlbum <| Request.get "search?q=" (e ++ "*") "&type=album&limit=9" (Decode.at [ "albums", "items" ] (Decode.list Data.Album.decodeAlbum)) token
-                , Http.send FindTrack <| Request.get "search?q=" (e ++ "*") "&type=track&limit=12" (Decode.at [ "tracks", "items" ] (Decode.list Data.Track.decodeTrack)) token
-                ]
-            )
+        ( SearchMsg searchMsg, _ ) ->
+            let
+                ( searchModel, searchCmds ) =
+                    Views.Search.update session searchMsg model.session.search
+
+                newSession search_ =
+                    { session | search = search_ }
+            in
+            case searchMsg of
+                Views.Search.PlayTrack uri ->
+                    ( { model | session = newSession searchModel }, Http.send NoOpResult <| Request.play [ uri ] (Data.Track.encodeTrack [ uri ]) token )
+
+                _ ->
+                    ( { model | session = newSession searchModel }, searchCmds |> Cmd.map SearchMsg )
 
         ( _, _ ) ->
             ( model, Cmd.none )
@@ -400,6 +378,9 @@ view model =
         player =
             Views.Player.view model.session.player |> Html.map PlayerMsg
 
+        search =
+            Views.Search.view model.session model.session.search |> Html.map SearchMsg
+
         pageConfig =
             Views.Page.Config model.session
 
@@ -410,40 +391,40 @@ view model =
         HomePage homeModel ->
             Page.Home.view model.session homeModel
                 |> mapMsg HomeMsg
-                |> Views.Page.frame (pageConfig Views.Page.Home) player
+                |> Views.Page.frame (pageConfig Views.Page.Home) player search
 
         CounterPage counterModel ->
             Page.Counter.view model.session counterModel
                 |> mapMsg CounterMsg
-                |> Views.Page.frame (pageConfig Views.Page.Counter) player
+                |> Views.Page.frame (pageConfig Views.Page.Counter) player search
 
         CollectionPage collectionModel ->
             Page.Collection.view model.session collectionModel
                 |> mapMsg CollectionMsg
-                |> Views.Page.frame (pageConfig Views.Page.Collection) player
+                |> Views.Page.frame (pageConfig Views.Page.Collection) player search
 
         PlaylistPage playlistModel ->
             Page.Playlist.view model.session playlistModel
                 |> mapMsg PlaylistMsg
-                |> Views.Page.frame (pageConfig Views.Page.Playlist) player
+                |> Views.Page.frame (pageConfig Views.Page.Playlist) player search
 
         AlbumPage albumModel ->
             Page.Album.view model.session albumModel
                 |> mapMsg AlbumMsg
-                |> Views.Page.frame (pageConfig Views.Page.Album) player
+                |> Views.Page.frame (pageConfig Views.Page.Album) player search
 
         ArtistPage artistModel ->
             Page.Artist.view model.session artistModel
                 |> mapMsg ArtistMsg
-                |> Views.Page.frame (pageConfig Views.Page.Artist) player
+                |> Views.Page.frame (pageConfig Views.Page.Artist) player search
 
         NotFound ->
             ( "Not Found", [ Html.text "Not found" ] )
-                |> Views.Page.frame (pageConfig Views.Page.Other) player
+                |> Views.Page.frame (pageConfig Views.Page.Other) player search
 
         Blank ->
             ( "", [] )
-                |> Views.Page.frame (pageConfig Views.Page.Other) player
+                |> Views.Page.frame (pageConfig Views.Page.Other) player search
 
 
 main : Program Flags Model Msg
