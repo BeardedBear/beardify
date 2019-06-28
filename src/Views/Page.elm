@@ -96,16 +96,12 @@ sidebarView config =
                     ]
                 ]
             ]
-        , div [ class "top-menu" ]
-            [ linkIf Home Route.Home "Home" "icon-home"
-            , linkIf Counter Route.Counter "Second page" "icon-bell"
-            ]
         , div [ class "relative" ]
             [ div [ class "fit" ]
                 [ Views.Collection.view
                     { session = config.session
                     , playlists = config.session.playlists
-                    , hasTitle = False
+                    , hasTitle = True
                     }
                 , div [ class "playlists" ]
                     [ div [ class "title" ] [ text "Playlists" ]

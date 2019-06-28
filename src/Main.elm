@@ -295,7 +295,7 @@ update msg ({ page, session } as model) =
         -- KEYBOARD
         ( HandleKeyboardEvent event, _ ) ->
             case ( event.shiftKey, event.key ) of
-                ( _, Just "Escape" ) ->
+                ( True, Just "Escape" ) ->
                     ( { model
                         | session = { session | search = { search | searchQuery = "" } }
 

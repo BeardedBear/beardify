@@ -6,6 +6,7 @@
     top: 10px;
     left: 10px;
     font-size: 1rem;
+    z-index: 9;
 
     i {
         font-size: 1.3rem;
@@ -43,7 +44,7 @@
 .sidebar {
     background: darken(#232B37, 5);
     display: grid;
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows:  auto 1fr;
     transition: all ease 0.15s;
     transform: translateZ(0);
     will-change: transform;
