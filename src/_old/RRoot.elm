@@ -607,10 +607,10 @@ update msg ({ searchModel, config, drawer, modal, releases, player, pocket } as 
             , Cmd.none
             )
 
-        DelCollectionAlbum p e ->
+        DelCollectionAlbum playlistId track ->
             ( model
             , Cmd.batch
-                [ Http.send Play <| Request.delete "playlists/" p "/tracks" (encodeDelCollectionAlbum e) token
+                [ Http.send Play <| Request.delete "playlists/" playlistId "/tracks" (encodeDelCollectionAlbum [track]) token
                 ]
             )
 

@@ -5,6 +5,7 @@ import Data.Playlist exposing (..)
 import Data.Session exposing (Session)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, classList, css, href, src)
+import Html.Styled.Events exposing (..)
 import Route
 import Utils
 

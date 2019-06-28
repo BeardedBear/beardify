@@ -78,13 +78,13 @@ post urlBefore e urlAfter token =
 
 
 delete : String -> String -> String -> Encode.Value -> String -> Request ()
-delete urlBefore e urlAfter encoder token =
+delete urlBefore playlistId urlAfter encoder token =
     request
         { method = "DELETE"
         , headers =
             [ Http.header "Authorization" <| "Bearer " ++ token
             ]
-        , url = apiUrl ++ urlBefore ++ e ++ urlAfter
+        , url = apiUrl ++ urlBefore ++ playlistId ++ urlAfter
         , body = Http.jsonBody encoder
         , expect = Http.expectStringResponse (\_ -> Ok ())
         , timeout = Nothing

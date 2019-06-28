@@ -2,8 +2,9 @@ module Views.Modal exposing (view)
 
 import Data.Session
 import Html.Styled as Html exposing (..)
-import Html.Styled.Attributes exposing (class)
+import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
+import Utils
 import Views.Collection
 import Views.Sidebar
 
@@ -16,6 +17,7 @@ type alias Config msg =
     { isOpen : Bool
     , session : Data.Session.Session
     , close : msg
+    , add : String -> msg
     }
 
 
@@ -29,11 +31,27 @@ view ({ session } as config) =
                     [ div [ class "title" ] [ text "Add in a collection" ]
                     ]
                 , div [ class "chest" ]
-                    [ Views.Collection.view
-                        { session = config.session
-                        , playlists = session.playlists
-                        , hasTitle = False
-                        }
+                    [ let
+                        collectionItem p =
+                            span
+                                [ classList
+                                    [ ( "playlist", True )
+                                    , ( "active", Utils.getId session.url == p.id )
+                                    ]
+                                , onClick <| config.add p.id
+                                ]
+                                [ i [ class "icon-book" ] [], text <| String.replace "#Collection " "" p.name ]
+                      in
+                      if List.length session.playlists /= 0 then
+                        div [ class "collections" ]
+                            [ session.playlists
+                                |> List.filter (\f -> String.contains "#Collection" f.name)
+                                |> List.map collectionItem
+                                |> div [ class "playlists-list" ]
+                            ]
+
+                      else
+                        text ""
                     ]
                 , div [ class "foot" ]
                     [ button [ class "button", onClick config.close ] [ text "Cancel" ]

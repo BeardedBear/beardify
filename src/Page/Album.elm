@@ -37,7 +37,8 @@ init id session =
 
 
 type Msg
-    = SetAlbum (Result Http.Error Data.Album.Album)
+    = NoOp
+    | SetAlbum (Result Http.Error Data.Album.Album)
     | SetAlbumTracks (Result Http.Error Data.Track.TrackSimplifiedPaging)
     | PlayTracks (List String)
     | PlayAlbum String
@@ -51,6 +52,9 @@ type Msg
 update : Data.Session.Session -> Msg -> Data.Meta.AlbumModel -> ( Data.Meta.AlbumModel, Cmd Msg )
 update session msg ({ tracks, modal } as model) =
     case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
         SetAlbum (Ok e) ->
             ( { model | album = e }
             , Cmd.none
@@ -92,21 +96,6 @@ update session msg ({ tracks, modal } as model) =
             , Cmd.none
             )
 
-        -- ModalOpen (Ok e) ->
-        --     let
-        --         firstTrack =
-        --             e
-        --                 |> List.map (\f -> f.uri)
-        --                 |> List.take 1
-        --     in
-        --     ( { session | modal =
-        --             { modal
-        --                 | isOpen = True
-        --                 , inPocket = firstTrack
-        --             }
-        --       }
-        --     , Cmd.none
-        --     )
         ModalOpen (Err _) ->
             ( model, Cmd.none )
 
@@ -169,6 +158,7 @@ view session model =
             { isOpen = model.modal.isOpen
             , session = session
             , close = ModalClear
+            , add = ModalAddTrack
             }
       , div [ class "album-wrapper" ]
             [ div [ class "bg-cover" ] [ imageView Large model.album.images ]
