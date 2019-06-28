@@ -9,9 +9,11 @@ import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
 import Http
+import Json.Decode as Decode exposing (..)
 import Request
 import Route
 import Utils
+import Views.Modal
 
 
 init : String -> Data.Session.Session -> ( Data.Meta.CollectionModel, Cmd Msg )
@@ -20,6 +22,10 @@ init id session =
       , albums =
             { items = []
             , next = ""
+            }
+      , modal =
+            { isOpen = False
+            , inPocket = []
             }
       }
     , Cmd.batch
@@ -35,10 +41,15 @@ type Msg
     | PlayAlbum String
     | DelCollectionAlbum String (List String)
     | DeletedCollectionAlbum (Result Http.Error ())
+    | ModalOpen (Result Http.Error (List Data.Track.TrackSimplified))
+    | ModalGetTrack String
+    | ModalAddTrack String
+    | SetModalTrack (Result Http.Error ())
+    | ModalClear
 
 
 update : Data.Session.Session -> Msg -> Data.Meta.CollectionModel -> ( Data.Meta.CollectionModel, Cmd Msg )
-update session msg model =
+update session msg ({ modal } as model) =
     case msg of
         SetCollection (Ok e) ->
             ( { model | collection = e }
@@ -85,6 +96,47 @@ update session msg model =
         DeletedCollectionAlbum (Err _) ->
             ( model, Cmd.none )
 
+        ModalOpen (Ok e) ->
+            let
+                firstTrack =
+                    e
+                        |> List.map (\f -> f.uri)
+                        |> List.take 1
+            in
+            ( { model | modal = { modal | isOpen = True, inPocket = firstTrack } }
+            , Cmd.none
+            )
+
+        ModalOpen (Err _) ->
+            ( model, Cmd.none )
+
+        ModalGetTrack e ->
+            ( model
+            , Cmd.batch
+                [ Http.send ModalOpen <| Request.get "albums/" e "/tracks" (Decode.at [ "items" ] (Decode.list Data.Track.decodeTrackSimplified)) session.token
+                ]
+            )
+
+        ModalAddTrack e ->
+            let
+                listTracks =
+                    String.concat model.modal.inPocket
+            in
+            ( model, Http.send SetModalTrack <| Request.post "playlists/" e ("/tracks?position=0&uris=" ++ listTracks) session.token )
+
+        SetModalTrack (Ok e) ->
+            ( { model | modal = { modal | isOpen = False } }
+            , Cmd.none
+            )
+
+        SetModalTrack (Err e) ->
+            ( model, Cmd.none )
+
+        ModalClear ->
+            ( { model | modal = { modal | isOpen = False } }
+            , Cmd.none
+            )
+
 
 view : Data.Session.Session -> Data.Meta.CollectionModel -> ( String, List (Html Msg) )
 view session model =
@@ -120,12 +172,18 @@ view session model =
                     )
                 , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat al.release_date ++ ")" ]
                 , div [ class "playing-btn", onClick <| PlayAlbum al.albumUri ] [ i [ class "icon-play" ] [] ]
-                , div [ class "add-btn" ] [ i [ class "icon-add" ] [] ]
+                , div [ class "add-btn", onClick <| ModalGetTrack al.albumId ] [ i [ class "icon-add" ] [] ]
                 , div [ class "del-btn", onClick <| DelCollectionAlbum model.collection.id [ al.trackUri ] ] [ i [ class "icon-del" ] [] ]
                 ]
     in
     ( model.collection.name
-    , [ div []
+    , [ Views.Modal.view
+            { isOpen = model.modal.isOpen
+            , session = session
+            , close = ModalClear
+            , add = ModalAddTrack
+            }
+      , div []
             [ div [ class "heading-page" ] [ text <| String.replace "#Collection " "" model.collection.name ]
             , div []
                 [ albums

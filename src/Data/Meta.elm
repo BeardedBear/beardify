@@ -16,6 +16,7 @@ import Data.Youtube
 type alias CollectionModel =
     { collection : Data.Playlist.Playlist
     , albums : Data.Playlist.PlaylistPaging
+    , modal : Data.Modal.Model
     }
 
 
