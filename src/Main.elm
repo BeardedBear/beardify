@@ -1,38 +1,52 @@
 module Main exposing (main)
 
-import Browser exposing (Document)
+import Browser
+import Browser.Dom
 import Browser.Events
-import Browser.Navigation as Nav
-import Data.Drawer as Drawer exposing (..)
-import Data.Modal as Modal exposing (..)
-import Data.Player as Player exposing (..)
-import Data.Playlist as Playlist exposing (..)
-import Data.Pocket as Pocket exposing (..)
-import Data.Releases as Releases exposing (..)
-import Data.Search as Search exposing (..)
-import Data.Track exposing (..)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Http exposing (..)
+import Browser.Navigation
+import Data.Album
+import Data.Artist
+import Data.Counter
+import Data.Date
+import Data.Home
+import Data.Meta
+import Data.Player
+import Data.Playlist
+import Data.Search
+import Data.Session
+import Data.Track
+import Html.Styled as Html exposing (..)
+import Html.Styled.Attributes exposing (..)
+import Html.Styled.Events exposing (onClick)
+import Http
 import Json.Decode as Decode exposing (..)
 import Keyboard.Event
+import Page.Album
+import Page.Artist
+import Page.Collection
+import Page.Counter
+import Page.Home
+import Page.Playlist
 import Ports
 import Request
-import Root exposing (..)
-import Time exposing (..)
+import Route
+import Task
+import Time
 import Url exposing (Url)
-import Utils
-import View.Album as Album exposing (..)
-import View.Artist as Artist exposing (..)
-import View.Collection as Collection exposing (..)
-import View.Home as Home exposing (..)
-import View.Modal as Modal exposing (..)
-import View.Player as Player exposing (..)
-import View.Playlist as Playlist exposing (..)
-import View.Releases as Releases
-import View.Search as Search exposing (..)
-import View.Sidebar as Sidebar exposing (..)
+import Views.Page
+import Views.Player
+import Views.Search
+
+
+type Page
+    = Blank
+    | HomePage Data.Home.Model
+    | CounterPage Data.Counter.Model
+    | CollectionPage Data.Meta.CollectionModel
+    | PlaylistPage Data.Meta.PlaylistModel
+    | AlbumPage Data.Meta.AlbumModel
+    | ArtistPage Data.Meta.ArtistModel
+    | NotFound
 
 
 type alias Flags =
@@ -41,121 +55,384 @@ type alias Flags =
     }
 
 
-init : Flags -> Url -> Nav.Key -> ( Root.Model, Cmd Msg )
-init flags url key =
+type alias Model =
+    { config :
+        { token : String
+        , currentDate : Data.Date.Date
+        }
+    , page : Page
+    , session : Data.Session.Session
+    }
+
+
+init : Flags -> Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
+init flags url navKey =
     let
+        session =
+            { navKey = navKey
+            , playlists = []
+            , url = url
+            , token = flags.token
+            , player = Data.Player.init
+            , search = Data.Search.init
+            }
+
         timestamp =
             Time.millisToPosix flags.now
-    in
-    ( { config =
-            { token = flags.token
-            , openedMenu = False
-            , currentDate =
-                { year = Time.toYear utc timestamp
-                , month = Time.toMonth utc timestamp
-                , day = Time.toDay utc timestamp
-                , hour = Time.toHour utc timestamp
-                , minute = Time.toMinute utc timestamp
-                , second = Time.toSecond utc timestamp
-                , milliSecond = Time.toMillis utc timestamp
+
+        ( model, cmds ) =
+            setRoute (Route.fromUrl url)
+                { config =
+                    { token = flags.token
+                    , currentDate =
+                        { year = Time.toYear Time.utc timestamp
+                        , month = Time.toMonth Time.utc timestamp
+                        , day = Time.toDay Time.utc timestamp
+                        , hour = Time.toHour Time.utc timestamp
+                        , minute = Time.toMinute Time.utc timestamp
+                        , second = Time.toSecond Time.utc timestamp
+                        , milliSecond = Time.toMillis Time.utc timestamp
+                        }
+                    }
+                , page = Blank
+                , session = session
                 }
-            }
-      , playlists = []
-      , drawer = Drawer.init
-      , searchModel = Search.init
-      , player = Player.init
-      , modal = Modal.init
-      , releases = Releases.init
-      , pocket = Pocket.init
-      }
+    in
+    ( model
     , Cmd.batch
-        [ Http.send SetPlaylists <|
-            Request.get "me/playlists" "" "?limit=50" decodePlaylistPagingSimplified flags.token
+        [ cmds
+        , Http.send InitPlaylist <| Request.get "me/playlists" "" "?limit=50" Data.Playlist.decodePlaylistPagingSimplified flags.token
         ]
     )
 
 
-subscriptions : Root.Model -> Sub Msg
+setRoute : Maybe Route.Route -> Model -> ( Model, Cmd Msg )
+setRoute maybeRoute model =
+    let
+        playlistInit =
+            Page.Playlist.init
+
+        collectionInit =
+            Page.Collection.init
+
+        albumInit =
+            Page.Album.init
+
+        artistInit =
+            Page.Artist.init
+
+        toPage page subInit subMsg =
+            let
+                ( subModel, subCmds ) =
+                    subInit model.session
+            in
+            ( { model | page = page subModel }
+            , Cmd.map subMsg subCmds
+            )
+    in
+    case maybeRoute of
+        Nothing ->
+            ( { model | page = NotFound }
+            , Cmd.none
+            )
+
+        Just Route.Home ->
+            toPage HomePage Page.Home.init HomeMsg
+
+        Just Route.Counter ->
+            toPage CounterPage Page.Counter.init CounterMsg
+
+        Just (Route.Collection id) ->
+            toPage CollectionPage (collectionInit id) CollectionMsg
+
+        Just (Route.Playlist id) ->
+            toPage PlaylistPage (playlistInit id) PlaylistMsg
+
+        Just (Route.Album id) ->
+            toPage AlbumPage (albumInit id) AlbumMsg
+
+        Just (Route.Artist id) ->
+            toPage ArtistPage (artistInit id) ArtistMsg
+
+
+type Msg
+    = NoOp
+    | NoOpResult (Result Http.Error ())
+    | UrlChanged Url
+    | UrlRequested Browser.UrlRequest
+      -- PAGES
+    | HomeMsg Page.Home.Msg
+    | CounterMsg Page.Counter.Msg
+    | CollectionMsg Page.Collection.Msg
+    | PlaylistMsg Page.Playlist.Msg
+    | AlbumMsg Page.Album.Msg
+    | ArtistMsg Page.Artist.Msg
+      -- SIDEBAR PLAYLISTS
+    | InitPlaylist (Result Http.Error Data.Playlist.PlaylistPagingSimplified)
+      -- PLAYER
+    | SetPlayer (Result Http.Error Data.Player.Model)
+    | GetPlayer Time.Posix
+    | PlayerMsg Views.Player.Msg
+    | SearchMsg Views.Search.Msg
+      -- KEYBOARD
+    | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg ({ page, session } as model) =
+    let
+        toPage toModel toMsg subUpdate subMsg subModel =
+            let
+                ( newModel, newCmd ) =
+                    subUpdate subMsg subModel
+            in
+            ( { model | page = toModel newModel }
+            , Cmd.map toMsg newCmd
+            )
+
+        token =
+            model.config.token
+
+        search =
+            model.session.search
+    in
+    case ( msg, page ) of
+        ( NoOp, _ ) ->
+            ( model, Cmd.none )
+
+        ( NoOpResult (Ok _), _ ) ->
+            ( model, Cmd.none )
+
+        ( NoOpResult (Err _), _ ) ->
+            ( model, Cmd.none )
+
+        -- PAGES
+        ( UrlRequested urlRequest, _ ) ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( { model | session = { session | url = url } }, Browser.Navigation.pushUrl session.navKey (Url.toString url) )
+
+                Browser.External href ->
+                    ( model, Browser.Navigation.load href )
+
+        ( UrlChanged url, _ ) ->
+            setRoute (Route.fromUrl url) { model | session = { session | url = url } }
+
+        ( HomeMsg homeMsg, HomePage homeModel ) ->
+            toPage HomePage HomeMsg (Page.Home.update session) homeMsg homeModel
+
+        ( CounterMsg counterMsg, CounterPage counterModel ) ->
+            toPage CounterPage CounterMsg (Page.Counter.update session) counterMsg counterModel
+
+        ( CollectionMsg collectionMsg, CollectionPage collectionModel ) ->
+            case collectionMsg of
+                Page.Collection.PlayAlbum e ->
+                    ( model, Http.send NoOpResult <| Request.play e (Data.Album.encodeAlbum e) token )
+
+                _ ->
+                    toPage CollectionPage CollectionMsg (Page.Collection.update session) collectionMsg collectionModel
+
+        ( PlaylistMsg playlistMsg, PlaylistPage playlistModel ) ->
+            case playlistMsg of
+                Page.Playlist.PlayTracks e ->
+                    ( model, Http.send NoOpResult <| Request.play e (Data.Track.encodeTrack e) token )
+
+                _ ->
+                    toPage PlaylistPage PlaylistMsg (Page.Playlist.update session) playlistMsg playlistModel
+
+        ( AlbumMsg albumMsg, AlbumPage albumModel ) ->
+            case albumMsg of
+                Page.Album.PlayTracks e ->
+                    ( model, Http.send NoOpResult <| Request.play e (Data.Track.encodeTrack e) token )
+
+                Page.Album.PlayAlbum e ->
+                    ( model, Http.send NoOpResult <| Request.play e (Data.Album.encodeAlbum e) token )
+
+                _ ->
+                    toPage AlbumPage AlbumMsg (Page.Album.update session) albumMsg albumModel
+
+        ( ArtistMsg artistMsg, ArtistPage artistModel ) ->
+            case artistMsg of
+                Page.Artist.PlayTracks e ->
+                    ( model, Http.send NoOpResult <| Request.play e (Data.Track.encodeTrack e) token )
+
+                Page.Artist.PlayAlbum e ->
+                    ( model, Http.send NoOpResult <| Request.play e (Data.Album.encodeAlbum e) token )
+
+                _ ->
+                    toPage ArtistPage ArtistMsg (Page.Artist.update session) artistMsg artistModel
+
+        -- SIDEBAR PLAYLISTS
+        ( InitPlaylist (Ok e), _ ) ->
+            let
+                concat =
+                    model.session.playlists ++ e.items
+            in
+            ( { model | session = { session | playlists = concat } }
+            , if e.next /= "" then
+                Cmd.batch [ Http.send InitPlaylist <| Request.getPaging e.next Data.Playlist.decodePlaylistPagingSimplified token ]
+
+              else
+                Cmd.none
+            )
+
+        ( InitPlaylist (Err e), _ ) ->
+            ( model, Cmd.none )
+
+        -- PLAYER
+        ( SetPlayer (Ok e), _ ) ->
+            ( { model | session = { session | player = e } }, Cmd.none )
+
+        ( SetPlayer (Err _), _ ) ->
+            ( model, Ports.refreshToken () )
+
+        ( GetPlayer _, _ ) ->
+            ( model, Http.send SetPlayer <| Request.get "me/player" "" "" Data.Player.decodePlayer token )
+
+        -- KEYBOARD
+        ( HandleKeyboardEvent event, _ ) ->
+            case ( event.shiftKey, event.key ) of
+                ( _, Just "Escape" ) ->
+                    ( { model
+                        | session = { session | search = { search | searchQuery = "" } }
+
+                        -- , modal = { modal | isOpen = False }
+                      }
+                    , Cmd.none
+                    )
+
+                -- ( _, Just " " ) ->
+                --     if player.is_playing && model.searchModel.searchQuery == "" then
+                --         ( model, Http.send PlayerControl <| Request.put "" "pause" "" token )
+                --     else
+                --         ( model, Http.send PlayerControl <| Request.put "" "play" "" token )
+                ( True, Just "F" ) ->
+                    ( model, Task.attempt (\_ -> NoOp) (Browser.Dom.focus "search") )
+
+                ( _, _ ) ->
+                    ( model, Cmd.none )
+
+        ( PlayerMsg playerMsg, _ ) ->
+            let
+                ( playerModel, playerCmds ) =
+                    Views.Player.update session playerMsg model.session.player
+            in
+            ( model, playerCmds |> Cmd.map PlayerMsg )
+
+        ( SearchMsg searchMsg, _ ) ->
+            let
+                ( searchModel, searchCmds ) =
+                    Views.Search.update session searchMsg model.session.search
+
+                newSession search_ =
+                    { session | search = search_ }
+            in
+            case searchMsg of
+                Views.Search.PlayTrack uri ->
+                    ( { model | session = newSession searchModel }, Http.send NoOpResult <| Request.play [ uri ] (Data.Track.encodeTrack [ uri ]) token )
+
+                _ ->
+                    ( { model | session = newSession searchModel }, searchCmds |> Cmd.map SearchMsg )
+
+        ( _, _ ) ->
+            ( model, Cmd.none )
+
+
+subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch
-        [ Time.every 1000 GetPlayer
-        , Browser.Events.onKeyDown (Decode.map HandleKeyboardEvent Keyboard.Event.decodeKeyboardEvent)
-        , Ports.thePrpReleases AddReleaseThePrp
-        ]
-
-
-view : Root.Model -> Document Msg
-view model =
-    { title = "Beardify"
-    , body =
-        [ div [ class "app" ]
-            [ Sidebar.view model
-            , div [ class "content" ]
-                [ div
-                    [ classList
-                        [ ( "pocket", True )
-                        , ( "active", not <| List.isEmpty model.pocket.tracks )
-                        ]
-                    ]
-                    [ div [ class "pocket-head" ]
-                        [ span [] [ text ((List.length model.pocket.tracks |> String.fromInt) ++ " tracks in your pocket") ]
-                        , button [ onClick PocketClear ] [ text "Clear" ]
-                        ]
-                    , div [ class "pocket-content" ]
-                        [ div [ class "pocket-tracks" ]
-                            (model.pocket.tracks
-                                |> List.map
-                                    (\y ->
-                                        div [ class "pocket-track" ]
-                                            [ div [ class "track-name" ] [ text y.track ]
-                                            , div [ class "artist-name" ] [ text y.artist ]
-                                            ]
-                                    )
-                            )
-                        , viewPlaylists model.drawer model.playlists False
-                        ]
-                    ]
-                , div [ class "topbar" ]
-                    [ button [ onClick ToggleMenu, class "menu" ] [ text "menu" ]
-                    , Search.view model.searchModel
-                    ]
-                , div [ class "drawer" ]
-                    [ case model.drawer.drawerType of
-                        DrawArtist ->
-                            Artist.view model.pocket model.player model.drawer.drawerArtist
-
-                        DrawAlbum ->
-                            Album.view model.pocket model.player model.drawer.drawerAlbum
-
-                        DrawPlaylist ->
-                            Playlist.view model.pocket model.player model.drawer.drawerPlaylist
-
-                        DrawCollection ->
-                            Collection.view model.player model.drawer.drawerCollection
-
-                        Home ->
-                            Home.view model
-
-                        Releases ->
-                            Releases.view model.player model
-
-                        _ ->
-                            text ""
-                    ]
-                , Player.view model.player
-                ]
-            , Modal.view model
+    let
+        commonSubs =
+            [ Time.every 1000 GetPlayer
+            , Browser.Events.onKeyDown (Decode.map HandleKeyboardEvent Keyboard.Event.decodeKeyboardEvent)
             ]
-        ]
-    }
+    in
+    case model.page of
+        HomePage _ ->
+            Sub.batch commonSubs
+
+        CounterPage _ ->
+            Sub.batch commonSubs
+
+        CollectionPage _ ->
+            Sub.batch commonSubs
+
+        PlaylistPage _ ->
+            Sub.batch commonSubs
+
+        AlbumPage _ ->
+            Sub.batch commonSubs
+
+        ArtistPage _ ->
+            Sub.batch commonSubs
+
+        NotFound ->
+            Sub.batch commonSubs
+
+        Blank ->
+            Sub.batch commonSubs
 
 
-main : Program Flags Root.Model Msg
+view : Model -> Browser.Document Msg
+view model =
+    let
+        player =
+            Views.Player.view model.session.player |> Html.map PlayerMsg
+
+        search =
+            Views.Search.view model.session model.session.search |> Html.map SearchMsg
+
+        pageConfig =
+            Views.Page.Config model.session
+
+        mapMsg msg ( title, content ) =
+            ( title, content |> List.map (Html.map msg) )
+    in
+    case model.page of
+        HomePage homeModel ->
+            Page.Home.view model.session homeModel
+                |> mapMsg HomeMsg
+                |> Views.Page.frame (pageConfig Views.Page.Home) player search
+
+        CounterPage counterModel ->
+            Page.Counter.view model.session counterModel
+                |> mapMsg CounterMsg
+                |> Views.Page.frame (pageConfig Views.Page.Counter) player search
+
+        CollectionPage collectionModel ->
+            Page.Collection.view model.session collectionModel
+                |> mapMsg CollectionMsg
+                |> Views.Page.frame (pageConfig Views.Page.Collection) player search
+
+        PlaylistPage playlistModel ->
+            Page.Playlist.view model.session playlistModel
+                |> mapMsg PlaylistMsg
+                |> Views.Page.frame (pageConfig Views.Page.Playlist) player search
+
+        AlbumPage albumModel ->
+            Page.Album.view model.session albumModel
+                |> mapMsg AlbumMsg
+                |> Views.Page.frame (pageConfig Views.Page.Album) player search
+
+        ArtistPage artistModel ->
+            Page.Artist.view model.session artistModel
+                |> mapMsg ArtistMsg
+                |> Views.Page.frame (pageConfig Views.Page.Artist) player search
+
+        NotFound ->
+            ( "Not Found", [ Html.text "Not found" ] )
+                |> Views.Page.frame (pageConfig Views.Page.Other) player search
+
+        Blank ->
+            ( "", [] )
+                |> Views.Page.frame (pageConfig Views.Page.Other) player search
+
+
+main : Program Flags Model Msg
 main =
     Browser.application
         { init = init
         , view = view
-        , update = Root.update
+        , update = update
         , subscriptions = subscriptions
         , onUrlChange = UrlChanged
         , onUrlRequest = UrlRequested

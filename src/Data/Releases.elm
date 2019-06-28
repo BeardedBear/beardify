@@ -1,11 +1,11 @@
 module Data.Releases exposing (Model, ThePrpReleases, decodeThePrpReleases, init)
 
-import Data.Album exposing (..)
-import Json.Decode as Decode exposing (..)
+import Data.Album
+import Json.Decode as Decode exposing (Decoder(..), field)
 
 
 type alias Model =
-    { releaseList : List Album
+    { releaseList : List Data.Album.Album
     , thePrp : List ThePrpReleases
     }
 

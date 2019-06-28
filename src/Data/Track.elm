@@ -1,19 +1,20 @@
 module Data.Track exposing
     ( Track
     , TrackSimplified
+    , TrackSimplifiedPaging
     , decodeTrack
     , decodeTrackSimplified
+    , decodeTrackSimplifiedPaging
     , encodeDelCollectionAlbum
+    , encodeDelCollectionAlbumInner
     , encodeTrack
     , init
     )
 
-import Data.Album as Album exposing (..)
-import Data.Artist exposing (..)
-import Http exposing (..)
-import Json.Decode as Decode exposing (..)
+import Data.Album
+import Data.Artist
+import Json.Decode as Decode exposing (Decoder(..), at, field, null, string)
 import Json.Encode as Encode
-import Utils
 
 
 init : Track
@@ -21,7 +22,7 @@ init =
     { name = ""
     , duration_ms = 0
     , artists = []
-    , album = Album.init
+    , album = Data.Album.init
     , uri = ""
     }
 
@@ -50,8 +51,8 @@ encodeTrack uris =
 type alias Track =
     { name : String
     , duration_ms : Int
-    , artists : List ArtistSimplified
-    , album : Album
+    , artists : List Data.Artist.ArtistSimplified
+    , album : Data.Album.Album
     , uri : String
     }
 
@@ -61,15 +62,15 @@ decodeTrack =
     Decode.map5 Track
         (Decode.field "name" Decode.string)
         (Decode.field "duration_ms" Decode.int)
-        (Decode.at [ "artists" ] (Decode.list decodeArtistSimplified))
-        (Decode.at [ "album" ] decodeAlbum)
+        (Decode.at [ "artists" ] (Decode.list Data.Artist.decodeArtistSimplified))
+        (Decode.at [ "album" ] Data.Album.decodeAlbum)
         (Decode.field "uri" Decode.string)
 
 
 type alias TrackSimplified =
     { name : String
     , duration_ms : Int
-    , artists : List ArtistSimplified
+    , artists : List Data.Artist.ArtistSimplified
     , track_number : Int
     , uri : String
     }
@@ -80,6 +81,21 @@ decodeTrackSimplified =
     Decode.map5 TrackSimplified
         (Decode.field "name" Decode.string)
         (Decode.field "duration_ms" Decode.int)
-        (Decode.at [ "artists" ] (Decode.list decodeArtistSimplified))
+        (Decode.at [ "artists" ] (Decode.list Data.Artist.decodeArtistSimplified))
         (Decode.field "track_number" Decode.int)
         (Decode.field "uri" Decode.string)
+
+
+type alias TrackSimplifiedPaging =
+    { items : List TrackSimplified
+    , next : String
+    }
+
+
+decodeTrackSimplifiedPaging : Decode.Decoder TrackSimplifiedPaging
+decodeTrackSimplifiedPaging =
+    Decode.map2 TrackSimplifiedPaging
+        (Decode.at [ "items" ] (Decode.list decodeTrackSimplified))
+        (Decode.field "next"
+            (Decode.oneOf [ string, null "" ])
+        )

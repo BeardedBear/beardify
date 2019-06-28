@@ -6,6 +6,7 @@
     top: 10px;
     left: 10px;
     font-size: 1rem;
+    z-index: 9;
 
     i {
         font-size: 1.3rem;
@@ -43,7 +44,7 @@
 .sidebar {
     background: darken(#232B37, 5);
     display: grid;
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows:  auto 1fr;
     transition: all ease 0.15s;
     transform: translateZ(0);
     will-change: transform;
@@ -79,6 +80,11 @@
         font-size: 2rem;
         border-bottom: 1px solid #222933;
         font-family: 'Exo 2';
+
+        span {
+            font-size: 1rem;
+            opacity: 0.2;
+        }
 
         img {
             width: 30px;
@@ -167,31 +173,33 @@
         border-bottom: 0;
     }
 
+    .menu-item {
+        padding: 7px 15px 6px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-weight: bold;
+        display: block;
+        border: 0;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: white;
+        }
+
+        &.active {
+            background: $primary-color;
+
+            i {
+                opacity: 1;
+            }
+        }
+    }
     
     .top-menu {
         padding: 20px 15px;
         font-size: 1rem;
         border-bottom: 1px solid #222933;
         font-family: 'Exo 2';
-
-        > div {
-            padding: 7px 15px 6px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-weight: bold;
-
-            &:hover {
-                background: rgba(255, 255, 255, 0.03);
-            }
-
-            &.active {
-                background: $primary-color;
-
-                i {
-                    opacity: 1;
-                }
-            }
-        }
 
         i {
             margin-right: 10px;

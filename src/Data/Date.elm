@@ -1,6 +1,6 @@
 module Data.Date exposing (Date, monthToString)
 
-import Time exposing (..)
+import Time exposing (Month(..))
 
 
 type alias Date =

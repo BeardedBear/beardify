@@ -73,7 +73,7 @@
     font-weight: bold;
 
     &:hover {
-        transform: scale(1.02);
+        // transform: scale(1.02);
 
         .playing-btn,
         .add-btn,
@@ -88,13 +88,10 @@
         }
     }
 
-    &:active {
-        transform: scale(0.97);
-    }
-
     .img {
         position: relative;
         border-radius: 5px;
+        display: block;
     }
     
     &.active {
