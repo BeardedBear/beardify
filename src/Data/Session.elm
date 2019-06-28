@@ -15,6 +15,4 @@ type alias Session =
     , token : String
     , player : Data.Player.Model
     , search : Data.Search.Model
-
-    -- , modal : Data.Modal.Model
     }

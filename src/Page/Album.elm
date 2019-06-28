@@ -171,7 +171,12 @@ view session model =
                 ]
             , div [ class "album-page" ]
                 [ div []
-                    [ div [ class "album" ]
+                    [ div
+                        [ classList
+                            [ ( "album", True )
+                            , ( "active", model.album.uri == session.player.item.album.uri )
+                            ]
+                        ]
                         [ div [ class "img" ]
                             [ imageView Large model.album.images
                             ]
