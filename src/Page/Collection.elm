@@ -156,7 +156,12 @@ view session model =
                     )
 
         albumItem al =
-            div [ classList [ ( "album", True ) ] ]
+            div
+                [ classList
+                    [ ( "album", True )
+                    , ( "active", al.albumUri == session.player.item.album.uri )
+                    ]
+                ]
                 [ a [ Route.href (Route.Album al.albumId), class "img" ] [ Data.Image.imageView Data.Image.Medium al.images ]
                 , div [] [ text al.album ]
                 , div []
