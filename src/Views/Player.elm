@@ -3,9 +3,9 @@ module Views.Player exposing (Model, Msg(..), update, view)
 import Data.Image
 import Data.Player
 import Data.Session exposing (Session)
-import Html.Styled as Html exposing (..)
-import Html.Styled.Attributes exposing (..)
-import Html.Styled.Events exposing (..)
+import Html as Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Http
 import Request as Request
 import Route
@@ -114,9 +114,9 @@ view player =
                     [ span [ class "time" ] [ text <| Utils.durationFormat player.progress_ms ]
                     , input
                         [ type_ "range"
-                        , Html.Styled.Attributes.value <| String.fromInt player.progress_ms
-                        , Html.Styled.Attributes.min "0"
-                        , Html.Styled.Attributes.max <| String.fromInt player.item.duration_ms
+                        , Html.Attributes.value <| String.fromInt player.progress_ms
+                        , Html.Attributes.min "0"
+                        , Html.Attributes.max <| String.fromInt player.item.duration_ms
                         , onInput Seek
                         ]
                         []
@@ -141,9 +141,9 @@ view player =
             , div [ class "range" ]
                 [ input
                     [ type_ "range"
-                    , Html.Styled.Attributes.value <| String.fromInt player.device.volume_percent
-                    , Html.Styled.Attributes.min "0"
-                    , Html.Styled.Attributes.max "100"
+                    , Html.Attributes.value <| String.fromInt player.device.volume_percent
+                    , Html.Attributes.min "0"
+                    , Html.Attributes.max "100"
                     , onInput Volume
                     ]
                     []

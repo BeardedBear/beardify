@@ -2,9 +2,9 @@ module Page.Counter exposing (Msg, init, update, view)
 
 import Data.Counter
 import Data.Session exposing (Session)
-import Html.Styled as Html exposing (..)
-import Html.Styled.Attributes exposing (..)
-import Html.Styled.Events exposing (onClick)
+import Html as Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 
 
 type Msg

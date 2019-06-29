@@ -2,7 +2,7 @@ module Page.Home exposing (Msg(..), init, update, view)
 
 import Data.Home
 import Data.Session
-import Html.Styled as Html exposing (..)
+import Html as Html exposing (..)
 import Http
 
 

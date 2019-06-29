@@ -3,8 +3,8 @@ module Views.Sidebar exposing (view)
 import Browser exposing (Document)
 import Data.Playlist exposing (..)
 import Data.Session exposing (Session)
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (class, classList, css, href, src)
+import Html exposing (..)
+import Html.Attributes exposing (class, classList, href, src)
 import Route
 import Utils
 import Views.Collection
