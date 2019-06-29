@@ -3,7 +3,6 @@ module Data.Playlist exposing
     , PlaylistPaging
     , PlaylistPagingSimplified
     , PlaylistSimplified
-    , PlaylistTrack
     , decodePlaylist
     , decodePlaylistPaging
     , decodePlaylistPagingSimplified
@@ -12,8 +11,8 @@ module Data.Playlist exposing
     , init
     )
 
-import Data.Image
-import Data.Track
+import Data.Image exposing (Image, decodeImage)
+import Data.Track exposing (Track, decodeTrack)
 import Json.Decode as Decode exposing (Decoder(..), at, field, null, string)
 
 
@@ -28,7 +27,7 @@ init =
 
 type alias Playlist =
     { id : String
-    , images : List Data.Image.Image
+    , images : List Image
     , name : String
     , uri : String
     }
@@ -38,14 +37,14 @@ decodePlaylist : Decode.Decoder Playlist
 decodePlaylist =
     Decode.map4 Playlist
         (Decode.field "id" Decode.string)
-        (Decode.at [ "images" ] (Decode.list Data.Image.decodeImage))
+        (Decode.at [ "images" ] (Decode.list decodeImage))
         (Decode.field "name" Decode.string)
         (Decode.field "uri" Decode.string)
 
 
 type alias PlaylistSimplified =
     { id : String
-    , images : List Data.Image.Image
+    , images : List Image
     , name : String
     , uri : String
     }
@@ -55,7 +54,7 @@ decodePlaylistSimplified : Decode.Decoder PlaylistSimplified
 decodePlaylistSimplified =
     Decode.map4 PlaylistSimplified
         (Decode.field "id" Decode.string)
-        (Decode.at [ "images" ] (Decode.list Data.Image.decodeImage))
+        (Decode.at [ "images" ] (Decode.list decodeImage))
         (Decode.field "name" Decode.string)
         (Decode.field "uri" Decode.string)
 
@@ -75,17 +74,13 @@ decodePlaylistPagingSimplified =
         )
 
 
-type alias PlaylistTrack =
-    Data.Track.Track
-
-
-decodePlaylistTrack : Decode.Decoder PlaylistTrack
+decodePlaylistTrack : Decode.Decoder Track
 decodePlaylistTrack =
-    Decode.field "track" Data.Track.decodeTrack
+    Decode.field "track" decodeTrack
 
 
 type alias PlaylistPaging =
-    { items : List PlaylistTrack
+    { items : List Track
     , next : String
     }
 

@@ -5,8 +5,8 @@ module Data.Album exposing
     , init
     )
 
-import Data.Artist
-import Data.Image
+import Data.Artist exposing (ArtistSimplified)
+import Data.Image exposing (Image)
 import Json.Decode as Decode exposing (Decoder(..), at, field)
 import Json.Encode as Encode
 
@@ -26,9 +26,9 @@ init =
 
 type alias Album =
     { album_type : String
-    , artists : List Data.Artist.ArtistSimplified
+    , artists : List ArtistSimplified
     , id : String
-    , images : List Data.Image.Image
+    , images : List Image
     , name : String
     , release_date : String
     , type_ : String

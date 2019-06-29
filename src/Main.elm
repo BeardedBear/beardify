@@ -1,21 +1,21 @@
 module Main exposing (main)
 
 import Browser
-import Browser.Dom
-import Browser.Events
-import Browser.Navigation
-import Data.Album
-import Data.Date
-import Data.Meta
-import Data.Player
-import Data.Playlist
+import Browser.Dom exposing (focus)
+import Browser.Events exposing (onKeyDown)
+import Browser.Navigation exposing (Key, load, pushUrl)
+import Data.Album exposing (encodeAlbum)
+import Data.Date exposing (Date)
+import Data.Meta exposing (AlbumModel, ArtistModel, CollectionModel, PlaylistModel)
+import Data.Player exposing (decodePlayer)
+import Data.Playlist exposing (PlaylistPagingSimplified, decodePlaylistPagingSimplified)
 import Data.Search
-import Data.Session
-import Data.Track
-import Html as Html exposing (map)
+import Data.Session exposing (Session)
+import Data.Track exposing (encodeTrack)
+import Html exposing (map)
 import Http
 import Json.Decode as Decode exposing (map)
-import Keyboard.Event
+import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
 import Page.Album
 import Page.Artist
 import Page.Collection
@@ -35,10 +35,10 @@ import Views.Search
 type Page
     = Blank
     | HomePage String
-    | CollectionPage Data.Meta.CollectionModel
-    | PlaylistPage Data.Meta.PlaylistModel
-    | AlbumPage Data.Meta.AlbumModel
-    | ArtistPage Data.Meta.ArtistModel
+    | CollectionPage CollectionModel
+    | PlaylistPage PlaylistModel
+    | AlbumPage AlbumModel
+    | ArtistPage ArtistModel
     | NotFound
 
 
@@ -51,14 +51,14 @@ type alias Flags =
 type alias Model =
     { config :
         { token : String
-        , currentDate : Data.Date.Date
+        , currentDate : Date
         }
     , page : Page
-    , session : Data.Session.Session
+    , session : Session
     }
 
 
-init : Flags -> Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
+init : Flags -> Url -> Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
         session =
@@ -94,7 +94,7 @@ init flags url navKey =
     ( model
     , Cmd.batch
         [ cmds
-        , Http.send InitPlaylist <| Request.get "me/playlists" "" "?limit=50" Data.Playlist.decodePlaylistPagingSimplified flags.token
+        , Http.send InitPlaylist <| Request.get "me/playlists" "" "?limit=50" decodePlaylistPagingSimplified flags.token
         ]
     )
 
@@ -157,14 +157,14 @@ type Msg
     | AlbumMsg Page.Album.Msg
     | ArtistMsg Page.Artist.Msg
       -- SIDEBAR PLAYLISTS
-    | InitPlaylist (Result Http.Error Data.Playlist.PlaylistPagingSimplified)
+    | InitPlaylist (Result Http.Error PlaylistPagingSimplified)
       -- PLAYER
     | SetPlayer (Result Http.Error Data.Player.Model)
     | GetPlayer Time.Posix
     | PlayerMsg Views.Player.Msg
     | SearchMsg Views.Search.Msg
       -- KEYBOARD
-    | HandleKeyboardEvent Keyboard.Event.KeyboardEvent
+    | HandleKeyboardEvent KeyboardEvent
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -199,10 +199,10 @@ update msg ({ page, session } as model) =
         ( UrlRequested urlRequest, _ ) ->
             case urlRequest of
                 Browser.Internal url ->
-                    ( { model | session = { session | url = url } }, Browser.Navigation.pushUrl session.navKey (Url.toString url) )
+                    ( { model | session = { session | url = url } }, pushUrl session.navKey (Url.toString url) )
 
                 Browser.External href ->
-                    ( model, Browser.Navigation.load href )
+                    ( model, load href )
 
         ( UrlChanged url, _ ) ->
             setRoute (Route.fromUrl url) { model | session = { session | url = url } }
@@ -213,7 +213,7 @@ update msg ({ page, session } as model) =
         ( CollectionMsg collectionMsg, CollectionPage collectionModel ) ->
             case collectionMsg of
                 Page.Collection.PlayAlbum e ->
-                    ( model, Http.send NoOpResult <| Request.play e (Data.Album.encodeAlbum e) token )
+                    ( model, Http.send NoOpResult <| Request.play e (encodeAlbum e) token )
 
                 _ ->
                     toPage CollectionPage CollectionMsg (Page.Collection.update session) collectionMsg collectionModel
@@ -221,7 +221,7 @@ update msg ({ page, session } as model) =
         ( PlaylistMsg playlistMsg, PlaylistPage playlistModel ) ->
             case playlistMsg of
                 Page.Playlist.PlayTracks e ->
-                    ( model, Http.send NoOpResult <| Request.play e (Data.Track.encodeTrack e) token )
+                    ( model, Http.send NoOpResult <| Request.play e (encodeTrack e) token )
 
                 _ ->
                     toPage PlaylistPage PlaylistMsg (Page.Playlist.update session) playlistMsg playlistModel
@@ -229,10 +229,10 @@ update msg ({ page, session } as model) =
         ( AlbumMsg albumMsg, AlbumPage albumModel ) ->
             case albumMsg of
                 Page.Album.PlayTracks e ->
-                    ( model, Http.send NoOpResult <| Request.play e (Data.Track.encodeTrack e) token )
+                    ( model, Http.send NoOpResult <| Request.play e (encodeTrack e) token )
 
                 Page.Album.PlayAlbum e ->
-                    ( model, Http.send NoOpResult <| Request.play e (Data.Album.encodeAlbum e) token )
+                    ( model, Http.send NoOpResult <| Request.play e (encodeAlbum e) token )
 
                 _ ->
                     toPage AlbumPage AlbumMsg (Page.Album.update session) albumMsg albumModel
@@ -240,10 +240,10 @@ update msg ({ page, session } as model) =
         ( ArtistMsg artistMsg, ArtistPage artistModel ) ->
             case artistMsg of
                 Page.Artist.PlayTracks e ->
-                    ( model, Http.send NoOpResult <| Request.play e (Data.Track.encodeTrack e) token )
+                    ( model, Http.send NoOpResult <| Request.play e (encodeTrack e) token )
 
                 Page.Artist.PlayAlbum e ->
-                    ( model, Http.send NoOpResult <| Request.play e (Data.Album.encodeAlbum e) token )
+                    ( model, Http.send NoOpResult <| Request.play e (encodeAlbum e) token )
 
                 _ ->
                     toPage ArtistPage ArtistMsg Page.Artist.update artistMsg artistModel
@@ -256,7 +256,7 @@ update msg ({ page, session } as model) =
             in
             ( { model | session = { session | playlists = concat } }
             , if e.next /= "" then
-                Cmd.batch [ Http.send InitPlaylist <| Request.getPaging e.next Data.Playlist.decodePlaylistPagingSimplified token ]
+                Cmd.batch [ Http.send InitPlaylist <| Request.getPaging e.next decodePlaylistPagingSimplified token ]
 
               else
                 Cmd.none
@@ -273,7 +273,7 @@ update msg ({ page, session } as model) =
             ( model, Ports.refreshToken () )
 
         ( GetPlayer _, _ ) ->
-            ( model, Http.send SetPlayer <| Request.get "me/player" "" "" Data.Player.decodePlayer token )
+            ( model, Http.send SetPlayer <| Request.get "me/player" "" "" decodePlayer token )
 
         -- KEYBOARD
         ( HandleKeyboardEvent event, _ ) ->
@@ -293,7 +293,7 @@ update msg ({ page, session } as model) =
                 --     else
                 --         ( model, Http.send PlayerControl <| Request.put "" "play" "" token )
                 ( True, Just "F" ) ->
-                    ( model, Task.attempt (\_ -> NoOp) (Browser.Dom.focus "search") )
+                    ( model, Task.attempt (\_ -> NoOp) (focus "search") )
 
                 ( _, _ ) ->
                     ( model, Cmd.none )
@@ -315,7 +315,7 @@ update msg ({ page, session } as model) =
             in
             case searchMsg of
                 Views.Search.PlayTrack uri ->
-                    ( { model | session = newSession searchModel }, Http.send NoOpResult <| Request.play [ uri ] (Data.Track.encodeTrack [ uri ]) token )
+                    ( { model | session = newSession searchModel }, Http.send NoOpResult <| Request.play [ uri ] (encodeTrack [ uri ]) token )
 
                 _ ->
                     ( { model | session = newSession searchModel }, searchCmds |> Cmd.map SearchMsg )
@@ -329,7 +329,7 @@ subscriptions model =
     let
         commonSubs =
             [ Time.every 1000 GetPlayer
-            , Browser.Events.onKeyDown (Decode.map HandleKeyboardEvent Keyboard.Event.decodeKeyboardEvent)
+            , onKeyDown (Decode.map HandleKeyboardEvent decodeKeyboardEvent)
             ]
     in
     case model.page of

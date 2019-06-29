@@ -6,7 +6,7 @@ module Data.Artist exposing
     , init
     )
 
-import Data.Image
+import Data.Image exposing (Image)
 import Json.Decode as Decode exposing (Decoder(..), at, field)
 
 
@@ -22,7 +22,7 @@ init =
 
 type alias Artist =
     { id : String
-    , images : List Data.Image.Image
+    , images : List Image
     , name : String
     , popularity : Int
     , type_ : String

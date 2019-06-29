@@ -1,9 +1,9 @@
 module Page.Collection exposing (Msg(..), init, update, view)
 
 import Data.Image
-import Data.Meta
+import Data.Meta exposing (CollectionModel)
 import Data.Playlist
-import Data.Session
+import Data.Session exposing (Session)
 import Data.Track
 import Html exposing (Html, a, div, i, text)
 import Html.Attributes exposing (class, classList)
@@ -16,7 +16,7 @@ import Utils
 import Views.Modal
 
 
-init : String -> Data.Session.Session -> ( Data.Meta.CollectionModel, Cmd Msg )
+init : String -> Session -> ( CollectionModel, Cmd Msg )
 init id session =
     ( { collection = Data.Playlist.init
       , albums =
@@ -48,7 +48,7 @@ type Msg
     | ModalClear
 
 
-update : Data.Session.Session -> Msg -> Data.Meta.CollectionModel -> ( Data.Meta.CollectionModel, Cmd Msg )
+update : Session -> Msg -> CollectionModel -> ( CollectionModel, Cmd Msg )
 update session msg ({ modal } as model) =
     case msg of
         SetCollection (Ok e) ->
@@ -138,7 +138,7 @@ update session msg ({ modal } as model) =
             )
 
 
-view : Data.Session.Session -> Data.Meta.CollectionModel -> ( String, List (Html Msg) )
+view : Session -> CollectionModel -> ( String, List (Html Msg) )
 view session model =
     let
         albums =

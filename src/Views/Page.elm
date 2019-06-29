@@ -44,7 +44,7 @@ frame config player search ( title, content ) =
     }
 
 
-playlistView : Data.Session.Session -> List PlaylistSimplified -> Bool -> Html msg
+playlistView : Session -> List PlaylistSimplified -> Bool -> Html msg
 playlistView session playlists _ =
     let
         test =

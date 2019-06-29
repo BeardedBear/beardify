@@ -1,10 +1,10 @@
 module Page.Album exposing (Msg(..), init, update, view)
 
-import Data.Album
+import Data.Album exposing (Album, decodeAlbum)
 import Data.Image exposing (ImageSize(..), imageView)
-import Data.Meta
-import Data.Session
-import Data.Track
+import Data.Meta exposing (AlbumModel)
+import Data.Session exposing (Session)
+import Data.Track exposing (TrackSimplified, TrackSimplifiedPaging, decodeTrackSimplified, decodeTrackSimplifiedPaging)
 import Html exposing (Html, div, i, span, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
@@ -17,7 +17,7 @@ import Views.Artist
 import Views.Modal
 
 
-init : String -> Data.Session.Session -> ( Data.Meta.AlbumModel, Cmd Msg )
+init : String -> Session -> ( AlbumModel, Cmd Msg )
 init id session =
     ( { album = Data.Album.init
       , tracks =
@@ -30,26 +30,26 @@ init id session =
             }
       }
     , Cmd.batch
-        [ Http.send SetAlbum <| Request.get "albums/" id "" Data.Album.decodeAlbum session.token
-        , Http.send SetAlbumTracks <| Request.get "albums/" id "/tracks" Data.Track.decodeTrackSimplifiedPaging session.token
+        [ Http.send SetAlbum <| Request.get "albums/" id "" decodeAlbum session.token
+        , Http.send SetAlbumTracks <| Request.get "albums/" id "/tracks" decodeTrackSimplifiedPaging session.token
         ]
     )
 
 
 type Msg
     = NoOp
-    | SetAlbum (Result Http.Error Data.Album.Album)
-    | SetAlbumTracks (Result Http.Error Data.Track.TrackSimplifiedPaging)
+    | SetAlbum (Result Http.Error Album)
+    | SetAlbumTracks (Result Http.Error TrackSimplifiedPaging)
     | PlayTracks (List String)
     | PlayAlbum String
-    | ModalOpen (Result Http.Error (List Data.Track.TrackSimplified))
+    | ModalOpen (Result Http.Error (List TrackSimplified))
     | ModalGetTrack String
     | ModalAddTrack String
     | SetModalTrack (Result Http.Error ())
     | ModalClear
 
 
-update : Data.Session.Session -> Msg -> Data.Meta.AlbumModel -> ( Data.Meta.AlbumModel, Cmd Msg )
+update : Session -> Msg -> AlbumModel -> ( AlbumModel, Cmd Msg )
 update session msg ({ tracks, modal } as model) =
     case msg of
         NoOp ->
@@ -70,7 +70,7 @@ update session msg ({ tracks, modal } as model) =
             in
             ( { model | tracks = { tracks | items = concat } }
             , if e.next /= "" then
-                Cmd.batch [ Http.send SetAlbumTracks <| Request.getPaging e.next Data.Track.decodeTrackSimplifiedPaging session.token ]
+                Cmd.batch [ Http.send SetAlbumTracks <| Request.getPaging e.next decodeTrackSimplifiedPaging session.token ]
 
               else
                 Cmd.none
@@ -102,7 +102,7 @@ update session msg ({ tracks, modal } as model) =
         ModalGetTrack e ->
             ( model
             , Cmd.batch
-                [ Http.send ModalOpen <| Request.get "albums/" e "/tracks" (Decode.at [ "items" ] (Decode.list Data.Track.decodeTrackSimplified)) session.token
+                [ Http.send ModalOpen <| Request.get "albums/" e "/tracks" (Decode.at [ "items" ] (Decode.list decodeTrackSimplified)) session.token
                 ]
             )
 
@@ -127,7 +127,7 @@ update session msg ({ tracks, modal } as model) =
             )
 
 
-view : Data.Session.Session -> Data.Meta.AlbumModel -> ( String, List (Html Msg) )
+view : Session -> AlbumModel -> ( String, List (Html Msg) )
 view session model =
     let
         listTracksUri id =
