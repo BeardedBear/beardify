@@ -7,7 +7,7 @@
     "dependencies": {
         "direct": {
             "Gizra/elm-keyboard-event": "1.0.1",
-            "elm-community/list-extra": "8.1.0",
+            "elm-community/list-extra": "8.2.0",
             "elm/browser": "1.0.1",
             "elm/core": "1.0.2",
             "elm/html": "1.0.0",
@@ -16,15 +16,12 @@
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
             "lukewestby/elm-http-builder": "6.0.0",
-            "rtfeldman/elm-css": "16.0.0",
             "truqu/elm-base64": "2.0.4"
         },
         "indirect": {
-            "Skinney/murmur3": "2.0.8",
             "SwiftsNamesake/proper-keyboard": "4.0.0",
             "elm/regex": "1.0.0",
-            "elm/virtual-dom": "1.0.2",
-            "rtfeldman/elm-hex": "1.0.0"
+            "elm/virtual-dom": "1.0.2"
         }
     },
     "test-dependencies": {

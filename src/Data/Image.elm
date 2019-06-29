@@ -1,7 +1,7 @@
 module Data.Image exposing (Image, ImageSize(..), decodeImage, imageView)
 
-import Html.Styled as Html exposing (..)
-import Html.Styled.Attributes exposing (..)
+import Html as Html exposing (..)
+import Html.Attributes exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode

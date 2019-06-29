@@ -1,9 +1,9 @@
 module Views.Modal exposing (view)
 
 import Data.Session
-import Html.Styled as Html exposing (..)
-import Html.Styled.Attributes exposing (..)
-import Html.Styled.Events exposing (..)
+import Html as Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Utils
 import Views.Collection
 import Views.Sidebar

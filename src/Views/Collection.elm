@@ -3,9 +3,9 @@ module Views.Collection exposing (view)
 import Browser exposing (Document)
 import Data.Playlist exposing (..)
 import Data.Session exposing (Session)
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (class, classList, css, href, src)
-import Html.Styled.Events exposing (..)
+import Html exposing (..)
+import Html.Attributes exposing (class, classList, href, src)
+import Html.Events exposing (..)
 import Route
 import Utils
 

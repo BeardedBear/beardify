@@ -5,8 +5,8 @@ module Views.Page exposing (ActivePage(..), Config, frame)
 import Browser exposing (Document)
 import Data.Playlist exposing (..)
 import Data.Session exposing (Session)
-import Html.Styled as Html exposing (..)
-import Html.Styled.Attributes exposing (class, classList, css, href, src)
+import Html as Html exposing (..)
+import Html.Attributes exposing (class, classList, href, src)
 import Route
 import Utils
 import Views.Collection
@@ -43,7 +43,6 @@ frame config player search ( title, content ) =
                 , player
                 ]
             ]
-            |> toUnstyled
         ]
     }
 

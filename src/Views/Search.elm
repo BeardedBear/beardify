@@ -7,9 +7,9 @@ import Data.Image
 import Data.Search
 import Data.Session exposing (Session)
 import Data.Track
-import Html.Styled as Html exposing (..)
-import Html.Styled.Attributes exposing (..)
-import Html.Styled.Events exposing (onClick, onInput)
+import Html as Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode exposing (..)
 import Request

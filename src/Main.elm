@@ -15,9 +15,9 @@ import Data.Playlist
 import Data.Search
 import Data.Session
 import Data.Track
-import Html.Styled as Html exposing (..)
-import Html.Styled.Attributes exposing (..)
-import Html.Styled.Events exposing (onClick)
+import Html as Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Http
 import Json.Decode as Decode exposing (..)
 import Keyboard.Event
