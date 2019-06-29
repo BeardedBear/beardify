@@ -1,14 +1,14 @@
 module Data.Search exposing (Model, init)
 
-import Data.Album
-import Data.Artist
-import Data.Track
+import Data.Album exposing (Album)
+import Data.Artist exposing (Artist)
+import Data.Track exposing (Track)
 
 
 type alias Model =
-    { findArtist : List Data.Artist.Artist
-    , findAlbum : List Data.Album.Album
-    , findTrack : List Data.Track.Track
+    { findArtist : List Artist
+    , findAlbum : List Album
+    , findTrack : List Track
     , searchQuery : String
     }
 

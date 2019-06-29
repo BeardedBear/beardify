@@ -1,7 +1,7 @@
 module Data.Player exposing (Model, decodePlayer, init)
 
-import Data.Device
-import Data.Track
+import Data.Device exposing (Device)
+import Data.Track exposing (Track)
 import Json.Decode as Decode exposing (Decoder(..), at, field)
 
 
@@ -17,10 +17,10 @@ init =
 
 
 type alias Model =
-    { device : Data.Device.Device
+    { device : Device
     , is_playing : Bool
     , progress_ms : Int
-    , item : Data.Track.Track
+    , item : Track
     , repeat_state : String
     , shuffle_state : Bool
     }

@@ -1,9 +1,9 @@
 module Page.Playlist exposing (Msg(..), init, update, view)
 
 import Data.Image
-import Data.Meta
-import Data.Playlist
-import Data.Session
+import Data.Meta exposing (PlaylistModel)
+import Data.Playlist exposing (Playlist, PlaylistPaging, decodePlaylist, decodePlaylistPaging)
+import Data.Session exposing (Session)
 import Html exposing (Html, a, div, i, text)
 import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick)
@@ -14,7 +14,7 @@ import Utils
 import Views.Artist
 
 
-init : String -> Data.Session.Session -> ( Data.Meta.PlaylistModel, Cmd Msg )
+init : String -> Session -> ( PlaylistModel, Cmd Msg )
 init id session =
     ( { playlist = Data.Playlist.init
       , tracks =
@@ -23,19 +23,19 @@ init id session =
             }
       }
     , Cmd.batch
-        [ Http.send SetPlaylistTracks <| Request.get "playlists/" id "/tracks" Data.Playlist.decodePlaylistPaging session.token
-        , Http.send SetPlaylist <| Request.get "playlists/" id "" Data.Playlist.decodePlaylist session.token
+        [ Http.send SetPlaylistTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging session.token
+        , Http.send SetPlaylist <| Request.get "playlists/" id "" decodePlaylist session.token
         ]
     )
 
 
 type Msg
-    = SetPlaylist (Result Http.Error Data.Playlist.Playlist)
-    | SetPlaylistTracks (Result Http.Error Data.Playlist.PlaylistPaging)
+    = SetPlaylist (Result Http.Error Playlist)
+    | SetPlaylistTracks (Result Http.Error PlaylistPaging)
     | PlayTracks (List String)
 
 
-update : Data.Session.Session -> Msg -> Data.Meta.PlaylistModel -> ( Data.Meta.PlaylistModel, Cmd Msg )
+update : Session -> Msg -> PlaylistModel -> ( PlaylistModel, Cmd Msg )
 update session msg model =
     case msg of
         SetPlaylist (Ok e) ->
@@ -55,7 +55,7 @@ update session msg model =
                 | tracks = { items = concat, next = "" }
               }
             , if e.next /= "" then
-                Cmd.batch [ Http.send SetPlaylistTracks <| Request.getPaging e.next Data.Playlist.decodePlaylistPaging session.token ]
+                Cmd.batch [ Http.send SetPlaylistTracks <| Request.getPaging e.next decodePlaylistPaging session.token ]
 
               else
                 Cmd.none
@@ -68,7 +68,7 @@ update session msg model =
             ( model, Cmd.none )
 
 
-view : Data.Session.Session -> Data.Meta.PlaylistModel -> ( String, List (Html Msg) )
+view : Session -> PlaylistModel -> ( String, List (Html Msg) )
 view session model =
     let
         listTracksUri id =

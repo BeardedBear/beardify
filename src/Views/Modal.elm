@@ -1,6 +1,6 @@
 module Views.Modal exposing (view)
 
-import Data.Session
+import Data.Session exposing (Session)
 import Html exposing (Html, button, div, i, span, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
@@ -9,7 +9,7 @@ import Utils
 
 type alias Config msg =
     { isOpen : Bool
-    , session : Data.Session.Session
+    , session : Session
     , close : msg
     , add : String -> msg
     }

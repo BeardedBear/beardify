@@ -3,8 +3,8 @@ module Page.Artist exposing (Msg(..), init, update, view)
 import Data.Album
 import Data.Artist
 import Data.Image
-import Data.Meta
-import Data.Session
+import Data.Meta exposing (ArtistModel)
+import Data.Session exposing (Session)
 import Data.Track
 import Data.Youtube
 import Html exposing (Html, a, div, i, iframe, text)
@@ -18,7 +18,7 @@ import Route
 import Utils
 
 
-init : String -> Data.Session.Session -> ( Data.Meta.ArtistModel, Cmd Msg )
+init : String -> Session -> ( ArtistModel, Cmd Msg )
 init id session =
     ( { artist = Data.Artist.init
       , albums = []
@@ -45,7 +45,7 @@ type Msg
     | PlayAlbum String
 
 
-update : Msg -> Data.Meta.ArtistModel -> ( Data.Meta.ArtistModel, Cmd Msg )
+update : Msg -> ArtistModel -> ( ArtistModel, Cmd Msg )
 update msg model =
     case msg of
         SetArtist (Ok e) ->
@@ -91,7 +91,7 @@ update msg model =
             ( model, Cmd.none )
 
 
-view : Data.Session.Session -> Data.Meta.ArtistModel -> ( String, List (Html Msg) )
+view : Session -> ArtistModel -> ( String, List (Html Msg) )
 view session model =
     let
         listTracksUri id =

@@ -11,8 +11,8 @@ module Data.Track exposing
     , init
     )
 
-import Data.Album
-import Data.Artist
+import Data.Album exposing (Album, decodeAlbum)
+import Data.Artist exposing (ArtistSimplified, decodeArtistSimplified)
 import Json.Decode as Decode exposing (Decoder(..), at, field, null, string)
 import Json.Encode as Encode
 
@@ -51,8 +51,8 @@ encodeTrack uris =
 type alias Track =
     { name : String
     , duration_ms : Int
-    , artists : List Data.Artist.ArtistSimplified
-    , album : Data.Album.Album
+    , artists : List ArtistSimplified
+    , album : Album
     , uri : String
     }
 
@@ -62,15 +62,15 @@ decodeTrack =
     Decode.map5 Track
         (Decode.field "name" Decode.string)
         (Decode.field "duration_ms" Decode.int)
-        (Decode.at [ "artists" ] (Decode.list Data.Artist.decodeArtistSimplified))
-        (Decode.at [ "album" ] Data.Album.decodeAlbum)
+        (Decode.at [ "artists" ] (Decode.list decodeArtistSimplified))
+        (Decode.at [ "album" ] decodeAlbum)
         (Decode.field "uri" Decode.string)
 
 
 type alias TrackSimplified =
     { name : String
     , duration_ms : Int
-    , artists : List Data.Artist.ArtistSimplified
+    , artists : List ArtistSimplified
     , track_number : Int
     , uri : String
     }
@@ -81,7 +81,7 @@ decodeTrackSimplified =
     Decode.map5 TrackSimplified
         (Decode.field "name" Decode.string)
         (Decode.field "duration_ms" Decode.int)
-        (Decode.at [ "artists" ] (Decode.list Data.Artist.decodeArtistSimplified))
+        (Decode.at [ "artists" ] (Decode.list decodeArtistSimplified))
         (Decode.field "track_number" Decode.int)
         (Decode.field "uri" Decode.string)
 
