@@ -3,13 +3,12 @@ module Views.Player exposing (Model, Msg(..), update, view)
 import Data.Image
 import Data.Player
 import Data.Session exposing (Session)
-import Html as Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html exposing (Html, a, button, div, i, input, span, text)
+import Html.Attributes exposing (class, classList, style, type_)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Request as Request
 import Route
-import Task
 import Utils
 import Views.Artist
 
@@ -34,7 +33,7 @@ type Msg
 
 
 update : Session -> Msg -> Model -> ( Model, Cmd Msg )
-update ({ token } as session) msg model =
+update { token } msg model =
     case msg of
         NoOp (Err _) ->
             ( model, Cmd.none )

@@ -5,14 +5,12 @@ import Json.Decode as Decode exposing (Decoder(..), at, field)
 
 
 type alias VideoId =
-    { videoId : String
-    }
+    String
 
 
 decodeVideoId : Decode.Decoder VideoId
 decodeVideoId =
-    Decode.map VideoId
-        (Decode.field "videoId" Decode.string)
+    Decode.field "videoId" Decode.string
 
 
 type alias Snippet =
@@ -44,14 +42,12 @@ decodeVideo =
 
 
 type alias Youtube =
-    { items : List Video
-    }
+    List Video
 
 
 decodeYoutube : Decode.Decoder Youtube
 decodeYoutube =
-    Decode.map Youtube
-        (Decode.at [ "items" ] (Decode.list decodeVideo))
+    Decode.at [ "items" ] (Decode.list decodeVideo)
 
 
 getVideos : String -> Http.Request Youtube

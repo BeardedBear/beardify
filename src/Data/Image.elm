@@ -1,21 +1,17 @@
 module Data.Image exposing (Image, ImageSize(..), decodeImage, imageView)
 
-import Html as Html exposing (..)
-import Html.Attributes exposing (..)
-import Http exposing (..)
-import Json.Decode as Decode exposing (..)
-import Json.Encode as Encode
+import Html exposing (Html, img, text)
+import Html.Attributes exposing (src)
+import Json.Decode as Decode exposing (field)
 
 
 type alias Image =
-    { url : String
-    }
+    String
 
 
 decodeImage : Decode.Decoder Image
 decodeImage =
-    Decode.map Image
-        (Decode.field "url" Decode.string)
+    Decode.field "url" Decode.string
 
 
 type ImageSize
@@ -28,18 +24,18 @@ imageView : ImageSize -> List Image -> Html msg
 imageView size image =
     let
         showImage c =
-            if c.url == "" then
+            if c == "" then
                 text ""
 
             else
-                img [ src c.url ] []
+                img [ src c ] []
     in
     case size of
         Small ->
             image
                 |> List.reverse
                 |> List.head
-                |> Maybe.withDefault { url = "" }
+                |> Maybe.withDefault ""
                 |> showImage
 
         Medium ->
@@ -47,11 +43,11 @@ imageView size image =
                 |> List.take 2
                 |> List.reverse
                 |> List.head
-                |> Maybe.withDefault { url = "" }
+                |> Maybe.withDefault ""
                 |> showImage
 
         Large ->
             image
                 |> List.head
-                |> Maybe.withDefault { url = "" }
+                |> Maybe.withDefault ""
                 |> showImage

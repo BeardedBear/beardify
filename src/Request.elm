@@ -7,8 +7,8 @@ module Request exposing
     , put
     )
 
-import Http exposing (..)
-import Json.Decode as Decode exposing (..)
+import Http exposing (Request, expectStringResponse, header, request)
+import Json.Decode as Decode exposing (Decoder(..))
 import Json.Encode as Encode
 
 
@@ -93,7 +93,7 @@ delete urlBefore playlistId urlAfter encoder token =
 
 
 play : a -> Encode.Value -> String -> Request ()
-play e encoder token =
+play _ encoder token =
     request
         { method = "PUT"
         , headers = [ Http.header "Authorization" <| "Bearer " ++ token ]

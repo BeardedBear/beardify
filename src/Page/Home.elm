@@ -1,8 +1,7 @@
 module Page.Home exposing (Msg(..), init, update, view)
 
-import Data.Home
 import Data.Session
-import Html as Html exposing (..)
+import Html exposing (Html, div, text)
 import Http
 
 
@@ -10,29 +9,29 @@ type Msg
     = ReadmeReceived (Result Http.Error String)
 
 
-init : Data.Session.Session -> ( Data.Home.Model, Cmd Msg )
-init session =
-    ( { readme = "Retrieving README from github" }
+init : Data.Session.Session -> ( String, Cmd Msg )
+init _ =
+    ( "Retrieving README from github"
     , Cmd.none
     )
 
 
-update : Data.Session.Session -> Msg -> Data.Home.Model -> ( Data.Home.Model, Cmd Msg )
+update : Data.Session.Session -> Msg -> String -> ( String, Cmd Msg )
 update _ msg model =
     case msg of
-        ReadmeReceived (Ok readme) ->
+        ReadmeReceived (Ok _) ->
             ( model
             , Cmd.none
             )
 
-        ReadmeReceived (Err error) ->
+        ReadmeReceived (Err _) ->
             ( model
             , Cmd.none
             )
 
 
-view : Data.Session.Session -> Data.Home.Model -> ( String, List (Html Msg) )
-view session model =
+view : Data.Session.Session -> String -> ( String, List (Html Msg) )
+view _ _ =
     ( "Home"
     , [ div [] [ text "" ]
       ]

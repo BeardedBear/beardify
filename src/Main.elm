@@ -5,26 +5,20 @@ import Browser.Dom
 import Browser.Events
 import Browser.Navigation
 import Data.Album
-import Data.Artist
-import Data.Counter
 import Data.Date
-import Data.Home
 import Data.Meta
 import Data.Player
 import Data.Playlist
 import Data.Search
 import Data.Session
 import Data.Track
-import Html as Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html as Html exposing (map)
 import Http
-import Json.Decode as Decode exposing (..)
+import Json.Decode as Decode exposing (map)
 import Keyboard.Event
 import Page.Album
 import Page.Artist
 import Page.Collection
-import Page.Counter
 import Page.Home
 import Page.Playlist
 import Ports
@@ -40,8 +34,7 @@ import Views.Search
 
 type Page
     = Blank
-    | HomePage Data.Home.Model
-    | CounterPage Data.Counter.Model
+    | HomePage String
     | CollectionPage Data.Meta.CollectionModel
     | PlaylistPage Data.Meta.PlaylistModel
     | AlbumPage Data.Meta.AlbumModel
@@ -139,9 +132,6 @@ setRoute maybeRoute model =
         Just Route.Home ->
             toPage HomePage Page.Home.init HomeMsg
 
-        Just Route.Counter ->
-            toPage CounterPage Page.Counter.init CounterMsg
-
         Just (Route.Collection id) ->
             toPage CollectionPage (collectionInit id) CollectionMsg
 
@@ -162,7 +152,6 @@ type Msg
     | UrlRequested Browser.UrlRequest
       -- PAGES
     | HomeMsg Page.Home.Msg
-    | CounterMsg Page.Counter.Msg
     | CollectionMsg Page.Collection.Msg
     | PlaylistMsg Page.Playlist.Msg
     | AlbumMsg Page.Album.Msg
@@ -221,9 +210,6 @@ update msg ({ page, session } as model) =
         ( HomeMsg homeMsg, HomePage homeModel ) ->
             toPage HomePage HomeMsg (Page.Home.update session) homeMsg homeModel
 
-        ( CounterMsg counterMsg, CounterPage counterModel ) ->
-            toPage CounterPage CounterMsg (Page.Counter.update session) counterMsg counterModel
-
         ( CollectionMsg collectionMsg, CollectionPage collectionModel ) ->
             case collectionMsg of
                 Page.Collection.PlayAlbum e ->
@@ -260,7 +246,7 @@ update msg ({ page, session } as model) =
                     ( model, Http.send NoOpResult <| Request.play e (Data.Album.encodeAlbum e) token )
 
                 _ ->
-                    toPage ArtistPage ArtistMsg (Page.Artist.update session) artistMsg artistModel
+                    toPage ArtistPage ArtistMsg Page.Artist.update artistMsg artistModel
 
         -- SIDEBAR PLAYLISTS
         ( InitPlaylist (Ok e), _ ) ->
@@ -276,7 +262,7 @@ update msg ({ page, session } as model) =
                 Cmd.none
             )
 
-        ( InitPlaylist (Err e), _ ) ->
+        ( InitPlaylist (Err _), _ ) ->
             ( model, Cmd.none )
 
         -- PLAYER
@@ -314,7 +300,7 @@ update msg ({ page, session } as model) =
 
         ( PlayerMsg playerMsg, _ ) ->
             let
-                ( playerModel, playerCmds ) =
+                ( _, playerCmds ) =
                     Views.Player.update session playerMsg model.session.player
             in
             ( model, playerCmds |> Cmd.map PlayerMsg )
@@ -322,7 +308,7 @@ update msg ({ page, session } as model) =
         ( SearchMsg searchMsg, _ ) ->
             let
                 ( searchModel, searchCmds ) =
-                    Views.Search.update session searchMsg model.session.search
+                    Views.Search.update searchMsg model.session.search
 
                 newSession search_ =
                     { session | search = search_ }
@@ -348,9 +334,6 @@ subscriptions model =
     in
     case model.page of
         HomePage _ ->
-            Sub.batch commonSubs
-
-        CounterPage _ ->
             Sub.batch commonSubs
 
         CollectionPage _ ->
@@ -392,11 +375,6 @@ view model =
             Page.Home.view model.session homeModel
                 |> mapMsg HomeMsg
                 |> Views.Page.frame (pageConfig Views.Page.Home) player search
-
-        CounterPage counterModel ->
-            Page.Counter.view model.session counterModel
-                |> mapMsg CounterMsg
-                |> Views.Page.frame (pageConfig Views.Page.Counter) player search
 
         CollectionPage collectionModel ->
             Page.Collection.view model.session collectionModel
