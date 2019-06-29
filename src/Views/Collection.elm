@@ -1,24 +1,22 @@
 module Views.Collection exposing (view)
 
-import Browser exposing (Document)
-import Data.Playlist exposing (..)
+import Data.Playlist exposing (PlaylistSimplified)
 import Data.Session exposing (Session)
-import Html exposing (..)
-import Html.Attributes exposing (class, classList, href, src)
-import Html.Events exposing (..)
+import Html exposing (Html, a, div, i, text)
+import Html.Attributes exposing (class, classList, href)
 import Route
 import Utils
 
 
 type alias ViewCollectionsConfig =
-    { session : Data.Session.Session
+    { session : Session
     , playlists : List PlaylistSimplified
     , hasTitle : Bool
     }
 
 
 view : ViewCollectionsConfig -> Html msg
-view ({ session, playlists, hasTitle } as viewCollectionsConfig) =
+view { session, playlists, hasTitle } =
     let
         collectionItem p =
             a

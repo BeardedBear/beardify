@@ -7,11 +7,11 @@ import Data.Image
 import Data.Search
 import Data.Session exposing (Session)
 import Data.Track
-import Html as Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html, div, i, input, span, strong, text)
+import Html.Attributes exposing (class, classList, id, placeholder, type_)
 import Html.Events exposing (onClick, onInput)
 import Http
-import Json.Decode as Decode exposing (..)
+import Json.Decode as Decode exposing (map)
 import Request
 import Route exposing (Route)
 import Utils
@@ -31,8 +31,8 @@ type Msg
     | PlayTrack String
 
 
-update : Session -> Msg -> Model -> ( Model, Cmd Msg )
-update session msg model =
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
     case msg of
         FindArtist (Ok artist) ->
             ( { model | findArtist = artist }
@@ -72,7 +72,7 @@ update session msg model =
                 ]
             )
 
-        PlayTrack id ->
+        PlayTrack _ ->
             ( { model | searchQuery = "" }, Cmd.none )
 
 

@@ -1,16 +1,10 @@
 module Views.Modal exposing (view)
 
 import Data.Session
-import Html as Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html exposing (Html, button, div, i, span, text)
+import Html.Attributes exposing (class, classList)
+import Html.Events exposing (onClick)
 import Utils
-import Views.Collection
-import Views.Sidebar
-
-
-type Msg
-    = NoOp
 
 
 type alias Config msg =

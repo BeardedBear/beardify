@@ -3,16 +3,13 @@ module Views.Page exposing (ActivePage(..), Config, frame)
 -- import Views.Sidebar
 
 import Browser exposing (Document)
-import Data.Playlist exposing (..)
+import Data.Playlist exposing (PlaylistSimplified)
 import Data.Session exposing (Session)
-import Html as Html exposing (..)
+import Html exposing (Html, a, div, i, img, span, text)
 import Html.Attributes exposing (class, classList, href, src)
 import Route
 import Utils
 import Views.Collection
-import Views.Player
-import Views.Search
-import Views.Sidebar
 
 
 type ActivePage
@@ -26,7 +23,7 @@ type ActivePage
 
 
 type alias Config =
-    { session : Data.Session.Session
+    { session : Session
     , activePage : ActivePage
     }
 
@@ -71,14 +68,6 @@ playlistView session playlists _ =
 
 sidebarView : Config -> Html msg
 sidebarView config =
-    let
-        linkIf page route caption icon =
-            if page == config.activePage then
-                span [ class "menu-item active" ] [ i [ class icon ] [], text caption ]
-
-            else
-                a [ class "menu-item", Route.href route ] [ i [ class icon ] [], text caption ]
-    in
     div [ class "sidebar" ]
         [ div [ class "logo" ]
             [ img [ src "./img/logo.png" ] []

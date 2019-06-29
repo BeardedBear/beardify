@@ -5,11 +5,11 @@ import Data.Meta
 import Data.Playlist
 import Data.Session
 import Data.Track
-import Html as Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html, a, div, i, text)
+import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Http
-import Json.Decode as Decode exposing (..)
+import Json.Decode as Decode exposing (map)
 import Request
 import Route
 import Utils
@@ -56,7 +56,7 @@ update session msg ({ modal } as model) =
             , Cmd.none
             )
 
-        SetCollection (Err e) ->
+        SetCollection (Err _) ->
             ( model, Cmd.none )
 
         SetCollectionTracks (Ok e) ->
@@ -77,7 +77,7 @@ update session msg ({ modal } as model) =
                 Cmd.none
             )
 
-        SetCollectionTracks (Err e) ->
+        SetCollectionTracks (Err _) ->
             ( model, Cmd.none )
 
         PlayAlbum _ ->
@@ -124,12 +124,12 @@ update session msg ({ modal } as model) =
             in
             ( model, Http.send SetModalTrack <| Request.post "playlists/" e ("/tracks?position=0&uris=" ++ listTracks) session.token )
 
-        SetModalTrack (Ok e) ->
+        SetModalTrack (Ok _) ->
             ( { model | modal = { modal | isOpen = False } }
             , Cmd.none
             )
 
-        SetModalTrack (Err e) ->
+        SetModalTrack (Err _) ->
             ( model, Cmd.none )
 
         ModalClear ->
@@ -145,13 +145,13 @@ view session model =
             model.albums.items
                 |> List.map
                     (\a ->
-                        { artists = a.track.artists
-                        , album = a.track.album.name
-                        , albumId = a.track.album.id
-                        , albumUri = a.track.album.uri
-                        , release_date = a.track.album.release_date
-                        , images = a.track.album.images
-                        , trackUri = a.track.uri
+                        { artists = a.artists
+                        , album = a.album.name
+                        , albumId = a.album.id
+                        , albumUri = a.album.uri
+                        , release_date = a.album.release_date
+                        , images = a.album.images
+                        , trackUri = a.uri
                         }
                     )
 

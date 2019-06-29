@@ -4,9 +4,8 @@ import Data.Image
 import Data.Meta
 import Data.Playlist
 import Data.Session
-import Data.Track
-import Html as Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html, a, div, i, text)
+import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick)
 import Http
 import List.Extra as LE
@@ -74,8 +73,8 @@ view session model =
     let
         listTracksUri id =
             model.tracks.items
-                |> LE.dropWhile (\e -> e.track.uri /= id)
-                |> List.map (\k -> k.track.uri)
+                |> LE.dropWhile (\e -> e.uri /= id)
+                |> List.map (\k -> k.uri)
 
         trackItem t =
             let
@@ -96,27 +95,27 @@ view session model =
             div
                 [ classList
                     [ ( "track playlist-page", True )
-                    , ( "active", t.track.uri == session.player.item.uri )
+                    , ( "active", t.uri == session.player.item.uri )
                     ]
                 ]
                 [ icon
                 , div
                     [ class "track-title"
-                    , title t.track.name
-                    , onClick <| PlayTracks (listTracksUri t.track.uri)
+                    , title t.name
+                    , onClick <| PlayTracks (listTracksUri t.uri)
                     ]
-                    [ text t.track.name ]
-                , div [ class "track-artist" ] [ Views.Artist.artistList t.track.artists ]
-                , div [ class "track-album", title t.track.album.name ]
-                    [ releaseType t.track.album.album_type
-                    , a [] [ text t.track.album.name ]
+                    [ text t.name ]
+                , div [ class "track-artist" ] [ Views.Artist.artistList t.artists ]
+                , div [ class "track-album", title t.album.name ]
+                    [ releaseType t.album.album_type
+                    , a [] [ text t.album.name ]
                     ]
-                , div [] [ text (Utils.durationFormat t.track.duration_ms) ]
+                , div [] [ text (Utils.durationFormat t.duration_ms) ]
                 ]
 
         trackSumDuration =
             model.tracks.items
-                |> List.map (\d -> d.track.duration_ms)
+                |> List.map (\d -> d.duration_ms)
                 |> List.sum
     in
     ( model.playlist.name

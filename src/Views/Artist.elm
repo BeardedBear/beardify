@@ -1,9 +1,8 @@
 module Views.Artist exposing (artistList)
 
 import Data.Artist
-import Html as Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html exposing (Html, a, span, text)
+import Html.Attributes exposing (class)
 import Route
 
 

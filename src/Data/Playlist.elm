@@ -76,14 +76,12 @@ decodePlaylistPagingSimplified =
 
 
 type alias PlaylistTrack =
-    { track : Data.Track.Track
-    }
+    Data.Track.Track
 
 
 decodePlaylistTrack : Decode.Decoder PlaylistTrack
 decodePlaylistTrack =
-    Decode.map PlaylistTrack
-        (Decode.field "track" Data.Track.decodeTrack)
+    Decode.field "track" Data.Track.decodeTrack
 
 
 type alias PlaylistPaging =

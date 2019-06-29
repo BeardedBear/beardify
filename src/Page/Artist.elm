@@ -7,16 +7,15 @@ import Data.Meta
 import Data.Session
 import Data.Track
 import Data.Youtube
-import Html as Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html, a, div, i, iframe, text)
+import Html.Attributes exposing (attribute, class, classList, height, href, src, target, width)
 import Html.Events exposing (onClick)
 import Http
-import Json.Decode as Decode exposing (..)
+import Json.Decode as Decode exposing (map)
 import List.Extra as LE
 import Request
 import Route
 import Utils
-import Views.Artist
 
 
 init : String -> Data.Session.Session -> ( Data.Meta.ArtistModel, Cmd Msg )
@@ -46,8 +45,8 @@ type Msg
     | PlayAlbum String
 
 
-update : Data.Session.Session -> Msg -> Data.Meta.ArtistModel -> ( Data.Meta.ArtistModel, Cmd Msg )
-update session msg model =
+update : Msg -> Data.Meta.ArtistModel -> ( Data.Meta.ArtistModel, Cmd Msg )
+update msg model =
     case msg of
         SetArtist (Ok e) ->
             ( { model | artist = e }
@@ -80,7 +79,7 @@ update session msg model =
             ( model, Cmd.none )
 
         SetYoutube (Ok e) ->
-            ( { model | videos = e.items }, Cmd.none )
+            ( { model | videos = e }, Cmd.none )
 
         SetYoutube (Err _) ->
             ( model, Cmd.none )
@@ -120,7 +119,7 @@ view session model =
 
         videoFrame v =
             div [ class "video-frame" ]
-                [ iframe [ class "video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 140, src <| "https://www.youtube.com/embed/" ++ v.id.videoId ] []
+                [ iframe [ class "video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 140, src <| "https://www.youtube.com/embed/" ++ v.id ] []
                 , div [ class "video-title" ] [ text v.snippet.title ]
                 , div [ class "artist-name" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ v.snippet.channelId) ] [ text v.snippet.channelTitle ] ]
                 ]

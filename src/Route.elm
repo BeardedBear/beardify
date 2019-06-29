@@ -9,7 +9,6 @@ import Url.Parser as Parser exposing ((</>), Parser)
 
 type Route
     = Home
-    | Counter
     | Collection String
     | Playlist String
     | Album String
@@ -20,7 +19,6 @@ parser : Parser (Route -> a) a
 parser =
     Parser.oneOf
         [ Parser.map Home Parser.top
-        , Parser.map Counter (Parser.s "second-page")
         , Parser.map Collection (Parser.s "collection" </> Parser.string)
         , Parser.map Playlist (Parser.s "playlist" </> Parser.string)
         , Parser.map Album (Parser.s "album" </> Parser.string)
@@ -51,9 +49,6 @@ toString route =
             case route of
                 Home ->
                     []
-
-                Counter ->
-                    [ "second-page" ]
 
                 Collection id ->
                     [ "collection", id ]

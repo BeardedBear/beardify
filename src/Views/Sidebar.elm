@@ -1,17 +1,16 @@
 module Views.Sidebar exposing (view)
 
-import Browser exposing (Document)
-import Data.Playlist exposing (..)
+import Data.Playlist exposing (PlaylistSimplified)
 import Data.Session exposing (Session)
-import Html exposing (..)
+import Html exposing (Html, a, div, i, img, span, text)
 import Html.Attributes exposing (class, classList, href, src)
 import Route
 import Utils
 import Views.Collection
 
 
-viewPlaylists : Data.Session.Session -> List PlaylistSimplified -> Bool -> Html msg
-viewPlaylists session playlists isClickable =
+viewPlaylists : Session -> List PlaylistSimplified -> Html msg
+viewPlaylists session playlists =
     let
         test =
             playlists
@@ -32,7 +31,7 @@ viewPlaylists session playlists isClickable =
         |> div [ class "playlists-list" ]
 
 
-view : Data.Session.Session -> Html msg
+view : Session -> Html msg
 view session =
     div [ class "sidebar" ]
         [ div [ class "logo" ]
@@ -57,7 +56,7 @@ view session =
                     }
                 , div [ class "playlists" ]
                     [ div [ class "title" ] [ text "Playlists" ]
-                    , viewPlaylists session session.playlists True
+                    , viewPlaylists session session.playlists
                     ]
                 ]
             ]

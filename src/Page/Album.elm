@@ -1,15 +1,15 @@
 module Page.Album exposing (Msg(..), init, update, view)
 
 import Data.Album
-import Data.Image exposing (..)
+import Data.Image exposing (ImageSize(..), imageView)
 import Data.Meta
 import Data.Session
 import Data.Track
-import Html as Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html, div, i, span, text)
+import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Http
-import Json.Decode as Decode exposing (..)
+import Json.Decode as Decode exposing (map)
 import List.Extra as LE
 import Request
 import Utils
@@ -76,7 +76,7 @@ update session msg ({ tracks, modal } as model) =
                 Cmd.none
             )
 
-        SetAlbumTracks (Err e) ->
+        SetAlbumTracks (Err _) ->
             ( model, Cmd.none )
 
         PlayTracks _ ->
@@ -113,12 +113,12 @@ update session msg ({ tracks, modal } as model) =
             in
             ( model, Http.send SetModalTrack <| Request.post "playlists/" e ("/tracks?position=0&uris=" ++ listTracks) session.token )
 
-        SetModalTrack (Ok e) ->
+        SetModalTrack (Ok _) ->
             ( { model | modal = { modal | isOpen = False } }
             , Cmd.none
             )
 
-        SetModalTrack (Err e) ->
+        SetModalTrack (Err _) ->
             ( model, Cmd.none )
 
         ModalClear ->
