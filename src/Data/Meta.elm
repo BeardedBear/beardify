@@ -2,7 +2,9 @@ module Data.Meta exposing
     ( AlbumModel
     , ArtistModel
     , CollectionModel
+    , PagingModel
     , PlaylistModel
+    , pagingInit
     )
 
 import Data.Album exposing (Album)
@@ -11,6 +13,19 @@ import Data.Modal exposing (ModalModel)
 import Data.Playlist exposing (Playlist, PlaylistPaging)
 import Data.Track exposing (Track, TrackSimplifiedPaging)
 import Data.Youtube exposing (Video)
+
+
+type alias PagingModel a =
+    { items : List a
+    , next : String
+    }
+
+
+pagingInit : PagingModel a
+pagingInit =
+    { items = []
+    , next = ""
+    }
 
 
 type alias CollectionModel =

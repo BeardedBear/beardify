@@ -1,5 +1,6 @@
 module Data.Playlist exposing
     ( Playlist
+    , PlaylistId
     , PlaylistPaging
     , PlaylistPagingSimplified
     , PlaylistSimplified
@@ -14,6 +15,10 @@ module Data.Playlist exposing
 import Data.Image exposing (Image, decodeImage)
 import Data.Track exposing (Track, decodeTrack)
 import Json.Decode as Decode exposing (Decoder(..), at, field, null, string)
+
+
+type alias PlaylistId =
+    String
 
 
 playlistInit : Playlist

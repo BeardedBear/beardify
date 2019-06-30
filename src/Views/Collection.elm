@@ -11,30 +11,25 @@ import Utils
 type alias ViewCollectionsConfig =
     { session : Session
     , playlists : List PlaylistSimplified
-    , hasTitle : Bool
     }
 
 
 view : ViewCollectionsConfig -> Html msg
-view { session, playlists, hasTitle } =
+view { session, playlists } =
     let
-        collectionItem p =
+        collectionItem playlist =
             a
                 [ classList
                     [ ( "playlist", True )
-                    , ( "active", Utils.getId session.url == p.id )
+                    , ( "active", Utils.getId session.url == playlist.id )
                     ]
-                , Route.href <| Route.Collection p.id
+                , Route.href <| Route.Collection playlist.id
                 ]
-                [ i [ class "icon-book" ] [], text <| String.replace "#Collection " "" p.name ]
+                [ i [ class "icon-book" ] [], text <| String.replace "#Collection " "" playlist.name ]
     in
     if List.length playlists /= 0 then
         div [ class "collections" ]
-            [ if hasTitle then
-                div [ class "title" ] [ text "Collections" ]
-
-              else
-                text ""
+            [ div [ class "title" ] [ text "Collections" ]
             , playlists
                 |> List.filter (\f -> String.contains "#Collection" f.name)
                 |> List.map collectionItem

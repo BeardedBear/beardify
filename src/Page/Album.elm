@@ -2,7 +2,8 @@ module Page.Album exposing (Msg(..), init, update, view)
 
 import Data.Album exposing (Album, albumInit, decodeAlbum)
 import Data.Image exposing (ImageSize(..), imageView)
-import Data.Meta exposing (AlbumModel)
+import Data.Meta exposing (AlbumModel, pagingInit)
+import Data.Modal exposing (modalInit)
 import Data.Session exposing (Session)
 import Data.Track exposing (TrackSimplified, TrackSimplifiedPaging, decodeTrackSimplified, decodeTrackSimplifiedPaging)
 import Html exposing (Html, div, i, span, text)
@@ -20,14 +21,8 @@ import Views.Modal
 init : String -> Session -> ( AlbumModel, Cmd Msg )
 init id session =
     ( { album = albumInit
-      , tracks =
-            { items = []
-            , next = ""
-            }
-      , modal =
-            { isOpen = False
-            , inPocket = []
-            }
+      , tracks = pagingInit
+      , modal = modalInit
       }
     , Cmd.batch
         [ Http.send SetAlbum <| Request.get "albums/" id "" decodeAlbum session.token

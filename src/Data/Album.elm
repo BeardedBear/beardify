@@ -1,5 +1,7 @@
 module Data.Album exposing
     ( Album
+    , AlbumId
+    , AlbumUri
     , albumInit
     , decodeAlbum
     , encodeAlbum
@@ -9,6 +11,14 @@ import Data.Artist exposing (ArtistSimplified)
 import Data.Image exposing (Image)
 import Json.Decode as Decode exposing (Decoder(..), at, field)
 import Json.Encode as Encode
+
+
+type alias AlbumId =
+    String
+
+
+type alias AlbumUri =
+    String
 
 
 albumInit : Album

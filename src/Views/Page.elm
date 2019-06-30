@@ -85,7 +85,6 @@ sidebarView config =
                 [ Views.Collection.view
                     { session = config.session
                     , playlists = config.session.playlists
-                    , hasTitle = True
                     }
                 , div [ class "playlists" ]
                     [ div [ class "title" ] [ text "Playlists" ]

@@ -1,10 +1,20 @@
 module Page.Collection exposing (Msg(..), init, update, view)
 
-import Data.Image
-import Data.Meta exposing (CollectionModel)
-import Data.Playlist exposing (playlistInit)
+import Data.Album exposing (AlbumId, AlbumUri)
+import Data.Image exposing (ImageSize(..), imageView)
+import Data.Meta exposing (CollectionModel, pagingInit)
+import Data.Modal exposing (modalInit)
+import Data.Playlist
+    exposing
+        ( Playlist
+        , PlaylistId
+        , PlaylistPaging
+        , decodePlaylist
+        , decodePlaylistPaging
+        , playlistInit
+        )
 import Data.Session exposing (Session)
-import Data.Track
+import Data.Track exposing (TrackId, TrackSimplified, decodeTrackSimplified, encodeDelCollectionAlbum)
 import Html exposing (Html, a, div, i, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
@@ -19,31 +29,27 @@ import Views.Modal
 init : String -> Session -> ( CollectionModel, Cmd Msg )
 init id session =
     ( { collection = playlistInit
-      , albums =
-            { items = []
-            , next = ""
-            }
-      , modal =
-            { isOpen = False
-            , inPocket = []
-            }
+      , albums = pagingInit
+      , modal = modalInit
       }
     , Cmd.batch
-        [ Http.send SetCollection <| Request.get "playlists/" id "" Data.Playlist.decodePlaylist session.token
-        , Http.send SetCollectionTracks <| Request.get "playlists/" id "/tracks" Data.Playlist.decodePlaylistPaging session.token
+        [ Http.send SetCollection <|
+            Request.get "playlists/" id "" decodePlaylist session.token
+        , Http.send SetCollectionTracks <|
+            Request.get "playlists/" id "/tracks" decodePlaylistPaging session.token
         ]
     )
 
 
 type Msg
-    = SetCollection (Result Http.Error Data.Playlist.Playlist)
-    | SetCollectionTracks (Result Http.Error Data.Playlist.PlaylistPaging)
-    | PlayAlbum String
-    | DelCollectionAlbum String (List String)
+    = SetCollection (Result Http.Error Playlist)
+    | SetCollectionTracks (Result Http.Error PlaylistPaging)
+    | PlayAlbum AlbumUri
+    | DelCollectionAlbum PlaylistId (List TrackId)
     | DeletedCollectionAlbum (Result Http.Error ())
-    | ModalOpen (Result Http.Error (List Data.Track.TrackSimplified))
-    | ModalGetTrack String
-    | ModalAddTrack String
+    | ModalOpen (Result Http.Error (List TrackSimplified))
+    | ModalGetTrack AlbumId
+    | ModalAddTrack PlaylistId
     | SetModalTrack (Result Http.Error ())
     | ModalClear
 
@@ -51,8 +57,8 @@ type Msg
 update : Session -> Msg -> CollectionModel -> ( CollectionModel, Cmd Msg )
 update session msg ({ modal } as model) =
     case msg of
-        SetCollection (Ok e) ->
-            ( { model | collection = e }
+        SetCollection (Ok playlist) ->
+            ( { model | collection = playlist }
             , Cmd.none
             )
 
@@ -71,7 +77,10 @@ update session msg ({ modal } as model) =
                     }
               }
             , if e.next /= "" then
-                Cmd.batch [ Http.send SetCollectionTracks <| Request.getPaging e.next Data.Playlist.decodePlaylistPaging session.token ]
+                Cmd.batch
+                    [ Http.send SetCollectionTracks <|
+                        Request.getPaging e.next decodePlaylistPaging session.token
+                    ]
 
               else
                 Cmd.none
@@ -83,10 +92,11 @@ update session msg ({ modal } as model) =
         PlayAlbum _ ->
             ( model, Cmd.none )
 
-        DelCollectionAlbum playlistId track ->
+        DelCollectionAlbum playlistId trackList ->
             ( model
             , Cmd.batch
-                [ Http.send DeletedCollectionAlbum <| Request.delete "playlists/" playlistId "/tracks" (Data.Track.encodeDelCollectionAlbum track) session.token
+                [ Http.send DeletedCollectionAlbum <|
+                    Request.delete "playlists/" playlistId "/tracks" (encodeDelCollectionAlbum trackList) session.token
                 ]
             )
 
@@ -96,10 +106,10 @@ update session msg ({ modal } as model) =
         DeletedCollectionAlbum (Err _) ->
             ( model, Cmd.none )
 
-        ModalOpen (Ok e) ->
+        ModalOpen (Ok trackList) ->
             let
                 firstTrack =
-                    e
+                    trackList
                         |> List.map (\f -> f.uri)
                         |> List.take 1
             in
@@ -110,19 +120,23 @@ update session msg ({ modal } as model) =
         ModalOpen (Err _) ->
             ( model, Cmd.none )
 
-        ModalGetTrack e ->
+        ModalGetTrack albumId ->
             ( model
             , Cmd.batch
-                [ Http.send ModalOpen <| Request.get "albums/" e "/tracks" (Decode.at [ "items" ] (Decode.list Data.Track.decodeTrackSimplified)) session.token
+                [ Http.send ModalOpen <|
+                    Request.get "albums/" albumId "/tracks" (Decode.at [ "items" ] (Decode.list decodeTrackSimplified)) session.token
                 ]
             )
 
-        ModalAddTrack e ->
+        ModalAddTrack playlistId ->
             let
-                listTracks =
+                trackList =
                     String.concat model.modal.inPocket
             in
-            ( model, Http.send SetModalTrack <| Request.post "playlists/" e ("/tracks?position=0&uris=" ++ listTracks) session.token )
+            ( model
+            , Http.send SetModalTrack <|
+                Request.post "playlists/" playlistId ("/tracks?position=0&uris=" ++ trackList) session.token
+            )
 
         SetModalTrack (Ok _) ->
             ( { model | modal = { modal | isOpen = False } }
@@ -139,59 +153,65 @@ update session msg ({ modal } as model) =
 
 
 view : Session -> CollectionModel -> ( String, List (Html Msg) )
-view session model =
+view session { collection, modal, albums } =
     let
-        albums =
-            model.albums.items
+        albumList =
+            albums.items
                 |> List.map
                     (\a ->
                         { artists = a.artists
                         , album = a.album.name
-                        , albumId = a.album.id
-                        , albumUri = a.album.uri
+                        , id = a.album.id
+                        , uri = a.album.uri
                         , release_date = a.album.release_date
                         , images = a.album.images
                         , trackUri = a.uri
                         }
                     )
 
-        albumItem al =
+        albumItem album =
             div
                 [ classList
                     [ ( "album", True )
-                    , ( "active", al.albumUri == session.player.item.album.uri )
+                    , ( "active", album.uri == session.player.item.album.uri )
                     ]
                 ]
-                [ a [ Route.href (Route.Album al.albumId), class "img" ] [ Data.Image.imageView Data.Image.Medium al.images ]
-                , div [] [ text al.album ]
+                [ a [ Route.href (Route.Album album.id), class "img" ] [ imageView Medium album.images ]
+                , div [] [ text album.album ]
                 , div []
-                    (al.artists
+                    (album.artists
                         |> List.map
-                            (\ar ->
+                            (\artist ->
                                 a
-                                    [ Route.href (Route.Artist ar.id)
+                                    [ Route.href (Route.Artist artist.id)
                                     , class "artist-name"
                                     ]
-                                    [ text ar.name ]
+                                    [ text artist.name ]
                             )
                     )
-                , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat al.release_date ++ ")" ]
-                , div [ class "playing-btn", onClick <| PlayAlbum al.albumUri ] [ i [ class "icon-play" ] [] ]
-                , div [ class "add-btn", onClick <| ModalGetTrack al.albumId ] [ i [ class "icon-add" ] [] ]
-                , div [ class "del-btn", onClick <| DelCollectionAlbum model.collection.id [ al.trackUri ] ] [ i [ class "icon-del" ] [] ]
+                , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat album.release_date ++ ")" ]
+                , div [ class "playing-btn", onClick <| PlayAlbum album.uri ]
+                    [ i [ class "icon-play" ] []
+                    ]
+                , div [ class "add-btn", onClick <| ModalGetTrack album.id ]
+                    [ i [ class "icon-add" ] []
+                    ]
+                , div [ class "del-btn", onClick <| DelCollectionAlbum collection.id [ album.trackUri ] ]
+                    [ i [ class "icon-del" ] []
+                    ]
                 ]
     in
-    ( model.collection.name
+    ( collection.name
     , [ Views.Modal.view
-            { isOpen = model.modal.isOpen
+            { isOpen = modal.isOpen
             , session = session
             , close = ModalClear
             , add = ModalAddTrack
             }
       , div []
-            [ div [ class "heading-page" ] [ text <| String.replace "#Collection " "" model.collection.name ]
+            [ div [ class "heading-page" ] [ text <| String.replace "#Collection " "" collection.name ]
             , div []
-                [ albums
+                [ albumList
                     |> List.map albumItem
                     |> div [ class "album-list-wrapper" ]
                 ]

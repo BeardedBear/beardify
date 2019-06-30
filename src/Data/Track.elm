@@ -1,5 +1,6 @@
 module Data.Track exposing
     ( Track
+    , TrackId
     , TrackSimplified
     , TrackSimplifiedPaging
     , decodeTrack
@@ -15,6 +16,10 @@ import Data.Album exposing (Album, albumInit, decodeAlbum)
 import Data.Artist exposing (ArtistSimplified, decodeArtistSimplified)
 import Json.Decode as Decode exposing (Decoder(..), at, field, null, string)
 import Json.Encode as Encode
+
+
+type alias TrackId =
+    String
 
 
 trackInit : Track

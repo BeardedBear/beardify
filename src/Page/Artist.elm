@@ -1,12 +1,12 @@
 module Page.Artist exposing (Msg(..), init, update, view)
 
-import Data.Album
-import Data.Artist exposing (artistInit)
+import Data.Album exposing (Album, decodeAlbum)
+import Data.Artist exposing (Artist, artistInit, decodeArtist)
 import Data.Image
 import Data.Meta exposing (ArtistModel)
 import Data.Session exposing (Session)
-import Data.Track
-import Data.Youtube
+import Data.Track exposing (Track, decodeTrack)
+import Data.Youtube exposing (Youtube, getVideos)
 import Html exposing (Html, a, div, i, iframe, text)
 import Html.Attributes exposing (attribute, class, classList, height, href, src, target, width)
 import Html.Events exposing (onClick)
@@ -27,20 +27,20 @@ init id session =
       , relatedArtists = []
       }
     , Cmd.batch
-        [ Http.send SetArtist <| Request.get "artists/" id "" Data.Artist.decodeArtist session.token
-        , Http.send SetArtistAlbums <| Request.get "artists/" id "/albums?market=FR&album_type=album" (Decode.at [ "items" ] (Decode.list Data.Album.decodeAlbum)) session.token
-        , Http.send SetArtistTopTracks <| Request.get "artists/" id "/top-tracks?country=FR" (Decode.at [ "tracks" ] (Decode.list Data.Track.decodeTrack)) session.token
-        , Http.send SetRelatedArtists <| Request.get "artists/" id "/related-artists" (Decode.at [ "artists" ] (Decode.list Data.Artist.decodeArtist)) session.token
+        [ Http.send SetArtist <| Request.get "artists/" id "" decodeArtist session.token
+        , Http.send SetArtistAlbums <| Request.get "artists/" id "/albums?market=FR&album_type=album" (Decode.at [ "items" ] (Decode.list decodeAlbum)) session.token
+        , Http.send SetArtistTopTracks <| Request.get "artists/" id "/top-tracks?country=FR" (Decode.at [ "tracks" ] (Decode.list decodeTrack)) session.token
+        , Http.send SetRelatedArtists <| Request.get "artists/" id "/related-artists" (Decode.at [ "artists" ] (Decode.list decodeArtist)) session.token
         ]
     )
 
 
 type Msg
-    = SetArtist (Result Http.Error Data.Artist.Artist)
-    | SetArtistAlbums (Result Http.Error (List Data.Album.Album))
-    | SetArtistTopTracks (Result Http.Error (List Data.Track.Track))
-    | SetRelatedArtists (Result Http.Error (List Data.Artist.Artist))
-    | SetYoutube (Result Http.Error Data.Youtube.Youtube)
+    = SetArtist (Result Http.Error Artist)
+    | SetArtistAlbums (Result Http.Error (List Album))
+    | SetArtistTopTracks (Result Http.Error (List Track))
+    | SetRelatedArtists (Result Http.Error (List Artist))
+    | SetYoutube (Result Http.Error Youtube)
     | PlayTracks (List String)
     | PlayAlbum String
 
@@ -51,7 +51,7 @@ update msg model =
         SetArtist (Ok e) ->
             ( { model | artist = e }
             , Cmd.batch
-                [ Http.send SetYoutube <| Data.Youtube.getVideos e.name
+                [ Http.send SetYoutube <| getVideos e.name
                 ]
             )
 
