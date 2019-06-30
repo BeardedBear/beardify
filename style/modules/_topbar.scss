@@ -73,7 +73,7 @@
 
         .artist-item {
             display: grid;
-            grid-auto-flow: column;
+            grid-template-columns: auto 1fr;
             align-items: center;
             grid-gap: 15px;
             justify-content: left;
@@ -97,6 +97,10 @@
                     height: $size;
                     width: $size;
                 }
+            }
+
+            .artist-name {
+                padding: 10px 0;
             }
         }
 

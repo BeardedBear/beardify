@@ -2,6 +2,7 @@ module Page.Home exposing (Msg(..), init, update, view)
 
 import Data.Session
 import Html exposing (Html, div, text)
+import Html.Attributes exposing (class)
 import Http
 
 
@@ -33,6 +34,6 @@ update _ msg model =
 view : Data.Session.Session -> String -> ( String, List (Html Msg) )
 view _ _ =
     ( "Home"
-    , [ div [] [ text "" ]
+    , [ div [ class "drawer-content" ] [ text "" ]
       ]
     )

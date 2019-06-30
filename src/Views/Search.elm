@@ -82,7 +82,7 @@ view session model =
         artistItem artist =
             div [ class "artist-item" ]
                 [ div [ class "img" ] [ Data.Image.imageView Data.Image.Small artist.images ]
-                , span [ onClick <| ClickResult (Route.Artist artist.id) session.navKey ] [ text artist.name ]
+                , div [ class "artist-name", onClick <| ClickResult (Route.Artist artist.id) session.navKey ] [ text artist.name ]
                 ]
 
         albumItem album =

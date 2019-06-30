@@ -155,6 +155,9 @@ update session msg ({ modal } as model) =
 view : Session -> CollectionModel -> ( String, List (Html Msg) )
 view session { collection, modal, albums } =
     let
+        reducedCollectionName =
+            String.replace "#Collection " "" collection.name
+
         albumList =
             albums.items
                 |> List.map
@@ -170,6 +173,10 @@ view session { collection, modal, albums } =
                     )
 
         albumItem album =
+            let
+                yearRelease =
+                    Utils.releaseDateFormat album.release_date
+            in
             div
                 [ classList
                     [ ( "album", True )
@@ -189,7 +196,13 @@ view session { collection, modal, albums } =
                                     [ text artist.name ]
                             )
                     )
-                , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat album.release_date ++ ")" ]
+                , if reducedCollectionName /= yearRelease then
+                    div [ class "date" ]
+                        [ text <| "(" ++ yearRelease ++ ")"
+                        ]
+
+                  else
+                    text ""
                 , div [ class "playing-btn", onClick <| PlayAlbum album.uri ]
                     [ i [ class "icon-play" ] []
                     ]
@@ -201,15 +214,15 @@ view session { collection, modal, albums } =
                     ]
                 ]
     in
-    ( collection.name
+    ( reducedCollectionName
     , [ Views.Modal.view
             { isOpen = modal.isOpen
             , session = session
             , close = ModalClear
             , add = ModalAddTrack
             }
-      , div []
-            [ div [ class "heading-page" ] [ text <| String.replace "#Collection " "" collection.name ]
+      , div [ class "drawer-content" ]
+            [ div [ class "heading-page" ] [ text reducedCollectionName ]
             , div []
                 [ albumList
                     |> List.map albumItem

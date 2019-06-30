@@ -2,7 +2,7 @@
 .drawer {
     position : relative;
 
-    > div {
+    .drawer-content {
         padding: 50px;
         position: absolute;
         top: 0;
@@ -148,7 +148,7 @@
         position: relative;
         
         > div {
-            padding: 8px 0;
+            padding: 5px;
 
             &:nth-of-type(2) {
                 padding-left: 12px;

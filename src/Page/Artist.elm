@@ -208,7 +208,7 @@ view session ({ modal } as model) =
             , add = ModalAddTrack
             }
       , div
-            [ class "artist-wrapper" ]
+            [ class "artist-wrapper drawer-content" ]
             [ div []
                 [ div [ class "heading-page" ] [ text model.artist.name ]
                 , div [ class "links" ]
