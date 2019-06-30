@@ -91,7 +91,7 @@ view session model =
                 , div []
                     [ strong [] [ text <| al.name ++ " " ]
                     , text <| "(" ++ Utils.releaseDateFormat al.release_date ++ ")"
-                    , span [ onClick <| ClickResult (Route.Artist al.id) session.navKey ] [ Views.Artist.artistList al.artists ]
+                    , span [ onClick <| ClickResult (Route.Artist al.id) session.navKey ] [ Views.Artist.view al.artists ]
                     ]
                 ]
 
@@ -100,7 +100,7 @@ view session model =
                 [ div [ onClick <| PlayTrack t.uri, class "track-icon" ] [ i [ class "icon-play" ] [] ]
                 , div []
                     [ strong [] [ text t.name ]
-                    , div [] [ Views.Artist.artistList t.artists ]
+                    , div [] [ Views.Artist.view t.artists ]
                     ]
                 , div []
                     [ text (Utils.durationFormat t.duration_ms)

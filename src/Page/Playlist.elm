@@ -105,7 +105,7 @@ view session model =
                     , onClick <| PlayTracks (listTracksUri t.uri)
                     ]
                     [ text t.name ]
-                , div [ class "track-artist" ] [ Views.Artist.artistList t.artists ]
+                , div [ class "track-artist" ] [ Views.Artist.view t.artists ]
                 , div [ class "track-album", title t.album.name ]
                     [ releaseType t.album.album_type
                     , a [] [ text t.album.name ]

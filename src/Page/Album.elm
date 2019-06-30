@@ -161,7 +161,7 @@ view session model =
                 [ div [ class "heading-page" ] [ text model.album.name ]
                 , div []
                     [ span [] [ text "By " ]
-                    , span [] [ Views.Artist.artistList model.album.artists ]
+                    , span [] [ Views.Artist.view model.album.artists ]
                     ]
                 ]
             , div [ class "album-page" ]

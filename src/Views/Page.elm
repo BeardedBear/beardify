@@ -28,10 +28,10 @@ type alias Config =
 
 frame : Config -> Html msg -> Html msg -> ( String, List (Html msg) ) -> Document msg
 frame config player search ( title, content ) =
-    { title = title ++ " - Beardify"
+    { title = title
     , body =
         [ div [ class "app" ]
-            [ sidebarView config
+            [ sidebarView config.session
             , div [ class "content" ]
                 [ div [ class "topbar" ] [ search ]
                 , div [ class "drawer" ] content
@@ -64,8 +64,8 @@ playlistView session playlists _ =
         |> div [ class "playlists-list" ]
 
 
-sidebarView : Config -> Html msg
-sidebarView config =
+sidebarView : Session -> Html msg
+sidebarView session =
     div [ class "sidebar" ]
         [ div [ class "logo" ]
             [ img [ src "./img/logo.png" ] []
@@ -83,12 +83,12 @@ sidebarView config =
         , div [ class "relative" ]
             [ div [ class "fit" ]
                 [ Views.Collection.view
-                    { session = config.session
-                    , playlists = config.session.playlists
+                    { session = session
+                    , playlists = session.playlists
                     }
                 , div [ class "playlists" ]
                     [ div [ class "title" ] [ text "Playlists" ]
-                    , playlistView config.session config.session.playlists True
+                    , playlistView session session.playlists True
                     ]
                 ]
             ]

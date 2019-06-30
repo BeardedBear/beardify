@@ -1,4 +1,4 @@
-module Views.Artist exposing (artistList)
+module Views.Artist exposing (view)
 
 import Data.Artist exposing (ArtistSimplified)
 import Html exposing (Html, a, span, text)
@@ -6,9 +6,9 @@ import Html.Attributes exposing (class)
 import Route
 
 
-artistList : List ArtistSimplified -> Html msg
-artistList artists =
-    artists
-        |> List.map (\ar -> a [ Route.href (Route.Artist ar.id) ] [ text ar.name ])
+view : List ArtistSimplified -> Html msg
+view artistList =
+    artistList
+        |> List.map (\artist -> a [ Route.href (Route.Artist artist.id) ] [ text artist.name ])
         |> List.intersperse (span [] [ text ", " ])
         |> span [ class "artist-name" ]

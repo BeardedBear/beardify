@@ -103,7 +103,7 @@ view player =
                 [ div []
                     [ span [ class "track" ] [ text player.item.name ]
                     , span [] [ text " - " ]
-                    , Views.Artist.artistList player.item.artists
+                    , Views.Artist.view player.item.artists
                     ]
                 , div [ class "range" ]
                     [ span [ class "time" ] [ text <| Utils.durationFormat player.progress_ms ]
