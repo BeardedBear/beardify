@@ -65,4 +65,5 @@ type alias ArtistModel =
     , videos : List Video
     , topTracks : List Track
     , relatedArtists : List Artist
+    , modal : ModalModel
     }
