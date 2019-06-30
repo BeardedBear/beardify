@@ -1,14 +1,7 @@
-module Data.Modal exposing (Model, init)
+module Data.Modal exposing (ModalModel)
 
 
-init : Model
-init =
-    { isOpen = False
-    , inPocket = []
-    }
-
-
-type alias Model =
+type alias ModalModel =
     { isOpen : Bool
     , inPocket : List String
     }

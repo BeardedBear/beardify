@@ -1,8 +1,8 @@
 module Data.Album exposing
     ( Album
+    , albumInit
     , decodeAlbum
     , encodeAlbum
-    , init
     )
 
 import Data.Artist exposing (ArtistSimplified)
@@ -11,8 +11,8 @@ import Json.Decode as Decode exposing (Decoder(..), at, field)
 import Json.Encode as Encode
 
 
-init : Album
-init =
+albumInit : Album
+albumInit =
     { album_type = ""
     , artists = []
     , id = ""

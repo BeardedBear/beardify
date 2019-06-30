@@ -2,7 +2,7 @@ module Page.Playlist exposing (Msg(..), init, update, view)
 
 import Data.Image
 import Data.Meta exposing (PlaylistModel)
-import Data.Playlist exposing (Playlist, PlaylistPaging, decodePlaylist, decodePlaylistPaging)
+import Data.Playlist exposing (Playlist, PlaylistPaging, decodePlaylist, decodePlaylistPaging, playlistInit)
 import Data.Session exposing (Session)
 import Html exposing (Html, a, div, i, text)
 import Html.Attributes exposing (class, classList, title)
@@ -16,7 +16,7 @@ import Views.Artist
 
 init : String -> Session -> ( PlaylistModel, Cmd Msg )
 init id session =
-    ( { playlist = Data.Playlist.init
+    ( { playlist = playlistInit
       , tracks =
             { items = []
             , next = ""

@@ -1,7 +1,7 @@
-module Views.Player exposing (Model, Msg(..), update, view)
+module Views.Player exposing (Msg(..), update, view)
 
 import Data.Image
-import Data.Player
+import Data.Player exposing (PlayerModel)
 import Data.Session exposing (Session)
 import Html exposing (Html, a, button, div, i, input, span, text)
 import Html.Attributes exposing (class, classList, style, type_)
@@ -11,10 +11,6 @@ import Request as Request
 import Route
 import Utils
 import Views.Artist
-
-
-type alias Model =
-    Data.Player.Model
 
 
 type Msg
@@ -32,7 +28,7 @@ type Msg
     | RepeatOn
 
 
-update : Session -> Msg -> Model -> ( Model, Cmd Msg )
+update : Session -> Msg -> PlayerModel -> ( PlayerModel, Cmd Msg )
 update { token } msg model =
     case msg of
         NoOp (Err _) ->
@@ -75,7 +71,7 @@ update { token } msg model =
             ( model, Http.send NoOp <| Request.put "" "" "repeat?state=track" token )
 
 
-view : Model -> Html Msg
+view : PlayerModel -> Html Msg
 view player =
     div [ class "player" ]
         [ div [ class "controls" ]

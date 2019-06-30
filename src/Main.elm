@@ -7,9 +7,9 @@ import Browser.Navigation exposing (Key, load, pushUrl)
 import Data.Album exposing (encodeAlbum)
 import Data.Date exposing (Date)
 import Data.Meta exposing (AlbumModel, ArtistModel, CollectionModel, PlaylistModel)
-import Data.Player exposing (decodePlayer)
+import Data.Player exposing (PlayerModel, decodePlayer, playerInit)
 import Data.Playlist exposing (PlaylistPagingSimplified, decodePlaylistPagingSimplified)
-import Data.Search
+import Data.Search exposing (searchInit)
 import Data.Session exposing (Session)
 import Data.Track exposing (encodeTrack)
 import Html exposing (map)
@@ -66,8 +66,8 @@ init flags url navKey =
             , playlists = []
             , url = url
             , token = flags.token
-            , player = Data.Player.init
-            , search = Data.Search.init
+            , player = playerInit
+            , search = searchInit
             }
 
         timestamp =
@@ -159,7 +159,7 @@ type Msg
       -- SIDEBAR PLAYLISTS
     | InitPlaylist (Result Http.Error PlaylistPagingSimplified)
       -- PLAYER
-    | SetPlayer (Result Http.Error Data.Player.Model)
+    | SetPlayer (Result Http.Error PlayerModel)
     | GetPlayer Time.Posix
     | PlayerMsg Views.Player.Msg
     | SearchMsg Views.Search.Msg

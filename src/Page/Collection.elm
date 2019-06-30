@@ -2,7 +2,7 @@ module Page.Collection exposing (Msg(..), init, update, view)
 
 import Data.Image
 import Data.Meta exposing (CollectionModel)
-import Data.Playlist
+import Data.Playlist exposing (playlistInit)
 import Data.Session exposing (Session)
 import Data.Track
 import Html exposing (Html, a, div, i, text)
@@ -18,7 +18,7 @@ import Views.Modal
 
 init : String -> Session -> ( CollectionModel, Cmd Msg )
 init id session =
-    ( { collection = Data.Playlist.init
+    ( { collection = playlistInit
       , albums =
             { items = []
             , next = ""

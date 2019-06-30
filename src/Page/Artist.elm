@@ -1,7 +1,7 @@
 module Page.Artist exposing (Msg(..), init, update, view)
 
 import Data.Album
-import Data.Artist
+import Data.Artist exposing (artistInit)
 import Data.Image
 import Data.Meta exposing (ArtistModel)
 import Data.Session exposing (Session)
@@ -20,7 +20,7 @@ import Utils
 
 init : String -> Session -> ( ArtistModel, Cmd Msg )
 init id session =
-    ( { artist = Data.Artist.init
+    ( { artist = artistInit
       , albums = []
       , videos = []
       , topTracks = []

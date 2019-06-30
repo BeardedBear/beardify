@@ -1,22 +1,22 @@
-module Data.Player exposing (Model, decodePlayer, init)
+module Data.Player exposing (PlayerModel, decodePlayer, playerInit)
 
-import Data.Device exposing (Device)
-import Data.Track exposing (Track)
+import Data.Device exposing (Device, deviceInit)
+import Data.Track exposing (Track, trackInit)
 import Json.Decode as Decode exposing (Decoder(..), at, field)
 
 
-init : Model
-init =
-    { device = Data.Device.init
+playerInit : PlayerModel
+playerInit =
+    { device = deviceInit
     , is_playing = False
     , progress_ms = 0
-    , item = Data.Track.init
+    , item = trackInit
     , repeat_state = ""
     , shuffle_state = False
     }
 
 
-type alias Model =
+type alias PlayerModel =
     { device : Device
     , is_playing : Bool
     , progress_ms : Int
@@ -26,9 +26,9 @@ type alias Model =
     }
 
 
-decodePlayer : Decode.Decoder Model
+decodePlayer : Decode.Decoder PlayerModel
 decodePlayer =
-    Decode.map6 Model
+    Decode.map6 PlayerModel
         (Decode.at [ "device" ] Data.Device.decodeDevice)
         (Decode.field "is_playing" Decode.bool)
         (Decode.field "progress_ms" Decode.int)

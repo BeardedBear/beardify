@@ -1,6 +1,6 @@
 module Page.Album exposing (Msg(..), init, update, view)
 
-import Data.Album exposing (Album, decodeAlbum)
+import Data.Album exposing (Album, albumInit, decodeAlbum)
 import Data.Image exposing (ImageSize(..), imageView)
 import Data.Meta exposing (AlbumModel)
 import Data.Session exposing (Session)
@@ -19,7 +19,7 @@ import Views.Modal
 
 init : String -> Session -> ( AlbumModel, Cmd Msg )
 init id session =
-    ( { album = Data.Album.init
+    ( { album = albumInit
       , tracks =
             { items = []
             , next = ""
