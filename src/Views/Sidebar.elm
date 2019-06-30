@@ -13,8 +13,8 @@ type PlaylistType
     | Albums
 
 
-collectionItem : Session -> PlaylistType -> PlaylistSimplified -> Html msg
-collectionItem session playlistType playlist =
+playlistItem : Session -> PlaylistType -> PlaylistSimplified -> Html msg
+playlistItem session playlistType playlist =
     let
         classes =
             classList
@@ -34,29 +34,26 @@ collectionItem session playlistType playlist =
                 [ i [ class "icon-list" ] [], text playlist.name ]
 
 
-collectionList : Session -> List PlaylistSimplified -> Html msg
-collectionList session playlists =
-    if List.length playlists /= 0 then
-        div [ class "collections" ]
-            [ div [ class "title" ] [ text "Collections" ]
-            , playlists
+listFilter : PlaylistType -> List PlaylistSimplified -> List PlaylistSimplified
+listFilter playlistType list =
+    case playlistType of
+        Albums ->
+            list
                 |> List.filter (\playlist -> String.contains "#Collection" playlist.name)
-                |> List.map (collectionItem session Albums)
-                |> div [ class "playlists-list" ]
-            ]
 
-    else
-        text ""
+        Tracks ->
+            list
+                |> List.filter (\playlist -> not <| String.contains "#Collection" playlist.name)
 
 
-playlistList : Session -> List PlaylistSimplified -> Html msg
-playlistList session playlists =
+playlistList : Session -> PlaylistType -> List PlaylistSimplified -> Html msg
+playlistList session playlistType playlists =
     if List.length playlists /= 0 then
         div [ class "playlists" ]
             [ div [ class "title" ] [ text "Playlists" ]
             , playlists
-                |> List.filter (\playlist -> not <| String.contains "#Collection" playlist.name)
-                |> List.map (collectionItem session Tracks)
+                |> listFilter playlistType
+                |> List.map (playlistItem session playlistType)
                 |> div [ class "playlists-list" ]
             ]
 
@@ -71,19 +68,11 @@ view session =
             [ img [ src "./img/logo.png" ] []
             , text "Beardify"
             , span [] [ text " alpha" ]
-            , div [ class "help" ]
-                [ i [ class "icon-question" ] []
-                , div [ class "popup" ]
-                    [ div [ class "title" ] [ text "Raccourcis" ]
-                    , div [] [ text "SHIFT + F : Focus search bar" ]
-                    , div [] [ text "SPACEBAR : Play/Pause player" ]
-                    ]
-                ]
             ]
         , div [ class "relative" ]
             [ div [ class "fit" ]
-                [ collectionList session session.playlists
-                , playlistList session session.playlists
+                [ playlistList session Albums session.playlists
+                , playlistList session Tracks session.playlists
                 ]
             ]
         ]
