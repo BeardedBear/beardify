@@ -31,7 +31,7 @@ collectionItem config session playlist =
 view : Config msg -> Html msg
 view ({ session } as config) =
     if config.isOpen then
-        div []
+        div [ class "modal-container" ]
             [ div [ class "overlay" ] []
             , div [ class "modal" ]
                 [ div [ class "head" ]

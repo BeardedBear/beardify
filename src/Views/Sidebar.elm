@@ -50,7 +50,14 @@ playlistList : Session -> PlaylistType -> List PlaylistSimplified -> Html msg
 playlistList session playlistType playlists =
     if List.length playlists /= 0 then
         div [ class "playlists" ]
-            [ div [ class "title" ] [ text "Playlists" ]
+            [ div [ class "title" ]
+                [ case playlistType of
+                    Albums ->
+                        text "Collections"
+
+                    Tracks ->
+                        text "Playlists"
+                ]
             , playlists
                 |> listFilter playlistType
                 |> List.map (playlistItem session playlistType)

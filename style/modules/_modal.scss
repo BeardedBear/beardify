@@ -1,12 +1,21 @@
-.overlay {
+.modal-container {
     position: fixed;
+    top: 0; 
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9;
+}
+
+.overlay {
     content: "";
     top: 0; 
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(black, 0.8);
     z-index: 9;
+    position: absolute;
+    background: rgba(black, 0.8);
 }
 .modal {
     position: absolute;

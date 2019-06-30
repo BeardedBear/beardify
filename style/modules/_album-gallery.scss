@@ -93,6 +93,12 @@
         position: relative;
         border-radius: 5px;
         display: block;
+        padding-bottom: 100%;
+        margin-bottom: 10px;
+
+        img {
+            position: absolute;
+        }
     }
     
     &.active {

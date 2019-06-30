@@ -156,7 +156,7 @@ view session model =
             , close = ModalClear
             , add = ModalAddTrack
             }
-      , div [ class "album-wrapper" ]
+      , div [ class "drawer-content album-wrapper" ]
             [ div [ class "bg-cover" ] [ imageView Large model.album.images ]
             , div [ class "album-page-head" ]
                 [ div [ class "heading-page" ] [ text model.album.name ]
