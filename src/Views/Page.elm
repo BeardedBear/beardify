@@ -1,7 +1,5 @@
 module Views.Page exposing (ActivePage(..), Config, frame)
 
--- import Views.Sidebar
-
 import Browser exposing (Document)
 import Data.Playlist exposing (PlaylistSimplified)
 import Data.Session exposing (Session)

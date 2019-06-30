@@ -14,9 +14,7 @@
             "elm/http": "1.0.0",
             "elm/json": "1.1.3",
             "elm/time": "1.0.0",
-            "elm/url": "1.0.0",
-            "lukewestby/elm-http-builder": "6.0.0",
-            "truqu/elm-base64": "2.0.4"
+            "elm/url": "1.0.0"
         },
         "indirect": {
             "SwiftsNamesake/proper-keyboard": "4.0.0",
