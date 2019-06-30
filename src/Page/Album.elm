@@ -146,7 +146,7 @@ view session model =
 
         trackSumDuration =
             model.tracks.items
-                |> List.map (\d -> d.duration_ms)
+                |> List.map (\track -> track.duration_ms)
                 |> List.sum
     in
     ( model.album.name

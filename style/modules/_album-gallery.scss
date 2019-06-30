@@ -108,48 +108,13 @@
             50% { box-shadow: 0 0 0 5px $primary-color; }
             100% { box-shadow: 0 0 0 0 $primary-color; }
         }
-        @keyframes InfiniteIcon {
-            0%   { transform: translate(-50%, -50%) scale(1);}
-            50% { transform: translate(-50%, -50%) scale(1.1); }
-            100% { transform: translate(-50%, -50%) scale(1);}
-        }
 
         > .playing-btn {
             visibility: hidden;
         }
 
         .img {
-            animation: InfiniteBox 3s infinite;
-            
-            &::after {
-                $size: 45px;
-                font-family: 'beardify';
-                content: "h"; 
-                position: absolute;
-                left: 50%;
-                top: 0;
-                transform: translate(-50%, -50%);
-                color: white;
-                font-size: 1.3rem;
-                background: $primary-color;
-                padding: 10px 12px;
-                border-radius: $size;
-                animation: InfiniteIcon 3s infinite;
-                width: $size;
-                height: $size
-            }
-    
-            // &:before {
-            //     position: absolute;
-            //     top: 0;
-            //     right: 0;
-            //     bottom: 0;
-            //     left: 0;
-            //     content: "";
-            //     background: $primary-color;
-            //     // mix-blend-mode: color;
-            //     border-radius: 5px;
-            // }
+            animation: InfiniteBox 2s infinite;
         }
     }
 

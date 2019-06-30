@@ -55,10 +55,17 @@ durationFormatMinutes duration =
                 |> millisToPosix
                 |> unit utc
 
+        hour =
+            if toTime toHour > 0 then
+                String.fromInt (toTime toHour) ++ " hr "
+
+            else
+                ""
+
         minute =
-            String.fromInt (toTime toMinute)
+            String.fromInt (toTime toMinute) ++ " min"
     in
-    minute ++ " min"
+    hour ++ minute
 
 
 releaseDateFormat : String -> String
