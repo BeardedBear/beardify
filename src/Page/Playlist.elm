@@ -1,7 +1,7 @@
 module Page.Playlist exposing (Msg(..), init, update, view)
 
 import Data.Image
-import Data.Meta exposing (PagingModel, PlaylistModel)
+import Data.Meta exposing (PlaylistModel)
 import Data.Playlist
     exposing
         ( Playlist

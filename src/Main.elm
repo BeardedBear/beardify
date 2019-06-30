@@ -246,7 +246,7 @@ update msg ({ page, session } as model) =
                     ( model, Http.send NoOpResult <| Request.play e (encodeAlbum e) token )
 
                 _ ->
-                    toPage ArtistPage ArtistMsg Page.Artist.update artistMsg artistModel
+                    toPage ArtistPage ArtistMsg (Page.Artist.update session) artistMsg artistModel
 
         -- SIDEBAR PLAYLISTS
         ( InitPlaylist (Ok e), _ ) ->

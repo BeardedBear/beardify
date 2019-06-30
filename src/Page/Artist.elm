@@ -1,11 +1,13 @@
 module Page.Artist exposing (Msg(..), init, update, view)
 
-import Data.Album exposing (Album, decodeAlbum)
+import Data.Album exposing (Album, AlbumId, decodeAlbum)
 import Data.Artist exposing (Artist, artistInit, decodeArtist)
 import Data.Image
 import Data.Meta exposing (ArtistModel)
+import Data.Modal exposing (modalInit)
+import Data.Playlist exposing (PlaylistId)
 import Data.Session exposing (Session)
-import Data.Track exposing (Track, TrackId, decodeTrack)
+import Data.Track exposing (Track, TrackSimplified, decodeTrack, decodeTrackSimplified)
 import Data.Youtube exposing (Youtube, getVideos)
 import Html exposing (Html, a, div, i, iframe, text)
 import Html.Attributes exposing (attribute, class, classList, height, href, src, target, width)
@@ -16,6 +18,7 @@ import List.Extra as LE
 import Request
 import Route
 import Utils
+import Views.Modal
 
 
 init : String -> Session -> ( ArtistModel, Cmd Msg )
@@ -25,6 +28,7 @@ init id session =
       , videos = []
       , topTracks = []
       , relatedArtists = []
+      , modal = modalInit
       }
     , Cmd.batch
         [ Http.send SetArtist <| Request.get "artists/" id "" decodeArtist session.token
@@ -43,10 +47,15 @@ type Msg
     | SetYoutube (Result Http.Error Youtube)
     | PlayTracks (List String)
     | PlayAlbum String
+    | ModalOpen (Result Http.Error (List TrackSimplified))
+    | ModalGetTrack AlbumId
+    | ModalAddTrack PlaylistId
+    | SetModalTrack (Result Http.Error ())
+    | ModalClear
 
 
-update : Msg -> ArtistModel -> ( ArtistModel, Cmd Msg )
-update msg model =
+update : Session -> Msg -> ArtistModel -> ( ArtistModel, Cmd Msg )
+update session msg ({ modal } as model) =
     case msg of
         SetArtist (Ok artist) ->
             ( { model | artist = artist }
@@ -90,9 +99,54 @@ update msg model =
         PlayAlbum _ ->
             ( model, Cmd.none )
 
+        ModalOpen (Ok trackList) ->
+            let
+                firstTrack =
+                    trackList
+                        |> List.map (\f -> f.uri)
+                        |> List.take 1
+            in
+            ( { model | modal = { modal | isOpen = True, inPocket = firstTrack } }
+            , Cmd.none
+            )
+
+        ModalOpen (Err _) ->
+            ( model, Cmd.none )
+
+        ModalGetTrack albumId ->
+            ( model
+            , Cmd.batch
+                [ Http.send ModalOpen <|
+                    Request.get "albums/" albumId "/tracks" (Decode.at [ "items" ] (Decode.list decodeTrackSimplified)) session.token
+                ]
+            )
+
+        ModalAddTrack playlistId ->
+            let
+                trackList =
+                    String.concat model.modal.inPocket
+            in
+            ( model
+            , Http.send SetModalTrack <|
+                Request.post "playlists/" playlistId ("/tracks?position=0&uris=" ++ trackList) session.token
+            )
+
+        SetModalTrack (Ok _) ->
+            ( { model | modal = { modal | isOpen = False } }
+            , Cmd.none
+            )
+
+        SetModalTrack (Err _) ->
+            ( model, Cmd.none )
+
+        ModalClear ->
+            ( { model | modal = { modal | isOpen = False } }
+            , Cmd.none
+            )
+
 
 view : Session -> ArtistModel -> ( String, List (Html Msg) )
-view session model =
+view session ({ modal } as model) =
     let
         listTracksUri trackUri =
             model.topTracks
@@ -140,14 +194,21 @@ view session model =
                 , div [] [ text album.name ]
                 , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat album.release_date ++ ")" ]
                 , div [ class "playing-btn", onClick <| PlayAlbum album.uri ] [ i [ class "icon-play" ] [] ]
-                , div [ class "add-btn" ] [ i [ class "icon-add" ] [] ]
+                , div [ class "add-btn", onClick <| ModalGetTrack album.id ] [ i [ class "icon-add" ] [] ]
                 ]
 
         link name urlBefore urlAfter icon =
             a [ href <| urlBefore ++ model.artist.name ++ urlAfter, target "_BLANK" ] [ i [ class <| "icon-" ++ icon ] [], text name ]
     in
     ( model.artist.name
-    , [ div [ class "artist-wrapper" ]
+    , [ Views.Modal.view
+            { isOpen = modal.isOpen
+            , session = session
+            , close = ModalClear
+            , add = ModalAddTrack
+            }
+      , div
+            [ class "artist-wrapper" ]
             [ div []
                 [ div [ class "heading-page" ] [ text model.artist.name ]
                 , div [ class "links" ]
