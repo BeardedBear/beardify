@@ -1,12 +1,12 @@
 module Page.Artist exposing (Msg(..), init, update, view)
 
-import Data.Album
-import Data.Artist
+import Data.Album exposing (Album, decodeAlbum)
+import Data.Artist exposing (Artist, artistInit, decodeArtist)
 import Data.Image
 import Data.Meta exposing (ArtistModel)
 import Data.Session exposing (Session)
-import Data.Track
-import Data.Youtube
+import Data.Track exposing (Track, TrackId, decodeTrack)
+import Data.Youtube exposing (Youtube, getVideos)
 import Html exposing (Html, a, div, i, iframe, text)
 import Html.Attributes exposing (attribute, class, classList, height, href, src, target, width)
 import Html.Events exposing (onClick)
@@ -20,27 +20,27 @@ import Utils
 
 init : String -> Session -> ( ArtistModel, Cmd Msg )
 init id session =
-    ( { artist = Data.Artist.init
+    ( { artist = artistInit
       , albums = []
       , videos = []
       , topTracks = []
       , relatedArtists = []
       }
     , Cmd.batch
-        [ Http.send SetArtist <| Request.get "artists/" id "" Data.Artist.decodeArtist session.token
-        , Http.send SetArtistAlbums <| Request.get "artists/" id "/albums?market=FR&album_type=album" (Decode.at [ "items" ] (Decode.list Data.Album.decodeAlbum)) session.token
-        , Http.send SetArtistTopTracks <| Request.get "artists/" id "/top-tracks?country=FR" (Decode.at [ "tracks" ] (Decode.list Data.Track.decodeTrack)) session.token
-        , Http.send SetRelatedArtists <| Request.get "artists/" id "/related-artists" (Decode.at [ "artists" ] (Decode.list Data.Artist.decodeArtist)) session.token
+        [ Http.send SetArtist <| Request.get "artists/" id "" decodeArtist session.token
+        , Http.send SetArtistAlbums <| Request.get "artists/" id "/albums?market=FR&album_type=album" (Decode.at [ "items" ] (Decode.list decodeAlbum)) session.token
+        , Http.send SetArtistTopTracks <| Request.get "artists/" id "/top-tracks?country=FR" (Decode.at [ "tracks" ] (Decode.list decodeTrack)) session.token
+        , Http.send SetRelatedArtists <| Request.get "artists/" id "/related-artists" (Decode.at [ "artists" ] (Decode.list decodeArtist)) session.token
         ]
     )
 
 
 type Msg
-    = SetArtist (Result Http.Error Data.Artist.Artist)
-    | SetArtistAlbums (Result Http.Error (List Data.Album.Album))
-    | SetArtistTopTracks (Result Http.Error (List Data.Track.Track))
-    | SetRelatedArtists (Result Http.Error (List Data.Artist.Artist))
-    | SetYoutube (Result Http.Error Data.Youtube.Youtube)
+    = SetArtist (Result Http.Error Artist)
+    | SetArtistAlbums (Result Http.Error (List Album))
+    | SetArtistTopTracks (Result Http.Error (List Track))
+    | SetRelatedArtists (Result Http.Error (List Artist))
+    | SetYoutube (Result Http.Error Youtube)
     | PlayTracks (List String)
     | PlayAlbum String
 
@@ -48,38 +48,38 @@ type Msg
 update : Msg -> ArtistModel -> ( ArtistModel, Cmd Msg )
 update msg model =
     case msg of
-        SetArtist (Ok e) ->
-            ( { model | artist = e }
+        SetArtist (Ok artist) ->
+            ( { model | artist = artist }
             , Cmd.batch
-                [ Http.send SetYoutube <| Data.Youtube.getVideos e.name
+                [ Http.send SetYoutube <| getVideos artist.name
                 ]
             )
 
         SetArtist (Err _) ->
             ( model, Cmd.none )
 
-        SetArtistAlbums (Ok e) ->
-            ( { model | albums = e }
+        SetArtistAlbums (Ok album) ->
+            ( { model | albums = album }
             , Cmd.none
             )
 
         SetArtistAlbums (Err _) ->
             ( model, Cmd.none )
 
-        SetArtistTopTracks (Ok e) ->
-            ( { model | topTracks = e }, Cmd.none )
+        SetArtistTopTracks (Ok trackList) ->
+            ( { model | topTracks = trackList }, Cmd.none )
 
         SetArtistTopTracks (Err _) ->
             ( model, Cmd.none )
 
-        SetRelatedArtists (Ok e) ->
-            ( { model | relatedArtists = e }, Cmd.none )
+        SetRelatedArtists (Ok artistList) ->
+            ( { model | relatedArtists = artistList }, Cmd.none )
 
         SetRelatedArtists (Err _) ->
             ( model, Cmd.none )
 
-        SetYoutube (Ok e) ->
-            ( { model | videos = e }, Cmd.none )
+        SetYoutube (Ok videoList) ->
+            ( { model | videos = videoList }, Cmd.none )
 
         SetYoutube (Err _) ->
             ( model, Cmd.none )
@@ -94,52 +94,52 @@ update msg model =
 view : Session -> ArtistModel -> ( String, List (Html Msg) )
 view session model =
     let
-        listTracksUri id =
+        listTracksUri trackUri =
             model.topTracks
-                |> LE.dropWhile (\e -> e.uri /= id)
+                |> LE.dropWhile (\track -> track.uri /= trackUri)
                 |> List.map .uri
 
-        trackItem t =
+        trackItem track =
             div
                 [ classList
                     [ ( "track", True )
-                    , ( "active", t.uri == session.player.item.uri )
+                    , ( "active", track.uri == session.player.item.uri )
                     ]
                 ]
-                [ div [] [ Data.Image.imageView Data.Image.Small t.album.images ]
-                , div [ onClick <| PlayTracks (listTracksUri t.uri) ] [ text t.name ]
-                , div [] [ text (Utils.durationFormat t.duration_ms) ]
+                [ div [] [ Data.Image.imageView Data.Image.Small track.album.images ]
+                , div [ onClick <| PlayTracks (listTracksUri track.uri) ] [ text track.name ]
+                , div [] [ text (Utils.durationFormat track.duration_ms) ]
                 ]
 
-        relatedArtistItem r =
-            a [ class "related-artist", Route.href (Route.Artist r.id) ]
-                [ div [] [ Data.Image.imageView Data.Image.Small r.images ]
-                , div [] [ text r.name ]
+        relatedArtistItem relatedArtist =
+            a [ class "related-artist", Route.href (Route.Artist relatedArtist.id) ]
+                [ div [] [ Data.Image.imageView Data.Image.Small relatedArtist.images ]
+                , div [] [ text relatedArtist.name ]
                 ]
 
-        videoFrame v =
+        videoFrame video =
             div [ class "video-frame" ]
-                [ iframe [ class "video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 140, src <| "https://www.youtube.com/embed/" ++ v.id ] []
-                , div [ class "video-title" ] [ text v.snippet.title ]
-                , div [ class "artist-name" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ v.snippet.channelId) ] [ text v.snippet.channelTitle ] ]
+                [ iframe [ class "video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 140, src <| "https://www.youtube.com/embed/" ++ video.id ] []
+                , div [ class "video-title" ] [ text video.snippet.title ]
+                , div [ class "artist-name" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ video.snippet.channelId) ] [ text video.snippet.channelTitle ] ]
                 ]
 
-        albumItem ar =
+        albumItem album =
             div
                 [ classList
                     [ ( "album", True )
-                    , ( "active", session.player.item.album.id == ar.id )
+                    , ( "active", session.player.item.album.id == album.id )
                     ]
                 ]
                 [ a
                     [ class "img"
-                    , Route.href (Route.Album ar.id)
+                    , Route.href (Route.Album album.id)
                     ]
-                    [ Data.Image.imageView Data.Image.Medium ar.images
+                    [ Data.Image.imageView Data.Image.Medium album.images
                     ]
-                , div [] [ text ar.name ]
-                , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat ar.release_date ++ ")" ]
-                , div [ class "playing-btn", onClick <| PlayAlbum ar.uri ] [ i [ class "icon-play" ] [] ]
+                , div [] [ text album.name ]
+                , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat album.release_date ++ ")" ]
+                , div [ class "playing-btn", onClick <| PlayAlbum album.uri ] [ i [ class "icon-play" ] [] ]
                 , div [ class "add-btn" ] [ i [ class "icon-add" ] [] ]
                 ]
 

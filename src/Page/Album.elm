@@ -1,8 +1,10 @@
 module Page.Album exposing (Msg(..), init, update, view)
 
-import Data.Album exposing (Album, decodeAlbum)
+import Data.Album exposing (Album, AlbumId, albumInit, decodeAlbum)
 import Data.Image exposing (ImageSize(..), imageView)
-import Data.Meta exposing (AlbumModel)
+import Data.Meta exposing (AlbumModel, pagingInit)
+import Data.Modal exposing (modalInit)
+import Data.Playlist exposing (PlaylistId)
 import Data.Session exposing (Session)
 import Data.Track exposing (TrackSimplified, TrackSimplifiedPaging, decodeTrackSimplified, decodeTrackSimplifiedPaging)
 import Html exposing (Html, div, i, span, text)
@@ -19,15 +21,9 @@ import Views.Modal
 
 init : String -> Session -> ( AlbumModel, Cmd Msg )
 init id session =
-    ( { album = Data.Album.init
-      , tracks =
-            { items = []
-            , next = ""
-            }
-      , modal =
-            { isOpen = False
-            , inPocket = []
-            }
+    ( { album = albumInit
+      , tracks = pagingInit
+      , modal = modalInit
       }
     , Cmd.batch
         [ Http.send SetAlbum <| Request.get "albums/" id "" decodeAlbum session.token
@@ -43,8 +39,8 @@ type Msg
     | PlayTracks (List String)
     | PlayAlbum String
     | ModalOpen (Result Http.Error (List TrackSimplified))
-    | ModalGetTrack String
-    | ModalAddTrack String
+    | ModalGetTrack AlbumId
+    | ModalAddTrack PlaylistId
     | SetModalTrack (Result Http.Error ())
     | ModalClear
 
@@ -99,19 +95,19 @@ update session msg ({ tracks, modal } as model) =
         ModalOpen (Err _) ->
             ( model, Cmd.none )
 
-        ModalGetTrack e ->
+        ModalGetTrack albumId ->
             ( model
             , Cmd.batch
-                [ Http.send ModalOpen <| Request.get "albums/" e "/tracks" (Decode.at [ "items" ] (Decode.list decodeTrackSimplified)) session.token
+                [ Http.send ModalOpen <| Request.get "albums/" albumId "/tracks" (Decode.at [ "items" ] (Decode.list decodeTrackSimplified)) session.token
                 ]
             )
 
-        ModalAddTrack e ->
+        ModalAddTrack playlistId ->
             let
                 listTracks =
                     String.concat model.modal.inPocket
             in
-            ( model, Http.send SetModalTrack <| Request.post "playlists/" e ("/tracks?position=0&uris=" ++ listTracks) session.token )
+            ( model, Http.send SetModalTrack <| Request.post "playlists/" playlistId ("/tracks?position=0&uris=" ++ listTracks) session.token )
 
         SetModalTrack (Ok _) ->
             ( { model | modal = { modal | isOpen = False } }
@@ -130,22 +126,22 @@ update session msg ({ tracks, modal } as model) =
 view : Session -> AlbumModel -> ( String, List (Html Msg) )
 view session model =
     let
-        listTracksUri id =
+        listTracksUri trackUri =
             model.tracks.items
-                |> LE.dropWhile (\e -> e.uri /= id)
-                |> List.map (\k -> k.uri)
+                |> LE.dropWhile (\track -> track.uri /= trackUri)
+                |> List.map (\track -> track.uri)
 
-        trackItem t =
+        trackItem track =
             div
                 [ classList
                     [ ( "track album-page", True )
-                    , ( "active", t.uri == session.player.item.uri )
+                    , ( "active", track.uri == session.player.item.uri )
                     ]
                 ]
                 [ div [] []
-                , div [] [ text <| String.fromInt t.track_number ++ "." ]
-                , div [ onClick <| PlayTracks (listTracksUri t.uri) ] [ text t.name ]
-                , div [] [ text (Utils.durationFormat t.duration_ms) ]
+                , div [] [ text <| String.fromInt track.track_number ++ "." ]
+                , div [ onClick <| PlayTracks (listTracksUri track.uri) ] [ text track.name ]
+                , div [] [ text (Utils.durationFormat track.duration_ms) ]
                 ]
 
         trackSumDuration =
@@ -166,7 +162,7 @@ view session model =
                 [ div [ class "heading-page" ] [ text model.album.name ]
                 , div []
                     [ span [] [ text "By " ]
-                    , span [] [ Views.Artist.artistList model.album.artists ]
+                    , span [] [ Views.Artist.view model.album.artists ]
                     ]
                 ]
             , div [ class "album-page" ]

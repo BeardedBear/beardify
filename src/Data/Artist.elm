@@ -1,17 +1,17 @@
 module Data.Artist exposing
     ( Artist
     , ArtistSimplified
+    , artistInit
     , decodeArtist
     , decodeArtistSimplified
-    , init
     )
 
 import Data.Image exposing (Image)
 import Json.Decode as Decode exposing (Decoder(..), at, field)
 
 
-init : Artist
-init =
+artistInit : Artist
+artistInit =
     { id = ""
     , images = []
     , name = ""

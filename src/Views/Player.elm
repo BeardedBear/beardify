@@ -1,7 +1,7 @@
-module Views.Player exposing (Model, Msg(..), update, view)
+module Views.Player exposing (Msg(..), update, view)
 
 import Data.Image
-import Data.Player
+import Data.Player exposing (PlayerModel)
 import Data.Session exposing (Session)
 import Html exposing (Html, a, button, div, i, input, span, text)
 import Html.Attributes exposing (class, classList, style, type_)
@@ -11,10 +11,6 @@ import Request as Request
 import Route
 import Utils
 import Views.Artist
-
-
-type alias Model =
-    Data.Player.Model
 
 
 type Msg
@@ -32,7 +28,7 @@ type Msg
     | RepeatOn
 
 
-update : Session -> Msg -> Model -> ( Model, Cmd Msg )
+update : Session -> Msg -> PlayerModel -> ( PlayerModel, Cmd Msg )
 update { token } msg model =
     case msg of
         NoOp (Err _) ->
@@ -41,14 +37,14 @@ update { token } msg model =
         NoOp (Ok _) ->
             ( model, Cmd.none )
 
-        Seek e ->
-            ( model, Http.send NoOp <| Request.put "seek?position_ms=" e "" token )
+        Seek duration ->
+            ( model, Http.send NoOp <| Request.put "seek?position_ms=" duration "" token )
 
-        Volume e ->
-            ( model, Http.send NoOp <| Request.put "volume?volume_percent=" e "" token )
+        Volume percent ->
+            ( model, Http.send NoOp <| Request.put "volume?volume_percent=" percent "" token )
 
-        VolumeToggleMute e ->
-            ( model, Http.send NoOp <| Request.put "volume?volume_percent=" e "" token )
+        VolumeToggleMute percent ->
+            ( model, Http.send NoOp <| Request.put "volume?volume_percent=" percent "" token )
 
         Next ->
             ( model, Http.send NoOp <| Request.post "me/player/" "next" "" token )
@@ -75,7 +71,7 @@ update { token } msg model =
             ( model, Http.send NoOp <| Request.put "" "" "repeat?state=track" token )
 
 
-view : Model -> Html Msg
+view : PlayerModel -> Html Msg
 view player =
     div [ class "player" ]
         [ div [ class "controls" ]
@@ -107,7 +103,7 @@ view player =
                 [ div []
                     [ span [ class "track" ] [ text player.item.name ]
                     , span [] [ text " - " ]
-                    , Views.Artist.artistList player.item.artists
+                    , Views.Artist.view player.item.artists
                     ]
                 , div [ class "range" ]
                     [ span [ class "time" ] [ text <| Utils.durationFormat player.progress_ms ]

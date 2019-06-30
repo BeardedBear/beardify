@@ -20,12 +20,6 @@
         grid-template-columns: auto 1fr auto;
         align-items: baseline;
         position: relative;
-
-        &:hover {
-            input[type=range] {
-                opacity: 1;
-            }
-        }
     
         input[type=range] {
             width: 30vw;

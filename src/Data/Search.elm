@@ -1,4 +1,4 @@
-module Data.Search exposing (Model, init)
+module Data.Search exposing (Model, searchInit)
 
 import Data.Album exposing (Album)
 import Data.Artist exposing (Artist)
@@ -13,8 +13,8 @@ type alias Model =
     }
 
 
-init : Model
-init =
+searchInit : Model
+searchInit =
     { findArtist = []
     , findAlbum = []
     , findTrack = []

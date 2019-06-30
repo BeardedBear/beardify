@@ -1,5 +1,6 @@
 module Views.Modal exposing (view)
 
+import Data.Playlist exposing (PlaylistSimplified)
 import Data.Session exposing (Session)
 import Html exposing (Html, button, div, i, span, text)
 import Html.Attributes exposing (class, classList)
@@ -15,6 +16,18 @@ type alias Config msg =
     }
 
 
+collectionItem : Config msg -> Session -> PlaylistSimplified -> Html msg
+collectionItem config session playlist =
+    span
+        [ classList
+            [ ( "playlist", True )
+            , ( "active", Utils.getId session.url == playlist.id )
+            ]
+        , onClick <| config.add playlist.id
+        ]
+        [ i [ class "icon-book" ] [], text <| String.replace "#Collection " "" playlist.name ]
+
+
 view : Config msg -> Html msg
 view ({ session } as config) =
     if config.isOpen then
@@ -25,22 +38,11 @@ view ({ session } as config) =
                     [ div [ class "title" ] [ text "Add in a collection" ]
                     ]
                 , div [ class "chest" ]
-                    [ let
-                        collectionItem p =
-                            span
-                                [ classList
-                                    [ ( "playlist", True )
-                                    , ( "active", Utils.getId session.url == p.id )
-                                    ]
-                                , onClick <| config.add p.id
-                                ]
-                                [ i [ class "icon-book" ] [], text <| String.replace "#Collection " "" p.name ]
-                      in
-                      if List.length session.playlists /= 0 then
+                    [ if List.length session.playlists /= 0 then
                         div [ class "collections" ]
                             [ session.playlists
-                                |> List.filter (\f -> String.contains "#Collection" f.name)
-                                |> List.map collectionItem
+                                |> List.filter (\playlist -> String.contains "#Collection" playlist.name)
+                                |> List.map (collectionItem config session)
                                 |> div [ class "playlists-list" ]
                             ]
 
