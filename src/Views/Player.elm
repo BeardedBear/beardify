@@ -37,14 +37,14 @@ update { token } msg model =
         NoOp (Ok _) ->
             ( model, Cmd.none )
 
-        Seek e ->
-            ( model, Http.send NoOp <| Request.put "seek?position_ms=" e "" token )
+        Seek duration ->
+            ( model, Http.send NoOp <| Request.put "seek?position_ms=" duration "" token )
 
-        Volume e ->
-            ( model, Http.send NoOp <| Request.put "volume?volume_percent=" e "" token )
+        Volume percent ->
+            ( model, Http.send NoOp <| Request.put "volume?volume_percent=" percent "" token )
 
-        VolumeToggleMute e ->
-            ( model, Http.send NoOp <| Request.put "volume?volume_percent=" e "" token )
+        VolumeToggleMute percent ->
+            ( model, Http.send NoOp <| Request.put "volume?volume_percent=" percent "" token )
 
         Next ->
             ( model, Http.send NoOp <| Request.post "me/player/" "next" "" token )

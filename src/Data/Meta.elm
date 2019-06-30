@@ -4,6 +4,7 @@ module Data.Meta exposing
     , CollectionModel
     , PagingModel
     , PlaylistModel
+    , decodePagingModel
     , pagingInit
     )
 
@@ -13,6 +14,7 @@ import Data.Modal exposing (ModalModel)
 import Data.Playlist exposing (Playlist, PlaylistPaging)
 import Data.Track exposing (Track, TrackSimplifiedPaging)
 import Data.Youtube exposing (Video)
+import Json.Decode as Decode exposing (Decoder(..), at, field, null, string)
 
 
 type alias PagingModel a =
@@ -26,6 +28,15 @@ pagingInit =
     { items = []
     , next = ""
     }
+
+
+decodePagingModel : Decoder a -> Decode.Decoder (PagingModel a)
+decodePagingModel type_ =
+    Decode.map2 PagingModel
+        (Decode.at [ "items" ] (Decode.list type_))
+        (Decode.field "next"
+            (Decode.oneOf [ string, null "" ])
+        )
 
 
 type alias CollectionModel =

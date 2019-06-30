@@ -1,8 +1,16 @@
 module Page.Playlist exposing (Msg(..), init, update, view)
 
 import Data.Image
-import Data.Meta exposing (PlaylistModel)
-import Data.Playlist exposing (Playlist, PlaylistPaging, decodePlaylist, decodePlaylistPaging, playlistInit)
+import Data.Meta exposing (PagingModel, PlaylistModel)
+import Data.Playlist
+    exposing
+        ( Playlist
+        , PlaylistId
+        , PlaylistPaging
+        , decodePlaylist
+        , decodePlaylistPaging
+        , playlistInit
+        )
 import Data.Session exposing (Session)
 import Html exposing (Html, a, div, i, text)
 import Html.Attributes exposing (class, classList, title)
@@ -14,8 +22,8 @@ import Utils
 import Views.Artist
 
 
-init : String -> Session -> ( PlaylistModel, Cmd Msg )
-init id session =
+init : PlaylistId -> Session -> ( PlaylistModel, Cmd Msg )
+init playlistId session =
     ( { playlist = playlistInit
       , tracks =
             { items = []
@@ -23,8 +31,8 @@ init id session =
             }
       }
     , Cmd.batch
-        [ Http.send SetPlaylistTracks <| Request.get "playlists/" id "/tracks" decodePlaylistPaging session.token
-        , Http.send SetPlaylist <| Request.get "playlists/" id "" decodePlaylist session.token
+        [ Http.send SetPlaylistTracks <| Request.get "playlists/" playlistId "/tracks" decodePlaylistPaging session.token
+        , Http.send SetPlaylist <| Request.get "playlists/" playlistId "" decodePlaylist session.token
         ]
     )
 
@@ -38,8 +46,8 @@ type Msg
 update : Session -> Msg -> PlaylistModel -> ( PlaylistModel, Cmd Msg )
 update session msg model =
     case msg of
-        SetPlaylist (Ok e) ->
-            ( { model | playlist = e }
+        SetPlaylist (Ok playlist) ->
+            ( { model | playlist = playlist }
             , Cmd.none
             )
 
@@ -73,10 +81,10 @@ view session model =
     let
         listTracksUri id =
             model.tracks.items
-                |> LE.dropWhile (\e -> e.uri /= id)
-                |> List.map (\k -> k.uri)
+                |> LE.dropWhile (\track -> track.uri /= id)
+                |> List.map (\track -> track.uri)
 
-        trackItem t =
+        trackItem track =
             let
                 icon =
                     div [] [ i [ class "icon-music" ] [] ]
@@ -95,27 +103,27 @@ view session model =
             div
                 [ classList
                     [ ( "track playlist-page", True )
-                    , ( "active", t.uri == session.player.item.uri )
+                    , ( "active", track.uri == session.player.item.uri )
                     ]
                 ]
                 [ icon
                 , div
                     [ class "track-title"
-                    , title t.name
-                    , onClick <| PlayTracks (listTracksUri t.uri)
+                    , title track.name
+                    , onClick <| PlayTracks (listTracksUri track.uri)
                     ]
-                    [ text t.name ]
-                , div [ class "track-artist" ] [ Views.Artist.view t.artists ]
-                , div [ class "track-album", title t.album.name ]
-                    [ releaseType t.album.album_type
-                    , a [] [ text t.album.name ]
+                    [ text track.name ]
+                , div [ class "track-artist" ] [ Views.Artist.view track.artists ]
+                , div [ class "track-album", title track.album.name ]
+                    [ releaseType track.album.album_type
+                    , a [] [ text track.album.name ]
                     ]
-                , div [] [ text (Utils.durationFormat t.duration_ms) ]
+                , div [] [ text (Utils.durationFormat track.duration_ms) ]
                 ]
 
         trackSumDuration =
             model.tracks.items
-                |> List.map (\d -> d.duration_ms)
+                |> List.map (\track -> track.duration_ms)
                 |> List.sum
     in
     ( model.playlist.name

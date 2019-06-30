@@ -41,7 +41,7 @@ view ({ session } as config) =
                     [ if List.length session.playlists /= 0 then
                         div [ class "collections" ]
                             [ session.playlists
-                                |> List.filter (\f -> String.contains "#Collection" f.name)
+                                |> List.filter (\playlist -> String.contains "#Collection" playlist.name)
                                 |> List.map (collectionItem config session)
                                 |> div [ class "playlists-list" ]
                             ]

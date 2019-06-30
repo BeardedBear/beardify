@@ -63,12 +63,12 @@ update msg model =
             , Route.pushUrl key route
             )
 
-        Query token e ->
-            ( { model | searchQuery = e }
+        Query token query ->
+            ( { model | searchQuery = query }
             , Cmd.batch
-                [ Http.send FindArtist <| Request.get "search?q=" (e ++ "*") "&type=artist&limit=10" (Decode.at [ "artists", "items" ] (Decode.list Data.Artist.decodeArtist)) token
-                , Http.send FindAlbum <| Request.get "search?q=" (e ++ "*") "&type=album&limit=9" (Decode.at [ "albums", "items" ] (Decode.list Data.Album.decodeAlbum)) token
-                , Http.send FindTrack <| Request.get "search?q=" (e ++ "*") "&type=track&limit=12" (Decode.at [ "tracks", "items" ] (Decode.list Data.Track.decodeTrack)) token
+                [ Http.send FindArtist <| Request.get "search?q=" (query ++ "*") "&type=artist&limit=10" (Decode.at [ "artists", "items" ] (Decode.list Data.Artist.decodeArtist)) token
+                , Http.send FindAlbum <| Request.get "search?q=" (query ++ "*") "&type=album&limit=9" (Decode.at [ "albums", "items" ] (Decode.list Data.Album.decodeAlbum)) token
+                , Http.send FindTrack <| Request.get "search?q=" (query ++ "*") "&type=track&limit=12" (Decode.at [ "tracks", "items" ] (Decode.list Data.Track.decodeTrack)) token
                 ]
             )
 
@@ -79,31 +79,31 @@ update msg model =
 view : Session -> Model -> Html Msg
 view session model =
     let
-        artistItem ar =
+        artistItem artist =
             div [ class "artist-item" ]
-                [ div [ class "img" ] [ Data.Image.imageView Data.Image.Small ar.images ]
-                , span [ onClick <| ClickResult (Route.Artist ar.id) session.navKey ] [ text ar.name ]
+                [ div [ class "img" ] [ Data.Image.imageView Data.Image.Small artist.images ]
+                , span [ onClick <| ClickResult (Route.Artist artist.id) session.navKey ] [ text artist.name ]
                 ]
 
-        albumItem al =
+        albumItem album =
             div [ class "album-item" ]
-                [ span [ class "search-cover-image", onClick <| ClickResult (Route.Album al.id) session.navKey ] [ Data.Image.imageView Data.Image.Small al.images ]
+                [ span [ class "search-cover-image", onClick <| ClickResult (Route.Album album.id) session.navKey ] [ Data.Image.imageView Data.Image.Small album.images ]
                 , div []
-                    [ strong [] [ text <| al.name ++ " " ]
-                    , text <| "(" ++ Utils.releaseDateFormat al.release_date ++ ")"
-                    , span [ onClick <| ClickResult (Route.Artist al.id) session.navKey ] [ Views.Artist.view al.artists ]
+                    [ strong [] [ text <| album.name ++ " " ]
+                    , text <| "(" ++ Utils.releaseDateFormat album.release_date ++ ")"
+                    , span [ onClick <| ClickResult (Route.Artist album.id) session.navKey ] [ Views.Artist.view album.artists ]
                     ]
                 ]
 
-        trackItem t =
+        trackItem track =
             div [ class "track-item" ]
-                [ div [ onClick <| PlayTrack t.uri, class "track-icon" ] [ i [ class "icon-play" ] [] ]
+                [ div [ onClick <| PlayTrack track.uri, class "track-icon" ] [ i [ class "icon-play" ] [] ]
                 , div []
-                    [ strong [] [ text t.name ]
-                    , div [] [ Views.Artist.view t.artists ]
+                    [ strong [] [ text track.name ]
+                    , div [] [ Views.Artist.view track.artists ]
                     ]
                 , div []
-                    [ text (Utils.durationFormat t.duration_ms)
+                    [ text (Utils.durationFormat track.duration_ms)
                     ]
                 ]
     in
