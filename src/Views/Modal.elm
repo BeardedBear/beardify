@@ -31,13 +31,13 @@ collectionItem config session playlist =
 view : Config msg -> Html msg
 view ({ session } as config) =
     if config.isOpen then
-        div [ class "modal-container" ]
-            [ div [ class "overlay" ] []
-            , div [ class "modal" ]
-                [ div [ class "head" ]
-                    [ div [ class "title" ] [ text "Add in a collection" ]
+        div [ class "Modal" ]
+            [ div [ class "Modal__overlay" ] []
+            , div [ class "ModalContent" ]
+                [ div [ class "Modal__head" ]
+                    [ text "Add in a collection"
                     ]
-                , div [ class "chest" ]
+                , div [ class "Modal__body" ]
                     [ if List.length session.playlists /= 0 then
                         div [ class "collections" ]
                             [ session.playlists
@@ -49,7 +49,7 @@ view ({ session } as config) =
                       else
                         text ""
                     ]
-                , div [ class "foot" ]
+                , div [ class "Modal__foot" ]
                     [ button [ class "button", onClick config.close ] [ text "Cancel" ]
                     ]
                 ]

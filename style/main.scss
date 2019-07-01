@@ -9,6 +9,8 @@
 @import "./modules/_drawer";
 @import "./modules/_modal";
 
+@import "./Blocks/Modal";
+
 .app {
   display: grid;
   grid-template-columns: 300px 1fr;
