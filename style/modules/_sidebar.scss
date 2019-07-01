@@ -1,241 +1,238 @@
 @import "../base/_variables";
 
-
 .help {
+  font-size: 1rem;
+  left: 10px;
+  position: absolute;
+  top: 10px;
+  z-index: 9;
+
+  i {
+    color: rgba(white, .2);
+    cursor: pointer;
+    font-size: 1.3rem;
+    line-height: 0;
+
+    &:hover {
+      color: rgba(white, .4);
+
+      ~ .popup {
+        display: block;
+      }
+    }
+  }
+
+  .popup {
+    background: darken(#232b37, 5);
+    border: 1px solid rgba(white, .2);
+    border-radius: 5px;
+    display: none;
+    left: 50%;
+    padding: 20px;
     position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 1rem;
-    z-index: 9;
+    top: 100%;
+    white-space: nowrap;
 
-    i {
-        font-size: 1.3rem;
-        color: rgba(white,0.2);
-        cursor: pointer;
-        line-height: 0;
-
-        &:hover {
-            color: rgba(white,0.4);
-
-            ~ .popup {
-                display: block;
-            }
-        }
+    .title {
+      font-weight: bold;
+      margin-bottom: 10px;
     }
-
-    .popup {
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        padding: 20px;
-        border-radius: 5px;
-        background: darken(#232B37, 5);
-        white-space: nowrap;
-        display: none;
-        border: 1px solid rgba(white, 0.2);
-
-        .title {
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-    }
+  }
 }
 
 .sidebar {
-    background: darken(#232B37, 5);
+  background: darken(#232b37, 5);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  transform: translateZ(0);
+  transition: all ease .15s;
+  will-change: transform;
+
+  .fit {
     display: grid;
-    grid-template-rows:  auto 1fr;
-    transition: all ease 0.15s;
-    transform: translateZ(0);
-    will-change: transform;
+    grid-auto-flow: row;
+  }
 
-    .fit {
-        display: grid;
-        grid-auto-flow: row;
+  @media (max-width: $mobile) {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translateX(-100%);
+    z-index: 9;
+
+    &.opened {
+      transform: translateX(0);
     }
-    
-    @media (max-width: $mobile) {
-        position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        z-index: 9;
-        left: 0;
-        transform: translateX(-100%);
+  }
 
-        &.opened {
-            transform: translateX(0);
-        }
-    }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(white, .1);
+    border: 5px solid darken(#232b37, 5);
+    border-radius: 20px;
+  }
 
-    ::-webkit-scrollbar-thumb {
-        background-color: rgba(white, 0.1);
-        border: 5px solid darken(#232B37, 5);
-        border-radius: 20px;
-    }
-    
-    .logo {
-        padding: 20px 30px;
-        font-weight: bold;
-        font-size: 2rem;
-        border-bottom: 1px solid #222933;
-        font-family: 'Exo 2';
+  .logo {
+    border-bottom: 1px solid #222933;
+    font-family: "Exo 2", sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+    padding: 20px 30px;
 
-        span {
-            font-size: 1rem;
-            opacity: 0.2;
-        }
-
-        img {
-            width: 30px;
-            position: relative;
-            top: 3px;
-            margin-right: 5px;
-        }
+    span {
+      font-size: 1rem;
+      opacity: .2;
     }
 
-    .playlists,
-    .collections,
-    .folders {
-        padding: 20px 15px;
-        font-weight: bold;
-        overflow: auto;
-        border-bottom: 1px solid #222933;
+    img {
+      margin-right: 5px;
+      position: relative;
+      top: 3px;
+      width: 30px;
+    }
+  }
 
-        .title {
-            font-size: 1rem;
-            margin-bottom: 15px;
-            padding-left: 15px;
-            font-family: 'Exo 2';
-            color: $primary-color;
-        }
-        
-        .folder-title {
-            display: grid;
-            grid-template-columns: auto 1fr;    
-            border-radius: 5px;
-            opacity: 0.6;
-            
-            &:hover {
-                background: rgba(255, 255, 255, 0.03);
-                opacity: 1;
-            }
-        }
-        
-        ul {
-            padding: 0;
-            margin: 0;
-            list-style: none;
-            
+  .playlists,
+  .collections,
+  .folders {
+    border-bottom: 1px solid #222933;
+    font-weight: bold;
+    overflow: auto;
+    padding: 20px 15px;
 
-            ul {
-                padding-left: 13px;
-                display: none;
-            }
-            
-            label {
-                display: block;
-                cursor: pointer;
-            }
-
-            input {
-                display: none;
-
-                &:checked  {
-                    + ul {
-                        display: block;
-                    }
-                }
-            }
-        }
-
-        .folder-title {
-            padding: 0 12px 0 14px;
-            
-            label {
-                padding: 6px 0 4px 0;
-            }
-
-            i {
-                position: relative;
-                top: 6px;
-            }
-        }
-
-        i {
-            font-size: 1.1rem;
-            margin-right: 10px;
-            opacity: 0.2;
-        }
+    .title {
+      color: $primary-color;
+      font-family: "Exo 2", sans-serif;
+      font-size: 1rem;
+      margin-bottom: 15px;
+      padding-left: 15px;
     }
 
-    .playlists {
-        border-bottom: 0;
+    .folder-title {
+      border-radius: 5px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      opacity: .6;
+
+      &:hover {
+        background: rgba(255, 255, 255, .03);
+        opacity: 1;
+      }
     }
 
-    .menu-item {
-        padding: 7px 15px 6px;
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      ul {
+        display: none;
+        padding-left: 13px;
+      }
+
+      label {
         cursor: pointer;
-        border-radius: 5px;
-        font-weight: bold;
         display: block;
-        border: 0;
+      }
 
-        &:hover {
-            background: rgba(255, 255, 255, 0.03);
-            color: white;
+      input {
+        display: none;
+
+        &:checked {
+          + ul {
+            display: block;
+          }
         }
-
-        &.active {
-            background: $primary-color;
-
-            i {
-                opacity: 1;
-            }
-        }
+      }
     }
-    
-    .top-menu {
-        padding: 20px 15px;
-        font-size: 1rem;
-        border-bottom: 1px solid #222933;
-        font-family: 'Exo 2';
 
-        i {
-            margin-right: 10px;
-            opacity: 0.2;
-        }
+    .folder-title {
+      padding: 0 12px 0 14px;
+
+      label {
+        padding: 6px 0 4px 0;
+      }
+
+      i {
+        position: relative;
+        top: 6px;
+      }
     }
-}
 
-.playlist {
-    padding: 6px 12px 4px;
+    i {
+      font-size: 1.1rem;
+      margin-right: 10px;
+      opacity: .2;
+    }
+  }
+
+  .playlists {
+    border-bottom: 0;
+  }
+
+  .menu-item {
+    border: 0;
     border-radius: 5px;
     cursor: pointer;
+    display: block;
     font-weight: bold;
-    opacity: 0.6;
-    display: grid;
-    grid-template-columns: auto 1fr;
+    padding: 7px 15px 6px;
 
     &:hover {
-        background: rgba(255, 255, 255, 0.03);
-        opacity: 1;
-    }
-
-    
-    i {
-        font-size: 1.1rem;
-        margin-right: 10px;
-        opacity: 0.2;
+      background: rgba(255, 255, 255, .03);
+      color: white;
     }
 
     &.active {
-        background: $primary-color;
-        color: white;
-        opacity: 1;
+      background: $primary-color;
 
-        i {
-            opacity: 1;
-        }
+      i {
+        opacity: 1;
+      }
     }
+  }
+
+  .top-menu {
+    border-bottom: 1px solid #222933;
+    font-family: "Exo 2", sans-serif;
+    font-size: 1rem;
+    padding: 20px 15px;
+
+    i {
+      margin-right: 10px;
+      opacity: .2;
+    }
+  }
+}
+
+.playlist {
+  border-radius: 5px;
+  cursor: pointer;
+  display: grid;
+  font-weight: bold;
+  grid-template-columns: auto 1fr;
+  opacity: .6;
+  padding: 6px 12px 4px;
+
+  &:hover {
+    background: rgba(255, 255, 255, .03);
+    opacity: 1;
+  }
+
+  i {
+    font-size: 1.1rem;
+    margin-right: 10px;
+    opacity: .2;
+  }
+
+  &.active {
+    background: $primary-color;
+    color: white;
+    opacity: 1;
+
+    i {
+      opacity: 1;
+    }
+  }
 }

@@ -1,52 +1,54 @@
 @import "./_variables";
 
-
-*, *::after, *::before {
-    box-sizing: border-box;
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
 }
 
-body, html {
-    min-height: 100%;
-    overflow-x: hidden;
+body,
+html {
+  min-height: 100%;
+  overflow-x: hidden;
 }
 
 i {
-    vertical-align: middle;
-    line-height: 0;
+  line-height: 0;
+  vertical-align: middle;
 }
 
 button {
-    &:focus {
-        outline: none;
-    }
+  &:focus {
+    outline: none;
+  }
 }
 
 a {
-    cursor: pointer;
-    text-decoration: none;
-    color: white;
+  color: white;
+  cursor: pointer;
+  text-decoration: none;
 
-    &:hover {
-        color: $primary-color
-    }
+  &:hover {
+    color: $primary-color;
+  }
 }
 
-body { 
-    font-family: "Roboto Condensed";
-    background: $bg-color;
-    color: white;
+body {
+  background: $bg-color;
+  color: white;
+  font-family: "Roboto Condensed", sans-serif;
 
-    ::-webkit-scrollbar {
-        width: 17px;
-    }
+  ::-webkit-scrollbar {
+    width: 17px;
+  }
 
-    ::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0);
-    }
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0);
+  }
 
-    ::-webkit-scrollbar-thumb {
-        background-color: $primary-color;
-        border: 5px solid #11151b;
-        border-radius: 20px;
-    }
+  ::-webkit-scrollbar-thumb {
+    background-color: $primary-color;
+    border: 5px solid #11151b;
+    border-radius: 20px;
+  }
 }

@@ -1,170 +1,169 @@
 .player {
+  border-top: 1px solid #191f27;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  justify-content: space-between;
+  justify-items: center;
+  padding: 10px;
+  position: relative;
+
+  @media (max-width: $tablet) {
+    display: block;
+  }
+
+  > div {
+    align-self: center;
+  }
+
+  .range {
+    align-items: baseline;
     display: grid;
     grid-template-columns: auto 1fr auto;
-    justify-content: space-between;
-    justify-items: center;
-    padding: 10px;
-    border-top: 1px solid #191f27;
     position: relative;
 
-    @media (max-width: $tablet) {
-        display: block;
+    input[type="range"] {
+      opacity: 0;
+      padding: 10px;
+      padding-bottom: 5px;
+      position: relative;
+      top: -2px;
+      transition: opacity ease .15s;
+      width: 30vw;
+
+      @media (max-width: $tablet) {
+        width: 100%;
+      }
     }
+  }
 
-    > div {
-        align-self: center;
+  .progress {
+    background: rgba(black, .45);
+    border-radius: 10px;
+    height: 8px;
+    left: 10px;
+    position: absolute;
+    right: 20px;
+    top: 14px;
+    z-index: -1;
+
+    .progress-current {
+      background: $primary-color;
+      border-radius: 10px;
+      bottom: 0;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100px;
     }
+  }
 
-    .range {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        align-items: baseline;
-        position: relative;
-    
-        input[type=range] {
-            width: 30vw;
-            position: relative;
-            top: -2px;
-            padding: 10px;
-            padding-bottom: 5px;
-            transition: opacity ease .15s;
-            opacity: 0;
+  .cover {
+    border-radius: 5px;
+    display: block;
+    width: 60px;
+  }
 
-            @media (max-width: $tablet) {
-                width: 100%;
-            }
-        }
+  .current {
+    align-items: end;
+    display: grid;
+    grid-template-columns: auto 1fr;
+
+    img {
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      margin-right: 15px;
     }
 
     .progress {
-        position: absolute;
-        background: rgba(black, 0.45);
-        left: 10px;
-        right: 20px;
-        height: 8px;
-        z-index: -1;
-        border-radius: 10px;
-        top: 14px;
-
-        .progress-current {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            width: 100px;
-            border-radius: 10px;
-            background:$primary-color;
-        }
+      left: 37px;
+      right: 37px;
     }
 
-    .cover {
-        width: 60px;
-        display: block;
-        border-radius: 5px;
+    .track {
+      font-weight: bold;
     }
 
-    .current {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        align-items: end;
+    .time {
+      opacity: .6;
+    }
+  }
 
-        img {
-            margin-right: 15px;
-            cursor: pointer;
-            display: block;
-            border-radius: 5px;
-        }
+  .controls {
+    align-content: center;
+    align-items: center;
+    display: grid;
+    grid-auto-flow: column;
 
-        .progress {
-            left: 37px;
-            right: 37px;
-        }
+    @media (max-width: $tablet) {
+      justify-content: center;
+    }
+  }
 
-        .track {
-            font-weight: bold;
-        }
+  button {
+    $size: 40px;
+    background: none;
+    border: 0;
+    border-radius: 30px;
+    color: white;
+    cursor: pointer;
+    font-size: 1.6rem;
+    height: $size;
+    line-height: 0;
+    position: relative;
+    top: -5px;
+    width: $size;
 
-        .time {
-            opacity: 0.6;
-        }        
+    &:hover {
+      border: 1px solid rgba(255, 255, 255, .1);
     }
 
-    .controls {
-        align-content: center;
-        display: grid;
-        grid-auto-flow: column;
-        align-items: center;
-        
-        @media (max-width: $tablet) {
-            justify-content: center;
-        }
+    &.active {
+      background: $primary-color;
     }
 
+    &.play {
+      $size: 60px;
+      background: rgba(255, 255, 255, .05);
+      font-size: 2.6rem;
+      height: $size;
+      margin: 0 10px;
+      top: 0;
+      width: $size;
 
-    button {
-        $size : 40px;
-        border: 0; 
-        background: none;
-        color: white;
-        font-size: 1.6rem;
-        border-radius: 30px;
+      &:hover {
+        background: rgba(255, 255, 255, .1);
+        border: 1px solid rgba(255, 255, 255, 0);
+      }
+
+      @media (max-width: $tablet) {
+        $size: 50px;
+        font-size: 2rem;
         height: $size;
         width: $size;
-        line-height: 0;
-        cursor: pointer;
-        position: relative;
-        top: - 5px;
+      }
+    }
+  }
 
-        &:hover {
-            border: 1px solid rgba(255,255,255, 0.1); 
-        }
+  .options {
+    align-items: center;
+    display: grid;
+    grid-auto-flow: column;
+    padding-right: 10px;
+    position: relative;
+    top: 15px;
 
-        &.active {
-            background: $primary-color;
-        }
-
-        &.play {
-            $size : 60px;
-            font-size: 2.6rem;
-            height: $size;
-            width: $size;
-            margin: 0 10px;
-            background: rgba(255,255,255, 0.05);
-            top: 0;
-
-            &:hover {
-                border: 1px solid rgba(255,255,255, 0); 
-                background: rgba(255,255,255, 0.1);
-            }
-
-            @media (max-width: $tablet) {
-                $size : 50px;
-                font-size: 2rem;
-                height: $size;
-                width: $size;
-            }
-        }
+    @media (max-width: $tablet) {
+      position: absolute;
+      right: 0;
     }
 
-    .options {
-        display: grid;
-        grid-auto-flow: column;
-        align-items: center;
-        top: 15px;
-        position: relative;
-        padding-right: 10px;
-
-        @media (max-width: $tablet) {
-            position: absolute;
-            right: 0;
-        }
-        
-        input[type=range] {
-            width: 140px;
-            position: relative;
-            top: -4px;
-            padding: 10px;
-            padding-bottom: 5px;
-        }
+    input[type="range"] {
+      padding: 10px;
+      padding-bottom: 5px;
+      position: relative;
+      top: -4px;
+      width: 140px;
     }
+  }
 }

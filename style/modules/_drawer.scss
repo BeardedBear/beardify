@@ -1,226 +1,222 @@
-
 .drawer {
-    position : relative;
+  position: relative;
 
-    .drawer-content {
-        padding: 50px;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        overflow: auto;
-        display: grid;
-        align-content: flex-start;
-        padding-top: 100px;
+  .drawer-content {
+    align-content: flex-start;
+    bottom: 0;
+    display: grid;
+    left: 0;
+    overflow: auto;
+    padding: 50px;
+    padding-top: 100px;
+    position: absolute;
+    right: 0;
+    top: 0;
 
-        @media (max-width: $mobile) {
-            padding: 10px;
-        }
-
-        @media (max-width: $tablet) {
-            padding: 20px;
-            padding-top: 100px;
-        }
+    @media (max-width: $mobile) {
+      padding: 10px;
     }
 
-    .heading-page {
-        font-size: 3rem;
-        font-weight: bold;
-        margin-bottom: 10px;
-        font-family: 'Exo 2';
-        
-        @media (max-width: $mobile) {
-            margin-top: 70px;
-        }
-    }   
+    @media (max-width: $tablet) {
+      padding: 20px;
+      padding-top: 100px;
+    }
+  }
 
-    .artist-wrapper {
-        grid-template-columns: 1fr 300px;
-        grid-gap: 30px;
-        
-        @media (max-width: $mobile) {
-            grid-template-columns: 1fr ;
-        }
+  .heading-page {
+    font-family: "Exo 2", sans-serif;
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
 
-        .links {
-            a {
-                margin-right: 15px;
-                opacity: 0.5;
+    @media (max-width: $mobile) {
+      margin-top: 70px;
+    }
+  }
 
-                &:hover {
-                    opacity: 1;
-                }
-            }
+  .artist-wrapper {
+    grid-gap: 30px;
+    grid-template-columns: 1fr 300px;
 
-            i {
-                position: relative;
-                top: 2px;
-                margin-right: 5px;
-            }
-        }
-
-        .related-artists {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            font-weight: bold;
-    
-            .related-artist {
-                display: grid;
-                grid-template-columns: auto 1fr;
-                align-items: center;
-                cursor: pointer;
-                padding: 10px;
-                border-radius: 5px;
-    
-                &:hover {
-                    background: rgba(black, 0.2);
-                }
-            }
-    
-            img {
-                $size: 82px;
-                width: $size;
-                height: $size;
-                border-radius: 100px;
-                margin-right: 10px;
-                display: block;
-            }
-        }
-
-        .top-tracks {
-            img {
-                border-radius: 5px;
-                width: 30px;
-                height: 30px;
-                margin-right: 20px;
-                display: block;
-            }
-        }
-    
-        .artist-head {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-gap: 30px;
-            margin: 50px 0;
-
-            @media (max-width: $mobile) {
-                display: block;
-            }
-        }
-    
-        .video-wrapper {
-            padding: 0 30px;
-            border-left: 1px solid rgba(white, 0.05);
-
-            @media (max-width: $mobile) {
-                display: none;
-            }
-    
-            .video-frame {
-                margin-bottom: 30px;
-            }
-    
-            .video {
-                margin-bottom: 10px;
-            }
-    
-            .video-title {
-                font-weight: bold;
-            }
-    
-            .video-channel {
-                opacity: 0.6;
-                font-style: italic;
-            }
-        }
+    @media (max-width: $mobile) {
+      grid-template-columns: 1fr;
     }
 
-    .track {
-        
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        justify-content: space-between;
-        align-items: center;
-        font-weight: bold;
-        border-radius: 5px;
-        cursor: pointer;
-        position: relative;
-        
-        > div {
-            padding: 5px;
-
-            &:nth-of-type(2) {
-                padding-left: 12px;
-            }
-
-            &:last-of-type {
-                padding-right: 12px;
-            }
-        }
-
-        .toggle-pocket {
-            position: absolute;
-            right: 100%;
-
-            .icon-checked {
-                opacity: 1;
-                color: rgba($secondary-color, 0.8)
-            }
-        }
-
-        .track-artist,
-        .track-album,
-        .track-title {
-            width: 13vw;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    .links {
+      a {
+        margin-right: 15px;
+        opacity: .5;
 
         &:hover {
-            background: rgba(black, 0.2);
+          opacity: 1;
         }
+      }
 
-        i {
-            font-size: 1.1rem;
-            margin-right: 10px;
-            opacity: 0.2;
-
-            &.icon-discogs {
-                color: $primary-color;
-                opacity: 1;
-            }
-
-            &.icon-pizza {
-                color: #dec32f;
-                opacity: 1;
-            }
-
-        }
-        
-        &.album-page {
-            grid-template-columns: auto 30px 1fr auto;
-            grid-gap: 10px;
-            
-        }
-
-        &.playlist-page {
-            grid-template-columns: auto 1fr 1fr 1fr auto;
-            justify-content: space-between;
-        }
-
-        &.active {
-            background: $primary-color;
-            color: white;
-
-            i {
-               opacity: 1;
-            }
-        }
-
-        &.selected {
-            background: rgba($secondary-color, 0.2);
-        }
+      i {
+        margin-right: 5px;
+        position: relative;
+        top: 2px;
+      }
     }
+
+    .related-artists {
+      display: grid;
+      font-weight: bold;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+
+      .related-artist {
+        align-items: center;
+        border-radius: 5px;
+        cursor: pointer;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        padding: 10px;
+
+        &:hover {
+          background: rgba(black, .2);
+        }
+      }
+
+      img {
+        $size: 82px;
+        border-radius: 100px;
+        display: block;
+        height: $size;
+        margin-right: 10px;
+        width: $size;
+      }
+    }
+
+    .top-tracks {
+      img {
+        border-radius: 5px;
+        display: block;
+        height: 30px;
+        margin-right: 20px;
+        width: 30px;
+      }
+    }
+
+    .artist-head {
+      display: grid;
+      grid-gap: 30px;
+      grid-template-columns: 1fr 1fr;
+      margin: 50px 0;
+
+      @media (max-width: $mobile) {
+        display: block;
+      }
+    }
+
+    .video-wrapper {
+      border-left: 1px solid rgba(white, .05);
+      padding: 0 30px;
+
+      @media (max-width: $mobile) {
+        display: none;
+      }
+
+      .video-frame {
+        margin-bottom: 30px;
+      }
+
+      .video {
+        margin-bottom: 10px;
+      }
+
+      .video-title {
+        font-weight: bold;
+      }
+
+      .video-channel {
+        font-style: italic;
+        opacity: .6;
+      }
+    }
+  }
+
+  .track {
+    align-items: center;
+    border-radius: 5px;
+    cursor: pointer;
+    display: grid;
+    font-weight: bold;
+    grid-template-columns: auto 1fr auto;
+    justify-content: space-between;
+    position: relative;
+
+    > div {
+      padding: 5px;
+
+      &:nth-of-type(2) {
+        padding-left: 12px;
+      }
+
+      &:last-of-type {
+        padding-right: 12px;
+      }
+    }
+
+    .toggle-pocket {
+      position: absolute;
+      right: 100%;
+
+      .icon-checked {
+        color: rgba($secondary-color, .8);
+        opacity: 1;
+      }
+    }
+
+    .track-artist,
+    .track-album,
+    .track-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 13vw;
+    }
+
+    &:hover {
+      background: rgba(black, .2);
+    }
+
+    i {
+      font-size: 1.1rem;
+      margin-right: 10px;
+      opacity: .2;
+
+      &.icon-discogs {
+        color: $primary-color;
+        opacity: 1;
+      }
+
+      &.icon-pizza {
+        color: #dec32f;
+        opacity: 1;
+      }
+    }
+
+    &.album-page {
+      grid-gap: 10px;
+      grid-template-columns: auto 30px 1fr auto;
+    }
+
+    &.playlist-page {
+      grid-template-columns: auto 1fr 1fr 1fr auto;
+      justify-content: space-between;
+    }
+
+    &.active {
+      background: $primary-color;
+      color: white;
+
+      i {
+        opacity: 1;
+      }
+    }
+
+    &.selected {
+      background: rgba($secondary-color, .2);
+    }
+  }
 }

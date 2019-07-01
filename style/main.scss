@@ -5,75 +5,65 @@
 @import "./modules/_topbar";
 @import "./modules/_sidebar";
 @import "./modules/_player";
-@import "./modules/_input-range"; 
+@import "./modules/_input-range";
 @import "./modules/_drawer";
 @import "./modules/_modal";
-@import "./modules/_release";
-@import "./modules/_button";
-@import "./modules/_loader";
-@import "./modules/_pocket";
-
-
 
 .app {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    height: 100vh;
-    
-    @media (max-width: $mobile) {
-        grid-template-columns: 0 1fr;
-        
-    }
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  height: 100vh;
+
+  @media (max-width: $mobile) {
+    grid-template-columns: 0 1fr;
+  }
 }
 
-
 .content {
+  display: grid;
+  grid-template-rows: 0 1fr auto;
+
+  @media (max-width: $mobile) {
+    bottom: 0;
     display: grid;
     grid-template-rows: 0 1fr auto;
-
-
-    @media (max-width: $mobile) {
-        display: grid;
-        grid-template-rows: 0 1fr auto;
-        width: 100%;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-    }
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+  }
 }
 
 .currently-playing {
-    background: $primary-color;
+  background: $primary-color;
 }
 
 .sub-title {
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 15px;
-    color: $primary-color;
-    font-weight: bold;
-    padding-left: 10px;
-    font-family: 'Exo 2';
+  color: $primary-color;
+  font-family: "Exo 2", sans-serif;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+  padding-left: 10px;
+  text-transform: uppercase;
 }
 
 .relative {
-    position: relative;
-    overflow: auto;
+  overflow: auto;
+  position: relative;
 
-    .fit {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-    }
+  .fit {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
 }
 
-
 .artist-name {
-    opacity: 0.6;
-    font-style: italic;
-    font-weight: normal;
+  font-style: italic;
+  font-weight: normal;
+  opacity: .6;
 }

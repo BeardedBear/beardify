@@ -1,149 +1,147 @@
 @import "../base/_variables";
 
 .topbar {
-    padding: 20px 30px 20px 20px;
-    display: grid;
-    grid-auto-flow: column;
+  display: grid;
+  grid-auto-flow: column;
+  padding: 20px 30px 20px 20px;
 
-    .menu {
-        display: none;
-        position: relative;
-        z-index: 1;
+  .menu {
+    display: none;
+    position: relative;
+    z-index: 1;
 
-        @media (max-width: $mobile) {
-            display: block;
-        }
+    @media (max-width: $mobile) {
+      display: block;
     }
+  }
 }
 
 .search {
-    position: relative;
-    z-index: 8;
+  position: relative;
+  z-index: 8;
 
-    input {
-        border: 1px solid #343b46;
-        width: 100%;
-        padding: 10px 15px;
+  input {
+    background: rgba($bg-color, .95);
+    border: 1px solid #343b46;
+    border-radius: 5px;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 10px 15px;
+    transition: all ease .25s;
+    width: 100%;
+
+    &.active,
+    &:focus,
+    &:hover {
+      background: #191f27;
+      border-radius: 5px 5px 0 0;
+      outline: none;
+    }
+  }
+
+  .results {
+    background: #191f27;
+    border-radius: 0 0 5px 5px;
+    border-top: 1px solid #222933;
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: 1.4fr 2fr 2.5fr;
+    left: 0;
+    max-height: 80vh;
+    overflow: hidden;
+    padding: 20px;
+    position: absolute;
+    right: 0;
+    top: 43px;
+
+    @media (max-width: $mobile) {
+      display: block;
+      left: 20px;
+      overflow: auto;
+      position: fixed;
+      right: 20px;
+    }
+
+    .title {
+      color: $primary-color;
+      font-family: "Exo 2";
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .artist-item {
+      align-items: center;
+      border-radius: 5px;
+      cursor: pointer;
+      display: grid;
+      font-weight: bold;
+      grid-gap: 15px;
+      grid-template-columns: auto 1fr;
+      justify-content: left;
+      padding: 10px;
+
+      &:hover {
+        background: rgba(0, 0, 0, .2);
         color: white;
-        font-weight: bold;
-        font-size: 1.2rem;
+      }
+
+      .img {
+        $size: 40px;
+        height: $size;
+        width: $size;
+
+        img {
+          border-radius: 100px;
+          height: $size;
+          width: $size;
+        }
+      }
+
+      .artist-name {
+        padding: 10px 0;
+      }
+    }
+
+    .album-item {
+      align-items: center;
+      display: grid;
+      grid-gap: 15px;
+      grid-template-columns: auto 1fr;
+      margin-bottom: 15px;
+
+      img {
         border-radius: 5px;
-        background: rgba($bg-color, 0.95);
-        transition: all ease .25s;
-        
-        &.active,
-        &:focus,
+        cursor: pointer;
+        display: block;
+        transition: all ease-in-out .15s;
+        transition: transform ease .15s;
+        width: 53px;
+
         &:hover {
-            background: #191f27;
-            outline: none;
-            border-radius: 5px 5px 0 0;
+          transform: scale(1.1);
         }
+      }
     }
 
-    .results {
-        position: absolute;
-        right: 0;
-        left:0;
-        top: 43px;
-        background: #191f27;
-        max-height: 80vh;
-        overflow: hidden;
-        display: grid;
-        grid-template-columns: 1.4fr 2fr 2.5fr;
-        grid-gap: 20px;
-        padding: 20px;
-        border-top: 1px solid #222933;
-        border-radius: 0 0 5px 5px;
+    .track-item {
+      align-items: center;
+      display: grid;
+      grid-gap: 15px;
+      grid-template-columns: auto 1fr auto;
+      margin-bottom: 15px;
 
-        @media (max-width: $mobile) {
-            display: block;
-            position: fixed;
-            left: 20px;
-            right: 20px;
-            overflow: auto;
+      .track-icon {
+        cursor: pointer;
+        float: left;
+        font-size: 1.8rem;
+        opacity: .2;
+
+        &:hover {
+          opacity: 1;
         }
-
-        .title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: $primary-color;
-            font-family: 'Exo 2';
-        }
-
-        .artist-item {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            align-items: center;
-            grid-gap: 15px;
-            justify-content: left;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 5px;
-            padding: 10px;
-
-            &:hover {
-                background: rgba(0,0,0,0.2);
-                color: white;
-            }
-
-            .img {
-                $size : 40px;
-                height: $size;
-                width: $size;
-                
-                img {
-                    border-radius: 100px;
-                    height: $size;
-                    width: $size;
-                }
-            }
-
-            .artist-name {
-                padding: 10px 0;
-            }
-        }
-
-        .album-item {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            grid-gap: 15px;
-            margin-bottom: 15px;
-            align-items: center;
-
-            img {
-                transition: all ease-in-out 0.15s;
-                border-radius: 5px;
-                width: 53px;
-                cursor: pointer;
-                display: block;
-                transition: transform ease .15s;
-
-                &:hover {
-                    transform: scale(1.1);
-                }
-            }
-        }
-
-        .track-item {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            grid-gap: 15px;
-            margin-bottom: 15px;
-            align-items: center;
-
-            .track-icon {
-                opacity: 0.2;
-                float: left;
-                font-size: 1.8rem;
-                cursor: pointer;
-            
-                &:hover {
-                    opacity: 1;
-                }
-            }
-        }
+      }
     }
+  }
 }
-
-
