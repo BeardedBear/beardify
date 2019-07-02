@@ -1,7 +1,7 @@
 module Data.Image exposing (Image, ImageSize(..), decodeImage, imageView)
 
 import Html exposing (Html, img, text)
-import Html.Attributes exposing (src)
+import Html.Attributes exposing (class, src)
 import Json.Decode as Decode exposing (field)
 
 
@@ -28,7 +28,7 @@ imageView size image =
                 text ""
 
             else
-                img [ src c ] []
+                img [ src c, class "Cover" ] []
     in
     case size of
         Small ->

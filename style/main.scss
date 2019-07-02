@@ -4,12 +4,12 @@
 @import "./modules/_album-gallery";
 @import "./modules/_topbar";
 @import "./modules/_sidebar";
-@import "./modules/_player";
 @import "./modules/_input-range";
 @import "./modules/_drawer";
-@import "./modules/_modal";
 
+@import "./Blocks/Cover";
 @import "./Blocks/Modal";
+@import "./Blocks/Player";
 
 .app {
   display: grid;
