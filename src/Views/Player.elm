@@ -107,7 +107,7 @@ view player =
                 ]
             ]
         , div [ class "Player__current" ]
-            [ a [ Route.href (Route.Album player.item.album.id) ] [ Data.Image.imageView Data.Image.Small player.item.album.images ]
+            [ a [ Route.href (Route.Album player.item.album.id) ] [ Data.Image.imageView Data.Image.Small "Cover" player.item.album.images ]
             , div []
                 [ div []
                     [ span [ class "PlayerPlaying__trackName" ] [ text player.item.name ]

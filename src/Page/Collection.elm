@@ -183,7 +183,7 @@ view session { collection, modal, albums } =
                     , ( "active", album.uri == session.player.item.album.uri )
                     ]
                 ]
-                [ a [ Route.href (Route.Album album.id), class "img" ] [ imageView Medium album.images ]
+                [ a [ Route.href (Route.Album album.id), class "img" ] [ imageView Medium "Cover" album.images ]
                 , div [] [ text album.album ]
                 , div []
                     (album.artists

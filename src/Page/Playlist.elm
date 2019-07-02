@@ -1,6 +1,6 @@
 module Page.Playlist exposing (Msg(..), init, update, view)
 
-import Data.Image
+import Data.Image exposing (ImageSize(..), imageView)
 import Data.Meta exposing (PlaylistModel)
 import Data.Playlist
     exposing
@@ -133,7 +133,7 @@ view session model =
                 ]
             , div [ class "album-page" ]
                 [ div []
-                    [ Data.Image.imageView Data.Image.Medium model.playlist.images
+                    [ imageView Medium "Cover" model.playlist.images
                     , div [] [ text <| Utils.durationFormatMinutes trackSumDuration ]
                     ]
                 , div []

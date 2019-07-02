@@ -8,7 +8,7 @@ import Data.Search
 import Data.Session exposing (Session)
 import Data.Track
 import Html exposing (Html, div, i, input, span, strong, text)
-import Html.Attributes exposing (class, classList, id, placeholder, type_)
+import Html.Attributes exposing (class, classList, placeholder, type_)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode exposing (map)
@@ -80,24 +80,24 @@ view : Session -> Model -> Html Msg
 view session model =
     let
         artistItem artist =
-            div [ class "artist-item" ]
-                [ div [ class "img" ] [ Data.Image.imageView Data.Image.Small artist.images ]
-                , div [ class "artist-name", onClick <| ClickResult (Route.Artist artist.id) session.navKey ] [ text artist.name ]
+            div [ class "SearchArtist__item" ]
+                [ div [ onClick <| ClickResult (Route.Artist artist.id) session.navKey ] [ Data.Image.imageView Data.Image.Small "SearchArtist__cover" artist.images ]
+                , div [ class "SearchArtist__name", onClick <| ClickResult (Route.Artist artist.id) session.navKey ] [ text artist.name ]
                 ]
 
         albumItem album =
-            div [ class "album-item" ]
-                [ span [ class "search-cover-image", onClick <| ClickResult (Route.Album album.id) session.navKey ] [ Data.Image.imageView Data.Image.Small album.images ]
+            div [ class "SearchAlbum__item" ]
+                [ span [ onClick <| ClickResult (Route.Album album.id) session.navKey ] [ Data.Image.imageView Data.Image.Small "SearchAlbum__cover" album.images ]
                 , div []
-                    [ strong [] [ text <| album.name ++ " " ]
+                    [ strong [ onClick <| ClickResult (Route.Album album.id) session.navKey ] [ text <| album.name ++ " " ]
                     , text <| "(" ++ Utils.releaseDateFormat album.release_date ++ ")"
-                    , span [ onClick <| ClickResult (Route.Artist album.id) session.navKey ] [ Views.Artist.view album.artists ]
+                    , div [ onClick <| ClickResult (Route.Artist album.id) session.navKey ] [ Views.Artist.view album.artists ]
                     ]
                 ]
 
         trackItem track =
-            div [ class "track-item" ]
-                [ div [ onClick <| PlayTrack track.uri, class "track-icon" ] [ i [ class "icon-play" ] [] ]
+            div [ class "SearchTrack__item" ]
+                [ div [ onClick <| PlayTrack track.uri, class "SearchTrack__icon" ] [ i [ class "icon-play" ] [] ]
                 , div []
                     [ strong [] [ text track.name ]
                     , div [] [ Views.Artist.view track.artists ]
@@ -107,32 +107,34 @@ view session model =
                     ]
                 ]
     in
-    div [ class "search" ]
+    div [ class "Search" ]
         [ div []
             [ input
-                [ classList [ ( "active", model.searchQuery /= "" ) ]
-                , id "search"
-                , placeholder "Recherche"
+                [ classList
+                    [ ( "Search__input", True )
+                    , ( "active", model.searchQuery /= "" )
+                    ]
+                , placeholder "Search"
                 , type_ "text"
                 , onInput (Query session.token)
                 ]
                 []
             , if model.searchQuery /= "" then
-                div [ class "results" ]
-                    [ div []
-                        [ div [ class "title" ] [ text "Artists" ]
+                div [ class "SearchResults" ]
+                    [ div [ class "SearchArtist" ]
+                        [ div [ class "SearchResults__title" ] [ text "Artists" ]
                         , div [] (model.findArtist |> List.map artistItem)
                         ]
-                    , div []
-                        [ div [ class "title" ] [ text "Albums" ]
+                    , div [ class "SearchAlbum" ]
+                        [ div [ class "SearchResults__title" ] [ text "Albums" ]
                         , div []
                             (model.findAlbum
                                 |> List.filter (\a -> a.album_type == "album")
                                 |> List.map albumItem
                             )
                         ]
-                    , div []
-                        [ div [ class "title" ] [ text "Tracks" ]
+                    , div [ class "SearchTrack" ]
+                        [ div [ class "SearchResults__title" ] [ text "Tracks" ]
                         , div []
                             (model.findTrack |> List.map trackItem)
                         ]

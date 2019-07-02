@@ -160,14 +160,14 @@ view session ({ modal } as model) =
                     , ( "active", track.uri == session.player.item.uri )
                     ]
                 ]
-                [ div [] [ Data.Image.imageView Data.Image.Small track.album.images ]
+                [ div [] [ Data.Image.imageView Data.Image.Small "Cover" track.album.images ]
                 , div [ onClick <| PlayTracks (listTracksUri track.uri) ] [ text track.name ]
                 , div [] [ text (Utils.durationFormat track.duration_ms) ]
                 ]
 
         relatedArtistItem relatedArtist =
             a [ class "related-artist", Route.href (Route.Artist relatedArtist.id) ]
-                [ div [] [ Data.Image.imageView Data.Image.Small relatedArtist.images ]
+                [ div [] [ Data.Image.imageView Data.Image.Small "Cover" relatedArtist.images ]
                 , div [] [ text relatedArtist.name ]
                 ]
 
@@ -189,7 +189,7 @@ view session ({ modal } as model) =
                     [ class "img"
                     , Route.href (Route.Album album.id)
                     ]
-                    [ Data.Image.imageView Data.Image.Medium album.images
+                    [ Data.Image.imageView Data.Image.Medium "Cover" album.images
                     ]
                 , div [] [ text album.name ]
                 , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat album.release_date ++ ")" ]

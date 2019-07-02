@@ -157,7 +157,7 @@ view session model =
             , add = ModalAddTrack
             }
       , div [ class "drawer-content album-wrapper" ]
-            [ div [ class "bg-cover" ] [ imageView Large model.album.images ]
+            [ div [ class "bg-cover" ] [ imageView Large "Cover" model.album.images ]
             , div [ class "album-page-head" ]
                 [ div [ class "heading-page" ] [ text model.album.name ]
                 , div []
@@ -174,7 +174,7 @@ view session model =
                             ]
                         ]
                         [ div [ class "img" ]
-                            [ imageView Large model.album.images
+                            [ imageView Large "Cover" model.album.images
                             ]
                         , div [ class "playing-btn", onClick <| PlayAlbum model.album.uri ] [ i [ class "icon-play" ] [] ]
                         , div [ class "add-btn", onClick <| ModalGetTrack model.album.id ] [ i [ class "icon-add" ] [] ]

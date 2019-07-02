@@ -20,15 +20,15 @@ type ImageSize
     | Large
 
 
-imageView : ImageSize -> List Image -> Html msg
-imageView size image =
+imageView : ImageSize -> String -> List Image -> Html msg
+imageView size className image =
     let
         showImage c =
             if c == "" then
                 text ""
 
             else
-                img [ src c, class "Cover" ] []
+                img [ src c, class className ] []
     in
     case size of
         Small ->
