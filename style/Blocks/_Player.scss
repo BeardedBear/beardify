@@ -149,13 +149,11 @@
   }
 
   &Volume {
-    align-items: center;
+    align-items: end;
     display: grid;
     gap: 15px;
     grid-auto-flow: column;
     padding-right: 10px;
-    position: relative;
-    top: 15px;
 
     @media (max-width: $tablet) {
       position: absolute;
