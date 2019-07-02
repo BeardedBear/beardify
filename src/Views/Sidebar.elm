@@ -18,7 +18,7 @@ playlistItem session playlistType playlist =
     let
         classes =
             classList
-                [ ( "playlist", True )
+                [ ( "Playlist", True )
                 , ( "active", Utils.getId session.url == playlist.id )
                 ]
     in
@@ -49,8 +49,8 @@ listFilter playlistType list =
 playlistList : Session -> PlaylistType -> List PlaylistSimplified -> Html msg
 playlistList session playlistType playlists =
     if List.length playlists /= 0 then
-        div [ class "playlists" ]
-            [ div [ class "title" ]
+        div [ class "SidebarBody__item" ]
+            [ div [ class "SidebarBody__title" ]
                 [ case playlistType of
                     Albums ->
                         text "Collections"
@@ -61,7 +61,7 @@ playlistList session playlistType playlists =
             , playlists
                 |> listFilter playlistType
                 |> List.map (playlistItem session playlistType)
-                |> div [ class "playlists-list" ]
+                |> div []
             ]
 
     else
@@ -70,14 +70,14 @@ playlistList session playlistType playlists =
 
 view : Session -> Html msg
 view session =
-    div [ class "sidebar" ]
-        [ div [ class "logo" ]
-            [ img [ src "./img/logo.png" ] []
+    div [ class "Sidebar" ]
+        [ div [ class "SidebarHead" ]
+            [ img [ class "SidebarHead__logo", src "./img/logo.png" ] []
             , text "Beardify"
-            , span [] [ text " alpha" ]
+            , span [ class "SidebarHead__version" ] [ text " alpha" ]
             ]
-        , div [ class "relative" ]
-            [ div [ class "fit" ]
+        , div [ class "Scrollable" ]
+            [ div [ class "SidebarBody Scrollable__target" ]
                 [ playlistList session Albums session.playlists
                 , playlistList session Tracks session.playlists
                 ]
