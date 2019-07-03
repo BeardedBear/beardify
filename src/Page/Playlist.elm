@@ -12,6 +12,7 @@ import Data.Playlist
         , playlistInit
         )
 import Data.Session exposing (Session)
+import Data.Track exposing (Track)
 import Html exposing (Html, a, div, i, text)
 import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick)
@@ -76,51 +77,50 @@ update session msg model =
             ( model, Cmd.none )
 
 
-view : Session -> PlaylistModel -> ( String, List (Html Msg) )
-view session model =
+trackView : Session -> PlaylistModel -> Track -> Html Msg
+trackView session model track =
     let
         listTracksUri id =
             model.tracks.items
-                |> LE.dropWhile (\track -> track.uri /= id)
-                |> List.map (\track -> track.uri)
+                |> LE.dropWhile (\trackItem -> trackItem.uri /= id)
+                |> List.map (\trackItem -> trackItem.uri)
 
-        trackItem track =
-            let
-                icon =
-                    div [] [ i [ class "Track__icon track icon-music" ] [] ]
+        releaseType release =
+            case release of
+                "album" ->
+                    i [ class "Track__icon album icon-discogs" ] []
 
-                releaseType r =
-                    case r of
-                        "album" ->
-                            i [ class "Track__icon album icon-discogs" ] []
+                "single" ->
+                    i [ class "Track__icon ep icon-pizza" ] []
 
-                        "single" ->
-                            i [ class "Track__icon ep icon-pizza" ] []
+                _ ->
+                    i [ class "Track__icon track icon-music" ] []
+    in
+    div
+        [ classList
+            [ ( "Track playlist", True )
+            , ( "active", track.uri == session.player.item.uri )
+            ]
+        ]
+        [ div [] [ i [ class "Track__icon track icon-music" ] [] ]
+        , div
+            [ class "Track__section overflow"
+            , title track.name
+            , onClick <| PlayTracks (listTracksUri track.uri)
+            ]
+            [ text track.name ]
+        , div [ class "Track__section overflow" ] [ Views.Artist.view track.artists ]
+        , div [ class "Track__section overflow", title track.album.name ]
+            [ releaseType track.album.album_type
+            , a [] [ text track.album.name ]
+            ]
+        , div [ class "Track__section" ] [ text (Utils.durationFormat track.duration_ms) ]
+        ]
 
-                        _ ->
-                            i [ class "Track__icon track icon-music" ] []
-            in
-            div
-                [ classList
-                    [ ( "Track playlist", True )
-                    , ( "active", track.uri == session.player.item.uri )
-                    ]
-                ]
-                [ icon
-                , div
-                    [ class "Track__section overflow"
-                    , title track.name
-                    , onClick <| PlayTracks (listTracksUri track.uri)
-                    ]
-                    [ text track.name ]
-                , div [ class "Track__section overflow" ] [ Views.Artist.view track.artists ]
-                , div [ class "Track__section overflow", title track.album.name ]
-                    [ releaseType track.album.album_type
-                    , a [] [ text track.album.name ]
-                    ]
-                , div [ class "Track__section" ] [ text (Utils.durationFormat track.duration_ms) ]
-                ]
 
+view : Session -> PlaylistModel -> ( String, List (Html Msg) )
+view session model =
+    let
         trackSumDuration =
             model.tracks.items
                 |> List.map (\track -> track.duration_ms)
@@ -129,14 +129,15 @@ view session model =
     ( model.playlist.name
     , [ div [ class "Page__content" ]
             [ div [ class "Title" ] [ text model.playlist.name ]
-            , div [ class "album-page" ]
+            , div [ class "PageAlbum" ]
                 [ div []
                     [ imageView Medium "Cover" model.playlist.images
                     , div [] [ text <| Utils.durationFormatMinutes trackSumDuration ]
                     ]
                 , div []
-                    [ div [] (model.tracks.items |> List.map trackItem)
-                    ]
+                    (model.tracks.items
+                        |> List.map (trackView session model)
+                    )
                 ]
             ]
       ]
