@@ -158,7 +158,7 @@ view session model =
             }
       , div [ class "Page__content" ]
             [ div [ class "Title" ] [ text model.album.name ]
-            , div []
+            , div [ class "TitleOptions" ]
                 [ span [] [ text "By " ]
                 , span [] [ Views.Artist.view model.album.artists ]
                 ]
