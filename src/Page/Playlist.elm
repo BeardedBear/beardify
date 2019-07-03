@@ -87,38 +87,38 @@ view session model =
         trackItem track =
             let
                 icon =
-                    div [] [ i [ class "icon-music" ] [] ]
+                    div [] [ i [ class "Track__icon track icon-music" ] [] ]
 
                 releaseType r =
                     case r of
                         "album" ->
-                            i [ class "icon-discogs" ] []
+                            i [ class "Track__icon album icon-discogs" ] []
 
                         "single" ->
-                            i [ class "icon-pizza" ] []
+                            i [ class "Track__icon ep icon-pizza" ] []
 
                         _ ->
-                            i [ class "icon-music" ] []
+                            i [ class "Track__icon track icon-music" ] []
             in
             div
                 [ classList
-                    [ ( "track playlist-page", True )
+                    [ ( "Track playlist", True )
                     , ( "active", track.uri == session.player.item.uri )
                     ]
                 ]
                 [ icon
                 , div
-                    [ class "track-title"
+                    [ class "Track__section overflow"
                     , title track.name
                     , onClick <| PlayTracks (listTracksUri track.uri)
                     ]
                     [ text track.name ]
-                , div [ class "track-artist" ] [ Views.Artist.view track.artists ]
-                , div [ class "track-album", title track.album.name ]
+                , div [ class "Track__section overflow" ] [ Views.Artist.view track.artists ]
+                , div [ class "Track__section overflow", title track.album.name ]
                     [ releaseType track.album.album_type
                     , a [] [ text track.album.name ]
                     ]
-                , div [] [ text (Utils.durationFormat track.duration_ms) ]
+                , div [ class "Track__section" ] [ text (Utils.durationFormat track.duration_ms) ]
                 ]
 
         trackSumDuration =
@@ -127,10 +127,8 @@ view session model =
                 |> List.sum
     in
     ( model.playlist.name
-    , [ div [ class "album-wrapper drawer-content" ]
-            [ div [ class "album-page-head" ]
-                [ div [ class "Title" ] [ text model.playlist.name ]
-                ]
+    , [ div [ class "Page__content" ]
+            [ div [ class "Title" ] [ text model.playlist.name ]
             , div [ class "album-page" ]
                 [ div []
                     [ imageView Medium "Cover" model.playlist.images

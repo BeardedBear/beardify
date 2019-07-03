@@ -7,9 +7,6 @@ $bg-color: #11151b;
 $mobile: 500px;
 $tablet: 1200px;
 
-@import "./modules/_album-gallery";
-@import "./modules/_drawer";
-
 @import "./Blocks/App";
 @import "./Blocks/Album";
 @import "./Blocks/Artist";
@@ -18,8 +15,10 @@ $tablet: 1200px;
 @import "./Blocks/Helper";
 @import "./Blocks/Modal";
 @import "./Blocks/Normalise";
+@import "./Blocks/Page";
 @import "./Blocks/Playlist";
 @import "./Blocks/Player";
 @import "./Blocks/Search";
 @import "./Blocks/Sidebar";
 @import "./Blocks/Topbar";
+@import "./Blocks/Track";

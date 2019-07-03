@@ -134,14 +134,14 @@ view session model =
         trackItem track =
             div
                 [ classList
-                    [ ( "track album-page", True )
+                    [ ( "Track album", True )
                     , ( "active", track.uri == session.player.item.uri )
                     ]
                 ]
-                [ div [] []
-                , div [] [ text <| String.fromInt track.track_number ++ "." ]
-                , div [ onClick <| PlayTracks (listTracksUri track.uri) ] [ text track.name ]
-                , div [] [ text (Utils.durationFormat track.duration_ms) ]
+                [ div [ class "Track__section" ] []
+                , div [ class "Track__section" ] [ text <| String.fromInt track.track_number ++ "." ]
+                , div [ class "Track__section", onClick <| PlayTracks (listTracksUri track.uri) ] [ text track.name ]
+                , div [ class "Track__section" ] [ text (Utils.durationFormat track.duration_ms) ]
                 ]
 
         trackSumDuration =
@@ -156,14 +156,12 @@ view session model =
             , close = ModalClear
             , add = ModalAddTrack
             }
-      , div [ class "drawer-content album-wrapper" ]
+      , div [ class "Page__content" ]
             [ div [ class "bg-cover" ] [ imageView Large "Cover" model.album.images ]
-            , div [ class "album-page-head" ]
-                [ div [ class "Title" ] [ text model.album.name ]
-                , div []
-                    [ span [] [ text "By " ]
-                    , span [] [ Views.Artist.view model.album.artists ]
-                    ]
+            , div [ class "Title" ] [ text model.album.name ]
+            , div []
+                [ span [] [ text "By " ]
+                , span [] [ Views.Artist.view model.album.artists ]
                 ]
             , div [ class "album-page" ]
                 [ div []

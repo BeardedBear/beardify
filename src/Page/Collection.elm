@@ -191,7 +191,7 @@ view session { collection, modal, albums } =
                             (\artist ->
                                 a
                                     [ Route.href (Route.Artist artist.id)
-                                    , class "artist-name"
+                                    , class "Artist"
                                     ]
                                     [ text artist.name ]
                             )
@@ -221,13 +221,11 @@ view session { collection, modal, albums } =
             , close = ModalClear
             , add = ModalAddTrack
             }
-      , div [ class "drawer-content" ]
+      , div [ class "Page__content" ]
             [ div [ class "Title" ] [ text reducedCollectionName ]
-            , div []
-                [ albumList
-                    |> List.map albumItem
-                    |> div [ class "album-list-wrapper" ]
-                ]
+            , albumList
+                |> List.map albumItem
+                |> div [ class "AlbumList" ]
             ]
       ]
     )

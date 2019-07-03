@@ -156,13 +156,13 @@ view session ({ modal } as model) =
         trackItem track =
             div
                 [ classList
-                    [ ( "track", True )
+                    [ ( "Track", True )
                     , ( "active", track.uri == session.player.item.uri )
                     ]
                 ]
-                [ div [] [ Data.Image.imageView Data.Image.Small "Cover" track.album.images ]
-                , div [ onClick <| PlayTracks (listTracksUri track.uri) ] [ text track.name ]
-                , div [] [ text (Utils.durationFormat track.duration_ms) ]
+                [ div [ class "Track__section" ] [ Data.Image.imageView Data.Image.Small "Cover" track.album.images ]
+                , div [ class "Track__section", onClick <| PlayTracks (listTracksUri track.uri) ] [ text track.name ]
+                , div [ class "Track__section" ] [ text (Utils.durationFormat track.duration_ms) ]
                 ]
 
         relatedArtistItem relatedArtist =
@@ -175,7 +175,7 @@ view session ({ modal } as model) =
             div [ class "video-frame" ]
                 [ iframe [ class "video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 140, src <| "https://www.youtube.com/embed/" ++ video.id ] []
                 , div [ class "video-title" ] [ text video.snippet.title ]
-                , div [ class "artist-name" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ video.snippet.channelId) ] [ text video.snippet.channelTitle ] ]
+                , div [ class "Artist" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ video.snippet.channelId) ] [ text video.snippet.channelTitle ] ]
                 ]
 
         albumItem album =
@@ -208,7 +208,7 @@ view session ({ modal } as model) =
             , add = ModalAddTrack
             }
       , div
-            [ class "artist-wrapper drawer-content" ]
+            [ class "artist-wrapper Page__content" ]
             [ div []
                 [ div [ class "Title" ] [ text model.artist.name ]
                 , div [ class "links" ]
@@ -230,7 +230,7 @@ view session ({ modal } as model) =
                 , div [ class "SubTitle" ] [ text "Albums" ]
                 , model.albums
                     |> List.map albumItem
-                    |> div [ class "album-list-wrapper" ]
+                    |> div [ class "AlbumList" ]
                 ]
             , div [ class "video-wrapper" ]
                 [ div [ class "SubTitle" ] [ text "Videos" ]

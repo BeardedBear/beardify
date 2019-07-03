@@ -31,7 +31,7 @@ frame config player search ( title, content ) =
             [ Views.Sidebar.view config.session
             , div [ class "App__content" ]
                 [ div [ class "Topbar" ] [ search ]
-                , div [ class "drawer" ] content
+                , div [ class "Page" ] content
                 , player
                 ]
             ]
