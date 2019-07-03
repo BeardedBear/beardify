@@ -179,11 +179,11 @@ view session { collection, modal, albums } =
             in
             div
                 [ classList
-                    [ ( "album", True )
+                    [ ( "Album", True )
                     , ( "active", album.uri == session.player.item.album.uri )
                     ]
                 ]
-                [ a [ Route.href (Route.Album album.id), class "img" ] [ imageView Medium album.images ]
+                [ a [ Route.href (Route.Album album.id), class "img" ] [ imageView Medium "Cover" album.images ]
                 , div [] [ text album.album ]
                 , div []
                     (album.artists
@@ -191,7 +191,7 @@ view session { collection, modal, albums } =
                             (\artist ->
                                 a
                                     [ Route.href (Route.Artist artist.id)
-                                    , class "artist-name"
+                                    , class "Artist"
                                     ]
                                     [ text artist.name ]
                             )
@@ -203,13 +203,13 @@ view session { collection, modal, albums } =
 
                   else
                     text ""
-                , div [ class "playing-btn", onClick <| PlayAlbum album.uri ]
+                , div [ class "Album__play", onClick <| PlayAlbum album.uri ]
                     [ i [ class "icon-play" ] []
                     ]
-                , div [ class "add-btn", onClick <| ModalGetTrack album.id ]
+                , div [ class "Album__add", onClick <| ModalGetTrack album.id ]
                     [ i [ class "icon-add" ] []
                     ]
-                , div [ class "del-btn", onClick <| DelCollectionAlbum collection.id [ album.trackUri ] ]
+                , div [ class "Album__del", onClick <| DelCollectionAlbum collection.id [ album.trackUri ] ]
                     [ i [ class "icon-del" ] []
                     ]
                 ]
@@ -221,13 +221,11 @@ view session { collection, modal, albums } =
             , close = ModalClear
             , add = ModalAddTrack
             }
-      , div [ class "drawer-content" ]
-            [ div [ class "heading-page" ] [ text reducedCollectionName ]
-            , div []
-                [ albumList
-                    |> List.map albumItem
-                    |> div [ class "album-list-wrapper" ]
-                ]
+      , div [ class "Page__content" ]
+            [ div [ class "Title" ] [ text reducedCollectionName ]
+            , albumList
+                |> List.map albumItem
+                |> div [ class "AlbumList" ]
             ]
       ]
     )

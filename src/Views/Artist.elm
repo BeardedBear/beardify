@@ -11,4 +11,4 @@ view artistList =
     artistList
         |> List.map (\artist -> a [ Route.href (Route.Artist artist.id) ] [ text artist.name ])
         |> List.intersperse (span [] [ text ", " ])
-        |> span [ class "artist-name" ]
+        |> span [ class "Artist" ]

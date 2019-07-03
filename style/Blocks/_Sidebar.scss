@@ -1,0 +1,68 @@
+.Sidebar {
+  background: darken(#232b37, 5);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  transform: translateZ(0);
+  transition: all ease .15s;
+  will-change: transform;
+
+  @media (max-width: $mobile) {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translateX(-100%);
+    z-index: 9;
+
+    &.opened {
+      transform: translateX(0);
+    }
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(white, .1);
+    border: 5px solid darken(#232b37, 5);
+    border-radius: 20px;
+  }
+
+  &Head {
+    border-bottom: 1px solid #222933;
+    font-family: "Exo 2", sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+    padding: 20px 30px;
+
+    &__logo {
+      margin-right: 5px;
+      position: relative;
+      top: 3px;
+      width: 30px;
+    }
+
+    &__version {
+      font-size: 1rem;
+      opacity: .2;
+    }
+  }
+
+  &Body {
+    display: grid;
+    grid-auto-flow: row;
+
+    &__item {
+      border-bottom: 1px solid #222933;
+      font-weight: bold;
+      overflow: auto;
+      padding: 20px 15px;
+    }
+
+    &__title {
+      color: $primary-color;
+      font-family: "Exo 2", sans-serif;
+      font-size: 1rem;
+      margin-bottom: 15px;
+      padding-left: 15px;
+    }
+  }
+}

@@ -27,11 +27,11 @@ frame : Config -> Html msg -> Html msg -> ( String, List (Html msg) ) -> Documen
 frame config player search ( title, content ) =
     { title = title
     , body =
-        [ div [ class "app" ]
+        [ div [ class "App" ]
             [ Views.Sidebar.view config.session
-            , div [ class "content" ]
-                [ div [ class "topbar" ] [ search ]
-                , div [ class "drawer" ] content
+            , div [ class "App__content" ]
+                [ div [ class "Topbar" ] [ search ]
+                , div [ class "Page" ] content
                 , player
                 ]
             ]

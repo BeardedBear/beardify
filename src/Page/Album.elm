@@ -134,14 +134,14 @@ view session model =
         trackItem track =
             div
                 [ classList
-                    [ ( "track album-page", True )
+                    [ ( "Track album", True )
                     , ( "active", track.uri == session.player.item.uri )
                     ]
                 ]
-                [ div [] []
-                , div [] [ text <| String.fromInt track.track_number ++ "." ]
-                , div [ onClick <| PlayTracks (listTracksUri track.uri) ] [ text track.name ]
-                , div [] [ text (Utils.durationFormat track.duration_ms) ]
+                [ div [ class "Track__section" ] []
+                , div [ class "Track__section" ] [ text <| String.fromInt track.track_number ++ "." ]
+                , div [ class "Track__section", onClick <| PlayTracks (listTracksUri track.uri) ] [ text track.name ]
+                , div [ class "Track__section" ] [ text (Utils.durationFormat track.duration_ms) ]
                 ]
 
         trackSumDuration =
@@ -156,28 +156,26 @@ view session model =
             , close = ModalClear
             , add = ModalAddTrack
             }
-      , div [ class "drawer-content album-wrapper" ]
-            [ div [ class "bg-cover" ] [ imageView Large model.album.images ]
-            , div [ class "album-page-head" ]
-                [ div [ class "heading-page" ] [ text model.album.name ]
-                , div []
-                    [ span [] [ text "By " ]
-                    , span [] [ Views.Artist.view model.album.artists ]
-                    ]
+      , div [ class "Page__content" ]
+            [ div [ class "Title" ] [ text model.album.name ]
+            , div [ class "TitleOptions" ]
+                [ span [] [ text "By " ]
+                , span [] [ Views.Artist.view model.album.artists ]
                 ]
-            , div [ class "album-page" ]
-                [ div []
+            , div [ class "PageAlbum" ]
+                [ div [ class "PageAlbumBackground" ] [ imageView Large "PageAlbumBackground__cover" model.album.images ]
+                , div []
                     [ div
                         [ classList
-                            [ ( "album", True )
+                            [ ( "Album", True )
                             , ( "active", model.album.uri == session.player.item.album.uri )
                             ]
                         ]
-                        [ div [ class "img" ]
-                            [ imageView Large model.album.images
+                        [ div [ class "AlbumCover" ]
+                            [ imageView Large "AlbumCover__item" model.album.images
                             ]
-                        , div [ class "playing-btn", onClick <| PlayAlbum model.album.uri ] [ i [ class "icon-play" ] [] ]
-                        , div [ class "add-btn", onClick <| ModalGetTrack model.album.id ] [ i [ class "icon-add" ] [] ]
+                        , div [ class "Album__play", onClick <| PlayAlbum model.album.uri ] [ i [ class "icon-play" ] [] ]
+                        , div [ class "Album__add", onClick <| ModalGetTrack model.album.id ] [ i [ class "icon-add" ] [] ]
                         , div [] [ text <| Utils.releaseDateFormat model.album.release_date ]
                         , div [] [ text <| Utils.durationFormatMinutes trackSumDuration ]
                         ]

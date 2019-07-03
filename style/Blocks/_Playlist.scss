@@ -1,0 +1,30 @@
+.Playlist {
+  border-radius: 5px;
+  cursor: pointer;
+  display: grid;
+  font-weight: bold;
+  grid-template-columns: auto 1fr;
+  opacity: .6;
+  padding: 6px 12px 4px;
+
+  &:hover {
+    background: rgba(255, 255, 255, .03);
+    opacity: 1;
+  }
+
+  i {
+    font-size: 1.1rem;
+    margin-right: 10px;
+    opacity: .2;
+  }
+
+  &.active {
+    background: $primary-color;
+    color: white;
+    opacity: 1;
+
+    i {
+      opacity: 1;
+    }
+  }
+}

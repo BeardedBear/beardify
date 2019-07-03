@@ -34,6 +34,6 @@ update _ msg model =
 view : Data.Session.Session -> String -> ( String, List (Html Msg) )
 view _ _ =
     ( "Home"
-    , [ div [ class "drawer-content" ] [ text "" ]
+    , [ div [ class "Page__content" ] [ text "" ]
       ]
     )

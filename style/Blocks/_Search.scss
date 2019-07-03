@@ -1,0 +1,130 @@
+.Search {
+  position: relative;
+  z-index: 8;
+
+  &__input {
+    background: rgba($bg-color, .95);
+    border: 1px solid #343b46;
+    border-radius: 5px;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 10px 15px;
+    transition: all ease .25s;
+    width: 100%;
+
+    &.active,
+    &:focus,
+    &:hover {
+      background: #191f27;
+      border-radius: 5px 5px 0 0;
+      outline: none;
+    }
+  }
+
+  &Results {
+    background: #191f27;
+    border-radius: 0 0 5px 5px;
+    border-top: 1px solid #222933;
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: 1.4fr 2fr 2.5fr;
+    left: 0;
+    max-height: 80vh;
+    overflow: hidden;
+    padding: 20px;
+    position: absolute;
+    right: 0;
+    top: 43px;
+
+    @media (max-width: $mobile) {
+      display: block;
+      left: 20px;
+      overflow: auto;
+      position: fixed;
+      right: 20px;
+    }
+
+    &__title {
+      color: $primary-color;
+      font-family: "Exo 2", sans-serif;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+  }
+
+  &Artist {
+    &__item {
+      align-items: center;
+      border-radius: 5px;
+      cursor: pointer;
+      display: grid;
+      font-weight: bold;
+      grid-gap: 15px;
+      grid-template-columns: auto 1fr;
+      justify-content: left;
+      padding: 10px;
+
+      &:hover {
+        background: rgba(0, 0, 0, .2);
+        color: white;
+      }
+    }
+
+    &__name {
+      padding: 10px 0;
+    }
+
+    &__cover {
+      $size: 40px;
+      border-radius: $size;
+      height: $size;
+      width: $size;
+    }
+  }
+
+  &Album {
+    &__item {
+      align-items: center;
+      display: grid;
+      grid-gap: 15px;
+      grid-template-columns: auto 1fr;
+      margin-bottom: 15px;
+    }
+
+    &__cover {
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      transition: all ease-in-out .15s;
+      transition: transform ease .15s;
+      width: 53px;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  &Track {
+    &__item {
+      align-items: center;
+      display: grid;
+      grid-gap: 15px;
+      grid-template-columns: auto 1fr auto;
+      margin-bottom: 15px;
+    }
+
+    &__icon {
+      cursor: pointer;
+      float: left;
+      font-size: 1.8rem;
+      opacity: .2;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}

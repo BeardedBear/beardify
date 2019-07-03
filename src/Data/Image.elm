@@ -1,7 +1,7 @@
 module Data.Image exposing (Image, ImageSize(..), decodeImage, imageView)
 
 import Html exposing (Html, img, text)
-import Html.Attributes exposing (src)
+import Html.Attributes exposing (class, src)
 import Json.Decode as Decode exposing (field)
 
 
@@ -20,15 +20,15 @@ type ImageSize
     | Large
 
 
-imageView : ImageSize -> List Image -> Html msg
-imageView size image =
+imageView : ImageSize -> String -> List Image -> Html msg
+imageView size className image =
     let
         showImage c =
             if c == "" then
                 text ""
 
             else
-                img [ src c ] []
+                img [ src c, class className ] []
     in
     case size of
         Small ->

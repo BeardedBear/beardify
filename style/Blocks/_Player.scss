@@ -1,0 +1,163 @@
+.Player {
+  border-top: 1px solid #191f27;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  justify-content: space-between;
+  justify-items: center;
+  padding: 10px;
+  position: relative;
+
+  @media (max-width: $tablet) {
+    display: block;
+  }
+
+  &__current {
+    align-items: end;
+    align-self: center;
+    display: grid;
+    gap: 15px;
+    grid-template-columns: auto 1fr;
+  }
+
+  &Controls {
+    align-content: center;
+    align-items: center;
+    align-self: center;
+    display: grid;
+    grid-auto-flow: column;
+
+    @media (max-width: $tablet) {
+      justify-content: center;
+    }
+
+    &__button {
+      $size: 40px;
+      background: none;
+      border: 0;
+      border-radius: 30px;
+      color: white;
+      cursor: pointer;
+      font-size: 1.6rem;
+      height: $size;
+      line-height: 0;
+      position: relative;
+      top: -5px;
+      width: $size;
+
+      &.play {
+        $size: 60px;
+        background: rgba(255, 255, 255, .05);
+        font-size: 2.6rem;
+        height: $size;
+        margin: 0 10px;
+        top: 0;
+        width: $size;
+
+        &:hover {
+          background: rgba(255, 255, 255, .1);
+          border: 1px solid rgba(255, 255, 255, 0);
+        }
+
+        @media (max-width: $tablet) {
+          $size: 50px;
+          font-size: 2rem;
+          height: $size;
+          width: $size;
+        }
+      }
+
+      &:hover {
+        border: 1px solid rgba(255, 255, 255, .1);
+      }
+
+      &.active {
+        background: $primary-color;
+      }
+    }
+  }
+
+  &Playing {
+    align-items: baseline;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    position: relative;
+
+    &__time {
+      opacity: .6;
+    }
+
+    &__trackName {
+      font-weight: bold;
+    }
+  }
+
+  &Range {
+    align-items: baseline;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    position: relative;
+
+    &__input {
+      opacity: 0;
+      padding: 10px;
+      padding-bottom: 5px;
+      position: relative;
+      top: -2px;
+      transition: opacity ease .15s;
+
+      &.current {
+        width: 30vw;
+      }
+
+      &.volume {
+        width: 140px;
+      }
+
+      @media (max-width: $tablet) {
+        width: 100%;
+      }
+    }
+  }
+
+  &Progress {
+    background: rgba(black, .45);
+    border-radius: 10px;
+    height: 8px;
+    position: absolute;
+    top: 14px;
+    z-index: -1;
+
+    &.current {
+      left: 40px;
+      right: 40px;
+    }
+
+    &.volume {
+      left: 0;
+      right: 0;
+    }
+
+    &__current {
+      background: $primary-color;
+      border-radius: 10px;
+      bottom: 0;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100px;
+    }
+  }
+
+  &Volume {
+    align-items: end;
+    display: grid;
+    gap: 15px;
+    grid-auto-flow: column;
+    padding-right: 10px;
+
+    @media (max-width: $tablet) {
+      position: absolute;
+      right: 0;
+    }
+  }
+}
