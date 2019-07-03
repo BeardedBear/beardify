@@ -20,7 +20,7 @@ collectionItem : Config msg -> Session -> PlaylistSimplified -> Html msg
 collectionItem config session playlist =
     span
         [ classList
-            [ ( "playlist", True )
+            [ ( "Playlist", True )
             , ( "active", Utils.getId session.url == playlist.id )
             ]
         , onClick <| config.add playlist.id

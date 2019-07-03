@@ -159,7 +159,7 @@ view session model =
       , div [ class "drawer-content album-wrapper" ]
             [ div [ class "bg-cover" ] [ imageView Large "Cover" model.album.images ]
             , div [ class "album-page-head" ]
-                [ div [ class "heading-page" ] [ text model.album.name ]
+                [ div [ class "Title" ] [ text model.album.name ]
                 , div []
                     [ span [] [ text "By " ]
                     , span [] [ Views.Artist.view model.album.artists ]
@@ -169,15 +169,15 @@ view session model =
                 [ div []
                     [ div
                         [ classList
-                            [ ( "album", True )
+                            [ ( "Album", True )
                             , ( "active", model.album.uri == session.player.item.album.uri )
                             ]
                         ]
-                        [ div [ class "img" ]
-                            [ imageView Large "Cover" model.album.images
+                        [ div [ class "AlbumCover" ]
+                            [ imageView Large "AlbumCover__item" model.album.images
                             ]
-                        , div [ class "playing-btn", onClick <| PlayAlbum model.album.uri ] [ i [ class "icon-play" ] [] ]
-                        , div [ class "add-btn", onClick <| ModalGetTrack model.album.id ] [ i [ class "icon-add" ] [] ]
+                        , div [ class "Album__play", onClick <| PlayAlbum model.album.uri ] [ i [ class "icon-play" ] [] ]
+                        , div [ class "Album__add", onClick <| ModalGetTrack model.album.id ] [ i [ class "icon-add" ] [] ]
                         , div [] [ text <| Utils.releaseDateFormat model.album.release_date ]
                         , div [] [ text <| Utils.durationFormatMinutes trackSumDuration ]
                         ]

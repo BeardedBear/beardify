@@ -1,73 +1,25 @@
-@import "./base/_base";
-@import "./base/_variables";
+// Colors
+$primary-color: #00bcc5;
+$secondary-color: #5d9c3f;
+$bg-color: #11151b;
+
+// Responsive
+$mobile: 500px;
+$tablet: 1200px;
 
 @import "./modules/_album-gallery";
 @import "./modules/_drawer";
 
+@import "./Blocks/App";
+@import "./Blocks/Album";
+@import "./Blocks/Artist";
 @import "./Blocks/Cover";
+@import "./Blocks/Heading";
 @import "./Blocks/Helper";
 @import "./Blocks/Modal";
+@import "./Blocks/Normalise";
 @import "./Blocks/Playlist";
 @import "./Blocks/Player";
 @import "./Blocks/Search";
 @import "./Blocks/Sidebar";
 @import "./Blocks/Topbar";
-
-.app {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  height: 100vh;
-
-  @media (max-width: $mobile) {
-    grid-template-columns: 0 1fr;
-  }
-}
-
-.content {
-  display: grid;
-  grid-template-rows: 0 1fr auto;
-
-  @media (max-width: $mobile) {
-    bottom: 0;
-    display: grid;
-    grid-template-rows: 0 1fr auto;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 100%;
-  }
-}
-
-.currently-playing {
-  background: $primary-color;
-}
-
-.sub-title {
-  color: $primary-color;
-  font-family: "Exo 2", sans-serif;
-  font-weight: bold;
-  letter-spacing: 1px;
-  margin-bottom: 15px;
-  padding-left: 10px;
-  text-transform: uppercase;
-}
-
-.relative {
-  overflow: auto;
-  position: relative;
-
-  .fit {
-    bottom: 0;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-}
-
-.artist-name {
-  font-style: italic;
-  font-weight: normal;
-  opacity: .6;
-}

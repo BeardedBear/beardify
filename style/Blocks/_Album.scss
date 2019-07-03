@@ -1,0 +1,139 @@
+.Album {
+  cursor: pointer;
+  font-weight: bold;
+  position: relative;
+  transition: all ease .15s;
+
+  &Cover {
+    border-radius: 5px;
+    display: block;
+    margin-bottom: 10px;
+    padding-bottom: 100%;
+    position: relative;
+
+    &__item {
+      position: absolute;
+    }
+  }
+
+  &__add {
+    right: 0;
+  }
+
+  &__del {
+    left: 0;
+  }
+
+  &__add,
+  &__del {
+    color: black;
+    font-size: 1.7rem;
+    padding: 10px;
+    position: absolute;
+    top: 0;
+    transform: scale(1);
+    transition: all ease .15s;
+    visibility: hidden;
+
+    &:before {
+      $inset: 15px;
+      background: white;
+      border-radius: 10px;
+      bottom: $inset + 5px;
+      content: "";
+      left: $inset;
+      position: absolute;
+      right: $inset;
+      top: $inset;
+      z-index: -1;
+    }
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  &__play {
+    $size: 60px;
+    align-items: center;
+    background: rgba(black, .8);
+    border-radius: 100px;
+    color: white;
+    display: grid;
+    font-size: 2.3rem;
+    height: $size;
+    justify-content: center;
+    left: 50%;
+    position: absolute;
+    top: 42%;
+    transform: translate(-50%, -50%);
+    transition: all ease .15s;
+    visibility: hidden;
+    width: $size;
+
+    i {
+      align-items: center;
+      display: grid;
+      justify-items: center;
+      position: relative;
+    }
+
+    &:hover {
+      background: rgba(black, 1);
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+  }
+
+  .date {
+    font-size: .9rem;
+    font-style: italic;
+    font-weight: normal;
+    margin-top: 5px;
+    opacity: .6;
+  }
+
+  img {
+    border-radius: 5px;
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  &.active {
+    @keyframes InfiniteBox {
+      0% {
+        box-shadow: 0 0 0 0 $primary-color;
+      }
+      50% {
+        box-shadow: 0 0 0 5px $primary-color;
+      }
+      100% {
+        box-shadow: 0 0 0 0 $primary-color;
+      }
+    }
+
+    > &__play {
+      visibility: hidden;
+    }
+
+    .img {
+      animation: InfiniteBox 2s infinite;
+    }
+  }
+
+  &:hover {
+    transform: scale(1.02);
+
+    .Album__play,
+    .Album__add,
+    .Album__del {
+      visibility: visible;
+    }
+
+    @media (max-width: $mobile) {
+      .Album__play {
+        display: none;
+      }
+    }
+  }
+}

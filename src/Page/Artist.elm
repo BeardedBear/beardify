@@ -181,7 +181,7 @@ view session ({ modal } as model) =
         albumItem album =
             div
                 [ classList
-                    [ ( "album", True )
+                    [ ( "Album", True )
                     , ( "active", session.player.item.album.id == album.id )
                     ]
                 ]
@@ -193,8 +193,8 @@ view session ({ modal } as model) =
                     ]
                 , div [] [ text album.name ]
                 , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat album.release_date ++ ")" ]
-                , div [ class "playing-btn", onClick <| PlayAlbum album.uri ] [ i [ class "icon-play" ] [] ]
-                , div [ class "add-btn", onClick <| ModalGetTrack album.id ] [ i [ class "icon-add" ] [] ]
+                , div [ class "Album__play", onClick <| PlayAlbum album.uri ] [ i [ class "icon-play" ] [] ]
+                , div [ class "Album__add", onClick <| ModalGetTrack album.id ] [ i [ class "icon-add" ] [] ]
                 ]
 
         link name urlBefore urlAfter icon =
@@ -210,7 +210,7 @@ view session ({ modal } as model) =
       , div
             [ class "artist-wrapper drawer-content" ]
             [ div []
-                [ div [ class "heading-page" ] [ text model.artist.name ]
+                [ div [ class "Title" ] [ text model.artist.name ]
                 , div [ class "links" ]
                     [ link "Wikipedia" "https://fr.wikipedia.org/wiki/" "" "wikipedia"
                     , link "Sputnik" "https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=" "&x=0&y=0" "sputnik"
@@ -219,21 +219,21 @@ view session ({ modal } as model) =
                     ]
                 , div [ class "artist-head" ]
                     [ div [ class "top-tracks" ]
-                        [ div [ class "sub-title" ] [ text "Top tracks" ]
+                        [ div [ class "SubTitle" ] [ text "Top tracks" ]
                         , div [] (model.topTracks |> List.take 5 |> List.map trackItem)
                         ]
                     , div []
-                        [ div [ class "sub-title" ] [ text "Similar artists" ]
+                        [ div [ class "SubTitle" ] [ text "Similar artists" ]
                         , div [ class "related-artists" ] (model.relatedArtists |> List.take 4 |> List.map relatedArtistItem)
                         ]
                     ]
-                , div [ class "sub-title" ] [ text "Albums" ]
+                , div [ class "SubTitle" ] [ text "Albums" ]
                 , model.albums
                     |> List.map albumItem
                     |> div [ class "album-list-wrapper" ]
                 ]
             , div [ class "video-wrapper" ]
-                [ div [ class "sub-title" ] [ text "Videos" ]
+                [ div [ class "SubTitle" ] [ text "Videos" ]
                 , div [] (model.videos |> List.map videoFrame)
                 ]
             ]

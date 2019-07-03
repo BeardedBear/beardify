@@ -129,7 +129,7 @@ view session model =
     ( model.playlist.name
     , [ div [ class "album-wrapper drawer-content" ]
             [ div [ class "album-page-head" ]
-                [ div [ class "heading-page" ] [ text model.playlist.name ]
+                [ div [ class "Title" ] [ text model.playlist.name ]
                 ]
             , div [ class "album-page" ]
                 [ div []

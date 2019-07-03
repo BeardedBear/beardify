@@ -179,7 +179,7 @@ view session { collection, modal, albums } =
             in
             div
                 [ classList
-                    [ ( "album", True )
+                    [ ( "Album", True )
                     , ( "active", album.uri == session.player.item.album.uri )
                     ]
                 ]
@@ -203,13 +203,13 @@ view session { collection, modal, albums } =
 
                   else
                     text ""
-                , div [ class "playing-btn", onClick <| PlayAlbum album.uri ]
+                , div [ class "Album__play", onClick <| PlayAlbum album.uri ]
                     [ i [ class "icon-play" ] []
                     ]
-                , div [ class "add-btn", onClick <| ModalGetTrack album.id ]
+                , div [ class "Album__add", onClick <| ModalGetTrack album.id ]
                     [ i [ class "icon-add" ] []
                     ]
-                , div [ class "del-btn", onClick <| DelCollectionAlbum collection.id [ album.trackUri ] ]
+                , div [ class "Album__del", onClick <| DelCollectionAlbum collection.id [ album.trackUri ] ]
                     [ i [ class "icon-del" ] []
                     ]
                 ]
@@ -222,7 +222,7 @@ view session { collection, modal, albums } =
             , add = ModalAddTrack
             }
       , div [ class "drawer-content" ]
-            [ div [ class "heading-page" ] [ text reducedCollectionName ]
+            [ div [ class "Title" ] [ text reducedCollectionName ]
             , div []
                 [ albumList
                     |> List.map albumItem
