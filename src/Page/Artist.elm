@@ -160,21 +160,21 @@ view session ({ modal } as model) =
                     , ( "active", track.uri == session.player.item.uri )
                     ]
                 ]
-                [ div [ class "Track__section" ] [ Data.Image.imageView Data.Image.Small "Cover" track.album.images ]
+                [ div [ class "Track__section" ] [ Data.Image.imageView Data.Image.Small "PageArtistTop__cover" track.album.images ]
                 , div [ class "Track__section", onClick <| PlayTracks (listTracksUri track.uri) ] [ text track.name ]
                 , div [ class "Track__section" ] [ text (Utils.durationFormat track.duration_ms) ]
                 ]
 
         relatedArtistItem relatedArtist =
-            a [ class "related-artist", Route.href (Route.Artist relatedArtist.id) ]
-                [ div [] [ Data.Image.imageView Data.Image.Small "Cover" relatedArtist.images ]
+            a [ class "PageArtistRelatedList__artist", Route.href (Route.Artist relatedArtist.id) ]
+                [ div [] [ Data.Image.imageView Data.Image.Small "PageArtistRelatedList__cover" relatedArtist.images ]
                 , div [] [ text relatedArtist.name ]
                 ]
 
         videoFrame video =
-            div [ class "video-frame" ]
-                [ iframe [ class "video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 140, src <| "https://www.youtube.com/embed/" ++ video.id ] []
-                , div [ class "video-title" ] [ text video.snippet.title ]
+            div [ class "PageArtistVideo__frame" ]
+                [ iframe [ class "PageArtistVideo__video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 140, src <| "https://www.youtube.com/embed/" ++ video.id ] []
+                , div [ class "PageArtistVideo__title" ] [ text video.snippet.title ]
                 , div [ class "Artist" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ video.snippet.channelId) ] [ text video.snippet.channelTitle ] ]
                 ]
 
@@ -208,33 +208,35 @@ view session ({ modal } as model) =
             , add = ModalAddTrack
             }
       , div
-            [ class "artist-wrapper Page__content" ]
-            [ div []
-                [ div [ class "Title" ] [ text model.artist.name ]
-                , div [ class "links" ]
-                    [ link "Wikipedia" "https://fr.wikipedia.org/wiki/" "" "wikipedia"
-                    , link "Sputnik" "https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=" "&x=0&y=0" "sputnik"
-                    , link "Discogs" "https://www.discogs.com/fr/search/?q=" "&type=artist&strict=true" "discogs"
-                    , link "Google" "https://www.google.com/search?q=" "" "magnifying-glass"
-                    ]
-                , div [ class "artist-head" ]
-                    [ div [ class "top-tracks" ]
-                        [ div [ class "SubTitle" ] [ text "Top tracks" ]
-                        , div [] (model.topTracks |> List.take 5 |> List.map trackItem)
-                        ]
-                    , div []
-                        [ div [ class "SubTitle" ] [ text "Similar artists" ]
-                        , div [ class "related-artists" ] (model.relatedArtists |> List.take 4 |> List.map relatedArtistItem)
-                        ]
-                    ]
-                , div [ class "SubTitle" ] [ text "Albums" ]
-                , model.albums
-                    |> List.map albumItem
-                    |> div [ class "AlbumList" ]
+            [ class "Page__content" ]
+            [ div [ class "Title" ] [ text model.artist.name ]
+            , div [ class "PageArtist__links" ]
+                [ link "Wikipedia" "https://fr.wikipedia.org/wiki/" "" "wikipedia"
+                , link "Sputnik" "https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=" "&x=0&y=0" "sputnik"
+                , link "Discogs" "https://www.discogs.com/fr/search/?q=" "&type=artist&strict=true" "discogs"
+                , link "Google" "https://www.google.com/search?q=" "" "magnifying-glass"
                 ]
-            , div [ class "video-wrapper" ]
-                [ div [ class "SubTitle" ] [ text "Videos" ]
-                , div [] (model.videos |> List.map videoFrame)
+            , div [ class "PageArtist" ]
+                [ div []
+                    [ div [ class "PageArtist__head" ]
+                        [ div [ class "PageArtistTop" ]
+                            [ div [ class "SubTitle" ] [ text "Top tracks" ]
+                            , div [] (model.topTracks |> List.take 5 |> List.map trackItem)
+                            ]
+                        , div []
+                            [ div [ class "SubTitle" ] [ text "Similar artists" ]
+                            , div [ class "PageArtistRelatedList" ] (model.relatedArtists |> List.take 4 |> List.map relatedArtistItem)
+                            ]
+                        ]
+                    , div [ class "SubTitle" ] [ text "Albums" ]
+                    , model.albums
+                        |> List.map albumItem
+                        |> div [ class "AlbumList" ]
+                    ]
+                , div [ class "PageArtistVideo" ]
+                    [ div [ class "SubTitle" ] [ text "Videos" ]
+                    , div [] (model.videos |> List.map videoFrame)
+                    ]
                 ]
             ]
       ]

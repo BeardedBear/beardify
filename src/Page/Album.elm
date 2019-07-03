@@ -157,14 +157,14 @@ view session model =
             , add = ModalAddTrack
             }
       , div [ class "Page__content" ]
-            [ div [ class "bg-cover" ] [ imageView Large "Cover" model.album.images ]
-            , div [ class "Title" ] [ text model.album.name ]
+            [ div [ class "Title" ] [ text model.album.name ]
             , div []
                 [ span [] [ text "By " ]
                 , span [] [ Views.Artist.view model.album.artists ]
                 ]
-            , div [ class "album-page" ]
-                [ div []
+            , div [ class "PageAlbum" ]
+                [ div [ class "PageAlbumBackground" ] [ imageView Large "PageAlbumBackground__cover" model.album.images ]
+                , div []
                     [ div
                         [ classList
                             [ ( "Album", True )

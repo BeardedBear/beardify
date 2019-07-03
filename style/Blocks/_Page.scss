@@ -23,7 +23,8 @@
     }
   }
 
-  .artist-wrapper {
+  &Artist {
+    display: grid;
     grid-gap: 30px;
     grid-template-columns: 1fr 300px;
 
@@ -31,7 +32,9 @@
       grid-template-columns: 1fr;
     }
 
-    .links {
+    &__links {
+      margin-bottom: 20px;
+
       a {
         margin-right: 15px;
         opacity: .5;
@@ -48,12 +51,23 @@
       }
     }
 
-    .related-artists {
+    &__head {
+      display: grid;
+      grid-gap: 30px;
+      grid-template-columns: 1fr 1fr;
+      margin: 50px 0;
+
+      @media (max-width: $mobile) {
+        display: block;
+      }
+    }
+
+    &RelatedList {
       display: grid;
       font-weight: bold;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 
-      .related-artist {
+      &__artist {
         align-items: center;
         border-radius: 5px;
         cursor: pointer;
@@ -66,9 +80,9 @@
         }
       }
 
-      img {
+      &__cover {
         $size: 82px;
-        border-radius: 100px;
+        border-radius: $size;
         display: block;
         height: $size;
         margin-right: 10px;
@@ -76,8 +90,8 @@
       }
     }
 
-    .top-tracks {
-      img {
+    &Top {
+      &__cover {
         border-radius: 5px;
         display: block;
         height: 30px;
@@ -86,18 +100,7 @@
       }
     }
 
-    .artist-head {
-      display: grid;
-      grid-gap: 30px;
-      grid-template-columns: 1fr 1fr;
-      margin: 50px 0;
-
-      @media (max-width: $mobile) {
-        display: block;
-      }
-    }
-
-    .video-wrapper {
+    &Video {
       border-left: 1px solid rgba(white, .05);
       padding: 0 30px;
 
@@ -105,45 +108,21 @@
         display: none;
       }
 
-      .video-frame {
+      &__frame {
         margin-bottom: 30px;
       }
 
-      .video {
+      &__video {
         margin-bottom: 10px;
       }
 
-      .video-title {
+      &__title {
         font-weight: bold;
       }
-
-      .video-channel {
-        font-style: italic;
-        opacity: .6;
-      }
     }
   }
 
-  .bg-cover {
-    bottom: 0;
-    left: 0;
-    opacity: .1;
-    overflow: hidden;
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: -1;
-
-    img {
-      filter: blur(10px);
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%) translateZ(0);
-      width: 100%;
-    }
-  }
-
-  .album-page {
+  &Album {
     display: grid;
     grid-gap: 40px;
     grid-template-columns: 300px 1fr;
@@ -156,18 +135,22 @@
       display: block;
     }
 
-    img {
-      border-radius: 5px;
-      display: block;
-      margin-bottom: 10px;
-      width: 100%;
+    &Background {
+      bottom: 0;
+      left: 0;
+      opacity: .1;
+      overflow: hidden;
+      position: absolute;
+      right: 0;
+      top: 0;
+      z-index: -1;
 
-      @media (max-width: $mobile) {
-        display: none;
-      }
-
-      @media (max-width: $tablet) {
-        max-width: 250px;
+      &__cover {
+        filter: blur(10px);
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%) translateZ(0);
+        width: 100%;
       }
     }
   }
