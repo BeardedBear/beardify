@@ -41,7 +41,9 @@ update { token } msg model =
             ( model, Http.send NoOp <| Request.put "seek?position_ms=" duration "" token )
 
         Volume percent ->
-            ( model, Http.send NoOp <| Request.put "volume?volume_percent=" percent "" token )
+            ( model
+            , Http.send NoOp <| Request.put "volume?volume_percent=" percent "" token
+            )
 
         VolumeToggleMute percent ->
             ( model, Http.send NoOp <| Request.put "volume?volume_percent=" percent "" token )
