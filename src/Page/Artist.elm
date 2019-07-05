@@ -2,13 +2,13 @@ module Page.Artist exposing (Msg(..), init, update, view)
 
 import Data.Album exposing (Album, AlbumId, decodeAlbum)
 import Data.Artist exposing (Artist, artistInit, decodeArtist)
-import Data.Image
+import Data.Image exposing (ImageSize(..), imageView)
 import Data.Meta exposing (ArtistModel)
 import Data.Modal exposing (modalInit)
 import Data.Playlist exposing (PlaylistId)
 import Data.Session exposing (Session)
 import Data.Track exposing (Track, TrackSimplified, decodeTrack, decodeTrackSimplified)
-import Data.Youtube exposing (Youtube, getVideos)
+import Data.Youtube exposing (Video, Youtube, getVideos)
 import Html exposing (Html, a, div, i, iframe, text)
 import Html.Attributes exposing (attribute, class, classList, height, href, src, target, width)
 import Html.Events exposing (onClick)
@@ -145,11 +145,44 @@ update session msg ({ modal } as model) =
             )
 
 
-view : Session -> ArtistModel -> ( String, List (Html Msg) )
-view session ({ modal } as model) =
+videoView : List Video -> Html msg
+videoView videoList =
+    let
+        videoFrame video =
+            div [ class "PageArtistVideo__frame" ]
+                [ iframe [ class "PageArtistVideo__video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 140, src <| "https://www.youtube.com/embed/" ++ video.id ] []
+                , div [ class "PageArtistVideo__title" ] [ text video.snippet.title ]
+                , div [ class "Artist" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ video.snippet.channelId) ] [ text video.snippet.channelTitle ] ]
+                ]
+    in
+    div [ class "PageArtistVideo" ]
+        [ div [ class "SubTitle" ] [ text "Videos" ]
+        , videoList
+            |> List.map videoFrame
+            |> div []
+        ]
+
+
+relatedArtistsView : List Artist -> Html msg
+relatedArtistsView artists =
+    let
+        relatedArtistItem relatedArtist =
+            a [ class "PageArtistRelatedList__artist", Route.href (Route.Artist relatedArtist.id) ]
+                [ div [] [ imageView Small "PageArtistRelatedList__cover" relatedArtist.images ]
+                , div [] [ text relatedArtist.name ]
+                ]
+    in
+    div []
+        [ div [ class "SubTitle" ] [ text "Similar artists" ]
+        , div [ class "PageArtistRelatedList" ] (artists |> List.take 4 |> List.map relatedArtistItem)
+        ]
+
+
+topTrackView : Session -> List Track -> Html Msg
+topTrackView session tracks =
     let
         listTracksUri trackUri =
-            model.topTracks
+            tracks
                 |> LE.dropWhile (\track -> track.uri /= trackUri)
                 |> List.map .uri
 
@@ -160,24 +193,23 @@ view session ({ modal } as model) =
                     , ( "active", track.uri == session.player.item.uri )
                     ]
                 ]
-                [ div [ class "Track__section" ] [ Data.Image.imageView Data.Image.Small "PageArtistTop__cover" track.album.images ]
+                [ div [ class "Track__section" ] [ imageView Small "PageArtistTop__cover" track.album.images ]
                 , div [ class "Track__section", onClick <| PlayTracks (listTracksUri track.uri) ] [ text track.name ]
                 , div [ class "Track__section" ] [ text (Utils.durationFormat track.duration_ms) ]
                 ]
+    in
+    div [ class "PageArtistTop" ]
+        [ div [ class "SubTitle" ] [ text "Top tracks" ]
+        , tracks
+            |> List.take 5
+            |> List.map trackItem
+            |> div []
+        ]
 
-        relatedArtistItem relatedArtist =
-            a [ class "PageArtistRelatedList__artist", Route.href (Route.Artist relatedArtist.id) ]
-                [ div [] [ Data.Image.imageView Data.Image.Small "PageArtistRelatedList__cover" relatedArtist.images ]
-                , div [] [ text relatedArtist.name ]
-                ]
 
-        videoFrame video =
-            div [ class "PageArtistVideo__frame" ]
-                [ iframe [ class "PageArtistVideo__video", attribute "allowfullscreen" "", attribute "frameborder" "0", width 250, height 140, src <| "https://www.youtube.com/embed/" ++ video.id ] []
-                , div [ class "PageArtistVideo__title" ] [ text video.snippet.title ]
-                , div [ class "Artist" ] [ a [ target "_BLANK", href ("https://www.youtube.com/channel/" ++ video.snippet.channelId) ] [ text video.snippet.channelTitle ] ]
-                ]
-
+albumsView : Session -> List Album -> Html Msg
+albumsView session albums =
+    let
         albumItem album =
             div
                 [ classList
@@ -189,17 +221,38 @@ view session ({ modal } as model) =
                     [ class "img"
                     , Route.href (Route.Album album.id)
                     ]
-                    [ Data.Image.imageView Data.Image.Medium "Cover" album.images
+                    [ imageView Medium "Cover" album.images
                     ]
                 , div [] [ text album.name ]
                 , div [ class "date" ] [ text <| "(" ++ Utils.releaseDateFormat album.release_date ++ ")" ]
                 , div [ class "Album__play", onClick <| PlayAlbum album.uri ] [ i [ class "icon-play" ] [] ]
                 , div [ class "Album__add", onClick <| ModalGetTrack album.id ] [ i [ class "icon-add" ] [] ]
                 ]
-
-        link name urlBefore urlAfter icon =
-            a [ href <| urlBefore ++ model.artist.name ++ urlAfter, target "_BLANK" ] [ i [ class <| "icon-" ++ icon ] [], text name ]
     in
+    div []
+        [ div [ class "SubTitle" ] [ text "Albums" ]
+        , albums
+            |> List.map albumItem
+            |> div [ class "AlbumList" ]
+        ]
+
+
+linksView : String -> Html msg
+linksView artistName =
+    let
+        link name urlBefore urlAfter icon =
+            a [ href <| urlBefore ++ artistName ++ urlAfter, target "_BLANK" ] [ i [ class <| "icon-" ++ icon ] [], text name ]
+    in
+    div [ class "PageArtist__links" ]
+        [ link "Wikipedia" "https://fr.wikipedia.org/wiki/" "" "wikipedia"
+        , link "Sputnik" "https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=" "&x=0&y=0" "sputnik"
+        , link "Discogs" "https://www.discogs.com/fr/search/?q=" "&type=artist&strict=true" "discogs"
+        , link "Google" "https://www.google.com/search?q=" "" "magnifying-glass"
+        ]
+
+
+view : Session -> ArtistModel -> ( String, List (Html Msg) )
+view session ({ modal } as model) =
     ( model.artist.name
     , [ Views.Modal.view
             { isOpen = modal.isOpen
@@ -210,33 +263,16 @@ view session ({ modal } as model) =
       , div
             [ class "Page__content" ]
             [ div [ class "Title" ] [ text model.artist.name ]
-            , div [ class "PageArtist__links" ]
-                [ link "Wikipedia" "https://fr.wikipedia.org/wiki/" "" "wikipedia"
-                , link "Sputnik" "https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=" "&x=0&y=0" "sputnik"
-                , link "Discogs" "https://www.discogs.com/fr/search/?q=" "&type=artist&strict=true" "discogs"
-                , link "Google" "https://www.google.com/search?q=" "" "magnifying-glass"
-                ]
+            , linksView model.artist.name
             , div [ class "PageArtist" ]
                 [ div []
                     [ div [ class "PageArtist__head" ]
-                        [ div [ class "PageArtistTop" ]
-                            [ div [ class "SubTitle" ] [ text "Top tracks" ]
-                            , div [] (model.topTracks |> List.take 5 |> List.map trackItem)
-                            ]
-                        , div []
-                            [ div [ class "SubTitle" ] [ text "Similar artists" ]
-                            , div [ class "PageArtistRelatedList" ] (model.relatedArtists |> List.take 4 |> List.map relatedArtistItem)
-                            ]
+                        [ topTrackView session model.topTracks
+                        , relatedArtistsView model.relatedArtists
                         ]
-                    , div [ class "SubTitle" ] [ text "Albums" ]
-                    , model.albums
-                        |> List.map albumItem
-                        |> div [ class "AlbumList" ]
+                    , albumsView session model.albums
                     ]
-                , div [ class "PageArtistVideo" ]
-                    [ div [ class "SubTitle" ] [ text "Videos" ]
-                    , div [] (model.videos |> List.map videoFrame)
-                    ]
+                , videoView model.videos
                 ]
             ]
       ]
