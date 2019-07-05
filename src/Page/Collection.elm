@@ -1,6 +1,6 @@
 module Page.Collection exposing (Msg(..), init, update, view)
 
-import Data.Album exposing (AlbumId, AlbumUri)
+import Data.Album exposing (Album, AlbumId, AlbumUri)
 import Data.Image exposing (ImageSize(..), imageView)
 import Data.Meta exposing (CollectionModel, pagingInit)
 import Data.Modal exposing (modalInit)

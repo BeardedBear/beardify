@@ -13,6 +13,14 @@ type PlaylistType
     | Albums
 
 
+type alias Config =
+    { session : Session
+    , playlistType : PlaylistType
+    , playlists : List PlaylistSimplified
+    , label : String
+    }
+
+
 playlistItem : Session -> PlaylistType -> PlaylistSimplified -> Html msg
 playlistItem session playlistType playlist =
     let
@@ -46,21 +54,14 @@ listFilter playlistType list =
                 |> List.filter (\playlist -> not <| String.contains "#Collection" playlist.name)
 
 
-playlistList : Session -> PlaylistType -> List PlaylistSimplified -> Html msg
-playlistList session playlistType playlists =
-    if List.length playlists /= 0 then
+playlistList : Config -> Html msg
+playlistList config =
+    if List.length config.playlists /= 0 then
         div [ class "SidebarBody__item" ]
-            [ div [ class "SidebarBody__title" ]
-                [ case playlistType of
-                    Albums ->
-                        text "Collections"
-
-                    Tracks ->
-                        text "Playlists"
-                ]
-            , playlists
-                |> listFilter playlistType
-                |> List.map (playlistItem session playlistType)
+            [ div [ class "SidebarBody__title" ] [ text config.label ]
+            , config.playlists
+                |> listFilter config.playlistType
+                |> List.map (playlistItem config.session config.playlistType)
                 |> div []
             ]
 
@@ -78,8 +79,18 @@ view session =
             ]
         , div [ class "Scrollable" ]
             [ div [ class "SidebarBody Scrollable__target" ]
-                [ playlistList session Albums session.playlists
-                , playlistList session Tracks session.playlists
+                [ playlistList
+                    { session = session
+                    , playlistType = Albums
+                    , playlists = session.playlists
+                    , label = "Collections"
+                    }
+                , playlistList
+                    { session = session
+                    , playlistType = Tracks
+                    , playlists = session.playlists
+                    , label = "Playlists"
+                    }
                 ]
             ]
         ]
