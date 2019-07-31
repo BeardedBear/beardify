@@ -39,7 +39,6 @@
             window.location.assign(authUrl);
             if (Object.getOwnPropertyNames(params).length != 0) {
                 let object = { value: params.access_token, timestamp: new Date().getTime() }
-                console.log(object);
                 localStorage.setItem(tokenName, JSON.stringify(object));
             }
         }
