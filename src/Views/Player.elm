@@ -187,10 +187,10 @@ view player =
             ]
         , div [ class "Device" ]
             [ div [ class "DeviceSelect" ]
-                [ i [ class "icon icon-pc" ] []
+                [ i [ class "icon icon-computer" ] []
                 , div [ class "DeviceSelect__menu" ]
-                    [ div [ class "DeviceSelect__item active" ] [ i [ class "icon icon-pc" ] [], text "Ordinateur" ]
-                    , div [ class "DeviceSelect__item" ] [ i [ class "icon icon-mobile" ] [], text "Mobile" ]
+                    [ div [ class "DeviceSelect__item active" ] [ i [ class "icon icon-computer" ] [], text "Ordinateur" ]
+                    , div [ class "DeviceSelect__item" ] [ i [ class "icon icon-smartphone" ] [], text "Mobile" ]
                     ]
                 ]
             , volumeView player

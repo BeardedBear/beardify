@@ -7,7 +7,10 @@
     display: grid;
     font-size: 1.6rem;
     padding: 0 20px;
+    padding-top: 10px;
     position: relative;
+    text-align: center;
+    // top: 5px;
 
     &__menu {
       background: #fff;
@@ -50,8 +53,12 @@
   &Volume {
     align-content: center;
     display: grid;
-    grid-auto-flow: column;
-    padding-right: 10px;
+    grid-gap: 5px;
+    grid-template-columns: auto 1fr;
+    padding-right: 20px;
+    padding-top: 10px;
+    position: relative;
+    // top: 5px;
 
     @media (max-width: $tablet) {
       position: absolute;

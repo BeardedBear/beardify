@@ -59,9 +59,6 @@
 .icon-loop:before {
   content: "\67";
 }
-.icon-sound:before {
-  content: "\68";
-}
 .icon-mute:before {
   content: "\69";
 }
@@ -107,15 +104,6 @@
 .icon-allmusic:before {
   content: "\77";
 }
-.icon-lastfm:before {
-  content: "\78";
-}
-.icon-discogs:before {
-  content: "\79";
-}
-.icon-pizza:before {
-  content: "\7a";
-}
 .icon-question:before {
   content: "\41";
 }
@@ -128,9 +116,48 @@
 .icon-checked:before {
   content: "\44";
 }
-.icon-pc:before {
+.icon-tv:before {
+  content: "\48";
+}
+.icon-speaker:before {
+  content: "\4a";
+}
+.icon-gameconsole:before {
+  content: "\4b";
+}
+.icon-castvideo:before {
+  content: "\4d";
+}
+.icon-unknown:before {
+  content: "\4f";
+}
+.icon-automobile:before {
+  content: "\51";
+}
+.icon-audiodongle:before {
+  content: "\49";
+}
+.icon-computer:before {
+  content: "\4c";
+}
+.icon-tablet:before {
   content: "\45";
 }
-.icon-mobile:before {
+.icon-smartphone:before {
   content: "\46";
+}
+.icon-sound:before {
+  content: "\47";
+}
+.icon-discogs:before {
+  content: "\68";
+}
+.icon-pizza:before {
+  content: "\78";
+}
+.icon-avr:before {
+  content: "\79";
+}
+.icon-stb:before {
+  content: "\7a";
 }
