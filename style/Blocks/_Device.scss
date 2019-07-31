@@ -1,5 +1,6 @@
 .Device {
   display: grid;
+  grid-gap: 15px;
   grid-template-columns: auto auto;
 
   &Select {
@@ -10,18 +11,18 @@
     padding-top: 10px;
     position: relative;
     text-align: center;
-    // top: 5px;
 
     &__menu {
-      background: #fff;
+      background: darken(#232b37, 5);
       border-radius: 3px;
-      bottom: 100%;
-      color: #000;
-      font-size: 1rem;
+      bottom: calc(100% - 20px);
+      color: rgba(white, .7);
+      font-size: 1.1rem;
       left: 50%;
       opacity: 0;
       padding: 5px;
       position: absolute;
+      text-align: left;
       transform: translateX(-50%);
       visibility: hidden;
     }
@@ -33,20 +34,36 @@
       }
     }
 
+    &__icon {
+      font-size: 1.8rem;
+    }
+
+    &__id {
+      font-size: .9rem;
+      font-style: italic;
+    }
+
     &__item {
+      align-items: center;
       cursor: pointer;
       display: grid;
-      grid-gap: 10px;
+      grid-gap: 15px;
       grid-template-columns: auto 1fr;
-      padding: 5px 10px;
+      padding: 10px 20px 7px 17px;
+      white-space: nowrap;
 
       &.active {
-        color: green;
+        color: $primary-color;
       }
 
       &:hover {
-        background: #ccc;
+        background: #232b37;
       }
+    }
+
+    &__label {
+      font-weight: 700;
+      margin-bottom: 5px;
     }
   }
 
@@ -58,7 +75,6 @@
     padding-right: 20px;
     padding-top: 10px;
     position: relative;
-    // top: 5px;
 
     @media (max-width: $tablet) {
       position: absolute;
