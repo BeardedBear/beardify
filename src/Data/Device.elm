@@ -1,30 +1,128 @@
 module Data.Device exposing
     ( Device
-    , decodeDevice
+    , Id
+    , decode
     , deviceInit
+    , idToString
+    , isComputer
     )
 
-import Json.Decode as Decode exposing (Decoder(..), field)
+import Json.Decode as Decode exposing (Decoder)
+
+
+type DeviceType
+    = Computer
+    | Tablet
+    | Smartphone
+    | Speaker
+    | Tv
+    | Avr
+    | STB
+    | AudioDongle
+    | GameConsole
+    | CastVideo
+    | Automobile
+    | Unknown
+
+
+type Id
+    = Id String
 
 
 type alias Device =
-    { id : String
+    { id : Id
     , name : String
-    , volume_percent : Int
+    , volumePercent : Int
+    , isActive : Bool
+    , isRestricted : Bool
+    , type_ : DeviceType
     }
+
+
+idToString : Id -> String
+idToString (Id id) =
+    id
+
+
+isComputer : Device -> Bool
+isComputer device =
+    case device.type_ of
+        Computer ->
+            True
+
+        _ ->
+            False
 
 
 deviceInit : Device
 deviceInit =
-    { id = ""
+    { id = Id ""
     , name = ""
-    , volume_percent = 0
+    , volumePercent = 0
+    , isActive = False
+    , isRestricted = False
+    , type_ = Unknown
     }
 
 
-decodeDevice : Decode.Decoder Device
-decodeDevice =
-    Decode.map3 Device
-        (Decode.field "id" Decode.string)
+decodeDeviceType : Decoder DeviceType
+decodeDeviceType =
+    Decode.string
+        |> Decode.andThen
+            (\string ->
+                case string of
+                    "Computer" ->
+                        Decode.succeed Computer
+
+                    "Tablet" ->
+                        Decode.succeed Tablet
+
+                    "Smartphone" ->
+                        Decode.succeed Smartphone
+
+                    "Speaker" ->
+                        Decode.succeed Speaker
+
+                    "TV" ->
+                        Decode.succeed Tv
+
+                    "AVR" ->
+                        Decode.succeed Avr
+
+                    "STB" ->
+                        Decode.succeed STB
+
+                    "AudioDongle" ->
+                        Decode.succeed AudioDongle
+
+                    "GameConsole" ->
+                        Decode.succeed GameConsole
+
+                    "CastVideo" ->
+                        Decode.succeed CastVideo
+
+                    "Automobile" ->
+                        Decode.succeed Automobile
+
+                    "Unknown" ->
+                        Decode.succeed Unknown
+
+                    _ ->
+                        Decode.fail "Invalid DeviceType"
+            )
+
+
+decodeId : Decoder Id
+decodeId =
+    Decode.andThen (Decode.succeed << Id) Decode.string
+
+
+decode : Decoder Device
+decode =
+    Decode.map6 Device
+        (Decode.field "id" decodeId)
         (Decode.field "name" Decode.string)
         (Decode.field "volume_percent" Decode.int)
+        (Decode.field "is_active" Decode.bool)
+        (Decode.field "is_restricted" Decode.bool)
+        (Decode.field "type" decodeDeviceType)

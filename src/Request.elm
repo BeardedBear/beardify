@@ -7,7 +7,13 @@ module Request exposing
     , put
     )
 
-import Http exposing (Request, expectStringResponse, header, request)
+import Http
+    exposing
+        ( Request
+        , expectStringResponse
+        , header
+        , request
+        )
 import Json.Decode as Decode exposing (Decoder(..))
 import Json.Encode as Encode
 

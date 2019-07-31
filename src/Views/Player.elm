@@ -42,11 +42,11 @@ update { token } msg model =
 
         Volume percent ->
             ( model
-            , Http.send NoOp <| Request.put "volume?volume_percent=" percent "" token
+            , Http.send NoOp <| Request.put "volume?volumePercent=" percent "" token
             )
 
         VolumeToggleMute percent ->
-            ( model, Http.send NoOp <| Request.put "volume?volume_percent=" percent "" token )
+            ( model, Http.send NoOp <| Request.put "volume?volumePercent=" percent "" token )
 
         Next ->
             ( model, Http.send NoOp <| Request.post "me/player/" "next" "" token )
@@ -151,7 +151,7 @@ volumeView player =
         [ div []
             [ button
                 [ classList
-                    [ ( "active", player.device.volume_percent == 0 )
+                    [ ( "active", player.device.volumePercent == 0 )
                     , ( "PlayerControls__button", True )
                     ]
                 ]
@@ -161,7 +161,7 @@ volumeView player =
             [ input
                 [ type_ "range"
                 , class "PlayerRange__input volume"
-                , Html.Attributes.value <| String.fromInt player.device.volume_percent
+                , Html.Attributes.value <| String.fromInt player.device.volumePercent
                 , Html.Attributes.min "0"
                 , Html.Attributes.max "100"
                 , onInput Volume
@@ -169,7 +169,7 @@ volumeView player =
                 []
             , div [ class "PlayerProgress volume" ]
                 [ div
-                    [ style "width" <| String.fromFloat (toFloat player.device.volume_percent) ++ "%"
+                    [ style "width" <| String.fromFloat (toFloat player.device.volumePercent) ++ "%"
                     , class "PlayerProgress__current"
                     ]
                     []

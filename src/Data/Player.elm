@@ -1,6 +1,6 @@
 module Data.Player exposing (PlayerModel, decodePlayer, playerInit)
 
-import Data.Device exposing (Device, deviceInit)
+import Data.Device as Device exposing (Device, deviceInit)
 import Data.Track exposing (Track, trackInit)
 import Json.Decode as Decode exposing (Decoder(..), at, field)
 
@@ -29,7 +29,7 @@ type alias PlayerModel =
 decodePlayer : Decode.Decoder PlayerModel
 decodePlayer =
     Decode.map6 PlayerModel
-        (Decode.at [ "device" ] Data.Device.decodeDevice)
+        (Decode.at [ "device" ] Device.decode)
         (Decode.field "is_playing" Decode.bool)
         (Decode.field "progress_ms" Decode.int)
         (Decode.at [ "item" ] Data.Track.decodeTrack)

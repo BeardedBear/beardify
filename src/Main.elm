@@ -6,6 +6,7 @@ import Browser.Events exposing (onKeyDown)
 import Browser.Navigation exposing (Key, load, pushUrl)
 import Data.Album exposing (encodeAlbum)
 import Data.Date exposing (Date)
+import Data.Device as Device exposing (Device)
 import Data.Meta exposing (AlbumModel, ArtistModel, CollectionModel, PlaylistModel)
 import Data.Player exposing (PlayerModel, decodePlayer, playerInit)
 import Data.Playlist exposing (PlaylistPagingSimplified, decodePlaylistPagingSimplified)
@@ -23,6 +24,7 @@ import Page.Home
 import Page.Playlist
 import Ports
 import Request
+import Request.Device as RequestDevice
 import Route
 import Task
 import Time
@@ -68,6 +70,7 @@ init flags url navKey =
             , token = flags.token
             , player = playerInit
             , search = searchInit
+            , devices = []
             }
 
         timestamp =
@@ -95,6 +98,8 @@ init flags url navKey =
     , Cmd.batch
         [ cmds
         , Http.send InitPlaylist <| Request.get "me/playlists" "" "?limit=50" decodePlaylistPagingSimplified flags.token
+        , RequestDevice.get session
+            |> Task.attempt UserDevice
         ]
     )
 
@@ -160,7 +165,8 @@ type Msg
     | InitPlaylist (Result Http.Error PlaylistPagingSimplified)
       -- PLAYER
     | SetPlayer (Result Http.Error PlayerModel)
-    | GetPlayer Time.Posix
+    | GetPlayer ()
+    | UserDevice (Result Http.Error (List Device))
     | PlayerMsg Views.Player.Msg
     | SearchMsg Views.Search.Msg
       -- KEYBOARD
@@ -266,14 +272,56 @@ update msg ({ page, session } as model) =
             ( model, Cmd.none )
 
         -- PLAYER
-        ( SetPlayer (Ok e), _ ) ->
-            ( { model | session = { session | player = e } }, Cmd.none )
+        ( SetPlayer (Ok player), _ ) ->
+            ( { model
+                | session =
+                    { session | player = player }
+              }
+            , Cmd.none
+            )
 
         ( SetPlayer (Err _), _ ) ->
-            ( model, Ports.refreshToken () )
+            ( { model
+                | session =
+                    { session | player = playerInit }
+              }
+            , Ports.refreshToken ()
+            )
+
+        ( UserDevice (Ok devices), _ ) ->
+            let
+                defaultDevice =
+                    List.filter Device.isComputer devices
+                        |> List.head
+                        |> Maybe.map .id
+            in
+            ( { model | session = { session | devices = devices } }
+            , case defaultDevice of
+                Just id ->
+                    RequestDevice.set session id
+                        |> Task.andThen
+                            (\_ ->
+                                Request.get "me/player" "" "" decodePlayer session.token
+                                    |> Http.toTask
+                            )
+                        |> Task.attempt SetPlayer
+
+                Nothing ->
+                    Cmd.none
+            )
+
+        ( UserDevice (Err err), _ ) ->
+            let
+                _ =
+                    Debug.log "devices" err
+            in
+            -- TODO: How to display error ?
+            ( model, Cmd.none )
 
         ( GetPlayer _, _ ) ->
-            ( model, Http.send SetPlayer <| Request.get "me/player" "" "" decodePlayer token )
+            ( model
+            , Http.send SetPlayer <| Request.get "me/player" "" "" decodePlayer token
+            )
 
         -- KEYBOARD
         ( HandleKeyboardEvent event, _ ) ->
@@ -328,8 +376,8 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     let
         commonSubs =
-            [ Time.every 1000 GetPlayer
-            , onKeyDown (Decode.map HandleKeyboardEvent decodeKeyboardEvent)
+            [ -- Time.every 1000 GetPlayer,
+              onKeyDown (Decode.map HandleKeyboardEvent decodeKeyboardEvent)
             ]
     in
     case model.page of
