@@ -147,7 +147,7 @@ playingView player =
 
 volumeView : PlayerModel -> Html Msg
 volumeView player =
-    div [ class "PlayerVolume" ]
+    div [ class "DeviceVolume" ]
         [ div []
             [ button
                 [ classList
@@ -180,15 +180,19 @@ volumeView player =
 
 view : PlayerModel -> Html Msg
 view player =
-    div [ class "Player" ]
-        [ controlsView player
-        , playingView player
-        , div [ class "PlayerDevice" ]
-            [ i [ class "icon icon-pc" ] []
-            , div [ class "PlayerDevice__menu" ]
-                [ div [ class "PlayerDevice__item active" ] [ i [ class "icon icon-pc" ] [], text "Ordinateur" ]
-                , div [ class "PlayerDevice__item" ] [ i [ class "icon icon-mobile" ] [], text "Mobile" ]
-                ]
+    div [ class "BottomBar" ]
+        [ div [ class "Player" ]
+            [ controlsView player
+            , playingView player
             ]
-        , volumeView player
+        , div [ class "Device" ]
+            [ div [ class "DeviceSelect" ]
+                [ i [ class "icon icon-pc" ] []
+                , div [ class "DeviceSelect__menu" ]
+                    [ div [ class "DeviceSelect__item active" ] [ i [ class "icon icon-pc" ] [], text "Ordinateur" ]
+                    , div [ class "DeviceSelect__item" ] [ i [ class "icon icon-mobile" ] [], text "Mobile" ]
+                    ]
+                ]
+            , volumeView player
+            ]
         ]

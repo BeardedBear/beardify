@@ -1,0 +1,61 @@
+.Device {
+  display: grid;
+  grid-template-columns: auto auto;
+
+  &Select {
+    align-content: center;
+    display: grid;
+    font-size: 1.6rem;
+    padding: 0 20px;
+    position: relative;
+
+    &__menu {
+      background: #fff;
+      border-radius: 3px;
+      bottom: 100%;
+      color: #000;
+      font-size: 1rem;
+      left: 50%;
+      opacity: 0;
+      padding: 5px;
+      position: absolute;
+      transform: translateX(-50%);
+      visibility: hidden;
+    }
+
+    &:hover {
+      .DeviceSelect__menu {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    &__item {
+      cursor: pointer;
+      display: grid;
+      grid-gap: 10px;
+      grid-template-columns: auto 1fr;
+      padding: 5px 10px;
+
+      &.active {
+        color: green;
+      }
+
+      &:hover {
+        background: #ccc;
+      }
+    }
+  }
+
+  &Volume {
+    align-content: center;
+    display: grid;
+    grid-auto-flow: column;
+    padding-right: 10px;
+
+    @media (max-width: $tablet) {
+      position: absolute;
+      right: 0;
+    }
+  }
+}
