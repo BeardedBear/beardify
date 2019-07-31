@@ -3,6 +3,7 @@ module Data.Device exposing
     , Id
     , decode
     , deviceInit
+    , findActive
     , idToString
     , isComputer
     )
@@ -52,6 +53,12 @@ isComputer device =
 
         _ ->
             False
+
+
+findActive : List Device -> Maybe Device
+findActive deviceList =
+    List.filter .isActive deviceList
+        |> List.head
 
 
 deviceInit : Device

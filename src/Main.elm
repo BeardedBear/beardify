@@ -165,7 +165,7 @@ type Msg
     | InitPlaylist (Result Http.Error PlaylistPagingSimplified)
       -- PLAYER
     | SetPlayer (Result Http.Error PlayerModel)
-    | GetPlayer ()
+    | GetPlayer Time.Posix
     | UserDevice (Result Http.Error (List Device))
     | PlayerMsg Views.Player.Msg
     | SearchMsg Views.Search.Msg
@@ -280,7 +280,11 @@ update msg ({ page, session } as model) =
             , Cmd.none
             )
 
-        ( SetPlayer (Err _), _ ) ->
+        ( SetPlayer (Err err), _ ) ->
+            let
+                _ =
+                    Debug.log "err" err
+            in
             ( { model
                 | session =
                     { session | player = playerInit }
@@ -290,15 +294,13 @@ update msg ({ page, session } as model) =
 
         ( UserDevice (Ok devices), _ ) ->
             let
-                defaultDevice =
-                    List.filter Device.isComputer devices
-                        |> List.head
-                        |> Maybe.map .id
+                activeDevice =
+                    Device.findActive devices
             in
             ( { model | session = { session | devices = devices } }
-            , case defaultDevice of
-                Just id ->
-                    RequestDevice.set session id
+            , case activeDevice of
+                Just device ->
+                    RequestDevice.set session device.id
                         |> Task.andThen
                             (\_ ->
                                 Request.get "me/player" "" "" decodePlayer session.token
@@ -311,10 +313,6 @@ update msg ({ page, session } as model) =
             )
 
         ( UserDevice (Err err), _ ) ->
-            let
-                _ =
-                    Debug.log "devices" err
-            in
             -- TODO: How to display error ?
             ( model, Cmd.none )
 
@@ -376,8 +374,8 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     let
         commonSubs =
-            [ -- Time.every 1000 GetPlayer,
-              onKeyDown (Decode.map HandleKeyboardEvent decodeKeyboardEvent)
+            [ Time.every 10000 GetPlayer
+            , onKeyDown (Decode.map HandleKeyboardEvent decodeKeyboardEvent)
             ]
     in
     case model.page of
