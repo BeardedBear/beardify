@@ -128,3 +128,9 @@
 .icon-checked:before {
   content: "\44";
 }
+.icon-pc:before {
+  content: "\45";
+}
+.icon-mobile:before {
+  content: "\46";
+}

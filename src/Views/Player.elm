@@ -183,5 +183,12 @@ view player =
     div [ class "Player" ]
         [ controlsView player
         , playingView player
+        , div [ class "PlayerDevice" ]
+            [ i [ class "icon icon-pc" ] []
+            , div [ class "PlayerDevice__menu" ]
+                [ div [ class "PlayerDevice__item active" ] [ i [ class "icon icon-pc" ] [], text "Ordinateur" ]
+                , div [ class "PlayerDevice__item" ] [ i [ class "icon icon-mobile" ] [], text "Mobile" ]
+                ]
+            ]
         , volumeView player
         ]
