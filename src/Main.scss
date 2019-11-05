@@ -1,0 +1,5 @@
+@use 'Views/Page' as P;
+
+body {
+  background-color: P.$color;
+}
