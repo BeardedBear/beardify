@@ -1,4 +1,6 @@
-@use 'Views/Page' as P;
+@use "Views/Page" as P;
+
+@import "../node_modules/normalize.css/normalize";
 
 body {
   background-color: P.$color;
