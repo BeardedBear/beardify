@@ -3,7 +3,7 @@ module Views.Page exposing (ActivePage(..), Config, frame)
 import Browser exposing (Document)
 import Data.Session exposing (Session)
 import Html exposing (..)
-import Html.Attributes exposing (class, href, src)
+import Html.Attributes exposing (href)
 import Route
 
 
@@ -40,19 +40,5 @@ viewHeader { activePage } =
     in
     header []
         [ h1 [] [ text "elm-kitchen" ]
-        , nav []
-            [ linkIf Home Route.Home "Home"
-            , text " | "
-            ]
-        , a
-            [ class "GithubIcon"
-            , Html.Attributes.target "_blank"
-            , href "https://github.com/allo-media/elm-kitchen"
-            ]
-            [ img
-                [ src "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Ei-sc-github.svg/768px-Ei-sc-github.svg.png"
-                ]
-                []
-            , span [] [ text "Github" ]
-            ]
+        , nav [] [ linkIf Home Route.Home "Home" ]
         ]
