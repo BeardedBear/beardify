@@ -1,4 +1,5 @@
 elm-stuff/
 build/
 public/app.js
+public/main.css
 node_modules/
