@@ -6,7 +6,6 @@ import Data.Session as Session exposing (Session)
 import Html exposing (..)
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Page.Counter as Counter
 import Page.Home as Home
 import Ports
 import Route exposing (Route)
@@ -23,7 +22,6 @@ type alias Flags =
 type Page
     = Blank
     | HomePage Home.Model
-    | CounterPage Counter.Model
     | NotFound
 
 
@@ -35,7 +33,6 @@ type alias Model =
 
 type Msg
     = HomeMsg Home.Msg
-    | CounterMsg Counter.Msg
     | StoreChanged String
     | UrlChanged Url
     | UrlRequested Browser.UrlRequest
@@ -68,9 +65,6 @@ setRoute maybeRoute model =
 
         Just Route.Home ->
             toPage HomePage Home.init HomeMsg
-
-        Just Route.Counter ->
-            toPage CounterPage Counter.init CounterMsg
 
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -111,9 +105,6 @@ update msg ({ page, session } as model) =
         ( HomeMsg homeMsg, HomePage homeModel ) ->
             toPage HomePage HomeMsg Home.update homeMsg homeModel
 
-        ( CounterMsg counterMsg, CounterPage counterModel ) ->
-            toPage CounterPage CounterMsg Counter.update counterMsg counterModel
-
         ( StoreChanged json, _ ) ->
             ( { model | session = { session | store = Session.deserializeStore json } }
             , Cmd.none
@@ -145,9 +136,6 @@ subscriptions model =
             HomePage _ ->
                 Sub.none
 
-            CounterPage _ ->
-                Sub.none
-
             NotFound ->
                 Sub.none
 
@@ -170,11 +158,6 @@ view { page, session } =
             Home.view session homeModel
                 |> mapMsg HomeMsg
                 |> Page.frame (pageConfig Page.Home)
-
-        CounterPage counterModel ->
-            Counter.view session counterModel
-                |> mapMsg CounterMsg
-                |> Page.frame (pageConfig Page.Counter)
 
         NotFound ->
             ( "Not Found", [ Html.text "Not found" ] )
