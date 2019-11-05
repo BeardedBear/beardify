@@ -9,7 +9,6 @@ import Route
 
 type ActivePage
     = Home
-    | Counter
     | Other
 
 
@@ -44,7 +43,6 @@ viewHeader { activePage } =
         , nav []
             [ linkIf Home Route.Home "Home"
             , text " | "
-            , linkIf Counter Route.Counter "Second page"
             ]
         , a
             [ class "GithubIcon"

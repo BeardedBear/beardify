@@ -1,15 +1,11 @@
 module Page.Home exposing (Model, Msg(..), init, update, view)
 
-import Browser exposing (Document)
 import Data.Session exposing (Session)
 import Html exposing (..)
-import Http
-import Task
 
 
 type alias Model =
-    { readme : String
-    }
+    String
 
 
 type Msg
@@ -18,7 +14,7 @@ type Msg
 
 init : Session -> ( Model, Session, Cmd Msg )
 init session =
-    ( { readme = "Retrieving README from github" }
+    ( ""
     , session
     , Cmd.none
     )
@@ -35,7 +31,7 @@ update session msg model =
 
 
 view : Session -> Model -> ( String, List (Html Msg) )
-view _ model =
+view _ _ =
     ( "Home"
     , [ div [] [ text "hello" ]
       ]

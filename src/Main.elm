@@ -4,8 +4,6 @@ import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Data.Session as Session exposing (Session)
 import Html exposing (..)
-import Json.Decode as Decode
-import Json.Encode as Encode
 import Page.Home as Home
 import Ports
 import Route exposing (Route)
