@@ -21,25 +21,24 @@ type alias Session =
 across browser restarts, typically in localStorage.
 -}
 type alias Store =
-    { counter : Int }
+    {}
 
 
 defaultStore : Store
 defaultStore =
-    { counter = 0 }
+    {}
 
 
 decodeStore : Decoder Store
 decodeStore =
-    Decode.map Store
-        (Decode.field "counter" Decode.int)
+    Decode.map (\_ -> Store)
+        Decode.string
 
 
 encodeStore : Store -> Encode.Value
 encodeStore v =
     Encode.object
-        [ ( "counter", Encode.int v.counter )
-        ]
+        []
 
 
 deserializeStore : String -> Store
