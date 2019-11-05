@@ -2,6 +2,7 @@ module Page.Home exposing (Model, Msg(..), init, update, view)
 
 import Data.Session exposing (Session)
 import Html exposing (..)
+import Html.Attributes exposing (class, type_)
 
 
 type alias Model =
@@ -33,6 +34,24 @@ update session msg model =
 view : Session -> Model -> ( String, List (Html Msg) )
 view _ _ =
     ( "Home"
-    , [ div [] [ text "hello" ]
+    , [ div [ class "Topbar" ]
+            [ div [ class "Sidebar__logo" ] [ text "LOGO" ]
+            , div [ class "Search" ]
+                [ input [ class "Search__input", type_ "text" ] []
+                ]
+            , div [ class "User" ] [ text "Qui que je suis ?" ]
+            ]
+      , div [ class "App__body" ]
+            [ div [ class "Sidebar" ]
+                [ div [ class "Sidebar__collections" ]
+                    [ text "collections" ]
+                , div [ class "Sidebar__playlists" ]
+                    [ text "playlists" ]
+                ]
+            , div [ class "Content" ]
+                [ div [ class "Page" ] [ text "page" ]
+                , div [ class "Player" ] [ text "player" ]
+                ]
+            ]
       ]
     )
