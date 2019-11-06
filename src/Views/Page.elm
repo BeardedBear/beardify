@@ -26,19 +26,3 @@ frame _ ( title, content ) =
     { title = title ++ " | Beardify "
     , body = [ main_ [ class "App" ] content ]
     }
-
-
-
--- viewHeader : Config -> Html msg
--- viewHeader { activePage } =
---     let
---         linkIf page route caption =
---             if page == activePage then
---                 strong [] [ text caption ]
---             else
---                 a [ Route.href route ] [ text caption ]
---     in
---     header []
---         [ h1 [] [ text "elm-kitchen" ]
---         , nav [] [ linkIf Home Route.Home "Home" ]
---         ]
