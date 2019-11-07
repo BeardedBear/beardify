@@ -1,1 +1,9 @@
-$color: rgba(0, 0 ,0, 0.7);
+.Content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.Page {
+  flex: 1;
+}

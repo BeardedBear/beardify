@@ -1,5 +1,24 @@
-@use 'Views/Page' as P;
+@use "Views/Page";
+@use "Views/Player";
+@use "Views/Search";
+@use "Views/Sidebar";
+@use "Views/Topbar";
+
+@import "../node_modules/normalize.css/normalize";
+
+.App {
+  background: #11151b;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  &__body {
+    display: flex;
+    flex: 1;
+  }
+}
 
 body {
-  background-color: P.$color;
+  color: rgba(#fff, .6);
+  font-family: "Nunito Sans", sans-serif;
 }
