@@ -3,6 +3,7 @@ module Data.Session exposing
     , Store
     , deserializeStore
     , serializeStore
+    , updateAuth
     , updateState
     )
 
@@ -31,9 +32,14 @@ type alias Store =
     }
 
 
-updateState : Store -> String -> Store
-updateState store state =
-    { store | state = state }
+updateState : String -> Session -> Session
+updateState newState ({ store } as session) =
+    { session | store = { store | state = newState } }
+
+
+updateAuth : Authorization -> Session -> Session
+updateAuth auth ({ store } as session) =
+    { session | store = { store | auth = Just auth } }
 
 
 defaultStore : Store

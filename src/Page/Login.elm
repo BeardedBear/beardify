@@ -27,7 +27,7 @@ update session msg model =
     case msg of
         Submit ->
             ( model
-            , { session | store = Session.updateState session.store session.randomBytes }
+            , Session.updateState session.randomBytes session
             , Cmd.batch
                 [ Authentication.createAuthentication session.clientId session.clientUrl "" Spotify.scope session.randomBytes
                     |> Authentication.params

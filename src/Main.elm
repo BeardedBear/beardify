@@ -113,13 +113,12 @@ init flags url navKey =
 
                     else
                         let
-                            updateStore store =
-                                { store | auth = Just auth }
+                            newSession =
+                                Session.updateAuth auth session
                         in
-                        ( { session = { session | store = updateStore session.store }, page = Blank }
+                        ( { session = newSession, page = Blank }
                         , Cmd.batch
-                            [ session.store
-                                |> updateStore
+                            [ newSession.store
                                 |> Session.serializeStore
                                 |> Ports.saveStore
                             , Route.pushUrl session.navKey Route.Home
