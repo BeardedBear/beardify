@@ -123,6 +123,7 @@ init flags url navKey =
                         ]
                     )
 
+        -- Api spotify error use query string rather than fragment
         ( Nothing, Just query ) ->
             case Authorization.parseAuth query of
                 Authorization.AuthError err ->
