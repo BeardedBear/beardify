@@ -12,12 +12,10 @@ module Data.Authorization exposing
 
 -- https://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthResponse
 
-import Browser.Navigation as Nav
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
 import Url exposing (Url)
-import Url.Builder as Builder exposing (..)
-import Url.Parser as Parser exposing (Parser)
+import Url.Parser as Parser
 import Url.Parser.Query as Query
 
 
@@ -50,7 +48,6 @@ type AuthorizationError
     = DecodeError
     | Oauth2Error Oauth2ErrorCode
     | OpenIdError OpenIdErrorCode
-    | MissingError
 
 
 type Oauth2ErrorCode
@@ -100,9 +97,6 @@ authorizationErrorToString authorizationError =
 
         DecodeError ->
             "Decode error: Unable to decode parameters"
-
-        MissingError ->
-            "Missing error: Missing parameters"
 
 
 decode : Decoder Authorization

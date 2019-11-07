@@ -99,7 +99,7 @@ init flags url navKey =
                         , session = session
                         }
 
-                Authorization.AuthError err ->
+                Authorization.AuthError _ ->
                     --TODO: How do we diplay us this error to user?
                     setRoute (Route.fromUrl url)
                         { page = Blank
@@ -129,7 +129,7 @@ init flags url navKey =
         -- Api spotify error use query string rather than fragment
         ( Nothing, Just query ) ->
             case Authorization.parseAuth query of
-                Authorization.AuthError err ->
+                Authorization.AuthError _ ->
                     setRoute (Route.fromUrl url)
                         { page = Blank
                         , session = session
