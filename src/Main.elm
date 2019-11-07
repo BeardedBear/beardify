@@ -100,6 +100,7 @@ init flags url navKey =
                         }
 
                 Authorization.AuthError err ->
+                    --TODO: How do we diplay us this error to user?
                     setRoute (Route.fromUrl url)
                         { page = Blank
                         , session = session
@@ -109,17 +110,14 @@ init flags url navKey =
                     let
                         updateStore store =
                             { store | auth = Just auth }
-
-                        ( model, newSession, cmd ) =
-                            Home.init session
                     in
-                    ( { session = newSession, page = HomePage model }
+                    ( { session = { session | store = updateStore session.store }, page = Blank }
                     , Cmd.batch
-                        [ Cmd.map HomeMsg cmd
-                        , newSession.store
+                        [ session.store
                             |> updateStore
                             |> Session.serializeStore
                             |> Ports.saveStore
+                        , Route.pushUrl session.navKey Route.Home
                         ]
                     )
 

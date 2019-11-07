@@ -5,6 +5,7 @@ import Data.Authentication as Authentication
 import Data.Session exposing (Session)
 import Data.Spotify as Spotify
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
 
@@ -41,7 +42,8 @@ update session msg model =
 view : Session -> Model -> ( String, List (Html Msg) )
 view _ _ =
     ( "Login"
-    , [ div [] [ text "Login" ]
-      , button [ onClick Submit ] [ text " Sign in " ]
+    , [ div [ class "Page Login" ]
+            [ button [ onClick Submit ] [ text " Sign in " ]
+            ]
       ]
     )
