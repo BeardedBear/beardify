@@ -1,24 +1,36 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>elm-kitchen</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://fonts.googleapis.com/css?family=Exo+2:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i|Nunito+Sans:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&display=swap" rel="stylesheet" />
-    <link href="main.css" rel="stylesheet" />
-  </head>
-  <body>
-    <script src="app.js"></script>
-    <script>
-      // The localStorage key to use to store serialized session data
-      const storeKey = "store";
+<head>
+  <meta charset="utf-8">
+  <title>elm-kitchen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Exo+2:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i|Nunito+Sans:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&display=swap" rel="stylesheet" />
+  <link href="main.css" rel="stylesheet">
+</head>
+<body>
+  <script src="app.js"></script>
+  <script>
+    // The localStorage key to use to store serialized session data
+    const storeKey = "beardifyStore";
 
-      const app = Elm.Main.init({
-        flags: {
-          clientUrl: location.origin + location.pathname,
-          rawStore: localStorage[storeKey] || ""
-        }
-      });
+    const randomBytes = () => {      
+        const buffer = new Uint8Array(256);
+        crypto.getRandomValues(buffer);
+        return Array
+          .from(buffer)
+          .map(x => String.fromCharCode((x % 26) + 65))
+          .join("");
+    };
+
+    const app = Elm.Main.init({
+      flags: {
+        clientUrl: location.origin + location.pathname,
+        rawStore: localStorage[storeKey] || "",
+        randomBytes: randomBytes(),
+        clientId: "7122c8a266e64044b799b1c73a29115e",
+        authUrl: "https://accounts.spotify.com/",
+      }
+    });
 
       app.ports.saveStore.subscribe(rawStore => {
         localStorage[storeKey] = rawStore;

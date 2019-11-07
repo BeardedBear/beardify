@@ -1,12 +1,13 @@
 module Data.Authorization exposing
     ( Authorization
+    , AuthorizationResult(..)
     , Error
     , authorizationErrorToString
     , createAuthHeader
     , decode
     , encode
     , endSession
-    , parseAuthRoute
+    , parseAuth
     , tokenIdToString
     )
 
@@ -28,6 +29,12 @@ type alias Authorization =
     , expires : Int
     , state : String
     }
+
+
+type AuthorizationResult
+    = Empty
+    | AuthError Error
+    | AuthSuccess Authorization
 
 
 type AccessToken
@@ -242,14 +249,15 @@ openIdErrorCodeToString openIdError =
             "Request uri not supported"
 
 
-parseAuthFragment : Maybe String -> Maybe (Result Error Authorization)
-parseAuthFragment =
+parseAuth : String -> AuthorizationResult
+parseAuth str =
     -- Note: the fragment actually contains query string parameters as per specification
-    Maybe.map (\str -> Url Url.Http "" Nothing "" (Just str) (Just ""))
-        >> Maybe.andThen (Parser.parse (Parser.query parseAuthQuery))
+    Url Url.Http "" Nothing "" (Just str) (Just "")
+        |> Parser.parse (Parser.query parseAuthQuery)
+        |> Maybe.withDefault Empty
 
 
-parseAuthQuery : Query.Parser (Result Error Authorization)
+parseAuthQuery : Query.Parser AuthorizationResult
 parseAuthQuery =
     Query.map7 toParsedAuthorization
         (Query.map
@@ -276,12 +284,6 @@ parseAuthQuery =
         (Query.string "error_description")
 
 
-parseAuthRoute : (Result Error Authorization -> a) -> a -> Parser (a -> a) a
-parseAuthRoute authRoute fallbackRoute =
-    Parser.fragment parseAuthFragment
-        |> Parser.map (Maybe.map authRoute >> Maybe.withDefault fallbackRoute)
-
-
 endSession : String -> String -> Authorization -> Cmd msg
 endSession authUrl redirectUrl auth =
     Builder.relative [ "end-session" ]
@@ -296,7 +298,7 @@ endSession authUrl redirectUrl auth =
 tokenTypeFromString : String -> TokenType
 tokenTypeFromString string =
     case string of
-        "bearer" ->
+        "Bearer" ->
             Bearer
 
         _ ->
@@ -316,29 +318,20 @@ toParsedAuthorization :
     -> String
     -> Maybe String
     -> Maybe String
-    -> Result Error Authorization
+    -> AuthorizationResult
 toParsedAuthorization access tokenId type_ expires state errorCode description =
-    case ( access, tokenId, errorCode ) of
-        ( _, _, Just errorCode_ ) ->
-            Err
+    case ( access, errorCode ) of
+        ( _, Just errorCode_ ) ->
+            AuthError
                 { code = decodeAuthorizationError errorCode_
                 , description = description
                 }
 
-        ( Nothing, _, Nothing ) ->
-            Err
-                { code = MissingError
-                , description = Just "access_token param is missing."
-                }
+        ( Nothing, Nothing ) ->
+            Empty
 
-        ( _, Nothing, Nothing ) ->
-            Err
-                { code = MissingError
-                , description = Just "token_id param is missing."
-                }
-
-        ( Just access_, Just tokenId_, Nothing ) ->
-            Ok (Authorization access_ tokenId_ type_ expires state)
+        ( Just access_, Nothing ) ->
+            AuthSuccess (Authorization access_ (IdToken "") type_ expires state)
 
 
 tokenTypeToString : TokenType -> String

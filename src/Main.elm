@@ -2,9 +2,11 @@ module Main exposing (main)
 
 import Browser exposing (Document)
 import Browser.Navigation as Nav
+import Data.Authorization as Authorization
 import Data.Session as Session exposing (Session)
 import Html exposing (..)
 import Page.Home as Home
+import Page.Login as Login
 import Ports
 import Route exposing (Route)
 import Url exposing (Url)
@@ -14,12 +16,16 @@ import Views.Page as Page
 type alias Flags =
     { clientUrl : String
     , rawStore : String
+    , clientId : String
+    , randomBytes : String
+    , authUrl : String
     }
 
 
 type Page
     = Blank
     | HomePage Home.Model
+    | LoginPage Login.Model
     | NotFound
 
 
@@ -31,6 +37,7 @@ type alias Model =
 
 type Msg
     = HomeMsg Home.Msg
+    | LoginMsg Login.Msg
     | StoreChanged String
     | UrlChanged Url
     | UrlRequested Browser.UrlRequest
@@ -55,14 +62,20 @@ setRoute maybeRoute model =
             , Cmd.batch [ Cmd.map subMsg subCmds, storeCmd ]
             )
     in
-    case maybeRoute of
-        Nothing ->
+    case ( model.session.store.auth /= Nothing, maybeRoute ) of
+        ( _, Nothing ) ->
             ( { model | page = NotFound }
             , Cmd.none
             )
 
-        Just Route.Home ->
+        ( True, Just Route.Home ) ->
             toPage HomePage Home.init HomeMsg
+
+        ( True, Just Route.Login ) ->
+            toPage LoginPage Login.init LoginMsg
+
+        ( False, _ ) ->
+            toPage LoginPage Login.init LoginMsg
 
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -71,13 +84,64 @@ init flags url navKey =
         session =
             { clientUrl = flags.clientUrl
             , navKey = navKey
+            , clientId = flags.clientId
+            , authUrl = flags.authUrl
+            , state = flags.randomBytes
             , store = Session.deserializeStore flags.rawStore
             }
     in
-    setRoute (Route.fromUrl url)
-        { page = Blank
-        , session = session
-        }
+    case ( url.fragment, url.query ) of
+        ( Just fragment, Nothing ) ->
+            case Authorization.parseAuth fragment of
+                Authorization.Empty ->
+                    setRoute (Route.fromUrl url)
+                        { page = Blank
+                        , session = session
+                        }
+
+                Authorization.AuthError err ->
+                    setRoute (Route.fromUrl url)
+                        { page = Blank
+                        , session = session
+                        }
+
+                Authorization.AuthSuccess auth ->
+                    let
+                        updateStore store =
+                            { store | auth = Just auth }
+
+                        ( model, newSession, cmd ) =
+                            Home.init session
+                    in
+                    ( { session = newSession, page = HomePage model }
+                    , Cmd.batch
+                        [ Cmd.map HomeMsg cmd
+                        , newSession.store
+                            |> updateStore
+                            |> Session.serializeStore
+                            |> Ports.saveStore
+                        ]
+                    )
+
+        ( Nothing, Just query ) ->
+            case Authorization.parseAuth query of
+                Authorization.AuthError err ->
+                    setRoute (Route.fromUrl url)
+                        { page = Blank
+                        , session = session
+                        }
+
+                _ ->
+                    setRoute (Route.fromUrl url)
+                        { page = Blank
+                        , session = session
+                        }
+
+        ( _, _ ) ->
+            setRoute (Route.fromUrl url)
+                { page = Blank
+                , session = session
+                }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -102,6 +166,9 @@ update msg ({ page, session } as model) =
     case ( msg, page ) of
         ( HomeMsg homeMsg, HomePage homeModel ) ->
             toPage HomePage HomeMsg Home.update homeMsg homeModel
+
+        ( LoginMsg loginMsg, LoginPage loginModel ) ->
+            toPage LoginPage LoginMsg Login.update loginMsg loginModel
 
         ( StoreChanged json, _ ) ->
             ( { model | session = { session | store = Session.deserializeStore json } }
@@ -134,6 +201,9 @@ subscriptions model =
             HomePage _ ->
                 Sub.none
 
+            LoginPage _ ->
+                Sub.none
+
             NotFound ->
                 Sub.none
 
@@ -155,6 +225,11 @@ view { page, session } =
         HomePage homeModel ->
             Home.view session homeModel
                 |> mapMsg HomeMsg
+                |> Page.frame (pageConfig Page.Home)
+
+        LoginPage loginModel ->
+            Login.view session loginModel
+                |> mapMsg LoginMsg
                 |> Page.frame (pageConfig Page.Home)
 
         NotFound ->

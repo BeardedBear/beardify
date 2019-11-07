@@ -62,13 +62,13 @@ createNonce string =
     Nonce string
 
 
-createAuthentication : String -> String -> String -> List String -> Authentication
-createAuthentication id url_ nonce scope =
+createAuthentication : String -> String -> String -> List String -> String -> Authentication
+createAuthentication id url_ nonce scope state =
     { clientId = ClientId id
-    , responseType = [ IdToken, Token ]
+    , responseType = [ Token ]
     , redirectUri = url_
     , scope = scope
-    , state = ""
+    , state = state
     , nonce = Nonce nonce
     }
 
@@ -85,6 +85,7 @@ params auth =
         , String.join " " auth.scope
             |> Builder.string "scope"
         , Builder.string "nonce" (nonceToString auth.nonce)
+        , Builder.string "state" auth.state
         ]
 
 
