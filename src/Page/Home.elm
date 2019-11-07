@@ -2,6 +2,10 @@ module Page.Home exposing (Model, Msg(..), init, update, view)
 
 import Data.Session exposing (Session)
 import Html exposing (..)
+import Html.Attributes exposing (..)
+import Views.Player as Player
+import Views.Sidebar as Sidebar
+import Views.Topbar as Topbar
 
 
 type alias Model =
@@ -33,6 +37,13 @@ update session msg model =
 view : Session -> Model -> ( String, List (Html Msg) )
 view _ _ =
     ( "Home"
-    , [ div [] [ text "home" ]
+    , [ Topbar.view
+      , div [ class "App__body" ]
+            [ Sidebar.view
+            , div [ class "Content" ]
+                [ div [ class "Page" ] []
+                , Player.view
+                ]
+            ]
       ]
     )

@@ -9,12 +9,15 @@ import Url.Parser as Parser exposing (Parser)
 
 type Route
     = Home
+    | Login
 
 
 parser : Parser (Route -> a) a
 parser =
     Parser.oneOf
-        [ Parser.map Home Parser.top ]
+        [ Parser.map Home Parser.top
+        , Parser.map Login (Parser.s "login")
+        ]
 
 
 fromUrl : Url -> Maybe Route
@@ -40,5 +43,8 @@ toString route =
             case route of
                 Home ->
                     []
+
+                Login ->
+                    [ "login" ]
     in
     "#/" ++ String.join "/" pieces

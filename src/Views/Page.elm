@@ -4,9 +4,6 @@ import Browser exposing (Document)
 import Data.Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Views.Player as Player exposing (..)
-import Views.Sidebar as Sidebar exposing (..)
-import Views.Topbar as Topbar exposing (..)
 
 
 
@@ -28,15 +25,5 @@ frame : Config -> ( String, List (Html msg) ) -> Document msg
 frame _ ( title, content ) =
     { title = title ++ " | Beardify "
     , body =
-        [ main_ [ class "App" ]
-            [ Topbar.view
-            , div [ class "App__body" ]
-                [ Sidebar.view
-                , div [ class "Content" ]
-                    [ div [ class "Page" ] content
-                    , Player.view
-                    ]
-                ]
-            ]
-        ]
+        [ main_ [ class "App" ] content ]
     }
