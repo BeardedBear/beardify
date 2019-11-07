@@ -13,7 +13,7 @@
     // The localStorage key to use to store serialized session data
     const storeKey = "beardifyStore";
 
-    const randomBytes = () => {      
+    const randomBytes = () => {
         const buffer = new Uint8Array(256);
         crypto.getRandomValues(buffer);
         return Array

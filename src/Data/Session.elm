@@ -3,6 +3,7 @@ module Data.Session exposing
     , Store
     , deserializeStore
     , serializeStore
+    , updateState
     )
 
 import Browser.Navigation as Nav
@@ -16,7 +17,7 @@ type alias Session =
     , clientUrl : String
     , authUrl : String
     , clientId : String
-    , state : String
+    , randomBytes : String
     , store : Store
     }
 
@@ -25,18 +26,28 @@ type alias Session =
 across browser restarts, typically in localStorage.
 -}
 type alias Store =
-    { auth : Maybe Authorization }
+    { auth : Maybe Authorization
+    , state : String
+    }
+
+
+updateState : Store -> String -> Store
+updateState store state =
+    { store | state = state }
 
 
 defaultStore : Store
 defaultStore =
-    { auth = Nothing }
+    { auth = Nothing
+    , state = ""
+    }
 
 
 decodeStore : Decoder Store
 decodeStore =
-    Decode.map Store
+    Decode.map2 Store
         (Decode.field "auth" Authorization.decode |> Decode.maybe)
+        (Decode.field "state" Decode.string)
 
 
 encodeStore : Store -> Encode.Value
@@ -47,6 +58,7 @@ encodeStore v =
                 |> Maybe.map Authorization.encode
                 |> Maybe.withDefault Encode.null
           )
+        , ( "state", Encode.string v.state )
         ]
 
 

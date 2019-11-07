@@ -6,7 +6,6 @@ module Data.Authorization exposing
     , createAuthHeader
     , decode
     , encode
-    , endSession
     , parseAuth
     , tokenIdToString
     )
@@ -284,17 +283,6 @@ parseAuthQuery =
         (Query.string "error_description")
 
 
-endSession : String -> String -> Authorization -> Cmd msg
-endSession authUrl redirectUrl auth =
-    Builder.relative [ "end-session" ]
-        [ Builder.string "id_token_hint" (tokenIdToString auth.idToken)
-        , Builder.string "post_logout_redirect_uri" redirectUrl
-        , Builder.string "state" auth.state
-        ]
-        |> (++) authUrl
-        |> Nav.load
-
-
 tokenTypeFromString : String -> TokenType
 tokenTypeFromString string =
     case string of
@@ -331,7 +319,7 @@ toParsedAuthorization access tokenId type_ expires state errorCode description =
             Empty
 
         ( Just access_, Nothing ) ->
-            AuthSuccess (Authorization access_ (IdToken "") type_ expires state)
+            AuthSuccess (Authorization access_ (Maybe.withDefault (IdToken "") tokenId) type_ expires state)
 
 
 tokenTypeToString : TokenType -> String

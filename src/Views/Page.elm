@@ -4,9 +4,6 @@ import Browser exposing (Document)
 import Data.Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Views.Player as Player exposing (..)
-import Views.Sidebar as Sidebar exposing (..)
-import Views.Topbar as Topbar exposing (..)
 
 
 

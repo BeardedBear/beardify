@@ -86,7 +86,7 @@ init flags url navKey =
             , navKey = navKey
             , clientId = flags.clientId
             , authUrl = flags.authUrl
-            , state = flags.randomBytes
+            , randomBytes = flags.randomBytes
             , store = Session.deserializeStore flags.rawStore
             }
     in
@@ -107,19 +107,24 @@ init flags url navKey =
                         }
 
                 Authorization.AuthSuccess auth ->
-                    let
-                        updateStore store =
-                            { store | auth = Just auth }
-                    in
-                    ( { session = { session | store = updateStore session.store }, page = Blank }
-                    , Cmd.batch
-                        [ session.store
-                            |> updateStore
-                            |> Session.serializeStore
-                            |> Ports.saveStore
-                        , Route.pushUrl session.navKey Route.Home
-                        ]
-                    )
+                    if auth.state /= session.store.state then
+                        -- TODO: auth state is corrupted, we need display something to the user
+                        ( { session = session, page = Blank }, Route.pushUrl session.navKey Route.Login )
+
+                    else
+                        let
+                            updateStore store =
+                                { store | auth = Just auth }
+                        in
+                        ( { session = { session | store = updateStore session.store }, page = Blank }
+                        , Cmd.batch
+                            [ session.store
+                                |> updateStore
+                                |> Session.serializeStore
+                                |> Ports.saveStore
+                            , Route.pushUrl session.navKey Route.Home
+                            ]
+                        )
 
         -- Api spotify error use query string rather than fragment
         ( Nothing, Just query ) ->
