@@ -23,7 +23,7 @@ getList session =
         , url = Api.url ++ "me/player/devices"
         , body = Http.emptyBody
         , resolver =
-            Decode.list Device.decode
+            Decode.at [ "devices" ] (Decode.list Device.decode)
                 |> Api.handleJsonResponse
                 |> Http.stringResolver
         , timeout = Nothing

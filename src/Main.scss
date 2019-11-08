@@ -1,4 +1,3 @@
-@use "Color";
 @use "Page/Login";
 
 @use "Views/Artist";
@@ -7,17 +6,10 @@
 @use "Views/Search";
 @use "Views/Sidebar";
 @use "Views/Topbar";
-<<<<<<< HEAD
-@use "Views/Device";
-||||||| merged common ancestors
-
-@use "Color";
-=======
 @use "Views/Device";
 @use "Views/Player";
 
 @use "Color";
->>>>>>> v2
 
 @import "../node_modules/normalize.css/normalize";
 // @import "../public/icons/styles";

@@ -14,7 +14,7 @@ import Views.Topbar as Topbar
 
 
 type alias Model =
-    String
+    { devices : List Device }
 
 
 type Msg
@@ -24,7 +24,7 @@ type Msg
 
 init : Session -> ( Model, Session, Cmd Msg )
 init session =
-    ( ""
+    ( { devices = [] }
     , session
     , Task.attempt Devices (DeviceRequest.getList session)
     )
@@ -39,13 +39,17 @@ update session msg model =
             , Cmd.none
             )
 
-        Devices (Ok _) ->
-            ( model
+        Devices (Ok devices) ->
+            ( { model | devices = devices }
             , session
             , Cmd.none
             )
 
-        Devices (Err _) ->
+        Devices (Err err) ->
+            let
+                _ =
+                    Debug.log "err" err
+            in
             ( model
             , session
             , Cmd.none
@@ -53,7 +57,7 @@ update session msg model =
 
 
 view : Session -> Model -> ( String, List (Html Msg) )
-view _ _ =
+view _ model =
     ( "Home"
     , [ Topbar.view
       , div [ class "App__body" ]
@@ -65,7 +69,7 @@ view _ _ =
                     ]
                 , div [ class "BottomBar" ]
                     [ Player.view
-                    , Device.view
+                    , Device.view { devices = model.devices }
                     ]
                 ]
             ]
