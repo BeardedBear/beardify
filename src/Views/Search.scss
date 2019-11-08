@@ -1,17 +1,14 @@
+@use "sass:color";
 @use "../Color";
 
 .Search {
   &__input {
-    background: lighten(Color.$background, 2);
-    border: 1px solid lighten(Color.$background, 5);
+    background: color.scale(Color.$background, $lightness: 1%);
+    border: 1px solid Color.$border;
     border-radius: 50px;
     color: #fff;
     outline: 0;
     padding: 7px 20px;
     width: 100%;
-
-    &:focus {
-      border: 1px solid lighten(Color.$background, 20);
-    }
   }
 }

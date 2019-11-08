@@ -2,7 +2,7 @@
 
 .Topbar {
   align-items: center;
-  border-bottom: 1px solid lighten(Color.$background, 5);
+  border-bottom: 1px solid Color.$border;
   display: grid;
   gap: 40px;
   grid-template-columns: auto 1fr auto;
