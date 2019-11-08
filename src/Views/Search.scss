@@ -1,8 +1,17 @@
-.Search {
-  flex: 1;
-  margin: 0 10px;
+@use "../Color";
 
+.Search {
   &__input {
+    background: lighten(Color.$background, 2);
+    border: 1px solid lighten(Color.$background, 5);
+    border-radius: 50px;
+    color: #fff;
+    outline: 0;
+    padding: 7px 20px;
     width: 100%;
+
+    &:focus {
+      border: 1px solid lighten(Color.$background, 20);
+    }
   }
 }

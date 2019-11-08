@@ -1,15 +1,19 @@
 @use "Page/Login";
 
+@use "Views/Artist";
+@use "Views/BottomBar";
 @use "Views/Page";
-@use "Views/Player";
 @use "Views/Search";
 @use "Views/Sidebar";
 @use "Views/Topbar";
 
+@use "Color";
+
 @import "../node_modules/normalize.css/normalize";
+// @import "../public/icons/styles";
 
 .App {
-  background: #11151b;
+  background: Color.$background;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -20,7 +24,20 @@
   }
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
-  color: rgba(#fff, .6);
+  color: rgba(#fff, .8);
   font-family: "Nunito Sans", sans-serif;
+  font-weight: 100;
+  line-height: 1.4;
+}
+
+h1 {
+  font-weight: 100;
+  margin: 0;
 }

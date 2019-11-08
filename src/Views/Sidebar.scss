@@ -1,15 +1,19 @@
+@use "../Color";
+
 .Sidebar {
-  border-right: 1px solid red;
+  border-right: 1px solid lighten(Color.$background, 5);
   display: flex;
   flex-basis: 250px;
   flex-direction: column;
 
   &__collections {
-    border-bottom: 1px solid red;
+    border-bottom: 1px solid lighten(Color.$background, 5);
     flex: 1;
+    padding: 15px;
   }
 
   &__playlists {
     flex: 1;
+    padding: 15px;
   }
 }
