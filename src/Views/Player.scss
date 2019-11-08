@@ -1,0 +1,36 @@
+@use "../Color";
+
+.Player {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  padding: 0 15px 0 30px;
+
+  &Current {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+
+    &__controls {
+      flex: 1;
+      max-width: 450px;
+    }
+
+    &__cover {
+      border-radius: 3px;
+      display: block;
+      height: 60px;
+      margin-right: 10px;
+    }
+
+    &__range {
+      width: 100%;
+    }
+
+    &__song {
+      font-weight: 700;
+    }
+  }
+}
