@@ -30,10 +30,7 @@ item device =
             ]
         ]
         [ div [ class "DeviceList__icon" ] [ i [ class ("icon-" ++ Device.typeToString device.type_) ] [] ]
-        , div []
-            [ div [ class "Device__name" ] [ text device.name ]
-            , div [ class "Device__id" ] []
-            ]
+        , div [ class "Device__name" ] [ text device.name ]
         ]
 
 
