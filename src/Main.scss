@@ -1,7 +1,8 @@
 @use "Page/Login";
 
+@use "Views/Artist";
+@use "Views/BottomBar";
 @use "Views/Page";
-@use "Views/Player";
 @use "Views/Search";
 @use "Views/Sidebar";
 @use "Views/Topbar";
@@ -9,6 +10,7 @@
 @use "Color";
 
 @import "../node_modules/normalize.css/normalize";
+// @import "../public/icons/styles";
 
 .App {
   background: Color.$background;
