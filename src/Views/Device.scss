@@ -1,0 +1,118 @@
+@use "../Color";
+
+.Device {
+  align-items: center;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: auto auto;
+  padding: 0 30px 0 15px;
+
+  &__active {
+    cursor: pointer;
+    font-size: 1.8rem;
+  }
+
+  &__id {
+    font-size: .8rem;
+    font-style: italic;
+  }
+
+  &__name {
+    font-weight: 700;
+  }
+
+  &List {
+    background: lighten(Color.$background, 7);
+    border-radius: 5px;
+    bottom: 100%;
+    left: 50%;
+    opacity: 0;
+    position: absolute;
+    transform: translateX(-50%);
+    transition: all ease .2s;
+    visibility: hidden;
+    width: 230px;
+
+    &__icon {
+      font-size: 1.8rem;
+      line-height: 0;
+      margin-right: 15px;
+    }
+
+    &Head {
+      background: lighten(Color.$background, 3);
+      border-radius: 5px 5px 0 0;
+      color: rgba(#fff, .3);
+      height: 0;
+      overflow: hidden;
+      padding: 0 10px;
+      position: relative;
+      text-align: center;
+      transition: all ease .3s;
+      transition-delay: .1s;
+
+      &::after {
+        background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, .15));
+        bottom: 0;
+        content: "";
+        height: 50px;
+        left: 0;
+        pointer-events: none;
+        position: absolute;
+        right: 0;
+        z-index: 1;
+      }
+
+      &__icon1 {
+        background: lighten(Color.$background, 3);
+        font-size: 2rem;
+        left: 4px;
+        padding: 5px 0;
+        position: relative;
+        top: -3px;
+      }
+
+      &__icon2 {
+        font-size: 4rem;
+        line-height: 0;
+      }
+
+      &__icon3 {
+        background: lighten(Color.$background, 3);
+        font-size: 2.5rem;
+        padding: 5px 0;
+        position: relative;
+        right: 3px;
+      }
+    }
+
+    &__item {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      padding: 10px 20px;
+      white-space: nowrap;
+
+      &.active {
+        color: Color.$primary;
+      }
+    }
+  }
+
+  &__select {
+    position: relative;
+
+    &:hover {
+      .DeviceList {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px);
+        visibility: visible;
+
+        &Head {
+          height: 150px;
+          padding: 10px;
+        }
+      }
+    }
+  }
+}
