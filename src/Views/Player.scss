@@ -1,4 +1,29 @@
+@use "../Color";
+
 .Player {
-  border-top: 1px solid red;
-  flex-basis: 100px;
+  align-content: center;
+  align-items: center;
+  background: lighten(Color.$background, 1);
+  border-top: 1px solid lighten(Color.$background, 5);
+  display: grid;
+  flex-basis: 80px;
+  grid-gap: 30px;
+  grid-template-columns: auto 1fr auto auto;
+  justify-content: space-between;
+  padding: 0 30px;
+
+  &Current {
+    align-items: center;
+    display: flex;
+
+    &__cover {
+      border-radius: 3px;
+      display: block;
+      height: 60px;
+    }
+
+    &__range {
+      width: 100%;
+    }
+  }
 }
