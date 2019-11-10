@@ -18,5 +18,8 @@
 
 .Page {
   flex: 1;
-  padding: 20px 30px;
+
+  &__body {
+    padding: 20px 30px;
+  }
 }

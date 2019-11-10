@@ -1,7 +1,13 @@
+@use "sass:color";
+
 @use "../node_modules/normalize.css/normalize";
 @use "Page/Login";
 
 @use "Views/Artist";
+@use "Views/Button";
+@use "Views/Heading";
+@use "Views/Helper";
+@use "Views/List";
 @use "Views/Page";
 @use "Views/Search";
 @use "Views/Sidebar";
@@ -29,6 +35,20 @@
   box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+  width: 17px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: color.scale(Color.$background, $lightness: 5%);
+  border: 5px solid #11151b;
+  border-radius: 20px;
+}
+
 i {
   line-height: 0;
 }
@@ -36,11 +56,6 @@ i {
 body {
   color: rgba(#fff, .8);
   font-family: "Nunito Sans", sans-serif;
-  font-weight: 200;
+  font-weight: 400;
   line-height: 1.4;
-}
-
-h1 {
-  font-weight: 200;
-  margin: 0;
 }

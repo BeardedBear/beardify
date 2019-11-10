@@ -77,7 +77,7 @@
 .icon-home:before {
   content: "\70";
 }
-.icon-book:before {
+.icon-collection:before {
   content: "\6f";
 }
 .icon-add:before {
@@ -89,7 +89,7 @@
 .icon-music:before {
   content: "\75";
 }
-.icon-list:before {
+.icon-playlist:before {
   content: "\76";
 }
 .icon-del:before {
@@ -160,4 +160,10 @@
 }
 .icon-stb:before {
   content: "\7a";
+}
+.icon-previous:before {
+  content: "\4e";
+}
+.icon-next:before {
+  content: "\50";
 }
