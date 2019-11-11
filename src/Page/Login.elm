@@ -41,7 +41,32 @@ view : Session -> Model -> ( String, List (Html Msg) )
 view _ _ =
     ( "Login"
     , [ div [ class "Page Login" ]
-            [ button [ onClick Submit ] [ text " Sign in " ]
+            [ div [ class "Login__form" ]
+                [ div []
+                    [ img [ class "Login__logo", src "./img/logo.svg" ] []
+                    ]
+                , p [ class "Login__desc" ]
+                    [ text "Have you ever imagined"
+                    , b [] [ text " Spotify " ]
+                    , text "with a rocket launcher? 🔫"
+                    ]
+                , button [ class "Button spotify", onClick Submit ]
+                    [ i [ class "Button__icon spotify icon-spotify" ] []
+                    , text "Connect with Spotify"
+                    ]
+                ]
+            ]
+      , div [ class "Login__foot" ]
+            [ div []
+                [ text "Crafted by "
+                , a [ class "Link", href "https://github.com/BeardedBear" ] [ text "BeardedBear" ]
+                , text " and "
+                , a [ class "Link", href "https://github.com/fbentz" ] [ text "fbentz" ]
+                ]
+            , div []
+                [ text "Participate in the open source project : "
+                , a [ class "Link", href "https://github.com/BeardedBear/beardify" ] [ text "Github" ]
+                ]
             ]
       ]
     )

@@ -167,3 +167,6 @@
 .icon-next:before {
   content: "\50";
 }
+.icon-spotify:before {
+  content: "\52";
+}

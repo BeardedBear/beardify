@@ -1,6 +1,16 @@
+@use "../Color";
+@use "sass:color";
+
 .Button {
+  background-color: color.scale(Color.$background, $lightness: 5%);
+  border: 0;
+  border-radius: 30px;
+  color: #fff;
   cursor: pointer;
+  font-weight: 700;
   outline: 0;
+  padding: 7px 15px;
+  position: relative;
 
   &.nude {
     background: transparent;
@@ -17,5 +27,22 @@
   &.disabled {
     opacity: .3;
     pointer-events: none;
+  }
+
+  &.spotify {
+    background: color.scale(#1ed760, $lightness: -60%);
+    padding-left: 35px;
+  }
+
+  &__icon {
+    font-size: 1.4rem;
+    left: 5px;
+    position: absolute;
+    top: 37%;
+    transform: translateY(-50%);
+
+    &.spotify {
+      color: #1ed760;
+    }
   }
 }

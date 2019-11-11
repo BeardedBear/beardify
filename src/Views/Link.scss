@@ -1,0 +1,6 @@
+@use "../Color";
+
+.Link {
+  color: Color.$primary;
+  text-decoration: none;
+}
