@@ -2,7 +2,6 @@ module Request.Api exposing (authHeader, handleJsonResponse, url)
 
 import Data.Authorization as Authorization
 import Data.Session exposing (Session)
-import Data.Spotify as Spotify
 import Http exposing (..)
 import Json.Decode as Decode exposing (Decoder)
 
