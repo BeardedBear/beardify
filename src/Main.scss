@@ -7,6 +7,7 @@
 @use "Views/Button";
 @use "Views/Heading";
 @use "Views/Helper";
+@use "Views/Link";
 @use "Views/List";
 @use "Views/Page";
 @use "Views/Search";
@@ -27,6 +28,11 @@
     display: flex;
     flex: 1;
   }
+}
+
+b,
+strong {
+  font-weight: 700;
 }
 
 *,

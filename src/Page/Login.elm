@@ -45,8 +45,27 @@ view _ _ =
                 [ div []
                     [ img [ class "Login__logo", src "./img/logo.svg" ] []
                     ]
-                , p [ class "Login__desc" ] [ text "Donec luctus placerat justo. Ut quis tellus egestas, venenatis massa efficitur, dignissim enim. Proin quis ullamcorper arcu. Cras semper bibendum tristique." ]
-                , button [ onClick Submit ] [ text "Sign in" ]
+                , p [ class "Login__desc" ]
+                    [ text "Have you ever imagined"
+                    , b [] [ text " Spotify " ]
+                    , text "with a rocket launcher? 🔫"
+                    ]
+                , button [ class "Button spotify", onClick Submit ]
+                    [ i [ class "Button__icon spotify icon-spotify" ] []
+                    , text "Connect with Spotify"
+                    ]
+                ]
+            ]
+      , div [ class "Login__foot" ]
+            [ div []
+                [ text "Crafted by "
+                , a [ class "Link", href "https://github.com/BeardedBear" ] [ text "BeardedBear" ]
+                , text " and "
+                , a [ class "Link", href "https://github.com/BeardedBear/beardify/pulls/fbentz" ] [ text "fbentz" ]
+                ]
+            , div []
+                [ text "Participate in the open source project : "
+                , a [ class "Link", href "https://github.com/BeardedBear/beardify" ] [ text "Github" ]
                 ]
             ]
       ]
