@@ -41,7 +41,13 @@ view : Session -> Model -> ( String, List (Html Msg) )
 view _ _ =
     ( "Login"
     , [ div [ class "Page Login" ]
-            [ button [ onClick Submit ] [ text " Sign in " ]
+            [ div [ class "Login__form" ]
+                [ div []
+                    [ img [ src "./img/logo.png" ] []
+                    , span [] [ text "beardify" ]
+                    ]
+                , button [ onClick Submit ] [ text "Sign in" ]
+                ]
             ]
       ]
     )
