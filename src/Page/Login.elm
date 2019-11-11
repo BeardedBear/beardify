@@ -61,7 +61,7 @@ view _ _ =
                 [ text "Crafted by "
                 , a [ class "Link", href "https://github.com/BeardedBear" ] [ text "BeardedBear" ]
                 , text " and "
-                , a [ class "Link", href "https://github.com/BeardedBear/beardify/pulls/fbentz" ] [ text "fbentz" ]
+                , a [ class "Link", href "https://github.com/fbentz" ] [ text "fbentz" ]
                 ]
             , div []
                 [ text "Participate in the open source project : "
