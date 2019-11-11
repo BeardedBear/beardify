@@ -34,25 +34,21 @@
     &.danger {
       background: Color.$danger;
       border-left: 10px solid color.scale(Color.$danger, $lightness: -25%);
-      color: color.scale(Color.$danger, $lightness: 70%);
     }
 
     &.info {
       background: Color.$primary;
       border-left: 10px solid color.scale(Color.$primary, $lightness: -25%);
-      color: color.scale(Color.$primary, $lightness: 70%);
     }
 
     &.success {
       background: Color.$success;
       border-left: 10px solid color.scale(Color.$success, $lightness: -25%);
-      color: color.scale(Color.$success, $lightness: 70%);
     }
 
     &.warning {
       background: Color.$warning;
       border-left: 10px solid color.scale(Color.$warning, $lightness: -25%);
-      color: color.scale(Color.$warning, $lightness: 70%);
     }
   }
 
