@@ -1,19 +1,34 @@
 @use "../Color";
+@use "sass:color";
 
 .Sidebar {
   border-right: 1px solid Color.$border;
   display: flex;
-  flex-basis: 250px;
+  flex-basis: 280px;
   flex-direction: column;
+
+  &__item {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
 
   &__collections {
     border-bottom: 1px solid Color.$border;
     flex: 1;
-    padding: 15px;
   }
 
   &__playlists {
     flex: 1;
-    padding: 15px;
+  }
+
+  &__title {
+    background: color.adjust(Color.$background, $lightness: 2%);
+    border-bottom: 1px solid Color.$border;
+    color: color.adjust(Color.$background, $lightness: 30%);
+    font-size: .85rem;
+    letter-spacing: .3px;
+    padding: 5px 15px;
+    text-transform: uppercase;
   }
 }

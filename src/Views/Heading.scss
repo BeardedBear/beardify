@@ -1,0 +1,9 @@
+@use "../Color";
+
+.Heading {
+  margin: 0;
+
+  &.first {
+    font-weight: 200;
+  }
+}

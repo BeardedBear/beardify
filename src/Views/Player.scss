@@ -83,7 +83,7 @@
   background: rgba(255, 255, 255, .1);
   border-radius: 1.5rem;
   cursor: pointer;
-  height: 7px;
+  height: 5px;
   margin: 0 10px;
   outline: 0;
   width: 100%;
@@ -95,6 +95,7 @@
     background: white;
     border-radius: 50%;
     height: $size;
+    padding: 5px 0;
     width: $size;
   }
 }
