@@ -162,10 +162,11 @@ view model =
                 |> (::) head
                 |> div [ class "DeviceList" ]
             ]
-        , div [ class "Device__volume" ]
-            [ i [ class "icon-sound" ] []
+        , div [ class "DeviceVolume" ]
+            [ i [ class "DeviceVolume__icon icon-sound" ] []
             , input
-                [ type_ "range"
+                [ class "Range"
+                , type_ "range"
                 , Html.Attributes.min "0"
                 , Html.Attributes.max "100"
                 , step "1"

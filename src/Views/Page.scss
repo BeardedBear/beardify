@@ -1,7 +1,19 @@
+@use "sass:color";
+@use "../Color";
+
 .Content {
   display: flex;
   flex: 1;
   flex-direction: column;
+
+  &__bottom {
+    align-content: center;
+    align-items: center;
+    background: color.adjust(Color.$background, $lightness: 2%);
+    border-top: 1px solid Color.$border;
+    display: flex;
+    flex-basis: 80px;
+  }
 }
 
 .Page {
