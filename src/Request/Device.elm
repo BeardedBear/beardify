@@ -1,10 +1,9 @@
 module Request.Device exposing (getList, set, setVolume)
 
-import Data.Authorization as Authorization
 import Data.Device as Device exposing (Device)
 import Data.Session exposing (Session)
 import Http exposing (..)
-import Json.Decode as Decode exposing (Decoder)
+import Json.Decode as Decode
 import Json.Encode as Encode
 import Request.Api as Api
 import Task exposing (Task)
@@ -48,8 +47,8 @@ set session device =
         }
 
 
-setVolume : Session -> Int -> Device -> Task Http.Error ()
-setVolume session volume device =
+setVolume : Session -> Int -> Task Http.Error ()
+setVolume session volume =
     Http.task
         { method = "PUT"
         , headers = [ Api.authHeader session ]

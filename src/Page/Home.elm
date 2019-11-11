@@ -1,12 +1,9 @@
 module Page.Home exposing (Model, Msg(..), init, update, view)
 
-import Data.Device exposing (Device)
+import Data.Device as Device
 import Data.Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Http
-import Request.Device as DeviceRequest
-import Task
 import Views.Device as Device
 import Views.Player as Player
 import Views.Sidebar as Sidebar
