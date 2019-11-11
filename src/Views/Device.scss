@@ -12,11 +12,6 @@
     font-size: 1.8rem;
   }
 
-  &__id {
-    font-size: .8rem;
-    font-style: italic;
-  }
-
   &__name {
     font-weight: 700;
   }
@@ -31,7 +26,7 @@
     transform: translateX(-50%);
     transition: all ease .2s;
     visibility: hidden;
-    width: 230px;
+    width: 280px;
 
     &__icon {
       font-size: 1.8rem;

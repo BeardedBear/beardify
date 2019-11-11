@@ -1,8 +1,12 @@
 module Page.Home exposing (Model, Msg(..), init, update, view)
 
+import Data.Device exposing (Device)
 import Data.Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Http
+import Request.Device as DeviceRequest
+import Task
 import Views.Device as Device
 import Views.Player as Player
 import Views.Sidebar as Sidebar
@@ -10,33 +14,41 @@ import Views.Topbar as Topbar
 
 
 type alias Model =
-    String
+    { device : Device.Model }
 
 
 type Msg
-    = NoOp
+    = DeviceMsg Device.Msg
 
 
 init : Session -> ( Model, Session, Cmd Msg )
 init session =
-    ( ""
+    let
+        ( deviceModel, deviceCmd ) =
+            Device.init session
+    in
+    ( { device = deviceModel }
     , session
-    , Cmd.none
+    , Cmd.batch [ Cmd.map DeviceMsg deviceCmd ]
     )
 
 
 update : Session -> Msg -> Model -> ( Model, Session, Cmd Msg )
 update session msg model =
     case msg of
-        NoOp ->
-            ( model
+        DeviceMsg deviceMsg ->
+            let
+                ( deviceModel, deviceCmd ) =
+                    Device.update session deviceMsg model.device
+            in
+            ( { model | device = deviceModel }
             , session
-            , Cmd.none
+            , Cmd.batch [ Cmd.map DeviceMsg deviceCmd ]
             )
 
 
 view : Session -> Model -> ( String, List (Html Msg) )
-view _ _ =
+view _ model =
     ( "Home"
     , [ Topbar.view
       , div [ class "App__body" ]
@@ -48,7 +60,8 @@ view _ _ =
                     ]
                 , div [ class "BottomBar" ]
                     [ Player.view
-                    , Device.view
+                    , Device.view model.device
+                        |> Html.map DeviceMsg
                     ]
                 ]
             ]
