@@ -50,7 +50,13 @@ update session msg model =
 view : Session -> Model -> ( String, List (Html Msg) )
 view session model =
     ( "Home"
-    , [ Topbar.view session
+    , [ div [ class "Notif" ]
+            [ div [ class "Notif__item danger" ] [ text "Mais putain t'es con quoi ?! T'as tout pété ! Fait chier je vais devoir tout refaire !" ]
+            , div [ class "Notif__item info" ] [ text "Hey ! T'as remarqué que Beardify c'était sympa ou pas ?" ]
+            , div [ class "Notif__item success" ] [ text "Wahou ! Bravo, tu as réussi un exploit ! Mes sincères félicitations !" ]
+            , div [ class "Notif__item warning" ] [ text "Tu fera gaffe, tu va tomber la..." ]
+            ]
+      , Topbar.view session
       , div [ class "App__body" ]
             [ Sidebar.view
             , div [ class "Content" ]
