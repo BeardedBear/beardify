@@ -24,6 +24,5 @@ type alias Config =
 frame : Config -> ( String, List (Html msg) ) -> Document msg
 frame _ ( title, content ) =
     { title = title ++ " | Beardify "
-    , body =
-        [ main_ [ class "App" ] content ]
+    , body = [ main_ [ class "App" ] content ]
     }

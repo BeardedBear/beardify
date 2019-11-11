@@ -28,6 +28,7 @@
     transition: all ease .2s;
     visibility: hidden;
     width: 280px;
+    z-index: 999;
 
     &__icon {
       font-size: 1.8rem;
