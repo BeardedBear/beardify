@@ -55,7 +55,7 @@ update session msg model =
             , Cmd.none
             )
 
-        DeviceList (Err err) ->
+        DeviceList (Err _) ->
             ( model, Cmd.none )
 
         Activate device ->
@@ -109,8 +109,8 @@ update session msg model =
             in
             ( { model | devices = newDevice }
             , case activeDevice of
-                Just device ->
-                    Task.attempt SetVolume (Request.setVolume session (String.toInt volume |> Maybe.withDefault 0) device)
+                Just _ ->
+                    Task.attempt SetVolume (Request.setVolume session (String.toInt volume |> Maybe.withDefault 0))
 
                 Nothing ->
                     Cmd.none
