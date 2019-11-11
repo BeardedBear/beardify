@@ -14,45 +14,36 @@ import Views.Topbar as Topbar
 
 
 type alias Model =
-    { devices : List Device }
+    { device : Device.Model }
 
 
 type Msg
-    = NoOp
-    | Devices (Result Http.Error (List Device))
+    = DeviceMsg Device.Msg
 
 
 init : Session -> ( Model, Session, Cmd Msg )
 init session =
-    ( { devices = [] }
+    let
+        ( deviceModel, deviceCmd ) =
+            Device.init session
+    in
+    ( { device = deviceModel }
     , session
-    , Task.attempt Devices (DeviceRequest.getList session)
+    , Cmd.batch [ Cmd.map DeviceMsg deviceCmd ]
     )
 
 
 update : Session -> Msg -> Model -> ( Model, Session, Cmd Msg )
 update session msg model =
     case msg of
-        NoOp ->
-            ( model
-            , session
-            , Cmd.none
-            )
-
-        Devices (Ok devices) ->
-            ( { model | devices = devices }
-            , session
-            , Cmd.none
-            )
-
-        Devices (Err err) ->
+        DeviceMsg deviceMsg ->
             let
-                _ =
-                    Debug.log "err" err
+                ( deviceModel, deviceCmd ) =
+                    Device.update session deviceMsg model.device
             in
-            ( model
+            ( { model | device = deviceModel }
             , session
-            , Cmd.none
+            , Cmd.batch [ Cmd.map DeviceMsg deviceCmd ]
             )
 
 
@@ -69,7 +60,8 @@ view _ model =
                     ]
                 , div [ class "BottomBar" ]
                     [ Player.view
-                    , Device.view { devices = model.devices }
+                    , Device.view model.device
+                        |> Html.map DeviceMsg
                     ]
                 ]
             ]

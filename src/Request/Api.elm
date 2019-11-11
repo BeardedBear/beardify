@@ -1,18 +1,17 @@
-module Request.Api exposing (handleJsonResponse, url)
+module Request.Api exposing (authHeader, handleJsonResponse, url)
 
+import Data.Authorization as Authorization
+import Data.Session exposing (Session)
 import Data.Spotify as Spotify
 import Http exposing (..)
 import Json.Decode as Decode exposing (Decoder)
 
 
-url : String
-url =
-    "https://api.spotify.com/" ++ version ++ "/"
-
-
-version : String
-version =
-    "v1"
+authHeader : Session -> Http.Header
+authHeader session =
+    Maybe.andThen Authorization.createAuthHeader session.store.auth
+        |> Maybe.withDefault ""
+        |> Http.header "Authorization"
 
 
 handleJsonResponse : Decoder a -> Http.Response String -> Result Http.Error a
@@ -37,3 +36,13 @@ handleJsonResponse decoder response =
 
                 Ok result ->
                     Ok result
+
+
+url : String
+url =
+    "https://api.spotify.com/" ++ version ++ "/"
+
+
+version : String
+version =
+    "v1"

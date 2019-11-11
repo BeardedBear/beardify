@@ -1,4 +1,11 @@
-module Data.Device exposing (Device, decode, typeToString)
+module Data.Device exposing
+    ( Device
+    , Id
+    , createId
+    , decode
+    , idToString
+    , typeToString
+    )
 
 import Json.Decode as Decode exposing (Decoder)
 
@@ -32,6 +39,11 @@ type Type
 
 type Id
     = Id String
+
+
+createId : String -> Id
+createId string =
+    Id string
 
 
 decode : Decoder Device
@@ -91,6 +103,11 @@ decodeType =
                     _ ->
                         Decode.succeed Unknown
             )
+
+
+idToString : Id -> String
+idToString (Id id) =
+    id
 
 
 typeToString : Type -> String
