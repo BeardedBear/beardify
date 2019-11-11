@@ -17,9 +17,11 @@ type alias Model =
 
 
 type Msg
-    = DeviceList (Result Http.Error (List Device))
-    | Activate Device
+    = Activate Device
     | Activated (Result Http.Error ())
+    | DeviceList (Result Http.Error (List Device))
+    | UpdateVolume String
+    | SetVolume (Result Http.Error ())
 
 
 default : Model
@@ -35,6 +37,14 @@ init session =
     , Cmd.batch
         [ Task.attempt DeviceList (Request.getList session) ]
     )
+
+
+initVolume : List Device -> Int
+initVolume deviceList =
+    List.filter .active deviceList
+        |> List.head
+        |> Maybe.map .volume
+        |> Maybe.withDefault 0
 
 
 update : Session -> Msg -> Model -> ( Model, Cmd Msg )
@@ -75,6 +85,27 @@ update session msg model =
         Activated (Err _) ->
             ( model, Cmd.none )
 
+        UpdateVolume volume ->
+            let
+                activeDevice =
+                    List.filter .active model.devices
+                        |> List.head
+            in
+            ( model
+            , case activeDevice of
+                Just device ->
+                    Task.attempt SetVolume (Request.setVolume session (String.toInt volume |> Maybe.withDefault 0) device)
+
+                Nothing ->
+                    Cmd.none
+            )
+
+        SetVolume (Ok _) ->
+            ( model, Cmd.none )
+
+        SetVolume (Err _) ->
+            ( model, Cmd.none )
+
 
 head : Html msg
 head =
@@ -104,6 +135,10 @@ item ({ name, type_, active } as device) =
 
 view : Model -> Html Msg
 view model =
+    let
+        _ =
+            Debug.log "volume" (String.fromInt (initVolume model.devices))
+    in
     div [ class "Device" ]
         [ div [ class "Device__select" ]
             [ i [ class "Device__active icon-computer" ] []
@@ -111,5 +146,16 @@ view model =
                 |> (::) head
                 |> div [ class "DeviceList" ]
             ]
-        , div [ class "Device__volume" ] [ i [ class "icon-sound" ] [], input [ type_ "range" ] [] ]
+        , div [ class "Device__volume" ]
+            [ i [ class "icon-sound" ] []
+            , input
+                [ type_ "range"
+                , Html.Attributes.min "0"
+                , Html.Attributes.max "100"
+                , step "1"
+                , onInput UpdateVolume
+                , value (String.fromInt (initVolume model.devices))
+                ]
+                []
+            ]
         ]

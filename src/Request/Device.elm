@@ -1,4 +1,4 @@
-module Request.Device exposing (getList, set)
+module Request.Device exposing (getList, set, setVolume)
 
 import Data.Authorization as Authorization
 import Data.Device as Device exposing (Device)
@@ -38,6 +38,31 @@ set session device =
                     [ ( "device_ids"
                       , Encode.list Encode.string
                             [ Device.idToString device.id ]
+                      )
+                    ]
+                )
+        , resolver =
+            Decode.succeed ()
+                |> Api.handleJsonResponse
+                |> Http.stringResolver
+        }
+
+
+setVolume : Session -> Int -> Device -> Task Http.Error ()
+setVolume session volume device =
+    Http.task
+        { method = "PUT"
+        , headers = [ Api.authHeader session ]
+        , url = Api.url ++ "me/player/volume"
+        , timeout = Nothing
+        , body =
+            jsonBody
+                (Encode.object
+                    [ ( "device_id"
+                      , Encode.string (Device.idToString device.id)
+                      )
+                    , ( "volume_percent"
+                      , Encode.int volume
                       )
                     ]
                 )
