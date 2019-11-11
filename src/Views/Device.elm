@@ -12,7 +12,7 @@ import Task
 
 type alias Model =
     { devices : List Device
-    , lastDeviceId : Maybe Device.Id
+    , lastDeviceId : Maybe Device
     }
 
 
@@ -49,7 +49,28 @@ update session msg model =
             ( model, Cmd.none )
 
         Activate device ->
-            ( model, Task.attempt Activated (Request.set session device) )
+            let
+                lastActiveDevice =
+                    List.filter .active model.devices
+                        |> List.head
+
+                updateDevices =
+                    List.map
+                        (\d ->
+                            if d.active then
+                                { d | active = False }
+
+                            else if d.id == device.id then
+                                { d | active = True }
+
+                            else
+                                d
+                        )
+                        model.devices
+            in
+            ( { model | devices = updateDevices, lastDeviceId = lastActiveDevice }
+            , Task.attempt Activated (Request.set session device)
+            )
 
         Activated (Ok _) ->
             ( model, Cmd.none )
