@@ -53,19 +53,9 @@ setVolume session volume device =
     Http.task
         { method = "PUT"
         , headers = [ Api.authHeader session ]
-        , url = Api.url ++ "me/player/volume"
+        , url = Api.url ++ "me/player/volume?volume_percent=" ++ String.fromInt volume
         , timeout = Nothing
-        , body =
-            jsonBody
-                (Encode.object
-                    [ ( "device_id"
-                      , Encode.string (Device.idToString device.id)
-                      )
-                    , ( "volume_percent"
-                      , Encode.int volume
-                      )
-                    ]
-                )
+        , body = emptyBody
         , resolver =
             Decode.succeed ()
                 |> Api.handleJsonResponse

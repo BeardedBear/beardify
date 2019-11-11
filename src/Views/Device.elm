@@ -90,8 +90,24 @@ update session msg model =
                 activeDevice =
                     List.filter .active model.devices
                         |> List.head
+
+                newDevice =
+                    List.map
+                        (\d ->
+                            case activeDevice of
+                                Just device ->
+                                    if d.id == device.id then
+                                        { d | volume = String.toInt volume |> Maybe.withDefault 0 }
+
+                                    else
+                                        d
+
+                                Nothing ->
+                                    d
+                        )
+                        model.devices
             in
-            ( model
+            ( { model | devices = newDevice }
             , case activeDevice of
                 Just device ->
                     Task.attempt SetVolume (Request.setVolume session (String.toInt volume |> Maybe.withDefault 0) device)
