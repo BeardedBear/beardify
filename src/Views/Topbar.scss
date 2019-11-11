@@ -8,18 +8,9 @@
   grid-template-columns: auto auto 1fr auto;
   padding: 10px;
 
-  &Logo {
-    align-items: center;
-    color: Color.$primary;
-    display: flex;
-    font-family: "Exo 2", sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-
-    &__img {
-      height: 30px;
-      margin-right: 7px;
-    }
+  &__logo {
+    height: 30px;
+    margin-right: 7px;
 
     &__name {
       position: relative;
