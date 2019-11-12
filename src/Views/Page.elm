@@ -1,28 +1,26 @@
-module Views.Page exposing (ActivePage(..), Config, frame)
+module Views.Page exposing (Config, frame)
 
 import Browser exposing (Document)
-import Data.Session exposing (Session)
+import Data.Session exposing (Notif, Session)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Views.Notif as Notif
 
 
-
--- import Route
-
-
-type ActivePage
-    = Home
-    | Other
-
-
-type alias Config =
+type alias Config msg =
     { session : Session
-    , activePage : ActivePage
+    , clearNotification : Notif -> msg
     }
 
 
-frame : Config -> ( String, List (Html msg) ) -> Document msg
-frame _ ( title, content ) =
+frame : Config msg -> ( String, List (Html msg) ) -> Document msg
+frame { session, clearNotification } ( title, content ) =
     { title = title ++ " | Beardify "
-    , body = [ main_ [ class "App" ] content ]
+    , body =
+        [ Notif.component
+            { clear = clearNotification
+            , notifs = session.notifications
+            }
+        , main_ [ class "App" ] content
+        ]
     }

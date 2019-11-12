@@ -3,12 +3,13 @@ module Main exposing (main)
 import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Data.Authorization as Authorization
-import Data.Session as Session exposing (Session)
+import Data.Session as Session exposing (Notif, Session)
 import Html exposing (..)
 import Page.Home as Home
 import Page.Login as Login
 import Ports
 import Route exposing (Route)
+import Time exposing (Posix)
 import Url exposing (Url)
 import Views.Page as Page
 
@@ -36,7 +37,9 @@ type alias Model =
 
 
 type Msg
-    = HomeMsg Home.Msg
+    = ClearNotification Notif
+    | RefreshNotifications Posix
+    | HomeMsg Home.Msg
     | LoginMsg Login.Msg
     | StoreChanged String
     | UrlChanged Url
@@ -87,6 +90,7 @@ init flags url navKey =
             , clientId = flags.clientId
             , authUrl = flags.authUrl
             , randomBytes = flags.randomBytes
+            , notifications = []
             , store = Session.deserializeStore flags.rawStore
             }
     in
@@ -177,6 +181,11 @@ update msg ({ page, session } as model) =
             )
     in
     case ( msg, page ) of
+        ( ClearNotification notif, _ ) ->
+            ( { model | session = session |> Session.closeNotification notif }
+            , Cmd.none
+            )
+
         ( HomeMsg homeMsg, HomePage homeModel ) ->
             toPage HomePage HomeMsg Home.update homeMsg homeModel
 
@@ -199,6 +208,11 @@ update msg ({ page, session } as model) =
         ( UrlChanged url, _ ) ->
             setRoute (Route.fromUrl url) model
 
+        ( RefreshNotifications _, _ ) ->
+            ( { model | session = session |> Session.tickNotifications Session.notificationTick }
+            , Cmd.none
+            )
+
         ( _, NotFound ) ->
             ( { model | page = NotFound }, Cmd.none )
 
@@ -210,6 +224,11 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Ports.storeChanged StoreChanged
+        , if List.length model.session.notifications > 0 then
+            Time.every Session.notificationTick RefreshNotifications
+
+          else
+            Sub.none
         , case model.page of
             HomePage _ ->
                 Sub.none
@@ -228,8 +247,11 @@ subscriptions model =
 view : Model -> Document Msg
 view { page, session } =
     let
-        pageConfig =
-            Page.Config session
+        frame =
+            Page.frame
+                { session = session
+                , clearNotification = ClearNotification
+                }
 
         mapMsg msg ( title, content ) =
             ( title, content |> List.map (Html.map msg) )
@@ -238,20 +260,20 @@ view { page, session } =
         HomePage homeModel ->
             Home.view session homeModel
                 |> mapMsg HomeMsg
-                |> Page.frame (pageConfig Page.Home)
+                |> frame
 
         LoginPage loginModel ->
             Login.view session loginModel
                 |> mapMsg LoginMsg
-                |> Page.frame (pageConfig Page.Home)
+                |> frame
 
         NotFound ->
             ( "Not Found", [ Html.text "Not found" ] )
-                |> Page.frame (pageConfig Page.Other)
+                |> frame
 
         Blank ->
             ( "", [] )
-                |> Page.frame (pageConfig Page.Other)
+                |> frame
 
 
 main : Program Flags Model Msg

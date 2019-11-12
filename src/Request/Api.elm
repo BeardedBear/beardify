@@ -51,7 +51,10 @@ mapError session task =
                 case httpError of
                     BadStatus status ->
                         if status == 401 then
-                            ( Session.updateAuth Nothing session, httpError )
+                            ( Session.updateAuth Nothing session
+                                |> Session.notifyError "Session expired!" "You will be redirect on login page !"
+                            , httpError
+                            )
 
                         else
                             ( session, httpError )
