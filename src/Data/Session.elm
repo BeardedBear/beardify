@@ -37,9 +37,9 @@ updateState newState ({ store } as session) =
     { session | store = { store | state = newState } }
 
 
-updateAuth : Authorization -> Session -> Session
+updateAuth : Maybe Authorization -> Session -> Session
 updateAuth auth ({ store } as session) =
-    { session | store = { store | auth = Just auth } }
+    { session | store = { store | auth = auth } }
 
 
 defaultStore : Store

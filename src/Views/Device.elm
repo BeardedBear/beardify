@@ -18,10 +18,10 @@ type alias Model =
 
 type Msg
     = Activate Device
-    | Activated (Result Http.Error ())
-    | DeviceList (Result Http.Error (List Device))
+    | Activated (Result ( Session, Http.Error ) ())
+    | DeviceList (Result ( Session, Http.Error ) (List Device))
     | UpdateVolume String
-    | SetVolume (Result Http.Error ())
+    | SetVolume (Result ( Session, Http.Error ) ())
 
 
 default : Model
@@ -47,16 +47,17 @@ initVolume deviceList =
         |> Maybe.withDefault 0
 
 
-update : Session -> Msg -> Model -> ( Model, Cmd Msg )
+update : Session -> Msg -> Model -> ( Model, Session, Cmd Msg )
 update session msg model =
     case msg of
         DeviceList (Ok devices) ->
             ( { model | devices = devices }
+            , session
             , Cmd.none
             )
 
-        DeviceList (Err _) ->
-            ( model, Cmd.none )
+        DeviceList (Err ( newSession, err )) ->
+            ( model, newSession, Cmd.none )
 
         Activate device ->
             let
@@ -76,14 +77,15 @@ update session msg model =
                             )
             in
             ( { model | devices = updateDevices, lastDevice = lastActiveDevice }
+            , session
             , Task.attempt Activated (Request.set session device)
             )
 
         Activated (Ok _) ->
-            ( model, Cmd.none )
+            ( model, session, Cmd.none )
 
-        Activated (Err _) ->
-            ( model, Cmd.none )
+        Activated (Err ( newSession, _ )) ->
+            ( model, newSession, Cmd.none )
 
         UpdateVolume volume ->
             let
@@ -108,6 +110,7 @@ update session msg model =
                         model.devices
             in
             ( { model | devices = newDevice }
+            , session
             , case activeDevice of
                 Just _ ->
                     Task.attempt SetVolume (Request.setVolume session (String.toInt volume |> Maybe.withDefault 0))
@@ -117,10 +120,10 @@ update session msg model =
             )
 
         SetVolume (Ok _) ->
-            ( model, Cmd.none )
+            ( model, session, Cmd.none )
 
-        SetVolume (Err _) ->
-            ( model, Cmd.none )
+        SetVolume (Err ( newSession, _ )) ->
+            ( model, newSession, Cmd.none )
 
 
 head : Html msg

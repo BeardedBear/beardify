@@ -35,11 +35,11 @@ update session msg model =
     case msg of
         DeviceMsg deviceMsg ->
             let
-                ( deviceModel, deviceCmd ) =
+                ( deviceModel, newSession, deviceCmd ) =
                     Device.update session deviceMsg model.device
             in
             ( { model | device = deviceModel }
-            , session
+            , newSession
             , Cmd.batch [ Cmd.map DeviceMsg deviceCmd ]
             )
 

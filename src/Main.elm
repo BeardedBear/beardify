@@ -114,7 +114,7 @@ init flags url navKey =
                     else
                         let
                             newSession =
-                                Session.updateAuth auth session
+                                Session.updateAuth (Just auth) session
                         in
                         ( { session = newSession, page = Blank }
                         , Cmd.batch
@@ -163,7 +163,17 @@ update msg ({ page, session } as model) =
                         Cmd.none
             in
             ( { model | session = newSession, page = toModel newModel }
-            , Cmd.map toMsg (Cmd.batch [ newCmd, storeCmd ])
+            , Cmd.map toMsg
+                (Cmd.batch
+                    [ newCmd
+                    , storeCmd
+                    , if newSession.store.auth == Nothing then
+                        Route.pushUrl session.navKey Route.Login
+
+                      else
+                        Cmd.none
+                    ]
+                )
             )
     in
     case ( msg, page ) of
