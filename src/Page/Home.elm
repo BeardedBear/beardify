@@ -39,7 +39,7 @@ update session msg model =
                     Device.update session deviceMsg model.device
             in
             ( { model | device = deviceModel }
-            , newSession |> Session.notifyInfo "Device Module loaded !"
+            , newSession
             , Cmd.batch [ Cmd.map DeviceMsg deviceCmd ]
             )
 
@@ -66,34 +66,3 @@ view session model =
             ]
       ]
     )
-
-
-
--- div [ class "Notif" ]
---         [ div [ class "Notif__item danger" ]
---             [ p [ class "Notif__desc" ] [ text "Mais putain t'es con quoi ?! T'as tout pété ! Fait chier je vais devoir tout refaire !" ]
---             , div [ class "Notif__actions" ]
---                 [ button [ class "Button Notif__btn" ] [ text "Tout re-casser" ]
---                 ]
---             ]
---         , div [ class "Notif__item info" ]
---             [ p [ class "Notif__desc" ] [ text "Hey ! T'as remarqué que Beardify c'était sympa ou pas ?" ]
---             , div [ class "Notif__actions" ]
---                 [ button [ class "Button Notif__btn" ] [ text "Oui" ]
---                 , button [ class "Button Notif__btn" ] [ text "Non" ]
---                 ]
---             ]
---         , div [ class "Notif__item success" ]
---             [ p [ class "Notif__desc" ] [ text "Wahou ! Bravo, tu as réussi un exploit ! Mes sincères félicitations !" ]
---             , div [ class "Notif__actions" ]
---                 [ button [ class "Button Notif__btn" ] [ text "Ok..." ]
---                 ]
---             ]
---         , div [ class "Notif__item warning" ]
---             [ p [ class "Notif__desc" ] [ text "Tu fera gaffe, tu va tomber la..." ]
---             , div [ class "Notif__actions" ]
---                 [ button [ class "Button Notif__btn" ] [ text "M'enfou !" ]
---                 , button [ class "Button Notif__btn" ] [ text "J'en ai marre de la vie." ]
---                 ]
---             ]
---         ]
