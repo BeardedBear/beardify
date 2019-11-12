@@ -49,16 +49,6 @@ type alias Store =
     }
 
 
-updateState : String -> Session -> Session
-updateState newState ({ store } as session) =
-    { session | store = { store | state = newState } }
-
-
-updateAuth : Maybe Authorization -> Session -> Session
-updateAuth auth ({ store } as session) =
-    { session | store = { store | auth = auth } }
-
-
 defaultStore : Store
 defaultStore =
     { auth = Nothing
@@ -93,6 +83,20 @@ deserializeStore =
 serializeStore : Store -> String
 serializeStore =
     encodeStore >> Encode.encode 0
+
+
+
+-- Authorization
+
+
+updateState : String -> Session -> Session
+updateState newState ({ store } as session) =
+    { session | store = { store | state = newState } }
+
+
+updateAuth : Maybe Authorization -> Session -> Session
+updateAuth auth ({ store } as session) =
+    { session | store = { store | auth = auth } }
 
 
 
