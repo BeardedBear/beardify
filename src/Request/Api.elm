@@ -1,9 +1,15 @@
-module Request.Api exposing (authHeader, handleJsonResponse, url)
+module Request.Api exposing
+    ( authHeader
+    , handleJsonResponse
+    , mapError
+    , url
+    )
 
 import Data.Authorization as Authorization
-import Data.Session exposing (Session)
+import Data.Session as Session exposing (Session)
 import Http exposing (..)
 import Json.Decode as Decode exposing (Decoder)
+import Task exposing (Task)
 
 
 authHeader : Session -> Http.Header
@@ -35,6 +41,27 @@ handleJsonResponse decoder response =
 
                 Ok result ->
                     Ok result
+
+
+mapError : Session -> Task Error a -> Task ( Session, Http.Error ) a
+mapError session task =
+    task
+        |> Task.mapError
+            (\httpError ->
+                case httpError of
+                    BadStatus status ->
+                        if status == 401 then
+                            ( Session.updateAuth Nothing session
+                                |> Session.notifyError "Session expired!" "you will be redirected on login page!"
+                            , httpError
+                            )
+
+                        else
+                            ( session, httpError )
+
+                    _ ->
+                        ( session, httpError )
+            )
 
 
 url : String

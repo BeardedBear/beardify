@@ -1,7 +1,7 @@
 module Page.Home exposing (Model, Msg(..), init, update, view)
 
 import Data.Device as Device
-import Data.Session exposing (Session)
+import Data.Session as Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Views.Device as Device
@@ -35,11 +35,11 @@ update session msg model =
     case msg of
         DeviceMsg deviceMsg ->
             let
-                ( deviceModel, deviceCmd ) =
+                ( deviceModel, newSession, deviceCmd ) =
                     Device.update session deviceMsg model.device
             in
             ( { model | device = deviceModel }
-            , session
+            , newSession
             , Cmd.batch [ Cmd.map DeviceMsg deviceCmd ]
             )
 
@@ -47,35 +47,7 @@ update session msg model =
 view : Session -> Model -> ( String, List (Html Msg) )
 view session model =
     ( "Home"
-    , [ div [ class "Notif" ]
-            [ div [ class "Notif__item danger" ]
-                [ p [ class "Notif__desc" ] [ text "Mais putain t'es con quoi ?! T'as tout pété ! Fait chier je vais devoir tout refaire !" ]
-                , div [ class "Notif__actions" ]
-                    [ button [ class "Button Notif__btn" ] [ text "Tout re-casser" ]
-                    ]
-                ]
-            , div [ class "Notif__item info" ]
-                [ p [ class "Notif__desc" ] [ text "Hey ! T'as remarqué que Beardify c'était sympa ou pas ?" ]
-                , div [ class "Notif__actions" ]
-                    [ button [ class "Button Notif__btn" ] [ text "Oui" ]
-                    , button [ class "Button Notif__btn" ] [ text "Non" ]
-                    ]
-                ]
-            , div [ class "Notif__item success" ]
-                [ p [ class "Notif__desc" ] [ text "Wahou ! Bravo, tu as réussi un exploit ! Mes sincères félicitations !" ]
-                , div [ class "Notif__actions" ]
-                    [ button [ class "Button Notif__btn" ] [ text "Ok..." ]
-                    ]
-                ]
-            , div [ class "Notif__item warning" ]
-                [ p [ class "Notif__desc" ] [ text "Tu fera gaffe, tu va tomber la..." ]
-                , div [ class "Notif__actions" ]
-                    [ button [ class "Button Notif__btn" ] [ text "M'enfou !" ]
-                    , button [ class "Button Notif__btn" ] [ text "J'en ai marre de la vie." ]
-                    ]
-                ]
-            ]
-      , Topbar.view session
+    , [ Topbar.view session
       , div [ class "App__body" ]
             [ Sidebar.view
             , div [ class "Content" ]
