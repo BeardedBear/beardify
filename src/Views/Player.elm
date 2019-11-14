@@ -38,24 +38,16 @@ update session msg model =
         Pause ->
             let
                 newPlayer =
-                    Maybe.map
-                        (\player ->
-                            { player | playing = False }
-                        )
-                        model
+                    Maybe.map (\player -> { player | playing = False })
             in
-            ( model, session, Task.attempt Paused (Request.pause session) )
+            ( newPlayer model, session, Task.attempt Paused (Request.pause session) )
 
         Play ->
             let
                 newPlayer =
-                    Maybe.map
-                        (\player ->
-                            { player | playing = True }
-                        )
-                        model
+                    Maybe.map (\player -> { player | playing = True })
             in
-            ( newPlayer, session, Task.attempt Played (Request.play session) )
+            ( newPlayer model, session, Task.attempt Played (Request.play session) )
 
         Paused (Ok _) ->
             ( model, session, Cmd.none )
