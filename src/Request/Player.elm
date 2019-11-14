@@ -1,4 +1,4 @@
-module Request.Player exposing (get, play)
+module Request.Player exposing (get, pause, play)
 
 import Data.Player as Player exposing (Player)
 import Data.Session exposing (Session)
@@ -27,9 +27,25 @@ get session =
 play : Session -> Task ( Session, Http.Error ) ()
 play session =
     Http.task
-        { method = "Put"
+        { method = "PUT"
         , headers = [ Api.authHeader session ]
         , url = Api.url ++ "me/player/play"
+        , body = Http.emptyBody
+        , resolver =
+            Decode.succeed ()
+                |> Api.handleJsonResponse
+                |> Http.stringResolver
+        , timeout = Nothing
+        }
+        |> Api.mapError session
+
+
+pause : Session -> Task ( Session, Http.Error ) ()
+pause session =
+    Http.task
+        { method = "PUT"
+        , headers = [ Api.authHeader session ]
+        , url = Api.url ++ "me/player/pause"
         , body = Http.emptyBody
         , resolver =
             Decode.succeed ()

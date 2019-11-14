@@ -19,7 +19,9 @@ type alias Model =
 
 
 type Msg
-    = Play
+    = Pause
+    | Paused (Result ( Session, Http.Error ) ())
+    | Play
     | Played (Result ( Session, Http.Error ) ())
     | Refresh Posix
     | Refreshed (Result ( Session, Http.Error ) Player)
@@ -33,8 +35,33 @@ init session =
 update : Session -> Msg -> Model -> ( Model, Session, Cmd Msg )
 update session msg model =
     case msg of
+        Pause ->
+            let
+                newPlayer =
+                    Maybe.map
+                        (\player ->
+                            { player | playing = False }
+                        )
+                        model
+            in
+            ( model, session, Task.attempt Paused (Request.pause session) )
+
         Play ->
-            ( model, session, Task.attempt Played (Request.play session) )
+            let
+                newPlayer =
+                    Maybe.map
+                        (\player ->
+                            { player | playing = True }
+                        )
+                        model
+            in
+            ( newPlayer, session, Task.attempt Played (Request.play session) )
+
+        Paused (Ok _) ->
+            ( model, session, Cmd.none )
+
+        Paused (Err ( newSession, err )) ->
+            ( model, newSession, Cmd.none )
 
         Played (Ok _) ->
             ( model, session, Cmd.none )
@@ -74,7 +101,11 @@ view player =
             in
             div [ class "Player" ]
                 [ div [ class "PlayerControl" ]
-                    [ button [ class "PlayerControl__btn play", onClick Play ] [ i [ class "icon-pause" ] [] ]
+                    [ if player_.playing then
+                        button [ class "PlayerControl__btn", onClick Pause ] [ i [ class "icon-pause" ] [] ]
+
+                      else
+                        button [ class "PlayerControl__btn", onClick Play ] [ i [ class "icon-play" ] [] ]
                     , button [ class "PlayerControl__btn" ] [ i [ class "icon-to-start" ] [] ]
                     , button [ class "PlayerControl__btn" ] [ i [ class "icon-to-end" ] [] ]
                     ]
