@@ -1,4 +1,4 @@
-module Views.Player exposing (Model, Msg(..), init, update, view)
+module Views.Player exposing (Model, Msg(..), init, subscriptions, update, view)
 
 import Data.Artist exposing (ArtistSimplified)
 import Data.Image as Image
@@ -11,6 +11,7 @@ import Html.Events exposing (..)
 import Http
 import Request.Player as Request
 import Task
+import Time exposing (Posix)
 
 
 type alias Model =
@@ -20,6 +21,7 @@ type alias Model =
 type Msg
     = Play
     | Played (Result ( Session, Http.Error ) ())
+    | Refresh Posix
     | Refreshed (Result ( Session, Http.Error ) Player)
 
 
@@ -40,11 +42,21 @@ update session msg model =
         Played (Err ( newSession, err )) ->
             ( model, newSession, Cmd.none )
 
+        Refresh _ ->
+            ( model, session, Task.attempt Refreshed (Request.get session) )
+
         Refreshed (Ok player) ->
             ( Just player, session, Cmd.none )
 
         Refreshed (Err ( newSession, err )) ->
             ( model, session, Cmd.none )
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Time.every 1000 Refresh
+        ]
 
 
 artistView : ArtistSimplified -> Html msg
@@ -62,7 +74,7 @@ view player =
             in
             div [ class "Player" ]
                 [ div [ class "PlayerControl" ]
-                    [ button [ class "PlayerControl__btn play", onClick Play ] [ i [ class "icon-play" ] [] ]
+                    [ button [ class "PlayerControl__btn play", onClick Play ] [ i [ class "icon-pause" ] [] ]
                     , button [ class "PlayerControl__btn" ] [ i [ class "icon-to-start" ] [] ]
                     , button [ class "PlayerControl__btn" ] [ i [ class "icon-to-end" ] [] ]
                     ]
@@ -81,8 +93,8 @@ view player =
                                 [ class "Range"
                                 , type_ "range"
                                 , Html.Attributes.min "0"
-                                , Html.Attributes.value <| String.fromFloat (toFloat player_.progress / toFloat track.duration * 100)
-                                , Html.Attributes.max "100"
+                                , Html.Attributes.value <| String.fromInt player_.progress
+                                , Html.Attributes.max <| String.fromInt track.duration
                                 ]
                                 []
                             , span [ class "PlayerCurrent__time" ] [ text <| Track.durationFormat track.duration ]
@@ -91,5 +103,6 @@ view player =
                     ]
                 ]
 
+        -- (toFloat player_.progress / toFloat track.duration * 100)
         Nothing ->
             div [ class "Player" ] []

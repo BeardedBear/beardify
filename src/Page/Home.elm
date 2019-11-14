@@ -1,4 +1,4 @@
-module Page.Home exposing (Model, Msg(..), init, update, view)
+module Page.Home exposing (Model, Msg(..), init, subscriptions, update, view)
 
 import Data.Device as Device
 import Data.Session as Session exposing (Session)
@@ -61,6 +61,14 @@ update session msg model =
             , newSession
             , Cmd.batch [ Cmd.map PlayerMsg playerCmd ]
             )
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Player.subscriptions model.player
+            |> Sub.map PlayerMsg
+        ]
 
 
 view : Session -> Model -> ( String, List (Html Msg) )
