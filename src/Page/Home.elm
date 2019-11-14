@@ -1,7 +1,7 @@
 module Page.Home exposing (Model, Msg(..), init, subscriptions, update, view)
 
 import Data.Device as Device
-import Data.Session as Session exposing (Session)
+import Data.Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Views.Device as Device

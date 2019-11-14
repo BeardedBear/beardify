@@ -2,9 +2,9 @@ module Views.Player exposing (Model, Msg(..), init, subscriptions, update, view)
 
 import Data.Artist exposing (ArtistSimplified)
 import Data.Image as Image
-import Data.Player as Player exposing (Player)
+import Data.Player exposing (Player)
 import Data.Session exposing (Session)
-import Data.Track as Track exposing (Track)
+import Data.Track as Track
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -15,7 +15,14 @@ import Time exposing (Posix)
 
 
 type alias Model =
-    Maybe Player
+    { player : Maybe Player
+    , refreshTick : Float
+    }
+
+
+defaultTick : Float
+defaultTick =
+    1000 * 60
 
 
 type Msg
@@ -29,7 +36,7 @@ type Msg
 
 init : Session -> ( Model, Cmd Msg )
 init session =
-    ( Nothing, Task.attempt Refreshed (Request.get session) )
+    ( { player = Nothing, refreshTick = defaultTick }, Task.attempt Refreshed (Request.get session) )
 
 
 update : Session -> Msg -> Model -> ( Model, Session, Cmd Msg )
@@ -40,41 +47,41 @@ update session msg model =
                 newPlayer =
                     Maybe.map (\player -> { player | playing = False })
             in
-            ( newPlayer model, session, Task.attempt Paused (Request.pause session) )
+            ( { model | player = newPlayer model.player, refreshTick = defaultTick }, session, Task.attempt Paused (Request.pause session) )
 
         Play ->
             let
                 newPlayer =
                     Maybe.map (\player -> { player | playing = True })
             in
-            ( newPlayer model, session, Task.attempt Played (Request.play session) )
+            ( { model | player = newPlayer model.player, refreshTick = 1000 }, session, Task.attempt Played (Request.play session) )
 
         Paused (Ok _) ->
             ( model, session, Cmd.none )
 
-        Paused (Err ( newSession, err )) ->
+        Paused (Err ( newSession, _ )) ->
             ( model, newSession, Cmd.none )
 
         Played (Ok _) ->
             ( model, session, Cmd.none )
 
-        Played (Err ( newSession, err )) ->
+        Played (Err ( newSession, _ )) ->
             ( model, newSession, Cmd.none )
 
         Refresh _ ->
             ( model, session, Task.attempt Refreshed (Request.get session) )
 
         Refreshed (Ok player) ->
-            ( Just player, session, Cmd.none )
+            ( { model | player = Just player }, session, Cmd.none )
 
-        Refreshed (Err ( newSession, err )) ->
+        Refreshed (Err ( newSession, _ )) ->
             ( model, newSession, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Time.every 1000 Refresh
+        [ Time.every model.refreshTick Refresh
         ]
 
 
@@ -84,7 +91,7 @@ artistView artist =
 
 
 view : Model -> Html Msg
-view player =
+view { player } =
     case player of
         Just ({ track } as player_) ->
             let

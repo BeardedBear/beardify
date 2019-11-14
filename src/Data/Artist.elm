@@ -5,7 +5,6 @@ module Data.Artist exposing
     , decodeSimplified
     )
 
-import Data.Image as Image exposing (Image)
 import Json.Decode as Decode exposing (Decoder)
 
 

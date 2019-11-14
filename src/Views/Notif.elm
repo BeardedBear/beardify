@@ -2,9 +2,8 @@ module Views.Notif exposing (Config, component, notificationItem)
 
 import Data.Session exposing (Notif(..))
 import Html exposing (..)
-import Html.Attributes as HA exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Route
 
 
 type alias Config msg =

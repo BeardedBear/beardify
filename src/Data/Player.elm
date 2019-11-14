@@ -18,10 +18,6 @@ type alias ExternalUrl =
     { spotify : String }
 
 
-type Id
-    = Id String
-
-
 type alias Player =
     { device : Device
     , repeatState : String

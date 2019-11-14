@@ -3,12 +3,6 @@ module Data.Image exposing (Image, decode, filterByWidth)
 import Json.Decode as Decode exposing (Decoder)
 
 
-type Size
-    = Small
-    | Medium
-    | Large
-
-
 type alias Image =
     { height : Int
     , url : String

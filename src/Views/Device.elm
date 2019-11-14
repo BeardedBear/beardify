@@ -56,7 +56,7 @@ update session msg model =
             , Cmd.none
             )
 
-        DeviceList (Err ( newSession, err )) ->
+        DeviceList (Err ( newSession, _ )) ->
             ( model, newSession, Cmd.none )
 
         Activate device ->
