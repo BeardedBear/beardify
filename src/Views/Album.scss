@@ -1,0 +1,25 @@
+.Album {
+  &List {
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    margin-bottom: 30px;
+  }
+
+  &__cover {
+    border-radius: 3px;
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  &__name {
+    font-weight: 700;
+  }
+
+  &__release {
+    font-size:.9rem;
+    font-style: italic;
+    opacity: .4;
+  }
+}

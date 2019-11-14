@@ -3,8 +3,10 @@
 @use "../node_modules/normalize.css/normalize";
 @use "Page/Login";
 
-@use "Views/Artist";
+@use "Views/Album";
+@use "Views/ArtistLink";
 @use "Views/Button";
+@use "Views/Flex";
 @use "Views/Heading";
 @use "Views/Helper";
 @use "Views/Link";
@@ -14,8 +16,11 @@
 @use "Views/Search";
 @use "Views/Sidebar";
 @use "Views/Topbar";
+@use "Views/Track";
 @use "Views/Device";
 @use "Views/Player";
+
+@use "Page/Artist";
 
 @use "Color";
 

@@ -1,0 +1,24 @@
+
+.Track {
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 5px 0;
+
+  &__cover {
+    border-radius: 3px;
+    height: 20px;
+    margin-right: 10px;
+  }
+
+  &__duration {
+    opacity: .4;
+  }
+
+  &__name {
+    font-weight: 700;
+  }
+
+  &:hover {
+    color : #fff
+  }
+}

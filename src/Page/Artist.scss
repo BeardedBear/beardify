@@ -1,0 +1,41 @@
+@use "../Color";
+
+.Artist {
+
+  &__body {
+    padding: 20px 30px;
+  }
+
+  &Links {
+    margin-bottom: 30px;
+
+    &__icon {
+      margin-right: 5px;
+      position: relative;
+      top: 3px;
+    }
+
+    &__item {
+      color: rgba(255, 255, 255, .3);
+      margin-right: 15px;
+      text-decoration: none;
+
+      &:hover {
+        color: rgba(255, 255, 255, .8);
+      }
+    }
+  }
+
+  &__top {
+    display: grid;
+    gap: 30px;
+    grid-template-columns: 2fr 1fr;
+    margin-bottom: 30px;
+  }
+
+  &__videos {
+    border-left: 1px solid Color.$border;
+    padding: 20px 30px;
+    width: 300px;
+  }
+}
