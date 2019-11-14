@@ -81,23 +81,21 @@ update session msg model =
             ( model, newSession, Cmd.none )
 
         Refresh _ ->
-            let
-                updateTick player =
-                    case player of
-                        Just player_ ->
-                            if player_.playing then
-                                { model | refreshTick = 1000 }
-
-                            else
-                                model
-
-                        Nothing ->
-                            model
-            in
-            ( updateTick model.player, session, Task.attempt Refreshed (Request.get session) )
+            ( model, session, Task.attempt Refreshed (Request.get session) )
 
         Refreshed (Ok player) ->
-            ( { model | player = Just player }, session, Cmd.none )
+            let
+                updateTick =
+                    if player.playing then
+                        1000
+
+                    else
+                        defaultTick
+            in
+            ( { model | player = Just player, refreshTick = updateTick }
+            , session
+            , Cmd.none
+            )
 
         Refreshed (Err ( newSession, _ )) ->
             ( model, newSession, Cmd.none )

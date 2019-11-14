@@ -37,6 +37,10 @@ handleJsonResponse decoder response =
         Http.GoodStatus_ _ body ->
             case Decode.decodeString decoder body of
                 Err err ->
+                    let
+                        _ =
+                            Debug.log "err" err
+                    in
                     Err (Http.BadBody (Decode.errorToString err))
 
                 Ok result ->
