@@ -21,7 +21,7 @@ type alias ExternalUrl =
 type alias Player =
     { device : Device
     , repeatState : String
-    , context : Context
+    , context : Maybe Context
     , shuffle : Bool
     , timestamp : Int
     , track : Track
@@ -36,7 +36,7 @@ decode =
     Decode.succeed Player
         |> JDP.required "device" Device.decode
         |> JDP.required "repeat_state" Decode.string
-        |> JDP.required "context" decodeContext
+        |> JDP.optional "context" (Decode.map Just decodeContext) Nothing
         |> JDP.required "shuffle_state" Decode.bool
         |> JDP.required "timestamp" Decode.int
         |> JDP.required "item" Track.decode
