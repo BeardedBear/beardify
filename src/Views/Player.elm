@@ -68,7 +68,7 @@ update session msg model =
             ( Just player, session, Cmd.none )
 
         Refreshed (Err ( newSession, err )) ->
-            ( model, session, Cmd.none )
+            ( model, newSession, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
