@@ -1,5 +1,5 @@
-@use "../Color"
-;
+@use "../Color";
+
 .Album {
   &List {
     display: grid;
@@ -12,21 +12,23 @@
     border-radius: 3px;
     display: block;
     margin-bottom: 10px;
+    transition: all ease .2s;
     width: 100%;
-  }
-
-  &__link {
-    display: block;
-    position: relative;
   }
 
   &__name {
     font-weight: 700;
   }
 
+  &__add {
+    padding:0;
+    position: absolute;
+    right: 0;
+    top: 0
+  }
+
   &__play {
     $size: 60px;
-    // background: Color.$primary;
     border: 0;
     border-radius: $size;
     cursor: pointer;
@@ -37,12 +39,27 @@
     padding-top: 10px;
     position: absolute;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(0);
     transition: all ease .2s;
     width: $size;
 
     &:hover {
-      transform: translate(-50%, -50%) scale(1.1);
+      transform: translate(-50%, -50%) scale(1.5);
+    }
+  }
+
+  &__link {
+    display: block;
+    position: relative;
+
+    &:hover {
+      .Album__cover {
+        opacity: .3;
+      }
+
+      .Album__play {
+        transform: translate(-50%, -50%) scale(1);
+      }
     }
   }
 
