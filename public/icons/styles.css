@@ -80,9 +80,6 @@
 .icon-collection:before {
   content: "\6f";
 }
-.icon-add:before {
-  content: "\73";
-}
 .icon-folder:before {
   content: "\72";
 }
@@ -169,4 +166,7 @@
 }
 .icon-spotify:before {
   content: "\52";
+}
+.icon-add:before {
+  content: "\53";
 }
