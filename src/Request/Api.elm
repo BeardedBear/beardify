@@ -34,10 +34,10 @@ handleJsonResponse decoder response =
         Http.NetworkError_ ->
             Err Http.NetworkError
 
-        Http.GoodStatus_ _ body ->
+        Http.GoodStatus_ meta body ->
             case Decode.decodeString decoder body of
-                Err _ ->
-                    Err (Http.BadBody body)
+                Err err ->
+                    Err (Http.BadBody (Decode.errorToString err))
 
                 Ok result ->
                     Ok result

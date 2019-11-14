@@ -11,11 +11,14 @@ import Views.Topbar as Topbar
 
 
 type alias Model =
-    { device : Device.Model }
+    { device : Device.Model
+    , player : Player.Model
+    }
 
 
 type Msg
     = DeviceMsg Device.Msg
+    | PlayerMsg Player.Msg
 
 
 init : Session -> ( Model, Session, Cmd Msg )
@@ -23,10 +26,16 @@ init session =
     let
         ( deviceModel, deviceCmd ) =
             Device.init session
+
+        ( playerModel, playerCmd ) =
+            Player.init session
     in
-    ( { device = deviceModel }
+    ( { device = deviceModel, player = playerModel }
     , session
-    , Cmd.batch [ Cmd.map DeviceMsg deviceCmd ]
+    , Cmd.batch
+        [ Cmd.map DeviceMsg deviceCmd
+        , Cmd.map PlayerMsg playerCmd
+        ]
     )
 
 
@@ -41,6 +50,16 @@ update session msg model =
             ( { model | device = deviceModel }
             , newSession
             , Cmd.batch [ Cmd.map DeviceMsg deviceCmd ]
+            )
+
+        PlayerMsg playerMsg ->
+            let
+                ( playerModel, newSession, playerCmd ) =
+                    Player.update session playerMsg model.player
+            in
+            ( { model | player = playerModel }
+            , newSession
+            , Cmd.batch [ Cmd.map PlayerMsg playerCmd ]
             )
 
 
@@ -58,7 +77,8 @@ view session model =
                         ]
                     ]
                 , div [ class "Content__bottom" ]
-                    [ Player.view
+                    [ Player.view model.player
+                        |> Html.map PlayerMsg
                     , Device.view model.device
                         |> Html.map DeviceMsg
                     ]

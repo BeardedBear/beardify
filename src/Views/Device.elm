@@ -40,11 +40,11 @@ init session =
 
 
 initVolume : List Device -> Int
-initVolume deviceList =
-    List.filter .active deviceList
-        |> List.head
-        |> Maybe.map .volume
-        |> Maybe.withDefault 0
+initVolume =
+    List.filter .active
+        >> List.head
+        >> Maybe.map .volume
+        >> Maybe.withDefault 0
 
 
 update : Session -> Msg -> Model -> ( Model, Session, Cmd Msg )
@@ -61,22 +61,28 @@ update session msg model =
 
         Activate device ->
             let
+                inactive device_ =
+                    { device_ | active = False }
+
+                active =
+                    \d ->
+                        if d.id == device.id then
+                            { d | active = True }
+
+                        else
+                            d
+
                 lastActiveDevice =
                     List.filter .active model.devices
                         |> List.head
 
                 updateDevices =
-                    List.map (\d -> { d | active = False }) model.devices
-                        |> List.map
-                            (\d ->
-                                if d.id == device.id then
-                                    { d | active = True }
-
-                                else
-                                    d
-                            )
+                    List.map inactive >> List.map active
             in
-            ( { model | devices = updateDevices, lastDevice = lastActiveDevice }
+            ( { model
+                | devices = updateDevices model.devices
+                , lastDevice = lastActiveDevice
+              }
             , session
             , Task.attempt Activated (Request.set session device)
             )
@@ -154,10 +160,6 @@ item ({ name, type_, active } as device) =
 
 view : Model -> Html Msg
 view model =
-    let
-        _ =
-            Debug.log "volume" (String.fromInt (initVolume model.devices))
-    in
     div [ class "Device" ]
         [ div [ class "Device__select" ]
             [ i [ class "Device__active icon-computer" ] []
