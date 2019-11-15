@@ -230,8 +230,9 @@ subscriptions model =
           else
             Sub.none
         , case model.page of
-            HomePage _ ->
-                Sub.none
+            HomePage homeModel ->
+                Home.subscriptions homeModel
+                    |> Sub.map HomeMsg
 
             LoginPage _ ->
                 Sub.none

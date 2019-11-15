@@ -1,4 +1,4 @@
-module Views.Device exposing (Model, Msg, default, init, update, view)
+module Views.Device exposing (Model, Msg(..), default, init, update, view)
 
 import Data.Device as Device exposing (Device)
 import Data.Session exposing (Session)
@@ -40,11 +40,11 @@ init session =
 
 
 initVolume : List Device -> Int
-initVolume deviceList =
-    List.filter .active deviceList
-        |> List.head
-        |> Maybe.map .volume
-        |> Maybe.withDefault 0
+initVolume =
+    List.filter .active
+        >> List.head
+        >> Maybe.map .volume
+        >> Maybe.withDefault 0
 
 
 update : Session -> Msg -> Model -> ( Model, Session, Cmd Msg )
@@ -56,27 +56,33 @@ update session msg model =
             , Cmd.none
             )
 
-        DeviceList (Err ( newSession, err )) ->
+        DeviceList (Err ( newSession, _ )) ->
             ( model, newSession, Cmd.none )
 
         Activate device ->
             let
+                inactive device_ =
+                    { device_ | active = False }
+
+                active =
+                    \d ->
+                        if d.id == device.id then
+                            { d | active = True }
+
+                        else
+                            d
+
                 lastActiveDevice =
                     List.filter .active model.devices
                         |> List.head
 
                 updateDevices =
-                    List.map (\d -> { d | active = False }) model.devices
-                        |> List.map
-                            (\d ->
-                                if d.id == device.id then
-                                    { d | active = True }
-
-                                else
-                                    d
-                            )
+                    List.map inactive >> List.map active
             in
-            ( { model | devices = updateDevices, lastDevice = lastActiveDevice }
+            ( { model
+                | devices = updateDevices model.devices
+                , lastDevice = lastActiveDevice
+              }
             , session
             , Task.attempt Activated (Request.set session device)
             )
@@ -134,7 +140,9 @@ head =
             , i [ class "DeviceListHead__icon2 icon-computer" ] []
             , i [ class "DeviceListHead__icon3 icon-speaker" ] []
             ]
-        , text "Choose the device on which to play your music"
+        , div [ class "DeviceListHead__desc" ]
+            [ text "Choose the device on which to play your music"
+            ]
         ]
 
 
@@ -154,10 +162,6 @@ item ({ name, type_, active } as device) =
 
 view : Model -> Html Msg
 view model =
-    let
-        _ =
-            Debug.log "volume" (String.fromInt (initVolume model.devices))
-    in
     div [ class "Device" ]
         [ div [ class "Device__select" ]
             [ i [ class "Device__active icon-computer" ] []
@@ -167,15 +171,18 @@ view model =
             ]
         , div [ class "DeviceVolume" ]
             [ i [ class "DeviceVolume__icon icon-sound" ] []
-            , input
-                [ class "Range"
-                , type_ "range"
-                , Html.Attributes.min "0"
-                , Html.Attributes.max "100"
-                , step "1"
-                , onInput UpdateVolume
-                , value (String.fromInt (initVolume model.devices))
+            , div [ class "Range" ]
+                [ input
+                    [ class "Range__input"
+                    , type_ "range"
+                    , Html.Attributes.min "0"
+                    , Html.Attributes.max "100"
+                    , step "1"
+                    , onInput UpdateVolume
+                    , value (String.fromInt (initVolume model.devices))
+                    ]
+                    []
+                , div [ class "Range__progress", style "width" (String.fromInt (initVolume model.devices) ++ "%") ] []
                 ]
-                []
             ]
         ]
