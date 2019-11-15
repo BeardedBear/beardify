@@ -126,7 +126,7 @@ update session msg model =
             )
 
         Refreshed (Err ( newSession, _ )) ->
-            ( model, newSession, Cmd.none )
+            ( model, newSession, Task.attempt Refreshed (Request.get session) )
 
         SkipTrack (Ok _) ->
             ( model, session, Cmd.none )

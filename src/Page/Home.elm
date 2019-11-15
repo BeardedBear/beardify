@@ -58,10 +58,6 @@ update session msg model =
                         Task.attempt Player.Refreshed (RequestPlayer.get session)
                             |> Cmd.map PlayerMsg
 
-                    Device.Activated (Err _) ->
-                        Task.attempt Player.Refreshed (RequestPlayer.get session)
-                            |> Cmd.map PlayerMsg
-
                     _ ->
                         Cmd.none
                 ]
