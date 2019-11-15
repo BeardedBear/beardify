@@ -1,4 +1,5 @@
 @use "../Color";
+@use "sass:color";
 
 .Artist {
 
@@ -35,7 +36,32 @@
 
   &__videos {
     border-left: 1px solid Color.$border;
-    padding: 20px 30px;
     width: 300px;
+  }
+}
+
+.Video {
+  padding: 15px;
+
+  &__channel {
+    color: rgba(255, 255, 255, .4);
+    font-style: italic;
+  }
+
+  &__embed{
+    border: 0;
+    margin-bottom: 5px;
+  }
+
+  &__item {
+    background: color.scale(Color.$background, $lightness: 3%);
+    border: 1px solid  color.scale(Color.$background, $lightness: 7%);
+    border-radius: 3px;
+    margin-bottom: 15px;
+    padding: 10px;
+  }
+
+  &__name {
+    font-weight: 700;
   }
 }

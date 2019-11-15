@@ -57,7 +57,7 @@ strong {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: color.scale(Color.$background, $lightness: 5%);
+  background-color: color.scale(Color.$background, $lightness: 7%);
   border: 5px solid #11151b;
   border-radius: 20px;
 }
