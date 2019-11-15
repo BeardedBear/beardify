@@ -126,7 +126,9 @@
 
   &Volume {
     align-items: center;
-    display: flex;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: auto 1fr;
 
     &__icon {
       font-size: 1.5rem;

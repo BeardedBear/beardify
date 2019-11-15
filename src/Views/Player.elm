@@ -159,6 +159,9 @@ view { player } =
             let
                 cover =
                     Image.filterByWidth 64 track.album.images
+
+                percentDuration =
+                    String.fromFloat (toFloat player_.progress / toFloat track.duration * 100) ++ "%"
             in
             div [ class "Player" ]
                 [ div [ class "PlayerControl" ]
@@ -181,15 +184,18 @@ view { player } =
                             )
                         , div [ class "PlayerCurrent__bar" ]
                             [ span [ class "PlayerCurrent__time" ] [ text <| Track.durationFormat player_.progress ]
-                            , input
-                                [ class "Range"
-                                , type_ "range"
-                                , Html.Attributes.min "0"
-                                , Html.Attributes.value <| String.fromInt player_.progress
-                                , Html.Attributes.max <| String.fromInt track.duration
-                                , onInput Seek
+                            , div [ class "Range" ]
+                                [ input
+                                    [ class "Range__input"
+                                    , type_ "range"
+                                    , Html.Attributes.min "0"
+                                    , Html.Attributes.value <| String.fromInt player_.progress
+                                    , Html.Attributes.max <| String.fromInt track.duration
+                                    , onInput Seek
+                                    ]
+                                    []
+                                , div [ class "Range__progress", style "width" percentDuration ] []
                                 ]
-                                []
                             , span [ class "PlayerCurrent__time" ] [ text <| Track.durationFormat track.duration ]
                             ]
                         ]

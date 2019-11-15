@@ -171,15 +171,18 @@ view model =
             ]
         , div [ class "DeviceVolume" ]
             [ i [ class "DeviceVolume__icon icon-sound" ] []
-            , input
-                [ class "Range"
-                , type_ "range"
-                , Html.Attributes.min "0"
-                , Html.Attributes.max "100"
-                , step "1"
-                , onInput UpdateVolume
-                , value (String.fromInt (initVolume model.devices))
+            , div [ class "Range" ]
+                [ input
+                    [ class "Range__input"
+                    , type_ "range"
+                    , Html.Attributes.min "0"
+                    , Html.Attributes.max "100"
+                    , step "1"
+                    , onInput UpdateVolume
+                    , value (String.fromInt (initVolume model.devices))
+                    ]
+                    []
+                , div [ class "Range__progress", style "width" (String.fromInt (initVolume model.devices) ++ "%") ] []
                 ]
-                []
             ]
         ]
