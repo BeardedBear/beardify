@@ -14,11 +14,14 @@ module Data.Session exposing
     , serializeStore
     , tickNotifications
     , updateAuth
+    , updatePlayerContext
     , updateState
     )
 
 import Browser.Navigation as Nav
 import Data.Authorization as Authorization exposing (Authorization)
+import Data.Device exposing (Device)
+import Data.Player exposing (PlayerContext)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
 
@@ -30,6 +33,8 @@ type alias Session =
     , clientId : String
     , randomBytes : String
     , store : Store
+    , playerContext : PlayerContext
+    , devices : List Device
     , notifications : List Notif
     }
 
@@ -97,6 +102,15 @@ updateState newState ({ store } as session) =
 updateAuth : Maybe Authorization -> Session -> Session
 updateAuth auth ({ store } as session) =
     { session | store = { store | auth = auth } }
+
+
+
+-- Player
+
+
+updatePlayerContext : PlayerContext -> Session -> Session
+updatePlayerContext playerContext session =
+    { session | playerContext = playerContext }
 
 
 

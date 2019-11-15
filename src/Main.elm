@@ -3,6 +3,7 @@ module Main exposing (main)
 import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Data.Authorization as Authorization
+import Data.Player as PlayerData
 import Data.Session as Session exposing (Notif, Session)
 import Html exposing (..)
 import Page.Home as Home
@@ -11,7 +12,9 @@ import Ports
 import Route exposing (Route)
 import Time exposing (Posix)
 import Url exposing (Url)
+import Views.Device as Device
 import Views.Page as Page
+import Views.Player as Player
 
 
 type alias Flags =
@@ -41,6 +44,8 @@ type Msg
     | RefreshNotifications Posix
     | HomeMsg Home.Msg
     | LoginMsg Login.Msg
+    | PlayerMsg Player.Msg
+    | DeviceMsg Device.Msg
     | StoreChanged String
     | UrlChanged Url
     | UrlRequested Browser.UrlRequest
@@ -60,9 +65,33 @@ setRoute maybeRoute model =
 
                     else
                         Cmd.none
+
+                ( playerInit, playerCmd ) =
+                    Player.init model.session
+
+                ( deviceInit, deviceCmd ) =
+                    Device.init model.session
             in
-            ( { model | session = newSession, page = page subModel }
-            , Cmd.batch [ Cmd.map subMsg subCmds, storeCmd ]
+            ( { model
+                | session =
+                    { newSession | devices = deviceInit }
+                        |> Session.updatePlayerContext playerInit
+                , page = page subModel
+              }
+            , Cmd.batch
+                [ Cmd.map subMsg subCmds
+                , storeCmd
+                , if model.session.store.auth /= Nothing then
+                    Cmd.map PlayerMsg playerCmd
+
+                  else
+                    Cmd.none
+                , if model.session.store.auth /= Nothing then
+                    Cmd.map DeviceMsg deviceCmd
+
+                  else
+                    Cmd.none
+                ]
             )
     in
     case ( model.session.store.auth /= Nothing, maybeRoute ) of
@@ -91,6 +120,8 @@ init flags url navKey =
             , authUrl = flags.authUrl
             , randomBytes = flags.randomBytes
             , notifications = []
+            , playerContext = PlayerData.defaultPlayerContext
+            , devices = []
             , store = Session.deserializeStore flags.rawStore
             }
     in
@@ -186,11 +217,46 @@ update msg ({ page, session } as model) =
             , Cmd.none
             )
 
+        ( DeviceMsg deviceMsg, _ ) ->
+            let
+                ( deviceModel, newSession, deviceCmd ) =
+                    Device.update session deviceMsg session.devices
+
+                playerContext =
+                    model.session.playerContext
+
+                updateContext context =
+                    { context | refreshTick = 1000 }
+            in
+            case deviceMsg of
+                Device.Activated (Ok _) ->
+                    ( { model | session = { newSession | playerContext = updateContext model.session.playerContext } }
+                    , Cmd.batch
+                        [ Cmd.map DeviceMsg deviceCmd ]
+                    )
+
+                _ ->
+                    ( { model | session = { newSession | devices = deviceModel } }
+                    , Cmd.batch
+                        [ Cmd.map DeviceMsg deviceCmd ]
+                    )
+
         ( HomeMsg homeMsg, HomePage homeModel ) ->
             toPage HomePage HomeMsg Home.update homeMsg homeModel
 
         ( LoginMsg loginMsg, LoginPage loginModel ) ->
             toPage LoginPage LoginMsg Login.update loginMsg loginModel
+
+        ( PlayerMsg playerMsg, _ ) ->
+            let
+                ( playerModel, newSession, playerCmd ) =
+                    Player.update session playerMsg session.playerContext
+            in
+            ( { model | session = Session.updatePlayerContext playerModel newSession }
+            , Cmd.batch
+                [ Cmd.map PlayerMsg playerCmd
+                ]
+            )
 
         ( StoreChanged json, _ ) ->
             ( { model | session = { session | store = Session.deserializeStore json } }
@@ -229,6 +295,8 @@ subscriptions model =
 
           else
             Sub.none
+        , Player.subscriptions model.session.playerContext
+            |> Sub.map PlayerMsg
         , case model.page of
             HomePage homeModel ->
                 Home.subscriptions homeModel
@@ -252,6 +320,8 @@ view { page, session } =
             Page.frame
                 { session = session
                 , clearNotification = ClearNotification
+                , playerMsg = PlayerMsg
+                , deviceMsg = DeviceMsg
                 }
 
         mapMsg msg ( title, content ) =
