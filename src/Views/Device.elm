@@ -140,7 +140,9 @@ head =
             , i [ class "DeviceListHead__icon2 icon-computer" ] []
             , i [ class "DeviceListHead__icon3 icon-speaker" ] []
             ]
-        , text "Choose the device on which to play your music"
+        , div [ class "DeviceListHead__desc" ]
+            [ text "Choose the device on which to play your music"
+            ]
         ]
 
 

@@ -61,6 +61,11 @@
         z-index: 1;
       }
 
+      &__desc {
+        position: relative;
+        z-index: 1;
+      }
+
       &__icon1 {
         background: $backgroundHead;
         font-size: 2rem;
@@ -88,8 +93,12 @@
       align-items: center;
       cursor: pointer;
       display: flex;
-      padding: 10px 20px;
+      padding: 15px 20px;
       white-space: nowrap;
+
+      &:hover {
+        background: color.scale(Color.$background, $lightness: 8%);
+      }
 
       &.active {
         color: Color.$primary;
