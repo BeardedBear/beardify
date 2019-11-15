@@ -153,10 +153,10 @@ view { player } =
             div [ class "Player" ]
                 [ div [ class "PlayerControl" ]
                     [ if player_.playing then
-                        button [ class "PlayerControl__btn", onClick Pause ] [ i [ class "icon-pause" ] [] ]
+                        button [ class "PlayerControl__btn play", onClick Pause ] [ i [ class "icon-pause" ] [] ]
 
                       else
-                        button [ class "PlayerControl__btn", onClick Play ] [ i [ class "icon-play" ] [] ]
+                        button [ class "PlayerControl__btn play", onClick Play ] [ i [ class "icon-play" ] [] ]
                     , button [ class "PlayerControl__btn", onClick Prev ] [ i [ class "icon-to-start" ] [] ]
                     , button [ class "PlayerControl__btn", onClick Next ] [ i [ class "icon-to-end" ] [] ]
                     ]
