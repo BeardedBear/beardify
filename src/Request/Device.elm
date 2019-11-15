@@ -18,8 +18,7 @@ getList session =
         , body = Http.emptyBody
         , resolver =
             Decode.at [ "devices" ] (Decode.list Device.decode)
-                |> Api.handleJsonResponse
-                |> Http.stringResolver
+                |> Api.jsonResolver
         , timeout = Nothing
         }
         |> Api.mapError session
@@ -42,9 +41,7 @@ set session device =
                     ]
                 )
         , resolver =
-            Decode.succeed ()
-                |> Api.handleJsonResponse
-                |> Http.stringResolver
+            Api.valueResolver ()
         }
         |> Api.mapError session
 
@@ -58,8 +55,6 @@ setVolume session volume =
         , timeout = Nothing
         , body = Http.emptyBody
         , resolver =
-            Decode.succeed ()
-                |> Api.handleJsonResponse
-                |> Http.stringResolver
+            Api.valueResolver ()
         }
         |> Api.mapError session

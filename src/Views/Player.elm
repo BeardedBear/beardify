@@ -27,11 +27,6 @@ type alias Model =
     }
 
 
-defaultTick : Float
-defaultTick =
-    1000 * 60
-
-
 type Msg
     = Next
     | Pause
@@ -42,6 +37,16 @@ type Msg
     | Refresh Posix
     | Refreshed (Result ( Session, Http.Error ) Player)
     | SkipTrack (Result ( Session, Http.Error ) ())
+
+
+artistView : ArtistSimplified -> Html msg
+artistView artist =
+    a [ href "", class "Artist__link" ] [ text artist.name ]
+
+
+defaultTick : Float
+defaultTick =
+    1000 * 60
 
 
 init : Session -> ( Model, Cmd Msg )
@@ -112,7 +117,10 @@ update session msg model =
                     else
                         defaultTick
             in
-            ( { model | player = Just player, refreshTick = updateTick }
+            ( { model
+                | player = Just player
+                , refreshTick = updateTick
+              }
             , session
             , Cmd.none
             )
@@ -132,11 +140,6 @@ subscriptions model =
     Sub.batch
         [ Time.every model.refreshTick Refresh
         ]
-
-
-artistView : ArtistSimplified -> Html msg
-artistView artist =
-    a [ href "", class "Artist__link" ] [ text artist.name ]
 
 
 view : Model -> Html Msg
@@ -182,6 +185,5 @@ view { player } =
                     ]
                 ]
 
-        -- (toFloat player_.progress / toFloat track.duration * 100)
         Nothing ->
             div [ class "Player" ] []

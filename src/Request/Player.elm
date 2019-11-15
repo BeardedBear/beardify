@@ -17,8 +17,7 @@ get session =
         , body = Http.emptyBody
         , resolver =
             Player.decode
-                |> Api.handleJsonResponse
-                |> Http.stringResolver
+                |> Api.jsonResolver
         , timeout = Nothing
         }
         |> Api.mapError session
@@ -31,10 +30,7 @@ next session =
         , headers = [ Api.authHeader session ]
         , url = Api.url ++ "me/player/next"
         , body = Http.emptyBody
-        , resolver =
-            Decode.succeed ()
-                |> Api.handleJsonResponse
-                |> Http.stringResolver
+        , resolver = Api.valueResolver ()
         , timeout = Nothing
         }
         |> Api.mapError session
@@ -47,10 +43,7 @@ pause session =
         , headers = [ Api.authHeader session ]
         , url = Api.url ++ "me/player/pause"
         , body = Http.emptyBody
-        , resolver =
-            Decode.succeed ()
-                |> Api.handleJsonResponse
-                |> Http.stringResolver
+        , resolver = Api.valueResolver ()
         , timeout = Nothing
         }
         |> Api.mapError session
@@ -63,10 +56,7 @@ play session =
         , headers = [ Api.authHeader session ]
         , url = Api.url ++ "me/player/play"
         , body = Http.emptyBody
-        , resolver =
-            Decode.succeed ()
-                |> Api.handleJsonResponse
-                |> Http.stringResolver
+        , resolver = Api.valueResolver ()
         , timeout = Nothing
         }
         |> Api.mapError session
@@ -79,10 +69,7 @@ prev session =
         , headers = [ Api.authHeader session ]
         , url = Api.url ++ "me/player/previous"
         , body = Http.emptyBody
-        , resolver =
-            Decode.succeed ()
-                |> Api.handleJsonResponse
-                |> Http.stringResolver
+        , resolver = Api.valueResolver ()
         , timeout = Nothing
         }
         |> Api.mapError session

@@ -4,6 +4,8 @@ import Data.Device as Device
 import Data.Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Request.Player as RequestPlayer
+import Task
 import Views.Device as Device
 import Views.Player as Player
 import Views.Sidebar as Sidebar
@@ -49,7 +51,16 @@ update session msg model =
             in
             ( { model | device = deviceModel }
             , newSession
-            , Cmd.batch [ Cmd.map DeviceMsg deviceCmd ]
+            , Cmd.batch
+                [ Cmd.map DeviceMsg deviceCmd
+                , case deviceMsg of
+                    Device.Activated (Ok _) ->
+                        Task.attempt Player.Refreshed (RequestPlayer.get session)
+                            |> Cmd.map PlayerMsg
+
+                    _ ->
+                        Cmd.none
+                ]
             )
 
         PlayerMsg playerMsg ->
