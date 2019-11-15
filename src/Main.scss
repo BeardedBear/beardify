@@ -1,8 +1,9 @@
+@use "Color";
 @use "sass:color";
 
 @use "../node_modules/normalize.css/normalize";
-@use "Page/Login";
 
+// Views
 @use "Views/Album";
 @use "Views/ArtistLink";
 @use "Views/Button";
@@ -20,9 +21,9 @@
 @use "Views/Device";
 @use "Views/Player";
 
+// Pages
+@use "Page/Login";
 @use "Page/Artist";
-
-@use "Color";
 
 .App {
   background: Color.$background;

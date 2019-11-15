@@ -4,7 +4,7 @@ import Data.Device as Device
 import Data.Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Views.Artist as Artist
+import Page.Artist as Artist
 import Views.Device as Device
 import Views.Player as Player
 import Views.Sidebar as Sidebar

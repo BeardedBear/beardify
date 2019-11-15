@@ -1,4 +1,4 @@
-module Views.Artist exposing (view)
+module Page.Artist exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
