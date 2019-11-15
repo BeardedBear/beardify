@@ -1,9 +1,11 @@
-module Page.Home exposing (Model, Msg(..), init, update, view)
+module Page.Home exposing (Model, Msg(..), init, subscriptions, update, view)
 
 import Data.Device as Device
-import Data.Session as Session exposing (Session)
+import Data.Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Request.Player as RequestPlayer
+import Task
 import Views.Device as Device
 import Views.Player as Player
 import Views.Sidebar as Sidebar
@@ -11,11 +13,14 @@ import Views.Topbar as Topbar
 
 
 type alias Model =
-    { device : Device.Model }
+    { device : Device.Model
+    , player : Player.Model
+    }
 
 
 type Msg
     = DeviceMsg Device.Msg
+    | PlayerMsg Player.Msg
 
 
 init : Session -> ( Model, Session, Cmd Msg )
@@ -23,10 +28,16 @@ init session =
     let
         ( deviceModel, deviceCmd ) =
             Device.init session
+
+        ( playerModel, playerCmd ) =
+            Player.init session
     in
-    ( { device = deviceModel }
+    ( { device = deviceModel, player = playerModel }
     , session
-    , Cmd.batch [ Cmd.map DeviceMsg deviceCmd ]
+    , Cmd.batch
+        [ Cmd.map DeviceMsg deviceCmd
+        , Cmd.map PlayerMsg playerCmd
+        ]
     )
 
 
@@ -37,11 +48,42 @@ update session msg model =
             let
                 ( deviceModel, newSession, deviceCmd ) =
                     Device.update session deviceMsg model.device
+
+                player =
+                    model.player
             in
-            ( { model | device = deviceModel }
+            case deviceMsg of
+                Device.Activated (Ok _) ->
+                    ( { model | player = { player | refreshTick = 1000 } }
+                    , newSession
+                    , Cmd.batch
+                        [ Cmd.map DeviceMsg deviceCmd ]
+                    )
+
+                _ ->
+                    ( { model | device = deviceModel }
+                    , newSession
+                    , Cmd.batch
+                        [ Cmd.map DeviceMsg deviceCmd ]
+                    )
+
+        PlayerMsg playerMsg ->
+            let
+                ( playerModel, newSession, playerCmd ) =
+                    Player.update session playerMsg model.player
+            in
+            ( { model | player = playerModel }
             , newSession
-            , Cmd.batch [ Cmd.map DeviceMsg deviceCmd ]
+            , Cmd.batch [ Cmd.map PlayerMsg playerCmd ]
             )
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Player.subscriptions model.player
+            |> Sub.map PlayerMsg
+        ]
 
 
 view : Session -> Model -> ( String, List (Html Msg) )
@@ -58,7 +100,8 @@ view session model =
                         ]
                     ]
                 , div [ class "Content__bottom" ]
-                    [ Player.view
+                    [ Player.view model.player
+                        |> Html.map PlayerMsg
                     , Device.view model.device
                         |> Html.map DeviceMsg
                     ]

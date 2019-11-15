@@ -1,30 +1,231 @@
-module Views.Player exposing (view)
+module Views.Player exposing
+    ( Model
+    , Msg(..)
+    , init
+    , subscriptions
+    , update
+    , view
+    )
 
+import Data.Artist exposing (ArtistSimplified)
+import Data.Image as Image
+import Data.Player exposing (Player)
+import Data.Session exposing (Session)
+import Data.Track as Track
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Http
+import Request.Player as Request
+import Task
+import Time exposing (Posix)
 
 
-view : Html msg
-view =
-    div [ class "Player" ]
-        [ div [ class "PlayerControl" ]
-            [ button [ class "PlayerControl__btn play" ] [ i [ class "icon-play" ] [] ]
-            , button [ class "PlayerControl__btn" ] [ i [ class "icon-to-start" ] [] ]
-            , button [ class "PlayerControl__btn" ] [ i [ class "icon-to-end" ] [] ]
-            ]
-        , div [ class "PlayerCurrent" ]
-            [ img [ class "PlayerCurrent__cover", src "https://i.scdn.co/image/ab67616d0000b273d10a2159dc6ef7beb9ef098e" ] []
-            , div [ class "PlayerCurrent__control" ]
-                [ div []
-                    [ span [ class "PlayerCurrent__song" ] [ text "The Proving Grounds" ]
-                    , span [] [ text " - " ]
-                    , a [ href "", class "Artist__link" ] [ text "Mars Red Sky" ]
+type alias Model =
+    { player : Maybe Player
+    , refreshTick : Float
+    }
+
+
+type Msg
+    = Next
+    | Pause
+    | Paused (Result ( Session, Http.Error ) ())
+    | Play
+    | Played (Result ( Session, Http.Error ) ())
+    | Prev
+    | Refresh Posix
+    | Refreshed (Result ( Session, Http.Error ) Player)
+    | Seek String
+    | Seeked (Result ( Session, Http.Error ) ())
+    | SkipTrack (Result ( Session, Http.Error ) ())
+
+
+artistsView : List ArtistSimplified -> List (Html msg)
+artistsView artists =
+    let
+        item artist =
+            a [ href "", class "Artist__link" ] [ text artist.name ]
+    in
+    List.map item artists
+        |> List.intersperse (span [] [ text ", " ])
+
+
+defaultTick : Float
+defaultTick =
+    1000 * 20
+
+
+init : Session -> ( Model, Cmd Msg )
+init session =
+    ( { player = Nothing
+      , refreshTick = defaultTick
+      }
+    , Task.attempt Refreshed (Request.get session)
+    )
+
+
+update : Session -> Msg -> Model -> ( Model, Session, Cmd Msg )
+update session msg model =
+    case msg of
+        Next ->
+            ( model, session, Task.attempt SkipTrack (Request.next session) )
+
+        Pause ->
+            let
+                newPlayer =
+                    Maybe.map (\player -> { player | playing = False })
+            in
+            ( { model
+                | player = newPlayer model.player
+                , refreshTick = defaultTick
+              }
+            , session
+            , Task.attempt Paused (Request.pause session)
+            )
+
+        Paused (Ok _) ->
+            ( model, session, Cmd.none )
+
+        Paused (Err ( newSession, _ )) ->
+            ( model, newSession, Cmd.none )
+
+        Play ->
+            let
+                newPlayer =
+                    Maybe.map (\player -> { player | playing = True })
+            in
+            ( { model
+                | player = newPlayer model.player
+                , refreshTick = 1000
+              }
+            , session
+            , Task.attempt Played (Request.play session)
+            )
+
+        Played (Ok _) ->
+            ( model, session, Cmd.none )
+
+        Played (Err ( newSession, _ )) ->
+            ( model, newSession, Cmd.none )
+
+        Prev ->
+            ( model, session, Task.attempt SkipTrack (Request.prev session) )
+
+        Refresh _ ->
+            ( model, session, Task.attempt Refreshed (Request.get session) )
+
+        Refreshed (Ok player) ->
+            let
+                updateTick =
+                    if player.playing then
+                        1000
+
+                    else
+                        defaultTick
+            in
+            ( { model
+                | player = Just player
+                , refreshTick = updateTick
+              }
+            , session
+            , Cmd.none
+            )
+
+        Refreshed (Err ( newSession, _ )) ->
+            ( model, newSession, Cmd.none )
+
+        Seek int ->
+            ( model
+            , session
+            , String.toInt int
+                |> Maybe.map (Request.seek session >> Task.attempt SkipTrack)
+                |> Maybe.withDefault Cmd.none
+            )
+
+        Seeked (Ok _) ->
+            ( model, session, Task.attempt Refreshed (Request.get session) )
+
+        Seeked (Err ( newSession, _ )) ->
+            ( model, newSession, Cmd.none )
+
+        SkipTrack (Ok _) ->
+            ( model, session, Cmd.none )
+
+        SkipTrack (Err ( newSession, _ )) ->
+            ( model, newSession, Cmd.none )
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch [ Time.every model.refreshTick Refresh ]
+
+
+view : Model -> Html Msg
+view { player } =
+    case player of
+        Just ({ track } as player_) ->
+            let
+                cover =
+                    Image.filterByWidth 64 track.album.images
+
+                percentDuration =
+                    String.fromFloat (toFloat player_.progress / toFloat track.duration * 100) ++ "%"
+            in
+            div [ class "Player" ]
+                [ div [ class "PlayerControl" ]
+                    [ if player_.playing then
+                        button
+                            [ class "PlayerControl__btn play"
+                            , onClick Pause
+                            ]
+                            [ i [ class "icon-pause" ] [] ]
+
+                      else
+                        button
+                            [ class "PlayerControl__btn play"
+                            , onClick Play
+                            ]
+                            [ i [ class "icon-play" ] [] ]
+                    , button
+                        [ class "PlayerControl__btn"
+                        , onClick Prev
+                        ]
+                        [ i [ class "icon-to-start" ] [] ]
+                    , button
+                        [ class "PlayerControl__btn"
+                        , onClick Next
+                        ]
+                        [ i [ class "icon-to-end" ] [] ]
                     ]
-                , div [ class "PlayerCurrent__bar" ]
-                    [ span [ class "PlayerCurrent__time" ] [ text "2:33" ]
-                    , input [ class "Range", type_ "range" ] []
-                    , span [ class "PlayerCurrent__time" ] [ text "2:33" ]
+                , div [ class "PlayerCurrent" ]
+                    [ img [ class "PlayerCurrent__cover", src cover.url ] []
+                    , div [ class "PlayerCurrent__control" ]
+                        [ div []
+                            ([ span [ class "PlayerCurrent__song" ] [ text track.name ]
+                             , span [] [ text " - " ]
+                             ]
+                                ++ artistsView track.artists
+                            )
+                        , div [ class "PlayerCurrent__bar" ]
+                            [ span [ class "PlayerCurrent__time" ] [ text <| Track.durationFormat player_.progress ]
+                            , div [ class "Range" ]
+                                [ input
+                                    [ class "Range__input"
+                                    , type_ "range"
+                                    , Html.Attributes.min "0"
+                                    , Html.Attributes.value <| String.fromInt player_.progress
+                                    , Html.Attributes.max <| String.fromInt track.duration
+                                    , onInput Seek
+                                    ]
+                                    []
+                                , div [ class "Range__progress", style "width" percentDuration ] []
+                                ]
+                            , span [ class "PlayerCurrent__time" ] [ text <| Track.durationFormat track.duration ]
+                            ]
+                        ]
                     ]
                 ]
-            ]
-        ]
+
+        Nothing ->
+            div [ class "Player" ] []

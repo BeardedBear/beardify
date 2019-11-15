@@ -31,16 +31,8 @@
       }
 
       &.play {
-        --size: 55px;
-        background-image: linear-gradient(to bottom, rgba(255, 255, 255, .6), rgba(255, 255, 255, .3));
-        color: Color.$background;
-        font-size: 2.5rem;
-        margin-right: 10px;
-        padding-left: 10px;
-
-        &:hover {
-          background-image: linear-gradient(to bottom, rgba(255, 255, 255, .8), rgba(255, 255, 255, .5));
-        }
+        --size: 60px;
+        font-size: 2.6rem;
       }
     }
   }
@@ -53,13 +45,15 @@
 
     &__bar {
       align-items: center;
-      display: flex;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: auto 1fr auto;
       margin-top: 5px;
     }
 
     &__control {
       flex: 1;
-      max-width: 450px;
+      max-width: 75%;
     }
 
     &__cover {
@@ -80,23 +74,50 @@
 }
 
 .Range {
-  -webkit-appearance: none;
-  background: rgba(255, 255, 255, .1);
-  border-radius: 1.5rem;
-  cursor: pointer;
-  height: 5px;
-  margin: 0 10px;
-  outline: 0;
-  width: 100%;
+  flex: 1;
+  position: relative;
 
-  &::-webkit-slider-thumb {
-    $size: 12px;
+  &__input                                    {
     -webkit-appearance: none;
-    appearance: none;
-    background: white;
-    border-radius: 50%;
-    height: $size;
-    padding: 5px 0;
-    width: $size;
+    background: rgba(255, 255, 255, .1);
+    border-radius: 1.5rem;
+    cursor: pointer;
+    height: 5px;
+    outline: 0;
+    vertical-align: middle;
+    width: 100%;
+
+    &::-webkit-slider-thumb {
+      $size: 12px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: white;
+      border-radius: 50%;
+      height: $size;
+      padding: 5px 0;
+      position: relative;
+      transform: scale(0);
+      transition: all ease .2s;
+      width: $size;
+      z-index: 9;
+    }
+  }
+
+  &:hover {
+    .Range__input::-webkit-slider-thumb  {
+      transform: scale(1);
+    }
+  }
+
+  &__progress {
+    background: Color.$primary;
+    border-radius: 3px;
+    height: 5px;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
