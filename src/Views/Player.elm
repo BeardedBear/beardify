@@ -46,7 +46,7 @@ artistView artist =
 
 defaultTick : Float
 defaultTick =
-    1000 * 60
+    1000 * 10
 
 
 init : Session -> ( Model, Cmd Msg )
@@ -126,7 +126,7 @@ update session msg model =
             )
 
         Refreshed (Err ( newSession, _ )) ->
-            ( model, newSession, Task.attempt Refreshed (Request.get session) )
+            ( model, newSession, Cmd.none )
 
         SkipTrack (Ok _) ->
             ( model, session, Cmd.none )

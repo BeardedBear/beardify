@@ -54,18 +54,15 @@ update session msg model =
             in
             case deviceMsg of
                 Device.Activated (Ok _) ->
-                    ( { model | device = deviceModel, player = { player | refreshTick = 1000 } }
+                    ( { model | player = { player | refreshTick = 1000 } }
                     , newSession
-                    , Cmd.batch
-                        [ Cmd.map DeviceMsg deviceCmd
-                        , case deviceMsg of
-                            Device.Activated (Ok _) ->
-                                Task.attempt Player.Refreshed (RequestPlayer.get session)
-                                    |> Cmd.map PlayerMsg
+                    , case deviceMsg of
+                        Device.Activated (Ok _) ->
+                            Task.attempt Player.Refreshed (RequestPlayer.get session)
+                                |> Cmd.map PlayerMsg
 
-                            _ ->
-                                Cmd.none
-                        ]
+                        _ ->
+                            Cmd.none
                     )
 
                 _ ->
