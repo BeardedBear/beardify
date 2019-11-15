@@ -164,7 +164,7 @@ view { player } =
                             ([ span [ class "PlayerCurrent__song" ] [ text track.name ]
                              , span [] [ text " - " ]
                              ]
-                                ++ List.map artistView track.album.artists
+                                ++ List.map artistView track.artists
                             )
                         , div [ class "PlayerCurrent__bar" ]
                             [ span [ class "PlayerCurrent__time" ] [ text <| Track.durationFormat player_.progress ]
