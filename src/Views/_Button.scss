@@ -2,7 +2,7 @@
 @use "sass:color";
 
 .Button {
-  background-color: color.scale(Color.$background, $lightness: 5%);
+  background-color: color.scale(Color.$background, $lightness: 7%);
   border: 0;
   border-radius: 30px;
   color: #fff;
@@ -12,6 +12,11 @@
   outline: 0;
   padding: 7px 15px;
   position: relative;
+
+  &.big {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+  }
 
   &.nude {
     background: transparent;
@@ -28,6 +33,10 @@
   &.disabled {
     opacity: .3;
     pointer-events: none;
+  }
+
+  &.primary {
+    background: Color.$primary;
   }
 
   &.spotify {

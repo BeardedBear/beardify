@@ -11,7 +11,7 @@ view =
             [ div [ class "Artist__body HelperScrollArea__target" ]
                 [ div [ class "Flex spaceBetween centeredVertical" ]
                     [ h1 [ class "Heading first" ] [ text "Pain of Salvation" ]
-                    , button [ class "Button" ] [ text "Follow" ]
+                    , button [ class "Button big" ] [ text "Follow" ]
                     ]
                 , div [ class "ArtistLinks" ]
                     [ a [ class "ArtistLinks__item", href "#" ] [ i [ class "ArtistLinks__icon icon-wikipedia" ] [], text "Wikipedia" ]
