@@ -1,4 +1,11 @@
-module Views.Player exposing (Model, Msg(..), init, subscriptions, update, view)
+module Views.Player exposing
+    ( Model
+    , Msg(..)
+    , init
+    , subscriptions
+    , update
+    , view
+    )
 
 import Data.Artist exposing (ArtistSimplified)
 import Data.Image as Image
@@ -26,22 +33,32 @@ defaultTick =
 
 
 type Msg
-    = Pause
+    = Next
+    | Pause
     | Paused (Result ( Session, Http.Error ) ())
     | Play
     | Played (Result ( Session, Http.Error ) ())
+    | Prev
     | Refresh Posix
     | Refreshed (Result ( Session, Http.Error ) Player)
+    | SkipTrack (Result ( Session, Http.Error ) ())
 
 
 init : Session -> ( Model, Cmd Msg )
 init session =
-    ( { player = Nothing, refreshTick = defaultTick }, Task.attempt Refreshed (Request.get session) )
+    ( { player = Nothing
+      , refreshTick = defaultTick
+      }
+    , Task.attempt Refreshed (Request.get session)
+    )
 
 
 update : Session -> Msg -> Model -> ( Model, Session, Cmd Msg )
 update session msg model =
     case msg of
+        Next ->
+            ( model, session, Task.attempt SkipTrack (Request.next session) )
+
         Pause ->
             let
                 newPlayer =
@@ -54,6 +71,12 @@ update session msg model =
             , session
             , Task.attempt Paused (Request.pause session)
             )
+
+        Paused (Ok _) ->
+            ( model, session, Cmd.none )
+
+        Paused (Err ( newSession, _ )) ->
+            ( model, newSession, Cmd.none )
 
         Play ->
             let
@@ -68,17 +91,14 @@ update session msg model =
             , Task.attempt Played (Request.play session)
             )
 
-        Paused (Ok _) ->
-            ( model, session, Cmd.none )
-
-        Paused (Err ( newSession, _ )) ->
-            ( model, newSession, Cmd.none )
-
         Played (Ok _) ->
             ( model, session, Cmd.none )
 
         Played (Err ( newSession, _ )) ->
             ( model, newSession, Cmd.none )
+
+        Prev ->
+            ( model, session, Task.attempt SkipTrack (Request.prev session) )
 
         Refresh _ ->
             ( model, session, Task.attempt Refreshed (Request.get session) )
@@ -98,6 +118,12 @@ update session msg model =
             )
 
         Refreshed (Err ( newSession, _ )) ->
+            ( model, newSession, Cmd.none )
+
+        SkipTrack (Ok _) ->
+            ( model, session, Cmd.none )
+
+        SkipTrack (Err ( newSession, _ )) ->
             ( model, newSession, Cmd.none )
 
 
@@ -128,8 +154,8 @@ view { player } =
 
                       else
                         button [ class "PlayerControl__btn", onClick Play ] [ i [ class "icon-play" ] [] ]
-                    , button [ class "PlayerControl__btn" ] [ i [ class "icon-to-start" ] [] ]
-                    , button [ class "PlayerControl__btn" ] [ i [ class "icon-to-end" ] [] ]
+                    , button [ class "PlayerControl__btn", onClick Prev ] [ i [ class "icon-to-start" ] [] ]
+                    , button [ class "PlayerControl__btn", onClick Next ] [ i [ class "icon-to-end" ] [] ]
                     ]
                 , div [ class "PlayerCurrent" ]
                     [ img [ class "PlayerCurrent__cover", src cover.url ] []

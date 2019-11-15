@@ -1,4 +1,4 @@
-module Request.Player exposing (get, pause, play)
+module Request.Player exposing (get, next, pause, play, prev)
 
 import Data.Player as Player exposing (Player)
 import Data.Session exposing (Session)
@@ -24,12 +24,12 @@ get session =
         |> Api.mapError session
 
 
-play : Session -> Task ( Session, Http.Error ) ()
-play session =
+next : Session -> Task ( Session, Http.Error ) ()
+next session =
     Http.task
-        { method = "PUT"
+        { method = "POST"
         , headers = [ Api.authHeader session ]
-        , url = Api.url ++ "me/player/play"
+        , url = Api.url ++ "me/player/next"
         , body = Http.emptyBody
         , resolver =
             Decode.succeed ()
@@ -46,6 +46,38 @@ pause session =
         { method = "PUT"
         , headers = [ Api.authHeader session ]
         , url = Api.url ++ "me/player/pause"
+        , body = Http.emptyBody
+        , resolver =
+            Decode.succeed ()
+                |> Api.handleJsonResponse
+                |> Http.stringResolver
+        , timeout = Nothing
+        }
+        |> Api.mapError session
+
+
+play : Session -> Task ( Session, Http.Error ) ()
+play session =
+    Http.task
+        { method = "PUT"
+        , headers = [ Api.authHeader session ]
+        , url = Api.url ++ "me/player/play"
+        , body = Http.emptyBody
+        , resolver =
+            Decode.succeed ()
+                |> Api.handleJsonResponse
+                |> Http.stringResolver
+        , timeout = Nothing
+        }
+        |> Api.mapError session
+
+
+prev : Session -> Task ( Session, Http.Error ) ()
+prev session =
+    Http.task
+        { method = "POST"
+        , headers = [ Api.authHeader session ]
+        , url = Api.url ++ "me/player/previous"
         , body = Http.emptyBody
         , resolver =
             Decode.succeed ()
