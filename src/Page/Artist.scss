@@ -38,6 +38,29 @@
     border-left: 1px solid Color.$border;
     width: 300px;
   }
+
+  &Similar {
+    &__avatar {
+      $size: 30px;
+      border-radius: $size;
+      height: $size;
+      margin-right: 15px;
+      width: $size;
+    }
+
+    &__item {
+      align-items: center;
+      color: rgba(255, 255, 255, .8);
+      display: flex;
+      font-weight: 700;
+      margin-bottom: 13px;
+      text-decoration: none;
+
+      &:hover {
+        color: #fff
+      }
+    }
+  }
 }
 
 .Video {
