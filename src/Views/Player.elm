@@ -36,6 +36,7 @@ type Msg
     | Prev
     | Refresh Posix
     | Refreshed (Result ( Session, Http.Error ) Player)
+    | Seek String
     | SkipTrack (Result ( Session, Http.Error ) ())
 
 
@@ -128,6 +129,17 @@ update session msg model =
         Refreshed (Err ( newSession, _ )) ->
             ( model, newSession, Cmd.none )
 
+        Seek int ->
+            ( model
+            , session
+            , case String.toInt int of
+                Just int_ ->
+                    Task.attempt SkipTrack (Request.seek session int_)
+
+                Nothing ->
+                    Cmd.none
+            )
+
         SkipTrack (Ok _) ->
             ( model, session, Cmd.none )
 
@@ -137,9 +149,7 @@ update session msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch
-        [ Time.every model.refreshTick Refresh
-        ]
+    Sub.batch [ Time.every model.refreshTick Refresh ]
 
 
 view : Model -> Html Msg
@@ -177,6 +187,7 @@ view { player } =
                                 , Html.Attributes.min "0"
                                 , Html.Attributes.value <| String.fromInt player_.progress
                                 , Html.Attributes.max <| String.fromInt track.duration
+                                , onInput Seek
                                 ]
                                 []
                             , span [ class "PlayerCurrent__time" ] [ text <| Track.durationFormat track.duration ]

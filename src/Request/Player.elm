@@ -1,4 +1,11 @@
-module Request.Player exposing (get, next, pause, play, prev)
+module Request.Player exposing
+    ( get
+    , next
+    , pause
+    , play
+    , prev
+    , seek
+    )
 
 import Data.Player as Player exposing (Player)
 import Data.Session exposing (Session)
@@ -14,9 +21,7 @@ get session =
         , headers = [ Api.authHeader session ]
         , url = Api.url ++ "me/player"
         , body = Http.emptyBody
-        , resolver =
-            Player.decode
-                |> Api.jsonResolver
+        , resolver = Player.decode |> Api.jsonResolver
         , timeout = Nothing
         }
         |> Api.mapError session
@@ -67,6 +72,19 @@ prev session =
         { method = "POST"
         , headers = [ Api.authHeader session ]
         , url = Api.url ++ "me/player/previous"
+        , body = Http.emptyBody
+        , resolver = Api.valueResolver ()
+        , timeout = Nothing
+        }
+        |> Api.mapError session
+
+
+seek : Session -> Int -> Task ( Session, Http.Error ) ()
+seek session position =
+    Http.task
+        { method = "PUT"
+        , headers = [ Api.authHeader session ]
+        , url = Api.url ++ "me/player/seek?position_ms=" ++ String.fromInt position
         , body = Http.emptyBody
         , resolver = Api.valueResolver ()
         , timeout = Nothing
