@@ -46,6 +46,8 @@ strong {
 *::before,
 *::after {
   box-sizing: border-box;
+  scrollbar-color: color.scale(Color.$background, $lightness: 7%) rgba(0, 0, 0, 0);
+  scrollbar-width: thin;
 }
 
 ::-webkit-scrollbar {
