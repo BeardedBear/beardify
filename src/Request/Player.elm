@@ -3,7 +3,6 @@ module Request.Player exposing (get, next, pause, play, prev)
 import Data.Player as Player exposing (Player)
 import Data.Session exposing (Session)
 import Http
-import Json.Decode as Decode
 import Request.Api as Api
 import Task exposing (Task)
 
