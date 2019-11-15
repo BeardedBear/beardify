@@ -56,13 +56,8 @@ update session msg model =
                 Device.Activated (Ok _) ->
                     ( { model | player = { player | refreshTick = 1000 } }
                     , newSession
-                    , case deviceMsg of
-                        Device.Activated (Ok _) ->
-                            Task.attempt Player.Refreshed (RequestPlayer.get session)
-                                |> Cmd.map PlayerMsg
-
-                        _ ->
-                            Cmd.none
+                    , Cmd.batch
+                        [ Cmd.map DeviceMsg deviceCmd ]
                     )
 
                 _ ->

@@ -37,12 +37,18 @@ type Msg
     | Refresh Posix
     | Refreshed (Result ( Session, Http.Error ) Player)
     | Seek String
+    | Seeked (Result ( Session, Http.Error ) ())
     | SkipTrack (Result ( Session, Http.Error ) ())
 
 
-artistView : ArtistSimplified -> Html msg
-artistView artist =
-    a [ href "", class "Artist__link" ] [ text artist.name ]
+artistsView : List ArtistSimplified -> List (Html msg)
+artistsView artists =
+    let
+        item artist =
+            a [ href "", class "Artist__link" ] [ text artist.name ]
+    in
+    List.map item artists
+        |> List.intersperse (span [] [ text ", " ])
 
 
 defaultTick : Float
@@ -132,13 +138,16 @@ update session msg model =
         Seek int ->
             ( model
             , session
-            , case String.toInt int of
-                Just int_ ->
-                    Task.attempt SkipTrack (Request.seek session int_)
-
-                Nothing ->
-                    Cmd.none
+            , String.toInt int
+                |> Maybe.map (Request.seek session >> Task.attempt SkipTrack)
+                |> Maybe.withDefault Cmd.none
             )
+
+        Seeked (Ok _) ->
+            ( model, session, Task.attempt Refreshed (Request.get session) )
+
+        Seeked (Err ( newSession, _ )) ->
+            ( model, newSession, Cmd.none )
 
         SkipTrack (Ok _) ->
             ( model, session, Cmd.none )
@@ -166,12 +175,28 @@ view { player } =
             div [ class "Player" ]
                 [ div [ class "PlayerControl" ]
                     [ if player_.playing then
-                        button [ class "PlayerControl__btn play", onClick Pause ] [ i [ class "icon-pause" ] [] ]
+                        button
+                            [ class "PlayerControl__btn play"
+                            , onClick Pause
+                            ]
+                            [ i [ class "icon-pause" ] [] ]
 
                       else
-                        button [ class "PlayerControl__btn play", onClick Play ] [ i [ class "icon-play" ] [] ]
-                    , button [ class "PlayerControl__btn", onClick Prev ] [ i [ class "icon-to-start" ] [] ]
-                    , button [ class "PlayerControl__btn", onClick Next ] [ i [ class "icon-to-end" ] [] ]
+                        button
+                            [ class "PlayerControl__btn play"
+                            , onClick Play
+                            ]
+                            [ i [ class "icon-play" ] [] ]
+                    , button
+                        [ class "PlayerControl__btn"
+                        , onClick Prev
+                        ]
+                        [ i [ class "icon-to-start" ] [] ]
+                    , button
+                        [ class "PlayerControl__btn"
+                        , onClick Next
+                        ]
+                        [ i [ class "icon-to-end" ] [] ]
                     ]
                 , div [ class "PlayerCurrent" ]
                     [ img [ class "PlayerCurrent__cover", src cover.url ] []
@@ -180,7 +205,7 @@ view { player } =
                             ([ span [ class "PlayerCurrent__song" ] [ text track.name ]
                              , span [] [ text " - " ]
                              ]
-                                ++ List.map artistView track.artists
+                                ++ artistsView track.artists
                             )
                         , div [ class "PlayerCurrent__bar" ]
                             [ span [ class "PlayerCurrent__time" ] [ text <| Track.durationFormat player_.progress ]
