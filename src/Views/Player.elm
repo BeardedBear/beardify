@@ -46,7 +46,7 @@ artistView artist =
 
 defaultTick : Float
 defaultTick =
-    1000 * 10
+    1000 * 20
 
 
 init : Session -> ( Model, Cmd Msg )
