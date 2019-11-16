@@ -10,7 +10,7 @@ view =
         [ div [ class "Flex__full HelperScrollArea" ]
             [ div [ class "Artist__body HelperScrollArea__target" ]
                 [ div [ class "Flex spaceBetween centeredVertical" ]
-                    [ h1 [ class "Heading first" ] [ text "Pain of Salvation" ]
+                    [ h1 [ class "Artist__name Heading first" ] [ text "Pain of Salvation" ]
                     , button [ class "Button big" ] [ text "Follow" ]
                     ]
                 , div [ class "Artist__links External" ]

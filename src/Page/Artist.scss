@@ -22,6 +22,10 @@
     margin-bottom: 30px;
   }
 
+  &__name {
+    margin: 0;
+  }
+
   &__videos {
     border-left: 1px solid Color.$border;
     width: 300px;

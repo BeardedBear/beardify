@@ -1,11 +1,8 @@
 @use "../Color";
 
 .Heading {
-  margin: 0;
-
   &.first {
     font-size: 2.6rem;
-    // font-weight: 200
   }
 
   &.second {
