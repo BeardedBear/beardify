@@ -29,6 +29,10 @@
     pointer-events: none;
   }
 
+  &.primary {
+    background: Color.$primary;
+  }
+
   &.spotify {
     background: color.scale(#1ed760, $lightness: -60%);
     padding-left: 35px;
