@@ -11,6 +11,7 @@
     display: flex;
     flex: 1;
     flex-direction: column;
+    font-weight: 700;
   }
 
   &__collections {
@@ -25,10 +26,10 @@
   &__title {
     background: color.adjust(Color.$background, $lightness: 2%);
     border-bottom: 1px solid Color.$border;
-    color: color.adjust(Color.$background, $lightness: 30%);
+    color: color.adjust(Color.$background, $lightness: 40%);
     font-size: .85rem;
     letter-spacing: .3px;
-    padding: 5px 15px;
+    padding: 8px 15px 5px;
     text-transform: uppercase;
   }
 }

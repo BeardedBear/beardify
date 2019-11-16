@@ -10,7 +10,7 @@
 
   &__icon {
     margin-right: 7px;
-    opacity: .2;
+    opacity: .3;
     position: relative;
     top: 3px;
   }
@@ -21,7 +21,7 @@
     padding: 3px 9px;
 
     &:hover {
-      background: color.adjust(Color.$background, $lightness: 5%);
+      color: #fff;
     }
 
     &.active {
