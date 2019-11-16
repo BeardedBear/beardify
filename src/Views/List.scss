@@ -8,6 +8,12 @@
     padding: 10px 5px;
   }
 
+  &__collaborativeIcon {
+    color: Color.$primary;
+    font-size: .8rem;
+    margin-right: 5px
+  }
+
   &__icon {
     margin-right: 7px;
     opacity: .3;
