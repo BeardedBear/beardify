@@ -3,7 +3,8 @@ module Main exposing (main)
 import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Data.Authorization as Authorization
-import Data.Player as PlayerData
+import Data.Device as DeviceData exposing (Device)
+import Data.Player as PlayerData exposing (PlayerContext)
 import Data.Session as Session exposing (Notif, Session)
 import Html exposing (..)
 import Page.Home as Home
@@ -36,6 +37,8 @@ type Page
 type alias Model =
     { page : Page
     , session : Session
+    , player : PlayerContext
+    , devices : List Device
     }
 
 
@@ -49,6 +52,27 @@ type Msg
     | StoreChanged String
     | UrlChanged Url
     | UrlRequested Browser.UrlRequest
+
+
+initComponent : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+initComponent ( model, msgCmd ) =
+    let
+        ( playerModel, playerCmd ) =
+            Player.init model.session
+
+        ( deviceModel, deviceCmd ) =
+            Device.init model.session
+    in
+    ( { model
+        | player = playerModel
+        , devices = deviceModel
+      }
+    , Cmd.batch
+        [ msgCmd
+        , Cmd.map PlayerMsg playerCmd
+        , Cmd.map DeviceMsg deviceCmd
+        ]
+    )
 
 
 setRoute : Maybe Route -> Model -> ( Model, Cmd Msg )
@@ -65,32 +89,14 @@ setRoute maybeRoute model =
 
                     else
                         Cmd.none
-
-                ( playerInit, playerCmd ) =
-                    Player.init model.session
-
-                ( deviceInit, deviceCmd ) =
-                    Device.init model.session
             in
             ( { model
-                | session =
-                    { newSession | devices = deviceInit }
-                        |> Session.updatePlayerContext playerInit
+                | session = newSession
                 , page = page subModel
               }
             , Cmd.batch
                 [ Cmd.map subMsg subCmds
                 , storeCmd
-                , if model.session.store.auth /= Nothing then
-                    Cmd.map PlayerMsg playerCmd
-
-                  else
-                    Cmd.none
-                , if model.session.store.auth /= Nothing then
-                    Cmd.map DeviceMsg deviceCmd
-
-                  else
-                    Cmd.none
                 ]
             )
     in
@@ -102,6 +108,7 @@ setRoute maybeRoute model =
 
         ( True, Just Route.Home ) ->
             toPage HomePage Home.init HomeMsg
+                |> initComponent
 
         ( True, Just Route.Login ) ->
             toPage LoginPage Login.init LoginMsg
@@ -120,8 +127,6 @@ init flags url navKey =
             , authUrl = flags.authUrl
             , randomBytes = flags.randomBytes
             , notifications = []
-            , playerContext = PlayerData.defaultPlayerContext
-            , devices = []
             , store = Session.deserializeStore flags.rawStore
             }
     in
@@ -131,6 +136,8 @@ init flags url navKey =
                 Authorization.Empty ->
                     setRoute (Route.fromUrl url)
                         { page = Blank
+                        , devices = []
+                        , player = PlayerData.defaultPlayerContext
                         , session = session
                         }
 
@@ -138,20 +145,32 @@ init flags url navKey =
                     --TODO: How do we diplay us this error to user?
                     setRoute (Route.fromUrl url)
                         { page = Blank
+                        , devices = []
+                        , player = PlayerData.defaultPlayerContext
                         , session = session
                         }
 
                 Authorization.AuthSuccess auth ->
                     if auth.state /= session.store.state then
                         -- TODO: auth state is corrupted, we need display something to the user
-                        ( { session = session, page = Blank }, Route.pushUrl session.navKey Route.Login )
+                        ( { session = session
+                          , devices = []
+                          , player = PlayerData.defaultPlayerContext
+                          , page = Blank
+                          }
+                        , Route.pushUrl session.navKey Route.Login
+                        )
 
                     else
                         let
                             newSession =
                                 Session.updateAuth (Just auth) session
                         in
-                        ( { session = newSession, page = Blank }
+                        ( { session = newSession
+                          , devices = []
+                          , player = PlayerData.defaultPlayerContext
+                          , page = Blank
+                          }
                         , Cmd.batch
                             [ newSession.store
                                 |> Session.serializeStore
@@ -166,18 +185,24 @@ init flags url navKey =
                 Authorization.AuthError _ ->
                     setRoute (Route.fromUrl url)
                         { page = Blank
+                        , devices = []
+                        , player = PlayerData.defaultPlayerContext
                         , session = session
                         }
 
                 _ ->
                     setRoute (Route.fromUrl url)
                         { page = Blank
+                        , devices = []
+                        , player = PlayerData.defaultPlayerContext
                         , session = session
                         }
 
         ( _, _ ) ->
             setRoute (Route.fromUrl url)
                 { page = Blank
+                , devices = []
+                , player = PlayerData.defaultPlayerContext
                 , session = session
                 }
 
@@ -220,25 +245,50 @@ update msg ({ page, session } as model) =
         ( DeviceMsg deviceMsg, _ ) ->
             let
                 ( deviceModel, newSession, deviceCmd ) =
-                    Device.update session deviceMsg session.devices
+                    Device.update session deviceMsg model.devices
 
                 playerContext =
-                    model.session.playerContext
+                    model.player
 
                 updateContext context =
                     { context | refreshTick = 1000 }
             in
             case deviceMsg of
                 Device.Activated (Ok _) ->
-                    ( { model | session = { newSession | playerContext = updateContext model.session.playerContext } }
+                    ( { model
+                        | session = newSession
+                        , player = updateContext model.player
+                      }
                     , Cmd.batch
-                        [ Cmd.map DeviceMsg deviceCmd ]
+                        [ Cmd.map DeviceMsg deviceCmd
+                        , if session.store /= newSession.store then
+                            newSession.store |> Session.serializeStore |> Ports.saveStore
+
+                          else
+                            Cmd.none
+                        , if newSession.store.auth == Nothing then
+                            Route.pushUrl session.navKey Route.Login
+
+                          else
+                            Cmd.none
+                        ]
                     )
 
                 _ ->
-                    ( { model | session = { newSession | devices = deviceModel } }
+                    ( { model | session = newSession, devices = deviceModel }
                     , Cmd.batch
-                        [ Cmd.map DeviceMsg deviceCmd ]
+                        [ Cmd.map DeviceMsg deviceCmd
+                        , if session.store /= newSession.store then
+                            newSession.store |> Session.serializeStore |> Ports.saveStore
+
+                          else
+                            Cmd.none
+                        , if newSession.store.auth == Nothing then
+                            Route.pushUrl session.navKey Route.Login
+
+                          else
+                            Cmd.none
+                        ]
                     )
 
         ( HomeMsg homeMsg, HomePage homeModel ) ->
@@ -250,11 +300,19 @@ update msg ({ page, session } as model) =
         ( PlayerMsg playerMsg, _ ) ->
             let
                 ( playerModel, newSession, playerCmd ) =
-                    Player.update session playerMsg session.playerContext
+                    Player.update session playerMsg model.player
             in
-            ( { model | session = Session.updatePlayerContext playerModel newSession }
+            ( { model
+                | session = newSession
+                , player = playerModel
+              }
             , Cmd.batch
                 [ Cmd.map PlayerMsg playerCmd
+                , if session.store /= newSession.store then
+                    newSession.store |> Session.serializeStore |> Ports.saveStore
+
+                  else
+                    Cmd.none
                 ]
             )
 
@@ -295,7 +353,7 @@ subscriptions model =
 
           else
             Sub.none
-        , Player.subscriptions model.session.playerContext
+        , Player.subscriptions model.player
             |> Sub.map PlayerMsg
         , case model.page of
             HomePage homeModel ->
@@ -314,7 +372,7 @@ subscriptions model =
 
 
 view : Model -> Document Msg
-view { page, session } =
+view { page, session, player, devices } =
     let
         frame =
             Page.frame
@@ -322,6 +380,8 @@ view { page, session } =
                 , clearNotification = ClearNotification
                 , playerMsg = PlayerMsg
                 , deviceMsg = DeviceMsg
+                , player = player
+                , devices = devices
                 }
 
         mapMsg msg ( title, content ) =

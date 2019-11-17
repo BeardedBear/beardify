@@ -14,7 +14,6 @@ module Data.Session exposing
     , serializeStore
     , tickNotifications
     , updateAuth
-    , updatePlayerContext
     , updateState
     )
 
@@ -33,8 +32,6 @@ type alias Session =
     , clientId : String
     , randomBytes : String
     , store : Store
-    , playerContext : PlayerContext
-    , devices : List Device
     , notifications : List Notif
     }
 
@@ -101,16 +98,11 @@ updateState newState ({ store } as session) =
 
 updateAuth : Maybe Authorization -> Session -> Session
 updateAuth auth ({ store } as session) =
+    let
+        _ =
+            Debug.log "auth" auth
+    in
     { session | store = { store | auth = auth } }
-
-
-
--- Player
-
-
-updatePlayerContext : PlayerContext -> Session -> Session
-updatePlayerContext playerContext session =
-    { session | playerContext = playerContext }
 
 
 

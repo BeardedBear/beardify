@@ -1,6 +1,8 @@
 module Views.Page exposing (Config, frame)
 
 import Browser exposing (Document)
+import Data.Device exposing (Device)
+import Data.Player exposing (PlayerContext)
 import Data.Session exposing (Notif, Session)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -16,11 +18,13 @@ type alias Config msg =
     , clearNotification : Notif -> msg
     , playerMsg : Player.Msg -> msg
     , deviceMsg : Device.Msg -> msg
+    , player : PlayerContext
+    , devices : List Device
     }
 
 
 frame : Config msg -> ( String, List (Html msg) ) -> Document msg
-frame { session, clearNotification, playerMsg, deviceMsg } ( title, content ) =
+frame { session, clearNotification, playerMsg, deviceMsg, player, devices } ( title, content ) =
     { title = title ++ " | Beardify "
     , body =
         [ Notif.component
@@ -36,9 +40,9 @@ frame { session, clearNotification, playerMsg, deviceMsg } ( title, content ) =
                         , div [ class "Content" ]
                             [ div [ class "Page HelperScrollArea" ] content
                             , div [ class "Content__bottom" ]
-                                [ Player.view session.playerContext
+                                [ Player.view player
                                     |> Html.map playerMsg
-                                , Device.view session.devices
+                                , Device.view devices
                                     |> Html.map deviceMsg
                                 ]
                             ]
