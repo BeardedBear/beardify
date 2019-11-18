@@ -27,7 +27,7 @@
       width: var(--size);
 
       &:hover {
-        --color: rgba(255, 255, 255, .8);
+        --color: Color.$font;
       }
 
       &.play {

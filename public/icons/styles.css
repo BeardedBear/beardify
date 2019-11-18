@@ -170,3 +170,12 @@
 .icon-add:before {
   content: "\53";
 }
+.icon-collaborative:before {
+  content: "\73";
+}
+.icon-more:before {
+  content: "\54";
+}
+.icon-close:before {
+  content: "\55";
+}
