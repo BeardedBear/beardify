@@ -1,0 +1,81 @@
+@use "../Color";
+
+.Album {
+  &List {
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  &__cover {
+    border-radius: 3px;
+    display: block;
+    margin-bottom: 10px;
+    transition: all ease .2s;
+    width: 100%;
+  }
+
+  &__name {
+    font-weight: 700;
+  }
+
+  &__add {
+    background: transparent;
+    border:0;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding:0;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    transform: scale(0);
+    transition: all ease .2s;
+  }
+
+  &__play {
+    $size: 60px;
+    border: 0;
+    border-radius: $size;
+    cursor: pointer;
+    font-size: 2rem;
+    height: $size;
+    left: 50%;
+    outline: 0;
+    padding-top: 10px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: all ease .2s;
+    width: $size;
+
+    &:hover {
+      transform: translate(-50%, -50%) scale(1.5);
+    }
+  }
+
+  &__link {
+    display: block;
+    position: relative;
+
+    &:hover {
+      .Album__cover {
+        opacity: .3;
+      }
+
+      .Album__play {
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .Album__add {
+        transform:  scale(1);
+      }
+    }
+  }
+
+  &__release {
+    font-size:.9rem;
+    font-style: italic;
+    opacity: .4;
+  }
+}

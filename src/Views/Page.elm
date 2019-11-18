@@ -1,41 +1,58 @@
 module Views.Page exposing (Config, frame)
 
 import Browser exposing (Document)
+import Data.Device exposing (Device)
+import Data.Player exposing (PlayerContext)
 import Data.Session exposing (Notif, Session)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Views.Device as Device
+import Views.Modal as Modal
 import Views.Notif as Notif
+import Views.Player as Player
+import Views.Sidebar as Sidebar
+import Views.Topbar as Topbar
 
 
 type alias Config msg =
     { session : Session
     , clearNotification : Notif -> msg
+    , playerMsg : Player.Msg -> msg
+    , deviceMsg : Device.Msg -> msg
+    , player : PlayerContext
+    , devices : List Device
     }
 
 
 frame : Config msg -> ( String, List (Html msg) ) -> Document msg
-frame { session, clearNotification } ( title, content ) =
+frame { session, clearNotification, playerMsg, deviceMsg, player, devices } ( title, content ) =
     { title = title ++ " | Beardify "
     , body =
         [ Notif.component
             { clear = clearNotification
             , notifs = session.notifications
             }
-        , div [ class "Modal" ]
-            [ div [ class "Modal__form" ]
-                [ div [ class "Modal__head" ]
-                    [ h2 [ class "Heading second" ] [ text "Faire des machins" ]
-                    , button [ class "Button nude" ] [ i [ class "icon-close" ] [] ]
+
+        -- , Modal.view
+        , case session.store.auth of
+            Just _ ->
+                main_ [ class "App" ]
+                    [ Topbar.view session
+                    , div [ class "App__body" ]
+                        [ Sidebar.view
+                        , div [ class "Content" ]
+                            [ div [ class "Page HelperScrollArea" ] content
+                            , div [ class "Content__bottom" ]
+                                [ Player.view player
+                                    |> Html.map playerMsg
+                                , Device.view devices
+                                    |> Html.map deviceMsg
+                                ]
+                            ]
+                        ]
                     ]
-                , div [ class "Modal__body " ]
-                    [ text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris neque tortor, vulputate rhoncus quam sit amet, cursus accumsan ex. Suspendisse aliquam sapien sapien, quis dapibus arcu cursus dictum. Donec faucibus sit amet diam vel aliquam. Praesent purus dolor, malesuada quis ex vel, pulvinar blandit dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris neque tortor, vulputate rhoncus quam sit amet, cursus accumsan ex. Suspendisse aliquam sapien sapien, quis dapibus arcu cursus dictum. Donec faucibus sit amet diam vel aliquam. Praesent purus dolor, malesuada quis ex vel, pulvinar blandit dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris neque tortor, vulputate rhoncus quam sit amet, cursus accumsan ex. Suspendisse aliquam sapien sapien, quis dapibus arcu cursus dictum. Donec faucibus sit amet diam vel aliquam. Praesent purus dolor, malesuada quis ex vel, pulvinar blandit dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris neque tortor, vulputate rhoncus quam sit amet, cursus accumsan ex. Suspendisse aliquam sapien sapien, quis dapibus arcu cursus dictum. Donec faucibus sit amet diam vel aliquam. Praesent purus dolor, malesuada quis ex vel, pulvinar blandit dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris neque tortor, vulputate rhoncus quam sit amet, cursus accumsan ex. Suspendisse aliquam sapien sapien, quis dapibus arcu cursus dictum. Donec faucibus sit amet diam vel aliquam. Praesent purus dolor, malesuada quis ex vel, pulvinar blandit dui.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris neque tortor, vulputate rhoncus quam sit amet, cursus accumsan ex. Suspendisse aliquam sapien sapien, quis dapibus arcu cursus dictum. Donec faucibus sit amet diam vel aliquam. Praesent purus dolor, malesuada quis ex vel, pulvinar blandit dui."
-                    ]
-                , div [ class "Modal__foot" ]
-                    [ button [ class "Button" ] [ text "Cancel" ]
-                    , button [ class "Button primary" ] [ text "Accept" ]
-                    ]
-                ]
-            ]
-        , main_ [ class "App" ] content
+
+            Nothing ->
+                main_ [ class "App" ] content
         ]
     }

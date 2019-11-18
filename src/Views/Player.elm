@@ -1,6 +1,5 @@
 module Views.Player exposing
-    ( Model
-    , Msg(..)
+    ( Msg(..)
     , init
     , subscriptions
     , update
@@ -9,7 +8,7 @@ module Views.Player exposing
 
 import Data.Artist exposing (ArtistSimplified)
 import Data.Image as Image
-import Data.Player exposing (Player)
+import Data.Player as Player exposing (Player, PlayerContext)
 import Data.Session exposing (Session)
 import Data.Track as Track
 import Html exposing (..)
@@ -19,12 +18,6 @@ import Http
 import Request.Player as Request
 import Task
 import Time exposing (Posix)
-
-
-type alias Model =
-    { player : Maybe Player
-    , refreshTick : Float
-    }
 
 
 type Msg
@@ -42,30 +35,22 @@ type Msg
 
 
 artistsView : List ArtistSimplified -> List (Html msg)
-artistsView artists =
+artistsView =
     let
         item artist =
             a [ href "", class "Artist__link" ] [ text artist.name ]
     in
-    List.map item artists
-        |> List.intersperse (span [] [ text ", " ])
+    List.map item >> List.intersperse (span [] [ text ", " ])
 
 
-defaultTick : Float
-defaultTick =
-    1000 * 20
-
-
-init : Session -> ( Model, Cmd Msg )
+init : Session -> ( PlayerContext, Cmd Msg )
 init session =
-    ( { player = Nothing
-      , refreshTick = defaultTick
-      }
+    ( Player.defaultPlayerContext
     , Task.attempt Refreshed (Request.get session)
     )
 
 
-update : Session -> Msg -> Model -> ( Model, Session, Cmd Msg )
+update : Session -> Msg -> PlayerContext -> ( PlayerContext, Session, Cmd Msg )
 update session msg model =
     case msg of
         Next ->
@@ -78,7 +63,7 @@ update session msg model =
             in
             ( { model
                 | player = newPlayer model.player
-                , refreshTick = defaultTick
+                , refreshTick = Player.defaultTick
               }
             , session
             , Task.attempt Paused (Request.pause session)
@@ -122,7 +107,7 @@ update session msg model =
                         1000
 
                     else
-                        defaultTick
+                        Player.defaultTick
             in
             ( { model
                 | player = Just player
@@ -156,12 +141,12 @@ update session msg model =
             ( model, newSession, Cmd.none )
 
 
-subscriptions : Model -> Sub Msg
+subscriptions : PlayerContext -> Sub Msg
 subscriptions model =
     Sub.batch [ Time.every model.refreshTick Refresh ]
 
 
-view : Model -> Html Msg
+view : PlayerContext -> Html Msg
 view { player } =
     case player of
         Just ({ track } as player_) ->
