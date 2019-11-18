@@ -1,0 +1,19 @@
+.Flex {
+  display: flex;
+
+  &__full {
+    flex:1;
+  }
+
+  &.fullHeight {
+    height: 100%;
+  }
+
+  &.centeredVertical {
+    align-items: center;
+  }
+
+  &.spaceBetween {
+    justify-content: space-between;
+  }
+}

@@ -1,10 +1,13 @@
+@use "Color";
 @use "sass:color";
 
 @use "../node_modules/normalize.css/normalize";
-@use "Page/Login";
 
-@use "Views/Artist";
+// Views
+@use "Views/Album";
+@use "Views/ArtistLink";
 @use "Views/Button";
+@use "Views/Flex";
 @use "Views/Heading";
 @use "Views/Helper";
 @use "Views/Link";
@@ -14,10 +17,13 @@
 @use "Views/Search";
 @use "Views/Sidebar";
 @use "Views/Topbar";
+@use "Views/Track";
 @use "Views/Device";
 @use "Views/Player";
 
-@use "Color";
+// Pages
+@use "Page/Login";
+@use "Page/Artist";
 
 .App {
   background: Color.$background;
@@ -40,6 +46,9 @@ strong {
 *::before,
 *::after {
   box-sizing: border-box;
+  -ms-overflow-style:-ms-autohiding-scrollbar;
+  scrollbar-color: color.scale(Color.$background, $lightness: 7%) rgba(0, 0, 0, 0);
+  scrollbar-width: thin;
 }
 
 ::-webkit-scrollbar {
@@ -51,13 +60,17 @@ strong {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: color.scale(Color.$background, $lightness: 5%);
+  background-color: color.scale(Color.$background, $lightness: 7%);
   border: 5px solid #11151b;
   border-radius: 20px;
 }
 
 i {
   line-height: 0;
+}
+
+html {
+  overflow: hidden;
 }
 
 body {

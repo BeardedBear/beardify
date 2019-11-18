@@ -1,0 +1,100 @@
+@use "../Color";
+@use "sass:color";
+
+.Artist {
+
+  &__body {
+    padding: 20px 30px;
+  }
+
+  &__links {
+    margin-bottom: 30px;
+  }
+
+  &__top {
+    display: grid;
+    gap: 30px;
+    grid-template-columns: 2fr 1fr;
+    margin-bottom: 30px;
+  }
+
+  &__releaseList {
+    margin-bottom: 30px;
+  }
+
+  &__name {
+    margin: 0;
+  }
+
+  &__videos {
+    border-left: 1px solid Color.$border;
+    width: 300px;
+  }
+
+  &Similar {
+    &__avatar {
+      $size: 30px;
+      border-radius: $size;
+      height: $size;
+      margin-right: 15px;
+      width: $size;
+    }
+
+    &__item {
+      align-items: center;
+      color: rgba(255, 255, 255, .8);
+      display: flex;
+      font-weight: 700;
+      margin-bottom: 13px;
+      text-decoration: none;
+
+      &:hover {
+        color: #fff
+      }
+    }
+  }
+}
+
+.External {
+  &__icon {
+    margin-right: 5px;
+    position: relative;
+    top: 3px;
+  }
+
+  &__item {
+    color: rgba(255, 255, 255, .3);
+    margin-right: 15px;
+    text-decoration: none;
+
+    &:hover {
+      color: rgba(255, 255, 255, .8);
+    }
+  }
+}
+
+.Video {
+  padding: 15px;
+
+  &__channel {
+    color: rgba(255, 255, 255, .4);
+    font-style: italic;
+  }
+
+  &__embed{
+    border: 0;
+    margin-bottom: 5px;
+  }
+
+  &__item {
+    background: color.scale(Color.$background, $lightness: 3%);
+    border: 1px solid  color.scale(Color.$background, $lightness: 7%);
+    border-radius: 3px;
+    margin-bottom: 15px;
+    padding: 10px;
+  }
+
+  &__name {
+    font-weight: 700;
+  }
+}
