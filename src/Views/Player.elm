@@ -16,6 +16,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Request.Player as Request
+import Route
 import Task
 import Time exposing (Posix)
 
@@ -38,7 +39,7 @@ artistsView : List ArtistSimplified -> List (Html msg)
 artistsView =
     let
         item artist =
-            a [ href "", class "Artist__link" ] [ text artist.name ]
+            a [ Route.Artist artist.id |> Route.href, class "Artist__link" ] [ text artist.name ]
     in
     List.map item >> List.intersperse (span [] [ text ", " ])
 
