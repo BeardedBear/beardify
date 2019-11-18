@@ -1,5 +1,7 @@
 module Views.Page exposing (Config, frame)
 
+-- import Views.Modal as Modal
+
 import Browser exposing (Document)
 import Data.Device exposing (Device)
 import Data.Player exposing (PlayerContext)
@@ -31,6 +33,8 @@ frame { session, clearNotification, playerMsg, deviceMsg, player, devices } ( ti
             { clear = clearNotification
             , notifs = session.notifications
             }
+
+        -- , Modal.view
         , case session.store.auth of
             Just _ ->
                 main_ [ class "App" ]
