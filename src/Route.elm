@@ -1,22 +1,25 @@
 module Route exposing (Route(..), fromUrl, href, pushUrl)
 
 import Browser.Navigation as Nav
+import Data.Artist as Artist
 import Html exposing (Attribute)
 import Html.Attributes as Attr
 import Url exposing (Url)
-import Url.Parser as Parser exposing (Parser)
+import Url.Parser as Parser exposing ((</>), Parser, oneOf, s, top)
 
 
 type Route
     = Home
+    | Artist Artist.Id
     | Login
 
 
 parser : Parser (Route -> a) a
 parser =
-    Parser.oneOf
-        [ Parser.map Home Parser.top
-        , Parser.map Login (Parser.s "login")
+    oneOf
+        [ Parser.map Home top
+        , Parser.map Login (s "login")
+        , Parser.map Artist (s "artists" </> Artist.parseId)
         ]
 
 
@@ -41,6 +44,9 @@ toString route =
     let
         pieces =
             case route of
+                Artist id ->
+                    [ "artists", Artist.idToString id ]
+
                 Home ->
                     []
 

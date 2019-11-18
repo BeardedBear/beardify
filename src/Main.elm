@@ -7,6 +7,7 @@ import Data.Device exposing (Device)
 import Data.Player as PlayerData exposing (PlayerContext)
 import Data.Session as Session exposing (Notif, Session)
 import Html exposing (..)
+import Page.Artist as Artist
 import Page.Home as Home
 import Page.Login as Login
 import Ports
@@ -28,7 +29,8 @@ type alias Flags =
 
 
 type Page
-    = Blank
+    = ArtistPage Artist.Model
+    | Blank
     | HomePage Home.Model
     | LoginPage Login.Model
     | NotFound
@@ -43,12 +45,13 @@ type alias Model =
 
 
 type Msg
-    = ClearNotification Notif
-    | RefreshNotifications Posix
+    = ArtistMsg Artist.Msg
+    | ClearNotification Notif
+    | DeviceMsg Device.Msg
     | HomeMsg Home.Msg
     | LoginMsg Login.Msg
     | PlayerMsg Player.Msg
-    | DeviceMsg Device.Msg
+    | RefreshNotifications Posix
     | StoreChanged String
     | UrlChanged Url
     | UrlRequested Browser.UrlRequest
@@ -101,7 +104,7 @@ setRoute maybeRoute model =
             )
     in
     case ( model.session.store.auth /= Nothing, maybeRoute ) of
-        ( _, Nothing ) ->
+        ( True, Nothing ) ->
             ( { model | page = NotFound }
             , Cmd.none
             )
@@ -110,8 +113,16 @@ setRoute maybeRoute model =
             toPage HomePage Home.init HomeMsg
                 |> initComponent
 
+        ( True, Just (Route.Artist _) ) ->
+            toPage ArtistPage Artist.init ArtistMsg
+
         ( True, Just Route.Login ) ->
             toPage LoginPage Login.init LoginMsg
+
+        ( False, Nothing ) ->
+            ( { model | page = NotFound }
+            , Cmd.none
+            )
 
         ( False, _ ) ->
             toPage LoginPage Login.init LoginMsg
@@ -130,7 +141,7 @@ init flags url navKey =
             , store = Session.deserializeStore flags.rawStore
             }
     in
-    case ( url.fragment, url.query ) of
+    (case ( url.fragment, url.query ) of
         ( Just fragment, Nothing ) ->
             case Authorization.parseAuth fragment of
                 Authorization.Empty ->
@@ -205,6 +216,8 @@ init flags url navKey =
                 , player = PlayerData.defaultPlayerContext
                 , session = session
                 }
+    )
+        |> initComponent
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -361,6 +374,9 @@ subscriptions model =
         , Player.subscriptions model.player
             |> Sub.map PlayerMsg
         , case model.page of
+            ArtistPage _ ->
+                Sub.none
+
             HomePage homeModel ->
                 Home.subscriptions homeModel
                     |> Sub.map HomeMsg
@@ -393,6 +409,11 @@ view { page, session, player, devices } =
             ( title, content |> List.map (Html.map msg) )
     in
     case page of
+        ArtistPage artistModel ->
+            Artist.view artistModel
+                |> mapMsg ArtistMsg
+                |> frame
+
         HomePage homeModel ->
             Home.view session homeModel
                 |> mapMsg HomeMsg
