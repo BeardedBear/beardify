@@ -313,6 +313,11 @@ update msg ({ page, session } as model) =
 
                   else
                     Cmd.none
+                , if newSession.store.auth == Nothing then
+                    Route.pushUrl session.navKey Route.Login
+
+                  else
+                    Cmd.none
                 ]
             )
 
