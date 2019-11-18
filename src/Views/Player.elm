@@ -35,13 +35,12 @@ type Msg
 
 
 artistsView : List ArtistSimplified -> List (Html msg)
-artistsView artists =
+artistsView =
     let
         item artist =
             a [ href "", class "Artist__link" ] [ text artist.name ]
     in
-    List.map item artists
-        |> List.intersperse (span [] [ text ", " ])
+    List.map item >> List.intersperse (span [] [ text ", " ])
 
 
 init : Session -> ( PlayerContext, Cmd Msg )

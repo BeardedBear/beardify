@@ -59,10 +59,6 @@ update session msg devices =
                         else
                             d
 
-                lastActiveDevice =
-                    List.filter .active devices
-                        |> List.head
-
                 updateDevices =
                     List.map inactive >> List.map active
             in

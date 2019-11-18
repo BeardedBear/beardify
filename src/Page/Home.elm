@@ -1,16 +1,8 @@
 module Page.Home exposing (Model, Msg(..), init, subscriptions, update, view)
 
-import Data.Device as Device
-import Data.Player as PlayerData
 import Data.Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Request.Player as RequestPlayer
-import Task
-import Views.Device as Device
-import Views.Player as Player
-import Views.Sidebar as Sidebar
-import Views.Topbar as Topbar
 
 
 type alias Model =
@@ -23,10 +15,6 @@ type Msg
 
 init : Session -> ( Model, Session, Cmd Msg )
 init session =
-    let
-        ( deviceModel, deviceCmd ) =
-            Device.init session
-    in
     ( {}
     , session
     , Cmd.none
@@ -40,38 +28,13 @@ update session msg model =
             ( model, session, Cmd.none )
 
 
-
--- DeviceMsg deviceMsg ->
---     let
---         ( deviceModel, newSession, deviceCmd ) =
---             Device.update session deviceMsg model.device
---
---         player =
---             session.playerContext.player
---     in
---     case deviceMsg of
---         Device.Activated (Ok _) ->
---             ( { model | player = { player | refreshTick = 1000 } }
---             , newSession
---             , Cmd.batch
---                 [ Cmd.map DeviceMsg deviceCmd ]
---             )
---
---         _ ->
---             ( { model | device = deviceModel }
---             , newSession
---             , Cmd.batch
---                 [ Cmd.map DeviceMsg deviceCmd ]
---             )
-
-
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
 view : Session -> Model -> ( String, List (Html Msg) )
-view session model =
+view _ _ =
     ( "Home"
     , [ div [ class "Page__body HelperScrollArea__target" ]
             [ h1 [ class "Heading first" ] [ text "Ceci est une page d'accueil du plus bel effet." ]

@@ -3,7 +3,7 @@ module Main exposing (main)
 import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Data.Authorization as Authorization
-import Data.Device as DeviceData exposing (Device)
+import Data.Device exposing (Device)
 import Data.Player as PlayerData exposing (PlayerContext)
 import Data.Session as Session exposing (Notif, Session)
 import Html exposing (..)
@@ -247,9 +247,6 @@ update msg ({ page, session } as model) =
                 ( deviceModel, newSession, deviceCmd ) =
                     Device.update session deviceMsg model.devices
 
-                playerContext =
-                    model.player
-
                 updateContext context =
                     { context | refreshTick = 1000 }
             in
@@ -275,7 +272,10 @@ update msg ({ page, session } as model) =
                     )
 
                 _ ->
-                    ( { model | session = newSession, devices = deviceModel }
+                    ( { model
+                        | session = newSession
+                        , devices = deviceModel
+                      }
                     , Cmd.batch
                         [ Cmd.map DeviceMsg deviceCmd
                         , if session.store /= newSession.store then

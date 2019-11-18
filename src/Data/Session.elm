@@ -19,8 +19,6 @@ module Data.Session exposing
 
 import Browser.Navigation as Nav
 import Data.Authorization as Authorization exposing (Authorization)
-import Data.Device exposing (Device)
-import Data.Player exposing (PlayerContext)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
 
@@ -98,10 +96,6 @@ updateState newState ({ store } as session) =
 
 updateAuth : Maybe Authorization -> Session -> Session
 updateAuth auth ({ store } as session) =
-    let
-        _ =
-            Debug.log "auth" auth
-    in
     { session | store = { store | auth = auth } }
 
 
