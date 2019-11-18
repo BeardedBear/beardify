@@ -1,4 +1,10 @@
-module Data.Player exposing (Player, decode)
+module Data.Player exposing
+    ( Player
+    , PlayerContext
+    , decode
+    , defaultPlayerContext
+    , defaultTick
+    )
 
 import Data.Device as Device exposing (Device)
 import Data.Track as Track exposing (Track)
@@ -29,6 +35,24 @@ type alias Player =
     , playing : Bool
     , currentPlayingType : String
     }
+
+
+type alias PlayerContext =
+    { player : Maybe Player
+    , refreshTick : Float
+    }
+
+
+defaultPlayerContext : PlayerContext
+defaultPlayerContext =
+    { player = Nothing
+    , refreshTick = defaultTick
+    }
+
+
+defaultTick : Float
+defaultTick =
+    1000 * 20
 
 
 decode : Decoder Player

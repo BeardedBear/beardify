@@ -29,6 +29,7 @@
     color: color.adjust(Color.$background, $lightness: 40%);
     font-size: .85rem;
     letter-spacing: .3px;
+    margin:0;
     padding: 8px 15px 5px;
     text-transform: uppercase;
   }

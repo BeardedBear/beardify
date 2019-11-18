@@ -176,3 +176,6 @@
 .icon-more:before {
   content: "\54";
 }
+.icon-close:before {
+  content: "\55";
+}
