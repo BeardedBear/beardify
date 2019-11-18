@@ -1,5 +1,7 @@
 module Views.Page exposing (Config, frame)
 
+-- import Views.Modal as Modal
+
 import Browser exposing (Document)
 import Data.Device exposing (Device)
 import Data.Player exposing (PlayerContext)
@@ -7,7 +9,6 @@ import Data.Session exposing (Notif, Session)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Views.Device as Device
-import Views.Modal as Modal
 import Views.Notif as Notif
 import Views.Player as Player
 import Views.Sidebar as Sidebar
