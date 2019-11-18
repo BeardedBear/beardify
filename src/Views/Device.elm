@@ -1,4 +1,4 @@
-module Views.Device exposing (Model, Msg(..), default, init, update, view)
+module Views.Device exposing (Msg(..), init, update, view)
 
 import Data.Device as Device exposing (Device)
 import Data.Session exposing (Session)
@@ -10,12 +10,6 @@ import Request.Device as Request
 import Task
 
 
-type alias Model =
-    { devices : List Device
-    , lastDevice : Maybe Device
-    }
-
-
 type Msg
     = Activate Device
     | Activated (Result ( Session, Http.Error ) ())
@@ -24,16 +18,9 @@ type Msg
     | SetVolume (Result ( Session, Http.Error ) ())
 
 
-default : Model
-default =
-    { devices = []
-    , lastDevice = Nothing
-    }
-
-
-init : Session -> ( Model, Cmd Msg )
+init : Session -> ( List Device, Cmd Msg )
 init session =
-    ( default
+    ( []
     , Cmd.batch
         [ Task.attempt DeviceList (Request.getList session) ]
     )
@@ -47,17 +34,17 @@ initVolume =
         >> Maybe.withDefault 0
 
 
-update : Session -> Msg -> Model -> ( Model, Session, Cmd Msg )
-update session msg model =
+update : Session -> Msg -> List Device -> ( List Device, Session, Cmd Msg )
+update session msg devices =
     case msg of
-        DeviceList (Ok devices) ->
-            ( { model | devices = devices }
+        DeviceList (Ok newDevices) ->
+            ( newDevices
             , session
             , Cmd.none
             )
 
         DeviceList (Err ( newSession, _ )) ->
-            ( model, newSession, Cmd.none )
+            ( devices, newSession, Cmd.none )
 
         Activate device ->
             let
@@ -72,31 +59,24 @@ update session msg model =
                         else
                             d
 
-                lastActiveDevice =
-                    List.filter .active model.devices
-                        |> List.head
-
                 updateDevices =
                     List.map inactive >> List.map active
             in
-            ( { model
-                | devices = updateDevices model.devices
-                , lastDevice = lastActiveDevice
-              }
+            ( updateDevices devices
             , session
             , Task.attempt Activated (Request.set session device)
             )
 
         Activated (Ok _) ->
-            ( model, session, Cmd.none )
+            ( devices, session, Cmd.none )
 
         Activated (Err ( newSession, _ )) ->
-            ( model, newSession, Cmd.none )
+            ( devices, newSession, Cmd.none )
 
         UpdateVolume volume ->
             let
                 activeDevice =
-                    List.filter .active model.devices
+                    List.filter .active devices
                         |> List.head
 
                 newDevice =
@@ -113,9 +93,9 @@ update session msg model =
                                 Nothing ->
                                     d
                         )
-                        model.devices
+                        devices
             in
-            ( { model | devices = newDevice }
+            ( newDevice
             , session
             , case activeDevice of
                 Just _ ->
@@ -126,10 +106,10 @@ update session msg model =
             )
 
         SetVolume (Ok _) ->
-            ( model, session, Cmd.none )
+            ( devices, session, Cmd.none )
 
         SetVolume (Err ( newSession, _ )) ->
-            ( model, newSession, Cmd.none )
+            ( devices, newSession, Cmd.none )
 
 
 head : Html msg
@@ -160,12 +140,12 @@ item ({ name, type_, active } as device) =
         ]
 
 
-view : Model -> Html Msg
-view model =
+view : List Device -> Html Msg
+view devices =
     div [ class "Device" ]
         [ div [ class "Device__select" ]
             [ i [ class "Device__active icon-computer" ] []
-            , List.map item model.devices
+            , List.map item devices
                 |> (::) head
                 |> div [ class "DeviceList" ]
             ]
@@ -179,10 +159,10 @@ view model =
                     , Html.Attributes.max "100"
                     , step "1"
                     , onInput UpdateVolume
-                    , value (String.fromInt (initVolume model.devices))
+                    , value (String.fromInt (initVolume devices))
                     ]
                     []
-                , div [ class "Range__progress", style "width" (String.fromInt (initVolume model.devices) ++ "%") ] []
+                , div [ class "Range__progress", style "width" (String.fromInt (initVolume devices) ++ "%") ] []
                 ]
             ]
         ]
