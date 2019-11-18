@@ -38,7 +38,6 @@ view : Session -> Model -> ( String, List (Html Msg) )
 view _ _ =
     ( "Home"
     , [ div [ class "Page__body HelperScrollArea__target" ]
-            [ Artist.view
-            ]
+            []
       ]
     )
