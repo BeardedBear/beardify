@@ -1,7 +1,14 @@
+@use "../Color";
+
 .Artist {
   &__link {
-    color: rgba(#fff, .7);
+    color: rgba(#fff, .4);
     font-style: italic;
+    margin-right: 5px;
     text-decoration: none;
+
+    &:hover {
+      color: Color.$primary;
+    }
   }
 }
