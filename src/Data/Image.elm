@@ -38,6 +38,6 @@ decode =
 
 filterByWidth : Int -> List Image -> Image
 filterByWidth width =
-    List.filter (\i -> i.width == width)
+    List.filter (\i -> i.width >= width)
         >> List.head
         >> Maybe.withDefault default

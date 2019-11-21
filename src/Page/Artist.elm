@@ -1,38 +1,125 @@
 module Page.Artist exposing (Model, Msg(..), init, update, view)
 
+import Data.Album as Album exposing (AlbumSimplified)
+import Data.Artist as Artist exposing (Artist)
+import Data.Image as Image
 import Data.Session exposing (Session)
+import Data.Track as Track exposing (Track)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Http
+import Request.Artist as Request
+import Route
+import Task
 
 
 type alias Model =
-    {}
+    { artist : Maybe Artist
+    , albums : List AlbumSimplified
+    , tracks : List Track
+    , relatedArtists : List Artist
+    }
 
 
 type Msg
-    = NoOp
+    = Fetched (Result ( Session, Http.Error ) Model)
+    | Follow
 
 
-init : Session -> ( Model, Session, Cmd Msg )
-init session =
-    ( {}, session, Cmd.none )
+init : Artist.Id -> Session -> ( Model, Session, Cmd Msg )
+init id session =
+    ( { artist = Nothing
+      , albums = []
+      , tracks = []
+      , relatedArtists = []
+      }
+    , session
+    , Task.map4 (Model << Just)
+        (Request.get session id)
+        (Request.getAlbums session id)
+        (Request.getTopTrack session id)
+        (Request.getRelatedArtists session id)
+        |> Task.attempt Fetched
+    )
 
 
 update : Session -> Msg -> Model -> ( Model, Session, Cmd Msg )
 update session msg model =
     case msg of
-        NoOp ->
+        Follow ->
             ( model, session, Cmd.none )
+
+        Fetched (Ok newModel) ->
+            ( newModel, session, Cmd.none )
+
+        Fetched (Err ( newSession, err )) ->
+            ( model, newSession, Cmd.none )
+
+
+relatedArtistsView : List Artist -> List (Html msg)
+relatedArtistsView artists =
+    let
+        relatedArtistView artist =
+            let
+                cover =
+                    Image.filterByWidth 160 artist.images
+            in
+            a [ class "ArtistSimilar__item", Route.href (Route.Artist artist.id) ]
+                [ img [ class "ArtistSimilar__avatar", src cover.url ] []
+                , span [ class "ArtistSimilar__name" ] [ text artist.name ]
+                ]
+    in
+    List.map relatedArtistView artists
+        |> List.take 7
+
+
+topTrackViews : List Track -> List (Html msg)
+topTrackViews tracks =
+    let
+        trackView track =
+            let
+                cover =
+                    Image.filterByWidth 64 track.album.images
+            in
+            div [ class "Track Flex centeredVertical" ]
+                [ img [ class "Track__cover", src cover.url ] []
+                , div [ class "Track__name Flex__full" ] [ text track.name ]
+                , div [ class "Track__duration" ] [ text <| Track.durationFormat track.duration ]
+                ]
+    in
+    List.map trackView tracks
+
+
+albumsListView : List AlbumSimplified -> Html msg
+albumsListView albums =
+    let
+        viewAlbum album =
+            let
+                cover =
+                    Image.filterByWidth 600 album.images
+            in
+            div [ class "Album" ]
+                [ a [ class "Album__link", href "#" ]
+                    [ img [ class "Album__cover", src cover.url ] []
+                    , button [ class "Album__play" ] [ i [ class "icon-play" ] [] ]
+                    , button [ class "Album__add" ] [ i [ class "icon-add" ] [] ]
+                    ]
+                , div [ class "Album__name" ] [ text album.name ]
+                , div [ class "Album__release" ] [ text album.releaseDate ]
+                ]
+    in
+    List.map viewAlbum albums
+        |> div [ class "Artist__releaseList AlbumList" ]
 
 
 view : Model -> ( String, List (Html Msg) )
-view _ =
+view model =
     ( "Artists"
     , [ div [ class "Flex fullHeight" ]
             [ div [ class "Flex__full HelperScrollArea" ]
                 [ div [ class "Artist__body HelperScrollArea__target" ]
                     [ div [ class "Flex spaceBetween centeredVertical" ]
-                        [ h1 [ class "Artist__name Heading first" ] [ text "Pain of Salvation" ]
+                        [ h1 [ class "Artist__name Heading first" ] [ Maybe.map .name model.artist |> Maybe.withDefault "" |> text ]
                         , button [ class "Button big" ] [ text "Follow" ]
                         ]
                     , div [ class "Artist__links External" ]
@@ -42,167 +129,29 @@ view _ =
                         , a [ class "External__item", href "#" ] [ i [ class "External__icon icon-magnifying-glass" ] [], text "Google" ]
                         ]
                     , div [ class "Artist__top" ]
-                        [ div []
-                            [ h2 [ class "Heading second" ] [ text "Top tracks" ]
-                            , div [ class "Track Flex centeredVertical" ]
-                                [ img [ class "Track__cover", src "https://i.scdn.co/image/ab67616d00004851b6db1b15fbf0d6a11de4b13c" ] []
-                                , div [ class "Track__name Flex__full" ] [ text "Sisters" ]
-                                , div [ class "Track__duration" ] [ text "6:15" ]
-                                ]
-                            , div [ class "Track Flex centeredVertical" ]
-                                [ img [ class "Track__cover", src "https://i.scdn.co/image/ab67616d00004851a45cd272063bc487a0615791" ] []
-                                , div [ class "Track__name Flex__full" ] [ text "Meaningless" ]
-                                , div [ class "Track__duration" ] [ text "4:47" ]
-                                ]
-                            , div [ class "Track Flex centeredVertical" ]
-                                [ img [ class "Track__cover", src "https://i.scdn.co/image/ab67616d000048513ef2598ca7bf8c4c9d317b9e" ] []
-                                , div [ class "Track__name Flex__full" ] [ text "Undertow" ]
-                                , div [ class "Track__duration" ] [ text "4:47" ]
-                                ]
-                            , div [ class "Track Flex centeredVertical" ]
-                                [ img [ class "Track__cover", src "https://i.scdn.co/image/ab67616d00004851a45cd272063bc487a0615791" ] []
-                                , div [ class "Track__name Flex__full" ] [ text "Silent Gold" ]
-                                , div [ class "Track__duration" ] [ text "3:23" ]
-                                ]
-                            , div [ class "Track Flex centeredVertical" ]
-                                [ img [ class "Track__cover", src "https://i.scdn.co/image/ab67616d00004851a45cd272063bc487a0615791" ] []
-                                , div [ class "Track__name Flex__full" ] [ text "On a Thuesday" ]
-                                , div [ class "Track__duration" ] [ text "10:22" ]
-                                ]
-                            ]
-                        , div [ class "ArtistSimilar" ]
-                            [ h2 [ class "Heading second" ] [ text "Similar artists" ]
-                            , a [ class "ArtistSimilar__item", href "#" ]
-                                [ img [ class "ArtistSimilar__avatar", src "https://i.scdn.co/image/ab67616d000048517308edb16e889fb03e0c06f7" ] []
-                                , span [ class "ArtistSimilar__name" ] [ text "OSI" ]
-                                ]
-                            , a [ class "ArtistSimilar__item", href "#" ]
-                                [ img [ class "ArtistSimilar__avatar", src "https://i.scdn.co/image/ab67616d00004851b5a802ad72225f03178099b6" ] []
-                                , span [ class "ArtistSimilar__name" ] [ text "Guilt Machine" ]
-                                ]
-                            , a [ class "ArtistSimilar__item", href "#" ]
-                                [ img [ class "ArtistSimilar__avatar", src "https://i.scdn.co/image/6ec60563bca6acd50f6b3ef73d4121bdb769dd33" ] []
-                                , span [ class "ArtistSimilar__name" ] [ text "Riverside" ]
-                                ]
-                            , a [ class "ArtistSimilar__item", href "#" ]
-                                [ img [ class "ArtistSimilar__avatar", src "https://i.scdn.co/image/481d1a97b7e67220d1ab3613f5f5bab2c671f047" ] []
-                                , span [ class "ArtistSimilar__name" ] [ text "Ayreon" ]
-                                ]
-                            ]
+                        [ topTrackViews model.tracks
+                            |> (::) (h2 [ class "Heading second" ] [ text "Top tracks" ])
+                            |> div []
+                        , relatedArtistsView model.relatedArtists
+                            |> (::) (h2 [ class "Heading second" ] [ text "Similar artists" ])
+                            |> div [ class "ArtistSimilar" ]
                         ]
                     , div []
-                        [ h2 [ class "Heading second" ] [ text "Albums" ]
-                        , div [ class "Artist__releaseList AlbumList" ]
-                            [ div [ class "Album" ]
-                                [ a [ class "Album__link", href "#" ]
-                                    [ img [ class "Album__cover", src "https://i.scdn.co/image/ab67616d00001e02a45cd272063bc487a0615791" ] []
-                                    , button [ class "Album__play" ] [ i [ class "icon-play" ] [] ]
-                                    , button [ class "Album__add" ] [ i [ class "icon-add" ] [] ]
-                                    ]
-                                , div [ class "Album__name" ] [ text "In The Passing Light of Day" ]
-                                , div [ class "Album__release" ] [ text "(2017)" ]
-                                ]
-                            , div [ class "Album" ]
-                                [ a [ class "Album__link", href "#" ]
-                                    [ img [ class "Album__cover", src "https://i.scdn.co/image/ab67616d00001e026112c09de48809873488eb97" ] []
-                                    , button [ class "Album__play" ] [ i [ class "icon-play" ] [] ]
-                                    , button [ class "Album__add" ] [ i [ class "icon-add" ] [] ]
-                                    ]
-                                , div [ class "Album__name" ] [ text "Remedy Lane Re:lived" ]
-                                , div [ class "Album__release" ] [ text "(2016)" ]
-                                ]
-                            , div [ class "Album" ]
-                                [ a [ class "Album__link", href "#" ]
-                                    [ img [ class "Album__cover", src "https://i.scdn.co/image/ab67616d00001e02951a174f717e2b4fb57c90ef" ] []
-                                    , button [ class "Album__play" ] [ i [ class "icon-play" ] [] ]
-                                    , button [ class "Album__add" ] [ i [ class "icon-add" ] [] ]
-                                    ]
-                                , div [ class "Album__name" ] [ text "Remedy Lane Re:mixed" ]
-                                , div [ class "Album__release" ] [ text "(2016)" ]
-                                ]
-                            , div [ class "Album" ]
-                                [ a [ class "Album__link", href "#" ]
-                                    [ img [ class "Album__cover", src "https://i.scdn.co/image/ab67616d00001e02749c330ea008a87fb3f19dd1" ] []
-                                    , button [ class "Album__play" ] [ i [ class "icon-play" ] [] ]
-                                    , button [ class "Album__add" ] [ i [ class "icon-add" ] [] ]
-                                    ]
-                                , div [ class "Album__name" ] [ text "Falling Home" ]
-                                , div [ class "Album__release" ] [ text "(2014)" ]
-                                ]
-                            , div [ class "Album" ]
-                                [ a [ class "Album__link", href "#" ]
-                                    [ img [ class "Album__cover", src "https://i.scdn.co/image/ab67616d00001e02c2d2935f63289fc4d2785b3d" ] []
-                                    , button [ class "Album__play" ] [ i [ class "icon-play" ] [] ]
-                                    , button [ class "Album__add" ] [ i [ class "icon-add" ] [] ]
-                                    ]
-                                , div [ class "Album__name" ] [ text "Road Salt Two" ]
-                                , div [ class "Album__release" ] [ text "(2011)" ]
-                                ]
-                            , div [ class "Album" ]
-                                [ a [ class "Album__link", href "#" ]
-                                    [ img [ class "Album__cover", src "https://i.scdn.co/image/ab67616d00001e02b6db1b15fbf0d6a11de4b13c" ] []
-                                    , button [ class "Album__play" ] [ i [ class "icon-play" ] [] ]
-                                    , button [ class "Album__add" ] [ i [ class "icon-add" ] [] ]
-                                    ]
-                                , div [ class "Album__name" ] [ text "Road Salt One" ]
-                                , div [ class "Album__release" ] [ text "(2010)" ]
-                                ]
+                        [ div []
+                            [ h2 [ class "Heading second" ] [ text "Albums" ]
+                            , List.filter (\a -> a.type_ == Album.Album) model.albums
+                                |> albumsListView
                             ]
                         ]
                     , div []
                         [ h2 [ class "Heading second" ] [ text "EPs" ]
-                        , div [ class "Artist__releaseList AlbumList" ]
-                            [ div [ class "Album" ]
-                                [ a [ class "Album__link", href "#" ]
-                                    [ img [ class "Album__cover", src "https://i.scdn.co/image/ab67616d00001e02b6db1b15fbf0d6a11de4b13c" ] []
-                                    , button [ class "Album__play" ] [ i [ class "icon-play" ] [] ]
-                                    , button [ class "Album__add" ] [ i [ class "icon-add" ] [] ]
-                                    ]
-                                , div [ class "Album__name" ] [ text "Road Salt One" ]
-                                , div [ class "Album__release" ] [ text "(2010)" ]
-                                ]
-                            , div [ class "Album" ]
-                                [ a [ class "Album__link", href "#" ]
-                                    [ img [ class "Album__cover", src "https://i.scdn.co/image/ab67616d00001e02b6db1b15fbf0d6a11de4b13c" ] []
-                                    , button [ class "Album__play" ] [ i [ class "icon-play" ] [] ]
-                                    , button [ class "Album__add" ] [ i [ class "icon-add" ] [] ]
-                                    ]
-                                , div [ class "Album__name" ] [ text "Road Salt One" ]
-                                , div [ class "Album__release" ] [ text "(2010)" ]
-                                ]
-                            , div [ class "Album" ]
-                                [ a [ class "Album__link", href "#" ]
-                                    [ img [ class "Album__cover", src "https://i.scdn.co/image/ab67616d00001e02b6db1b15fbf0d6a11de4b13c" ] []
-                                    , button [ class "Album__play" ] [ i [ class "icon-play" ] [] ]
-                                    , button [ class "Album__add" ] [ i [ class "icon-add" ] [] ]
-                                    ]
-                                , div [ class "Album__name" ] [ text "Road Salt One" ]
-                                , div [ class "Album__release" ] [ text "(2010)" ]
-                                ]
-                            ]
+                        , List.filter (\a -> a.type_ == Album.Compilation) model.albums
+                            |> albumsListView
                         ]
                     , div []
                         [ h2 [ class "Heading second" ] [ text "Singles" ]
-                        , div [ class "Artist__releaseList AlbumList" ]
-                            [ div [ class "Album" ]
-                                [ a [ class "Album__link", href "#" ]
-                                    [ img [ class "Album__cover", src "https://i.scdn.co/image/ab67616d00001e02951a174f717e2b4fb57c90ef" ] []
-                                    , button [ class "Album__play" ] [ i [ class "icon-play" ] [] ]
-                                    , button [ class "Album__add" ] [ i [ class "icon-add" ] [] ]
-                                    ]
-                                , div [ class "Album__name" ] [ text "Road Salt One" ]
-                                , div [ class "Album__release" ] [ text "(2010)" ]
-                                ]
-                            , div [ class "Album" ]
-                                [ a [ class "Album__link", href "#" ]
-                                    [ img [ class "Album__cover", src "https://i.scdn.co/image/ab67616d00001e02951a174f717e2b4fb57c90ef" ] []
-                                    , button [ class "Album__play" ] [ i [ class "icon-play" ] [] ]
-                                    , button [ class "Album__add" ] [ i [ class "icon-add" ] [] ]
-                                    ]
-                                , div [ class "Album__name" ] [ text "Road Salt One" ]
-                                , div [ class "Album__release" ] [ text "(2010)" ]
-                                ]
-                            ]
+                        , List.filter (\a -> a.type_ == Album.Single) model.albums
+                            |> albumsListView
                         ]
                     ]
                 ]

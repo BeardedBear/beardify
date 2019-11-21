@@ -1,5 +1,6 @@
 module Page.Login exposing (Model, Msg, init, update, view)
 
+import Browser exposing (..)
 import Browser.Navigation as Nav
 import Data.Authentication as Authentication
 import Data.Session as Session exposing (Session)

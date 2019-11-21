@@ -111,10 +111,9 @@ setRoute maybeRoute model =
 
         ( True, Just Route.Home ) ->
             toPage HomePage Home.init HomeMsg
-                |> initComponent
 
-        ( True, Just (Route.Artist _) ) ->
-            toPage ArtistPage Artist.init ArtistMsg
+        ( True, Just (Route.Artist id) ) ->
+            toPage ArtistPage (Artist.init id) ArtistMsg
 
         ( True, Just Route.Login ) ->
             toPage LoginPage Login.init LoginMsg
@@ -250,6 +249,9 @@ update msg ({ page, session } as model) =
             )
     in
     case ( msg, page ) of
+        ( ArtistMsg artistMsg, ArtistPage artistModel ) ->
+            toPage ArtistPage ArtistMsg Artist.update artistMsg artistModel
+
         ( ClearNotification notif, _ ) ->
             ( { model | session = session |> Session.closeNotification notif }
             , Cmd.none
