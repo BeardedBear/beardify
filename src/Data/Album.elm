@@ -1,4 +1,4 @@
-module Data.Album exposing (AlbumSimplified, Type(..), decodeSimplified)
+module Data.Album exposing (AlbumSimplified, Type(..), decodeSimplified, typeToString)
 
 import Data.Artist as Artist exposing (ArtistSimplified)
 import Data.Image as Image exposing (Image)
@@ -18,8 +18,9 @@ type alias AlbumSimplified =
 
 
 type Type
-    = Compilation
-    | Album
+    = Album
+    | AppearsOn
+    | Compilation
     | Single
 
 
@@ -29,11 +30,14 @@ decodeType =
         |> Decode.andThen
             (\string ->
                 case string of
-                    "compilation" ->
-                        Decode.succeed Compilation
-
                     "album" ->
                         Decode.succeed Album
+
+                    "appears_on" ->
+                        Decode.succeed AppearsOn
+
+                    "compilation" ->
+                        Decode.succeed Compilation
 
                     "single" ->
                         Decode.succeed Single
@@ -53,3 +57,19 @@ decodeSimplified =
         |> JDP.required "name" Decode.string
         |> JDP.required "release_date" Decode.string
         |> JDP.required "uri" Decode.string
+
+
+typeToString : Type -> String
+typeToString type_ =
+    case type_ of
+        Album ->
+            "album"
+
+        AppearsOn ->
+            "appears on"
+
+        Compilation ->
+            "compilation"
+
+        Single ->
+            "single"

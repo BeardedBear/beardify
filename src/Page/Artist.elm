@@ -70,7 +70,7 @@ relatedArtistsView artists =
                 ]
     in
     List.map relatedArtistView artists
-        |> List.take 7
+        |> List.take 4
 
 
 topTrackViews : List Track -> List (Html msg)
@@ -88,6 +88,7 @@ topTrackViews tracks =
                 ]
     in
     List.map trackView tracks
+        |> List.take 5
 
 
 albumsListView : List AlbumSimplified -> Html msg
@@ -137,11 +138,9 @@ view model =
                             |> div [ class "ArtistSimilar" ]
                         ]
                     , div []
-                        [ div []
-                            [ h2 [ class "Heading second" ] [ text "Albums" ]
-                            , List.filter (\a -> a.type_ == Album.Album) model.albums
-                                |> albumsListView
-                            ]
+                        [ h2 [ class "Heading second" ] [ text "Albums" ]
+                        , List.filter (\a -> a.type_ == Album.Album) model.albums
+                            |> albumsListView
                         ]
                     , div []
                         [ h2 [ class "Heading second" ] [ text "EPs" ]
