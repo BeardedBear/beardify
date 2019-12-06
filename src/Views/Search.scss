@@ -18,7 +18,8 @@
     background: color.scale(Color.$background, $lightness: 2%);
     border-radius: 3px;
     box-shadow: 0px 4px 20px rgba(0, 0, 0, .3);
-    display: grid;
+    display: none;
+    // display: grid;
     grid-template-columns: 1fr 1.5fr 2fr;
     left: 0;
     position: absolute;
