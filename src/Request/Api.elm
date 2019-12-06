@@ -77,6 +77,10 @@ mapError session task =
                             ( session, httpError )
 
                     _ ->
+                        let
+                            _ =
+                                Debug.log "err" httpError
+                        in
                         ( session, httpError )
             )
 

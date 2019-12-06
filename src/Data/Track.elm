@@ -14,7 +14,6 @@ type Id
 type alias Track =
     { album : AlbumSimplified
     , artists : List ArtistSimplified
-    , availableMarkets : List String
     , discNumber : Int
     , duration : Int
     , explicit : Bool
@@ -62,7 +61,6 @@ decode =
     Decode.succeed Track
         |> JDP.required "album" Album.decodeSimplified
         |> JDP.required "artists" (Decode.list Artist.decodeSimplified)
-        |> JDP.required "available_markets" (Decode.list Decode.string)
         |> JDP.required "disc_number" Decode.int
         |> JDP.required "duration_ms" Decode.int
         |> JDP.required "explicit" Decode.bool

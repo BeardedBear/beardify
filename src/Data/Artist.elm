@@ -8,6 +8,7 @@ module Data.Artist exposing
     , parseId
     )
 
+import Data.Image as Image exposing (Image)
 import Json.Decode as Decode exposing (Decoder)
 import Url.Parser as Parser exposing (Parser)
 
@@ -15,6 +16,7 @@ import Url.Parser as Parser exposing (Parser)
 type alias Artist =
     { id : Id
     , name : String
+    , images : List Image
     , popularity : Int
     , type_ : String
     }
@@ -32,17 +34,17 @@ type Id
 
 decode : Decoder Artist
 decode =
-    Decode.map4 Artist
+    Decode.map5 Artist
         (Decode.field "id" decodeId)
         (Decode.field "name" Decode.string)
+        (Decode.field "images" (Decode.list Image.decode))
         (Decode.field "popularity" Decode.int)
         (Decode.field "type" Decode.string)
 
 
 decodeId : Decoder Id
 decodeId =
-    Decode.string
-        |> Decode.map Id
+    Decode.map Id Decode.string
 
 
 decodeSimplified : Decoder ArtistSimplified
