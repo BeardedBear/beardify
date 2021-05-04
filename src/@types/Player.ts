@@ -11,9 +11,33 @@ interface Player {
   playlist: PlaylistItem[];
 }
 
+interface Artist {
+  name: string;
+  uri: string;
+}
+
+interface Images {
+  height: number;
+  url: string;
+  width: number;
+}
+interface Album {
+  images: Images[];
+  name: string;
+  uri: string;
+}
+interface TrackWindow {
+  current_track: {
+    artists: Artist[];
+    name: string;
+    album: Album;
+  };
+}
+
 interface Track {
   duration: number;
   position: number;
+  trackWindow: TrackWindow;
 }
 
 interface Device {

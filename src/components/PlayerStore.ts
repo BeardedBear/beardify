@@ -1,7 +1,24 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { playlist } from "@/fake-playlist";
 import { ActionTree, MutationTree } from "vuex";
 import { instance } from "@/api";
 import { AxiosResponse } from "axios";
+
+const defaultTrack: Track = {
+  duration: 0,
+  position: 0,
+  trackWindow: {
+    current_track: {
+      artists: [],
+      name: "",
+      album: {
+        images: [],
+        name: "",
+        uri: ""
+      }
+    }
+  }
+};
 
 const state: Player = {
   devices: {
@@ -11,10 +28,7 @@ const state: Player = {
   playlist: playlist,
   currentlyPlaying: {
     index: 0,
-    track: {
-      duration: 0,
-      position: 0
-    },
+    track: defaultTrack,
     item: playlist[0]
   }
 };
@@ -44,8 +58,11 @@ const mutations: MutationTree<Player> = {
   },
 
   [Mutations.PLAYER_STATE_CHANGED](state, customEvent: Track): void {
+    console.log("customEvent", customEvent.trackWindow);
+
     state.currentlyPlaying.track.duration = customEvent.duration;
     state.currentlyPlaying.track.position = Math.round(customEvent.position);
+    state.currentlyPlaying.track.trackWindow = customEvent.trackWindow;
   }
 };
 
@@ -54,8 +71,7 @@ const mutations: MutationTree<Player> = {
 export enum PlayerActions {
   next = "next",
   getDeviceList = "getDeviceList",
-  setThisDevice = "setThisDevice",
-  playerStateChanged = "playerStateChanged"
+  setThisDevice = "setThisDevice"
 }
 
 const actions: ActionTree<Player, RootState> = {
@@ -68,17 +84,12 @@ const actions: ActionTree<Player, RootState> = {
       .get<Device[]>("me/player/devices")
       .then((e: AxiosResponse) => store.commit(Mutations.GET_DEVICE_LIST, e.data.devices))
       .then(() => {
-        /* eslint-disable @typescript-eslint/camelcase */
         instance.put("me/player", { device_ids: [store.state.devices.thisDevice] });
       });
   },
 
   [PlayerActions.setThisDevice](store, thisDevice: string) {
     store.commit(Mutations.SET_THIS_DEVICE, thisDevice);
-  },
-
-  [PlayerActions.playerStateChanged](store, customEvent: Track) {
-    store.commit(Mutations.PLAYER_STATE_CHANGED, customEvent);
   }
 };
 

@@ -1,20 +1,38 @@
 <template>
   <div class="player">
     <!-- <button @click="goNext((current.index += 1))">NEXT</button> -->
-    <button @click="goPlay">PLAY</button>
-    <button @click="goPause">PAUSE</button>
-    <div>{{ current.track }}</div>
-    <div>
+
+    <!-- <div>
       {{ (current.track.position / current.track.duration) * 100 }}
-    </div>
+    </div> -->
 
     <div>
-      <div class="prog">
-        <div>{{ timecode(current.track.position) }}</div>
+      <div class="meta">
+        <div>
+          <button @click="goPlay">PLAY</button>
+          <button @click="goPause">PAUSE</button>
+          <div>{{ timecode(current.track.position) }} / {{ timecode(current.track.duration) }}</div>
+          <div></div>
+        </div>
 
-        <div>{{ timecode(current.track.duration) }}</div>
+        <div class="meta__what">
+          <img :src="current.track.trackWindow.current_track.album.images[1].url" alt="" />
+          <div>
+            <div>
+              <span v-for="(artist, _, index) in current.track.trackWindow.current_track.artists" :key="index">
+                {{ artist.name }}, </span
+              >- {{ current.track.trackWindow.current_track.name }}
+            </div>
+            <div>{{ current.track.trackWindow.current_track.album.name }}</div>
+          </div>
+        </div>
+        <div>coucou</div>
       </div>
-      <div>{{ current.item.label }}</div>
+
+      <!-- <div v-for="(cover, _, index) in current.track.trackWindow.current_track.album.images" :key="index">
+        <img :src="cover.url" alt="" />
+      </div> -->
+
       <div ref="progresss" class="progress">
         <div class="bar" :style="`width:${(current.track.position / current.track.duration) * 100}%`"></div>
         <div class="seek" :style="`width:${perc}%`">
@@ -29,7 +47,7 @@
 import { defineComponent, ref, inject, watchEffect } from "vue";
 import { useStore } from "vuex";
 import { instance } from "@/api";
-import { PlayerActions } from "@/components/PlayerStore";
+import { Mutations } from "@/components/PlayerStore";
 import { timecode } from "@/helpers/date";
 
 /* eslint-disable @typescript-eslint/camelcase */
@@ -80,9 +98,10 @@ export default defineComponent({
       "playerStateChanged",
       ((detail: CustomEvent) => {
         // if (current.index < playlist.length) goNext();
-        store.dispatch(`player/${PlayerActions.playerStateChanged}`, {
+        store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, {
           duration: detail.detail.duration,
-          position: detail.detail.position
+          position: detail.detail.position,
+          trackWindow: detail.detail.trackWindow
         });
       }) as EventListener
       // { once: true }
@@ -133,12 +152,29 @@ export default defineComponent({
   }
 }
 
-.prog {
+.player {
+  background: #1b1e26;
+}
+
+.meta {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+
+  &__what {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    img {
+      height: 50px;
+    }
+  }
 }
 
 .progress {
-  background: #1b1e26;
+  background: #262a36;
   height: 10px;
   position: relative;
   cursor: pointer;

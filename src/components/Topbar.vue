@@ -10,7 +10,7 @@
         :key="device.name"
         :class="{ active: device.id === store.state.player.devices.thisDevice }"
       >
-        {{ device.name }} - {{ store.state.player.devices.thisDevice }}
+        {{ device.name }}
       </span>
     </div>
     <div>
@@ -49,7 +49,7 @@ export default defineComponent({
 .topbar {
   display: flex;
   justify-content: space-between;
-  background: lightgray;
+  background: #1b1e26;
   padding: 10px;
   align-items: center;
 }
