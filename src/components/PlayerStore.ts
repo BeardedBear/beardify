@@ -1,9 +1,9 @@
 import { playlist } from "@/fake-playlist";
-import { ActionContext, ActionTree, MutationTree } from "vuex";
+import { ActionTree, MutationTree } from "vuex";
 import { instance } from "@/api";
 import { AxiosResponse } from "axios";
 
-const state = {
+const state: Player = {
   devices: {
     thisDevice: "",
     list: []
@@ -66,7 +66,11 @@ const actions: ActionTree<Player, RootState> = {
   [PlayerActions.getDeviceList](store) {
     instance
       .get<Device[]>("me/player/devices")
-      .then((e: AxiosResponse) => store.commit(Mutations.GET_DEVICE_LIST, e.data.devices));
+      .then((e: AxiosResponse) => store.commit(Mutations.GET_DEVICE_LIST, e.data.devices))
+      .then(() => {
+        /* eslint-disable @typescript-eslint/camelcase */
+        instance.put("me/player", { device_ids: [store.state.devices.thisDevice] });
+      });
   },
 
   [PlayerActions.setThisDevice](store, thisDevice: string) {

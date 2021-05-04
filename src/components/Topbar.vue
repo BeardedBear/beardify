@@ -10,7 +10,7 @@
         :key="device.name"
         :class="{ active: device.id === store.state.player.devices.thisDevice }"
       >
-        {{ device.name }}
+        {{ device.name }} - {{ store.state.player.devices.thisDevice }}
       </span>
     </div>
     <div>

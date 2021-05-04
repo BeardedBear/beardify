@@ -5,7 +5,7 @@ import auth from "@/views/AuthStore";
 
 const persisted = createPersistedState({
   key: "beardify",
-  paths: ["auth"]
+  paths: ["auth", "player"]
 });
 
 export default createStore<RootState>({

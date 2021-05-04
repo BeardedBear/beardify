@@ -34,7 +34,7 @@ export default defineComponent({
     const current = useStore<RootState>().state.player.currentlyPlaying;
     const playlist = useStore<RootState>().state.player.playlist;
     const progresss = ref();
-    const plyr: any = inject("plyr", ref(null));
+    const plyr = inject("plyr", ref(null));
     const perc = ref();
     const time = ref();
 
@@ -50,26 +50,26 @@ export default defineComponent({
       });
     };
 
-    const goNext = (id: number) => {
-      store.dispatch(`player/${PlayerActions.next}`, id).then(() => {
-        store.dispatch(`player/${PlayerActions.getDeviceList}`);
-        if (current.index < playlist.length) {
-          if (current.item.type === "speak") {
-            instance.put("me/player/pause", {
-              device_id: store.state.player.devices.thisDevice
-            });
-            plyr.value.player.source = playlist[current.index].data;
-            plyr.value.player.play();
-          } else {
-            plyr.value.player.stop();
-            instance.put(`me/player/play?device_id=${store.state.player.devices.thisDevice}`, {
-              uris: [current.item.uri],
-              position_ms: 1
-            });
-          }
-        }
-      });
-    };
+    // const goNext = (id: number) => {
+    //   store.dispatch(`player/${PlayerActions.next}`, id).then(() => {
+    //     store.dispatch(`player/${PlayerActions.getDeviceList}`);
+    //     if (current.index < playlist.length) {
+    //       if (current.item.type === "speak") {
+    //         instance.put("me/player/pause", {
+    //           device_id: store.state.player.devices.thisDevice
+    //         });
+    //         plyr.value.player.source = playlist[current.index].data;
+    //         plyr.value.player.play();
+    //       } else {
+    //         plyr.value.player.stop();
+    //         instance.put(`me/player/play?device_id=${store.state.player.devices.thisDevice}`, {
+    //           uris: [current.item.uri],
+    //           position_ms: 1
+    //         });
+    //       }
+    //     }
+    //   });
+    // };
 
     window.addEventListener(
       "playerStateChanged",
@@ -85,16 +85,16 @@ export default defineComponent({
 
     watchEffect(() => {
       if (plyr.value) {
-        plyr.value.player.on("timeupdate", (e: CustomEvent) => {
-          store.dispatch(`player/${PlayerActions.playerStateChanged}`, {
-            duration: e.detail.plyr.duration * 1000,
-            position: e.detail.plyr.currentTime * 1000
-          });
-        });
+        // plyr.value.player.on("timeupdate", (e: CustomEvent) => {
+        //   store.dispatch(`player/${PlayerActions.playerStateChanged}`, {
+        //     duration: e.detail.plyr.duration * 1000,
+        //     position: e.detail.plyr.currentTime * 1000
+        //   });
+        // });
 
-        plyr.value.player.on("ended", () => {
-          if (current.index < playlist.length) goNext((current.index += 1));
-        });
+        // plyr.value.player.on("ended", () => {
+        //   if (current.index < playlist.length) goNext((current.index += 1));
+        // });
 
         progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
           const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
@@ -113,7 +113,7 @@ export default defineComponent({
       }
     });
 
-    return { goNext, store, current, playlist, goPlay, goPause, progresss, perc, time };
+    return { store, current, playlist, goPlay, goPause, progresss, perc, time };
   }
 });
 </script>
