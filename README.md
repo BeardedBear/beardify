@@ -1,50 +1,29 @@
-![alt text](http://i.imgur.com/2HRvcVq.png "Logo")
+# beardify
 
-# Experimental Spotify client, in Elm.
+## Project setup
 
-IMPORTANT : At this moment, Beardify works like a remote controller for Spotify, you will need to have an official client launched in the background. It's an alpha version, only add/remove albums in collections, play songs/albums, view and play your playlists and view Spotify data.
+```
+yarn install
+```
 
-## Installation
+### Compiles and hot-reloads for development
 
-Don't try to install it, otherwise your house will probably explode, and so will your dog. Be patient, and when it's ready I'll make smoke signals in the sky, watch for a bear symbol in the clouds.
+```
+yarn serve
+```
 
-## To-Do for v1
+### Compiles and minifies for production
 
-- Cleaner Spotify authentication
-- Improve reactivity of the player
-- Rearrange order of playlists
-- Create/modify Playlist
-- Create/modify Collection
-- Delete Tracks
+```
+yarn build
+```
 
-## Features
+### Lints and fixes files
 
-- Elm 0.19 Ready
-- Responsive
-- Fast
-- Added **Collections**, which are playlists containing keywords in the title (`#Collection`), which lists the albums it contains rather than a list of songs.
-- Adding a list of **associated videos** on an artist's page
-- Added a list of **useful links** about the artist (Wikipedia, Sputnik, LastFM, Discogs...)
+```
+yarn lint
+```
 
-## Future features
+### Customize configuration
 
-- Publicly share collections
-- More sources for releases
-
-## Screenshots
-
-### Collection View
-
-![alt text](http://i.imgur.com/AUuStbT.png "Collection View")
-
-### Artist View
-
-![alt text](http://i.imgur.com/N5fTWGJ.png "Artist View")
-
-### Search View
-
-![alt text](http://i.imgur.com/9FhnUTT.png "Search View")
-
-### Album and playlist View
-
-![alt text](http://i.imgur.com/EYDyCtA.png "Album View")
+See [Configuration Reference](https://cli.vuejs.org/config/).
