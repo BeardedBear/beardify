@@ -4,18 +4,14 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-tsc --noEmit && vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@types/form-urlencoded": "^2.0.1",
     "axios": "^0.21.1",
-    "base64-arraybuffer": "^0.2.0",
-    "base64url": "^3.0.1",
     "core-js": "^3.8.0",
-    "crypto-random-string": "^4.0.0",
     "form-urlencoded": "^4.2.1",
-    "js-sha256": "^0.9.0",
     "normalize.css": "^8.0.1",
     "vue": "^3.0.3",
     "vue-plyr": "^7.0.0",
@@ -41,6 +37,7 @@
     "prettier": "^1.19.1",
     "sass": "^1.29.0",
     "sass-loader": "^10.1.0",
-    "typescript": "^4.1.2"
+    "typescript": "^4.1.2",
+    "vue-tsc": "^0.1.0"
   }
 }
