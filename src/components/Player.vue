@@ -9,13 +9,18 @@
     </div>
 
     <div>
+      <div class="prog">
+        <div>{{ timecode(current.track.position) }}</div>
+
+        <div>{{ timecode(current.track.duration) }}</div>
+      </div>
+      <div>{{ current.item.label }}</div>
       <div ref="progresss" class="progress">
         <div class="bar" :style="`width:${(current.track.position / current.track.duration) * 100}%`"></div>
         <div class="seek" :style="`width:${perc}%`">
           <div class="time">{{ time }}</div>
         </div>
       </div>
-      <div>{{ current.item.label }}</div>
     </div>
   </div>
 </template>
@@ -113,7 +118,7 @@ export default defineComponent({
       }
     });
 
-    return { store, current, playlist, goPlay, goPause, progresss, perc, time };
+    return { store, current, playlist, goPlay, goPause, progresss, perc, time, timecode };
   }
 });
 </script>
@@ -128,18 +133,23 @@ export default defineComponent({
   }
 }
 
+.prog {
+  display: flex;
+}
+
 .progress {
-  background: rgb(179, 179, 179);
-  height: 20px;
+  background: #1b1e26;
+  height: 10px;
   position: relative;
   cursor: pointer;
+  flex: 1;
 
   .seek {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
-    background: rgba(black, 0.2);
+    background: rgba(white, 0.2);
     display: none;
     animation: popSeek 0.2s ease 0s both;
 
@@ -161,7 +171,7 @@ export default defineComponent({
     top: 0;
     bottom: 0;
     left: 0;
-    background: rgb(144, 216, 238);
+    background: #6243b0;
   }
 
   &:hover {
