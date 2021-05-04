@@ -6,13 +6,12 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
-    <title><%= htmlWebpackPlugin.options.title %></title>
+    <title>Beardify</title>
   </head>
   <body>
     <noscript>
       <strong>
-        We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please
-        enable it to continue.
+        We're sorry but Beardify doesn't work properly without JavaScript enabled. Please enable it to continue.
       </strong>
     </noscript>
     <div id="app"></div>
@@ -22,7 +21,7 @@
       window.onSpotifyWebPlaybackSDKReady = () => {
         if (ls) {
           const player = new Spotify.Player({
-            name: "Beardify",
+            name: "Beardify3",
             getOAuthToken: cb => cb(JSON.parse(localStorage.getItem("beardify")).auth.auth.accessToken),
             volume: 0.5
           });

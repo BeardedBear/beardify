@@ -7,8 +7,8 @@ const cvHasedBase64url = "t5oGiJ2QcE9rK1WdE6yUQA_5tquXc3ijSWx8F5c18s0";
 
 export const api = {
   url: "https://api.spotify.com/",
-  clientId: "59468014e099439f9e589fed9fe7b0ab",
-  clientSecret: "636985bc012840fb890be131972ae902",
+  clientId: "29a0936f4c6c46399f33f6f60a0855e8",
+  clientSecret: "7d50fed5ac154883ae4d5eec1138a3f2",
   redirectUri:
     process.env.NODE_ENV !== "production" ? "http://localhost:8080/auth" : "https://orchestre.netlify.app/auth",
   codeVerifier: cv,

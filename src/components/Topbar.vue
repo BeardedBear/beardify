@@ -18,10 +18,7 @@
       <div v-if="store.state.auth.me.displayName === ''">
         <a :href="connectUrl">LOGME</a> - {{ store.state.auth.me.displayName }}
       </div>
-      <div v-else>
-        <span @click="getMe">GETME</span>
-        <a :href="connectUrl">LOGME</a> - {{ store.state.auth.me.displayName }}
-      </div>
+      <div v-else><a :href="connectUrl">LOGME</a> - {{ store.state.auth.me.displayName }}</div>
     </div>
   </div>
 </template>
@@ -38,13 +35,12 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    const getMe = () => store.dispatch(`auth/${AuthActions.getUser}`);
     const getDeviceList = () => store.dispatch(`player/${PlayerActions.getDeviceList}`);
     function refresh() {
       store.dispatch(`auth/${AuthActions.refresh}`);
     }
 
-    return { connectUrl, getMe, store, getDeviceList, refresh };
+    return { connectUrl, store, getDeviceList, refresh };
   }
 });
 </script>
