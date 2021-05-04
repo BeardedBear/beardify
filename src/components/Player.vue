@@ -1,6 +1,6 @@
 <template>
   <div class="player">
-    <button @click="goNext((current.index += 1))">NEXT</button>
+    <!-- <button @click="goNext((current.index += 1))">NEXT</button> -->
     <button @click="goPlay">PLAY</button>
     <button @click="goPause">PAUSE</button>
     <div>{{ current.track }}</div>
@@ -39,23 +39,15 @@ export default defineComponent({
     const time = ref();
 
     const goPlay = () => {
-      if (current.item.type === "speak") {
-        plyr.value.player.play();
-      } else {
-        instance.put("me/player/play", {
-          device_id: store.state.player.devices.thisDevice
-        });
-      }
+      instance.put("me/player/play", {
+        device_id: store.state.player.devices.thisDevice
+      });
     };
 
     const goPause = () => {
-      if (current.item.type === "speak") {
-        plyr.value.player.pause();
-      } else {
-        instance.put("me/player/pause", {
-          device_id: store.state.player.devices.thisDevice
-        });
-      }
+      instance.put("me/player/pause", {
+        device_id: store.state.player.devices.thisDevice
+      });
     };
 
     const goNext = (id: number) => {
@@ -114,27 +106,10 @@ export default defineComponent({
         progresss.value.addEventListener("click", (e: MouseEvent) => {
           const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
           const duration = (current.track.duration / 100) * positionInPercent;
-          if (current.item.type === "speak") {
-            plyr.value.player.currentTime = duration / 1000;
-          } else {
-            instance.put(
-              `me/player/seek?position_ms=${Math.round(duration)}&device_id=${store.state.player.devices.thisDevice}`
-            );
-          }
+          instance.put(
+            `me/player/seek?position_ms=${Math.round(duration)}&device_id=${store.state.player.devices.thisDevice}`
+          );
         });
-
-        // plyr.value.player.on("playing", () => {
-        //   instance
-        //     .put("me/player/pause", {
-        //       device_id: store.state.player.devices.thisDevice
-        //     })
-        //     .then(() =>
-        //       instance.put("me/player", {
-        //         device_ids: [store.state.player.devices.thisDevice],
-        //         position_ms: 1
-        //       })
-        //     );
-        // });
       }
     });
 

@@ -15,15 +15,13 @@ export default defineComponent({
     const store = useStore();
 
     onMounted(() => {
-      store
-        .dispatch(`auth/${AuthActions.auth}`, props.query)
-        // .then(() => store.dispatch(`auth/${AuthActions.getUser}`))
-        .then(() => router.push("/"));
+      store.dispatch(`auth/${AuthActions.auth}`, props.query).then(() => router.push("/"));
 
       setInterval(() => {
         store.dispatch(`auth/${AuthActions.refresh}`);
       }, 1000000);
     });
+
     return { store };
   }
 });
