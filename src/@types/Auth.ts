@@ -1,16 +1,14 @@
-interface Auth {
+export interface Auth {
   auth: AuthData;
   me: Me;
 }
 
-interface AuthData {
+export interface AuthData {
   accessToken: string;
   refreshToken: string;
   code: string;
-  codeVerifier: string;
-  codeChallenge: string;
 }
 
-interface Me {
+export interface Me {
   displayName: string;
 }

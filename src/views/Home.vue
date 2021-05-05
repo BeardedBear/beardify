@@ -10,16 +10,16 @@
 </template>
 
 <script lang="ts">
-import { RootState } from "@/@types/rootStore";
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
+import type { RootState } from "../@types/rootStore";
 
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
     return { store };
-  }
+  },
 });
 </script>
 

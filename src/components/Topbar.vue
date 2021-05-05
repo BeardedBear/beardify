@@ -1,14 +1,16 @@
 <template>
   <div class="topbar">
     <div id="nav">
-      <img src="/img/logo.svg" alt="" />
+      <img class="logo" src="/img/logo.svg" alt="" />
       <router-link to="/">Home</router-link>
       <router-link to="/about">About</router-link>
+      <router-link to="/login">Login</router-link>
     </div>
     <div>
       <span
         v-for="device in store.state.player.devices.list"
         :key="device.name"
+        class="button button--small"
         :class="{ active: device.id === store.state.player.devices.thisDevice }"
       >
         {{ device.name }}
@@ -19,7 +21,6 @@
         <a :href="connectUrl">LOGME</a> - {{ store.state.auth.me.displayName }}
       </div>
       <div v-else>
-        <button @click="refresh()">refresh</button><a :href="connectUrl">LOGME</a> -
         {{ store.state.auth.me.displayName }}
       </div>
     </div>
@@ -27,33 +28,40 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
 import { connectUrl } from "../api";
 import { useStore } from "vuex";
 import { PlayerActions } from "../components/PlayerStore";
 import { AuthActions } from "../views/AuthStore";
-import { RootState } from "../@types/rootStore";
+import type { RootState } from "../@types/rootStore";
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "Topbar",
   setup() {
     const store = useStore<RootState>();
 
-    const getDeviceList = () => store.dispatch(`player/${PlayerActions.getDeviceList}`);
-    function refresh() {
+    function getDeviceList(): void {
+      store.dispatch(`player/${PlayerActions.getDeviceList}`);
+    }
+    function refresh(): void {
       store.dispatch(`auth/${AuthActions.refresh}`);
     }
 
-    return { connectUrl, store, getDeviceList, refresh };
+    return { store, getDeviceList, refresh, connectUrl };
   },
 });
 </script>
 
 <style lang="scss" scoped>
+@import "../assets/scss/colors";
+
+.logo {
+  height: 30px;
+  display: block;
+}
 .topbar {
   display: flex;
   justify-content: space-between;
-  background: #1b1e26;
+  background: $bg-color;
   padding: 15px;
   align-items: center;
 }
@@ -61,12 +69,14 @@ export default defineComponent({
 #nav {
   display: flex;
   gap: 15px;
+  align-items: center;
+
   a {
     font-weight: bold;
-    color: #2c3e50;
+    color: $bg-color-lighter;
 
     &.router-link-exact-active {
-      color: #42b983;
+      color: $primary-color;
     }
   }
 }
@@ -75,7 +85,7 @@ span {
   margin-right: 10px;
   &.active {
     color: white;
-    background: green;
+    background: $primary-color;
   }
 }
 </style>

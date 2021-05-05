@@ -44,10 +44,10 @@ export const defaultTrack: Track = {
       album: {
         images: [],
         name: "",
-        uri: ""
-      }
-    }
-  }
+        uri: "",
+      },
+    },
+  },
 };
 
 export interface Track {

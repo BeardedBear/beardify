@@ -2,15 +2,15 @@ import { ActionContext } from "vuex";
 import { api } from "../api";
 import formurlencoded from "form-urlencoded";
 import axios from "axios";
-import { RootState } from "../@types/rootStore";
+import type { RootState } from "../@types/rootStore";
+import type { Auth, AuthData } from "../@types/Auth";
+import router from "../router";
 
 const state: Auth = {
   auth: {
     accessToken: "",
     refreshToken: "",
     code: "",
-    codeVerifier: "",
-    codeChallenge: "",
   },
   me: {
     displayName: "",
@@ -91,7 +91,8 @@ const actions = {
             "Content-Type": "application/json",
           },
         })
-        .then((p) => store.commit("GET_ME", p.data.display_name));
+        .then((p) => store.commit("GET_ME", p.data.display_name))
+        .then(() => router.push("/"));
 
       store.commit(Mutations.AUTH, {
         accessToken: json.access_token,

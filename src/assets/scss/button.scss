@@ -1,0 +1,30 @@
+@import "./colors";
+
+.button {
+  background-color: $bg-color-light;
+  border: 0;
+  cursor: pointer;
+  font-weight: 700;
+  color: rgba(white, 0.8);
+  padding: 10px 20px;
+  border-radius: 3px;
+
+  &:hover {
+    background-color: $bg-color-lighter;
+    color: white;
+  }
+
+  &--primary {
+    background-color: $primary-color;
+    color: lighten($primary-color, 35%);
+
+    &:hover {
+      background-color: $primary-color-light;
+      color: white;
+    }
+  }
+
+  &--small {
+    padding: 5px 10px;
+  }
+}

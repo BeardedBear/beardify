@@ -14,7 +14,6 @@
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
 import { useStore } from "vuex";
-import { connectUrl } from "./api";
 import Topbar from "./components/Topbar.vue";
 import { PlayerActions, Mutations } from "./components/PlayerStore";
 import Player from "./components/Player.vue";
@@ -26,29 +25,32 @@ export default defineComponent({
     const store = useStore<RootState>();
 
     onMounted(() => {
-      window.addEventListener("noAccess", () => {
-        window.location.href = connectUrl;
-      });
+      // window.onfocus = () => {
+      //   store.dispatch(`player/${PlayerActions.getDeviceList}`);
+      //   store.commit(`player/${Mutations.SET_THIS_DEVICE}`, store.state.player.devices.thisDevice);
+      // };
 
-      window.onfocus = () => {
-        store.commit(`player/${Mutations.SET_THIS_DEVICE}`, store.state.player.devices.thisDevice);
-      };
-
-      // interface Test {
-      //   thisDevice: string;
-      // }
+      console.log(typeof store.state.auth.me.displayName, store.state.auth.me.displayName);
 
       window.addEventListener("initdevice", ((customEvent: CustomEvent) => {
         store.commit(`player/${Mutations.SET_THIS_DEVICE}`, customEvent.detail.thisDevice);
         store.dispatch(`player/${PlayerActions.getDeviceList}`);
       }) as { (evt: Event): void });
     });
+
+    return { store };
   },
 });
 </script>
 
 <style lang="scss">
 @import "../node_modules/normalize.css/normalize.css";
+@import "./assets/scss/button";
+@import "./assets/scss/colors";
+
+::selection {
+  background-color: $primary-color;
+}
 
 .scale-enter-active,
 .scale-leave-active {
@@ -61,7 +63,7 @@ export default defineComponent({
 }
 
 .sidebar {
-  background: rgba(#1b1e26, 0.5);
+  background: $bg-color-dark;
   padding: 30px;
 }
 
@@ -76,7 +78,7 @@ export default defineComponent({
   display: grid;
   grid-template-rows: auto 1fr auto;
   overflow: hidden;
-  background-color: #16181d;
+  background-color: $bg-color-darker;
 
   &__content {
     display: grid;

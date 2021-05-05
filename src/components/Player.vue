@@ -45,66 +45,74 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
+<script lang="ts">
+import { ref, onMounted, defineComponent } from "vue";
 import { useStore } from "vuex";
 import { instance } from "../api";
 import { Mutations } from "../components/PlayerStore";
 import { timecode } from "../helpers/date";
 import type { RootState } from "../@types/rootStore";
 
-const store = useStore<RootState>();
-const current = useStore<RootState>().state.player.currentlyPlaying;
-const progresss = ref();
-const perc = ref();
-const time = ref();
+export default defineComponent({
+  setup() {
+    const store = useStore<RootState>();
+    const current = useStore<RootState>().state.player.currentlyPlaying;
+    const progresss = ref();
+    const perc = ref();
+    const time = ref();
 
-function goPlay() {
-  instance.put("me/player/play", {
-    device_id: store.state.player.devices.thisDevice,
-  });
-}
+    function goPlay() {
+      instance.put("me/player/play", {
+        device_id: store.state.player.devices.thisDevice,
+      });
+    }
 
-function goNext() {
-  instance.post("me/player/next");
-}
+    function goNext() {
+      instance.post("me/player/next");
+    }
 
-function goPause() {
-  instance.put("me/player/pause", {
-    device_id: store.state.player.devices.thisDevice,
-  });
-}
+    function goPause() {
+      instance.put("me/player/pause", {
+        device_id: store.state.player.devices.thisDevice,
+      });
+    }
 
-addEventListener("playerStateChanged", ((detail: CustomEvent) => {
-  store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, {
-    duration: detail.detail.duration,
-    position: detail.detail.position,
-    paused: detail.detail.paused,
-    repeatMode: detail.detail.repeat_mode,
-    shuffle: detail.detail.shuffle,
-    trackWindow: detail.detail.trackWindow,
-  });
-}) as { (evt: Event): void });
+    addEventListener("playerStateChanged", ((detail: CustomEvent) => {
+      store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, {
+        duration: detail.detail.duration,
+        position: detail.detail.position,
+        paused: detail.detail.paused,
+        repeatMode: detail.detail.repeat_mode,
+        shuffle: detail.detail.shuffle,
+        trackWindow: detail.detail.trackWindow,
+      });
+    }) as { (evt: Event): void });
 
-onMounted(() => {
-  progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
-    const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
-    const duration = (current.track.duration / 100) * positionInPercent;
-    perc.value = positionInPercent;
-    time.value = timecode(duration);
-  });
+    onMounted(() => {
+      progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
+        const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
+        const duration = (current.track.duration / 100) * positionInPercent;
+        perc.value = positionInPercent;
+        time.value = timecode(duration);
+      });
 
-  progresss.value.addEventListener("click", (e: MouseEvent) => {
-    const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
-    const duration = (current.track.duration / 100) * positionInPercent;
-    instance.put(
-      `me/player/seek?position_ms=${Math.round(duration)}&device_id=${store.state.player.devices.thisDevice}`
-    );
-  });
+      progresss.value.addEventListener("click", (e: MouseEvent) => {
+        const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
+        const duration = (current.track.duration / 100) * positionInPercent;
+        instance.put(
+          `me/player/seek?position_ms=${Math.round(duration)}&device_id=${store.state.player.devices.thisDevice}`
+        );
+      });
+    });
+
+    return { current, store, goPlay, goNext, goPause, perc, time, timecode, progresss };
+  },
 });
 </script>
 
 <style lang="scss" scoped>
+@import "../assets/scss/colors";
+
 @keyframes popSeek {
   from {
     opacity: 0;
@@ -115,7 +123,7 @@ onMounted(() => {
 }
 
 .player {
-  background: #1b1e26;
+  background: $bg-color;
 }
 
 .trackname {
@@ -146,7 +154,7 @@ onMounted(() => {
     padding: 5px 7px;
 
     &:hover {
-      background-color: rgba(black, 0.3);
+      background-color: $bg-color-light;
       color: white;
     }
   }
@@ -174,7 +182,7 @@ onMounted(() => {
 }
 
 .progress {
-  background: #262a36;
+  background: $bg-color-light;
   height: 10px;
   position: relative;
   cursor: pointer;
@@ -192,12 +200,12 @@ onMounted(() => {
     .time {
       position: absolute;
       bottom: calc(100% + 5px);
-      background: white;
-      color: black;
+      background: $primary-color;
+      color: rgba(white, 0.8);
       padding: 5px 10px;
       right: 0;
-      border: 1px solid #cccccc;
-      border-radius: 5px;
+      border: 1px solid $primary-color-light;
+      border-radius: 3px;
       transform: translateX(50%);
     }
   }
