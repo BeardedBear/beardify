@@ -1,32 +1,30 @@
-interface Player {
+/* eslint-disable @typescript-eslint/camelcase */
+export interface Player {
   devices: {
     thisDevice: string;
     list: Device[];
   };
   currentlyPlaying: {
-    index: number;
     track: Track;
-    item: PlaylistItem;
   };
-  playlist: PlaylistItem[];
 }
 
-interface Artist {
+export interface Artist {
   name: string;
   uri: string;
 }
 
-interface Images {
+export interface Images {
   height: number;
   url: string;
   width: number;
 }
-interface Album {
+export interface Album {
   images: Images[];
   name: string;
   uri: string;
 }
-interface TrackWindow {
+export interface TrackWindow {
   current_track: {
     artists: Artist[];
     name: string;
@@ -34,13 +32,35 @@ interface TrackWindow {
   };
 }
 
-interface Track {
+export const defaultTrack: Track = {
+  duration: 0,
+  position: 0,
+  paused: true,
+  repeatMode: 0,
+  shuffle: false,
+  trackWindow: {
+    current_track: {
+      artists: [],
+      name: "",
+      album: {
+        images: [],
+        name: "",
+        uri: ""
+      }
+    }
+  }
+};
+
+export interface Track {
   duration: number;
   position: number;
+  paused: boolean;
+  repeatMode: number;
+  shuffle: boolean;
   trackWindow: TrackWindow;
 }
 
-interface Device {
+export interface Device {
   id: string;
   is_active: boolean;
   name: string;
@@ -48,7 +68,7 @@ interface Device {
   volume_percent: number;
 }
 
-interface PlaylistItem {
+export interface PlaylistItem {
   type: string;
   label: string;
   uri?: string;

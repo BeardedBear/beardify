@@ -1,0 +1,90 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('fonts/icomoon.eot?jayr2x');
+  src:  url('fonts/icomoon.eot?jayr2x#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?jayr2x') format('truetype'),
+    url('fonts/icomoon.woff?jayr2x') format('woff'),
+    url('fonts/icomoon.svg?jayr2x#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-airplay:before {
+  content: "\e900";
+}
+.icon-fast-forward:before {
+  content: "\e901";
+}
+.icon-file-text:before {
+  content: "\e902";
+}
+.icon-folder:before {
+  content: "\e903";
+}
+.icon-headphones:before {
+  content: "\e904";
+}
+.icon-heart:before {
+  content: "\e905";
+}
+.icon-music:before {
+  content: "\e906";
+}
+.icon-play1:before {
+  content: "\e907";
+}
+.icon-repeat:before {
+  content: "\e908";
+}
+.icon-rewind:before {
+  content: "\e909";
+}
+.icon-settings:before {
+  content: "\e90a";
+}
+.icon-skip-back:before {
+  content: "\e90b";
+}
+.icon-skip-forward:before {
+  content: "\e90c";
+}
+.icon-square:before {
+  content: "\e90d";
+}
+.icon-volume:before {
+  content: "\e90e";
+}
+.icon-volume-1:before {
+  content: "\e90f";
+}
+.icon-volume-2:before {
+  content: "\e910";
+}
+.icon-volume-x:before {
+  content: "\e911";
+}
+.icon-skip-forward1:before {
+  content: "\e912";
+}
+.icon-pause:before {
+  content: "\e913";
+}
+.icon-play:before {
+  content: "\e914";
+}

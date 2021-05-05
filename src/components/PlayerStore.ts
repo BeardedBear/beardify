@@ -1,53 +1,29 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { playlist } from "@/fake-playlist";
 import { ActionTree, MutationTree } from "vuex";
 import { instance } from "@/api";
 import { AxiosResponse } from "axios";
-
-const defaultTrack: Track = {
-  duration: 0,
-  position: 0,
-  trackWindow: {
-    current_track: {
-      artists: [],
-      name: "",
-      album: {
-        images: [],
-        name: "",
-        uri: ""
-      }
-    }
-  }
-};
+import { Player, defaultTrack, Device, Track } from "@/@types/Player";
+import { RootState } from "@/@types/rootStore";
 
 const state: Player = {
   devices: {
     thisDevice: "",
     list: []
   },
-  playlist: playlist,
   currentlyPlaying: {
-    index: 0,
-    track: defaultTrack,
-    item: playlist[0]
+    track: defaultTrack
   }
 };
 
 // MUTATIONS
 
 export enum Mutations {
-  NEXT = "NEXT",
   GET_DEVICE_LIST = "GET_DEVICE_LIST",
   SET_THIS_DEVICE = "SET_THIS_DEVICE",
   PLAYER_STATE_CHANGED = "PLAYER_STATE_CHANGED"
 }
 
 const mutations: MutationTree<Player> = {
-  [Mutations.NEXT](state, id: number): void {
-    state.currentlyPlaying.index = id;
-    state.currentlyPlaying.item = playlist[id];
-  },
-
   [Mutations.GET_DEVICE_LIST](state, data: Device[]): void {
     state.devices.list = data;
   },
@@ -59,6 +35,9 @@ const mutations: MutationTree<Player> = {
   [Mutations.PLAYER_STATE_CHANGED](state, customEvent: Track): void {
     state.currentlyPlaying.track.duration = customEvent.duration;
     state.currentlyPlaying.track.position = Math.round(customEvent.position);
+    state.currentlyPlaying.track.paused = customEvent.paused;
+    state.currentlyPlaying.track.repeatMode = customEvent.repeatMode;
+    state.currentlyPlaying.track.shuffle = customEvent.shuffle;
     state.currentlyPlaying.track.trackWindow = customEvent.trackWindow;
   }
 };
@@ -66,27 +45,15 @@ const mutations: MutationTree<Player> = {
 // ACTIONS
 
 export enum PlayerActions {
-  next = "next",
-  getDeviceList = "getDeviceList",
-  setThisDevice = "setThisDevice"
+  getDeviceList = "getDeviceList"
 }
 
 const actions: ActionTree<Player, RootState> = {
-  [PlayerActions.next](store, id: number) {
-    store.commit(Mutations.NEXT, id);
-  },
-
   [PlayerActions.getDeviceList](store) {
     instance
       .get<Device[]>("me/player/devices")
       .then((e: AxiosResponse) => store.commit(Mutations.GET_DEVICE_LIST, e.data.devices))
-      .then(() => {
-        instance.put("me/player", { device_ids: [store.state.devices.thisDevice] });
-      });
-  },
-
-  [PlayerActions.setThisDevice](store, thisDevice: string) {
-    store.commit(Mutations.SET_THIS_DEVICE, thisDevice);
+      .then(() => instance.put("me/player", { device_ids: [store.state.devices.thisDevice] }));
   }
 };
 

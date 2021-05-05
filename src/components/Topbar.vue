@@ -1,6 +1,7 @@
 <template>
   <div class="topbar">
     <div id="nav">
+      <img src="/img/logo.svg" alt="" />
       <router-link to="/">Home</router-link>
       <router-link to="/about">About</router-link>
     </div>
@@ -14,11 +15,13 @@
       </span>
     </div>
     <div>
-      <button @click="refresh()">refresh</button>
       <div v-if="store.state.auth.me.displayName === ''">
         <a :href="connectUrl">LOGME</a> - {{ store.state.auth.me.displayName }}
       </div>
-      <div v-else><a :href="connectUrl">LOGME</a> - {{ store.state.auth.me.displayName }}</div>
+      <div v-else>
+        <button @click="refresh()">refresh</button><a :href="connectUrl">LOGME</a> -
+        {{ store.state.auth.me.displayName }}
+      </div>
     </div>
   </div>
 </template>
@@ -29,6 +32,7 @@ import { connectUrl } from "@/api";
 import { useStore } from "vuex";
 import { PlayerActions } from "@/components/PlayerStore";
 import { AuthActions } from "@/views/AuthStore";
+import { RootState } from "@/@types/rootStore";
 
 export default defineComponent({
   name: "Topbar",
@@ -50,11 +54,13 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   background: #1b1e26;
-  padding: 10px;
+  padding: 15px;
   align-items: center;
 }
 
 #nav {
+  display: flex;
+  gap: 15px;
   a {
     font-weight: bold;
     color: #2c3e50;

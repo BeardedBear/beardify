@@ -2,6 +2,7 @@ import { ActionContext } from "vuex";
 import { api } from "@/api";
 import formurlencoded from "form-urlencoded";
 import axios from "axios";
+import { RootState } from "@/@types/rootStore";
 
 const state: Auth = {
   auth: {

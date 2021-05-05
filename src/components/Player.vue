@@ -2,9 +2,14 @@
   <div class="player">
     <div>
       <div class="meta">
-        <div>
-          <button @click="goPlay">PLAY</button>
-          <button @click="goPause">PAUSE</button>
+        <div class="controls">
+          <div>
+            <button class="controls__btn" v-if="current.track.paused" @click="goPlay()">
+              <i class="icon-play"></i>
+            </button>
+            <button class="controls__btn" v-else @click="goPause()"><i class="icon-pause"></i></button>
+            <button class="controls__btn" @click="goNext()"><i class="icon-skip-forward"></i></button>
+          </div>
           <div>{{ timecode(current.track.position) }} / {{ timecode(current.track.duration) }}</div>
           <div></div>
         </div>
@@ -41,33 +46,40 @@ import { useStore } from "vuex";
 import { instance } from "@/api";
 import { Mutations } from "@/components/PlayerStore";
 import { timecode } from "@/helpers/date";
+import { RootState } from "@/@types/rootStore";
 
 /* eslint-disable @typescript-eslint/camelcase */
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
     const current = useStore<RootState>().state.player.currentlyPlaying;
-    const playlist = useStore<RootState>().state.player.playlist;
     const progresss = ref();
     const perc = ref();
     const time = ref();
 
-    const goPlay = () => {
+    function goPlay() {
       instance.put("me/player/play", {
         device_id: store.state.player.devices.thisDevice
       });
-    };
+    }
 
-    const goPause = () => {
+    function goNext() {
+      instance.post("me/player/next");
+    }
+
+    function goPause() {
       instance.put("me/player/pause", {
         device_id: store.state.player.devices.thisDevice
       });
-    };
+    }
 
     addEventListener("playerStateChanged", ((detail: CustomEvent) => {
       store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, {
         duration: detail.detail.duration,
         position: detail.detail.position,
+        paused: detail.detail.paused,
+        repeatMode: detail.detail.repeat_mode,
+        shuffle: detail.detail.shuffle,
         trackWindow: detail.detail.trackWindow
       });
     }) as EventListener);
@@ -89,9 +101,7 @@ export default defineComponent({
       });
     });
 
-    // addEventListener("refreshToken", (() => store.dispatch(`auth/${AuthActions.refresh}`)) as EventListener);
-
-    return { store, current, playlist, goPlay, goPause, progresss, perc, time, timecode };
+    return { store, current, goPlay, goPause, goNext, progresss, perc, time, timecode };
   }
 });
 </script>
@@ -122,15 +132,37 @@ export default defineComponent({
   font-style: italic;
 }
 
+.controls {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+
+  &__btn {
+    border: 0;
+    background-color: transparent;
+    font-size: 1.8rem;
+    color: currentColor;
+    border-radius: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+    padding: 5px 7px;
+
+    &:hover {
+      background-color: rgba(black, 0.3);
+      color: white;
+    }
+  }
+}
 .options {
   text-align: right;
 }
 .meta {
+  $sidewidth: 250px;
   display: grid;
-  grid-template-columns: 200px auto 200px;
+  grid-template-columns: $sidewidth auto $sidewidth;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 15px 25px;
 
   &__what {
     display: flex;
@@ -178,7 +210,7 @@ export default defineComponent({
     bottom: 0;
     left: 0;
     background: #6243b0;
-    // transition: width linear 1s;
+    transition: width linear 0.5s;
   }
 
   &:hover {

@@ -10,6 +10,7 @@
 </template>
 
 <script lang="ts">
+import { RootState } from "@/@types/rootStore";
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 

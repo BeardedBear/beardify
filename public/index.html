@@ -11,6 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link href="/icons/style.css" rel="stylesheet" />
     <title>Beardify</title>
   </head>
   <body>
@@ -39,7 +40,14 @@
             player?.getCurrentState().then(state => {
               window.dispatchEvent(
                 new CustomEvent("playerStateChanged", {
-                  detail: { duration: state.duration, position: state.position, trackWindow: state.track_window }
+                  detail: {
+                    duration: state.duration,
+                    position: state.position,
+                    paused: state.paused,
+                    repeatMode: state.repeat_mode,
+                    shuffle: state.shuffle,
+                    trackWindow: state.track_window
+                  }
                 })
               );
             });
