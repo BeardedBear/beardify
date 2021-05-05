@@ -4,6 +4,7 @@
       <b>accessToken</b> :{{ store.state.auth.auth.accessToken }}<br /><br />
       <b>refreshToken</b> :{{ store.state.auth.auth.refreshToken }}<br /><br />
       <b>code</b> :{{ store.state.auth.auth.code }}<br /><br />
+      <b>code</b> :{{ store.state.player.devices }}<br /><br />
     </div>
   </div>
 </template>

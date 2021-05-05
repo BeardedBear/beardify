@@ -2,11 +2,10 @@
   <Topbar />
   <router-view />
   <Player />
-  <vue-plyr ref="plyr"><audio playsinline></audio></vue-plyr>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, provide } from "vue";
+import { defineComponent, onMounted } from "vue";
 import { useStore } from "vuex";
 import { connectUrl } from "@/api";
 import Topbar from "@/components/Topbar.vue";
@@ -17,13 +16,8 @@ export default defineComponent({
   components: { Topbar, Player },
   setup() {
     const store = useStore<RootState>();
-    const plyr = ref();
-    const playlist = useStore<RootState>().state.player.playlist;
-    provide("plyr", plyr);
 
     onMounted(() => {
-      plyr.value.player.source = playlist[0].data;
-
       window.addEventListener("noAccess", (() => {
         window.location.href = connectUrl;
       }) as EventListener);
@@ -33,8 +27,6 @@ export default defineComponent({
         store.dispatch(`player/${PlayerActions.getDeviceList}`);
       }) as EventListener);
     });
-
-    return { plyr };
   }
 });
 </script>
@@ -42,12 +34,10 @@ export default defineComponent({
 <style lang="scss">
 @import "../node_modules/normalize.css/normalize.css";
 
-.plyr--audio {
-  display: none !important;
-}
-
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Quicksand", Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  line-height: 1.4;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #c5ccd3;

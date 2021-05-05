@@ -1,11 +1,5 @@
 <template>
   <div class="player">
-    <!-- <button @click="goNext((current.index += 1))">NEXT</button> -->
-
-    <!-- <div>
-      {{ (current.track.position / current.track.duration) * 100 }}
-    </div> -->
-
     <div>
       <div class="meta">
         <div>
@@ -29,10 +23,6 @@
         <div>coucou</div>
       </div>
 
-      <!-- <div v-for="(cover, _, index) in current.track.trackWindow.current_track.album.images" :key="index">
-        <img :src="cover.url" alt="" />
-      </div> -->
-
       <div ref="progresss" class="progress">
         <div class="bar" :style="`width:${(current.track.position / current.track.duration) * 100}%`"></div>
         <div class="seek" :style="`width:${perc}%`">
@@ -44,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, inject, watchEffect } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import { instance } from "@/api";
 import { Mutations } from "@/components/PlayerStore";
@@ -57,7 +47,6 @@ export default defineComponent({
     const current = useStore<RootState>().state.player.currentlyPlaying;
     const playlist = useStore<RootState>().state.player.playlist;
     const progresss = ref();
-    const plyr = inject("plyr", ref(null));
     const perc = ref();
     const time = ref();
 
@@ -73,69 +62,32 @@ export default defineComponent({
       });
     };
 
-    // const goNext = (id: number) => {
-    //   store.dispatch(`player/${PlayerActions.next}`, id).then(() => {
-    //     store.dispatch(`player/${PlayerActions.getDeviceList}`);
-    //     if (current.index < playlist.length) {
-    //       if (current.item.type === "speak") {
-    //         instance.put("me/player/pause", {
-    //           device_id: store.state.player.devices.thisDevice
-    //         });
-    //         plyr.value.player.source = playlist[current.index].data;
-    //         plyr.value.player.play();
-    //       } else {
-    //         plyr.value.player.stop();
-    //         instance.put(`me/player/play?device_id=${store.state.player.devices.thisDevice}`, {
-    //           uris: [current.item.uri],
-    //           position_ms: 1
-    //         });
-    //       }
-    //     }
-    //   });
-    // };
+    addEventListener("playerStateChanged", ((detail: CustomEvent) => {
+      store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, {
+        duration: detail.detail.duration,
+        position: detail.detail.position,
+        trackWindow: detail.detail.trackWindow
+      });
+    }) as EventListener);
 
-    window.addEventListener(
-      "playerStateChanged",
-      ((detail: CustomEvent) => {
-        // if (current.index < playlist.length) goNext();
-        store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, {
-          duration: detail.detail.duration,
-          position: detail.detail.position,
-          trackWindow: detail.detail.trackWindow
-        });
-      }) as EventListener
-      // { once: true }
-    );
+    onMounted(() => {
+      progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
+        const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
+        const duration = (current.track.duration / 100) * positionInPercent;
+        perc.value = positionInPercent;
+        time.value = timecode(duration);
+      });
 
-    watchEffect(() => {
-      if (plyr.value) {
-        // plyr.value.player.on("timeupdate", (e: CustomEvent) => {
-        //   store.dispatch(`player/${PlayerActions.playerStateChanged}`, {
-        //     duration: e.detail.plyr.duration * 1000,
-        //     position: e.detail.plyr.currentTime * 1000
-        //   });
-        // });
-
-        // plyr.value.player.on("ended", () => {
-        //   if (current.index < playlist.length) goNext((current.index += 1));
-        // });
-
-        progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
-          const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
-          const duration = (current.track.duration / 100) * positionInPercent;
-          perc.value = positionInPercent;
-          time.value = timecode(duration);
-        });
-
-        progresss.value.addEventListener("click", (e: MouseEvent) => {
-          const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
-          const duration = (current.track.duration / 100) * positionInPercent;
-          instance.put(
-            `me/player/seek?position_ms=${Math.round(duration)}&device_id=${store.state.player.devices.thisDevice}`
-          );
-        });
-      }
+      progresss.value.addEventListener("click", (e: MouseEvent) => {
+        const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
+        const duration = (current.track.duration / 100) * positionInPercent;
+        instance.put(
+          `me/player/seek?position_ms=${Math.round(duration)}&device_id=${store.state.player.devices.thisDevice}`
+        );
+      });
     });
+
+    // addEventListener("refreshToken", (() => store.dispatch(`auth/${AuthActions.refresh}`)) as EventListener);
 
     return { store, current, playlist, goPlay, goPause, progresss, perc, time, timecode };
   }
@@ -208,6 +160,7 @@ export default defineComponent({
     bottom: 0;
     left: 0;
     background: #6243b0;
+    // transition: width linear 1s;
   }
 
   &:hover {

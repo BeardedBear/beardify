@@ -30,30 +30,23 @@
             getOAuthToken: cb => cb(JSON.parse(localStorage.getItem("beardify")).auth.auth.accessToken),
             volume: 0.5
           });
-          player.connect();
 
+          player.connect();
           player.on("authentication_error", () => window.dispatchEvent(new CustomEvent("noAccess")));
 
-          window.setInterval(() => {
-            player.getCurrentState().then(state => {
-              if (state) {
-                if (state.paused === false) {
-                  window.dispatchEvent(
-                    new CustomEvent("playerStateChanged", {
-                      detail: { duration: state.duration, position: state.position, trackWindow: state.track_window }
-                    })
-                  );
-                }
-              }
+          // Update current player state
+          setInterval(() => {
+            player?.getCurrentState().then(state => {
+              window.dispatchEvent(
+                new CustomEvent("playerStateChanged", {
+                  detail: { duration: state.duration, position: state.position, trackWindow: state.track_window }
+                })
+              );
             });
-          }, 250);
+          }, 500);
 
           player.addListener("player_state_changed", event => {
-            window.dispatchEvent(
-              new CustomEvent("playerStateChanged", {
-                detail: { duration: event.duration, position: event.position, trackWindow: event.track_window }
-              })
-            );
+            window.dispatchEvent(new CustomEvent("refreshToken"));
           });
 
           player.addListener("ready", ({ device_id }) => {

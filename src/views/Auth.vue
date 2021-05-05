@@ -16,10 +16,7 @@ export default defineComponent({
 
     onMounted(() => {
       store.dispatch(`auth/${AuthActions.auth}`, props.query).then(() => router.push("/"));
-
-      setInterval(() => {
-        store.dispatch(`auth/${AuthActions.refresh}`);
-      }, 1000000);
+      setInterval(() => store.dispatch(`auth/${AuthActions.refresh}`), 300000);
     });
 
     return { store };
