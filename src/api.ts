@@ -10,7 +10,7 @@ export const api = {
   clientId: "29a0936f4c6c46399f33f6f60a0855e8",
   clientSecret: "7d50fed5ac154883ae4d5eec1138a3f2",
   redirectUri:
-    process.env.NODE_ENV !== "production" ? "http://localhost:3000/auth" : "https://orchestre.netlify.app/auth",
+    process.env.NODE_ENV !== "production" ? "http://localhost:3000/auth" : "https://beardify.netlify.app/auth",
   codeVerifier: cv,
   codeChallenge: cvHasedBase64url,
   scopes:
