@@ -1177,11 +1177,6 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
-"@types/form-urlencoded@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@types/form-urlencoded/-/form-urlencoded-2.0.1.tgz#5c7789aca2681564116c3d278359232527e14ba1"
-  integrity sha512-Kz3LwezuNvsQF8ZcswMv4b5ZhKmjTkH2Rxle6l/520Npvaxho6b4HN9lStp6HhGrZsL/rwJHpWK9vM1RA7uZbw==
-
 "@types/glob@^7.1.1":
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-7.1.3.tgz#e6ba80f36b7daad2c685acd9266382e68985c183"
@@ -1268,11 +1263,6 @@
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@types/source-list-map/-/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
   integrity sha512-K5K+yml8LTo9bWJI/rECfIPrGgxdpeNbj+d53lwN4QjW1MCwlkhUms+gtdzigTeUyBr09+u8BwOIY3MXvHdcsA==
-
-"@types/spotify-web-playback-sdk@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@types/spotify-web-playback-sdk/-/spotify-web-playback-sdk-0.1.9.tgz#14cfc9f98e5704bdfb4bd3d13461942947832b8a"
-  integrity sha512-D1L898J4TkIJIMng5oWnqiFXQDDmMr/Ay6H1MW6Ar09OCetyEbyEnh3iU2NoiVhe645RMJq4b3NobFCIgih+lw==
 
 "@types/tapable@*":
   version "1.0.6"
@@ -4831,10 +4821,10 @@ form-data@~2.3.2:
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
 
-form-urlencoded@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/form-urlencoded/-/form-urlencoded-4.2.1.tgz#264d0b4524a87332e94f606237493fb5d26dcd84"
-  integrity sha512-0eFJroOH2qaqc/630d4YZpmsyKmh6sfq/1z3YMXvFab0O6teGnf8640C7gufikwbQJFaC6nPlG4d/GiYVN+Dcw==
+form-urlencoded@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/form-urlencoded/-/form-urlencoded-6.0.3.tgz#98f79ba29366b129751c5fe8b5b00f4d2970f18f"
+  integrity sha512-WoIMOwRlxTmzzRI3tnocMi4FEDYshbSnbAkbExh2qELEaJaPHlcQC17Ce5TCTmR5xnGkvbe9m0Bq8nI2d6K5vA==
 
 format@^0.2.0:
   version "0.2.2"
