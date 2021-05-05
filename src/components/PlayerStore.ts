@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { ActionTree, MutationTree } from "vuex";
 import { instance } from "@/api";
 import { AxiosResponse } from "axios";

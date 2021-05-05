@@ -26,18 +26,22 @@ export default defineComponent({
     const store = useStore<RootState>();
 
     onMounted(() => {
-      window.addEventListener("noAccess", (() => {
+      window.addEventListener("noAccess", () => {
         window.location.href = connectUrl;
-      }) as EventListener);
+      });
 
       window.onfocus = () => {
         store.commit(`player/${Mutations.SET_THIS_DEVICE}`, store.state.player.devices.thisDevice);
       };
 
+      // interface Test {
+      //   thisDevice: string;
+      // }
+
       window.addEventListener("initdevice", ((customEvent: CustomEvent) => {
         store.commit(`player/${Mutations.SET_THIS_DEVICE}`, customEvent.detail.thisDevice);
         store.dispatch(`player/${PlayerActions.getDeviceList}`);
-      }) as EventListener);
+      }) as { (evt: Event): void });
     });
   }
 });

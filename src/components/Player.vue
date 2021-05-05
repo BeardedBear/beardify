@@ -48,7 +48,6 @@ import { Mutations } from "@/components/PlayerStore";
 import { timecode } from "@/helpers/date";
 import { RootState } from "@/@types/rootStore";
 
-/* eslint-disable @typescript-eslint/camelcase */
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
@@ -82,7 +81,7 @@ export default defineComponent({
         shuffle: detail.detail.shuffle,
         trackWindow: detail.detail.trackWindow
       });
-    }) as EventListener);
+    }) as { (evt: Event): void });
 
     onMounted(() => {
       progresss.value.addEventListener("mousemove", (e: MouseEvent) => {

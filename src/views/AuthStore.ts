@@ -49,7 +49,6 @@ const actions = {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: formurlencoded({
-        /* eslint-disable @typescript-eslint/camelcase */
         grant_type: "refresh_token",
         refresh_token: store.state.auth.refreshToken,
         client_id: api.clientId,
