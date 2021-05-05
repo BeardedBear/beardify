@@ -10,7 +10,7 @@ export const api = {
   clientId: "29a0936f4c6c46399f33f6f60a0855e8",
   clientSecret: "7d50fed5ac154883ae4d5eec1138a3f2",
   redirectUri:
-    process.env.NODE_ENV !== "production" ? "http://localhost:3000/auth" : "https://beardify.netlify.app/auth",
+    process.env.NODE_ENV !== "production" ? "http://localhost:3000/auth" : "https%2F%2Fbeardify.netlify.app%2Fauth",
   codeVerifier: cv,
   codeChallenge: cvHasedBase64url,
   scopes:
@@ -34,4 +34,4 @@ export const instanceAuth = axios.create({
   },
 });
 
-export const connectUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${api.codeChallenge}`;
+export const connectUrl = `https://accounts.spotify.com/fr/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${api.codeChallenge}`;
