@@ -44,7 +44,6 @@ export enum Mutations {
 
 const mutations: MutationTree<Player> = {
   [Mutations.NEXT](state, id: number): void {
-    // const inc = (state.currentlyPlaying.index += 1);
     state.currentlyPlaying.index = id;
     state.currentlyPlaying.item = playlist[id];
   },
@@ -58,8 +57,6 @@ const mutations: MutationTree<Player> = {
   },
 
   [Mutations.PLAYER_STATE_CHANGED](state, customEvent: Track): void {
-    console.log("customEvent", customEvent.trackWindow);
-
     state.currentlyPlaying.track.duration = customEvent.duration;
     state.currentlyPlaying.track.position = Math.round(customEvent.position);
     state.currentlyPlaying.track.trackWindow = customEvent.trackWindow;

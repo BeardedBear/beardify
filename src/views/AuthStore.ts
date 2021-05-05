@@ -59,10 +59,6 @@ const actions = {
     if (request.ok) {
       const json = await request.json();
 
-      // instance.get<Device[]>("me/player/devices");
-      // .then((e: AxiosResponse) => store.commit(Mutations.GET_DEVICE_LIST, e.data.devices));
-      // console.log(store.state.player.devices.thisDevice);
-
       store.commit(Mutations.AUTH, {
         accessToken: json.access_token,
         refreshToken: json.refresh_token
