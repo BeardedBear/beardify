@@ -14,8 +14,8 @@
     "form-urlencoded": "^4.2.1",
     "normalize.css": "^8.0.1",
     "vue": "^3.0.11",
-    "vue-router": "^4.0.0-rc.6",
-    "vuex": "^4.0.0-rc.2",
+    "vue-router": "^4.0.6",
+    "vuex": "^4.0.0",
     "vuex-persistedstate": "^4.0.0-beta.1"
   },
   "devDependencies": {
