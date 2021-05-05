@@ -14,13 +14,15 @@
           <div>
             <div>
               <span v-for="(artist, _, index) in current.track.trackWindow.current_track.artists" :key="index">
-                {{ artist.name }}, </span
-              >- {{ current.track.trackWindow.current_track.name }}
+                <span class="artistname">{{ artist.name }}</span>
+                <span v-if="current.track.trackWindow.current_track.artists.length === index">,</span>
+              </span>
+              · <span class="trackname">{{ current.track.trackWindow.current_track.name }}</span>
             </div>
-            <div>{{ current.track.trackWindow.current_track.album.name }}</div>
+            <div class="album">{{ current.track.trackWindow.current_track.album.name }}</div>
           </div>
         </div>
-        <div>coucou</div>
+        <div class="options">coucou</div>
       </div>
 
       <div ref="progresss" class="progress">
@@ -108,8 +110,24 @@ export default defineComponent({
   background: #1b1e26;
 }
 
+.trackname {
+  font-style: italic;
+}
+
+.artistname {
+  font-weight: 700;
+}
+.album {
+  opacity: 0.5;
+  font-style: italic;
+}
+
+.options {
+  text-align: right;
+}
 .meta {
-  display: flex;
+  display: grid;
+  grid-template-columns: 200px auto 200px;
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
