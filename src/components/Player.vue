@@ -7,22 +7,27 @@
             <button class="controls__btn" v-if="current.track.paused" @click="goPlay()">
               <i class="icon-play"></i>
             </button>
-            <button class="controls__btn" v-else @click="goPause()"><i class="icon-pause"></i></button>
-            <button class="controls__btn" @click="goNext()"><i class="icon-skip-forward"></i></button>
+            <button class="controls__btn" v-else @click="goPause()">
+              <i class="icon-pause"></i>
+            </button>
+            <button class="controls__btn" @click="goNext()">
+              <i class="icon-skip-forward"></i>
+            </button>
           </div>
           <div>{{ timecode(current.track.position) }} / {{ timecode(current.track.duration) }}</div>
           <div></div>
         </div>
 
         <div class="meta__what">
-          <img :src="current.track.trackWindow.current_track.album.images[1].url" alt="" />
+          <img :src="current.track.trackWindow.current_track.album.images[1].url" />
           <div>
             <div>
               <span v-for="(artist, _, index) in current.track.trackWindow.current_track.artists" :key="index">
                 <span class="artistname">{{ artist.name }}</span>
                 <span v-if="current.track.trackWindow.current_track.artists.length === index">,</span>
               </span>
-              · <span class="trackname">{{ current.track.trackWindow.current_track.name }}</span>
+              ·
+              <span class="trackname">{{ current.track.trackWindow.current_track.name }}</span>
             </div>
             <div class="album">{{ current.track.trackWindow.current_track.album.name }}</div>
           </div>
@@ -40,68 +45,62 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
-import { instance } from "@/api";
-import { Mutations } from "@/components/PlayerStore";
-import { timecode } from "@/helpers/date";
-import { RootState } from "@/@types/rootStore";
+import { instance } from "../api";
+import { Mutations } from "../components/PlayerStore";
+import { timecode } from "../helpers/date";
+import type { RootState } from "../@types/rootStore";
 
-export default defineComponent({
-  setup() {
-    const store = useStore<RootState>();
-    const current = useStore<RootState>().state.player.currentlyPlaying;
-    const progresss = ref();
-    const perc = ref();
-    const time = ref();
+const store = useStore<RootState>();
+const current = useStore<RootState>().state.player.currentlyPlaying;
+const progresss = ref();
+const perc = ref();
+const time = ref();
 
-    function goPlay() {
-      instance.put("me/player/play", {
-        device_id: store.state.player.devices.thisDevice
-      });
-    }
+function goPlay() {
+  instance.put("me/player/play", {
+    device_id: store.state.player.devices.thisDevice,
+  });
+}
 
-    function goNext() {
-      instance.post("me/player/next");
-    }
+function goNext() {
+  instance.post("me/player/next");
+}
 
-    function goPause() {
-      instance.put("me/player/pause", {
-        device_id: store.state.player.devices.thisDevice
-      });
-    }
+function goPause() {
+  instance.put("me/player/pause", {
+    device_id: store.state.player.devices.thisDevice,
+  });
+}
 
-    addEventListener("playerStateChanged", ((detail: CustomEvent) => {
-      store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, {
-        duration: detail.detail.duration,
-        position: detail.detail.position,
-        paused: detail.detail.paused,
-        repeatMode: detail.detail.repeat_mode,
-        shuffle: detail.detail.shuffle,
-        trackWindow: detail.detail.trackWindow
-      });
-    }) as { (evt: Event): void });
+addEventListener("playerStateChanged", ((detail: CustomEvent) => {
+  store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, {
+    duration: detail.detail.duration,
+    position: detail.detail.position,
+    paused: detail.detail.paused,
+    repeatMode: detail.detail.repeat_mode,
+    shuffle: detail.detail.shuffle,
+    trackWindow: detail.detail.trackWindow,
+  });
+}) as { (evt: Event): void });
 
-    onMounted(() => {
-      progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
-        const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
-        const duration = (current.track.duration / 100) * positionInPercent;
-        perc.value = positionInPercent;
-        time.value = timecode(duration);
-      });
+onMounted(() => {
+  progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
+    const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
+    const duration = (current.track.duration / 100) * positionInPercent;
+    perc.value = positionInPercent;
+    time.value = timecode(duration);
+  });
 
-      progresss.value.addEventListener("click", (e: MouseEvent) => {
-        const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
-        const duration = (current.track.duration / 100) * positionInPercent;
-        instance.put(
-          `me/player/seek?position_ms=${Math.round(duration)}&device_id=${store.state.player.devices.thisDevice}`
-        );
-      });
-    });
-
-    return { store, current, goPlay, goPause, goNext, progresss, perc, time, timecode };
-  }
+  progresss.value.addEventListener("click", (e: MouseEvent) => {
+    const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
+    const duration = (current.track.duration / 100) * positionInPercent;
+    instance.put(
+      `me/player/seek?position_ms=${Math.round(duration)}&device_id=${store.state.player.devices.thisDevice}`
+    );
+  });
 });
 </script>
 

@@ -1,8 +1,8 @@
 import { ActionContext } from "vuex";
-import { api } from "@/api";
+import { api } from "../api";
 import formurlencoded from "form-urlencoded";
 import axios from "axios";
-import { RootState } from "@/@types/rootStore";
+import { RootState } from "../@types/rootStore";
 
 const state: Auth = {
   auth: {
@@ -10,18 +10,18 @@ const state: Auth = {
     refreshToken: "",
     code: "",
     codeVerifier: "",
-    codeChallenge: ""
+    codeChallenge: "",
   },
   me: {
-    displayName: ""
-  }
+    displayName: "",
+  },
 };
 
 // MUTATIONS
 
 export enum Mutations {
   AUTH = "AUTH",
-  GET_ME = "GET_ME"
+  GET_ME = "GET_ME",
 }
 
 const mutations = {
@@ -33,18 +33,18 @@ const mutations = {
 
   [Mutations.GET_ME](state: Auth, data: string): void {
     state.me.displayName = data;
-  }
+  },
 };
 
 // ACTIONS
 
 export enum AuthActions {
   auth = "auth",
-  refresh = "refresh"
+  refresh = "refresh",
 }
 
 const actions = {
-  async [AuthActions.refresh](store: ActionContext<Auth, RootState>) {
+  async [AuthActions.refresh](store: ActionContext<Auth, RootState>): Promise<void> {
     const request = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -52,8 +52,8 @@ const actions = {
         grant_type: "refresh_token",
         refresh_token: store.state.auth.refreshToken,
         client_id: api.clientId,
-        client_secret: api.clientSecret
-      })
+        client_secret: api.clientSecret,
+      }),
     });
 
     if (request.ok) {
@@ -61,14 +61,14 @@ const actions = {
 
       store.commit(Mutations.AUTH, {
         accessToken: json.access_token,
-        refreshToken: json.refresh_token
+        refreshToken: json.refresh_token,
       });
     } else {
       alert("HTTP-Error: " + request.status);
     }
   },
 
-  async [AuthActions.auth](store: ActionContext<Auth, RootState>, query: string) {
+  async [AuthActions.auth](store: ActionContext<Auth, RootState>, query: string): Promise<void> {
     const response = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -77,8 +77,8 @@ const actions = {
         code: query,
         redirect_uri: api.redirectUri,
         client_id: api.clientId,
-        code_verifier: api.codeVerifier
-      })
+        code_verifier: api.codeVerifier,
+      }),
     });
 
     if (response.ok) {
@@ -88,25 +88,25 @@ const actions = {
         .get("https://api.spotify.com/v1/me", {
           headers: {
             Authorization: `Bearer ${json.access_token}`,
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         })
-        .then(p => store.commit("GET_ME", p.data.display_name));
+        .then((p) => store.commit("GET_ME", p.data.display_name));
 
       store.commit(Mutations.AUTH, {
         accessToken: json.access_token,
         refreshToken: json.refresh_token,
-        code: query
+        code: query,
       });
     } else {
       alert("HTTP-Error: " + response.status);
     }
-  }
+  },
 };
 
 export default {
   actions,
   mutations,
   namespaced: true,
-  state
+  state,
 };

@@ -1,17 +1,17 @@
 import { ActionTree, MutationTree } from "vuex";
-import { instance } from "@/api";
+import { instance } from "../api";
 import { AxiosResponse } from "axios";
-import { Player, defaultTrack, Device, Track } from "@/@types/Player";
-import { RootState } from "@/@types/rootStore";
+import { Player, defaultTrack, Device, Track } from "../@types/Player";
+import { RootState } from "../@types/rootStore";
 
 const state: Player = {
   devices: {
     thisDevice: "",
-    list: []
+    list: [],
   },
   currentlyPlaying: {
-    track: defaultTrack
-  }
+    track: defaultTrack,
+  },
 };
 
 // MUTATIONS
@@ -19,7 +19,7 @@ const state: Player = {
 export enum Mutations {
   GET_DEVICE_LIST = "GET_DEVICE_LIST",
   SET_THIS_DEVICE = "SET_THIS_DEVICE",
-  PLAYER_STATE_CHANGED = "PLAYER_STATE_CHANGED"
+  PLAYER_STATE_CHANGED = "PLAYER_STATE_CHANGED",
 }
 
 const mutations: MutationTree<Player> = {
@@ -38,13 +38,13 @@ const mutations: MutationTree<Player> = {
     state.currentlyPlaying.track.repeatMode = customEvent.repeatMode;
     state.currentlyPlaying.track.shuffle = customEvent.shuffle;
     state.currentlyPlaying.track.trackWindow = customEvent.trackWindow;
-  }
+  },
 };
 
 // ACTIONS
 
 export enum PlayerActions {
-  getDeviceList = "getDeviceList"
+  getDeviceList = "getDeviceList",
 }
 
 const actions: ActionTree<Player, RootState> = {
@@ -53,12 +53,12 @@ const actions: ActionTree<Player, RootState> = {
       .get<Device[]>("me/player/devices")
       .then((e: AxiosResponse) => store.commit(Mutations.GET_DEVICE_LIST, e.data.devices))
       .then(() => instance.put("me/player", { device_ids: [store.state.devices.thisDevice] }));
-  }
+  },
 };
 
 export default {
   actions,
   mutations,
   namespaced: true,
-  state
+  state,
 };

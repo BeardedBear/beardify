@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <!-- <link rel="icon" href="<%= BASE_URL %>favicon.ico" /> -->
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
@@ -21,6 +21,7 @@
       </strong>
     </noscript>
     <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
     <script>
       const ls = localStorage["beardify"];
 
@@ -28,8 +29,8 @@
         if (ls) {
           const player = new Spotify.Player({
             name: "Beardify3",
-            getOAuthToken: cb => cb(JSON.parse(localStorage.getItem("beardify")).auth.auth.accessToken),
-            volume: 0.5
+            getOAuthToken: (cb) => cb(JSON.parse(localStorage.getItem("beardify")).auth.auth.accessToken),
+            volume: 0.5,
           });
 
           player.connect();
@@ -37,7 +38,7 @@
 
           // Update current player state
           setInterval(() => {
-            player?.getCurrentState().then(state => {
+            player?.getCurrentState().then((state) => {
               window.dispatchEvent(
                 new CustomEvent("playerStateChanged", {
                   detail: {
@@ -46,21 +47,21 @@
                     paused: state.paused,
                     repeatMode: state.repeat_mode,
                     shuffle: state.shuffle,
-                    trackWindow: state.track_window
-                  }
+                    trackWindow: state.track_window,
+                  },
                 })
               );
             });
           }, 500);
 
-          player.addListener("player_state_changed", event => {
+          player.addListener("player_state_changed", (event) => {
             window.dispatchEvent(new CustomEvent("refreshToken"));
           });
 
           player.addListener("ready", ({ device_id }) => {
             window.dispatchEvent(
               new CustomEvent("initdevice", {
-                detail: { thisDevice: device_id }
+                detail: { thisDevice: device_id },
               })
             );
           });

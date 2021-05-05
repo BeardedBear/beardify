@@ -14,10 +14,10 @@
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
 import { useStore } from "vuex";
-import { connectUrl } from "@/api";
-import Topbar from "@/components/Topbar.vue";
-import { PlayerActions, Mutations } from "@/components/PlayerStore";
-import Player from "@/components/Player.vue";
+import { connectUrl } from "./api";
+import Topbar from "./components/Topbar.vue";
+import { PlayerActions, Mutations } from "./components/PlayerStore";
+import Player from "./components/Player.vue";
 import { RootState } from "./@types/rootStore";
 
 export default defineComponent({
@@ -43,7 +43,7 @@ export default defineComponent({
         store.dispatch(`player/${PlayerActions.getDeviceList}`);
       }) as { (evt: Event): void });
     });
-  }
+  },
 });
 </script>
 

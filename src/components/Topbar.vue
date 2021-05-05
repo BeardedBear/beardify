@@ -28,11 +28,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { connectUrl } from "@/api";
+import { connectUrl } from "../api";
 import { useStore } from "vuex";
-import { PlayerActions } from "@/components/PlayerStore";
-import { AuthActions } from "@/views/AuthStore";
-import { RootState } from "@/@types/rootStore";
+import { PlayerActions } from "../components/PlayerStore";
+import { AuthActions } from "../views/AuthStore";
+import { RootState } from "../@types/rootStore";
 
 export default defineComponent({
   name: "Topbar",
@@ -45,7 +45,7 @@ export default defineComponent({
     }
 
     return { connectUrl, store, getDeviceList, refresh };
-  }
+  },
 });
 </script>
 
