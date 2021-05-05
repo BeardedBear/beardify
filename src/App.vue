@@ -2,7 +2,7 @@
   <Topbar />
   <router-view />
   <Player />
-  <vue-plyr ref="plyr"><audio crossorigin playsinline></audio></vue-plyr>
+  <vue-plyr ref="plyr"><audio playsinline></audio></vue-plyr>
 </template>
 
 <script lang="ts">
