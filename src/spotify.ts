@@ -17,9 +17,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             duration: state?.duration,
             position: state?.position,
             paused: state?.paused,
-            repeatMode: state?.repeat_mode,
+            repeat_mode: state?.repeat_mode,
             shuffle: state?.shuffle,
-            trackWindow: state?.track_window
+            track_window: state?.track_window
           }
         })
       );

@@ -4,78 +4,80 @@ export interface Player {
     list: UserDevice[];
   };
   currentlyPlaying: {
-    track: Track;
+    track: Spotify.PlaybackState;
   };
 }
 
-export interface Artist {
-  name: string;
-  uri: string;
-}
+export const defaultUserDevice = {
+  id: null,
+  is_active: false,
+  is_restricted: false,
+  name: "",
+  type: "",
+  volume_percent: null
+};
 
-export interface Images {
-  height: number;
-  url: string;
-  width: number;
-}
-export interface Album {
-  images: Images[];
-  name: string;
-  uri: string;
-}
-export interface TrackWindow {
-  current_track: {
-    artists: Artist[];
-    name: string;
-    album: Album;
-  };
-}
+const defaultAlbum: Spotify.Album = {
+  uri: "",
+  name: "",
+  images: []
+};
 
-export const defaultTrack: Track = {
+const defaultArtist: Spotify.Artist[] = [
+  {
+    uri: "",
+    name: ""
+  }
+];
+
+const defaultTrack: Spotify.Track = {
+  uri: "",
+  id: null,
+  type: "track",
+  media_type: "audio",
+  name: "",
+  is_playable: true,
+  album: defaultAlbum,
+  artists: defaultArtist
+};
+
+const defaultTrackWindow: Spotify.PlaybackTrackWindow = {
+  current_track: defaultTrack,
+  previous_tracks: [defaultTrack],
+  next_tracks: [defaultTrack]
+};
+
+const defaultPlaybackDisallows = {
+  pausing: false,
+  peeking_next: false,
+  peeking_prev: false,
+  resuming: false,
+  seeking: false,
+  skipping_next: false,
+  skipping_prev: false
+};
+
+const defaultPlaybackRestrictions = {
+  disallow_pausing_reasons: [],
+  disallow_peeking_next_reasons: [],
+  disallow_peeking_prev_reasons: [],
+  disallow_resuming_reasons: [],
+  disallow_seeking_reasons: [],
+  disallow_skipping_next_reasons: [],
+  disallow_skipping_prev_reasons: []
+};
+
+export const defaultPlaybackState: Spotify.PlaybackState = {
+  context: {
+    metadata: "",
+    uri: null
+  },
+  disallows: defaultPlaybackDisallows,
   duration: 0,
   position: 0,
   paused: true,
-  repeatMode: 0,
+  repeat_mode: 0,
   shuffle: false,
-  trackWindow: {
-    current_track: {
-      artists: [],
-      name: "",
-      album: {
-        images: [],
-        name: "",
-        uri: ""
-      }
-    }
-  }
+  restrictions: defaultPlaybackRestrictions,
+  track_window: defaultTrackWindow
 };
-
-export interface Track {
-  duration: number;
-  position: number;
-  paused: boolean;
-  repeatMode: number;
-  shuffle: boolean;
-  trackWindow: TrackWindow;
-}
-
-export interface Device {
-  id: string;
-  is_active: boolean;
-  name: string;
-  type: string;
-  volume_percent: number;
-}
-
-export interface PlaylistItem {
-  type: string;
-  label: string;
-  uri?: string;
-  data?: {
-    type: string;
-    sources: {
-      src: string;
-      type: string;
-    }[];
-  };
-}

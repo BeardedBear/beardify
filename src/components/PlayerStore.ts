@@ -1,22 +1,15 @@
 import { ActionTree, MutationTree } from "vuex";
 import { instance } from "../api";
-import { Player, defaultTrack, Track } from "../@types/Player";
+import { Player, defaultPlaybackState, defaultUserDevice } from "../@types/Player";
 import { RootState } from "../@types/rootStore";
 
 const state: Player = {
   devices: {
-    activeDevice: {
-      id: null,
-      is_active: false,
-      is_restricted: false,
-      name: "",
-      type: "",
-      volume_percent: null
-    },
+    activeDevice: defaultUserDevice,
     list: []
   },
   currentlyPlaying: {
-    track: defaultTrack
+    track: defaultPlaybackState
   }
 };
 
@@ -37,13 +30,13 @@ const mutations: MutationTree<Player> = {
     state.devices.activeDevice = data;
   },
 
-  [Mutations.PLAYER_STATE_CHANGED](state, customEvent: Track): void {
+  [Mutations.PLAYER_STATE_CHANGED](state, customEvent: Spotify.PlaybackState): void {
     state.currentlyPlaying.track.duration = customEvent.duration;
     state.currentlyPlaying.track.position = Math.round(customEvent.position);
     state.currentlyPlaying.track.paused = customEvent.paused;
-    state.currentlyPlaying.track.repeatMode = customEvent.repeatMode;
+    state.currentlyPlaying.track.repeat_mode = customEvent.repeat_mode;
     state.currentlyPlaying.track.shuffle = customEvent.shuffle;
-    state.currentlyPlaying.track.trackWindow = customEvent.trackWindow;
+    state.currentlyPlaying.track.track_window = customEvent.track_window;
   }
 };
 

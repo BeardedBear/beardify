@@ -18,21 +18,23 @@
           <div></div>
         </div>
 
-        <div v-if="current.track.trackWindow.current_track.name !== ''" class="meta__what">
-          <img :src="current.track.trackWindow.current_track.album.images[1].url" />
-          <div>
+        <div>
+          <div v-if="current.track.track_window.current_track.name !== ''" class="meta__what">
+            <img :src="current.track.track_window.current_track.album.images[1].url" />
             <div>
-              <span v-for="(artist, _, index) in current.track.trackWindow.current_track.artists" :key="index">
-                <span class="artistname">{{ artist.name }}</span>
-                <span v-if="current.track.trackWindow.current_track.artists.length === index">,</span>
-              </span>
-              ·
-              <span class="trackname">{{ current.track.trackWindow.current_track.name }}</span>
+              <div>
+                <span v-for="(artist, _, index) in current.track.track_window.current_track.artists" :key="index">
+                  <span class="artistname">{{ artist.name }}</span>
+                  <span v-if="current.track.track_window.current_track.artists.length === index">,</span>
+                </span>
+                ·
+                <span class="trackname">{{ current.track.track_window.current_track.name }}</span>
+              </div>
+              <div class="album">{{ current.track.track_window.current_track.album.name }}</div>
             </div>
-            <div class="album">{{ current.track.trackWindow.current_track.album.name }}</div>
           </div>
+          <div v-else>Pas de morceaux de lancé</div>
         </div>
-        <div v-else>Pas de morceaux de lancé</div>
 
         <div class="options">
           <div v-if="store.state.player.devices.list.length">
@@ -110,7 +112,7 @@ export default defineComponent({
         paused: detail.detail.paused,
         repeatMode: detail.detail.repeat_mode,
         shuffle: detail.detail.shuffle,
-        trackWindow: detail.detail.trackWindow,
+        track_window: detail.detail.track_window,
       });
     }) as { (evt: Event): void });
 
