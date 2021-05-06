@@ -3,7 +3,8 @@ import { Paging } from "./Paging";
 export interface ArtistPage {
   artist: Artist;
   topTracks: ArtistTopTracks;
-  albums: Paging<AlbumSimplified>;
+  albums: AlbumSimplified[];
+  relatedArtists: RelatedArtists;
 }
 
 export interface ArtistTopTracks {
@@ -57,6 +58,10 @@ export const defaultExternalUrls = {
 };
 interface ExternalUrls {
   spotify: string;
+}
+
+export interface RelatedArtists {
+  artists: Artist[];
 }
 
 export interface ArtistSimplified {

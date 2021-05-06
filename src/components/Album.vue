@@ -1,7 +1,8 @@
 <template>
   <div class="album">
     <img class="img" :src="album.images[1].url" alt="" />
-    <div>{{ album.name }}</div>
+    <div class="name">{{ album.name }}</div>
+    <div class="date">{{ album.release_date.split("-").shift() }}</div>
   </div>
 </template>
 
@@ -24,8 +25,29 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@keyframes popAlbum {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.album {
+  animation: popAlbum 1s ease both;
+}
 .img {
   width: 100%;
   border-radius: 4px;
+}
+
+.name {
+  margin: 3px 0;
+}
+
+.date {
+  font-style: italic;
+  opacity: 0.3;
+  font-size: 0.8rem;
 }
 </style>

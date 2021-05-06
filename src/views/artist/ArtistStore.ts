@@ -4,7 +4,7 @@ import formurlencoded from "form-urlencoded";
 import axios from "axios";
 import type { RootState } from "../../@types/rootStore";
 import type { Auth, AuthData } from "../../@types/Auth";
-import { AlbumSimplified, Artist, ArtistPage, ArtistSimplified, ArtistTopTracks, defaultArtist, Track } from "../../@types/Artist";
+import { AlbumSimplified, Artist, ArtistPage, ArtistSimplified, ArtistTopTracks, defaultArtist, RelatedArtists, Track } from "../../@types/Artist";
 import { defaultPaging, Paging } from "../../@types/Paging";
 
 const state: ArtistPage = {
@@ -12,7 +12,10 @@ const state: ArtistPage = {
   topTracks: {
     tracks: []
   },
-  albums: defaultPaging,
+  albums: [],
+  relatedArtists : {
+    artists : []
+  }
 };
 
 // MUTATIONS
@@ -21,6 +24,7 @@ export enum Mutations {
   SET_ARTIST = "SET_ARTIST",
   SET_TRACKS = "SET_TRACKS",
   SET_ALBUMS = "SET_ALBUMS",
+  SET_RELATED_ARTISTS = "SET_RELATED_ARTISTS",
 }
 
 const mutations: MutationTree<ArtistPage> = {
@@ -32,8 +36,12 @@ const mutations: MutationTree<ArtistPage> = {
     state.topTracks = data
   },
 
-  [Mutations.SET_ALBUMS](state, data: Paging<AlbumSimplified>): void {
+  [Mutations.SET_ALBUMS](state, data: AlbumSimplified[]): void {
     state.albums = data
+  },
+
+  [Mutations.SET_RELATED_ARTISTS](state, data: Artist[]): void {
+    state.relatedArtists.artists = data
   }
 };
 
@@ -42,7 +50,8 @@ const mutations: MutationTree<ArtistPage> = {
 export enum ArtistActions {
   getArtist = "getArtist",
   getTopTracks = "getTopTracks",
-  getAlbums = "getAlbums"
+  getAlbums = "getAlbums",
+  getRelatedArtists = "getRelatedArtists"
 }
 
 const actions: ActionTree<ArtistPage, RootState> = {
@@ -59,10 +68,16 @@ const actions: ActionTree<ArtistPage, RootState> = {
   },
 
   [ArtistActions.getAlbums](store, artistId: string): void {
-    instance.get<Paging<ArtistSimplified>>(`https://api.spotify.com/v1/artists/${artistId}/albums?market=FR`).then((e) => {
-      console.log(e.data);
+    instance.get<Paging<ArtistSimplified>>(`https://api.spotify.com/v1/artists/${artistId}/albums?market=FR&include_groups=album`).then((e) => {
+      const removedDuplicateAlbums = e.data.items.reduce((acc: ArtistSimplified[], value) => acc.some(i => i.name === value.name) ? acc : acc.concat(value), []);
 
-      store.commit(Mutations.SET_ALBUMS, e.data)
+      store.commit(Mutations.SET_ALBUMS, removedDuplicateAlbums)
+    })
+  },
+
+  [ArtistActions.getRelatedArtists](store, artistId: string): void {
+    instance.get<RelatedArtists>(`https://api.spotify.com/v1/artists/${artistId}/related-artists`).then((e) => {
+      store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists)
     })
   },
 };

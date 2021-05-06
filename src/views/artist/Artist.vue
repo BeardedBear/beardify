@@ -1,5 +1,5 @@
 <template>
-  <div class="overflowed">
+  <div ref="artistpage" class="overflowed">
     <div class="artist-page overflowed__target">
       <div class="title">
         {{ store.state.artist.artist.name }}
@@ -8,69 +8,78 @@
         <div>
           <div class="heading">Albums</div>
           <div class="albums">
-            <div v-for="(album, _, index) in store.state.artist.albums.items" :key="index">
+            <div v-for="(album, _, index) in store.state.artist.albums" :key="index">
               <Album :album="album" />
             </div>
           </div>
         </div>
-        <TopTracks class="top" />
+        <div class="top"><TopTracks class="top__item" /> <RelatedArtists class="top__item" /></div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, ref } from "vue";
 import { onBeforeRouteUpdate } from "vue-router";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/rootStore";
 import { ArtistActions } from "./ArtistStore";
 import { timecode } from "../../helpers/date";
 import TopTracks from "./TopTracks.vue";
+import RelatedArtists from "./RelatedArtists.vue";
 import Album from "../../components/Album.vue";
 
 export default defineComponent({
-  components: { Album, TopTracks },
+  components: { Album, TopTracks, RelatedArtists },
   props: {
     id: { default: "", type: String }
   },
   setup(props) {
     const store = useStore<RootState>();
+    const artistpage = ref();
 
     onBeforeRouteUpdate(to => {
       store.dispatch(`artist/${ArtistActions.getArtist}`, to.params.id);
       store.dispatch(`artist/${ArtistActions.getTopTracks}`, to.params.id);
       store.dispatch(`artist/${ArtistActions.getAlbums}`, to.params.id);
+      store.dispatch(`artist/${ArtistActions.getRelatedArtists}`, to.params.id);
+      artistpage.value.scrollTop = 0;
     });
 
     store.dispatch(`artist/${ArtistActions.getArtist}`, props.id);
     store.dispatch(`artist/${ArtistActions.getTopTracks}`, props.id);
     store.dispatch(`artist/${ArtistActions.getAlbums}`, props.id);
+    store.dispatch(`artist/${ArtistActions.getRelatedArtists}`, props.id);
 
-    onMounted(() => {
-      console.log("mounted");
-    });
-
-    return { store, timecode };
+    return { artistpage, store, timecode };
   }
 });
 </script>
 
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
+
+.overflowed {
+  scroll-behavior: smooth;
+}
 .albums {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 15px;
+  gap: 20px;
 }
 
 .content {
   display: flex;
-  gap: 30px;
+  gap: 40px;
 }
 
 .top {
   flex: 0 0 350px;
+
+  &__item {
+    margin-bottom: 40px;
+  }
 }
 .artist-page {
   padding: 30px 40px;

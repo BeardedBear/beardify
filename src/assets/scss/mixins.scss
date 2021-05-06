@@ -1,6 +1,6 @@
 .overflowed {
   position: relative;
-  overflow: auto;
+  overflow-y: scroll;
 
   &__target {
     position: absolute;

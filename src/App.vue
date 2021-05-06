@@ -57,6 +57,23 @@ export default defineComponent({
   background-color: $primary-color;
 }
 
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-clip: content-box;
+  background-color: rgba($primary-color, 0.7);
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0);
+}
+
 .scale-enter-active,
 .scale-leave-active {
   transition: all 0.1s ease;
@@ -84,6 +101,8 @@ export default defineComponent({
   grid-template-rows: auto 1fr auto;
   overflow: hidden;
   background-color: $bg-color-darker;
+  font-size: 0.9rem;
+  font-weight: 600;
 
   &__content {
     display: grid;
