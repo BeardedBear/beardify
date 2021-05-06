@@ -6,16 +6,7 @@
       <router-link to="/about">About</router-link>
       <router-link to="/login">Login</router-link>
     </div>
-    <div>
-      <span
-        v-for="device in store.state.player.devices.list"
-        :key="device.name"
-        class="button button--small"
-        :class="{ active: device.id === store.state.player.devices.thisDevice }"
-      >
-        {{ device.name }}
-      </span>
-    </div>
+    <div>search</div>
     <div>
       <div v-if="store.state.auth.me.displayName === ''">
         <a :href="connectUrl">LOGME</a> - {{ store.state.auth.me.displayName }}
@@ -78,14 +69,6 @@ export default defineComponent({
     &.router-link-exact-active {
       color: $primary-color;
     }
-  }
-}
-
-span {
-  margin-right: 10px;
-  &.active {
-    color: white;
-    background: $primary-color;
   }
 }
 </style>

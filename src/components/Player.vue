@@ -32,7 +32,21 @@
             <div class="album">{{ current.track.trackWindow.current_track.album.name }}</div>
           </div>
         </div>
-        <div class="options">coucou</div>
+        <div class="options">
+          <div v-if="store.state.player.devices.list.length">
+            <button
+              type="button"
+              v-for="(device, _, index) in store.state.player.devices.list"
+              :key="index"
+              class="button button--x-small"
+              :class="{ 'button--primary': device.id === store.state.player.devices.activeDevice }"
+              @click="setDevice(device.id)"
+            >
+              {{ device.name }}
+            </button>
+          </div>
+          <div v-else><button class="button button--primary" @click="getDevices()"></button></div>
+        </div>
       </div>
 
       <div ref="progresss" class="progress">
@@ -49,7 +63,7 @@
 import { ref, onMounted, defineComponent } from "vue";
 import { useStore } from "vuex";
 import { instance } from "../api";
-import { Mutations } from "../components/PlayerStore";
+import { Mutations, PlayerActions } from "../components/PlayerStore";
 import { timecode } from "../helpers/date";
 import type { RootState } from "../@types/rootStore";
 
@@ -61,9 +75,17 @@ export default defineComponent({
     const perc = ref();
     const time = ref();
 
+    function getDevices() {
+      store.dispatch(`player/${PlayerActions.getDeviceList}`);
+    }
+
+    function setDevice(id: string) {
+      store.dispatch(`player/${PlayerActions.setDevice}`, id);
+    }
+
     function goPlay() {
       instance.put("me/player/play", {
-        device_id: store.state.player.devices.thisDevice,
+        device_id: store.state.player.devices.activeDevice,
       });
     }
 
@@ -73,7 +95,7 @@ export default defineComponent({
 
     function goPause() {
       instance.put("me/player/pause", {
-        device_id: store.state.player.devices.thisDevice,
+        device_id: store.state.player.devices.activeDevice,
       });
     }
 
@@ -100,12 +122,12 @@ export default defineComponent({
         const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
         const duration = (current.track.duration / 100) * positionInPercent;
         instance.put(
-          `me/player/seek?position_ms=${Math.round(duration)}&device_id=${store.state.player.devices.thisDevice}`
+          `me/player/seek?position_ms=${Math.round(duration)}&device_id=${store.state.player.devices.activeDevice}`
         );
       });
     });
 
-    return { current, store, goPlay, goNext, goPause, perc, time, timecode, progresss };
+    return { current, store, getDevices, setDevice, goPlay, goNext, goPause, perc, time, timecode, progresss };
   },
 });
 </script>

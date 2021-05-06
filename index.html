@@ -23,8 +23,6 @@
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
     <script>
-      const ls = localStorage["beardify"];
-
       window.onSpotifyWebPlaybackSDKReady = () => {
         const player = new Spotify.Player({
           name: "Beardify3",
@@ -38,6 +36,7 @@
         // Update current player state
         setInterval(() => {
           player?.getCurrentState().then((state) => {
+            console.log(state);
             window.dispatchEvent(
               new CustomEvent("playerStateChanged", {
                 detail: {

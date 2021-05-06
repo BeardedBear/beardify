@@ -5,7 +5,7 @@
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
 import { useStore } from "vuex";
-import { Mutations, PlayerActions } from "../components/PlayerStore";
+import { PlayerActions } from "../components/PlayerStore";
 import router from "../router";
 import { AuthActions } from "../views/AuthStore";
 
@@ -21,7 +21,7 @@ export default defineComponent({
       // Keep app active
       setInterval(() => {
         store.dispatch(`player/${PlayerActions.getDeviceList}`);
-        store.commit(`player/${Mutations.SET_THIS_DEVICE}`, store.state.player.devices.thisDevice);
+        // store.commit(`player/${PlayerActions.SET_THIS_DEVICE}`, store.state.player.devices.thisDevice);
         store.dispatch(`auth/${AuthActions.refresh}`);
       }, 300000);
     });

@@ -6,7 +6,7 @@ import { RootState } from "../@types/rootStore";
 
 const state: Player = {
   devices: {
-    thisDevice: "",
+    activeDevice: "",
     list: [],
   },
   currentlyPlaying: {
@@ -28,7 +28,7 @@ const mutations: MutationTree<Player> = {
   },
 
   [Mutations.SET_THIS_DEVICE](state, data: string): void {
-    state.devices.thisDevice = data;
+    state.devices.activeDevice = data;
   },
 
   [Mutations.PLAYER_STATE_CHANGED](state, customEvent: Track): void {
@@ -45,6 +45,7 @@ const mutations: MutationTree<Player> = {
 
 export enum PlayerActions {
   getDeviceList = "getDeviceList",
+  setDevice = "setDevice",
 }
 
 const actions: ActionTree<Player, RootState> = {
@@ -52,7 +53,12 @@ const actions: ActionTree<Player, RootState> = {
     instance
       .get<Device[]>("me/player/devices")
       .then((e: AxiosResponse) => store.commit(Mutations.GET_DEVICE_LIST, e.data.devices))
-      .then(() => instance.put("me/player", { device_ids: [store.state.devices.thisDevice] }));
+      .then(() => instance.put("me/player", { device_ids: [store.state.devices.activeDevice] }));
+  },
+
+  [PlayerActions.setDevice](store, deviceId: Device) {
+    store.commit(Mutations.SET_THIS_DEVICE, deviceId);
+    instance.put("me/player", { device_ids: [deviceId] });
   },
 };
 

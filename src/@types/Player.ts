@@ -1,6 +1,6 @@
 export interface Player {
   devices: {
-    thisDevice: string;
+    activeDevice: string;
     list: Device[];
   };
   currentlyPlaying: {
