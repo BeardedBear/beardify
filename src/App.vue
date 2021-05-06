@@ -51,6 +51,7 @@ export default defineComponent({
 @import "./assets/scss/button";
 @import "./assets/scss/colors";
 @import "./assets/scss/heading";
+@import "./assets/scss/mixins";
 
 ::selection {
   background-color: $primary-color;

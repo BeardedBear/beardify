@@ -1,25 +1,13 @@
+import { Paging } from "./Paging";
+
 export interface ArtistPage {
   artist: Artist;
   topTracks: ArtistTopTracks;
+  albums: Paging<AlbumSimplified>;
 }
 
 export interface ArtistTopTracks {
   tracks: Track[];
-}
-
-export interface AlbumSimplified {
-  album_type: string;
-  artists: ArtistSimplified[];
-  external_urls: ExternalUrls;
-  href: string;
-  id: string;
-  images: Image[];
-  name: string;
-  release_date: string;
-  release_date_precision: string;
-  total_tracks: number;
-  type: string;
-  uri: string;
 }
 
 export interface Image {
@@ -27,6 +15,22 @@ export interface Image {
   url: string;
   width: number;
 }
+
+// export interface Album {
+//   album_group: string;
+//   album_type: string;
+//   artists: ArtistSimplified[];
+//   external_urls: ExternalUrls;
+//   href: string;
+//   id: string;
+//   images: Image[];
+//   name: string;
+//   release_date: string;
+//   release_date_precision: string;
+//   total_tracks: number;
+//   type: string;
+//   uri: string;
+// }
 
 export interface Track {
   album: AlbumSimplified;
@@ -48,6 +52,9 @@ export interface Track {
   uri: string;
 }
 
+export const defaultExternalUrls = {
+  Spotify: ""
+};
 interface ExternalUrls {
   spotify: string;
 }
@@ -92,6 +99,36 @@ export const defaultArtist = {
   images: [],
   name: "",
   popularity: 0,
+  type: "",
+  uri: ""
+};
+
+export interface AlbumSimplified {
+  album_type: string;
+  artists: ArtistSimplified[];
+  external_urls: ExternalUrls;
+  href: string;
+  id: string;
+  images: Image[];
+  name: string;
+  release_date: string;
+  release_date_precision: string;
+  total_tracks: number;
+  type: string;
+  uri: string;
+}
+
+export const defaultAlbumSimplified = {
+  album_type: "",
+  artists: defaultArtist,
+  external_urls: defaultExternalUrls,
+  href: "",
+  id: "",
+  images: [],
+  name: "",
+  release_date: "",
+  release_date_precision: "",
+  total_tracks: 0,
   type: "",
   uri: ""
 };

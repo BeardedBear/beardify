@@ -1,15 +1,20 @@
 <template>
-  <div class="artist-page">
-    <div class="title">
-      {{ store.state.artist.artist.name }}
-    </div>
-    <div class="content">
-      <div>
-        <div class="heading">Albums</div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat fuga, facilis, adipisci cum sed eum ad cumque
-        dignissimos eos consequuntur nemo, aliquid necessitatibus dolorum sit nihil autem asperiores totam expedita.
+  <div class="overflowed">
+    <div class="artist-page overflowed__target">
+      <div class="title">
+        {{ store.state.artist.artist.name }}
       </div>
-      <TopTracks class="top" />
+      <div class="content">
+        <div>
+          <div class="heading">Albums</div>
+          <div class="albums">
+            <div v-for="(album, _, index) in store.state.artist.albums.items" :key="index">
+              <Album :album="album" />
+            </div>
+          </div>
+        </div>
+        <TopTracks class="top" />
+      </div>
     </div>
   </div>
 </template>
@@ -22,9 +27,10 @@ import { RootState } from "../../@types/rootStore";
 import { ArtistActions } from "./ArtistStore";
 import { timecode } from "../../helpers/date";
 import TopTracks from "./TopTracks.vue";
+import Album from "../../components/Album.vue";
 
 export default defineComponent({
-  components: { TopTracks },
+  components: { Album, TopTracks },
   props: {
     id: { default: "", type: String }
   },
@@ -34,10 +40,12 @@ export default defineComponent({
     onBeforeRouteUpdate(to => {
       store.dispatch(`artist/${ArtistActions.getArtist}`, to.params.id);
       store.dispatch(`artist/${ArtistActions.getTopTracks}`, to.params.id);
+      store.dispatch(`artist/${ArtistActions.getAlbums}`, to.params.id);
     });
 
     store.dispatch(`artist/${ArtistActions.getArtist}`, props.id);
     store.dispatch(`artist/${ArtistActions.getTopTracks}`, props.id);
+    store.dispatch(`artist/${ArtistActions.getAlbums}`, props.id);
 
     onMounted(() => {
       console.log("mounted");
@@ -49,6 +57,13 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "../../assets/scss/colors";
+.albums {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 15px;
+}
+
 .content {
   display: flex;
   gap: 30px;
@@ -64,5 +79,8 @@ export default defineComponent({
   font-size: 2rem;
   font-weight: 300;
   margin-bottom: 20px;
+  // position: sticky;
+  // top: -1px;
+  // background: $bg-color-darker;
 }
 </style>
