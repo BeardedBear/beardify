@@ -1,7 +1,6 @@
 import { ActionTree, MutationTree } from "vuex";
 import { instance } from "../api";
-import { AxiosResponse } from "axios";
-import { Player, defaultTrack, Device, Track } from "../@types/Player";
+import { Player, defaultTrack, Track } from "../@types/Player";
 import { RootState } from "../@types/rootStore";
 
 const state: Player = {
@@ -60,9 +59,7 @@ const actions: ActionTree<Player, RootState> = {
     instance.get<UserDevicesResponse>("me/player/devices").then(({ data }) => {
       // On set le dernier device actif par defaut
       const lastActiveDevice = data.devices.filter(el => el.name === store.state.devices.activeDevice.name);
-      if (lastActiveDevice[0] !== undefined) {
-        store.dispatch(PlayerActions.setDevice, lastActiveDevice[0]);
-      }
+      if (lastActiveDevice[0] !== undefined) store.dispatch(PlayerActions.setDevice, lastActiveDevice[0]);
 
       // On met a jour la liste des devices
       store.commit(Mutations.GET_DEVICE_LIST, data.devices);

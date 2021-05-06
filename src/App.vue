@@ -15,11 +15,9 @@
 import { defineComponent, onMounted } from "vue";
 import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
-import { PlayerActions, Mutations } from "./components/PlayerStore";
+import { PlayerActions } from "./components/PlayerStore";
 import Player from "./components/Player.vue";
 import { RootState } from "./@types/rootStore";
-import { Device } from "./@types/Player";
-import { instance } from "./api";
 import { AuthActions } from "./views/AuthStore";
 
 export default defineComponent({
@@ -27,48 +25,19 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    // setInterval(() => {
-    //   const activeDevice = store.state.player.devices.list.filter(
-    //     (d: Device) => d.id === store.state.player.devices.activeDevice
-    //   );
-    //   if (activeDevice[0].name !== "Beardify3") {
-    //     console.log("non");
-
-    //     instance.get("https://api.spotify.com/v1/me/player").then((e) => {
-    //       store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, {
-    //         // duration: detail.detail.duration,
-    //         position: e.data.progress_ms,
-    //         // paused: detail.detail.paused,
-    //         // repeatMode: detail.detail.repeat_mode,
-    //         // shuffle: detail.detail.shuffle,
-    //         // trackWindow: detail.detail.trackWindow,
-    //       });
-    //       console.log(e.data);
-    //     });
-    //   }
-    //   console.log(activeDevice);
-    // }, 1000);
+    // Keep app active
+    setInterval(() => store.dispatch(`auth/${AuthActions.refresh}`), 120000);
 
     onMounted(() => {
-      // window.onfocus = () => {
-      //   store.dispatch(`player/${PlayerActions.getDeviceList}`);
-      //   store.commit(`player/${Mutations.SET_THIS_DEVICE}`, store.state.player.devices.thisDevice);
-      // };
-      // store.dispatch (`auth/${AuthActions.auth}`);
-
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
-      // store.commit(`player/${Mutations.SET_THIS_DEVICE}`, store.state.player.devices.thisDevice);
-
-      // console.log(typeof store.state.auth.me.displayName, store.state.auth.me.displayName);
 
       window.addEventListener("initdevice", (() => {
-        // store.commit(`player/${Mutations.SET_THIS_DEVICE}`, customEvent.detail.thisDevice);
         store.dispatch(`player/${PlayerActions.getDeviceList}`);
       }) as { (evt: Event): void });
     });
 
     return { store };
-  },
+  }
 });
 </script>
 
