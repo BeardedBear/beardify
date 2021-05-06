@@ -26,7 +26,9 @@
             <div>
               <div>
                 <span v-for="(artist, _, index) in current.track?.track_window.current_track.artists" :key="index">
-                  <span class="artistname">{{ artist.name }}</span>
+                  <router-link class="artistname" :to="`/artist/${artist.uri.split(':').pop()}`">
+                    {{ artist.name }}
+                  </router-link>
                   <span v-if="current.track?.track_window.current_track.artists.length === index">,</span>
                 </span>
                 ·
@@ -207,6 +209,8 @@ export default defineComponent({
 
 .artistname {
   font-weight: 700;
+  text-decoration: none;
+  color: currentColor;
 }
 .album {
   opacity: 0.5;
