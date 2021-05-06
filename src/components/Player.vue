@@ -39,6 +39,15 @@
         </div>
 
         <div class="options">
+          <div>
+            <div ref="refVolume" class="volume" @click="setVolume()">
+              <div
+                class="volume__cursor"
+                :style="{ width: store.state.player.devices.activeDevice.volume_percent + '%' }"
+              ></div>
+              <div class="volume__hover" :style="{ width: volume + '%' }"></div>
+            </div>
+          </div>
           <div v-if="store.state.player.devices.list.length">
             <button
               type="button"
@@ -80,6 +89,8 @@ export default defineComponent({
     const progresss = ref();
     const perc = ref();
     const time = ref();
+    const refVolume = ref();
+    const volume = ref(0);
 
     function getDevices() {
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
@@ -107,11 +118,21 @@ export default defineComponent({
       });
     }
 
+    function setVolume() {
+      store.dispatch(`player/${PlayerActions.setVolume}`, volume.value)
+    }
+
+
     addEventListener("playerStateChanged", ((CE: CustomEvent<Spotify.PlaybackState>) => {
       store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, CE.detail);
     }) as { (evt: Event): void });
 
     onMounted(() => {
+
+      refVolume.value.addEventListener("mousemove", (e: MouseEvent) => {
+        volume.value = e.offsetX;
+      });
+
       progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
         const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
         const duration = (current.track.duration / 100) * positionInPercent;
@@ -126,7 +147,7 @@ export default defineComponent({
       });
     });
 
-    return { current, store, getDevices, setDevice, goPlay, goNext, goPause, perc, time, timecode, progresss };
+    return { current, store, getDevices, setDevice, setVolume, goPlay, goNext, goPause, perc, time, timecode, progresss, refVolume, volume};
   },
 });
 </script>
@@ -140,6 +161,39 @@ export default defineComponent({
   }
   to {
     opacity: 1;
+  }
+}
+
+.volume {
+  background-color: $bg-color-light;
+  position: relative;
+  height: 25px;
+  width: 100px;
+  display: inline-block;
+  clip-path: polygon(0 74%, 100% 0, 100% 100%, 0% 100%);
+  margin-bottom: 5px;
+
+  &__cursor {
+    background-color: $primary-color;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+  }
+
+  &:hover {
+    .volume__hover {
+      display: block;
+    }
+  }
+
+  &__hover {
+    background-color: rgba(white, 0.3);
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    display: none;
   }
 }
 

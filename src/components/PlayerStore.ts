@@ -18,7 +18,8 @@ const state: Player = {
 export enum Mutations {
   GET_DEVICE_LIST = "GET_DEVICE_LIST",
   SET_THIS_DEVICE = "SET_THIS_DEVICE",
-  PLAYER_STATE_CHANGED = "PLAYER_STATE_CHANGED"
+  PLAYER_STATE_CHANGED = "PLAYER_STATE_CHANGED",
+  SET_VOLUME = "SET_VOLUME"
 }
 
 const mutations: MutationTree<Player> = {
@@ -32,6 +33,10 @@ const mutations: MutationTree<Player> = {
 
   [Mutations.PLAYER_STATE_CHANGED](state, customEvent: Spotify.PlaybackState): void {
     state.currentlyPlaying.track = customEvent;
+  },
+
+  [Mutations.SET_VOLUME](state, volume: number): void {
+    state.devices.activeDevice.volume_percent = volume;
   }
 };
 
@@ -39,7 +44,8 @@ const mutations: MutationTree<Player> = {
 
 export enum PlayerActions {
   getDeviceList = "getDeviceList",
-  setDevice = "setDevice"
+  setDevice = "setDevice",
+  setVolume = "setVolume"
 }
 
 const actions: ActionTree<Player, RootState> = {
@@ -61,6 +67,11 @@ const actions: ActionTree<Player, RootState> = {
   [PlayerActions.setDevice](store, device: UserDevice) {
     store.commit(Mutations.SET_THIS_DEVICE, device);
     instance.put("me/player", { device_ids: [device.id] });
+  },
+
+  [PlayerActions.setVolume](store, volume: number) {
+    store.commit(Mutations.SET_VOLUME, volume);
+    instance.put(`https://api.spotify.com/v1/me/player/volume?volume_percent=${volume}`);
   }
 };
 
