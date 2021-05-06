@@ -1,7 +1,12 @@
 <template>
   <div>
     <div class="heading">Top tracks</div>
-    <div class="item" v-for="(trackItem, _, index) in store.state.artist.topTracks.tracks" :key="index">
+    <div
+      class="item"
+      v-for="(trackItem, _, index) in store.state.artist.topTracks.tracks"
+      :key="index"
+      :class="{ active: store.state.player.currentlyPlaying.track.track_window.current_track.id === trackItem.id }"
+    >
       <img class="cover" :src="trackItem.album.images[2].url" alt="" />
       <div class="name">{{ trackItem.name }}</div>
       <div class="duration">{{ timecode(trackItem.duration_ms) }}</div>
@@ -16,7 +21,7 @@ import { RootState } from "../../@types/rootStore";
 import { timecode } from "../../helpers/date";
 
 export default defineComponent({
-  setup(props) {
+  setup() {
     const store = useStore<RootState>();
 
     return { store, timecode };
@@ -32,10 +37,18 @@ export default defineComponent({
   align-items: center;
   gap: 15px;
   margin-bottom: 5px;
+  padding-right: 10px;
+  border-radius: 3px;
+
+  &.active {
+    background-color: rgba($primary-color, 0.1);
+    color: $primary-color;
+  }
 }
 
 .cover {
   height: 25px;
+  border-radius: 3px;
 }
 
 .name {

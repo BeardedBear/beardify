@@ -1,11 +1,8 @@
-import { ActionContext, ActionTree, MutationTree } from "vuex";
-import { api, instance } from "../../api";
-import formurlencoded from "form-urlencoded";
-import axios from "axios";
+import {  ActionTree, MutationTree } from "vuex";
+import {  instance } from "../../api";
 import type { RootState } from "../../@types/rootStore";
-import type { Auth, AuthData } from "../../@types/Auth";
-import { AlbumSimplified, Artist, ArtistPage, ArtistSimplified, ArtistTopTracks, defaultArtist, RelatedArtists, Track } from "../../@types/Artist";
-import { defaultPaging, Paging } from "../../@types/Paging";
+import { AlbumSimplified, Artist, ArtistPage, ArtistSimplified, ArtistTopTracks, defaultArtist, RelatedArtists } from "../../@types/Artist";
+import { Paging } from "../../@types/Paging";
 
 const state: ArtistPage = {
   artist: defaultArtist,
@@ -68,8 +65,8 @@ const actions: ActionTree<ArtistPage, RootState> = {
   },
 
   [ArtistActions.getAlbums](store, artistId: string): void {
-    instance.get<Paging<ArtistSimplified>>(`https://api.spotify.com/v1/artists/${artistId}/albums?market=FR&include_groups=album`).then((e) => {
-      const removedDuplicateAlbums = e.data.items.reduce((acc: ArtistSimplified[], value) => acc.some(i => i.name === value.name) ? acc : acc.concat(value), []);
+    instance.get<Paging<AlbumSimplified>>(`https://api.spotify.com/v1/artists/${artistId}/albums?market=FR&include_groups=album&limit=50`).then((e) => {
+      const removedDuplicateAlbums = e.data.items.reduce((acc: AlbumSimplified[], value) => acc.some(i => i.name === value.name) ? acc : acc.concat(value), []);
 
       store.commit(Mutations.SET_ALBUMS, removedDuplicateAlbums)
     })
