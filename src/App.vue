@@ -50,6 +50,7 @@ export default defineComponent({
 @import "../node_modules/normalize.css/normalize.css";
 @import "./assets/scss/button";
 @import "./assets/scss/colors";
+@import "./assets/scss/heading";
 
 ::selection {
   background-color: $primary-color;
