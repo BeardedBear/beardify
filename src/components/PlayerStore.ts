@@ -6,12 +6,19 @@ import { RootState } from "../@types/rootStore";
 
 const state: Player = {
   devices: {
-    activeDevice: "",
-    list: [],
+    activeDevice: {
+      id: null,
+      is_active: false,
+      is_restricted: false,
+      name: "",
+      type: "",
+      volume_percent: null
+    },
+    list: []
   },
   currentlyPlaying: {
-    track: defaultTrack,
-  },
+    track: defaultTrack
+  }
 };
 
 // MUTATIONS
@@ -19,15 +26,15 @@ const state: Player = {
 export enum Mutations {
   GET_DEVICE_LIST = "GET_DEVICE_LIST",
   SET_THIS_DEVICE = "SET_THIS_DEVICE",
-  PLAYER_STATE_CHANGED = "PLAYER_STATE_CHANGED",
+  PLAYER_STATE_CHANGED = "PLAYER_STATE_CHANGED"
 }
 
 const mutations: MutationTree<Player> = {
-  [Mutations.GET_DEVICE_LIST](state, data: Device[]): void {
+  [Mutations.GET_DEVICE_LIST](state, data: UserDevice[]): void {
     state.devices.list = data;
   },
 
-  [Mutations.SET_THIS_DEVICE](state, data: string): void {
+  [Mutations.SET_THIS_DEVICE](state, data: UserDevice): void {
     state.devices.activeDevice = data;
   },
 
@@ -38,33 +45,39 @@ const mutations: MutationTree<Player> = {
     state.currentlyPlaying.track.repeatMode = customEvent.repeatMode;
     state.currentlyPlaying.track.shuffle = customEvent.shuffle;
     state.currentlyPlaying.track.trackWindow = customEvent.trackWindow;
-  },
+  }
 };
 
 // ACTIONS
 
 export enum PlayerActions {
   getDeviceList = "getDeviceList",
-  setDevice = "setDevice",
+  setDevice = "setDevice"
 }
 
 const actions: ActionTree<Player, RootState> = {
   [PlayerActions.getDeviceList](store) {
-    instance
-      .get<Device[]>("me/player/devices")
-      .then((e: AxiosResponse) => store.commit(Mutations.GET_DEVICE_LIST, e.data.devices))
-      .then(() => instance.put("me/player", { device_ids: [store.state.devices.activeDevice] }));
+    instance.get<UserDevicesResponse>("me/player/devices").then(({ data }) => {
+      // On set le dernier device actif par defaut
+      const lastActiveDevice = data.devices.filter(el => el.name === store.state.devices.activeDevice.name);
+      if (lastActiveDevice[0] !== undefined) {
+        store.dispatch(PlayerActions.setDevice, lastActiveDevice[0]);
+      }
+
+      // On met a jour la liste des devices
+      store.commit(Mutations.GET_DEVICE_LIST, data.devices);
+    });
   },
 
-  [PlayerActions.setDevice](store, deviceId: Device) {
-    store.commit(Mutations.SET_THIS_DEVICE, deviceId);
-    instance.put("me/player", { device_ids: [deviceId] });
-  },
+  [PlayerActions.setDevice](store, device: UserDevice) {
+    store.commit(Mutations.SET_THIS_DEVICE, device);
+    instance.put("me/player", { device_ids: [device.id] });
+  }
 };
 
 export default {
   actions,
   mutations,
   namespaced: true,
-  state,
+  state
 };

@@ -18,7 +18,7 @@
           <div></div>
         </div>
 
-        <div class="meta__what">
+        <div v-if="current.track.trackWindow.current_track.name !== ''" class="meta__what">
           <img :src="current.track.trackWindow.current_track.album.images[1].url" />
           <div>
             <div>
@@ -32,6 +32,8 @@
             <div class="album">{{ current.track.trackWindow.current_track.album.name }}</div>
           </div>
         </div>
+        <div v-else>Pas de morceaux de lancé</div>
+
         <div class="options">
           <div v-if="store.state.player.devices.list.length">
             <button
@@ -39,8 +41,8 @@
               v-for="(device, _, index) in store.state.player.devices.list"
               :key="index"
               class="button button--x-small"
-              :class="{ 'button--primary': device.id === store.state.player.devices.activeDevice }"
-              @click="setDevice(device.id)"
+              :class="{ 'button--primary': device === store.state.player.devices.activeDevice }"
+              @click="setDevice(device)"
             >
               {{ device.name }}
             </button>
@@ -79,13 +81,15 @@ export default defineComponent({
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
     }
 
-    function setDevice(id: string) {
+    function setDevice(id: UserDevice) {
       store.dispatch(`player/${PlayerActions.setDevice}`, id);
     }
 
     function goPlay() {
       instance.put("me/player/play", {
         device_id: store.state.player.devices.activeDevice,
+      }).catch((error) => {
+        console.log(error);
       });
     }
 
