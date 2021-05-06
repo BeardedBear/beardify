@@ -26,15 +26,14 @@ export default defineComponent({
     const store = useStore<RootState>();
 
     // Keep app active
-    setInterval(() => store.dispatch(`auth/${AuthActions.refresh}`), 120000);
-
-    onMounted(() => {
+    setInterval(() => {
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
+      store.dispatch(`auth/${AuthActions.refresh}`);
+    }, 120000);
 
-      window.addEventListener("initdevice", (() => {
-        store.dispatch(`player/${PlayerActions.getDeviceList}`);
-      }) as { (evt: Event): void });
-    });
+    addEventListener("initdevice", (() => {
+      store.dispatch(`player/${PlayerActions.getDeviceList}`);
+    }) as { (evt: Event): void });
 
     return { store };
   }

@@ -18,11 +18,11 @@ export default defineComponent({
     const store = useStore<RootState>();
 
     function connect() {
-      window.location.href = connectUrl;
+      location.href = connectUrl;
     }
 
     return { connect, store };
-  },
+  }
 });
 </script>
 

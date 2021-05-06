@@ -4,7 +4,7 @@
       <div class="meta">
         <div class="controls">
           <div>
-            <button class="controls__btn" v-if="current.track.paused" @click="goPlay()">
+            <button class="controls__btn" v-if="current.track?.paused" @click="goPlay()">
               <i class="icon-play"></i>
             </button>
             <button class="controls__btn" v-else @click="goPause()">
@@ -14,23 +14,25 @@
               <i class="icon-skip-forward"></i>
             </button>
           </div>
-          <div>{{ timecode(current.track.position) }} / {{ timecode(current.track.duration) }}</div>
+          <div v-if="current.track?.position">
+            {{ timecode(current.track?.position) }} / {{ timecode(current.track?.duration) }}
+          </div>
           <div></div>
         </div>
 
         <div>
-          <div v-if="current.track.track_window.current_track.name !== ''" class="meta__what">
-            <img :src="current.track.track_window.current_track.album.images[1].url" />
+          <div v-if="current.track?.track_window.current_track.name !== null" class="meta__what">
+            <img :src="current.track?.track_window.current_track.album.images[1].url" />
             <div>
               <div>
-                <span v-for="(artist, _, index) in current.track.track_window.current_track.artists" :key="index">
+                <span v-for="(artist, _, index) in current.track?.track_window.current_track.artists" :key="index">
                   <span class="artistname">{{ artist.name }}</span>
-                  <span v-if="current.track.track_window.current_track.artists.length === index">,</span>
+                  <span v-if="current.track?.track_window.current_track.artists.length === index">,</span>
                 </span>
                 ·
-                <span class="trackname">{{ current.track.track_window.current_track.name }}</span>
+                <span class="trackname">{{ current.track?.track_window.current_track.name }}</span>
               </div>
-              <div class="album">{{ current.track.track_window.current_track.album.name }}</div>
+              <div class="album">{{ current.track?.track_window.current_track.album.name }}</div>
             </div>
           </div>
           <div v-else>Pas de morceaux de lancé</div>
@@ -43,7 +45,7 @@
               v-for="(device, _, index) in store.state.player.devices.list"
               :key="index"
               class="button button--x-small"
-              :class="{ 'button--primary': device === store.state.player.devices.activeDevice }"
+              :class="{ 'button--primary': device.id === store.state.player.devices.activeDevice.id }"
               @click="setDevice(device)"
             >
               {{ device.name }}
@@ -54,7 +56,7 @@
       </div>
 
       <div ref="progresss" class="progress">
-        <div class="bar" :style="`width:${(current.track.position / current.track.duration) * 100}%`"></div>
+        <div class="bar" :style="`width:${(current.track?.position / current.track?.duration) * 100}%`"></div>
         <div class="seek" :style="`width:${perc}%`">
           <div class="time">{{ time }}</div>
         </div>
@@ -105,15 +107,8 @@ export default defineComponent({
       });
     }
 
-    addEventListener("playerStateChanged", ((detail: CustomEvent) => {
-      store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, {
-        duration: detail.detail.duration,
-        position: detail.detail.position,
-        paused: detail.detail.paused,
-        repeatMode: detail.detail.repeat_mode,
-        shuffle: detail.detail.shuffle,
-        track_window: detail.detail.track_window,
-      });
+    addEventListener("playerStateChanged", ((CE: CustomEvent<Spotify.PlaybackState>) => {
+      store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, CE.detail);
     }) as { (evt: Event): void });
 
     onMounted(() => {

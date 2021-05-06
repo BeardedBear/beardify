@@ -31,12 +31,7 @@ const mutations: MutationTree<Player> = {
   },
 
   [Mutations.PLAYER_STATE_CHANGED](state, customEvent: Spotify.PlaybackState): void {
-    state.currentlyPlaying.track.duration = customEvent.duration;
-    state.currentlyPlaying.track.position = Math.round(customEvent.position);
-    state.currentlyPlaying.track.paused = customEvent.paused;
-    state.currentlyPlaying.track.repeat_mode = customEvent.repeat_mode;
-    state.currentlyPlaying.track.shuffle = customEvent.shuffle;
-    state.currentlyPlaying.track.track_window = customEvent.track_window;
+    state.currentlyPlaying.track = customEvent;
   }
 };
 
@@ -51,8 +46,12 @@ const actions: ActionTree<Player, RootState> = {
   [PlayerActions.getDeviceList](store) {
     instance.get<UserDevicesResponse>("me/player/devices").then(({ data }) => {
       // On set le dernier device actif par defaut
-      const lastActiveDevice = data.devices.filter(el => el.name === store.state.devices.activeDevice.name);
-      if (lastActiveDevice[0] !== undefined) store.dispatch(PlayerActions.setDevice, lastActiveDevice[0]);
+      const lastActiveDevice = data.devices.filter(el => el.name === store.state.devices.activeDevice.name).shift();
+      const haveDeviceActive = data.devices.filter(d => d.is_active);
+
+      if (!haveDeviceActive.length) {
+        if (lastActiveDevice !== undefined) store.dispatch(PlayerActions.setDevice, lastActiveDevice);
+      }
 
       // On met a jour la liste des devices
       store.commit(Mutations.GET_DEVICE_LIST, data.devices);
