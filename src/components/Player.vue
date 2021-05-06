@@ -121,9 +121,7 @@ export default defineComponent({
       progresss.value.addEventListener("click", (e: MouseEvent) => {
         const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
         const duration = (current.track.duration / 100) * positionInPercent;
-        instance.put(
-          `me/player/seek?position_ms=${Math.round(duration)}&device_id=${store.state.player.devices.activeDevice}`
-        );
+        instance.put(`me/player/seek?position_ms=${Math.round(duration)}`);
       });
     });
 
