@@ -41,7 +41,6 @@ export default defineComponent({
 
     setInterval(() => {
       instance.get("https://api.spotify.com/v1/me/player").then(e => {
-        console.log(e.data);
         store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data);
       });
     }, 1000);
@@ -49,6 +48,23 @@ export default defineComponent({
     addEventListener("initdevice", (() => {
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
     }) as { (evt: Event): void });
+
+    addEventListener("keydown", e => {
+      let currentVolume = store.state.player.devices.activeDevice.volume_percent;
+      const delta = 2;
+
+      function setVolume(volume: number) {
+        store.dispatch(`player/${PlayerActions.setVolume}`, volume);
+      }
+
+      if (currentVolume && e.shiftKey) {
+        if (e.key === "ArrowUp") {
+          100 - delta > currentVolume ? setVolume(currentVolume + delta) : setVolume(100);
+        } else if (e.key === "ArrowDown") {
+          currentVolume - delta < 0 ? setVolume(1) : setVolume(currentVolume - delta);
+        }
+      }
+    });
 
     return { store };
   }
@@ -104,7 +120,7 @@ export default defineComponent({
   line-height: 1.4;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #c5ccd3;
+  color: #d5dbe0;
   height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
