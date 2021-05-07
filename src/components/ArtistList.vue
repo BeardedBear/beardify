@@ -1,8 +1,8 @@
 <template>
   <span v-for="(artist, _, index) in artistList" :key="index">
-    <router-link class="artist" :class="{ feat }" :to="`/artist/${artist.uri.split(':').pop()}`">{{
-      artist.name
-    }}</router-link>
+    <span class="artist" :class="{ feat }" @click.stop="goArtist(`/artist/${artist.uri.split(':').pop()}`)">
+      {{ artist.name }}
+    </span>
     <span v-if="artistList.length === index">,</span>
   </span>
 </template>
@@ -10,6 +10,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { Artist, ArtistSimplified } from "../@types/Artist";
+import router from "../router";
 
 export default defineComponent({
   props: {
@@ -21,6 +22,12 @@ export default defineComponent({
       default: false,
       type: Boolean as PropType<boolean>
     }
+  },
+  setup() {
+    function goArtist(artistUri: string) {
+      router.push(artistUri);
+    }
+    return { goArtist };
   }
 });
 </script>
@@ -30,6 +37,7 @@ export default defineComponent({
 .artist {
   text-decoration: none;
   color: currentColor;
+  cursor: pointer;
 
   &.feat {
     font-style: italic;
