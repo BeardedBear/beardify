@@ -25,6 +25,9 @@ import { PlayerActions } from "./components/PlayerStore";
 import Player from "./components/Player.vue";
 import { RootState } from "./@types/rootStore";
 import { AuthActions } from "./views/AuthStore";
+import axios from "axios";
+import formUrlEncoded from "form-urlencoded";
+import { api } from "./api";
 
 export default defineComponent({
   components: { Topbar, Player },
@@ -40,6 +43,17 @@ export default defineComponent({
     addEventListener("initdevice", (() => {
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
     }) as { (evt: Event): void });
+
+    axios.post("https://accounts.spotify.com/api/token", {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: formUrlEncoded({
+        grant_type: "authorization_code",
+        code: store.state.auth.auth.code,
+        redirect_uri: api.redirectUri,
+        client_id: api.clientId,
+        code_verifier: api.codeVerifier
+      })
+    });
 
     return { store };
   }
