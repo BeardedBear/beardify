@@ -3,6 +3,7 @@ import Home from "./views/Home.vue";
 import About from "./views/About.vue";
 import Auth from "./views/Auth.vue";
 import Artist from "./views/artist/Artist.vue";
+import Album from "./views/album/Album.vue";
 import Login from "./views/Login.vue";
 import Store from "./store";
 
@@ -26,6 +27,12 @@ const routes: Array<RouteRecordRaw> = [
     component: Artist,
     name: "Artist",
     path: "/artist/:id",
+    props: route => ({ id: route.params.id })
+  },
+  {
+    component: Album,
+    name: "Album",
+    path: "/album/:id",
     props: route => ({ id: route.params.id })
   },
   {

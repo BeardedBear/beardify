@@ -56,7 +56,7 @@ export interface Track {
 export const defaultExternalUrls = {
   Spotify: ""
 };
-interface ExternalUrls {
+export interface ExternalUrls {
   spotify: string;
 }
 
