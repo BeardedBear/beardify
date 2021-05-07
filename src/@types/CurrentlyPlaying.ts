@@ -1,4 +1,5 @@
-import { Artist, Image } from "./Artist";
+import { Artist } from "./Artist";
+import { Image } from "./Image";
 
 export interface CurrentlyPlayingItem {
   album: CurrentlyPlayingAlbum;

@@ -23,15 +23,12 @@
 
         <div>
           <div v-if="store.state.player.currentlyPlaying.item.name !== null" class="meta__what">
-            <img :src="store.state.player.currentlyPlaying.item.album.images[1].url" />
+            <router-link :to="`/album/${store.state.player.currentlyPlaying.item.album.id}`">
+              <img class="cover" :src="store.state.player.currentlyPlaying.item.album.images[1].url" />
+            </router-link>
             <div>
               <div>
-                <span v-for="(artist, _, index) in store.state.player.currentlyPlaying.item.album.artists" :key="index">
-                  <router-link class="artistname" :to="`/artist/${artist.uri.split(':').pop()}`">
-                    {{ artist.name }}
-                  </router-link>
-                  <span v-if="store.state.player.currentlyPlaying.item.album.artists.length === index">,</span>
-                </span>
+                <ArtistList :artistList="store.state.player.currentlyPlaying.item.album.artists" />
                 ·
                 <span class="trackname">{{ store.state.player.currentlyPlaying.item.name }}</span>
               </div>
@@ -90,9 +87,11 @@ import { useStore } from "vuex";
 import { instance } from "../api";
 import { Mutations, PlayerActions } from "../components/PlayerStore";
 import { timecode } from "../helpers/date";
-import type { RootState } from "../@types/rootStore";
+import { RootState } from "../@types/rootStore";
+import ArtistList from "./ArtistList.vue";
 
 export default defineComponent({
+  components: { ArtistList },
   setup() {
     const store = useStore<RootState>();
     const current = useStore<RootState>().state.player.currentlyPlaying;
@@ -112,7 +111,7 @@ export default defineComponent({
 
     function goPlay() {
       instance.put("me/player/play", {
-        device_id: store.state.player.devices.activeDevice,
+        device_id: store.state.player.devices.activeDevice
       });
     }
 
@@ -122,21 +121,19 @@ export default defineComponent({
 
     function goPause() {
       instance.put("me/player/pause", {
-        device_id: store.state.player.devices.activeDevice,
+        device_id: store.state.player.devices.activeDevice
       });
     }
 
     function setVolume() {
-      store.dispatch(`player/${PlayerActions.setVolume}`, volume.value)
+      store.dispatch(`player/${PlayerActions.setVolume}`, volume.value);
     }
-
 
     addEventListener("playerStateChanged", ((CE: CustomEvent<Spotify.PlaybackState>) => {
       store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, CE.detail);
     }) as { (evt: Event): void });
 
     onMounted(() => {
-
       refVolume.value.addEventListener("mousemove", (e: MouseEvent) => {
         volume.value = e.offsetX;
       });
@@ -155,8 +152,23 @@ export default defineComponent({
       });
     });
 
-    return { current, store, getDevices, setDevice, setVolume, goPlay, goNext, goPause, perc, time, timecode, progresss, refVolume, volume};
-  },
+    return {
+      current,
+      store,
+      getDevices,
+      setDevice,
+      setVolume,
+      goPlay,
+      goNext,
+      goPause,
+      perc,
+      time,
+      timecode,
+      progresss,
+      refVolume,
+      volume
+    };
+  }
 });
 </script>
 
@@ -203,6 +215,11 @@ export default defineComponent({
     bottom: 0;
     display: none;
   }
+}
+
+.cover {
+  border-radius: 4px;
+  display: block;
 }
 
 .player {

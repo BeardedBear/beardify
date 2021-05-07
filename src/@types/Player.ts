@@ -1,4 +1,5 @@
 import { CurrentlyPlaying } from "./CurrentlyPlaying";
+import { defaultImage } from "./Defaults";
 
 export interface Player {
   devices: {
@@ -20,7 +21,7 @@ export const defaultUserDevice = {
 const defaultAlbum: Spotify.Album = {
   uri: "",
   name: "",
-  images: []
+  images: [defaultImage]
 };
 
 const defaultArtist: Spotify.Artist[] = [

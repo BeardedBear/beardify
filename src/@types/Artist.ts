@@ -1,4 +1,5 @@
 import { AlbumSimplified } from "./Album";
+import { Image } from "./Image";
 import { Track } from "./Track";
 
 export interface ArtistPage {
@@ -12,12 +13,6 @@ export interface ArtistPage {
 
 export interface ArtistTopTracks {
   tracks: Track[];
-}
-
-export interface Image {
-  height: number;
-  url: string;
-  width: number;
 }
 
 export interface ExternalUrls {

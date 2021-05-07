@@ -2,6 +2,12 @@ import { Album, AlbumSimplified } from "./Album";
 import { Artist, ExternalUrls } from "./Artist";
 import { TrackSimplified, Track } from "./Track";
 
+export const defaultImage = {
+  height: 0,
+  url: "",
+  width: 0
+};
+
 export const defaultExternalUrls: ExternalUrls = {
   spotify: ""
 };
@@ -12,7 +18,7 @@ export const defaultAlbumSimplified: AlbumSimplified = {
   external_urls: defaultExternalUrls,
   href: "",
   id: "",
-  images: [],
+  images: [defaultImage],
   name: "",
   release_date: "",
   release_date_precision: "",
@@ -32,7 +38,7 @@ export const defaultArtist: Artist = {
   genres: [""],
   href: "",
   id: "",
-  images: [],
+  images: [defaultImage],
   name: "",
   popularity: 0,
   type: "",
@@ -45,7 +51,7 @@ const defaultCurrentlyPlayingAlbum = {
   available_markets: ["FR"],
   href: "",
   id: "",
-  images: [],
+  images: [defaultImage],
   name: "",
   release_date: "",
   release_date_precision: "",
@@ -143,7 +149,7 @@ export const defaultAlbum: Album = {
   genres: [],
   href: "",
   id: "",
-  images: [],
+  images: [defaultImage],
   label: "",
   name: "",
   popularity: 0,
