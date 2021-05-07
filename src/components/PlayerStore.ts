@@ -33,6 +33,8 @@ const mutations: MutationTree<Player> = {
 
   [Mutations.PLAYER_STATE_CHANGED](state, customEvent: Spotify.PlaybackState): void {
     state.currentlyPlaying.track = customEvent;
+    // WTF SDK
+    state.currentlyPlaying.track.track_window.current_track.album.uri = customEvent.context.uri || "";
   },
 
   [Mutations.SET_VOLUME](state, volume: number): void {

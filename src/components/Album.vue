@@ -3,7 +3,7 @@
     <div class="active" v-if="currentlyPlayedId === album.uri"><i class="icon-volume-2"></i></div>
     <div class="cover">
       <img class="img" :src="album.images[1].url" alt="" />
-      <button class="play" type="button" @click="playAlbum(album.uri)">
+      <button class="play" type="button" @click="playAlbum(album.uri)" :title="album.uri">
         <i class="icon-play"></i>
       </button>
     </div>
