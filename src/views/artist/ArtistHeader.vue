@@ -1,7 +1,15 @@
 <template>
   <div class="header">
     <div class="title">
-      {{ store.state.artist.artist.name }}
+      <div class="name">{{ store.state.artist.artist.name }}</div>
+      <div
+        v-if="store.state.artist.followStatus"
+        class="follow button button--primary"
+        @click="switchFollow(store.state.artist.artist.id)"
+      >
+        Suivi
+      </div>
+      <div v-else class="follow button" @click="switchFollow(store.state.artist.artist.id)">Suivre</div>
     </div>
     <div class="header-links">
       <a
@@ -42,6 +50,7 @@
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/rootStore";
+import { ArtistActions } from "./ArtistStore";
 
 export default defineComponent({
   setup() {
@@ -51,7 +60,11 @@ export default defineComponent({
       window.open(url, "_blank");
     }
 
-    return { store, openLink };
+    function switchFollow(artistId: string) {
+      store.dispatch(`artist/${ArtistActions.switchFollow}`, artistId);
+    }
+
+    return { store, openLink, switchFollow };
   }
 });
 </script>
@@ -60,9 +73,20 @@ export default defineComponent({
 @import "../../assets/scss/colors";
 
 .title {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.name {
   font-size: 2rem;
   font-weight: 300;
-  margin-bottom: 10px;
+}
+
+.follow {
+  width: 70px;
+  text-align: center;
 }
 .header {
   margin-bottom: 30px;

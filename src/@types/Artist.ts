@@ -4,6 +4,7 @@ export interface ArtistPage {
   albums: AlbumSimplified[];
   singles: AlbumSimplified[];
   relatedArtists: RelatedArtists;
+  followStatus: boolean;
 }
 
 export interface ArtistTopTracks {

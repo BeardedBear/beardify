@@ -54,6 +54,7 @@ export default defineComponent({
       store.dispatch(`artist/${ArtistActions.getAlbums}`, to.params.id);
       store.dispatch(`artist/${ArtistActions.getRelatedArtists}`, to.params.id);
       store.dispatch(`artist/${ArtistActions.getSingles}`, to.params.id);
+      store.dispatch(`artist/${ArtistActions.getFollowStatus}`, to.params.id);
       artistpage.value.scrollTop = 0;
     });
 
@@ -62,6 +63,7 @@ export default defineComponent({
     store.dispatch(`artist/${ArtistActions.getAlbums}`, props.id);
     store.dispatch(`artist/${ArtistActions.getRelatedArtists}`, props.id);
     store.dispatch(`artist/${ArtistActions.getSingles}`, props.id);
+    store.dispatch(`artist/${ArtistActions.getFollowStatus}`, props.id);
 
     return { artistpage, store, timecode };
   }
@@ -70,6 +72,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
+@import "../../assets/scss/responsive";
 
 .overflowed {
   scroll-behavior: smooth;
@@ -78,6 +81,10 @@ export default defineComponent({
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
+
+  @include tablet {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 .singles {
   display: grid;

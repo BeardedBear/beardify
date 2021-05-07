@@ -22,7 +22,8 @@ const state: ArtistPage = {
   singles: [],
   relatedArtists: {
     artists: []
-  }
+  },
+  followStatus: false
 };
 
 // MUTATIONS
@@ -32,7 +33,10 @@ export enum Mutations {
   SET_TRACKS = "SET_TRACKS",
   SET_ALBUMS = "SET_ALBUMS",
   SET_SINGLES = "SET_SINGLES",
-  SET_RELATED_ARTISTS = "SET_RELATED_ARTISTS"
+  SET_RELATED_ARTISTS = "SET_RELATED_ARTISTS",
+  SET_FOLLOW_STATUS = "SET_FOLLOW_STATUS",
+  FOLLOW = "FOLLOW",
+  UNFOLLOW = "UNFOLLOW"
 }
 
 const mutations: MutationTree<ArtistPage> = {
@@ -54,6 +58,18 @@ const mutations: MutationTree<ArtistPage> = {
 
   [Mutations.SET_RELATED_ARTISTS](state, data: Artist[]): void {
     state.relatedArtists.artists = data;
+  },
+
+  [Mutations.SET_FOLLOW_STATUS](state, data: boolean): void {
+    state.followStatus = data;
+  },
+
+  [Mutations.FOLLOW](state): void {
+    state.followStatus = true;
+  },
+
+  [Mutations.UNFOLLOW](state): void {
+    state.followStatus = false;
   }
 };
 
@@ -64,7 +80,9 @@ export enum ArtistActions {
   getTopTracks = "getTopTracks",
   getAlbums = "getAlbums",
   getSingles = "getSingles",
-  getRelatedArtists = "getRelatedArtists"
+  getRelatedArtists = "getRelatedArtists",
+  getFollowStatus = "getFollowStatus",
+  switchFollow = "switchFollow"
 }
 
 const actions: ActionTree<ArtistPage, RootState> = {
@@ -100,6 +118,28 @@ const actions: ActionTree<ArtistPage, RootState> = {
     instance.get<RelatedArtists>(`https://api.spotify.com/v1/artists/${artistId}/related-artists`).then(e => {
       store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists);
     });
+  },
+
+  [ArtistActions.getRelatedArtists](store, artistId: string): void {
+    instance.get<RelatedArtists>(`https://api.spotify.com/v1/artists/${artistId}/related-artists`).then(e => {
+      store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists);
+    });
+  },
+
+  [ArtistActions.getFollowStatus](store, artistId: string): void {
+    instance.get<boolean[]>(`https://api.spotify.com/v1/me/following/contains?type=artist&ids=${artistId}`).then(e => {
+      store.commit(Mutations.SET_FOLLOW_STATUS, e.data.pop());
+    });
+  },
+
+  [ArtistActions.switchFollow](store, artistId: string): void {
+    if (store.state.followStatus) {
+      instance.delete(`https://api.spotify.com/v1/me/following?type=artist&ids=${artistId}`);
+      store.commit(Mutations.SET_FOLLOW_STATUS, false);
+    } else {
+      instance.put(`https://api.spotify.com/v1/me/following?type=artist&ids=${artistId}`);
+      store.commit(Mutations.SET_FOLLOW_STATUS, true);
+    }
   }
 };
 
