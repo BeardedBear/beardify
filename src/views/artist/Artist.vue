@@ -4,10 +4,20 @@
       <ArtistHeader />
       <div class="content">
         <div>
-          <div class="heading">Albums</div>
-          <div class="albums">
-            <div v-for="(album, _, index) in store.state.artist.albums" :key="index">
-              <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
+          <div class="content__block">
+            <div class="heading">Albums</div>
+            <div class="albums">
+              <div v-for="(album, _, index) in store.state.artist.albums" :key="index">
+                <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
+              </div>
+            </div>
+          </div>
+          <div class="content__block" v-if="store.state.artist.singles.length">
+            <div class="heading">Singles & EP's</div>
+            <div class="singles">
+              <div v-for="(album, _, index) in store.state.artist.singles" :key="index">
+                <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
+              </div>
             </div>
           </div>
         </div>
@@ -43,6 +53,7 @@ export default defineComponent({
       store.dispatch(`artist/${ArtistActions.getTopTracks}`, to.params.id);
       store.dispatch(`artist/${ArtistActions.getAlbums}`, to.params.id);
       store.dispatch(`artist/${ArtistActions.getRelatedArtists}`, to.params.id);
+      store.dispatch(`artist/${ArtistActions.getSingles}`, to.params.id);
       artistpage.value.scrollTop = 0;
     });
 
@@ -50,6 +61,7 @@ export default defineComponent({
     store.dispatch(`artist/${ArtistActions.getTopTracks}`, props.id);
     store.dispatch(`artist/${ArtistActions.getAlbums}`, props.id);
     store.dispatch(`artist/${ArtistActions.getRelatedArtists}`, props.id);
+    store.dispatch(`artist/${ArtistActions.getSingles}`, props.id);
 
     return { artistpage, store, timecode };
   }
@@ -67,10 +79,19 @@ export default defineComponent({
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
 }
+.singles {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 20px;
+}
 
 .content {
   display: flex;
   gap: 40px;
+
+  &__block {
+    margin-bottom: 60px;
+  }
 }
 
 .top {

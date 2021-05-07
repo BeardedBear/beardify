@@ -1,9 +1,8 @@
-import { Paging } from "./Paging";
-
 export interface ArtistPage {
   artist: Artist;
   topTracks: ArtistTopTracks;
   albums: AlbumSimplified[];
+  singles: AlbumSimplified[];
   relatedArtists: RelatedArtists;
 }
 

@@ -11,6 +11,7 @@ import {
   RelatedArtists
 } from "../../@types/Artist";
 import { Paging } from "../../@types/Paging";
+import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 
 const state: ArtistPage = {
   artist: defaultArtist,
@@ -18,6 +19,7 @@ const state: ArtistPage = {
     tracks: []
   },
   albums: [],
+  singles: [],
   relatedArtists: {
     artists: []
   }
@@ -29,6 +31,7 @@ export enum Mutations {
   SET_ARTIST = "SET_ARTIST",
   SET_TRACKS = "SET_TRACKS",
   SET_ALBUMS = "SET_ALBUMS",
+  SET_SINGLES = "SET_SINGLES",
   SET_RELATED_ARTISTS = "SET_RELATED_ARTISTS"
 }
 
@@ -45,6 +48,10 @@ const mutations: MutationTree<ArtistPage> = {
     state.albums = data;
   },
 
+  [Mutations.SET_SINGLES](state, data: AlbumSimplified[]): void {
+    state.singles = data;
+  },
+
   [Mutations.SET_RELATED_ARTISTS](state, data: Artist[]): void {
     state.relatedArtists.artists = data;
   }
@@ -56,6 +63,7 @@ export enum ArtistActions {
   getArtist = "getArtist",
   getTopTracks = "getTopTracks",
   getAlbums = "getAlbums",
+  getSingles = "getSingles",
   getRelatedArtists = "getRelatedArtists"
 }
 
@@ -77,30 +85,15 @@ const actions: ActionTree<ArtistPage, RootState> = {
       .get<Paging<AlbumSimplified>>(
         `https://api.spotify.com/v1/artists/${artistId}/albums?market=FR&include_groups=album&limit=50`
       )
-      .then(e => {
-        const removedDuplicateAlbums = e.data.items.reduce((acc: AlbumSimplified[], value) => {
-          return acc.some(
-            i =>
-              i.name.toLowerCase() === value.name.toLowerCase() ||
-              i.name
-                .replaceAll(" (Live)", "")
-                .replaceAll(" (In Concert)", "")
-                .replaceAll(/[^a-z0-9]+/gi, " ")
-                .toLowerCase()
-                .replaceAll(" ", "") ===
-                value.name
-                  .replaceAll(" (Live)", "")
-                  .replaceAll(" (In Concert)", "")
-                  .replaceAll(/[^a-z0-9]+/gi, " ")
-                  .toLowerCase()
-                  .replaceAll(" ", "")
-          )
-            ? acc
-            : acc.concat(value);
-        }, []);
+      .then(e => store.commit(Mutations.SET_ALBUMS, removeDuplicatesAlbums(e.data.items)));
+  },
 
-        store.commit(Mutations.SET_ALBUMS, removedDuplicateAlbums);
-      });
+  [ArtistActions.getSingles](store, artistId: string): void {
+    instance
+      .get<Paging<AlbumSimplified>>(
+        `https://api.spotify.com/v1/artists/${artistId}/albums?market=FR&include_groups=single&limit=50`
+      )
+      .then(e => store.commit(Mutations.SET_SINGLES, removeDuplicatesAlbums(e.data.items)));
   },
 
   [ArtistActions.getRelatedArtists](store, artistId: string): void {

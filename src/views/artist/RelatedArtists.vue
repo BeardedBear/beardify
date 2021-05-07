@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="heading">Artists similaires</div>
+    <div class="heading">Artistes similaires</div>
     <div class="list">
       <router-link
         class="item"
@@ -22,9 +22,8 @@ import { RootState } from "../../@types/rootStore";
 import { timecode } from "../../helpers/date";
 
 export default defineComponent({
-  setup(props) {
+  setup() {
     const store = useStore<RootState>();
-
     return { store, timecode };
   }
 });
