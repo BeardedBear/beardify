@@ -7,7 +7,7 @@
           <div class="content__block">
             <div class="heading">Albums</div>
             <div class="albums">
-              <div v-for="(album, _, index) in store.state.artist.albums" :key="index">
+              <div v-for="(album, index, key) in store.state.artist.albums" :key="key">
                 <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
               </div>
             </div>

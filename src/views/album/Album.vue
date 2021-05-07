@@ -12,10 +12,10 @@
         </div>
       </div>
       <div class="content">
-        <div class="content__cover">
-          <img class="cover" :src="store.state.album.album.images[0].url" alt="" />
+        <div class="content__cover" data-aos="fade-right">
+          <img class="cover" :src="store.state.album.album.images[0].url" />
         </div>
-        <div class="content__tracks">
+        <div class="content__tracks" data-aos="fade-left">
           <div
             class="track"
             :class="{ 'track--active': store.state.player.currentlyPlaying.item.id === track.id }"

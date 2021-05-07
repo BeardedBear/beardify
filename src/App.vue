@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
 import { Mutations, PlayerActions } from "./components/PlayerStore";
@@ -27,11 +27,18 @@ import Player from "./components/Player.vue";
 import { RootState } from "./@types/rootStore";
 import { AuthActions } from "./views/AuthStore";
 import { instance } from "./api";
+import AOS from "aos";
 
 export default defineComponent({
   components: { Topbar, Player },
   setup() {
     const store = useStore<RootState>();
+
+    onBeforeMount(() => {
+      AOS.init({
+        easing: "ease-out-back"
+      }); // Params : https://github.com/michalsnik/aos#1-initialize-aos
+    });
 
     // Keep app active
     setInterval(() => {
