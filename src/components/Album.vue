@@ -1,5 +1,6 @@
 <template>
   <div class="album">
+    <div class="active" v-if="currentlyPlayedId === album.uri"><i class="icon-volume-2"></i></div>
     <div class="cover">
       <img class="img" :src="album.images[1].url" alt="" />
       <button class="play" type="button" @click="playAlbum(album.uri)">
@@ -20,7 +21,8 @@ import { instance } from "../api";
 
 export default defineComponent({
   props: {
-    album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified> }
+    album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified> },
+    currentlyPlayedId: { default: "", type: String as PropType<string> }
   },
   setup() {
     const store = useStore<RootState>();
@@ -47,6 +49,8 @@ export default defineComponent({
 }
 .album {
   animation: popAlbum 1s ease both;
+  position: relative;
+
   &:hover {
     .play {
       display: block;
@@ -59,6 +63,35 @@ export default defineComponent({
   }
 }
 
+@keyframes bounce {
+  0% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(1.2);
+  }
+}
+
+.active {
+  $size: 45px;
+  height: $size;
+  width: $size;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  background: $primary-color;
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  border-radius: 0 4px 0 0;
+
+  i {
+    animation: bounce 0.5s cubic-bezier(1, 0, 1, 0) 0s infinite alternate;
+    position: absolute;
+    top: 3px;
+    right: 4px;
+    font-size: 1.2rem;
+  }
+}
 .play {
   $offset: 20px;
   $size: 45px;
