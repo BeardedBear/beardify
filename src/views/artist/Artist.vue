@@ -43,10 +43,7 @@
           <div class="heading">Albums</div>
           <div class="albums">
             <div v-for="(album, _, index) in store.state.artist.albums" :key="index">
-              <Album
-                :album="album"
-                :currentlyPlayedId="store.state.player.currentlyPlaying.track.track_window.current_track.album.uri"
-              />
+              <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
             </div>
           </div>
         </div>

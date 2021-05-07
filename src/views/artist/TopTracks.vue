@@ -5,7 +5,7 @@
       class="item"
       v-for="(trackItem, _, index) in store.state.artist.topTracks.tracks"
       :key="index"
-      :class="{ active: store.state.player.currentlyPlaying.track.track_window.current_track.id === trackItem.id }"
+      :class="{ active: store.state.player.currentlyPlaying.item.id === trackItem.id }"
     >
       <img class="cover" :src="trackItem.album.images[2].url" alt="" />
       <div class="name">{{ trackItem.name }}</div>

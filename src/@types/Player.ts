@@ -1,11 +1,12 @@
+import { AlbumSimplified, ArtistSimplified, defaultAlbumSimplified } from "./Artist";
+import { CurrentlyPlaying } from "./CurrentlyPlaying";
+
 export interface Player {
   devices: {
     activeDevice: UserDevice;
     list: UserDevice[];
   };
-  currentlyPlaying: {
-    track: Spotify.PlaybackState;
-  };
+  currentlyPlaying: CurrentlyPlaying;
 }
 
 export const defaultUserDevice = {

@@ -98,7 +98,7 @@ export const defaultArtist = {
     href: null,
     total: 0
   },
-  genres: [],
+  genres: [""],
   href: "",
   id: "",
   images: [],

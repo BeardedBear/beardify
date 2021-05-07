@@ -4,7 +4,7 @@
       <div class="meta">
         <div class="controls">
           <div>
-            <button class="controls__btn" v-if="current.track?.paused" @click="goPlay()">
+            <button class="controls__btn" v-if="current.is_playing" @click="goPlay()">
               <i class="icon-play"></i>
             </button>
             <button class="controls__btn" v-else @click="goPause()">
@@ -14,13 +14,11 @@
               <i class="icon-skip-forward"></i>
             </button>
           </div>
-          <div v-if="current.track?.position">
-            {{ timecode(current.track?.position) }} / {{ timecode(current.track?.duration) }}
-          </div>
+          <div v-if="current.progress_ms">{{ timecode(current.progress_ms) }} / {{ timecode(current.timestamp) }}</div>
           <div></div>
         </div>
 
-        <div>
+        <!-- <div>
           <div v-if="current.track?.track_window.current_track.name !== null" class="meta__what">
             <img :src="current.track?.track_window.current_track.album.images[1].url" />
             <div>
@@ -38,7 +36,7 @@
             </div>
           </div>
           <div v-else>Pas de morceaux de lancé</div>
-        </div>
+        </div> -->
 
         <div class="options">
           <div>
@@ -66,12 +64,12 @@
         </div>
       </div>
 
-      <div ref="progresss" class="progress">
+      <!-- <div ref="progresss" class="progress">
         <div class="bar" :style="`width:${(current.track?.position / current.track?.duration) * 100}%`"></div>
         <div class="seek" :style="`width:${perc}%`">
           <div class="time">{{ time }}</div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -105,8 +103,6 @@ export default defineComponent({
     function goPlay() {
       instance.put("me/player/play", {
         device_id: store.state.player.devices.activeDevice,
-      }).catch((error) => {
-        console.log(error);
       });
     }
 
@@ -135,18 +131,18 @@ export default defineComponent({
         volume.value = e.offsetX;
       });
 
-      progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
-        const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
-        const duration = (current.track.duration / 100) * positionInPercent;
-        perc.value = positionInPercent;
-        time.value = timecode(duration);
-      });
+      // progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
+      //   const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
+      //   const duration = (current.track.duration / 100) * positionInPercent;
+      //   perc.value = positionInPercent;
+      //   time.value = timecode(duration);
+      // });
 
-      progresss.value.addEventListener("click", (e: MouseEvent) => {
-        const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
-        const duration = (current.track.duration / 100) * positionInPercent;
-        instance.put(`me/player/seek?position_ms=${Math.round(duration)}`);
-      });
+      // progresss.value.addEventListener("click", (e: MouseEvent) => {
+      //   const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
+      //   const duration = (current.track.duration / 100) * positionInPercent;
+      //   instance.put(`me/player/seek?position_ms=${Math.round(duration)}`);
+      // });
     });
 
     return { current, store, getDevices, setDevice, setVolume, goPlay, goNext, goPause, perc, time, timecode, progresss, refVolume, volume};

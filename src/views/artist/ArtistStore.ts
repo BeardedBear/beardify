@@ -79,7 +79,24 @@ const actions: ActionTree<ArtistPage, RootState> = {
       )
       .then(e => {
         const removedDuplicateAlbums = e.data.items.reduce((acc: AlbumSimplified[], value) => {
-          return acc.some(i => i.name === value.name) ? acc : acc.concat(value);
+          return acc.some(
+            i =>
+              i.name.toLowerCase() === value.name.toLowerCase() ||
+              i.name
+                .replaceAll(" (Live)", "")
+                .replaceAll(" (In Concert)", "")
+                .replaceAll(/[^a-z0-9]+/gi, " ")
+                .toLowerCase()
+                .replaceAll(" ", "") ===
+                value.name
+                  .replaceAll(" (Live)", "")
+                  .replaceAll(" (In Concert)", "")
+                  .replaceAll(/[^a-z0-9]+/gi, " ")
+                  .toLowerCase()
+                  .replaceAll(" ", "")
+          )
+            ? acc
+            : acc.concat(value);
         }, []);
 
         store.commit(Mutations.SET_ALBUMS, removedDuplicateAlbums);

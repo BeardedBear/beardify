@@ -25,6 +25,7 @@ import { PlayerActions } from "./components/PlayerStore";
 import Player from "./components/Player.vue";
 import { RootState } from "./@types/rootStore";
 import { AuthActions } from "./views/AuthStore";
+import { instance } from "./api";
 
 export default defineComponent({
   components: { Topbar, Player },
@@ -36,6 +37,12 @@ export default defineComponent({
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
       store.dispatch(`auth/${AuthActions.refresh}`);
     }, 120000);
+
+    setInterval(() => {
+      instance.get("https://api.spotify.com/v1/me/player").then(e => {
+        console.log(e.data);
+      });
+    }, 1000);
 
     addEventListener("initdevice", (() => {
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
