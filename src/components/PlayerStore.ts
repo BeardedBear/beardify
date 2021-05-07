@@ -2,7 +2,8 @@ import { ActionTree, MutationTree } from "vuex";
 import { instance } from "../api";
 import { Player, defaultUserDevice } from "../@types/Player";
 import { RootState } from "../@types/rootStore";
-import { CurrentlyPlaying, defaultCurrentlyPlaying } from "../@types/CurrentlyPlaying";
+import { CurrentlyPlaying } from "../@types/CurrentlyPlaying";
+import { defaultCurrentlyPlaying } from "../@types/Defaults";
 
 const state: Player = {
   devices: {
@@ -32,16 +33,7 @@ const mutations: MutationTree<Player> = {
 
   [Mutations.PLAYER_STATE_CHANGED](state, customEvent: CurrentlyPlaying): void {
     state.currentlyPlaying = customEvent;
-    // WTF SDK
-    // state.currentlyPlaying.track.track_window.current_track.album.uri = customEvent.context.uri || "";
   },
-  // [Mutations.PLAYER_STATE_CHANGED](state, customEvent: Spotify.PlaybackState): void {
-  //   state.currentlyPlaying.track = customEvent;
-  //   // WTF SDK
-  //   state.currentlyPlaying.track.track_window.current_track.album.uri = customEvent.context.uri || "";
-  //   state.currentlyPlaying.track.track_window.current_track.album.name =
-  //     customEvent.context.metadata.context_description || "";
-  // },
 
   [Mutations.SET_VOLUME](state, volume: number): void {
     state.devices.activeDevice.volume_percent = volume;

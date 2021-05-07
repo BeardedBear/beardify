@@ -1,4 +1,4 @@
-import { AlbumSimplified } from "../@types/Artist";
+import { AlbumSimplified } from "../@types/Album";
 
 export function removeDuplicatesAlbums(array: AlbumSimplified[]) {
   return array.reduce((acc: AlbumSimplified[], value) => {

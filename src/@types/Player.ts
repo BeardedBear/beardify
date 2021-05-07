@@ -1,4 +1,3 @@
-import { AlbumSimplified, ArtistSimplified, defaultAlbumSimplified } from "./Artist";
 import { CurrentlyPlaying } from "./CurrentlyPlaying";
 
 export interface Player {

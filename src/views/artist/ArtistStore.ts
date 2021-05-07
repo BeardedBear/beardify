@@ -1,17 +1,11 @@
 import { ActionTree, MutationTree } from "vuex";
 import { instance } from "../../api";
 import { RootState } from "../../@types/rootStore";
-import {
-  AlbumSimplified,
-  Artist,
-  ArtistPage,
-  ArtistSimplified,
-  ArtistTopTracks,
-  defaultArtist,
-  RelatedArtists
-} from "../../@types/Artist";
+import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "../../@types/Artist";
 import { Paging } from "../../@types/Paging";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
+import { AlbumSimplified } from "../../@types/Album";
+import { defaultArtist } from "../../@types/Defaults";
 
 const state: ArtistPage = {
   artist: defaultArtist,

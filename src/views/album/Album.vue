@@ -1,9 +1,20 @@
 <template>
   <div ref="albumpage" class="overflowed">
     <div class="album-page overflowed__target">
-      {{ id }}
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit officia ut distinctio maiores molestias ipsam
-      adipisci sit accusamus. In aspernatur quisquam nostrum nam facere similique sunt inventore autem, tempora id?
+      <div class="album-header">
+        <div class="title">{{ store.state.album.album.name }}</div>
+        <div>Lorem ipsum dolor sit amet consectetur</div>
+      </div>
+      <div class="content">
+        <!-- <div class="content__cover" v-if="store.state.album.album.images[0].url">
+          <img class="cover" :src="store.state.album.album.images[0].url" alt="" />
+        </div> -->
+        <div class="content__tracks">
+          <div v-for="(track, _, index) in store.state.album.album.tracks.items" :key="index">
+            {{ track.track_number }}. {{ track.name }}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -25,12 +36,11 @@ export default defineComponent({
     const albumpage = ref();
 
     onBeforeRouteUpdate(to => {
-      store.dispatch(`artist/${AlbumActions.getAlbum}`, to.params.id);
-
+      store.dispatch(`album/${AlbumActions.getAlbum}`, to.params.id);
       albumpage.value.scrollTop = 0;
     });
 
-    store.dispatch(`artist/${AlbumActions.getAlbum}`, props.id);
+    store.dispatch(`album/${AlbumActions.getAlbum}`, props.id);
 
     return { albumpage, store, timecode };
   }
@@ -44,38 +54,30 @@ export default defineComponent({
 .overflowed {
   scroll-behavior: smooth;
 }
-.albums {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 20px;
 
-  @include tablet {
-    grid-template-columns: 1fr 1fr;
-  }
+.album-header {
+  text-align: center;
+  margin-bottom: 40px;
 }
-.singles {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 20px;
+
+.title {
+  font-size: 2rem;
+  font-weight: 100;
+}
+
+.cover {
+  width: 100%;
 }
 
 .content {
   display: flex;
-  gap: 40px;
 
-  &__block {
-    margin-bottom: 60px;
+  &__cover {
+    flex: 0 0 300px;
   }
 }
 
-.top {
-  flex: 0 0 350px;
-
-  &__item {
-    margin-bottom: 40px;
-  }
-}
-.artist-page {
+.album-page {
   padding: 30px 40px;
 }
 </style>

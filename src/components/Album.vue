@@ -2,7 +2,7 @@
   <div class="album">
     <div class="active" v-if="currentlyPlayedId === album.uri"><i class="icon-volume-2"></i></div>
     <div class="cover">
-      <img class="img" :src="album.images[1].url" alt="" />
+      <img @click="goAlbum()" class="img" :src="album.images[1].url" alt="" />
       <button class="play" type="button" @click="playAlbum(album.uri)" :title="album.uri">
         <i class="icon-play"></i>
       </button>
@@ -15,23 +15,30 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { useStore } from "vuex";
-import { AlbumSimplified, defaultAlbumSimplified } from "../@types/Artist";
+import { AlbumSimplified } from "../@types/Album";
 import { RootState } from "../@types/rootStore";
 import { instance } from "../api";
+import { defaultAlbumSimplified } from "../@types/Defaults";
+import router from "../router";
 
 export default defineComponent({
   props: {
     album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified> },
     currentlyPlayedId: { default: "", type: String as PropType<string> }
   },
-  setup() {
+  setup(props) {
     const store = useStore<RootState>();
 
     function playAlbum(albumId: string) {
       instance.put("https://api.spotify.com/v1/me/player/play", { context_uri: albumId });
     }
 
-    return { store, playAlbum };
+    function goAlbum() {
+      router.push(`/album/${props.album.id}`);
+      console.log("gogo");
+    }
+
+    return { store, playAlbum, goAlbum };
   }
 });
 </script>
