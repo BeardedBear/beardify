@@ -7,32 +7,32 @@
         </div>
         <div class="header-links">
           <a
-            :href="`https://fr.wikipedia.org/wiki/${store.state.artist.artist.name}`"
+            @click="openLink(`https://fr.wikipedia.org/wiki/${store.state.artist.artist.name}`)"
             class="header-links__item"
-            target="_blank"
           >
             <i class="icon-wikipedia"></i>Wikipedia</a
           >
           <a
-            :href="
-              `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${store.state.artist.artist.name}&amp;x=0&amp;y=0`
+            @click="
+              openLink(
+                `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${store.state.artist.artist.name
+                  .normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')}&amp;x=0&amp;y=0`
+              )
             "
             class="header-links__item"
-            target="_blank"
           >
             <i class="icon-sputnik"></i>Sputnik</a
           >
           <a
-            :href="`https://www.discogs.com/fr/search/?q=${store.state.artist.artist.name}&amp;strict=true`"
+            @click="openLink(`https://www.discogs.com/fr/search/?q=${store.state.artist.artist.name}&amp;strict=true`)"
             class="header-links__item"
-            target="_blank"
           >
             <i class="icon-discogs"></i>Discogs</a
           >
           <a
-            :href="`https://www.google.com/search?q=${store.state.artist.artist.name}`"
+            @click="openLink(`https://www.google.com/search?q=${store.state.artist.artist.name}`)"
             class="header-links__item"
-            target="_blank"
           >
             <i class="icon-google"></i>Google</a
           >
@@ -73,6 +73,10 @@ export default defineComponent({
     const store = useStore<RootState>();
     const artistpage = ref();
 
+    function openLink(url: string) {
+      window.open(url, "_blank");
+    }
+
     onBeforeRouteUpdate(to => {
       store.dispatch(`artist/${ArtistActions.getArtist}`, to.params.id);
       store.dispatch(`artist/${ArtistActions.getTopTracks}`, to.params.id);
@@ -86,7 +90,7 @@ export default defineComponent({
     store.dispatch(`artist/${ArtistActions.getAlbums}`, props.id);
     store.dispatch(`artist/${ArtistActions.getRelatedArtists}`, props.id);
 
-    return { artistpage, store, timecode };
+    return { artistpage, store, timecode, openLink };
   }
 });
 </script>
@@ -139,6 +143,7 @@ export default defineComponent({
       text-decoration: none;
       color: currentColor;
       opacity: 0.3;
+      cursor: pointer;
 
       &:hover {
         opacity: 1;
