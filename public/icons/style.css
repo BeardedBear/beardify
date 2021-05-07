@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?jayr2x');
-  src:  url('fonts/icomoon.eot?jayr2x#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?jayr2x') format('truetype'),
-    url('fonts/icomoon.woff?jayr2x') format('woff'),
-    url('fonts/icomoon.svg?jayr2x#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?ap01gq');
+  src:  url('fonts/icomoon.eot?ap01gq#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?ap01gq') format('truetype'),
+    url('fonts/icomoon.woff?ap01gq') format('woff'),
+    url('fonts/icomoon.svg?ap01gq#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-discogs:before {
+  content: "\e919";
+}
+.icon-sputnik:before {
+  content: "\e918";
+}
+.icon-google:before {
+  content: "\e917";
+}
+.icon-wikipedia:before {
+  content: "\e915";
+}
 .icon-airplay:before {
   content: "\e900";
 }
@@ -54,6 +66,9 @@
 }
 .icon-rewind:before {
   content: "\e909";
+}
+.icon-search:before {
+  content: "\e916";
 }
 .icon-settings:before {
   content: "\e90a";

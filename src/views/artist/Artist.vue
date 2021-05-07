@@ -1,8 +1,42 @@
 <template>
   <div ref="artistpage" class="overflowed">
     <div class="artist-page overflowed__target">
-      <div class="title">
-        {{ store.state.artist.artist.name }}
+      <div class="header">
+        <div class="title">
+          {{ store.state.artist.artist.name }}
+        </div>
+        <div class="header-links">
+          <a
+            :href="`https://fr.wikipedia.org/wiki/${store.state.artist.artist.name}`"
+            class="header-links__item"
+            target="_blank"
+          >
+            <i class="icon-wikipedia"></i>Wikipedia</a
+          >
+          <a
+            :href="
+              `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${store.state.artist.artist.name}&amp;x=0&amp;y=0`
+            "
+            class="header-links__item"
+            target="_blank"
+          >
+            <i class="icon-sputnik"></i>Sputnik</a
+          >
+          <a
+            :href="`https://www.discogs.com/fr/search/?q=${store.state.artist.artist.name}&amp;strict=true`"
+            class="header-links__item"
+            target="_blank"
+          >
+            <i class="icon-discogs"></i>Discogs</a
+          >
+          <a
+            :href="`https://www.google.com/search?q=${store.state.artist.artist.name}`"
+            class="header-links__item"
+            target="_blank"
+          >
+            <i class="icon-google"></i>Google</a
+          >
+        </div>
       </div>
       <div class="content">
         <div>
@@ -90,9 +124,29 @@ export default defineComponent({
 .title {
   font-size: 2rem;
   font-weight: 300;
-  margin-bottom: 20px;
-  // position: sticky;
-  // top: -1px;
-  // background: $bg-color-darker;
+  margin-bottom: 10px;
+}
+
+.header {
+  margin-bottom: 30px;
+
+  &-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    &__item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+      color: currentColor;
+      opacity: 0.3;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
 }
 </style>
