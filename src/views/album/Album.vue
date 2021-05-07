@@ -8,7 +8,7 @@
           ·
           <span>{{ store.state.album.album.release_date.split("-").shift() }}</span>
           ·
-          <span>30min</span>
+          <span>{{ timecodeWithUnits(sumDuration(store.state.album.album.tracks.items)) }}</span>
         </div>
       </div>
       <div class="content">
@@ -40,14 +40,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { onBeforeRouteUpdate } from "vue-router";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/rootStore";
-import { timecode } from "../../helpers/date";
+import { timecodeWithUnits, timecode } from "../../helpers/date";
 import { AlbumActions } from "./AlbumStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { playSongs } from "../../helpers/play";
+import { Track, TrackSimplified } from "../../@types/Track";
 
 export default defineComponent({
   components: { ArtistList },
@@ -57,15 +58,27 @@ export default defineComponent({
   setup(props) {
     const store = useStore<RootState>();
     const albumpage = ref();
+    const albumDuration = ref(0);
 
     onBeforeRouteUpdate(to => {
       store.dispatch(`album/${AlbumActions.getAlbum}`, to.params.id);
       albumpage.value.scrollTop = 0;
     });
 
+    function sumDuration(tracks: TrackSimplified[] | Track[]) {
+      return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
+    }
+
+    onMounted(() => {
+      console.log(store.state.album.album.tracks);
+      // albumDuration.value = store.state.album.album.tracks.items
+      //   .map(t => t.duration_ms)
+      //   .reduce((acc, value) => acc + value, 0);
+    });
+
     store.dispatch(`album/${AlbumActions.getAlbum}`, props.id);
 
-    return { albumpage, store, timecode, playSongs };
+    return { albumpage, store, timecode, timecodeWithUnits, playSongs, albumDuration, sumDuration };
   }
 });
 </script>
