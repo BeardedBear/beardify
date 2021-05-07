@@ -3,9 +3,10 @@
     <div class="heading">Top tracks</div>
     <div
       class="item"
-      v-for="(trackItem, _, index) in store.state.artist.topTracks.tracks"
+      v-for="(trackItem, index) in store.state.artist.topTracks.tracks"
       :key="index"
       :class="{ active: store.state.player.currentlyPlaying.item.id === trackItem.id }"
+      @click="playSongs(index, store.state.artist.topTracks.tracks)"
     >
       <img class="cover" :src="trackItem.album.images[2].url" alt="" />
       <div class="name">{{ trackItem.name }}</div>
@@ -19,12 +20,13 @@ import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/rootStore";
 import { timecode } from "../../helpers/date";
+import { playSongs } from "../../helpers/play";
 
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    return { store, timecode };
+    return { store, timecode, playSongs };
   }
 });
 </script>
@@ -39,9 +41,13 @@ export default defineComponent({
   margin-bottom: 5px;
   padding-right: 10px;
   border-radius: 3px;
+  cursor: pointer;
 
-  &.active {
+  &:hover {
     background-color: rgba($primary-color, 0.1);
+  }
+  &.active {
+    background-color: rgba($primary-color, 0.2);
     color: $primary-color;
   }
 }

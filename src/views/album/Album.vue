@@ -19,8 +19,9 @@
           <div
             class="track"
             :class="{ 'track--active': store.state.player.currentlyPlaying.item.id === track.id }"
-            v-for="(track, _, index) in store.state.album.album.tracks.items"
+            v-for="(track, index) in store.state.album.album.tracks.items"
             :key="index"
+            @click="playSongs(index, store.state.album.album.tracks.items)"
           >
             <div>
               <span class="track__number">{{ track.track_number }}.</span>
@@ -46,10 +47,10 @@ import { RootState } from "../../@types/rootStore";
 import { timecode } from "../../helpers/date";
 import { AlbumActions } from "./AlbumStore";
 import ArtistList from "../../components/ArtistList.vue";
-import Cover from "../../components/Cover.vue";
+import { playSongs } from "../../helpers/play";
 
 export default defineComponent({
-  components: { ArtistList, Cover },
+  components: { ArtistList },
   props: {
     id: { default: "", type: String }
   },
@@ -64,7 +65,7 @@ export default defineComponent({
 
     store.dispatch(`album/${AlbumActions.getAlbum}`, props.id);
 
-    return { albumpage, store, timecode };
+    return { albumpage, store, timecode, playSongs };
   }
 });
 </script>
