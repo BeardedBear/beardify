@@ -36,7 +36,8 @@ export default defineComponent({
 
     onBeforeMount(() => {
       AOS.init({
-        easing: "ease-out-back"
+        easing: "ease-in-out-back",
+        duration: 300
       }); // Params : https://github.com/michalsnik/aos#1-initialize-aos
     });
 

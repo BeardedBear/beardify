@@ -31,7 +31,6 @@ const actions: ActionTree<AlbumPage, RootState> = {
   [AlbumActions.getAlbum](store, albumId: string): void {
     instance.get(`https://api.spotify.com/v1/albums/${albumId}`).then(e => {
       store.commit(Mutations.SET_ALBUM, e.data);
-      console.log(e.data);
     });
   }
 };

@@ -9,8 +9,6 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { useStore } from "vuex";
-import type { RootState } from "../@types/rootStore";
 import { Artist, ArtistSimplified } from "../@types/Artist";
 
 export default defineComponent({
@@ -19,17 +17,12 @@ export default defineComponent({
       default: [],
       type: Array as PropType<Artist[] | ArtistSimplified[]>
     },
-    feat : {
-      default : false,
-      type : Boolean as PropType<boolean>
+    feat: {
+      default: false,
+      type: Boolean as PropType<boolean>
     }
-  },
-  setup() {
-    const store = useStore<RootState>();
-    return { store }
-
   }
-})
+});
 </script>
 
 <style lang="scss" scoped>

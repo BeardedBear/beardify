@@ -12,10 +12,10 @@
         </div>
       </div>
       <div class="content">
-        <div class="content__cover" data-aos="fade-right">
+        <div class="content__cover">
           <img class="cover" :src="store.state.album.album.images[0].url" />
         </div>
-        <div class="content__tracks" data-aos="fade-left">
+        <div class="content__tracks">
           <div
             class="track"
             :class="{ 'track--active': store.state.player.currentlyPlaying.item.id === track.id }"
@@ -46,9 +46,10 @@ import { RootState } from "../../@types/rootStore";
 import { timecode } from "../../helpers/date";
 import { AlbumActions } from "./AlbumStore";
 import ArtistList from "../../components/ArtistList.vue";
+import Cover from "../../components/Cover.vue";
 
 export default defineComponent({
-  components: { ArtistList },
+  components: { ArtistList, Cover },
   props: {
     id: { default: "", type: String }
   },
