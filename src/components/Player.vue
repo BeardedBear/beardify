@@ -4,7 +4,7 @@
       <div class="meta">
         <div class="controls">
           <div>
-            <button class="controls__btn" v-if="current.is_playing" @click="goPlay()">
+            <button class="controls__btn" v-if="!store.state.player.currentlyPlaying.is_playing" @click="goPlay()">
               <i class="icon-play"></i>
             </button>
             <button class="controls__btn" v-else @click="goPause()">
@@ -14,29 +14,32 @@
               <i class="icon-skip-forward"></i>
             </button>
           </div>
-          <div v-if="current.progress_ms">{{ timecode(current.progress_ms) }} / {{ timecode(current.timestamp) }}</div>
+          <div v-if="store.state.player.currentlyPlaying.progress_ms">
+            {{ timecode(store.state.player.currentlyPlaying.progress_ms) }} /
+            {{ timecode(store.state.player.currentlyPlaying.item.duration_ms) }}
+          </div>
           <div></div>
         </div>
 
-        <!-- <div>
-          <div v-if="current.track?.track_window.current_track.name !== null" class="meta__what">
-            <img :src="current.track?.track_window.current_track.album.images[1].url" />
+        <div>
+          <div v-if="store.state.player.currentlyPlaying.item.name !== null" class="meta__what">
+            <img :src="store.state.player.currentlyPlaying.item.album.images[1].url" />
             <div>
               <div>
-                <span v-for="(artist, _, index) in current.track?.track_window.current_track.artists" :key="index">
+                <span v-for="(artist, _, index) in store.state.player.currentlyPlaying.item.album.artists" :key="index">
                   <router-link class="artistname" :to="`/artist/${artist.uri.split(':').pop()}`">
                     {{ artist.name }}
                   </router-link>
-                  <span v-if="current.track?.track_window.current_track.artists.length === index">,</span>
+                  <span v-if="store.state.player.currentlyPlaying.item.album.artists.length === index">,</span>
                 </span>
                 ·
-                <span class="trackname">{{ current.track?.track_window.current_track.name }}</span>
+                <span class="trackname">{{ store.state.player.currentlyPlaying.item.name }}</span>
               </div>
-              <div class="album">{{ current.track?.track_window.current_track.album.name }}</div>
+              <div class="album">{{ store.state.player.currentlyPlaying.item.album.name }}</div>
             </div>
           </div>
           <div v-else>Pas de morceaux de lancé</div>
-        </div> -->
+        </div>
 
         <div class="options">
           <div>
@@ -64,12 +67,19 @@
         </div>
       </div>
 
-      <!-- <div ref="progresss" class="progress">
-        <div class="bar" :style="`width:${(current.track?.position / current.track?.duration) * 100}%`"></div>
+      <div ref="progresss" class="progress">
+        <div
+          class="bar"
+          :style="
+            `width:${(store.state.player.currentlyPlaying.progress_ms /
+              store.state.player.currentlyPlaying.item.duration_ms) *
+              100}%`
+          "
+        ></div>
         <div class="seek" :style="`width:${perc}%`">
           <div class="time">{{ time }}</div>
         </div>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -131,18 +141,18 @@ export default defineComponent({
         volume.value = e.offsetX;
       });
 
-      // progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
-      //   const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
-      //   const duration = (current.track.duration / 100) * positionInPercent;
-      //   perc.value = positionInPercent;
-      //   time.value = timecode(duration);
-      // });
+      progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
+        const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
+        const duration = (store.state.player.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
+        perc.value = positionInPercent;
+        time.value = timecode(duration);
+      });
 
-      // progresss.value.addEventListener("click", (e: MouseEvent) => {
-      //   const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
-      //   const duration = (current.track.duration / 100) * positionInPercent;
-      //   instance.put(`me/player/seek?position_ms=${Math.round(duration)}`);
-      // });
+      progresss.value.addEventListener("click", (e: MouseEvent) => {
+        const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
+        const duration = (store.state.player.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
+        instance.put(`me/player/seek?position_ms=${Math.round(duration)}`);
+      });
     });
 
     return { current, store, getDevices, setDevice, setVolume, goPlay, goNext, goPause, perc, time, timecode, progresss, refVolume, volume};
@@ -291,7 +301,7 @@ export default defineComponent({
     bottom: 0;
     left: 0;
     background: #6243b0;
-    transition: width linear 0.5s;
+    // transition: width linear 1s;
   }
 
   &:hover {

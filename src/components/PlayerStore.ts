@@ -2,7 +2,7 @@ import { ActionTree, MutationTree } from "vuex";
 import { instance } from "../api";
 import { Player, defaultUserDevice } from "../@types/Player";
 import { RootState } from "../@types/rootStore";
-import { defaultCurrentlyPlaying } from "../@types/CurrentlyPlaying";
+import { CurrentlyPlaying, defaultCurrentlyPlaying } from "../@types/CurrentlyPlaying";
 
 const state: Player = {
   devices: {
@@ -30,7 +30,8 @@ const mutations: MutationTree<Player> = {
     state.devices.activeDevice = data;
   },
 
-  [Mutations.PLAYER_STATE_CHANGED](state, customEvent: {}): void {
+  [Mutations.PLAYER_STATE_CHANGED](state, customEvent: CurrentlyPlaying): void {
+    state.currentlyPlaying = customEvent;
     // WTF SDK
     // state.currentlyPlaying.track.track_window.current_track.album.uri = customEvent.context.uri || "";
   },
