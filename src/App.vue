@@ -28,18 +28,23 @@ import { RootState } from "./@types/rootStore";
 import { AuthActions } from "./views/AuthStore";
 import { instance } from "./api";
 import AOS from "aos";
+import { log } from "console";
 
 export default defineComponent({
   components: { Topbar, Player },
   setup() {
     const store = useStore<RootState>();
 
+    // Params : https://github.com/michalsnik/aos#1-initialize-aos
     onBeforeMount(() => {
       AOS.init({
         easing: "ease-in-out-back",
         duration: 300
-      }); // Params : https://github.com/michalsnik/aos#1-initialize-aos
+      });
     });
+
+    store.dispatch(`player/${PlayerActions.getDeviceList}`);
+    store.dispatch(`auth/${AuthActions.refresh}`);
 
     // Keep app active
     setInterval(() => {
@@ -48,9 +53,15 @@ export default defineComponent({
     }, 120000);
 
     setInterval(() => {
-      instance.get("https://api.spotify.com/v1/me/player").then(e => {
-        store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data);
-      });
+      instance
+        .get("https://api.spotify.com/v1/me/player")
+        .then(e => {
+          console.log(e.status);
+          store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data);
+        })
+        .catch(error => {
+          console.error("error", error);
+        });
     }, 1000);
 
     addEventListener("initdevice", (() => {

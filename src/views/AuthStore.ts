@@ -45,6 +45,7 @@ export enum AuthActions {
 
 const actions = {
   async [AuthActions.refresh](store: ActionContext<Auth, RootState>): Promise<void> {
+
     const request = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -52,7 +53,6 @@ const actions = {
         grant_type: "refresh_token",
         refresh_token: store.state.auth.refreshToken,
         client_id: api.clientId,
-        client_secret: api.clientSecret,
       }),
     });
 

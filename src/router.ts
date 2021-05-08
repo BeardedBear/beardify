@@ -6,6 +6,11 @@ import Artist from "./views/artist/Artist.vue";
 import Album from "./views/album/Album.vue";
 import Login from "./views/Login.vue";
 import Store from "./store";
+import axios from "axios";
+import { instance } from "./api";
+import store from "./store";
+import { PlayerActions } from "./components/PlayerStore";
+import { AuthActions } from "./views/AuthStore";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -51,6 +56,13 @@ const router = createRouter({
 
 router.beforeEach(async to => {
   if (!Store.state.auth.me.displayName && to.path !== "/login" && to.path !== "/auth") {
+    instance.get("https://api.spotify.com/v1/me/player").then(e => {
+      if (e.status !== 200) {
+        store.dispatch(`player/${PlayerActions.getDeviceList}`);
+        store.dispatch(`auth/${AuthActions.refresh}`);
+      }
+    });
+
     router.push("/login");
   }
 });
