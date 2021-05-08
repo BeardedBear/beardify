@@ -5,6 +5,7 @@ import axios from "axios";
 import type { RootState } from "../@types/rootStore";
 import type { Auth, AuthData } from "../@types/Auth";
 import router from "../router";
+import { log } from "console";
 
 const state: Auth = {
   auth: {
@@ -100,7 +101,7 @@ const actions = {
         code: query,
       });
     } else {
-      alert("HTTP-Error: " + response.status);
+      console.error(response.status)
     }
   },
 };
