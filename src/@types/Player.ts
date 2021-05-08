@@ -1,10 +1,11 @@
 import { CurrentlyPlaying } from "./CurrentlyPlaying";
 import { defaultImage } from "./Defaults";
+import { Device } from "./Device";
 
 export interface Player {
   devices: {
-    activeDevice: UserDevice;
-    list: UserDevice[];
+    activeDevice: Device;
+    list: Device[];
   };
   currentlyPlaying: CurrentlyPlaying;
 }

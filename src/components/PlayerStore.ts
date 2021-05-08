@@ -4,6 +4,7 @@ import { Player, defaultUserDevice } from "../@types/Player";
 import { RootState } from "../@types/rootStore";
 import { CurrentlyPlaying } from "../@types/CurrentlyPlaying";
 import { defaultCurrentlyPlaying } from "../@types/Defaults";
+import { Device, DevicesResponse } from "../@types/Device";
 
 const state: Player = {
   devices: {
@@ -23,11 +24,11 @@ export enum Mutations {
 }
 
 const mutations: MutationTree<Player> = {
-  [Mutations.GET_DEVICE_LIST](state, data: UserDevice[]): void {
+  [Mutations.GET_DEVICE_LIST](state, data: Device[]): void {
     state.devices.list = data;
   },
 
-  [Mutations.SET_THIS_DEVICE](state, data: UserDevice): void {
+  [Mutations.SET_THIS_DEVICE](state, data: Device): void {
     state.devices.activeDevice = data;
   },
 
@@ -50,7 +51,7 @@ export enum PlayerActions {
 
 const actions: ActionTree<Player, RootState> = {
   [PlayerActions.getDeviceList](store) {
-    instance.get<UserDevicesResponse>("me/player/devices").then(({ data }) => {
+    instance.get<DevicesResponse>("me/player/devices").then(({ data }) => {
       // On set le dernier device actif par defaut
       const lastActiveDevice = data.devices.filter(el => el.name === store.state.devices.activeDevice.name).shift();
       const haveDeviceActive = data.devices.filter(d => d.is_active);
@@ -64,7 +65,7 @@ const actions: ActionTree<Player, RootState> = {
     });
   },
 
-  [PlayerActions.setDevice](store, device: UserDevice) {
+  [PlayerActions.setDevice](store, device: Device) {
     store.commit(Mutations.SET_THIS_DEVICE, device);
     instance.put("me/player", { device_ids: [device.id] });
   },

@@ -94,6 +94,7 @@ import { Mutations, PlayerActions } from "../components/PlayerStore";
 import { timecode } from "../helpers/date";
 import { RootState } from "../@types/rootStore";
 import ArtistList from "./ArtistList.vue";
+import { Device } from "../@types/Device";
 
 export default defineComponent({
   components: { ArtistList },
@@ -110,7 +111,7 @@ export default defineComponent({
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
     }
 
-    function setDevice(id: UserDevice) {
+    function setDevice(id: Device) {
       store.dispatch(`player/${PlayerActions.setDevice}`, id);
     }
 
