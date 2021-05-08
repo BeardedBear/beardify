@@ -22,7 +22,7 @@ export enum Mutations {
 
 const mutations: MutationTree<Search> = {
   [Mutations.SET_RESULTS](state, data: { artists: Artist[]; albums: Album[]; tracks: TrackSimplified[] }): void {
-    state.artists = data.artists.slice(0, 12);
+    state.artists = data.artists;
     state.albums = data.albums;
     state.tracks = data.tracks;
   }
@@ -37,8 +37,8 @@ export enum SearchActions {
 const actions: ActionTree<Search, RootState> = {
   [SearchActions.search](store, query: string) {
     instance.get<SearchFromAPI>(`https://api.spotify.com/v1/search?q=${query}&type=artist%2Calbum%2Ctrack`).then(e => {
-      const artists = e.data.artists.items;
-      const albums = e.data.albums.items;
+      const artists = e.data.artists.items.slice(0, 12);
+      const albums = e.data.albums.items.slice(0, 6);
       const tracks = e.data.tracks.items;
       store.commit(Mutations.SET_RESULTS, { artists, albums, tracks });
       // On set le dernier device actif par defaut

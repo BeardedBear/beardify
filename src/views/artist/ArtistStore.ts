@@ -112,8 +112,9 @@ const actions: ActionTree<ArtistPage, RootState> = {
         `https://api.spotify.com/v1/artists/${artistId}/albums?market=FR&include_groups=single&limit=50`
       )
       .then(e => {
-        const onlySingles = e.data.items.filter(e => e.total_tracks < 4);
-        const onlyEps = e.data.items.filter(e => e.total_tracks >= 4);
+        const minimumNumberOfTracks = 4;
+        const onlySingles = e.data.items.filter(e => e.total_tracks < minimumNumberOfTracks);
+        const onlyEps = e.data.items.filter(e => e.total_tracks >= minimumNumberOfTracks);
         store.commit(Mutations.SET_SINGLES, removeDuplicatesAlbums(onlySingles));
         store.commit(Mutations.SET_EPS, removeDuplicatesAlbums(onlyEps));
       });

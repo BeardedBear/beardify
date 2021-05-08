@@ -1,9 +1,9 @@
 <template>
-  <span v-for="(artist, _, index) in artistList" :key="index">
+  <span v-for="(artist, index) in artistList" :key="index">
     <span class="artist" :class="{ feat }" @click.stop="goArtist(`/artist/${artist.uri.split(':').pop()}`)">
       {{ artist.name }}
     </span>
-    <span v-if="artistList.length === index">,</span>
+    <span class="separator" v-if="artistList.length - 1 !== index"> / </span>
   </span>
 </template>
 
@@ -34,6 +34,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "../assets/scss/colors";
+
+.separator {
+  opacity: 0.2;
+}
 .artist {
   text-decoration: none;
   color: currentColor;

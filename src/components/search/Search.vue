@@ -12,6 +12,7 @@
     </div>
     <button class="reset" @click="reset()">Effacer</button>
     <div class="results" v-if="query">
+      <!-- Artist List -->
       <div class="artist-list">
         <router-link
           :to="`/artist/${artist.id}`"
@@ -25,11 +26,24 @@
           <div>{{ artist.name }}</div>
         </router-link>
       </div>
-      <div>
-        <div v-for="(album, index) in store.state.search.albums" :key="index">
-          {{ album.name }}
-        </div>
+      <!-- Album List -->
+      <div class="album-list">
+        <router-link
+          :to="`/album/${album.id}`"
+          v-for="(album, index) in store.state.search.albums"
+          :key="index"
+          @click="reset()"
+          class="album"
+        >
+          <img class="cover" v-if="album.images.length" :src="album.images[album.images.length - 1].url" />
+          <img class="cover" v-else src="/img/default.png" />
+          <div class>
+            <div>{{ album.name }}</div>
+            <div><ArtistList :artistList="album.artists" feat /></div>
+          </div>
+        </router-link>
       </div>
+      <!-- Track List -->
       <div>
         <div v-for="(track, index) in store.state.search.tracks" :key="index">
           {{ track.name }}
@@ -44,8 +58,10 @@ import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/rootStore";
 import { SearchActions } from "./SearchStore";
+import ArtistList from "../../components/ArtistList.vue";
 
 export default defineComponent({
+  components: { ArtistList },
   setup() {
     const store = useStore<RootState>();
     const query = ref("");
@@ -88,13 +104,33 @@ $radius: 4px;
   }
 }
 
+.album {
+  display: flex;
+  padding: 10px;
+  border-radius: $radius;
+  gap: 10px;
+  color: currentColor;
+  text-decoration: none;
+  align-items: center;
+
+  .cover {
+    $size: 40px;
+    height: $size;
+    width: $size;
+    border-radius: 3px;
+  }
+
+  &:hover {
+    background-color: $bg-color-lighter;
+  }
+}
+
 .artist {
   text-align: center;
-  padding: 10px;
+  padding: 10px 5px;
   border-radius: $radius;
   text-decoration: none;
   color: currentColor;
-  font-size: 0.8rem;
 
   &:hover {
     background-color: $bg-color-lighter;
@@ -107,7 +143,7 @@ $radius: 4px;
   }
 
   .avatar {
-    $size: 45px;
+    $size: 35px;
     height: $size;
     width: $size;
     border-radius: $size;
@@ -135,8 +171,9 @@ $radius: 4px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   justify-content: space-evenly;
-  gap: 30px;
+  gap: 10px;
   border-radius: 0 0 $radius $radius;
+  font-size: 0.8rem;
 
   > div {
     padding: 10px;
