@@ -85,7 +85,7 @@ export default defineComponent({
 }
 
 .follow {
-  width: 70px;
+  width: 100px;
   text-align: center;
 }
 .header {

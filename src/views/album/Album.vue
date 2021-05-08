@@ -13,7 +13,12 @@
       </div>
       <div class="content">
         <div class="content__cover">
-          <img class="cover" :src="store.state.album.album.images[0].url" />
+          <img
+            v-if="store.state.album.album.images.length >= 2"
+            class="cover"
+            :src="store.state.album.album.images[1].url"
+          />
+          <img v-else class="cover" src="/img/default.png" />
         </div>
         <div class="content__tracks">
           <div

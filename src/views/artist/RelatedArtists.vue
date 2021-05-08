@@ -8,7 +8,7 @@
         :key="index"
         :to="`/artist/${artist.id}`"
       >
-        <img class="image" :src="artist.images[2].url" />
+        <img v-if="artist.images.length" class="image" :src="artist.images[artist.images.length - 1].url" />
         <div class="name">{{ artist.name }}</div>
       </router-link>
     </div>

@@ -24,7 +24,12 @@
         <div>
           <div v-if="store.state.player.currentlyPlaying.item.name !== null" class="meta__what">
             <router-link :to="`/album/${store.state.player.currentlyPlaying.item.album.id}`">
-              <img class="cover" :src="store.state.player.currentlyPlaying.item.album.images[1].url" />
+              <img
+                class="cover"
+                v-if="store.state.album.album.images.length"
+                :src="store.state.player.currentlyPlaying.item.album.images[0].url"
+              />
+              <img class="cover" v-else src="/img/default.png" />
             </router-link>
             <div>
               <div>
