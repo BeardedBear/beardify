@@ -10,7 +10,7 @@
         placeholder="Recherche..."
       />
     </div>
-    <button class="reset" @click="reset()">Effacer</button>
+    <button v-if="query" class="reset" @click="reset()"><i class="icon-x"></i></button>
     <div class="results" v-if="query">
       <!-- Artist List -->
       <div class="artist-list">
@@ -154,8 +154,17 @@ $radius: 4px;
 
 .reset {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: $radius;
+  border: 0;
+  background-color: $bg-color-lighter;
+  color: currentColor;
+  text-align: center;
+  width: 40px;
 }
 .search {
   position: relative;
