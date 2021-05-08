@@ -97,6 +97,12 @@ export default defineComponent({
 @import "./assets/scss/heading";
 @import "./assets/scss/mixins";
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 ::selection {
   background-color: $primary-color;
 }

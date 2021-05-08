@@ -57,6 +57,7 @@ export default defineComponent({
   background: $bg-color;
   padding: 15px;
   align-items: center;
+  gap: 30px;
 }
 
 #nav {

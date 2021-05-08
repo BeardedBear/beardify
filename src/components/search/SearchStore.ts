@@ -22,7 +22,7 @@ export enum Mutations {
 
 const mutations: MutationTree<Search> = {
   [Mutations.SET_RESULTS](state, data: { artists: Artist[]; albums: Album[]; tracks: TrackSimplified[] }): void {
-    state.artists = data.artists;
+    state.artists = data.artists.slice(0, 12);
     state.albums = data.albums;
     state.tracks = data.tracks;
   }
