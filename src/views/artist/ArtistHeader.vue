@@ -37,7 +37,7 @@
         <i class="icon-discogs"></i>Discogs</a
       >
       <a
-        @click="openLink(`https://www.google.com/search?q=${store.state.artist.artist.name}`)"
+        @click="openLink(`https://www.google.com/search?q=${store.state.artist.artist.name}+band+artist`)"
         class="header-links__item"
       >
         <i class="icon-google"></i>Google</a

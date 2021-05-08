@@ -37,7 +37,7 @@
         >
           <img class="cover" v-if="album.images.length" :src="album.images[album.images.length - 1].url" />
           <img class="cover" v-else src="/img/default.png" />
-          <div class>
+          <div>
             <div>{{ album.name }}</div>
             <div><ArtistList :artistList="album.artists" feat /></div>
           </div>
@@ -45,8 +45,22 @@
       </div>
       <!-- Track List -->
       <div>
-        <div v-for="(track, index) in store.state.search.tracks" :key="index">
-          {{ track.name }}
+        <div
+          class="track"
+          v-for="(track, index) in store.state.search.tracks"
+          :key="index"
+          @click="
+            () => {
+              playSong(track.uri);
+              reset();
+            }
+          "
+        >
+          <i class="track__icon icon-music"></i>
+          <div>
+            <div>{{ track.name }}</div>
+            <div><ArtistList :artistList="track.artists" feat /></div>
+          </div>
         </div>
       </div>
     </div>
@@ -59,6 +73,7 @@ import { useStore } from "vuex";
 import { RootState } from "../../@types/rootStore";
 import { SearchActions } from "./SearchStore";
 import ArtistList from "../../components/ArtistList.vue";
+import { playSong } from "../../helpers/play";
 
 export default defineComponent({
   components: { ArtistList },
@@ -74,7 +89,11 @@ export default defineComponent({
       query.value = "";
     }
 
-    return { store, search, query, reset };
+    document.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.key === "Escape") query.value = "";
+    });
+
+    return { store, search, query, reset, playSong };
   }
 });
 </script>
@@ -101,6 +120,24 @@ $radius: 4px;
 
   &.active {
     border-radius: $radius $radius 0 0;
+  }
+}
+
+.track {
+  display: flex;
+  gap: 10px;
+  border-radius: $radius;
+  padding: 10px;
+  cursor: pointer;
+  align-items: center;
+
+  &__icon {
+    font-size: 2.5rem;
+    opacity: 0.1;
+  }
+
+  &:hover {
+    background-color: $bg-color-lighter;
   }
 }
 
@@ -139,6 +176,7 @@ $radius: 4px;
   &-list {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
     align-content: flex-start;
   }
 

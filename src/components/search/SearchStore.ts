@@ -39,7 +39,7 @@ const actions: ActionTree<Search, RootState> = {
     instance.get<SearchFromAPI>(`https://api.spotify.com/v1/search?q=${query}&type=artist%2Calbum%2Ctrack`).then(e => {
       const artists = e.data.artists.items.slice(0, 12);
       const albums = e.data.albums.items.slice(0, 6);
-      const tracks = e.data.tracks.items;
+      const tracks = e.data.tracks.items.slice(0, 6);
       store.commit(Mutations.SET_RESULTS, { artists, albums, tracks });
       // On set le dernier device actif par defaut
       console.log(e.data);
