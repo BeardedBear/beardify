@@ -8,11 +8,16 @@
     </div>
     <Search />
     <div>
-      <div v-if="store.state.auth.me.displayName === ''">
-        <a :href="connectUrl">LOGME</a> - {{ store.state.auth.me.displayName }}
+      <div v-if="store.state.auth.me.display_name === ''">
+        <a :href="connectUrl">LOGME</a> - {{ store.state.auth.me }}
       </div>
       <div v-else>
-        {{ store.state.auth.me.displayName }}
+        <img
+          class="avatar"
+          v-if="store.state.auth.me.images.length"
+          :src="store.state.auth.me.images[store.state.auth.me.images.length - 1].url"
+        />
+        <img v-else src="/img/default.png" />
       </div>
     </div>
   </div>
@@ -47,6 +52,13 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import "../assets/scss/colors";
 
+.avatar {
+  $size: 35px;
+  border-radius: $size;
+  height: $size;
+  width: $size;
+  display: block;
+}
 .logo {
   height: 30px;
   display: block;

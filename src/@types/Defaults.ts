@@ -160,3 +160,22 @@ export const defaultAlbum: Album = {
   type: "",
   uri: ""
 };
+
+const defaultFollowers = {
+  href: null,
+  total: 0
+};
+
+export const defaultMe = {
+  country: "",
+  display_name: "",
+  email: "",
+  external_urls: defaultExternalUrls,
+  followers: defaultFollowers,
+  href: "",
+  id: "",
+  images: [defaultImage],
+  product: "",
+  type: "",
+  uri: ""
+};

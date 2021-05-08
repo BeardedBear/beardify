@@ -5,7 +5,8 @@ import axios from "axios";
 import type { RootState } from "../@types/rootStore";
 import type { Auth, AuthData } from "../@types/Auth";
 import router from "../router";
-import { log } from "console";
+import { defaultMe } from "../@types/Defaults";
+import { Me } from "../@types/Me";
 
 const state: Auth = {
   auth: {
@@ -13,16 +14,14 @@ const state: Auth = {
     refreshToken: "",
     code: "",
   },
-  me: {
-    displayName: "",
-  },
+  me: defaultMe,
 };
 
 // MUTATIONS
 
 export enum Mutations {
   AUTH = "AUTH",
-  GET_ME = "GET_ME",
+  SET_ME = "SET_ME",
 }
 
 const mutations = {
@@ -32,8 +31,8 @@ const mutations = {
     state.auth.code = data.code;
   },
 
-  [Mutations.GET_ME](state: Auth, data: string): void {
-    state.me.displayName = data;
+  [Mutations.SET_ME](state: Auth, data: Me): void {
+    state.me = data;
   },
 };
 
@@ -87,13 +86,13 @@ const actions = {
       const json = await response.json();
 
       axios
-        .get("https://api.spotify.com/v1/me", {
+        .get<Me>("https://api.spotify.com/v1/me", {
           headers: {
             Authorization: `Bearer ${json.access_token}`,
             "Content-Type": "application/json",
           },
         })
-        .then((p) => store.commit("GET_ME", p.data.display_name))
+        .then((p) => store.commit(Mutations.SET_ME, p.data))
         .then(() => router.push("/"));
 
       store.commit(Mutations.AUTH, {

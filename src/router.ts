@@ -55,7 +55,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async to => {
-  if (!Store.state.auth.me.displayName && to.path !== "/login" && to.path !== "/auth") {
+  if (!Store.state.auth.me.display_name && to.path !== "/login" && to.path !== "/auth") {
     instance.get("https://api.spotify.com/v1/me/player").then(e => {
       if (e.status !== 200) {
         store.dispatch(`player/${PlayerActions.getDeviceList}`);
