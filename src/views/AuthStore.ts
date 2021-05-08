@@ -63,6 +63,7 @@ const actions = {
       store.commit(Mutations.AUTH, {
         accessToken: json.access_token,
         refreshToken: json.refresh_token,
+        code : store.state.auth.code
       });
     } else {
       console.error("From refresh", request.status)

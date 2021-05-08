@@ -2,11 +2,11 @@
   <div class="topbar">
     <div id="nav">
       <img class="logo" src="/img/logo.svg" alt="" />
-      <router-link to="/">Home</router-link>
-      <router-link to="/about">About</router-link>
+      <!-- <router-link to="/">Home</router-link>
+      <router-link to="/about">About</router-link> -->
       <router-link to="/login">Login</router-link>
     </div>
-    <div>search</div>
+    <Search />
     <div>
       <div v-if="store.state.auth.me.displayName === ''">
         <a :href="connectUrl">LOGME</a> - {{ store.state.auth.me.displayName }}
@@ -25,8 +25,10 @@ import { PlayerActions } from "../components/PlayerStore";
 import { AuthActions } from "../views/AuthStore";
 import type { RootState } from "../@types/rootStore";
 import { defineComponent } from "vue";
+import Search from "./search/Search.vue"
 
 export default defineComponent({
+  components : {Search},
   setup() {
     const store = useStore<RootState>();
 
