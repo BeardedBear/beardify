@@ -7,15 +7,23 @@
           <div class="content__block">
             <div class="heading">Albums</div>
             <div class="albums">
-              <div v-for="(album, index, key) in store.state.artist.albums" :key="key">
+              <div v-for="(album, index) in store.state.artist.albums" :key="index">
+                <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
+              </div>
+            </div>
+          </div>
+          <div class="content__block" v-if="store.state.artist.eps.length">
+            <div class="heading">EP's</div>
+            <div class="eps">
+              <div v-for="(album, index) in store.state.artist.eps" :key="index">
                 <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
               </div>
             </div>
           </div>
           <div class="content__block" v-if="store.state.artist.singles.length">
-            <div class="heading">Singles & EP's</div>
+            <div class="heading">Singles</div>
             <div class="singles">
-              <div v-for="(album, _, index) in store.state.artist.singles" :key="index">
+              <div v-for="(album, index) in store.state.artist.singles" :key="index">
                 <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
               </div>
             </div>
@@ -86,9 +94,15 @@ export default defineComponent({
     grid-template-columns: 1fr 1fr;
   }
 }
-.singles {
+.eps {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.singles {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   gap: 20px;
 }
 

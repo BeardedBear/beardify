@@ -13,6 +13,7 @@ const state: ArtistPage = {
     tracks: []
   },
   albums: [],
+  eps: [],
   singles: [],
   relatedArtists: {
     artists: []
@@ -27,6 +28,7 @@ export enum Mutations {
   SET_TRACKS = "SET_TRACKS",
   SET_ALBUMS = "SET_ALBUMS",
   SET_SINGLES = "SET_SINGLES",
+  SET_EPS = "SET_EPS",
   SET_RELATED_ARTISTS = "SET_RELATED_ARTISTS",
   SET_FOLLOW_STATUS = "SET_FOLLOW_STATUS",
   FOLLOW = "FOLLOW",
@@ -48,6 +50,10 @@ const mutations: MutationTree<ArtistPage> = {
 
   [Mutations.SET_SINGLES](state, data: AlbumSimplified[]): void {
     state.singles = data;
+  },
+
+  [Mutations.SET_EPS](state, data: AlbumSimplified[]): void {
+    state.eps = data;
   },
 
   [Mutations.SET_RELATED_ARTISTS](state, data: Artist[]): void {
@@ -105,7 +111,12 @@ const actions: ActionTree<ArtistPage, RootState> = {
       .get<Paging<AlbumSimplified>>(
         `https://api.spotify.com/v1/artists/${artistId}/albums?market=FR&include_groups=single&limit=50`
       )
-      .then(e => store.commit(Mutations.SET_SINGLES, removeDuplicatesAlbums(e.data.items)));
+      .then(e => {
+        const onlySingles = e.data.items.filter(e => e.total_tracks < 4);
+        const onlyEps = e.data.items.filter(e => e.total_tracks >= 4);
+        store.commit(Mutations.SET_SINGLES, removeDuplicatesAlbums(onlySingles));
+        store.commit(Mutations.SET_EPS, removeDuplicatesAlbums(onlyEps));
+      });
   },
 
   [ArtistActions.getRelatedArtists](store, artistId: string): void {

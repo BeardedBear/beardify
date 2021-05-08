@@ -6,6 +6,7 @@ export interface ArtistPage {
   artist: Artist;
   topTracks: ArtistTopTracks;
   albums: AlbumSimplified[];
+  eps: AlbumSimplified[];
   singles: AlbumSimplified[];
   relatedArtists: RelatedArtists;
   followStatus: boolean;
