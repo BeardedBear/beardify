@@ -1,6 +1,6 @@
 import { ActionTree, MutationTree } from "vuex";
 import { instance } from "../../api";
-import { RootState } from "../../@types/rootStore";
+import { RootState } from "../../@types/RootState";
 
 import { Album, AlbumPage } from "../../@types/Album";
 import { defaultAlbum } from "../../@types/Defaults";

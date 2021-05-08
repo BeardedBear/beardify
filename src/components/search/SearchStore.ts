@@ -2,7 +2,7 @@ import { ActionTree, MutationTree } from "vuex";
 import { Album } from "../../@types/Album";
 import { Artist } from "../../@types/Artist";
 import { defaultAlbum, defaultArtist, defaultTrackSimplified } from "../../@types/Defaults";
-import { RootState } from "../../@types/rootStore";
+import { RootState } from "../../@types/RootState";
 import { Search, SearchFromAPI } from "../../@types/Search";
 import { TrackSimplified } from "../../@types/Track";
 import { instance } from "../../api";

@@ -17,7 +17,7 @@
 import { defineComponent, PropType } from "vue";
 import { useStore } from "vuex";
 import { AlbumSimplified } from "../@types/Album";
-import { RootState } from "../@types/rootStore";
+import { RootState } from "../@types/RootState";
 import { instance } from "../api";
 import { defaultAlbumSimplified } from "../@types/Defaults";
 import router from "../router";

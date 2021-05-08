@@ -49,7 +49,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
-import { RootState } from "../../@types/rootStore";
+import { RootState } from "../../@types/RootState";
 import { ArtistActions } from "./ArtistStore";
 
 export default defineComponent({

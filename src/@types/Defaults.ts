@@ -1,5 +1,6 @@
 import { Album, AlbumSimplified } from "./Album";
-import { Artist, ExternalUrls } from "./Artist";
+import { Artist } from "./Artist";
+import { ExternalUrls } from "./Misc";
 import { TrackSimplified, Track } from "./Track";
 
 export const defaultImage = {

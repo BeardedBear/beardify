@@ -92,7 +92,7 @@ import { useStore } from "vuex";
 import { instance } from "../api";
 import { Mutations, PlayerActions } from "../components/PlayerStore";
 import { timecode } from "../helpers/date";
-import { RootState } from "../@types/rootStore";
+import { RootState } from "../@types/RootState";
 import ArtistList from "./ArtistList.vue";
 import { Device } from "../@types/Device";
 

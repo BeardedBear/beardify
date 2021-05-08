@@ -48,7 +48,7 @@
 import { defineComponent, onMounted, ref } from "vue";
 import { onBeforeRouteUpdate } from "vue-router";
 import { useStore } from "vuex";
-import { RootState } from "../../@types/rootStore";
+import { RootState } from "../../@types/RootState";
 import { timecodeWithUnits, timecode } from "../../helpers/date";
 import { AlbumActions } from "./AlbumStore";
 import ArtistList from "../../components/ArtistList.vue";

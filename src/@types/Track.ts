@@ -1,5 +1,6 @@
 import { AlbumSimplified } from "./Album";
-import { ArtistSimplified, ExternalUrls } from "./Artist";
+import { ArtistSimplified } from "./Artist";
+import { ExternalUrls } from "./Misc";
 
 export interface Track {
   album: AlbumSimplified;

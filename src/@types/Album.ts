@@ -1,5 +1,6 @@
-import { Artist, ExternalUrls } from "./Artist";
+import { Artist } from "./Artist";
 import { Image } from "./Image";
+import { ExternalUrls } from "./Misc";
 import { Track } from "./Track";
 
 export interface AlbumPage {

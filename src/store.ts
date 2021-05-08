@@ -5,7 +5,7 @@ import auth from "./views/AuthStore";
 import artist from "./views/artist/ArtistStore";
 import album from "./views/album/AlbumStore";
 import search from "./components/search/SearchStore";
-import { RootState } from "./@types/rootStore";
+import { RootState } from "./@types/RootState";
 
 const persisted = createPersistedState({
   key: "beardify",

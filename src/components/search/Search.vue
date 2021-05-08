@@ -70,7 +70,7 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
-import { RootState } from "../../@types/rootStore";
+import { RootState } from "../../@types/RootState";
 import { SearchActions } from "./SearchStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { playSong } from "../../helpers/play";

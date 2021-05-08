@@ -28,7 +28,7 @@ import { connectUrl } from "../api";
 import { useStore } from "vuex";
 import { PlayerActions } from "../components/PlayerStore";
 import { AuthActions } from "../views/AuthStore";
-import type { RootState } from "../@types/rootStore";
+import type { RootState } from "../@types/RootState";
 import { defineComponent } from "vue";
 import Search from "./search/Search.vue"
 

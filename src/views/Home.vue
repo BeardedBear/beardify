@@ -12,7 +12,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
-import type { RootState } from "../@types/rootStore";
+import type { RootState } from "../@types/RootState";
 
 export default defineComponent({
   setup() {

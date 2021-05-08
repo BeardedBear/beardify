@@ -1,5 +1,6 @@
 import { AlbumSimplified } from "./Album";
 import { Image } from "./Image";
+import { ExternalUrls } from "./Misc";
 import { Track } from "./Track";
 
 export interface ArtistPage {
@@ -14,10 +15,6 @@ export interface ArtistPage {
 
 export interface ArtistTopTracks {
   tracks: Track[];
-}
-
-export interface ExternalUrls {
-  spotify: string;
 }
 
 export interface RelatedArtists {

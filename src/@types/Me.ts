@@ -1,4 +1,4 @@
-import { ExternalUrls } from "./Artist";
+import { ExternalUrls } from "./Misc";
 import { Image } from "./Image";
 
 export interface Me {

@@ -1,6 +1,6 @@
 import { ActionTree, MutationTree } from "vuex";
 import { instance } from "../../api";
-import { RootState } from "../../@types/rootStore";
+import { RootState } from "../../@types/RootState";
 import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "../../@types/Artist";
 import { Paging } from "../../@types/Paging";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";

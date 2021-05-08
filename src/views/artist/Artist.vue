@@ -39,7 +39,7 @@
 import { defineComponent, ref } from "vue";
 import { onBeforeRouteUpdate } from "vue-router";
 import { useStore } from "vuex";
-import { RootState } from "../../@types/rootStore";
+import { RootState } from "../../@types/RootState";
 import { ArtistActions } from "./ArtistStore";
 import { timecode } from "../../helpers/date";
 import TopTracks from "./TopTracks.vue";
