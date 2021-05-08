@@ -65,7 +65,7 @@ const actions = {
         refreshToken: json.refresh_token,
       });
     } else {
-      alert("HTTP-Error: " + request.status);
+      console.error("From refresh", request.status)
     }
   },
 
@@ -101,7 +101,7 @@ const actions = {
         code: query,
       });
     } else {
-      console.error(response.status)
+      console.error("From auth", response.status)
     }
   },
 };
