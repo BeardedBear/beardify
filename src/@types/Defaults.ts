@@ -1,9 +1,18 @@
 import { Album, AlbumSimplified } from "./Album";
 import { Artist } from "./Artist";
+import {
+  CurrentlyPlaying,
+  CurrentlyPlayingContext,
+  CurrentlyPlayingDevice,
+  CurrentlyPlayingItem,
+  CurrentlyPlayingAlbum
+} from "./CurrentlyPlaying";
+import { Image } from "./Image";
 import { ExternalUrls } from "./Misc";
 import { TrackSimplified, Track } from "./Track";
+import { Followers, Me } from "./Me";
 
-export const defaultImage = {
+export const defaultImage: Image = {
   height: 0,
   url: "",
   width: 0
@@ -14,7 +23,8 @@ export const defaultExternalUrls: ExternalUrls = {
 };
 
 export const defaultAlbumSimplified: AlbumSimplified = {
-  album_type: "",
+  album_group: "album",
+  album_type: "album",
   artists: [],
   external_urls: defaultExternalUrls,
   href: "",
@@ -22,7 +32,7 @@ export const defaultAlbumSimplified: AlbumSimplified = {
   images: [defaultImage],
   name: "",
   release_date: "",
-  release_date_precision: "",
+  release_date_precision: "year",
   total_tracks: 0,
   type: "",
   uri: ""
@@ -46,7 +56,7 @@ export const defaultArtist: Artist = {
   uri: ""
 };
 
-const defaultCurrentlyPlayingAlbum = {
+const defaultCurrentlyPlayingAlbum: CurrentlyPlayingAlbum = {
   album_type: "",
   artists: [defaultArtist],
   available_markets: ["FR"],
@@ -55,13 +65,13 @@ const defaultCurrentlyPlayingAlbum = {
   images: [defaultImage],
   name: "",
   release_date: "",
-  release_date_precision: "",
+  release_date_precision: "year",
   total_tracks: 0,
   type: "",
   uri: ""
 };
 
-const defaultCurrentlyPlayingItem = {
+const defaultCurrentlyPlayingItem: CurrentlyPlayingItem = {
   album: defaultCurrentlyPlayingAlbum,
   artists: [defaultArtist],
   available_markets: ["FR"],
@@ -79,13 +89,13 @@ const defaultCurrentlyPlayingItem = {
   uri: ""
 };
 
-const defaultCurrentlyPlayingContext = {
+const defaultCurrentlyPlayingContext: CurrentlyPlayingContext = {
   href: "",
-  type: "",
+  type: "album",
   uri: ""
 };
 
-const defaultCurrentlyPlayingDevice = {
+const defaultCurrentlyPlayingDevice: CurrentlyPlayingDevice = {
   id: "",
   is_active: false,
   is_private_session: false,
@@ -95,9 +105,9 @@ const defaultCurrentlyPlayingDevice = {
   volume_percent: 0
 };
 
-export const defaultCurrentlyPlaying = {
+export const defaultCurrentlyPlaying: CurrentlyPlaying = {
   context: defaultCurrentlyPlayingContext,
-  currently_playing_type: "",
+  currently_playing_type: "track",
   device: defaultCurrentlyPlayingDevice,
   is_playing: false,
   item: defaultCurrentlyPlayingItem,
@@ -144,7 +154,7 @@ export const defaultTrackSimplified: TrackSimplified = {
 };
 
 export const defaultAlbum: Album = {
-  album_type: "",
+  album_type: "album",
   artists: [],
   available_markets: [],
   genres: [],
@@ -155,19 +165,19 @@ export const defaultAlbum: Album = {
   name: "",
   popularity: 0,
   release_date: "",
-  release_date_precision: "",
+  release_date_precision: "year",
   total_tracks: 0,
   tracks: defaultTrack,
   type: "",
   uri: ""
 };
 
-const defaultFollowers = {
+const defaultFollowers: Followers = {
   href: null,
   total: 0
 };
 
-export const defaultMe = {
+export const defaultMe: Me = {
   country: "",
   display_name: "",
   email: "",
@@ -176,7 +186,7 @@ export const defaultMe = {
   href: "",
   id: "",
   images: [defaultImage],
-  product: "",
+  product: "premium",
   type: "",
   uri: ""
 };

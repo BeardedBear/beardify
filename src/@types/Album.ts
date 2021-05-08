@@ -7,8 +7,11 @@ export interface AlbumPage {
   album: Album;
 }
 
+export type AlbumType = "album" | "single" | "compilation";
+
+export type ReleaseDatePrecision = "year" | "month" | "day";
 export interface Album {
-  album_type: string;
+  album_type: AlbumType;
   artists: Artist[];
   available_markets: string[];
   genres: string[];
@@ -19,15 +22,16 @@ export interface Album {
   name: string;
   popularity: number;
   release_date: string;
-  release_date_precision: string;
+  release_date_precision: ReleaseDatePrecision;
   total_tracks: number;
   tracks: Track;
   type: string;
   uri: string;
 }
-
+export type AlbumGroup = "album" | "single" | "compilation" | "appears_on";
 export interface AlbumSimplified {
-  album_type: string;
+  album_group: AlbumGroup;
+  album_type: AlbumType;
   artists: Artist[];
   external_urls: ExternalUrls;
   href: string;
@@ -35,7 +39,7 @@ export interface AlbumSimplified {
   images: Image[];
   name: string;
   release_date: string;
-  release_date_precision: string;
+  release_date_precision: ReleaseDatePrecision;
   total_tracks: number;
   type: string;
   uri: string;

@@ -1,3 +1,4 @@
+import { ReleaseDatePrecision } from "./Album";
 import { Artist } from "./Artist";
 import { Image } from "./Image";
 
@@ -28,9 +29,11 @@ export interface CurrentlyPlayingDevice {
   type: string;
   volume_percent: number;
 }
+
+export type CurrentlyPlayingType = "track" | "episode" | "ad" | "unknown";
 export interface CurrentlyPlaying {
   context: CurrentlyPlayingContext;
-  currently_playing_type: string;
+  currently_playing_type: CurrentlyPlayingType;
   device: CurrentlyPlayingDevice;
   is_playing: boolean;
   item: CurrentlyPlayingItem;
@@ -39,13 +42,15 @@ export interface CurrentlyPlaying {
   shuffle_state: boolean;
   timestamp: number;
 }
+
+export type ContextType = "artist" | "playlist" | "album" | "show";
 export interface CurrentlyPlayingContext {
   href: string;
-  type: string;
+  type: ContextType;
   uri: string;
 }
 
-interface CurrentlyPlayingAlbum {
+export interface CurrentlyPlayingAlbum {
   album_type: string;
   artists: Artist[];
   available_markets: string[];
@@ -54,7 +59,7 @@ interface CurrentlyPlayingAlbum {
   images: Image[];
   name: string;
   release_date: string;
-  release_date_precision: string;
+  release_date_precision: ReleaseDatePrecision;
   total_tracks: number;
   type: string;
   uri: string;

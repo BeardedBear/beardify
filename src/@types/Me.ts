@@ -1,6 +1,7 @@
 import { ExternalUrls } from "./Misc";
 import { Image } from "./Image";
 
+export type Product = "premium" | "free" | "open";
 export interface Me {
   country: string;
   display_name: string;
@@ -10,12 +11,12 @@ export interface Me {
   href: string;
   id: string;
   images: Image[];
-  product: string;
+  product: Product;
   type: string;
   uri: string;
 }
 
-interface Followers {
+export interface Followers {
   href: null;
   total: number;
 }
