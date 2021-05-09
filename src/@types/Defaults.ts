@@ -11,6 +11,8 @@ import { Image } from "./Image";
 import { ExternalUrls } from "./Misc";
 import { TrackSimplified, Track } from "./Track";
 import { Followers, Me } from "./Me";
+import { PlaylistTracksRef, SimplifiedPlaylist } from "./Playlist";
+import { PublicUser } from "./PublicUser";
 
 export const defaultImage: Image = {
   height: 0,
@@ -187,6 +189,38 @@ export const defaultMe: Me = {
   id: "",
   images: [defaultImage],
   product: "premium",
+  type: "",
+  uri: ""
+};
+
+export const defaultPublicUser: PublicUser = {
+  display_name: "",
+  external_urls: defaultExternalUrls,
+  followers: defaultFollowers,
+  href: "",
+  id: "",
+  images: [defaultImage],
+  type: "",
+  uri: ""
+};
+
+export const defaultPlaylistTracksRef: PlaylistTracksRef = {
+  href: "",
+  total: 0
+};
+
+export const defaultSimplifiedPlaylist: SimplifiedPlaylist = {
+  collaborative: false,
+  description: "",
+  external_urls: defaultExternalUrls,
+  href: "",
+  id: "",
+  images: [defaultImage],
+  name: "",
+  owner: defaultPublicUser,
+  public: false,
+  snapshot_id: "",
+  tracks: defaultPlaylistTracksRef,
   type: "",
   uri: ""
 };

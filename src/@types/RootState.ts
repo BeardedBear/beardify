@@ -3,6 +3,7 @@ import { Player } from "./Player";
 import { ArtistPage } from "./Artist";
 import { AlbumPage } from "./Album";
 import { Search } from "./Search";
+import { Sidebar } from "./Sidebar";
 
 export interface RootState {
   auth: Auth;
@@ -10,4 +11,5 @@ export interface RootState {
   artist: ArtistPage;
   album: AlbumPage;
   search: Search;
+  sidebar: Sidebar;
 }

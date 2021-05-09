@@ -5,6 +5,7 @@ import auth from "./views/auth/AuthStore";
 import artist from "./views/artist/ArtistStore";
 import album from "./views/album/AlbumStore";
 import search from "./components/search/SearchStore";
+import sidebar from "./components/sidebar/SidebarStore";
 import { RootState } from "./@types/RootState";
 
 const persisted = createPersistedState({
@@ -13,6 +14,6 @@ const persisted = createPersistedState({
 });
 
 export default createStore<RootState>({
-  modules: { player, auth, artist, album, search },
+  modules: { player, auth, artist, album, search, sidebar },
   plugins: [persisted]
 });
