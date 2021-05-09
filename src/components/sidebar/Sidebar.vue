@@ -1,11 +1,5 @@
 <template>
   <div class="sidebar">
-    <!-- <div v-for="(playlist, index) in store.state.sidebar.playlists" :key="index">
-      {{ playlist.name }}
-    </div>
-    <div v-for="(playlist, index) in store.state.sidebar.playlists" :key="index">
-      {{ playlist.name }}
-    </div> -->
     <div class="overflowed">
       <div class="overflowed__target">
         <div
@@ -14,7 +8,10 @@
           )"
           :key="index"
         >
-          {{ playlist.name }}
+          <router-link class="playlist-item" :to="/dede/">
+            <i class="icon-folder"></i>
+            <div>{{ playlist.name }}</div>
+          </router-link>
         </div>
       </div>
     </div>
@@ -26,7 +23,10 @@
           )"
           :key="index"
         >
-          {{ playlist.name }}
+          <router-link class="playlist-item" :to="/dede/">
+            <i class="icon-music"></i>
+            <div>{{ playlist.name }}</div>
+          </router-link>
         </div>
       </div>
     </div>
@@ -52,6 +52,23 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
+
+.playlist-item {
+  padding: 5px 10px;
+  color: currentColor;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &:hover {
+    background-color: $bg-color-light;
+  }
+
+  i {
+    opacity: 0.3;
+  }
+}
 
 .sidebar {
   background: $bg-color-dark;
