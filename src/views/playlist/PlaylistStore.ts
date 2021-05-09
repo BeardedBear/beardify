@@ -3,7 +3,6 @@ import { defaultPlaylist, defaultPlaylistTrack, defaultTrack } from "../../@type
 import { Paging } from "../../@types/Paging";
 import { Playlist, PlaylistPage, PlaylistTrack } from "../../@types/Playlist";
 import { RootState } from "../../@types/RootState";
-import { Track } from "../../@types/Track";
 import { instance } from "../../api";
 
 const state: PlaylistPage = {
@@ -21,7 +20,7 @@ export enum Mutations {
 
 const mutations: MutationTree<PlaylistPage> = {
   [Mutations.SET_PLAYLIST](state, p: Playlist): void {
-    state.playlist.name = p.name;
+    state.playlist = p;
   },
 
   [Mutations.SET_TRACKS](state, tracks: PlaylistTrack[]): void {

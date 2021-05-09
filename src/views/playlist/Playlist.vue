@@ -1,9 +1,18 @@
 <template>
   <div ref="playlistpage" class="overflowed">
     <div class="playlist-page overflowed__target">
-      {{ id }}
-
-      <div class="title">{{ store.state.playlist.playlist.name }}</div>
+      <div class="playlist-header">
+        <div><Cover size="medium" :images="store.state.playlist.playlist.images" className="cover" /></div>
+        <div>
+          <div class="title">{{ store.state.playlist.playlist.name }}</div>
+          <div class="description">{{ store.state.playlist.playlist.description }}</div>
+          <div>
+            {{ store.state.playlist.playlist.owner.display_name }} ·
+            {{ store.state.playlist.playlist.tracks.total }} Morceaux ·
+            {{ timecodeWithUnits(sumDuration(store.state.playlist.tracks)) }}
+          </div>
+        </div>
+      </div>
       <!-- <div>{{ store.state.playlist.tracks }}</div> -->
       <div v-for="(track, index) in store.state.playlist.tracks" :key="index">
         {{ track.track.name }}
@@ -16,11 +25,15 @@
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
-import { timecode } from "../../helpers/date";
+import { timecode, timecodeWithUnits } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import { PlaylistActions, Mutations } from "./PlaylistStore";
+import Cover from "../../components/Cover.vue";
+import { Track, TrackSimplified } from "../../@types/Track";
+import { PlaylistTrack } from "../../@types/Playlist";
 
 export default defineComponent({
+  components: { Cover },
   props: {
     id: { default: "", type: String }
   },
@@ -28,11 +41,15 @@ export default defineComponent({
     const store = useStore<RootState>();
     const playlistpage = ref();
 
+    function sumDuration(tracks: PlaylistTrack[]) {
+      return tracks.map((t: PlaylistTrack) => t.track.duration_ms).reduce((acc, value) => acc + value, 0);
+    }
+
     store.dispatch(`playlist/${PlaylistActions.getPlaylist}`, `https://api.spotify.com/v1/playlists/${props.id}`);
     store.dispatch(`playlist/${PlaylistActions.getTracks}`, `https://api.spotify.com/v1/playlists/${props.id}/tracks`);
     store.commit(`playlist/${Mutations.CLEAN_TRACKS}`);
 
-    return { playlistpage, store, timecode, playSongs };
+    return { playlistpage, store, timecode, timecodeWithUnits, playSongs, sumDuration };
   }
 });
 </script>
@@ -45,10 +62,11 @@ export default defineComponent({
   scroll-behavior: smooth;
 }
 
-// .album-header {
-//   text-align: center;
-//   margin-bottom: 60px;
-// }
+.description {
+  margin-bottom: 7px;
+  font-style: italic;
+  opacity: 0.5;
+}
 
 .title {
   font-size: 2rem;
@@ -56,53 +74,19 @@ export default defineComponent({
   margin-bottom: 5px;
 }
 
-// .cover {
-//   width: 100%;
-// }
+.playlist-header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 20px;
+}
 
-// .track {
-//   padding: 5px 10px;
-//   cursor: pointer;
-//   border-radius: 3px;
-//   display: grid;
-//   grid-template-columns: 30px 1fr auto;
+.cover {
+  border-radius: 4px;
+  height: 140px;
+}
 
-//   &:hover {
-//     background-color: rgba($primary-color, 0.1);
-//   }
-
-//   &--active {
-//     background-color: rgba($primary-color, 0.2);
-//     color: $primary-color;
-
-//     &:hover {
-//       background-color: rgba($primary-color, 0.2);
-//       color: $primary-color;
-//     }
-//   }
-
-//   &__number {
-//     font-style: italic;
-//     opacity: 0.5;
-//   }
-// }
-
-// .content {
-//   display: flex;
-//   justify-content: center;
-//   gap: 30px;
-
-//   &__cover {
-//     flex: 0 0 300px;
-//   }
-
-//   &__tracks {
-//     flex: 0.8;
-//     font-size: 1rem;
-//   }
-// }
-
-.album-page {
+.playlist-page {
   padding: 30px 40px;
 }
 </style>

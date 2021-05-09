@@ -43,7 +43,6 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { onBeforeRouteUpdate } from "vue-router";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { timecodeWithUnits, timecode } from "../../helpers/date";
