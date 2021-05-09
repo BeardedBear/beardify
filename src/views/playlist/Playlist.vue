@@ -13,49 +13,24 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeUpdate, onMounted, onUnmounted, onUpdated, ref } from "vue";
-import { onBeforeRouteUpdate, useRoute } from "vue-router";
+import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
-import router from "../../router";
 import { PlaylistActions, Mutations } from "./PlaylistStore";
 
 export default defineComponent({
   props: {
     id: { default: "", type: String }
   },
-  setup() {
+  setup(props) {
     const store = useStore<RootState>();
     const playlistpage = ref();
 
-    // onUpdated(() => {
-    //   router.go(1);
-    // });
-
-    // onUpdated
-    // onBeforeUpdate(() => {
-    //   store.dispatch(
-    //     `playlist/${PlaylistActions.getPlaylist}`,
-    //     `https://api.spotify.com/v1/playlists/${useRoute().params.id}`
-    //   );
-    //   store.dispatch(
-    //     `playlist/${PlaylistActions.getPlaylistTracks}`,
-    //     `https://api.spotify.com/v1/playlists/${useRoute().params.id}/tracks`
-    //   );
-    // });
-
-    store.dispatch(
-      `playlist/${PlaylistActions.getPlaylist}`,
-      `https://api.spotify.com/v1/playlists/${useRoute().params.id}`
-    );
-    store.dispatch(
-      `playlist/${PlaylistActions.getPlaylistTracks}`,
-      `https://api.spotify.com/v1/playlists/${useRoute().params.id}/tracks`
-    );
+    store.dispatch(`playlist/${PlaylistActions.getPlaylist}`, `https://api.spotify.com/v1/playlists/${props.id}`);
+    store.dispatch(`playlist/${PlaylistActions.getTracks}`, `https://api.spotify.com/v1/playlists/${props.id}/tracks`);
     store.commit(`playlist/${Mutations.CLEAN_TRACKS}`);
-    onMounted(() => {});
 
     return { playlistpage, store, timecode, playSongs };
   }

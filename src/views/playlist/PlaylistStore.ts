@@ -21,18 +21,15 @@ export enum Mutations {
 
 const mutations: MutationTree<PlaylistPage> = {
   [Mutations.SET_PLAYLIST](state, p: Playlist): void {
-    // state.playlists = state.playlists.concat(data);
     state.playlist.name = p.name;
   },
 
   [Mutations.SET_TRACKS](state, tracks: PlaylistTrack[]): void {
     state.tracks = state.tracks.concat(tracks);
-    // state.playlists = state.playlists.concat(data);
   },
 
   [Mutations.CLEAN_TRACKS](state): void {
     state.tracks = [];
-    // state.playlists = state.playlists.concat(data);
   }
 };
 
@@ -40,27 +37,20 @@ const mutations: MutationTree<PlaylistPage> = {
 
 export enum PlaylistActions {
   getPlaylist = "getPlaylist",
-  getPlaylistTracks = "getPlaylistTracks"
+  getTracks = "getTracks"
 }
 
 const actions: ActionTree<PlaylistPage, RootState> = {
   [PlaylistActions.getPlaylist](store, url: string) {
     instance.get<Playlist>(url).then(e => {
-      // console.log(e.data);
       store.commit(Mutations.SET_PLAYLIST, e.data);
-
-      // if (e.data.tracks.next !== "") store.dispatch(PlaylistActions.getPlaylist, e.data.tracks.next);
     });
   },
 
-  [PlaylistActions.getPlaylistTracks](store, url: string) {
+  [PlaylistActions.getTracks](store, url: string) {
     instance.get<Paging<PlaylistTrack>>(url).then(e => {
-      console.log(e.data);
       store.commit(Mutations.SET_TRACKS, e.data.items);
-      // https://api.spotify.com/v1/playlists/1tvj7Il9ZnzPLGnRzGqQbn/tracks?offset=100&limit=100
-      // store.commit(Mutations.SET_PLAYLIST, e.data);
-      // store.commit(Mutations.SET_TRACKS, e.data.tracks.items);
-      if (e.data.next !== "") store.dispatch(PlaylistActions.getPlaylistTracks, e.data.next);
+      if (e.data.next !== "") store.dispatch(PlaylistActions.getTracks, e.data.next);
     });
   }
 };
