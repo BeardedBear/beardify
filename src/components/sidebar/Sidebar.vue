@@ -8,7 +8,12 @@
           )"
           :key="index"
         >
-          <router-link v-if="playlist.id" class="playlist-item" :to="`/playlist/${playlist.id}`">
+          <router-link
+            v-if="playlist.id"
+            class="playlist-item"
+            :to="`/playlist/${playlist.id}`"
+            :class="{ active: $route.params.id === playlist.id }"
+          >
             <i class="icon-folder"></i>
             <div>{{ playlist.name }}</div>
           </router-link>
@@ -23,7 +28,12 @@
           )"
           :key="index"
         >
-          <router-link v-if="playlist.id" class="playlist-item" :to="`/playlist/${playlist.id}`">
+          <router-link
+            v-if="playlist.id"
+            class="playlist-item"
+            :to="`/playlist/${playlist.id}`"
+            :class="{ active: $route.params.id === playlist.id }"
+          >
             <i class="icon-music"></i>
             <div>{{ playlist.name }}</div>
           </router-link>
@@ -63,6 +73,11 @@ export default defineComponent({
 
   &:hover {
     background-color: $bg-color-light;
+  }
+
+  &.active {
+    background-color: rgba($primary-color, 0.2);
+    color: $primary-color;
   }
 
   i {

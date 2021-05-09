@@ -1,4 +1,4 @@
-@keyframes huihu {
+@keyframes popContent {
   from {
     opacity: 0;
   }
@@ -9,7 +9,7 @@
   overflow-y: scroll;
 
   &__target {
-    animation: huihu 1s ease both;
+    animation: popContent 1s ease both;
     position: absolute;
     top: 0;
     bottom: 0;
