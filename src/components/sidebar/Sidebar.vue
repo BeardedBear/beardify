@@ -1,13 +1,34 @@
 <template>
   <div class="sidebar">
-    <router-link class="artistname" to="/artist/31u3refS0tKDq8JFs4rgVx"> Luna Sol </router-link>
-    <br />
-    <router-link class="artistname" to="/artist/6xPOeIDWmM9ooOw7SBknMl">
-      The Night Flight Orchestra
-    </router-link>
-
+    <!-- <div v-for="(playlist, index) in store.state.sidebar.playlists" :key="index">
+      {{ playlist.name }}
+    </div>
     <div v-for="(playlist, index) in store.state.sidebar.playlists" :key="index">
       {{ playlist.name }}
+    </div> -->
+    <div class="overflowed">
+      <div class="overflowed__target">
+        <div
+          v-for="(playlist, index) in store.state.sidebar.playlists.filter(p =>
+            p.name.toLowerCase().includes('#collection')
+          )"
+          :key="index"
+        >
+          {{ playlist.name }}
+        </div>
+      </div>
+    </div>
+    <div class="overflowed">
+      <div class="overflowed__target">
+        <div
+          v-for="(playlist, index) in store.state.sidebar.playlists.filter(
+            p => !p.name.toLowerCase().includes('#collection')
+          )"
+          :key="index"
+        >
+          {{ playlist.name }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -34,9 +55,7 @@ export default defineComponent({
 
 .sidebar {
   background: $bg-color-dark;
-  padding: 30px;
-  // temp
-  overflow: auto;
-  height: 76%;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
 }
 </style>

@@ -126,11 +126,6 @@ export default defineComponent({
   transform: translateY(-5px);
 }
 
-.sidebar {
-  background: $bg-color-dark;
-  padding: 30px;
-}
-
 #app {
   font-family: "Quicksand", Helvetica, Arial, sans-serif;
   font-weight: 500;
