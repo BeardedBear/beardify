@@ -70,13 +70,6 @@ export default defineComponent({
       return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
     }
 
-    onMounted(() => {
-      console.log(store.state.album.album.tracks);
-      // albumDuration.value = store.state.album.album.tracks.items
-      //   .map(t => t.duration_ms)
-      //   .reduce((acc, value) => acc + value, 0);
-    });
-
     store.dispatch(`album/${AlbumActions.getAlbum}`, props.id);
 
     return { albumpage, store, timecode, timecodeWithUnits, playSongs, albumDuration, sumDuration };

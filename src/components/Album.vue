@@ -37,7 +37,6 @@ export default defineComponent({
 
     function goAlbum() {
       router.push(`/album/${props.album.id}`);
-      console.log("gogo");
     }
 
     return { store, playAlbum, goAlbum };

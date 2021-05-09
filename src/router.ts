@@ -1,16 +1,15 @@
 import { createRouter, createWebHistory, RouteRecordRaw, RouteLocation } from "vue-router";
 import Home from "./views/Home.vue";
 import About from "./views/About.vue";
-import Auth from "./views/Auth.vue";
+import Auth from "./views/auth/Auth.vue";
 import Artist from "./views/artist/Artist.vue";
 import Album from "./views/album/Album.vue";
 import Login from "./views/Login.vue";
 import Store from "./store";
-import axios from "axios";
 import { instance } from "./api";
 import store from "./store";
 import { PlayerActions } from "./components/player/PlayerStore";
-import { AuthActions } from "./views/AuthStore";
+import { AuthActions } from "./views/auth/AuthStore";
 
 const routes: Array<RouteRecordRaw> = [
   {

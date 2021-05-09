@@ -22,7 +22,7 @@
 import { connectUrl } from "../api";
 import { useStore } from "vuex";
 import { PlayerActions } from "./player/PlayerStore";
-import { AuthActions } from "../views/AuthStore";
+import { AuthActions } from "../views/auth/AuthStore";
 import type { RootState } from "../@types/RootState";
 import { defineComponent } from "vue";
 import Search from "./search/Search.vue"

@@ -1,12 +1,12 @@
 import { ActionContext } from "vuex";
-import { api } from "../api";
+import { api } from "../../api";
 import formurlencoded from "form-urlencoded";
 import axios from "axios";
-import type { RootState } from "../@types/RootState";
-import type { Auth, AuthData } from "../@types/Auth";
-import router from "../router";
-import { defaultMe } from "../@types/Defaults";
-import { Me } from "../@types/Me";
+import type { RootState } from "../../@types/RootState";
+import type { Auth, AuthData } from "../../@types/Auth";
+import router from "../../router";
+import { defaultMe } from "../../@types/Defaults";
+import { Me } from "../../@types/Me";
 
 const state: Auth = {
   auth: {

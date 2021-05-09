@@ -1,8 +1,8 @@
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
 import { useStore } from "vuex";
-import router from "../router";
-import { AuthActions } from "../views/AuthStore";
+import router from "../../router";
+import { AuthActions } from "../auth/AuthStore";
 
 export default defineComponent({
   name: "Auth",

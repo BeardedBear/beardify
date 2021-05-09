@@ -1,7 +1,7 @@
 import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
 import player from "./components/player/PlayerStore";
-import auth from "./views/AuthStore";
+import auth from "./views/auth/AuthStore";
 import artist from "./views/artist/ArtistStore";
 import album from "./views/album/AlbumStore";
 import search from "./components/search/SearchStore";

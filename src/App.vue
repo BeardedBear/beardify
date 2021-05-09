@@ -7,7 +7,6 @@
       <router-link class="artistname" to="/artist/6xPOeIDWmM9ooOw7SBknMl">
         The Night Flight Orchestra
       </router-link>
-      <!-- {{ store.state.player.currentlyPlaying }} -->
     </div>
     <router-view v-slot="{ Component }">
       <transition name="scale" mode="out-in">
@@ -25,7 +24,7 @@ import Topbar from "./components/Topbar.vue";
 import { Mutations, PlayerActions } from "./components/player/PlayerStore";
 import Player from "./components/player/Player.vue";
 import { RootState } from "./@types/RootState";
-import { AuthActions } from "./views/AuthStore";
+import { AuthActions } from "./views/auth/AuthStore";
 import { instance } from "./api";
 import AOS from "aos";
 import { log } from "console";
@@ -56,7 +55,6 @@ export default defineComponent({
       instance
         .get("https://api.spotify.com/v1/me/player")
         .then(e => {
-          console.log(e.status);
           store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data);
         })
         .catch(error => {

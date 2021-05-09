@@ -41,8 +41,6 @@ const actions: ActionTree<Search, RootState> = {
       const albums = e.data.albums.items.slice(0, 6);
       const tracks = e.data.tracks.items.slice(0, 6);
       store.commit(Mutations.SET_RESULTS, { artists, albums, tracks });
-      // On set le dernier device actif par defaut
-      console.log(e.data);
     });
   }
 };
