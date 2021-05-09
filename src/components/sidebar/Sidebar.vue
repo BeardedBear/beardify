@@ -22,7 +22,7 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    store.dispatch(`sidebar/${SidebarActions.search}`);
+    store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, "https://api.spotify.com/v1/me/playlists?limit=50");
 
     return { store };
   }
