@@ -2,41 +2,47 @@
   <div class="sidebar">
     <div class="overflowed">
       <div class="overflowed__target">
-        <div
-          v-for="(playlist, index) in store.state.sidebar.playlists.filter(p =>
-            p.name.toLowerCase().includes('#collection')
-          )"
-          :key="index"
-        >
-          <router-link
-            v-if="playlist.id"
-            class="playlist-item"
-            :to="`/playlist/${playlist.id}`"
-            :class="{ active: $route.params.id === playlist.id }"
+        <div class="sidebar__item">
+          <div class="heading title">Collections</div>
+          <div
+            v-for="(playlist, index) in store.state.sidebar.playlists.filter(p =>
+              p.name.toLowerCase().includes('#collection')
+            )"
+            :key="index"
           >
-            <i class="icon-folder"></i>
-            <div>{{ playlist.name }}</div>
-          </router-link>
+            <router-link
+              v-if="playlist.id"
+              class="playlist-item"
+              :to="`/playlist/${playlist.id}`"
+              :class="{ active: $route.params.id === playlist.id }"
+            >
+              <i class="icon-folder"></i>
+              <div>{{ playlist.name }}</div>
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
     <div class="overflowed">
       <div class="overflowed__target">
-        <div
-          v-for="(playlist, index) in store.state.sidebar.playlists.filter(
-            p => !p.name.toLowerCase().includes('#collection')
-          )"
-          :key="index"
-        >
-          <router-link
-            v-if="playlist.id"
-            class="playlist-item"
-            :to="`/playlist/${playlist.id}`"
-            :class="{ active: $route.params.id === playlist.id }"
+        <div>
+          <div class="heading title">Playlists</div>
+          <div
+            v-for="(playlist, index) in store.state.sidebar.playlists.filter(
+              p => !p.name.toLowerCase().includes('#collection')
+            )"
+            :key="index"
           >
-            <i class="icon-music"></i>
-            <div>{{ playlist.name }}</div>
-          </router-link>
+            <router-link
+              v-if="playlist.id"
+              class="playlist-item"
+              :to="`/playlist/${playlist.id}`"
+              :class="{ active: $route.params.id === playlist.id }"
+            >
+              <i class="icon-music"></i>
+              <div>{{ playlist.name }}</div>
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -89,5 +95,18 @@ export default defineComponent({
   background: $bg-color-dark;
   display: grid;
   grid-template-rows: 1fr 1fr;
+
+  &__item {
+    position: relative;
+  }
+}
+
+.title {
+  position: sticky;
+  top: 0;
+  padding: 10px 10px;
+  background-color: $bg-color-dark;
+  z-index: 1;
+  margin: 0;
 }
 </style>
