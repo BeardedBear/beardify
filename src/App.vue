@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount } from "vue";
+import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
 import { Mutations, PlayerActions } from "./components/player/PlayerStore";
@@ -20,21 +20,12 @@ import Player from "./components/player/Player.vue";
 import { RootState } from "./@types/RootState";
 import { AuthActions } from "./views/auth/AuthStore";
 import { instance } from "./api";
-import AOS from "aos";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 
 export default defineComponent({
   components: { Topbar, Player, Sidebar },
   setup() {
     const store = useStore<RootState>();
-
-    // Params : https://github.com/michalsnik/aos#1-initialize-aos
-    onBeforeMount(() => {
-      AOS.init({
-        easing: "ease-in-out-back",
-        duration: 300
-      });
-    });
 
     store.dispatch(`player/${PlayerActions.getDeviceList}`);
     store.dispatch(`auth/${AuthActions.refresh}`);

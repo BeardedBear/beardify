@@ -8,7 +8,7 @@
           )"
           :key="index"
         >
-          <router-link class="playlist-item" :to="`/playlist/${playlist.id}`">
+          <router-link v-if="playlist.id" class="playlist-item" :to="`/playlist/${playlist.id}`">
             <i class="icon-folder"></i>
             <div>{{ playlist.name }}</div>
           </router-link>
@@ -23,7 +23,7 @@
           )"
           :key="index"
         >
-          <router-link class="playlist-item" :to="`/playlist/${playlist.id}`">
+          <router-link v-if="playlist.id" class="playlist-item" :to="`/playlist/${playlist.id}`">
             <i class="icon-music"></i>
             <div>{{ playlist.name }}</div>
           </router-link>
