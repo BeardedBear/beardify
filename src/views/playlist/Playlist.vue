@@ -25,11 +25,20 @@
           )
         "
       >
+        <div class="track-icon"><i class="icon-music"></i></div>
         <div>
           <div>{{ track.track.name }}</div>
           <div><ArtistList :artistList="track.track.artists" feat /></div>
         </div>
-        <div class="album"><i class="icon-discogs"></i> {{ track.track.album.name }}</div>
+        <div class="album">
+          <i
+            :class="{
+              'icon-album': track.track.album.album_type === 'album',
+              'icon-single': track.track.album.album_type === 'single'
+            }"
+          ></i
+          >{{ track.track.album.name }}
+        </div>
         <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
       </div>
     </div>
@@ -78,8 +87,13 @@ export default defineComponent({
   cursor: pointer;
   border-radius: 3px;
   display: grid;
-  grid-template-columns: 1fr 0.8fr 50px;
+  grid-template-columns: 40px 1fr 0.8fr 50px;
   align-items: center;
+
+  &-icon {
+    font-size: 1.5rem;
+    opacity: 0.1;
+  }
 
   &:hover {
     background-color: rgba($primary-color, 0.1);
@@ -107,6 +121,12 @@ export default defineComponent({
 
   i {
     opacity: 0.3;
+    font-size: 1rem;
+
+    &.icon-album {
+      color: $primary-color;
+      opacity: 1;
+    }
   }
 }
 .overflowed {

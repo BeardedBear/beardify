@@ -70,7 +70,7 @@ export default defineComponent({
 @import "../../assets/scss/colors";
 
 .playlist-item {
-  padding: 5px 10px;
+  padding: 5px 15px;
   color: currentColor;
   text-decoration: none;
   display: flex;
@@ -104,7 +104,7 @@ export default defineComponent({
 .title {
   position: sticky;
   top: 0;
-  padding: 10px 10px;
+  padding: 10px 15px;
   background-color: $bg-color-dark;
   z-index: 1;
   margin: 0;
