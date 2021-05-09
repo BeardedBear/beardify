@@ -4,7 +4,7 @@
       <ArtistHeader />
       <div class="content">
         <div>
-          <div class="content__block">
+          <div class="content__block" v-if="store.state.artist.albums.length">
             <div class="heading">Albums</div>
             <div class="albums">
               <div v-for="(album, index) in store.state.artist.albums" :key="index">

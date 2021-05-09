@@ -131,7 +131,7 @@ export default defineComponent({
 
 .cover {
   position: relative;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 .name {

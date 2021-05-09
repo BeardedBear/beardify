@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="store.state.artist.relatedArtists.artists.length">
     <div class="heading">Artistes similaires</div>
     <div class="list">
       <router-link

@@ -23,13 +23,15 @@
             :key="index"
             @click="playSongs(index, store.state.album.album.tracks.items)"
           >
+            <span class="track__number">{{ track.track_number }}.</span>
             <div>
-              <span class="track__number">{{ track.track_number }}.</span>
-              {{ track.name }}
-              <ArtistList
-                :artistList="track.artists.filter(e => e.name !== store.state.album.album.artists[0].name)"
-                feat
-              />
+              <div>{{ track.name }}</div>
+              <div v-if="store.state.album.album.artists.length">
+                <ArtistList
+                  :artistList="track.artists.filter(e => e.name !== store.state.album.album.artists[0].name)"
+                  feat
+                />
+              </div>
             </div>
             <div>{{ timecode(track.duration_ms) }}</div>
           </div>
@@ -104,8 +106,8 @@ export default defineComponent({
   padding: 5px 10px;
   cursor: pointer;
   border-radius: 3px;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
 
   &:hover {
     background-color: rgba($primary-color, 0.1);
@@ -122,8 +124,6 @@ export default defineComponent({
   }
 
   &__number {
-    width: 30px;
-    display: inline-block;
     font-style: italic;
     opacity: 0.5;
   }
