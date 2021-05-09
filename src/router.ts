@@ -9,7 +9,7 @@ import Store from "./store";
 import axios from "axios";
 import { instance } from "./api";
 import store from "./store";
-import { PlayerActions } from "./components/PlayerStore";
+import { PlayerActions } from "./components/player/PlayerStore";
 import { AuthActions } from "./views/AuthStore";
 
 const routes: Array<RouteRecordRaw> = [

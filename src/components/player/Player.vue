@@ -84,13 +84,13 @@
 <script lang="ts">
 import { ref, onMounted, defineComponent } from "vue";
 import { useStore } from "vuex";
-import { instance } from "../api";
-import { Mutations, PlayerActions } from "../components/PlayerStore";
-import { timecode } from "../helpers/date";
-import { RootState } from "../@types/RootState";
-import ArtistList from "./ArtistList.vue";
-import { Device } from "../@types/Device";
-import Cover from "./Cover.vue";
+import { instance } from "../../api";
+import { Mutations, PlayerActions } from "./../player/PlayerStore";
+import { RootState } from "../../@types/RootState";
+import ArtistList from "../ArtistList.vue";
+import { Device } from "../../@types/Device";
+import Cover from "../Cover.vue";
+import { timecode } from "../../helpers/date";
 
 export default defineComponent({
   components: { ArtistList, Cover },
@@ -175,7 +175,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/scss/colors";
+@import "../../assets/scss/colors";
 
 @keyframes popSeek {
   from {

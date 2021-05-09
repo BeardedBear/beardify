@@ -22,8 +22,8 @@
 import { defineComponent, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
-import { Mutations, PlayerActions } from "./components/PlayerStore";
-import Player from "./components/Player.vue";
+import { Mutations, PlayerActions } from "./components/player/PlayerStore";
+import Player from "./components/player/Player.vue";
 import { RootState } from "./@types/RootState";
 import { AuthActions } from "./views/AuthStore";
 import { instance } from "./api";

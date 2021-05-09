@@ -1,6 +1,6 @@
 import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
-import player from "./components/PlayerStore";
+import player from "./components/player/PlayerStore";
 import auth from "./views/AuthStore";
 import artist from "./views/artist/ArtistStore";
 import album from "./views/album/AlbumStore";
