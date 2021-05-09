@@ -13,9 +13,18 @@
           </div>
         </div>
       </div>
-      <!-- <div>{{ store.state.playlist.tracks }}</div> -->
-      <div v-for="(track, index) in store.state.playlist.tracks" :key="index">
-        {{ track.track.name }}
+      <div
+        class="track"
+        v-for="(track, index) in store.state.playlist.tracks"
+        :key="index"
+        :class="{ active: track.track.id === store.state.player.currentlyPlaying.item.id }"
+      >
+        <div>
+          <div>{{ track.track.name }}</div>
+          <div><ArtistList :artistList="track.track.artists" feat /></div>
+        </div>
+        <div class="album">{{ track.track.album.name }}</div>
+        <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
       </div>
     </div>
   </div>
@@ -29,11 +38,11 @@ import { timecode, timecodeWithUnits } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import { PlaylistActions, Mutations } from "./PlaylistStore";
 import Cover from "../../components/Cover.vue";
-import { Track, TrackSimplified } from "../../@types/Track";
 import { PlaylistTrack } from "../../@types/Playlist";
+import ArtistList from "../../components/ArtistList.vue";
 
 export default defineComponent({
-  components: { Cover },
+  components: { ArtistList, Cover },
   props: {
     id: { default: "", type: String }
   },
@@ -58,6 +67,35 @@ export default defineComponent({
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
 
+.track {
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 3px;
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 50px;
+  align-items: center;
+
+  &:hover {
+    background-color: rgba($primary-color, 0.1);
+  }
+
+  &.active {
+    background-color: rgba($primary-color, 0.2);
+    color: $primary-color;
+
+    &:hover {
+      background-color: rgba($primary-color, 0.2);
+      color: $primary-color;
+    }
+  }
+}
+
+.duration {
+  text-align: right;
+}
+.album {
+  text-align: left;
+}
 .overflowed {
   scroll-behavior: smooth;
 }
@@ -88,5 +126,7 @@ export default defineComponent({
 
 .playlist-page {
   padding: 30px 40px;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 </style>
