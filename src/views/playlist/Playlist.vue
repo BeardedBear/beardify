@@ -18,12 +18,18 @@
         v-for="(track, index) in store.state.playlist.tracks"
         :key="index"
         :class="{ active: track.track.id === store.state.player.currentlyPlaying.item.id }"
+        @click="
+          playSongs(
+            index,
+            store.state.playlist.tracks.map(e => e.track)
+          )
+        "
       >
         <div>
           <div>{{ track.track.name }}</div>
           <div><ArtistList :artistList="track.track.artists" feat /></div>
         </div>
-        <div class="album">{{ track.track.album.name }}</div>
+        <div class="album"><i class="icon-discogs"></i> {{ track.track.album.name }}</div>
         <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
       </div>
     </div>
@@ -95,6 +101,13 @@ export default defineComponent({
 }
 .album {
   text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  i {
+    opacity: 0.3;
+  }
 }
 .overflowed {
   scroll-behavior: smooth;
