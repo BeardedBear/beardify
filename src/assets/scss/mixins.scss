@@ -1,8 +1,15 @@
+@keyframes huihu {
+  from {
+    opacity: 0;
+  }
+}
+
 .overflowed {
   position: relative;
   overflow-y: scroll;
 
   &__target {
+    animation: huihu 1s ease both;
     position: absolute;
     top: 0;
     bottom: 0;

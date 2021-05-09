@@ -4,6 +4,7 @@ import About from "./views/About.vue";
 import Auth from "./views/auth/Auth.vue";
 import Artist from "./views/artist/Artist.vue";
 import Album from "./views/album/Album.vue";
+import Playlist from "./views/playlist/Playlist.vue";
 import Login from "./views/Login.vue";
 import Store from "./store";
 import { instance } from "./api";
@@ -37,6 +38,12 @@ const routes: Array<RouteRecordRaw> = [
     component: Album,
     name: "Album",
     path: "/album/:id",
+    props: route => ({ id: route.params.id })
+  },
+  {
+    component: Playlist,
+    name: "Playlist",
+    path: "/playlist/:id",
     props: route => ({ id: route.params.id })
   },
   {

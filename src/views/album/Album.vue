@@ -63,16 +63,13 @@ export default defineComponent({
     const albumpage = ref();
     const albumDuration = ref(0);
 
-    onBeforeRouteUpdate(to => {
-      store.dispatch(`album/${AlbumActions.getAlbum}`, to.params.id);
-      albumpage.value.scrollTop = 0;
-    });
-
     function sumDuration(tracks: TrackSimplified[] | Track[]) {
       return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
     }
-
-    store.dispatch(`album/${AlbumActions.getAlbum}`, props.id);
+    onMounted(() => {
+      store.dispatch(`album/${AlbumActions.getAlbum}`, props.id);
+      // albumpage.value.scrollTop = 0;
+    });
 
     return { albumpage, store, timecode, timecodeWithUnits, playSongs, albumDuration, sumDuration };
   }

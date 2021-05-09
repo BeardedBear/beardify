@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { onBeforeRouteUpdate } from "vue-router";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
@@ -56,22 +56,15 @@ export default defineComponent({
     const store = useStore<RootState>();
     const artistpage = ref();
 
-    onBeforeRouteUpdate(to => {
-      store.dispatch(`artist/${ArtistActions.getArtist}`, to.params.id);
-      store.dispatch(`artist/${ArtistActions.getTopTracks}`, to.params.id);
-      store.dispatch(`artist/${ArtistActions.getAlbums}`, to.params.id);
-      store.dispatch(`artist/${ArtistActions.getRelatedArtists}`, to.params.id);
-      store.dispatch(`artist/${ArtistActions.getSingles}`, to.params.id);
-      store.dispatch(`artist/${ArtistActions.getFollowStatus}`, to.params.id);
+    onMounted(() => {
+      store.dispatch(`artist/${ArtistActions.getArtist}`, props.id);
+      store.dispatch(`artist/${ArtistActions.getTopTracks}`, props.id);
+      store.dispatch(`artist/${ArtistActions.getAlbums}`, props.id);
+      store.dispatch(`artist/${ArtistActions.getRelatedArtists}`, props.id);
+      store.dispatch(`artist/${ArtistActions.getSingles}`, props.id);
+      store.dispatch(`artist/${ArtistActions.getFollowStatus}`, props.id);
       artistpage.value.scrollTop = 0;
     });
-
-    store.dispatch(`artist/${ArtistActions.getArtist}`, props.id);
-    store.dispatch(`artist/${ArtistActions.getTopTracks}`, props.id);
-    store.dispatch(`artist/${ArtistActions.getAlbums}`, props.id);
-    store.dispatch(`artist/${ArtistActions.getRelatedArtists}`, props.id);
-    store.dispatch(`artist/${ArtistActions.getSingles}`, props.id);
-    store.dispatch(`artist/${ArtistActions.getFollowStatus}`, props.id);
 
     return { artistpage, store, timecode };
   }

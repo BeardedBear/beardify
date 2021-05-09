@@ -1,15 +1,9 @@
-import { AxiosResponse } from "axios";
-import { log } from "console";
 import { ActionTree, MutationTree } from "vuex";
-import { Album } from "../../@types/Album";
-import { Artist } from "../../@types/Artist";
 import { defaultSimplifiedPlaylist } from "../../@types/Defaults";
 import { Paging } from "../../@types/Paging";
 import { SimplifiedPlaylist } from "../../@types/Playlist";
 import { RootState } from "../../@types/RootState";
-import { Search, SearchFromAPI } from "../../@types/Search";
 import { Sidebar } from "../../@types/Sidebar";
-import { TrackSimplified } from "../../@types/Track";
 import { instance } from "../../api";
 
 const state: Sidebar = {
@@ -26,7 +20,6 @@ export enum Mutations {
 const mutations: MutationTree<Sidebar> = {
   [Mutations.SET_RESULTS](state, data: SimplifiedPlaylist[]): void {
     state.playlists = state.playlists.concat(data);
-    console.log("coucou");
   }
 };
 

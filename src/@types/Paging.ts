@@ -7,13 +7,3 @@ export interface Paging<T> {
   previous: null;
   total: number;
 }
-
-export const defaultPaging = {
-  href: "",
-  items: [],
-  limit: 0,
-  next: "",
-  offset: 0,
-  previous: null,
-  total: 0
-};

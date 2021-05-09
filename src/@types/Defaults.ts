@@ -20,6 +20,16 @@ export const defaultImage: Image = {
   width: 0
 };
 
+export const defaultPaging = {
+  href: "",
+  items: [],
+  limit: 0,
+  next: "",
+  offset: 0,
+  previous: null,
+  total: 0
+};
+
 export const defaultExternalUrls: ExternalUrls = {
   spotify: ""
 };
@@ -221,6 +231,30 @@ export const defaultSimplifiedPlaylist: SimplifiedPlaylist = {
   public: false,
   snapshot_id: "",
   tracks: defaultPlaylistTracksRef,
+  type: "",
+  uri: ""
+};
+
+export const defaultPlaylistTrack = {
+  added_at: 0,
+  added_by: defaultPublicUser,
+  is_local: false,
+  track: defaultTrack
+};
+
+export const defaultPlaylist = {
+  collaborative: false,
+  description: "",
+  external_urls: defaultExternalUrls,
+  followers: defaultFollowers,
+  href: "",
+  id: "",
+  images: [defaultImage],
+  name: "",
+  owner: defaultPublicUser,
+  public: false,
+  snapshot_id: "",
+  tracks: defaultPaging,
   type: "",
   uri: ""
 };
