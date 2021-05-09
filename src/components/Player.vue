@@ -24,12 +24,7 @@
         <div>
           <div v-if="store.state.player.currentlyPlaying.item.name !== null" class="meta__what">
             <router-link :to="`/album/${store.state.player.currentlyPlaying.item.album.id}`">
-              <img
-                class="cover"
-                v-if="store.state.album.album.images.length"
-                :src="store.state.player.currentlyPlaying.item.album.images[0].url"
-              />
-              <img class="cover" v-else src="/img/default.png" />
+              <Cover size="small" :images="store.state.player.currentlyPlaying.item.album.images" className="cover" />
             </router-link>
             <div>
               <div>
@@ -95,9 +90,10 @@ import { timecode } from "../helpers/date";
 import { RootState } from "../@types/RootState";
 import ArtistList from "./ArtistList.vue";
 import { Device } from "../@types/Device";
+import Cover from "./Cover.vue";
 
 export default defineComponent({
-  components: { ArtistList },
+  components: { ArtistList, Cover },
   setup() {
     const store = useStore<RootState>();
     const current = useStore<RootState>().state.player.currentlyPlaying;

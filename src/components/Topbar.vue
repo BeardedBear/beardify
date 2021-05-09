@@ -12,12 +12,7 @@
         <a :href="connectUrl">LOGME</a> - {{ store.state.auth.me }}
       </div>
       <div v-else>
-        <img
-          class="avatar"
-          v-if="store.state.auth.me.images.length"
-          :src="store.state.auth.me.images[store.state.auth.me.images.length - 1].url"
-        />
-        <img v-else src="/img/default.png" />
+        <Cover size="large" :images="store.state.auth.me.images" className="avatar" />
       </div>
     </div>
   </div>
@@ -31,9 +26,10 @@ import { AuthActions } from "../views/AuthStore";
 import type { RootState } from "../@types/RootState";
 import { defineComponent } from "vue";
 import Search from "./search/Search.vue"
+import Cover from "./Cover.vue"
 
 export default defineComponent({
-  components : {Search},
+  components : {Search, Cover},
   setup() {
     const store = useStore<RootState>();
 

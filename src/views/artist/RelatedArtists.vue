@@ -8,7 +8,7 @@
         :key="index"
         :to="`/artist/${artist.id}`"
       >
-        <img v-if="artist.images.length" class="image" :src="artist.images[artist.images.length - 1].url" />
+        <Cover size="small" :images="artist.images" className="image" />
         <div class="name">{{ artist.name }}</div>
       </router-link>
     </div>
@@ -20,8 +20,10 @@ import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { timecode } from "../../helpers/date";
+import Cover from "../../components/Cover.vue";
 
 export default defineComponent({
+  components: { Cover },
   setup() {
     const store = useStore<RootState>();
     return { store, timecode };

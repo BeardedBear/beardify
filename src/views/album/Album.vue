@@ -13,12 +13,7 @@
       </div>
       <div class="content">
         <div class="content__cover">
-          <img
-            v-if="store.state.album.album.images.length >= 2"
-            class="cover"
-            :src="store.state.album.album.images[1].url"
-          />
-          <img v-else class="cover" src="/img/default.png" />
+          <Cover size="medium" :images="store.state.album.album.images" />
         </div>
         <div class="content__tracks">
           <div
@@ -54,9 +49,10 @@ import { AlbumActions } from "./AlbumStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { playSongs } from "../../helpers/play";
 import { Track, TrackSimplified } from "../../@types/Track";
+import Cover from "../../components/Cover.vue";
 
 export default defineComponent({
-  components: { ArtistList },
+  components: { ArtistList, Cover },
   props: {
     id: { default: "", type: String }
   },

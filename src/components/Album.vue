@@ -2,8 +2,7 @@
   <div class="album">
     <div class="active" v-if="currentlyPlayedId === album.uri"><i class="icon-volume-2"></i></div>
     <div class="cover">
-      <img v-if="album.images.length >= 2" @click="goAlbum()" class="img" :src="album.images[1].url" />
-      <img v-else @click="goAlbum()" class="img" src="/img/default.png" />
+      <Cover size="medium" :images="album.images" @click="goAlbum()" />
       <button class="play" type="button" @click="playAlbum(album.uri)" :title="album.uri">
         <i class="icon-play"></i>
       </button>
@@ -21,8 +20,10 @@ import { RootState } from "../@types/RootState";
 import { instance } from "../api";
 import { defaultAlbumSimplified } from "../@types/Defaults";
 import router from "../router";
+import Cover from "./Cover.vue";
 
 export default defineComponent({
+  components: { Cover },
   props: {
     album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified> },
     currentlyPlayedId: { default: "", type: String as PropType<string> }
@@ -131,11 +132,7 @@ export default defineComponent({
 
 .cover {
   position: relative;
-}
-.img {
-  width: 100%;
-  border-radius: 4px;
-  cursor: pointer;
+  margin-bottom: 5px;
 }
 
 .name {

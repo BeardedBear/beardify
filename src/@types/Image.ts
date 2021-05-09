@@ -3,3 +3,5 @@ export interface Image {
   url: string;
   width: number;
 }
+
+export type ImageSize = "small" | "medium" | "large";

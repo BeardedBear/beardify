@@ -21,8 +21,7 @@
           v-for="(artist, index) in store.state.search.artists"
           :key="index"
         >
-          <img class="avatar" v-if="artist.images.length" :src="artist.images[artist.images.length - 1].url" />
-          <img class="avatar" v-else src="/img/default.png" />
+          <Cover size="small" :images="artist.images" className="avatar" />
           <div>{{ artist.name }}</div>
         </router-link>
       </div>
@@ -35,8 +34,7 @@
           @click="reset()"
           class="album"
         >
-          <img class="cover" v-if="album.images.length" :src="album.images[album.images.length - 1].url" />
-          <img class="cover" v-else src="/img/default.png" />
+          <Cover size="small" :images="album.images" className="cover" />
           <div>
             <div>{{ album.name }}</div>
             <div><ArtistList :artistList="album.artists" feat /></div>
@@ -74,9 +72,10 @@ import { RootState } from "../../@types/RootState";
 import { SearchActions } from "./SearchStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { playSong } from "../../helpers/play";
+import Cover from "../Cover.vue";
 
 export default defineComponent({
-  components: { ArtistList },
+  components: { ArtistList, Cover },
   setup() {
     const store = useStore<RootState>();
     const query = ref("");

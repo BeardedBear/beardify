@@ -8,7 +8,7 @@
       :class="{ active: store.state.player.currentlyPlaying.item.id === trackItem.id }"
       @click="playSongs(index, store.state.artist.topTracks.tracks)"
     >
-      <img class="cover" :src="trackItem.album.images[2].url" alt="" />
+      <Cover size="small" :images="trackItem.album.images" className="cover" />
       <div class="name">{{ trackItem.name }}</div>
       <div class="duration">{{ timecode(trackItem.duration_ms) }}</div>
     </div>
@@ -21,8 +21,10 @@ import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
+import Cover from "../../components/Cover.vue";
 
 export default defineComponent({
+  components: { Cover },
   setup() {
     const store = useStore<RootState>();
 
