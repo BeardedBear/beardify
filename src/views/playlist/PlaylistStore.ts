@@ -15,7 +15,8 @@ const state: PlaylistPage = {
 
 export enum Mutations {
   SET_PLAYLIST = "SET_PLAYLIST",
-  SET_TRACKS = "SET_TRACKS"
+  SET_TRACKS = "SET_TRACKS",
+  CLEAN_TRACKS = "CLEAN_TRACKS"
 }
 
 const mutations: MutationTree<PlaylistPage> = {
@@ -26,6 +27,11 @@ const mutations: MutationTree<PlaylistPage> = {
 
   [Mutations.SET_TRACKS](state, tracks: PlaylistTrack[]): void {
     state.tracks = state.tracks.concat(tracks);
+    // state.playlists = state.playlists.concat(data);
+  },
+
+  [Mutations.CLEAN_TRACKS](state): void {
+    state.tracks = [];
     // state.playlists = state.playlists.concat(data);
   }
 };

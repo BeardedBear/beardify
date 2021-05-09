@@ -3,7 +3,7 @@
     <div class="playlist-page overflowed__target">
       {{ id }}
 
-      <!-- {{ store.state.playlist.playlist.name }} -->
+      <div class="title">{{ store.state.playlist.playlist.name }}</div>
       <!-- <div>{{ store.state.playlist.tracks }}</div> -->
       <div v-for="(track, index) in store.state.playlist.tracks" :key="index">
         {{ track.track.name }}
@@ -54,6 +54,7 @@ export default defineComponent({
       `playlist/${PlaylistActions.getPlaylistTracks}`,
       `https://api.spotify.com/v1/playlists/${useRoute().params.id}/tracks`
     );
+    store.commit(`playlist/${Mutations.CLEAN_TRACKS}`);
     onMounted(() => {});
 
     return { playlistpage, store, timecode, playSongs };
@@ -74,11 +75,11 @@ export default defineComponent({
 //   margin-bottom: 60px;
 // }
 
-// .title {
-//   font-size: 2rem;
-//   font-weight: 100;
-//   margin-bottom: 5px;
-// }
+.title {
+  font-size: 2rem;
+  font-weight: 100;
+  margin-bottom: 5px;
+}
 
 // .cover {
 //   width: 100%;
