@@ -45,6 +45,7 @@ export default defineComponent({
           store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data);
         })
         .catch(error => {
+          store.dispatch(`auth/${AuthActions.refresh}`);
           console.error("error", error);
         });
     }, 1000);
