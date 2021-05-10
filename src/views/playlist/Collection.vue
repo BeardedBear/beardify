@@ -29,7 +29,7 @@ import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { timecode, timecodeWithUnits } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
-import { PlaylistActions, Mutations } from "./CollectionStore";
+import { PlaylistActions, Mutations } from "./PlaylistStore";
 import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import ArtistList from "../../components/ArtistList.vue";

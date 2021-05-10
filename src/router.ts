@@ -5,7 +5,7 @@ import Auth from "./views/auth/Auth.vue";
 import Artist from "./views/artist/Artist.vue";
 import Album from "./views/album/Album.vue";
 import Playlist from "./views/playlist/Playlist.vue";
-import Collection from "./views/collection/Collection.vue";
+import Collection from "./views/playlist/Collection.vue";
 import Login from "./views/Login.vue";
 import Store from "./store";
 import { instance } from "./api";
