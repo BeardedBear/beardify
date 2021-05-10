@@ -12,11 +12,13 @@
         </div>
       </div>
       <div class="album-list">
-        <div
-          v-for="(album, index) in removeDuplicatesAlbums(store.state.playlist.tracks.map(a => a.track.album))"
-          :key="index"
-        >
-          <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" withArtists />
+        <div v-for="(album, index) in cleanAlbumList" :key="index">
+          <Album
+            :album="album"
+            :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri"
+            withArtists
+            canDelete
+          />
         </div>
       </div>
     </div>
@@ -24,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { timecode, timecodeWithUnits } from "../../helpers/date";
@@ -44,6 +46,9 @@ export default defineComponent({
   setup(props) {
     const store = useStore<RootState>();
     const playlistpage = ref();
+    const cleanAlbumList = computed(() => removeDuplicatesAlbums(store.state.playlist.tracks.map(a => a.track.album)));
+
+    console.log(cleanAlbumList);
 
     function sumDuration(tracks: PlaylistTrack[]) {
       return tracks.map((t: PlaylistTrack) => t.track.duration_ms).reduce((acc, value) => acc + value, 0);
@@ -53,7 +58,16 @@ export default defineComponent({
     store.dispatch(`playlist/${PlaylistActions.getTracks}`, `https://api.spotify.com/v1/playlists/${props.id}/tracks`);
     store.commit(`playlist/${Mutations.CLEAN_TRACKS}`);
 
-    return { playlistpage, store, timecode, timecodeWithUnits, playSongs, sumDuration, removeDuplicatesAlbums };
+    return {
+      playlistpage,
+      store,
+      timecode,
+      timecodeWithUnits,
+      playSongs,
+      sumDuration,
+      removeDuplicatesAlbums,
+      cleanAlbumList
+    };
   }
 });
 </script>

@@ -15,7 +15,8 @@ const state: PlaylistPage = {
 export enum Mutations {
   SET_PLAYLIST = "SET_PLAYLIST",
   SET_TRACKS = "SET_TRACKS",
-  CLEAN_TRACKS = "CLEAN_TRACKS"
+  CLEAN_TRACKS = "CLEAN_TRACKS",
+  REMOVE_TRACKS = "REMOVE_TRACKS"
 }
 
 const mutations: MutationTree<PlaylistPage> = {
@@ -29,6 +30,10 @@ const mutations: MutationTree<PlaylistPage> = {
 
   [Mutations.CLEAN_TRACKS](state): void {
     state.tracks = [];
+  },
+
+  [Mutations.REMOVE_TRACKS](state, trackUri: string): void {
+    state.tracks = state.tracks.filter(e => e.track.uri !== trackUri);
   }
 };
 

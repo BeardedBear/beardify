@@ -2,37 +2,54 @@
   <div class="album">
     <div class="active" v-if="currentlyPlayedId === album.uri"><i class="icon-volume-2"></i></div>
     <div class="cover">
-      <Cover size="medium" :images="album.images" @click="goAlbum()" />
-      <button class="play" type="button" @click="playAlbum(album.uri)" :title="album.uri">
+      <Cover size="medium" :images="album.images" @click="goAlbum()" class="img" />
+      <button class="play" type="button" @click="playAlbum(album.uri)">
         <i class="icon-play"></i>
       </button>
+      <button class="buttonAction add" type="button" @click="addAlbum('addalbum', album.id)">
+        <i class="icon-save"></i>
+      </button>
+      <button v-if="canDelete" class="buttonAction delete" type="button" @click="deleteAlbum(album.id)">
+        <i class="icon-trash-2"></i>
+      </button>
     </div>
-    <div class="name">{{ album.name }}</div>
-    <div v-if="withArtists"><ArtistList :artistList="album.artists" feat /></div>
-    <div class="date">{{ album.release_date.split("-").shift() }}</div>
+    <div v-if="!withoutMetas">
+      <div class="name">{{ album.name }}</div>
+      <div v-if="withArtists"><ArtistList :artistList="album.artists" feat /></div>
+      <div class="date">{{ album.release_date.split("-").shift() }}</div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, Prop, PropType } from "vue";
+import { defineComponent, PropType } from "vue";
 import { useStore } from "vuex";
-import { AlbumSimplified } from "../@types/Album";
+import { Album, AlbumSimplified } from "../@types/Album";
 import { RootState } from "../@types/RootState";
 import { instance } from "../api";
 import { defaultAlbumSimplified } from "../@types/Defaults";
 import router from "../router";
 import Cover from "./Cover.vue";
 import ArtistList from "./ArtistList.vue";
+import { Mutations } from "./dialog/DialogStore";
+import { DialogType } from "../@types/Dialog";
+import { Paging } from "../@types/Paging";
+import { TrackSimplified } from "../@types/Track";
+import { useRoute } from "vue-router";
+import { Mutations as PlaylistMutation } from "../views/playlist/PlaylistStore";
 
 export default defineComponent({
   components: { ArtistList, Cover },
   props: {
-    album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified> },
+    album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified | Album> },
     currentlyPlayedId: { default: "", type: String as PropType<string> },
-    withArtists: { default: false, type: Boolean as PropType<boolean> }
+    withArtists: { default: false, type: Boolean as PropType<boolean> },
+    withoutMetas: { default: false, type: Boolean as PropType<boolean> },
+    canDelete: { default: false, type: Boolean as PropType<boolean> }
   },
   setup(props) {
     const store = useStore<RootState>();
+    const currentRouteId = useRoute().params.id;
 
     function playAlbum(albumId: string) {
       instance.put("https://api.spotify.com/v1/me/player/play", { context_uri: albumId });
@@ -42,7 +59,28 @@ export default defineComponent({
       router.push(`/album/${props.album.id}`);
     }
 
-    return { store, playAlbum, goAlbum };
+    function addAlbum(type: DialogType, albumId: string) {
+      store.commit(`dialog/${Mutations.OPEN}`, { type, albumId });
+    }
+
+    function deleteAlbum(albumId: string) {
+      console.log(currentRouteId);
+      instance.get<Paging<TrackSimplified>>(`https://api.spotify.com/v1/albums/${albumId}/tracks`).then(e => {
+        instance
+          .delete(`https://api.spotify.com/v1/playlists/${currentRouteId}/tracks`, {
+            data: {
+              tracks: [
+                {
+                  uri: e.data.items[0].uri
+                }
+              ]
+            }
+          })
+          .then(f => store.commit(`playlist/${PlaylistMutation.REMOVE_TRACKS}`, e.data.items[0].uri));
+      });
+    }
+
+    return { deleteAlbum, addAlbum, store, playAlbum, goAlbum };
   }
 });
 </script>
@@ -50,27 +88,32 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import "../assets/scss/colors";
 
-@keyframes popAlbum {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 .album {
   animation: popAlbum 1s ease both;
   position: relative;
 
   &:hover {
-    .play {
+    .play,
+    .add,
+    .delete {
       display: block;
+    }
+
+    .img {
+      opacity: 0.3;
     }
   }
 }
 @keyframes popPlayButton {
   from {
+    opacity: 0;
     transform: scale(0.8) rotate(50deg);
+  }
+}
+@keyframes popAddButton {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
   }
 }
 
@@ -81,6 +124,40 @@ export default defineComponent({
   100% {
     transform: scale(1.2);
   }
+}
+
+.buttonAction {
+  animation: popAddButton 0.2s ease both;
+  position: absolute;
+  border: 0;
+  background-color: transparent;
+  color: currentColor;
+  font-size: 1.5rem;
+  padding: 5px 7px;
+  transition: transform ease 0.1s;
+  will-change: transform;
+  display: none;
+  cursor: pointer;
+  border-radius: 100px;
+
+  &:hover {
+    background-color: rgba(black, 0.5);
+    color: white;
+  }
+
+  &.delete {
+    top: 20px;
+    left: 20px;
+  }
+
+  &.add {
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+.img {
+  transition: all ease 0.2s;
 }
 
 .active {
@@ -125,6 +202,7 @@ export default defineComponent({
 
   &:hover {
     background: $primary-color-light;
+    color: white;
   }
 
   &:active {

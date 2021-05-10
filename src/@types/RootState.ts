@@ -5,6 +5,7 @@ import { AlbumPage } from "./Album";
 import { Search } from "./Search";
 import { Sidebar } from "./Sidebar";
 import { PlaylistPage } from "./Playlist";
+import { Dialog } from "./Dialog";
 
 export interface RootState {
   auth: Auth;
@@ -14,4 +15,5 @@ export interface RootState {
   search: Search;
   sidebar: Sidebar;
   playlist: PlaylistPage;
+  dialog: Dialog;
 }

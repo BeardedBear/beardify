@@ -1,4 +1,5 @@
 <template>
+  <Dialog />
   <Topbar />
   <div id="app__content">
     <Sidebar />
@@ -21,9 +22,10 @@ import { RootState } from "./@types/RootState";
 import { AuthActions } from "./views/auth/AuthStore";
 import { instance } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
+import Dialog from "./components/dialog/Dialog.vue";
 
 export default defineComponent({
-  components: { Topbar, Player, Sidebar },
+  components: { Dialog, Topbar, Player, Sidebar },
   setup() {
     const store = useStore<RootState>();
 
@@ -100,7 +102,7 @@ export default defineComponent({
 
 ::-webkit-scrollbar-thumb {
   background-clip: content-box;
-  background-color: rgba($primary-color, 0.7);
+  background-color: $primary-color-dark;
 }
 
 ::-webkit-scrollbar-track {

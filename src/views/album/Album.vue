@@ -13,7 +13,7 @@
       </div>
       <div class="content">
         <div class="content__cover">
-          <Cover size="medium" :images="store.state.album.album.images" />
+          <Album :album="store.state.album.album" withoutMetas />
         </div>
         <div class="content__tracks">
           <div
@@ -51,9 +51,10 @@ import ArtistList from "../../components/ArtistList.vue";
 import { playSongs } from "../../helpers/play";
 import { Track, TrackSimplified } from "../../@types/Track";
 import Cover from "../../components/Cover.vue";
+import Album from "../../components/Album.vue";
 
 export default defineComponent({
-  components: { ArtistList, Cover },
+  components: { Album, ArtistList, Cover },
   props: {
     id: { default: "", type: String }
   },
