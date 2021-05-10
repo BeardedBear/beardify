@@ -11,9 +11,11 @@
           </div>
         </div>
       </div>
-      <!-- <div>{{ store.state.playlist.tracks.map(a => a.track.album) }}</div> -->
       <div class="album-list">
-        <div v-for="(album, index) in store.state.playlist.tracks.map(a => a.track.album)" :key="index">
+        <div
+          v-for="(album, index) in removeDuplicatesAlbums(store.state.playlist.tracks.map(a => a.track.album))"
+          :key="index"
+        >
           <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
         </div>
       </div>
@@ -32,6 +34,7 @@ import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import ArtistList from "../../components/ArtistList.vue";
 import Album from "../../components/Album.vue";
+import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 
 export default defineComponent({
   components: { Album, ArtistList, Cover },
@@ -50,7 +53,7 @@ export default defineComponent({
     store.dispatch(`playlist/${PlaylistActions.getTracks}`, `https://api.spotify.com/v1/playlists/${props.id}/tracks`);
     store.commit(`playlist/${Mutations.CLEAN_TRACKS}`);
 
-    return { playlistpage, store, timecode, timecodeWithUnits, playSongs, sumDuration };
+    return { playlistpage, store, timecode, timecodeWithUnits, playSongs, sumDuration, removeDuplicatesAlbums };
   }
 });
 </script>
@@ -59,45 +62,10 @@ export default defineComponent({
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
 
-.track {
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 3px;
-  display: grid;
-  grid-template-columns: 40px 1fr 0.8fr 50px;
-  align-items: center;
-
-  &-icon {
-    font-size: 1.5rem;
-    opacity: 0.1;
-  }
-
-  &:hover {
-    background-color: rgba($primary-color, 0.1);
-  }
-
-  &.active {
-    background-color: rgba($primary-color, 0.2);
-    color: $primary-color;
-
-    &:hover {
-      background-color: rgba($primary-color, 0.2);
-      color: $primary-color;
-    }
-  }
-}
-
 .album-list {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 30px;
-}
-
-.duration {
-  text-align: right;
-}
-.overflowed {
-  scroll-behavior: smooth;
 }
 
 .description {
@@ -118,11 +86,6 @@ export default defineComponent({
   gap: 30px;
   margin-bottom: 40px;
   text-align: center;
-}
-
-.cover {
-  border-radius: 4px;
-  height: 140px;
 }
 
 .playlist-page {
