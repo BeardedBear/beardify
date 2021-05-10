@@ -13,7 +13,7 @@
             <router-link
               v-if="playlist.id"
               class="playlist-item"
-              :to="`/playlist/${playlist.id}`"
+              :to="`/collection/${playlist.id}`"
               :class="{ active: $route.params.id === playlist.id }"
             >
               <i class="icon-folder"></i>
