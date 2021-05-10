@@ -267,7 +267,7 @@ export default defineComponent({
   text-align: right;
 }
 .meta {
-  $sidewidth: 250px;
+  $sidewidth: 300px;
   display: grid;
   grid-template-columns: $sidewidth auto $sidewidth;
   justify-content: space-between;
