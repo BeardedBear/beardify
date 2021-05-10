@@ -1,5 +1,6 @@
 $mobileWidth: 440px;
-$tabletWidth: 900px;
+$xl: 1100px;
+$l: 900px;
 
 @mixin mobile {
   @media (max-width: $mobileWidth) {
@@ -7,8 +8,14 @@ $tabletWidth: 900px;
   }
 }
 
-@mixin tablet {
-  @media (max-width: $tabletWidth) {
+@mixin xl {
+  @media (max-width: $xl) {
+    @content;
+  }
+}
+
+@mixin l {
+  @media (max-width: $l) {
     @content;
   }
 }

@@ -29,7 +29,7 @@
             </div>
           </div>
         </div>
-        <div class="top"><TopTracks class="top__item" /> <RelatedArtists class="top__item" /></div>
+        <div class="top"><TopTracks class="top__item" /> <RelatedArtists class="top__item related-artists" /></div>
       </div>
     </div>
   </div>
@@ -37,7 +37,6 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { onBeforeRouteUpdate } from "vue-router";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { ArtistActions } from "./ArtistStore";
@@ -83,7 +82,7 @@ export default defineComponent({
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
 
-  @include tablet {
+  @include l {
     grid-template-columns: 1fr 1fr;
   }
 }
@@ -91,17 +90,37 @@ export default defineComponent({
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 20px;
+
+  @include l {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  @include l {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .singles {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   gap: 20px;
+
+  @include xl {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
+  @include l {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .content {
   display: flex;
   gap: 40px;
+
+  @include xl {
+    flex-direction: column;
+  }
 
   &__block {
     margin-bottom: 60px;
@@ -111,11 +130,25 @@ export default defineComponent({
 .top {
   flex: 0 0 350px;
 
+  @include xl {
+    order: -1;
+  }
+
   &__item {
     margin-bottom: 40px;
+
+    @include xl {
+      margin-bottom: 0;
+    }
   }
 }
 .artist-page {
   padding: 30px 40px;
+}
+
+.related-artists {
+  @include xl {
+    display: none;
+  }
 }
 </style>

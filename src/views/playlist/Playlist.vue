@@ -34,7 +34,8 @@
           <i
             :class="{
               'icon-album': track.track.album.album_type === 'album',
-              'icon-single': track.track.album.album_type === 'single'
+              'icon-single': track.track.album.album_type === 'single',
+              'icon-compilation': track.track.album.album_type === 'compilation'
             }"
           ></i
           >{{ track.track.album.name }}
