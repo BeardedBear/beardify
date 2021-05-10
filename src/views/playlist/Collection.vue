@@ -16,7 +16,7 @@
           v-for="(album, index) in removeDuplicatesAlbums(store.state.playlist.tracks.map(a => a.track.album))"
           :key="index"
         >
-          <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
+          <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" withArtists />
         </div>
       </div>
     </div>

@@ -8,12 +8,13 @@
       </button>
     </div>
     <div class="name">{{ album.name }}</div>
+    <div v-if="withArtists"><ArtistList :artistList="album.artists" feat /></div>
     <div class="date">{{ album.release_date.split("-").shift() }}</div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, Prop, PropType } from "vue";
 import { useStore } from "vuex";
 import { AlbumSimplified } from "../@types/Album";
 import { RootState } from "../@types/RootState";
@@ -21,12 +22,14 @@ import { instance } from "../api";
 import { defaultAlbumSimplified } from "../@types/Defaults";
 import router from "../router";
 import Cover from "./Cover.vue";
+import ArtistList from "./ArtistList.vue";
 
 export default defineComponent({
-  components: { Cover },
+  components: { ArtistList, Cover },
   props: {
     album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified> },
-    currentlyPlayedId: { default: "", type: String as PropType<string> }
+    currentlyPlayedId: { default: "", type: String as PropType<string> },
+    withArtists: { default: false, type: Boolean as PropType<boolean> }
   },
   setup(props) {
     const store = useStore<RootState>();
