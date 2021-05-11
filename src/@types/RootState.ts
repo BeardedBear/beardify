@@ -6,6 +6,7 @@ import { Search } from "./Search";
 import { Sidebar } from "./Sidebar";
 import { PlaylistPage } from "./Playlist";
 import { Dialog } from "./Dialog";
+import { Config } from "./Config";
 
 export interface RootState {
   auth: Auth;
@@ -16,4 +17,5 @@ export interface RootState {
   sidebar: Sidebar;
   playlist: PlaylistPage;
   dialog: Dialog;
+  config: Config;
 }

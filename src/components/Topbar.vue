@@ -16,7 +16,10 @@
         <a :href="connectUrl">LOGME</a> - {{ store.state.auth.me }}
       </div>
       <div v-else>
-        <Cover size="large" :images="store.state.auth.me.images" className="avatar" />
+        <Cover size="large" :images="store.state.auth.me.images" className="avatar" @click="openConfig()" />
+
+        {{ store.state.config.show }}
+        <Config v-if="store.state.config.show" />
       </div>
     </div>
   </div>
@@ -32,9 +35,12 @@ import { defineComponent } from "vue";
 import Search from "./search/Search.vue"
 import Cover from "./Cover.vue"
 import router from "../router";
+import Config from "./config/Config.vue"
+import {Mutations} from "./config/ConfigStore"
+import { log } from "console";
 
 export default defineComponent({
-  components : {Search, Cover},
+  components : {Search, Cover, Config},
   setup() {
     const store = useStore<RootState>();
 
@@ -54,7 +60,20 @@ export default defineComponent({
       store.dispatch(`auth/${AuthActions.refresh}`);
     }
 
-    return { store, getDeviceList, refresh, connectUrl, previous, next };
+    function openConfig() {
+      store.commit(`config/${Mutations.OPEN}`)
+    }
+
+    addEventListener("click", (e:MouseEvent) => {
+
+        if (store.state.config.show && e.target !== document.querySelector(".config")) {
+          console.log("d");
+
+          store.commit(`config/${Mutations.CLOSE}`)
+        }
+    })
+
+    return { store, getDeviceList, refresh, connectUrl, previous, next,openConfig };
   },
 });
 </script>
@@ -62,6 +81,15 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import "../assets/scss/colors";
 
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  background: var(--bg-color);
+  padding: 15px;
+  align-items: center;
+  gap: 30px;
+  position: relative;
+}
 .navigation {
   $radius: 4px;
 
@@ -102,14 +130,6 @@ export default defineComponent({
   height: 30px;
   display: block;
   margin-right: 15px;
-}
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  background: var(--bg-color);
-  padding: 15px;
-  align-items: center;
-  gap: 30px;
 }
 
 #nav {

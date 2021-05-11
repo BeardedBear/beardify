@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, onUpdated } from "vue";
 import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
 import { Mutations, PlayerActions } from "./components/player/PlayerStore";
@@ -33,9 +33,7 @@ export default defineComponent({
     store.dispatch(`player/${PlayerActions.getDeviceList}`);
     store.dispatch(`auth/${AuthActions.refresh}`);
 
-    themeLight.forEach((c: Test) => {
-      document.documentElement.style.setProperty(c.var, c.color);
-    });
+    store.state.config.theme.forEach((c: Test) => document.documentElement.style.setProperty(c.var, c.color));
 
     // Keep app active
     setInterval(() => {

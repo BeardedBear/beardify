@@ -18,6 +18,7 @@
             :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri"
             withArtists
             canDelete
+            canSave
           />
         </div>
       </div>

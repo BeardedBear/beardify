@@ -8,7 +8,7 @@
             <div class="heading">Albums</div>
             <div class="albums">
               <div v-for="(album, index) in store.state.artist.albums" :key="index">
-                <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
+                <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" canSave />
               </div>
             </div>
           </div>
@@ -16,7 +16,7 @@
             <div class="heading">EP's</div>
             <div class="eps">
               <div v-for="(album, index) in store.state.artist.eps" :key="index">
-                <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
+                <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" canSave />
               </div>
             </div>
           </div>

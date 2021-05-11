@@ -1,29 +1,39 @@
-// document.documentElement.style.setProperty('--primary-color', '#FF0000');
-
 import { ActionTree, MutationTree } from "vuex";
-import { Album } from "../../@types/Album";
-import { Artist } from "../../@types/Artist";
-import { Config } from "../../@types/Config";
-import { defaultAlbum, defaultArtist, defaultTrackSimplified } from "../../@types/Defaults";
-import { Dialog, DialogType } from "../../@types/Dialog";
+import { Config, ThemeColor, themeDark, themeLight } from "../../@types/Config";
+import { Dialog } from "../../@types/Dialog";
 import { RootState } from "../../@types/RootState";
-import { Search, SearchFromAPI } from "../../@types/Search";
-import { TrackSimplified } from "../../@types/Track";
-import { instance } from "../../api";
 
 const state: Config = {
-  theme: "dark"
+  show: false,
+  theme: themeDark
 };
 
 // MUTATIONS
 
 export enum Mutations {
-  SWITCH_THEME = "SWITCH_THEME"
+  SWITCH_THEME_LIGHT = "SWITCH_THEME_LIGHT",
+  SWITCH_THEME_DARK = "SWITCH_THEME_DARK",
+  OPEN = "OPEN",
+  CLOSE = "CLOSE"
 }
 
 const mutations: MutationTree<Config> = {
-  [Mutations.SWITCH_THEME](state): void {
-    state.theme === "dark" ? "light" : "dark";
+  [Mutations.SWITCH_THEME_LIGHT](state): void {
+    state.theme = themeLight;
+    state.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
+  },
+
+  [Mutations.SWITCH_THEME_DARK](state): void {
+    state.theme = themeDark;
+    state.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
+  },
+
+  [Mutations.OPEN](state): void {
+    state.show = true;
+  },
+
+  [Mutations.CLOSE](state): void {
+    state.show = false;
   }
 };
 

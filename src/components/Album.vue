@@ -6,7 +6,7 @@
       <button class="play" type="button" @click="playAlbum(album.uri)">
         <i class="icon-play"></i>
       </button>
-      <button class="buttonAction add" type="button" @click="addAlbum('addalbum', album.id)">
+      <button v-if="canSave" class="buttonAction add" type="button" @click="addAlbum('addalbum', album.id)">
         <i class="icon-save"></i>
       </button>
       <button v-if="canDelete" class="buttonAction delete" type="button" @click="deleteAlbum(album.id)">
@@ -45,7 +45,8 @@ export default defineComponent({
     currentlyPlayedId: { default: "", type: String as PropType<string> },
     withArtists: { default: false, type: Boolean as PropType<boolean> },
     withoutMetas: { default: false, type: Boolean as PropType<boolean> },
-    canDelete: { default: false, type: Boolean as PropType<boolean> }
+    canDelete: { default: false, type: Boolean as PropType<boolean> },
+    canSave: { default: false, type: Boolean as PropType<boolean> }
   },
   setup(props) {
     const store = useStore<RootState>();

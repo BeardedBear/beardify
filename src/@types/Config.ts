@@ -1,15 +1,16 @@
 export interface Config {
-  theme: Theme;
+  show: boolean;
+  theme: ThemeColor[];
 }
 
 export type Theme = "light" | "dark";
 
-export interface Test {
+export interface ThemeColor {
   var: string;
   color: string;
 }
 
-export const themeDark: Test[] = [
+export const themeDark: ThemeColor[] = [
   {
     var: "--bg-color-darker",
     color: "#15181d"
@@ -24,7 +25,7 @@ export const themeDark: Test[] = [
   },
   {
     var: "--bg-color-light",
-    color: "#212530"
+    color: "#21242e"
   },
   {
     var: "--bg-color-lighter",
@@ -35,7 +36,7 @@ export const themeDark: Test[] = [
     color: "#d5dbe0"
   }
 ];
-export const themeLight: Test[] = [
+export const themeLight: ThemeColor[] = [
   {
     var: "--bg-color-darker",
     color: "#ebebeb"
@@ -61,11 +62,3 @@ export const themeLight: Test[] = [
     color: "#1b1e20"
   }
 ];
-
-// document.documentElement.style.setProperty('--bg-color', '#FF0000');
-
-// --bg-color-darker: #15181d;
-// --bg-color-dark: #181b21;
-// --bg-color: #1b1e26;
-// --bg-color-light: #212530;
-// --bg-color-lighter: #272c3a;

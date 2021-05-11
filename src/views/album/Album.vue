@@ -13,7 +13,7 @@
       </div>
       <div class="content">
         <div class="content__cover">
-          <Album :album="store.state.album.album" withoutMetas />
+          <Album :album="store.state.album.album" withoutMetas canSave />
         </div>
         <div class="content__tracks">
           <div
