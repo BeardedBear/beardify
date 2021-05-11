@@ -2,14 +2,62 @@ export interface Config {
   show: boolean;
   theme: ThemeColor[];
   themeLabel: ThemeLabel;
+  scheme: ThemeColor[];
+  schemeLabel: SchemeLabel;
 }
 
 export type ThemeLabel = "light" | "dark";
+export type SchemeLabel = "default" | "blue";
 
 export interface ThemeColor {
   var: string;
   color: string;
 }
+
+export const schemeDefault: ThemeColor[] = [
+  {
+    var: "--primary-color-darker",
+    color: "#402d6e"
+  },
+  {
+    var: "--primary-color-dark",
+    color: "#543a97"
+  },
+  {
+    var: "--primary-color",
+    color: "#6d49c9"
+  },
+  {
+    var: "--primary-color-light",
+    color: "#7a50e4"
+  },
+  {
+    var: "--primary-color-lighter",
+    color: "#9064ff"
+  }
+];
+export const schemeBlue: ThemeColor[] = [
+  {
+    var: "--primary-color-darker",
+    color: "#25688d"
+  },
+  {
+    var: "--primary-color-dark",
+    color: "#3482ad"
+  },
+  {
+    var: "--primary-color",
+    color: "#499dc9"
+  },
+  {
+    var: "--primary-color-light",
+    color: "#47aee4"
+  },
+  {
+    var: "--primary-color-lighter",
+    color: "#42beff"
+  }
+];
 
 export const themeDark: ThemeColor[] = [
   {

@@ -1,21 +1,45 @@
 <template>
   <div class="config">
-    <div>Theme</div>
-    <div class="radio">
+    <div class="user">
+      <div>{{ store.state.auth.me.display_name }}</div>
+      <div class="user__mail">{{ store.state.auth.me.email }}</div>
+    </div>
+    <div class="links">
+      <router-link class="links__item button" to="/login">Login</router-link>
+    </div>
+
+    <div class="schemes">
       <button
-        class="radio__item"
-        @click="switchThemeLight()"
-        :class="{ current: store.state.config.themeLabel === 'light' }"
-      >
-        <i class="icon-sun"></i>
-      </button>
+        class="schemes__item default"
+        @click="schemeDefault()"
+        :class="{ current: store.state.config.schemeLabel === 'default' }"
+      ></button>
       <button
-        class="radio__item"
-        @click="switchThemeDark()"
-        :class="{ current: store.state.config.themeLabel === 'dark' }"
-      >
-        <i class="icon-moon"></i>
-      </button>
+        class="schemes__item blue"
+        @click="schemeBlue()"
+        :class="{ current: store.state.config.schemeLabel === 'blue' }"
+      ></button>
+      <button class="schemes__item blue" @click="schemeBlue()"></button>
+      <button class="schemes__item blue" @click="schemeBlue()"></button>
+    </div>
+
+    <div>
+      <div class="radio">
+        <button
+          class="radio__item"
+          @click="switchThemeLight()"
+          :class="{ current: store.state.config.themeLabel === 'light' }"
+        >
+          <i class="icon-sun"></i>
+        </button>
+        <button
+          class="radio__item"
+          @click="switchThemeDark()"
+          :class="{ current: store.state.config.themeLabel === 'dark' }"
+        >
+          <i class="icon-moon"></i>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -36,11 +60,20 @@ export default defineComponent({
     function switchThemeLight() {
       store.commit(`config/${Mutations.SWITCH_THEME_LIGHT}`);
     }
+
     function switchThemeDark() {
       store.commit(`config/${Mutations.SWITCH_THEME_DARK}`);
     }
 
-    return { store, switchThemeLight, switchThemeDark };
+    function schemeBlue() {
+      store.commit(`config/${Mutations.SCHEME_BLUE}`);
+    }
+
+    function schemeDefault() {
+      store.commit(`config/${Mutations.SCHEME_DEFAULT}`);
+    }
+
+    return { store, switchThemeLight, switchThemeDark, schemeBlue, schemeDefault };
   }
 });
 </script>
@@ -53,6 +86,65 @@ export default defineComponent({
     transform-origin: top right;
   }
 }
+
+.schemes {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 15px;
+
+  &__item {
+    $s: 15px;
+    width: $s * 2;
+    height: $s;
+    border-radius: $s;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    position: relative;
+
+    &::after {
+      $o: 3px;
+      position: absolute;
+      top: $o;
+      bottom: $o;
+      left: $o;
+      right: $o;
+      content: "";
+      background-color: var(--bg-color-darker);
+      border-radius: $s;
+    }
+
+    &.current {
+      &::after {
+        display: none;
+      }
+    }
+    &.blue {
+      background-color: #499dc9;
+    }
+    &.default {
+      background-color: #6d49c9;
+    }
+  }
+}
+
+.links {
+  &__item {
+    width: 100%;
+    display: block;
+  }
+}
+
+.user {
+  margin-bottom: 20px;
+
+  &__mail {
+    margin-top: 2px;
+    font-size: 0.8rem;
+    font-style: italic;
+    opacity: 0.5;
+  }
+}
 .config {
   animation: popConfig ease 0.2s both;
   background-color: var(--bg-color-darker);
@@ -61,12 +153,13 @@ export default defineComponent({
   top: calc(100% - 3px);
   right: 20px;
   border-radius: 4px;
-  width: 200px;
+  width: 250px;
   box-shadow: 0 5px 10px rgba(black, 0.2);
   z-index: 999;
 }
 
 .radio {
+  margin-top: 5px;
   display: flex;
   justify-content: space-between;
 

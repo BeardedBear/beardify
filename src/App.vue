@@ -34,6 +34,7 @@ export default defineComponent({
     store.dispatch(`auth/${AuthActions.refresh}`);
 
     store.state.config.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
+    store.state.config.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
 
     // Keep app active
     setInterval(() => {

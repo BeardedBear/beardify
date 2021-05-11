@@ -1,12 +1,14 @@
 import { ActionTree, MutationTree } from "vuex";
-import { Config, ThemeColor, themeDark, themeLight } from "../../@types/Config";
+import { Config, schemeDefault, ThemeColor, themeDark, themeLight, schemeBlue } from "../../@types/Config";
 import { Dialog } from "../../@types/Dialog";
 import { RootState } from "../../@types/RootState";
 
 const state: Config = {
   show: false,
   theme: themeDark,
-  themeLabel: "dark"
+  themeLabel: "dark",
+  scheme: schemeDefault,
+  schemeLabel: "default"
 };
 
 // MUTATIONS
@@ -14,6 +16,8 @@ const state: Config = {
 export enum Mutations {
   SWITCH_THEME_LIGHT = "SWITCH_THEME_LIGHT",
   SWITCH_THEME_DARK = "SWITCH_THEME_DARK",
+  SCHEME_DEFAULT = "SCHEME_DEFAULT",
+  SCHEME_BLUE = "SCHEME_BLUE",
   OPEN = "OPEN",
   CLOSE = "CLOSE"
 }
@@ -29,6 +33,18 @@ const mutations: MutationTree<Config> = {
     state.theme = themeDark;
     state.themeLabel = "dark";
     state.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
+  },
+
+  [Mutations.SCHEME_DEFAULT](state): void {
+    state.scheme = schemeDefault;
+    state.schemeLabel = "default";
+    state.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
+  },
+
+  [Mutations.SCHEME_BLUE](state): void {
+    state.scheme = schemeBlue;
+    state.schemeLabel = "blue";
+    state.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
   },
 
   [Mutations.OPEN](state): void {

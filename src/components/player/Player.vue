@@ -318,7 +318,7 @@ export default defineComponent({
     top: 0;
     bottom: 0;
     left: 0;
-    background: #6243b0;
+    background: var(--primary-color);
     // transition: width linear 1s;
   }
 

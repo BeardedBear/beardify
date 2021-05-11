@@ -133,6 +133,7 @@ export default defineComponent({
   height: 30px;
   display: block;
   margin-right: 15px;
+  opacity: 0.5;
 }
 
 #nav {
