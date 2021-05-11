@@ -1,9 +1,10 @@
 export interface Config {
   show: boolean;
   theme: ThemeColor[];
+  themeLabel: ThemeLabel;
 }
 
-export type Theme = "light" | "dark";
+export type ThemeLabel = "light" | "dark";
 
 export interface ThemeColor {
   var: string;

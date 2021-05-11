@@ -1,24 +1,27 @@
 <template>
   <div class="topbar">
     <div id="nav">
-      <img class="logo" src="/img/logo.svg" alt="" />
+      <img class="logo" src="/img/logo.svg" />
       <div class="navigation">
-        <button class="navigation__item" @click="previous()"><i class="icon-arrow-left"></i></button>
-        <button class="navigation__item" @click="next()"><i class="icon-arrow-right"></i></button>
+        <button class="navigation__item" @click="previous()">
+          <i class="icon-arrow-left"></i>
+        </button>
+        <button class="navigation__item" @click="next()">
+          <i class="icon-arrow-right"></i>
+        </button>
       </div>
       <!-- <router-link to="/">Home</router-link>
-      <router-link to="/about">About</router-link> -->
+      <router-link to="/about">About</router-link>-->
       <!-- <router-link to="/login">Login</router-link> -->
     </div>
     <Search />
     <div>
       <div v-if="store.state.auth.me.display_name === ''">
-        <a :href="connectUrl">LOGME</a> - {{ store.state.auth.me }}
+        <a :href="connectUrl">LOGME</a>
+        - {{ store.state.auth.me }}
       </div>
       <div v-else>
-        <Cover size="large" :images="store.state.auth.me.images" className="avatar" @click="openConfig()" />
-
-        {{ store.state.config.show }}
+        <Cover size="large" :images="store.state.auth.me.images" class="avatar" @click="openConfig()" />
         <Config v-if="store.state.config.show" />
       </div>
     </div>
@@ -31,16 +34,16 @@ import { useStore } from "vuex";
 import { PlayerActions } from "./player/PlayerStore";
 import { AuthActions } from "../views/auth/AuthStore";
 import type { RootState } from "../@types/RootState";
-import { defineComponent } from "vue";
+import { defineComponent, onMounted } from "vue";
 import Search from "./search/Search.vue"
 import Cover from "./Cover.vue"
 import router from "../router";
 import Config from "./config/Config.vue"
-import {Mutations} from "./config/ConfigStore"
+import { Mutations } from "./config/ConfigStore"
 import { log } from "console";
 
 export default defineComponent({
-  components : {Search, Cover, Config},
+  components: { Search, Cover, Config },
   setup() {
     const store = useStore<RootState>();
 
@@ -64,16 +67,16 @@ export default defineComponent({
       store.commit(`config/${Mutations.OPEN}`)
     }
 
-    addEventListener("click", (e:MouseEvent) => {
-
-        if (store.state.config.show && e.target !== document.querySelector(".config")) {
-          console.log("d");
-
-          store.commit(`config/${Mutations.CLOSE}`)
-        }
+    onMounted(() => {
+      addEventListener("click", (e: any) => {
+        const test = e.composedPath().filter((b :HTMLElement) => b.className === "config").length
+        if (!test) store.commit(`config/${Mutations.CLOSE}`)
+      })
+      document.querySelector(".avatar")?.addEventListener("click", (e) => e.stopPropagation())
     })
 
-    return { store, getDeviceList, refresh, connectUrl, previous, next,openConfig };
+
+    return { store, getDeviceList, refresh, connectUrl, previous, next, openConfig };
   },
 });
 </script>

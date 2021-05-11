@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUpdated } from "vue";
+import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
 import { Mutations, PlayerActions } from "./components/player/PlayerStore";
@@ -23,7 +23,7 @@ import { AuthActions } from "./views/auth/AuthStore";
 import { instance } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
-import { themeDark, Test, themeLight } from "./@types/Config";
+import { ThemeColor } from "./@types/Config";
 
 export default defineComponent({
   components: { Dialog, Topbar, Player, Sidebar },
@@ -33,7 +33,7 @@ export default defineComponent({
     store.dispatch(`player/${PlayerActions.getDeviceList}`);
     store.dispatch(`auth/${AuthActions.refresh}`);
 
-    store.state.config.theme.forEach((c: Test) => document.documentElement.style.setProperty(c.var, c.color));
+    store.state.config.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
 
     // Keep app active
     setInterval(() => {

@@ -5,7 +5,8 @@ import { RootState } from "../../@types/RootState";
 
 const state: Config = {
   show: false,
-  theme: themeDark
+  theme: themeDark,
+  themeLabel: "dark"
 };
 
 // MUTATIONS
@@ -20,11 +21,13 @@ export enum Mutations {
 const mutations: MutationTree<Config> = {
   [Mutations.SWITCH_THEME_LIGHT](state): void {
     state.theme = themeLight;
+    state.themeLabel = "light";
     state.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
   },
 
   [Mutations.SWITCH_THEME_DARK](state): void {
     state.theme = themeDark;
+    state.themeLabel = "dark";
     state.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
   },
 

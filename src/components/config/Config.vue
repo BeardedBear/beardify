@@ -1,10 +1,21 @@
 <template>
   <div class="config">
-    <div>
-      <button @click="switchThemeDark()">y</button>
-    </div>
-    <div>
-      <button @click="switchThemeLight()">x</button>
+    <div>Theme</div>
+    <div class="radio">
+      <button
+        class="radio__item"
+        @click="switchThemeLight()"
+        :class="{ current: store.state.config.themeLabel === 'light' }"
+      >
+        <i class="icon-sun"></i>
+      </button>
+      <button
+        class="radio__item"
+        @click="switchThemeDark()"
+        :class="{ current: store.state.config.themeLabel === 'dark' }"
+      >
+        <i class="icon-moon"></i>
+      </button>
     </div>
   </div>
 </template>
@@ -35,11 +46,52 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@keyframes popConfig {
+  from {
+    opacity: 0;
+    transform: scale(0);
+    transform-origin: top right;
+  }
+}
 .config {
-  background-color: red;
+  animation: popConfig ease 0.2s both;
+  background-color: var(--bg-color-darker);
   padding: 20px;
   position: absolute;
-  top: 100%;
-  right: 0;
+  top: calc(100% - 3px);
+  right: 20px;
+  border-radius: 4px;
+  width: 200px;
+  box-shadow: 0 5px 10px rgba(black, 0.2);
+  z-index: 999;
+}
+
+.radio {
+  display: flex;
+  justify-content: space-between;
+
+  &__item {
+    $radius: 4px;
+    width: 100%;
+    margin-top: 10px;
+    padding: 7px 0;
+    border: 0;
+    background-color: var(--bg-color);
+    cursor: pointer;
+    color: currentColor;
+
+    &:first-of-type {
+      border-radius: $radius 0 0 $radius;
+    }
+
+    &:last-of-type {
+      border-radius: 0 $radius $radius 0;
+    }
+
+    &.current {
+      background-color: var(--primary-color);
+      color: white;
+    }
+  }
 }
 </style>
