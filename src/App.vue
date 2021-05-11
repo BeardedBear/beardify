@@ -35,6 +35,7 @@ export default defineComponent({
     // Keep app active
     setInterval(() => {
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
+      store.dispatch(`auth/${AuthActions.auth}`, store.state.auth.auth.code);
       store.dispatch(`auth/${AuthActions.refresh}`);
     }, 120000);
 
