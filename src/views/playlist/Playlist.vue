@@ -99,16 +99,6 @@ export default defineComponent({
   &:hover {
     background-color: rgba(var(--primary-color), 0.1);
   }
-
-  &.active {
-    background-color: rgba(var(--primary-color), 0.2);
-    color: var(--primary-color);
-
-    &:hover {
-      background-color: rgba(var(--primary-color), 0.2);
-      color: var(--primary-color);
-    }
-  }
 }
 
 .duration {

@@ -81,11 +81,6 @@ export default defineComponent({
     background-color: var(--bg-color-light);
   }
 
-  &.active {
-    background-color: rgba(var(--primary-color), 0.2);
-    color: var(--primary-color);
-  }
-
   i {
     opacity: 0.3;
   }

@@ -18,7 +18,7 @@
         <div class="content__tracks">
           <div
             class="track"
-            :class="{ 'track--active': store.state.player.currentlyPlaying.item.id === track.id }"
+            :class="{ active: store.state.player.currentlyPlaying.item.id === track.id }"
             v-for="(track, index) in store.state.album.album.tracks.items"
             :key="index"
             @click="playSongs(index, store.state.album.album.tracks.items)"
@@ -107,17 +107,7 @@ export default defineComponent({
   grid-template-columns: 30px 1fr auto;
 
   &:hover {
-    background-color: rgba(var(--primary-color), 0.1);
-  }
-
-  &--active {
-    background-color: rgba(var(--primary-color), 0.2);
-    color: var(--primary-color);
-
-    &:hover {
-      background-color: rgba(var(--primary-color), 0.2);
-      color: var(--primary-color);
-    }
+    background-color: var(--bg-color-light);
   }
 
   &__number {

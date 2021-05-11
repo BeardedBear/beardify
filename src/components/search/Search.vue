@@ -116,10 +116,6 @@ $radius: 4px;
     font-style: italic;
     color: rgba(rgb(162, 186, 218), 0.2);
   }
-
-  &.active {
-    border-radius: $radius $radius 0 0;
-  }
 }
 
 .track {
