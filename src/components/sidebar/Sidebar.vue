@@ -75,7 +75,6 @@ export default defineComponent({
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 10px;
 
   &:hover {
     background-color: rgba(rgb(74, 75, 103), 0.15);
@@ -83,6 +82,7 @@ export default defineComponent({
 
   i {
     opacity: 0.3;
+    margin-right: 10px;
   }
 }
 

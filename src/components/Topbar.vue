@@ -90,11 +90,12 @@ export default defineComponent({
   background: var(--bg-color);
   padding: 15px;
   align-items: center;
-  gap: 30px;
   position: relative;
 }
 .navigation {
   $radius: 4px;
+  margin-right: 15px;
+  margin-left: 15px;
 
   &__item {
     border: 0;
@@ -128,17 +129,16 @@ export default defineComponent({
   height: $size;
   width: $size;
   display: block;
+  margin-left: 15px;
 }
 .logo {
   height: 30px;
   display: block;
-  margin-right: 15px;
   opacity: 0.5;
 }
 
 #nav {
   display: flex;
-  gap: 15px;
   align-items: center;
 
   a {

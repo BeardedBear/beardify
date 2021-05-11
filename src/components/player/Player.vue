@@ -276,10 +276,10 @@ export default defineComponent({
   &__what {
     display: flex;
     align-items: center;
-    gap: 10px;
 
     img {
       height: 50px;
+      margin-right: 15px;
     }
   }
 }
@@ -319,7 +319,6 @@ export default defineComponent({
     bottom: 0;
     left: 0;
     background: var(--primary-color);
-    // transition: width linear 1s;
   }
 
   &:hover {
