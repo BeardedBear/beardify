@@ -3,7 +3,7 @@
     <div>
       <input
         class="input"
-        :class="{ active: query }"
+        :class="{ opened: query }"
         type="text"
         v-model="query"
         @input="search(query)"
@@ -112,6 +112,10 @@ $radius: 4px;
   color: currentColor;
   font-weight: 700;
 
+  &.opened {
+    border-radius: $radius $radius 0 0;
+  }
+
   &::placeholder {
     font-style: italic;
     color: rgba(rgb(162, 186, 218), 0.2);
@@ -153,7 +157,7 @@ $radius: 4px;
   }
 
   &:hover {
-    background-color: var(--bg-color-light) er;
+    background-color: var(--bg-color-light);
   }
 }
 
@@ -165,7 +169,7 @@ $radius: 4px;
   color: currentColor;
 
   &:hover {
-    background-color: var(--bg-color-light) er;
+    background-color: var(--bg-color-light);
   }
 
   &-list {
@@ -194,7 +198,7 @@ $radius: 4px;
   cursor: pointer;
   border-radius: $radius;
   border: 0;
-  background-color: var(--bg-color-light) er;
+  background-color: var(--bg-color-light);
   color: currentColor;
   text-align: center;
   width: 40px;
@@ -204,7 +208,7 @@ $radius: 4px;
   flex: 1;
 }
 .results {
-  background-color: var(--bg-color-light);
+  background-color: var(--bg-color-lighter);
   position: absolute;
   top: 100%;
   left: 0;

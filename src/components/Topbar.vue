@@ -119,7 +119,7 @@ export default defineComponent({
 
   a {
     font-weight: bold;
-    color: var(--bg-color-light) er;
+    color: var(--bg-color-light);
 
     &.router-link-exact-active {
       color: var(--primary-color);
