@@ -39,11 +39,14 @@ export default defineComponent({
 .item {
   display: flex;
   align-items: center;
-  gap: 15px;
   margin-bottom: 5px;
   padding-right: 10px;
   border-radius: 3px;
   cursor: pointer;
+
+  img {
+    margin-right: 15px;
+  }
 
   &:hover {
     background-color: rgba(rgb(74, 75, 103), 0.15);

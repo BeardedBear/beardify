@@ -125,11 +125,12 @@ export default defineComponent({
 }
 
 .content {
-  display: flex;
+  display: grid;
   gap: 40px;
+  grid-template-columns: 1fr 300px;
 
   @include xl {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   &__block {

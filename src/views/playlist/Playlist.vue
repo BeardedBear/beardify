@@ -108,11 +108,11 @@ export default defineComponent({
   text-align: left;
   display: flex;
   align-items: center;
-  gap: 10px;
 
   i {
     opacity: 0.3;
     font-size: 1rem;
+    margin-right: 10px;
 
     &.icon-album {
       color: var(--primary-color);
@@ -139,8 +139,11 @@ export default defineComponent({
 .playlist-header {
   display: flex;
   align-items: center;
-  gap: 30px;
   margin-bottom: 20px;
+
+  img {
+    margin-right: 30px;
+  }
 }
 
 .cover {

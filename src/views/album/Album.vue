@@ -119,10 +119,10 @@ export default defineComponent({
 .content {
   display: flex;
   justify-content: center;
-  gap: 30px;
 
   &__cover {
     flex: 0 0 300px;
+    margin-right: 30px;
   }
 
   &__tracks {

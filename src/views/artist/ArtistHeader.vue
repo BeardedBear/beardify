@@ -94,16 +94,20 @@ export default defineComponent({
   &-links {
     display: flex;
     align-items: center;
-    gap: 20px;
+    margin-right: 20px;
 
     &__item {
       display: flex;
       align-items: center;
-      gap: 7px;
+      margin-right: 20px;
       text-decoration: none;
       color: currentColor;
       opacity: 0.3;
       cursor: pointer;
+
+      i {
+        margin-right: 10px;
+      }
 
       &:hover {
         opacity: 1;

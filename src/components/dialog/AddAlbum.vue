@@ -53,11 +53,11 @@ export default defineComponent({
 
 .album {
   display: flex;
-  gap: 10px;
   align-items: center;
 
   i {
     opacity: 0.3;
+    margin-right: 10px;
   }
 }
 
