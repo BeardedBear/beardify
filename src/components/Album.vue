@@ -100,7 +100,7 @@ export default defineComponent({
     }
 
     .img {
-      opacity: 0.3;
+      opacity: 0.5;
     }
   }
 }
@@ -142,7 +142,7 @@ export default defineComponent({
 
   &:hover {
     background-color: rgba(black, 0.5);
-    color: white;
+    color: currentColor;
   }
 
   &.delete {
@@ -194,7 +194,7 @@ export default defineComponent({
   left: $offset;
   border: 0;
   background: var(--primary-color);
-  color: currentColor;
+  color: rgba(white, 0.8);
   cursor: pointer;
   transition: transform ease 0.1s;
   will-change: transform;

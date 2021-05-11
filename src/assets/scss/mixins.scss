@@ -19,11 +19,11 @@
 }
 
 .active {
-  background-color: var(--primary-color-darker) !important;
+  // background-color: var(--primary-color-darker) !important;
   color: var(--primary-color-lighter) !important;
 
   &:hover {
-    background-color: var(--primary-color-darker) !important;
+    // background-color: var(--primary-color-darker) !important;
     color: var(--primary-color-lighter) !important;
   }
 }

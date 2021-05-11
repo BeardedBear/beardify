@@ -29,6 +29,10 @@ export const themeDark: Test[] = [
   {
     var: "--bg-color-lighter",
     color: "#272c3a"
+  },
+  {
+    var: "--font-color",
+    color: "#d5dbe0"
   }
 ];
 export const themeLight: Test[] = [
@@ -51,6 +55,10 @@ export const themeLight: Test[] = [
   {
     var: "--bg-color-lighter",
     color: "#ffffff"
+  },
+  {
+    var: "--font-color",
+    color: "#1b1e20"
   }
 ];
 

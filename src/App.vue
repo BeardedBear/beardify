@@ -132,7 +132,7 @@ export default defineComponent({
   line-height: 1.4;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #d5dbe0;
+  color: var(--font-color);
   height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;

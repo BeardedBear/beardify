@@ -210,7 +210,7 @@ export default defineComponent({
   }
 
   &__hover {
-    background-color: rgba(white, 0.3);
+    background-color: rgba(black, 0.2);
     position: absolute;
     top: 0;
     left: 0;
@@ -297,7 +297,7 @@ export default defineComponent({
     top: 0;
     bottom: 0;
     left: 0;
-    background: rgba(white, 0.2);
+    background: rgba(black, 0.3);
     display: none;
     animation: popSeek 0.2s ease 0s both;
 

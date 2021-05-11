@@ -1,17 +1,16 @@
 @import "./colors";
 
 .button {
-  background-color: var(--bg-color-lighter);
+  background-color: var(--bg-color-light);
   border: 0;
   cursor: pointer;
   font-weight: 700;
-  color: rgba(white, 0.8);
+  color: var(--font-color);
   padding: 10px 20px;
   border-radius: 3px;
 
   &:hover {
     background-color: var(--bg-color-lighter);
-    color: white;
   }
 
   &--primary {
