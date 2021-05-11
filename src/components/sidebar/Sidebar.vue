@@ -78,7 +78,7 @@ export default defineComponent({
   gap: 10px;
 
   &:hover {
-    background-color: rgba(grey, 0.15);
+    background-color: rgba(rgb(74, 75, 103), 0.15);
   }
 
   i {

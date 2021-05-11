@@ -107,7 +107,7 @@ export default defineComponent({
   grid-template-columns: 30px 1fr auto;
 
   &:hover {
-    background-color: rgba(grey, 0.15);
+    background-color: rgba(rgb(74, 75, 103), 0.15);
   }
 
   &__number {

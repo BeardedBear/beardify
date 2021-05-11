@@ -118,7 +118,7 @@ $radius: 4px;
 
   &::placeholder {
     font-style: italic;
-    color: rgba(grey, 0.3);
+    color: rgba(rgb(74, 81, 103), 0.4);
   }
 }
 
