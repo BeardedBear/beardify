@@ -19,8 +19,16 @@
         @click="schemeBlue()"
         :class="{ current: store.state.config.schemeLabel === 'blue' }"
       ></button>
-      <button class="schemes__item blue" @click="schemeBlue()"></button>
-      <button class="schemes__item blue" @click="schemeBlue()"></button>
+      <button
+        class="schemes__item crimson"
+        @click="schemeCrimson()"
+        :class="{ current: store.state.config.schemeLabel === 'crimson' }"
+      ></button>
+      <button
+        class="schemes__item apple"
+        @click="schemeApple()"
+        :class="{ current: store.state.config.schemeLabel === 'apple' }"
+      ></button>
     </div>
 
     <div>
@@ -73,7 +81,15 @@ export default defineComponent({
       store.commit(`config/${Mutations.SCHEME_DEFAULT}`);
     }
 
-    return { store, switchThemeLight, switchThemeDark, schemeBlue, schemeDefault };
+    function schemeCrimson() {
+      store.commit(`config/${Mutations.SCHEME_CRIMSON}`);
+    }
+
+    function schemeApple() {
+      store.commit(`config/${Mutations.SCHEME_APPLE}`);
+    }
+
+    return { store, switchThemeLight, switchThemeDark, schemeBlue, schemeDefault, schemeCrimson, schemeApple };
   }
 });
 </script>
@@ -120,10 +136,16 @@ export default defineComponent({
       }
     }
     &.blue {
-      background-color: #499dc9;
+      background-color: #15acde;
     }
     &.default {
       background-color: #6d49c9;
+    }
+    &.crimson {
+      background-color: #de1c3e;
+    }
+    &.apple {
+      background-color: #28aa1b;
     }
   }
 }

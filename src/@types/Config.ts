@@ -7,7 +7,7 @@ export interface Config {
 }
 
 export type ThemeLabel = "light" | "dark";
-export type SchemeLabel = "default" | "blue";
+export type SchemeLabel = "default" | "blue" | "crimson" | "apple" | "orange";
 
 export interface ThemeColor {
   var: string;
@@ -39,23 +39,67 @@ export const schemeDefault: ThemeColor[] = [
 export const schemeBlue: ThemeColor[] = [
   {
     var: "--primary-color-darker",
-    color: "#25688d"
+    color: "#0285b0"
   },
   {
     var: "--primary-color-dark",
-    color: "#3482ad"
+    color: "#0992bf"
   },
   {
     var: "--primary-color",
-    color: "#499dc9"
+    color: "#15acde"
   },
   {
     var: "--primary-color-light",
-    color: "#47aee4"
+    color: "#1cbaee"
   },
   {
     var: "--primary-color-lighter",
-    color: "#42beff"
+    color: "#32ccff"
+  }
+];
+export const schemeApple: ThemeColor[] = [
+  {
+    var: "--primary-color-darker",
+    color: "#228319"
+  },
+  {
+    var: "--primary-color-dark",
+    color: "#228d17"
+  },
+  {
+    var: "--primary-color",
+    color: "#28aa1b"
+  },
+  {
+    var: "--primary-color-light",
+    color: "#2dc31e"
+  },
+  {
+    var: "--primary-color-lighter",
+    color: "#3fd830"
+  }
+];
+export const schemeCrimson: ThemeColor[] = [
+  {
+    var: "--primary-color-darker",
+    color: "#9d152c"
+  },
+  {
+    var: "--primary-color-dark",
+    color: "#b51833"
+  },
+  {
+    var: "--primary-color",
+    color: "#de1c3e"
+  },
+  {
+    var: "--primary-color-light",
+    color: "#ff4868"
+  },
+  {
+    var: "--primary-color-lighter",
+    color: "#ff647f"
   }
 ];
 

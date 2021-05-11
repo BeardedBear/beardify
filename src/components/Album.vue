@@ -1,6 +1,6 @@
 <template>
   <div class="album">
-    <div class="active" v-if="currentlyPlayedId === album.uri"><i class="icon-volume-2"></i></div>
+    <div class="current" v-if="currentlyPlayedId === album.uri"><i class="icon-volume-2"></i></div>
     <div class="cover">
       <Cover size="medium" :images="album.images" @click="goAlbum()" class="img" />
       <button class="play" type="button" @click="playAlbum(album.uri)">
@@ -161,7 +161,7 @@ export default defineComponent({
   transition: all ease 0.2s;
 }
 
-.active {
+.current {
   $size: 45px;
   height: $size;
   width: $size;
@@ -179,6 +179,7 @@ export default defineComponent({
     top: 3px;
     right: 4px;
     font-size: 1.2rem;
+    color: white;
   }
 }
 .play {
