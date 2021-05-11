@@ -128,7 +128,7 @@ const actions: ActionTree<ArtistPage, RootState> = {
 
   [ArtistActions.getRelatedArtists](store, artistId: string): void {
     instance.get<RelatedArtists>(`https://api.spotify.com/v1/artists/${artistId}/related-artists`).then(e => {
-      store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists);
+      store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists.slice(0, 15));
     });
   },
 
