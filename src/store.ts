@@ -8,14 +8,15 @@ import dialog from "./components/dialog/DialogStore";
 import search from "./components/search/SearchStore";
 import sidebar from "./components/sidebar/SidebarStore";
 import playlist from "./views/playlist/PlaylistStore";
+import config from "./components/config/ConfigStore";
 import { RootState } from "./@types/RootState";
 
 const persisted = createPersistedState({
   key: "beardify",
-  paths: ["auth", "player"]
+  paths: ["auth", "player", "config"]
 });
 
 export default createStore<RootState>({
-  modules: { player, auth, artist, album, search, sidebar, playlist, dialog },
+  modules: { player, auth, artist, album, search, sidebar, playlist, dialog, config },
   plugins: [persisted]
 });

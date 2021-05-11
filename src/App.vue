@@ -23,6 +23,7 @@ import { AuthActions } from "./views/auth/AuthStore";
 import { instance } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
+import { themeDark, Test, themeLight } from "./@types/Config";
 
 export default defineComponent({
   components: { Dialog, Topbar, Player, Sidebar },
@@ -31,6 +32,10 @@ export default defineComponent({
 
     store.dispatch(`player/${PlayerActions.getDeviceList}`);
     store.dispatch(`auth/${AuthActions.refresh}`);
+
+    themeLight.forEach((c: Test) => {
+      document.documentElement.style.setProperty(c.var, c.color);
+    });
 
     // Keep app active
     setInterval(() => {
