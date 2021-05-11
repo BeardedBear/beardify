@@ -97,7 +97,7 @@ export default defineComponent({
   }
 
   &:hover {
-    background-color: rgba(var(--primary-color), 0.1);
+    background-color: rgba(rgb(74, 75, 103), 0.1);
   }
 }
 

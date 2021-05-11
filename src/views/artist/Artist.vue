@@ -3,7 +3,14 @@
     <div class="artist-page overflowed__target">
       <ArtistHeader />
       <div class="content">
-        <div>
+        <div class="list">
+          <div
+            v-if="
+              !store.state.artist.albums.length && !store.state.artist.eps.length && !store.state.artist.singles.length
+            "
+          >
+            {{ store.state.artist.artist.name }} n'a rien sorti, c'est triste un peu.
+          </div>
           <div class="content__block" v-if="store.state.artist.albums.length">
             <div class="heading">Albums</div>
             <div class="albums">
@@ -74,6 +81,9 @@ export default defineComponent({
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
 
+.list {
+  flex: 1;
+}
 .overflowed {
   scroll-behavior: smooth;
 }
