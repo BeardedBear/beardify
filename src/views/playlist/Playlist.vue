@@ -97,16 +97,16 @@ export default defineComponent({
   }
 
   &:hover {
-    background-color: rgba($primary-color, 0.1);
+    background-color: rgba(var(--primary-color), 0.1);
   }
 
   &.active {
-    background-color: rgba($primary-color, 0.2);
-    color: $primary-color;
+    background-color: rgba(var(--primary-color), 0.2);
+    color: var(--primary-color);
 
     &:hover {
-      background-color: rgba($primary-color, 0.2);
-      color: $primary-color;
+      background-color: rgba(var(--primary-color), 0.2);
+      color: var(--primary-color);
     }
   }
 }
@@ -125,7 +125,7 @@ export default defineComponent({
     font-size: 1rem;
 
     &.icon-album {
-      color: $primary-color;
+      color: var(--primary-color);
       opacity: 1;
     }
   }

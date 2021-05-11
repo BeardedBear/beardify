@@ -168,7 +168,7 @@ export default defineComponent({
   top: 0;
   right: 0;
   z-index: 1;
-  background: $primary-color;
+  background: var(--primary-color);
   clip-path: polygon(100% 0, 0 0, 100% 100%);
   border-radius: 0 4px 0 0;
 
@@ -193,7 +193,7 @@ export default defineComponent({
   bottom: $offset;
   left: $offset;
   border: 0;
-  background: $primary-color;
+  background: var(--primary-color);
   color: currentColor;
   cursor: pointer;
   transition: transform ease 0.1s;
@@ -201,12 +201,12 @@ export default defineComponent({
   display: none;
 
   &:hover {
-    background: $primary-color-light;
+    background: var(--primary-color-light);
     color: white;
   }
 
   &:active {
-    background: $primary-color-lighter;
+    background: var(--primary-color-lighter);
   }
 }
 

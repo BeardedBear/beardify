@@ -1,7 +1,7 @@
 @import "./colors";
 
 .button {
-  background-color: $bg-color-light;
+  background-color: var(--bg-color-lighter);
   border: 0;
   cursor: pointer;
   font-weight: 700;
@@ -10,16 +10,16 @@
   border-radius: 3px;
 
   &:hover {
-    background-color: $bg-color-lighter;
+    background-color: var(--bg-color-lighter);
     color: white;
   }
 
   &--primary {
-    background-color: $primary-color;
-    color: lighten($primary-color, 35%);
+    background-color: var(--primary-color);
+    color: white;
 
     &:hover {
-      background-color: $primary-color-light;
+      background-color: var(--primary-color-light);
       color: white;
     }
   }

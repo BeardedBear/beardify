@@ -66,7 +66,7 @@ export default defineComponent({
   cursor: pointer;
 
   &:hover {
-    background: $bg-color-light;
+    background: var(--bg-color-light);
   }
 }
 </style>

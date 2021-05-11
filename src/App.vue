@@ -91,7 +91,7 @@ export default defineComponent({
 }
 
 ::selection {
-  background-color: $primary-color;
+  background-color: var(--primary-color);
 }
 
 ::-webkit-scrollbar {
@@ -104,7 +104,7 @@ export default defineComponent({
 
 ::-webkit-scrollbar-thumb {
   background-clip: content-box;
-  background-color: $primary-color-dark;
+  background-color: var(--primary-color-dark);
 }
 
 ::-webkit-scrollbar-track {
@@ -132,7 +132,7 @@ export default defineComponent({
   display: grid;
   grid-template-rows: auto 1fr auto;
   overflow: hidden;
-  background-color: $bg-color-darker;
+  background-color: var(--bg-color-darker);
   font-size: 0.9rem;
   font-weight: 600;
 

@@ -70,16 +70,16 @@ export default defineComponent({
     font-size: 1.2rem;
     padding: 8px 7px;
     line-height: 1;
-    background-color: $bg-color-light;
+    background-color: var(--bg-color-light);
     cursor: pointer;
     color: currentColor;
 
     &:hover {
-      background-color: $bg-color-lighter;
+      background-color: var(--bg-color-lighter);
     }
 
     &:active {
-      background-color: rgba($bg-color-lighter, 0.8);
+      background-color: var(--bg-color);
     }
 
     &:first-of-type {
@@ -106,7 +106,7 @@ export default defineComponent({
 .topbar {
   display: flex;
   justify-content: space-between;
-  background: $bg-color;
+  background: var(--bg-color);
   padding: 15px;
   align-items: center;
   gap: 30px;
@@ -119,10 +119,10 @@ export default defineComponent({
 
   a {
     font-weight: bold;
-    color: $bg-color-lighter;
+    color: var(--bg-color-light) er;
 
     &.router-link-exact-active {
-      color: $primary-color;
+      color: var(--primary-color);
     }
   }
 }

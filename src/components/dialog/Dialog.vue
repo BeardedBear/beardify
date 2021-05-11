@@ -58,11 +58,11 @@ $radius: 4px;
   padding: 5px 8px;
   border-radius: 4px;
   font-size: 1rem;
-  background-color: $primary-color-light;
+  background-color: var(--primary-color-light);
   color: currentColor;
 
   &:hover {
-    background-color: $primary-color-lighter;
+    background-color: var(--primary-color-lighter);
   }
 }
 .dialog {
@@ -72,7 +72,7 @@ $radius: 4px;
   bottom: 0;
   right: 0;
   left: 0;
-  background-color: rgba($bg-color-darker, 0.9);
+  background-color: rgba(black, 0.9);
   z-index: 99999999;
   display: grid;
   place-content: center;
@@ -81,7 +81,7 @@ $radius: 4px;
 
 .head {
   padding: 15px 25px;
-  background-color: $primary-color;
+  background-color: var(--primary-color);
   border-radius: $radius $radius 0 0;
   font-size: 1rem;
   font-weight: 700;
@@ -89,7 +89,7 @@ $radius: 4px;
 }
 .dialog-content {
   animation: popDialogContent 0.2s ease both;
-  background: $bg-color;
+  background: var(--bg-color);
   max-width: 600px;
   max-height: 600px;
   position: relative;

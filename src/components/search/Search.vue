@@ -104,7 +104,7 @@ $radius: 4px;
 
 .input {
   width: 100%;
-  background-color: rgba($bg-color-light, 0.5);
+  background-color: var(--bg-color-light);
   border: 0;
   padding: 10px 15px;
   outline: 0;
@@ -136,7 +136,7 @@ $radius: 4px;
   }
 
   &:hover {
-    background-color: $bg-color-lighter;
+    background-color: var(--bg-color-light);
   }
 }
 
@@ -157,7 +157,7 @@ $radius: 4px;
   }
 
   &:hover {
-    background-color: $bg-color-lighter;
+    background-color: var(--bg-color-light) er;
   }
 }
 
@@ -169,7 +169,7 @@ $radius: 4px;
   color: currentColor;
 
   &:hover {
-    background-color: $bg-color-lighter;
+    background-color: var(--bg-color-light) er;
   }
 
   &-list {
@@ -198,7 +198,7 @@ $radius: 4px;
   cursor: pointer;
   border-radius: $radius;
   border: 0;
-  background-color: $bg-color-lighter;
+  background-color: var(--bg-color-light) er;
   color: currentColor;
   text-align: center;
   width: 40px;
@@ -208,7 +208,7 @@ $radius: 4px;
   flex: 1;
 }
 .results {
-  background-color: $bg-color-light;
+  background-color: var(--bg-color-light);
   position: absolute;
   top: 100%;
   left: 0;

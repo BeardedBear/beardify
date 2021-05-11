@@ -50,7 +50,7 @@ export default defineComponent({
   }
 
   &:hover {
-    color: $primary-color;
+    color: var(--primary-color);
     opacity: 1;
   }
 }

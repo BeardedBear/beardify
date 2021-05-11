@@ -187,7 +187,7 @@ export default defineComponent({
 }
 
 .volume {
-  background-color: $bg-color-light;
+  background-color: var(--bg-color-light);
   position: relative;
   height: 25px;
   width: 100px;
@@ -196,7 +196,7 @@ export default defineComponent({
   margin-bottom: 5px;
 
   &__cursor {
-    background-color: $primary-color;
+    background-color: var(--primary-color);
     position: absolute;
     top: 0;
     left: 0;
@@ -225,7 +225,7 @@ export default defineComponent({
 }
 
 .player {
-  background: $bg-color;
+  background: var(--bg-color);
 }
 
 .trackname {
@@ -258,7 +258,7 @@ export default defineComponent({
     padding: 5px 7px;
 
     &:hover {
-      background-color: $bg-color-light;
+      background-color: var(--bg-color-light);
       color: white;
     }
   }
@@ -286,7 +286,7 @@ export default defineComponent({
 }
 
 .progress {
-  background: $bg-color-light;
+  background: var(--bg-color-light);
   height: 10px;
   position: relative;
   cursor: pointer;
@@ -304,11 +304,11 @@ export default defineComponent({
     .time {
       position: absolute;
       bottom: calc(100% + 5px);
-      background: $primary-color;
+      background: var(--primary-color);
       color: rgba(white, 0.8);
       padding: 5px 10px;
       right: 0;
-      border: 1px solid $primary-color-light;
+      border: 1px solid var(--primary-color-light);
       border-radius: 3px;
       transform: translateX(50%);
     }

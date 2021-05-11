@@ -43,7 +43,7 @@ export default defineComponent({
 .form {
   text-align: center;
   padding: 50px;
-  background-color: rgba($primary-color, 0.1);
+  background-color: rgba(var(--primary-color), 0.1);
   border-radius: 5px;
 }
 

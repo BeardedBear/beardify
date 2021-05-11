@@ -1,10 +1,15 @@
-$primary-color-dark: #543a97;
-$primary-color: #6d49c9;
-$primary-color-light: #7a50e4;
-$primary-color-lighter: #8352ff;
+:root {
+  // Primary
+  --primary-color-darker: #402d6e;
+  --primary-color-dark: #543a97;
+  --primary-color: #6d49c9;
+  --primary-color-light: #7a50e4;
+  --primary-color-lighter: #9064ff;
 
-$bg-color-darker: #15181d;
-$bg-color-dark: #181b21;
-$bg-color: #1b1e26;
-$bg-color-light: #262a36;
-$bg-color-lighter: #313544;
+  // Bg
+  --bg-color-darker: #15181d;
+  --bg-color-dark: #181b21;
+  --bg-color: #1b1e26;
+  --bg-color-light: #212530;
+  --bg-color-lighter: rgb(45, 49, 65);
+}

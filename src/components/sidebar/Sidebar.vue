@@ -78,12 +78,12 @@ export default defineComponent({
   gap: 10px;
 
   &:hover {
-    background-color: $bg-color-light;
+    background-color: var(--bg-color-light);
   }
 
   &.active {
-    background-color: rgba($primary-color, 0.2);
-    color: $primary-color;
+    background-color: rgba(var(--primary-color), 0.2);
+    color: var(--primary-color);
   }
 
   i {
@@ -92,7 +92,7 @@ export default defineComponent({
 }
 
 .sidebar {
-  background: $bg-color-dark;
+  background: var(--bg-color-dark);
   display: grid;
   grid-template-rows: 1fr 1fr;
 
@@ -105,7 +105,7 @@ export default defineComponent({
   position: sticky;
   top: 0;
   padding: 10px 15px;
-  background-color: $bg-color-dark;
+  background-color: var(--bg-color-dark);
   z-index: 1;
   margin: 0;
 }
