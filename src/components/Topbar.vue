@@ -1,7 +1,7 @@
 <template>
   <div class="topbar">
     <div id="nav">
-      <img class="logo" src="/img/logo.svg" />
+      <router-link to="/"><img class="logo" src="/img/logo.svg"/></router-link>
       <div class="navigation">
         <button class="navigation__item" @click="previous()">
           <i class="icon-arrow-left"></i>
@@ -13,12 +13,12 @@
     </div>
     <Search />
     <div>
-      <div v-if="store.state.auth.me.display_name === ''">
+      <div v-if="store.state.auth.me?.display_name === ''">
         <a :href="connectUrl">LOGME</a>
         - {{ store.state.auth.me }}
       </div>
       <div v-else>
-        <Cover size="large" :images="store.state.auth.me.images" class="avatar" @click="openConfig()" />
+        <Cover size="large" :images="store.state.auth.me?.images" class="avatar" @click="openConfig()" />
         <Config v-if="store.state.config.show" />
       </div>
     </div>
