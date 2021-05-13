@@ -49,7 +49,10 @@ export default defineComponent({
     watchEffect(() => {
       if (store.state.auth.me !== null) {
         setInterval(() => {
-          if (document.hasFocus()) getPlayerStatus();
+          if (document.hasFocus()) {
+            store.dispatch(`player/${PlayerActions.getDeviceList}`);
+            getPlayerStatus();
+          }
         }, 1000);
       }
     });
