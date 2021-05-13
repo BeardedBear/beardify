@@ -65,7 +65,6 @@ export default defineComponent({
     }
 
     function deleteAlbum(albumId: string) {
-      console.log(currentRouteId);
       instance.get<Paging<TrackSimplified>>(`https://api.spotify.com/v1/albums/${albumId}/tracks`).then(e => {
         instance
           .delete(`https://api.spotify.com/v1/playlists/${currentRouteId}/tracks`, {

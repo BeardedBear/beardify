@@ -26,6 +26,15 @@ export const instance = axios.create({
   }
 });
 
+// on intercepte les requetes pour mettre à jour `Authorization` depuis le refresh token
+instance.interceptors.request.use(
+  async config => {
+    config.headers = { Authorization: `Bearer ${store.state.auth.auth.accessToken}` };
+    return config;
+  },
+  error => Promise.reject(error)
+);
+
 export const instanceAuth = axios.create({
   baseURL: "https://accounts.spotify.com/api/",
   timeout: 5000,

@@ -1,8 +1,8 @@
 <template>
   <div class="config">
     <div class="user">
-      <div>{{ store.state.auth.me.display_name }}</div>
-      <div class="user__mail">{{ store.state.auth.me.email }}</div>
+      <div>{{ store.state.auth.me?.display_name }}</div>
+      <div class="user__mail">{{ store.state.auth.me?.email }}</div>
     </div>
 
     <div class="section">

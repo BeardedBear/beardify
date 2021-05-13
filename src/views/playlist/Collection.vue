@@ -49,8 +49,6 @@ export default defineComponent({
     const playlistpage = ref();
     const cleanAlbumList = computed(() => removeDuplicatesAlbums(store.state.playlist.tracks.map(a => a.track.album)));
 
-    console.log(cleanAlbumList);
-
     function sumDuration(tracks: PlaylistTrack[]) {
       return tracks.map((t: PlaylistTrack) => t.track.duration_ms).reduce((acc, value) => acc + value, 0);
     }

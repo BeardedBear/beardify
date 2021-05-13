@@ -14,7 +14,7 @@ const state: Auth = {
     refreshToken: "",
     code: "",
   },
-  me: defaultMe,
+  me: null,
 };
 
 // MUTATIONS

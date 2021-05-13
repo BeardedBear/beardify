@@ -67,17 +67,16 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach(async to => {
-  if (!Store.state.auth.me.display_name && to.path !== "/login" && to.path !== "/auth") {
-    instance.get("https://api.spotify.com/v1/me/player").then(e => {
-      if (e.status !== 200) {
-        store.dispatch(`player/${PlayerActions.getDeviceList}`);
-        store.dispatch(`auth/${AuthActions.refresh}`);
-      }
-    });
-
-    router.push("/login");
-  }
-});
+// router.beforeEach(async to => {
+// if (!Store.state.auth.me.display_name && to.path !== "/login" && to.path !== "/auth") {
+//   instance.get("https://api.spotify.com/v1/me/player").then(e => {
+//     if (e.status !== 200) {
+//       store.dispatch(`player/${PlayerActions.getDeviceList}`);
+//       store.dispatch(`auth/${AuthActions.refresh}`);
+//     }
+//   });
+//   router.push("/login");
+// }
+// });
 
 export default router;

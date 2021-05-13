@@ -2,7 +2,7 @@ import { Me } from "./Me";
 
 export interface Auth {
   auth: AuthData;
-  me: Me;
+  me: Me | null;
 }
 
 export interface AuthData {

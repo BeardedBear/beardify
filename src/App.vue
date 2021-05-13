@@ -48,7 +48,19 @@ export default defineComponent({
       store.dispatch(`auth/${AuthActions.refresh}`);
     }, 120000);
 
-    function getPlayerStatus() {
+    onBeforeMount(() => {
+      fetch("https://api.spotify.com/v1/me", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${store.state.auth.auth.accessToken}`,
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }).then(e => {
+        if (e.status === 401) router.push("/login");
+      });
+    });
+
+    async function getPlayerStatus() {
       instance
         .get("https://api.spotify.com/v1/me/player")
         .then(e => store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data))
