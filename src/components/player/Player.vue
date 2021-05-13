@@ -150,6 +150,7 @@ export default defineComponent({
       progresss.value.addEventListener("click", (e: MouseEvent) => {
         const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
         const duration = (store.state.player.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
+        store.commit(`player/${Mutations.UPDATE_PROGRESS}`, Math.round(duration));
         instance.put(`me/player/seek?position_ms=${Math.round(duration)}`);
       });
     });
@@ -319,6 +320,7 @@ export default defineComponent({
     bottom: 0;
     left: 0;
     background: var(--primary-color);
+    transition: all ease 0.25s;
   }
 
   &:hover {

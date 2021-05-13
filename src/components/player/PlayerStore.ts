@@ -20,7 +20,8 @@ export enum Mutations {
   GET_DEVICE_LIST = "GET_DEVICE_LIST",
   SET_THIS_DEVICE = "SET_THIS_DEVICE",
   PLAYER_STATE_CHANGED = "PLAYER_STATE_CHANGED",
-  SET_VOLUME = "SET_VOLUME"
+  SET_VOLUME = "SET_VOLUME",
+  UPDATE_PROGRESS = "UPDATE_PROGRESS"
 }
 
 const mutations: MutationTree<Player> = {
@@ -38,6 +39,10 @@ const mutations: MutationTree<Player> = {
 
   [Mutations.SET_VOLUME](state, volume: number): void {
     state.devices.activeDevice.volume_percent = volume;
+  },
+
+  [Mutations.UPDATE_PROGRESS](state, progress: number): void {
+    state.currentlyPlaying.progress_ms = progress;
   }
 };
 
