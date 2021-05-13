@@ -19,7 +19,7 @@ export const api = {
 
 export const instance = axios.create({
   baseURL: api.url + "v1/",
-  timeout: 1000,
+  timeout: 5000,
   headers: {
     Authorization: `Bearer ${store.state.auth.auth.accessToken}`,
     "Content-Type": "application/json"
@@ -28,7 +28,7 @@ export const instance = axios.create({
 
 export const instanceAuth = axios.create({
   baseURL: "https://accounts.spotify.com/api/",
-  timeout: 1000,
+  timeout: 5000,
   headers: {
     Authorization: `Bearer ${store.state.auth.auth.accessToken}`,
     "Content-Type": "application/x-www-form-urlencoded"
