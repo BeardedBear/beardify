@@ -147,13 +147,13 @@ export default defineComponent({
   }
 
   &.delete {
-    top: 20px;
-    left: 20px;
+    top: 1vw;
+    left: 1vw;
   }
 
   &.add {
-    bottom: 20px;
-    right: 20px;
+    bottom: 1vw;
+    right: 1vw;
   }
 }
 
@@ -183,7 +183,7 @@ export default defineComponent({
   }
 }
 .play {
-  $offset: 20px;
+  $offset: 1vw;
   $size: 45px;
   animation: popPlayButton 0.2s ease both;
   font-size: 1.3rem;

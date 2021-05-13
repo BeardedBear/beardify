@@ -81,6 +81,14 @@ export default defineComponent({
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 30px;
+
+  @include xl {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  @include l {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .description {
