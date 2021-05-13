@@ -4,10 +4,18 @@
       <div>{{ store.state.auth.me.display_name }}</div>
       <div class="user__mail">{{ store.state.auth.me.email }}</div>
     </div>
-    <div class="links">
-      <router-link class="links__item button" to="/login">Login</router-link>
+
+    <div class="section">
+      <div class="section__title">Debug</div>
+      <router-link class=" button button--full" to="/login">Login</router-link>
+      <button class="button button--full" @click="refresh()">Refresh token</button>
+      <button class="button button--full" @click="getDeviceList()">Get devices</button>
     </div>
-    <Colors />
+
+    <div class="section">
+      <div class="section__title">Couleurs</div>
+      <Colors />
+    </div>
   </div>
 </template>
 
@@ -15,6 +23,8 @@
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
+import { AuthActions } from "../../views/auth/AuthStore";
+import { PlayerActions } from "../player/PlayerStore";
 import Colors from "./Colors.vue";
 
 export default defineComponent({
@@ -22,7 +32,15 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    return { store };
+    function getDeviceList(): void {
+      store.dispatch(`player/${PlayerActions.getDeviceList}`);
+    }
+
+    function refresh(): void {
+      store.dispatch(`auth/${AuthActions.refresh}`);
+    }
+
+    return { store, getDeviceList, refresh };
   }
 });
 </script>
@@ -36,10 +54,21 @@ export default defineComponent({
   }
 }
 
-.links {
-  &__item {
-    width: 100%;
-    display: block;
+.section {
+  padding: 7px 10px 10px;
+  border: 1px solid var(--bg-color-dark);
+  margin-top: 15px;
+  border-radius: 5px;
+  background: var(--bg-color-light);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &__title {
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 0.8rem;
+    opacity: 0.5;
   }
 }
 

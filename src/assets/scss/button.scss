@@ -9,9 +9,15 @@
   padding: 10px 20px;
   border-radius: 3px;
   text-decoration: none;
+  display: inline-block;
+  text-align: center;
 
   &:hover {
     background-color: var(--bg-color-lighter);
+  }
+
+  &--full {
+    width: 100%;
   }
 
   &--primary {

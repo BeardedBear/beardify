@@ -10,9 +10,6 @@
           <i class="icon-arrow-right"></i>
         </button>
       </div>
-      <!-- <router-link to="/">Home</router-link>
-      <router-link to="/about">About</router-link>-->
-      <!-- <router-link to="/login">Login</router-link> -->
     </div>
     <Search />
     <div>
@@ -31,8 +28,6 @@
 <script lang="ts">
 import { connectUrl } from "../api";
 import { useStore } from "vuex";
-import { PlayerActions } from "./player/PlayerStore";
-import { AuthActions } from "../views/auth/AuthStore";
 import type { RootState } from "../@types/RootState";
 import { defineComponent, onMounted } from "vue";
 import Search from "./search/Search.vue"
@@ -40,16 +35,11 @@ import Cover from "./Cover.vue"
 import router from "../router";
 import Config from "./config/Config.vue"
 import { Mutations } from "./config/ConfigStore"
-import { log } from "console";
 
 export default defineComponent({
   components: { Search, Cover, Config },
   setup() {
     const store = useStore<RootState>();
-
-    function getDeviceList(): void {
-      store.dispatch(`player/${PlayerActions.getDeviceList}`);
-    }
 
     function previous() {
       router.go(-1)
@@ -57,10 +47,6 @@ export default defineComponent({
 
     function next() {
       router.go(1)
-    }
-
-    function refresh(): void {
-      store.dispatch(`auth/${AuthActions.refresh}`);
     }
 
     function openConfig() {
@@ -76,7 +62,7 @@ export default defineComponent({
     })
 
 
-    return { store, getDeviceList, refresh, connectUrl, previous, next, openConfig };
+    return { store, connectUrl, previous, next, openConfig };
   },
 });
 </script>

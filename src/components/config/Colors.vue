@@ -93,7 +93,6 @@ export default defineComponent({
 .schemes {
   display: flex;
   justify-content: space-evenly;
-  margin-top: 15px;
 
   &__item {
     $s: 15px;
