@@ -2,24 +2,17 @@
   <div class="colors">
     <div class="schemes">
       <button
-        class="schemes__item default"
-        @click="schemeDefault()"
-        :class="{ current: store.state.config.schemeLabel === 'default' }"
-      ></button>
-      <button
-        class="schemes__item blue"
-        @click="schemeBlue()"
-        :class="{ current: store.state.config.schemeLabel === 'blue' }"
-      ></button>
-      <button
-        class="schemes__item crimson"
-        @click="schemeCrimson()"
-        :class="{ current: store.state.config.schemeLabel === 'crimson' }"
-      ></button>
-      <button
-        class="schemes__item apple"
-        @click="schemeApple()"
-        :class="{ current: store.state.config.schemeLabel === 'apple' }"
+        v-for="(c, index) in textColors"
+        :key="index"
+        class="schemes__item"
+        @click="c.fn()"
+        :class="{
+          current: store.state.config.schemeLabel === `${c.name}`,
+          crimson: c.name === 'crimson',
+          blue: c.name === 'blue',
+          apple: c.name === 'apple',
+          default: c.name === 'default'
+        }"
       ></button>
     </div>
 
@@ -50,9 +43,33 @@ import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { Mutations } from "./ConfigStore";
 
+interface TextColors {
+  name: string;
+  fn: () => void;
+}
+
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
+
+    const textColors: TextColors[] = [
+      {
+        name: "default",
+        fn: () => store.commit(`config/${Mutations.SCHEME_DEFAULT}`)
+      },
+      {
+        name: "blue",
+        fn: () => store.commit(`config/${Mutations.SCHEME_BLUE}`)
+      },
+      {
+        name: "crimson",
+        fn: () => store.commit(`config/${Mutations.SCHEME_CRIMSON}`)
+      },
+      {
+        name: "apple",
+        fn: () => store.commit(`config/${Mutations.SCHEME_APPLE}`)
+      }
+    ];
 
     function switchThemeLight() {
       store.commit(`config/${Mutations.SWITCH_THEME_LIGHT}`);
@@ -62,23 +79,12 @@ export default defineComponent({
       store.commit(`config/${Mutations.SWITCH_THEME_DARK}`);
     }
 
-    function schemeBlue() {
-      store.commit(`config/${Mutations.SCHEME_BLUE}`);
-    }
-
-    function schemeDefault() {
-      store.commit(`config/${Mutations.SCHEME_DEFAULT}`);
-    }
-
-    function schemeCrimson() {
-      store.commit(`config/${Mutations.SCHEME_CRIMSON}`);
-    }
-
-    function schemeApple() {
-      store.commit(`config/${Mutations.SCHEME_APPLE}`);
-    }
-
-    return { store, switchThemeLight, switchThemeDark, schemeBlue, schemeDefault, schemeCrimson, schemeApple };
+    return {
+      store,
+      textColors,
+      switchThemeLight,
+      switchThemeDark
+    };
   }
 });
 </script>
@@ -91,29 +97,44 @@ export default defineComponent({
 
   &__item {
     $s: 15px;
-    width: $s * 2;
     height: $s;
-    border-radius: $s;
     padding: 0;
     border: 0;
     cursor: pointer;
     position: relative;
+    flex: 1;
+    transition: all ease 0.2s;
+
+    // &:hover {
+    //   opacity: 0.8;
+    // }
+
+    &:first-of-type {
+      border-radius: $s 0 0 $s;
+    }
+
+    &:last-of-type {
+      border-radius: 0 $s $s 0;
+    }
 
     &::after {
-      $o: 3px;
+      $o: 6px;
       position: absolute;
       top: $o;
       bottom: $o;
-      left: $o;
-      right: $o;
+      left: $o * 2;
+      right: $o * 2;
       content: "";
-      background-color: var(--bg-color-darker);
+      background-color: white;
       border-radius: $s;
+      transition: all ease 0.2s;
+      transform: scaleX(0);
+      will-change: transform;
     }
 
     &.current {
       &::after {
-        display: none;
+        transform: scaleX(1);
       }
     }
     &.blue {
@@ -132,7 +153,6 @@ export default defineComponent({
 }
 
 .radio {
-  margin-top: 5px;
   display: flex;
   justify-content: space-between;
 
