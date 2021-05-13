@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onBeforeMount, onMounted, watchEffect } from "vue";
 import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
 import { Mutations, PlayerActions } from "./components/player/PlayerStore";
@@ -24,6 +24,11 @@ import { instance } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
 import { ThemeColor } from "./@types/Config";
+import router from "./router";
+import axios from "axios";
+import { api } from "./api";
+import { watch } from "fs";
+import { defaultMe } from "./@types/Defaults";
 
 export default defineComponent({
   components: { Dialog, Topbar, Player, Sidebar },
@@ -43,17 +48,20 @@ export default defineComponent({
       store.dispatch(`auth/${AuthActions.refresh}`);
     }, 120000);
 
-    setInterval(() => {
+    function getPlayerStatus() {
       instance
         .get("https://api.spotify.com/v1/me/player")
-        .then(e => {
-          store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data);
-        })
-        .catch(error => {
-          store.dispatch(`auth/${AuthActions.refresh}`);
-          console.error("error", error);
-        });
-    }, 1000);
+        .then(e => store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data))
+        .catch(error => console.error("error", error));
+    }
+
+    watchEffect(() => {
+      if (store.state.auth.me !== null) {
+        setInterval(() => {
+          if (document.hasFocus()) getPlayerStatus();
+        }, 1000);
+      }
+    });
 
     addEventListener("initdevice", (() => {
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
