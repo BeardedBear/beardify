@@ -5,7 +5,7 @@
       <div class="user__mail">{{ store.state.auth.me?.email }}</div>
     </div>
 
-    <div class="section">
+    <div class="section" v-if="env !== 'production'">
       <div class="section__title">Debug</div>
       <router-link class=" button button--full" to="/login">Login</router-link>
       <button class="button button--full" @click="refresh()">Refresh token</button>
@@ -31,6 +31,7 @@ export default defineComponent({
   components: { Colors },
   setup() {
     const store = useStore<RootState>();
+    const env = process.env.NODE_ENV;
 
     function getDeviceList(): void {
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
@@ -40,7 +41,7 @@ export default defineComponent({
       store.dispatch(`auth/${AuthActions.refresh}`);
     }
 
-    return { store, getDeviceList, refresh };
+    return { store, getDeviceList, refresh, env };
   }
 });
 </script>
