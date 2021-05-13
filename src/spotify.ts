@@ -8,13 +8,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   player.connect();
   player.on("authentication_error", () => dispatchEvent(new CustomEvent("noAccess")));
 
-  // FUCK YOU SDK
-  // setInterval(() => {
-  //   player?.getCurrentState().then(state => {
-  //     dispatchEvent(new CustomEvent("playerStateChanged", { detail: state }));
-  //   });
-  // }, 500);
-
   player.addListener("ready", ({ device_id }) => {
     dispatchEvent(
       new CustomEvent("initdevice", {
