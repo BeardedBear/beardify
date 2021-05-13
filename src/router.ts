@@ -7,11 +7,7 @@ import Album from "./views/album/Album.vue";
 import Playlist from "./views/playlist/Playlist.vue";
 import Collection from "./views/playlist/Collection.vue";
 import Login from "./views/Login.vue";
-import Store from "./store";
-import { instance } from "./api";
 import store from "./store";
-import { PlayerActions } from "./components/player/PlayerStore";
-import { AuthActions } from "./views/auth/AuthStore";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -62,21 +58,14 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-  // history: createWebHistory(processenv.BASE_URL),=)
   history: createWebHistory("/"),
   routes
 });
 
-// router.beforeEach(async to => {
-// if (!Store.state.auth.me.display_name && to.path !== "/login" && to.path !== "/auth") {
-//   instance.get("https://api.spotify.com/v1/me/player").then(e => {
-//     if (e.status !== 200) {
-//       store.dispatch(`player/${PlayerActions.getDeviceList}`);
-//       store.dispatch(`auth/${AuthActions.refresh}`);
-//     }
-//   });
-//   router.push("/login");
-// }
-// });
+router.beforeEach(async to => {
+  if (!store.state.auth.me?.display_name && to.path !== "/login" && to.path !== "/auth") {
+    router.push("/login");
+  }
+});
 
 export default router;

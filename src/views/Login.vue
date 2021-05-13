@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div class="form">
-      <img class="logo" src="/img/logo.svg" alt="" />
+      <img class="logo" src="/img/logo-long.svg" alt="" />
       <div><button class="button button--primary" type="button" @click="connect()">Se connecter</button></div>
     </div>
   </div>
@@ -29,6 +29,12 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import "../assets/scss/colors";
 
+@keyframes popLogin {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
 .login {
   display: grid;
   place-content: center;
@@ -38,13 +44,17 @@ export default defineComponent({
   width: 100%;
   top: 0;
   background-color: #16181d;
+  background-image: url("/img/bg-login.png");
+  background-size: cover;
 }
 
 .form {
+  animation: popLogin 1s ease both;
   text-align: center;
   padding: 50px;
   background-color: rgba(var(--primary-color), 0.1);
   border-radius: 5px;
+  will-change: transform;
 }
 
 .logo {

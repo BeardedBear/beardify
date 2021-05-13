@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount, onMounted, watchEffect } from "vue";
+import { defineComponent, watchEffect } from "vue";
 import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
 import { Mutations, PlayerActions } from "./components/player/PlayerStore";
@@ -24,11 +24,6 @@ import { instance } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
 import { ThemeColor } from "./@types/Config";
-import router from "./router";
-import axios from "axios";
-import { api } from "./api";
-import { watch } from "fs";
-import { defaultMe } from "./@types/Defaults";
 
 export default defineComponent({
   components: { Dialog, Topbar, Player, Sidebar },
@@ -42,23 +37,7 @@ export default defineComponent({
     store.state.config.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
 
     // Keep app active
-    setInterval(() => {
-      store.dispatch(`player/${PlayerActions.getDeviceList}`);
-      store.dispatch(`auth/${AuthActions.auth}`, store.state.auth.auth.code);
-      store.dispatch(`auth/${AuthActions.refresh}`);
-    }, 120000);
-
-    onBeforeMount(() => {
-      fetch("https://api.spotify.com/v1/me", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${store.state.auth.auth.accessToken}`,
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }).then(e => {
-        if (e.status === 401) router.push("/login");
-      });
-    });
+    setInterval(() => store.dispatch(`auth/${AuthActions.refresh}`), 120000);
 
     async function getPlayerStatus() {
       instance
