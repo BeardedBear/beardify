@@ -1,9 +1,9 @@
 import { ActionTree, MutationTree } from "vuex";
 import { instance } from "../../api";
-import { Player, defaultDevice } from "../../@types/Player";
+import { Player } from "../../@types/Player";
 import { RootState } from "../../@types/RootState";
 import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
-import { defaultCurrentlyPlaying } from "../../@types/Defaults";
+import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
 import { Device, DevicesResponse } from "../../@types/Device";
 
 const state: Player = {

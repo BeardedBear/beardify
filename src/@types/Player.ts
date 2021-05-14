@@ -30,16 +30,6 @@ export type PlayerError =
   | "PREMIUM_REQUIRED"
   | "UNKNOWN";
 
-export const defaultDevice: Device = {
-  id: null,
-  is_active: false,
-  is_private_session: false,
-  is_restricted: false,
-  name: "",
-  type: "computer",
-  volume_percent: null
-};
-
 const defaultAlbum: Spotify.Album = {
   uri: "",
   name: "",

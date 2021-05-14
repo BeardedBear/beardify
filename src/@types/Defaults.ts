@@ -12,7 +12,7 @@ import { TrackSimplified, Track } from "./Track";
 import { Followers, Me } from "./Me";
 import { PlaylistTracksRef, SimplifiedPlaylist } from "./Playlist";
 import { PublicUser } from "./PublicUser";
-import { defaultDevice } from "./Player";
+import { Device } from "./Device";
 
 export const defaultImage: Image = {
   height: 0,
@@ -105,6 +105,16 @@ const defaultCurrentlyPlayingContext: CurrentlyPlayingContext = {
   href: "",
   type: "album",
   uri: ""
+};
+
+export const defaultDevice: Device = {
+  id: null,
+  is_active: false,
+  is_private_session: false,
+  is_restricted: false,
+  name: "",
+  type: "computer",
+  volume_percent: null
 };
 
 export const defaultCurrentlyPlaying: CurrentlyPlaying = {
