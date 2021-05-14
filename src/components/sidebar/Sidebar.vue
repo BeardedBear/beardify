@@ -17,7 +17,7 @@
               :class="{ active: $route.params.id === playlist.id }"
             >
               <i class="icon-folder"></i>
-              <div>{{ playlist.name.replace("#Collection ", "") }}</div>
+              <div>{{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}</div>
             </router-link>
           </div>
         </div>

@@ -3,7 +3,9 @@
     <div class="playlist-page overflowed__target">
       <div class="playlist-header">
         <div>
-          <div class="title">{{ store.state.playlist.playlist.name.replace("#Collection ", "") }}</div>
+          <div class="title">
+            {{ store.state.playlist.playlist.name.replace("#Collection ", "").replace("#collection ", "") }}
+          </div>
           <div class="description">{{ store.state.playlist.playlist.description }}</div>
           <div>
             {{ store.state.playlist.playlist.owner.display_name }} ·
