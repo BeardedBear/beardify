@@ -33,13 +33,15 @@ export default defineComponent({
 
     store.dispatch(`player/${PlayerActions.getDeviceList}`);
     store.dispatch(`auth/${AuthActions.refresh}`);
-    store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, "https://api.spotify.com/v1/me/playlists?limit=50");
 
     store.state.config.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
     store.state.config.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
 
     // Keep app active
-    setInterval(() => store.dispatch(`auth/${AuthActions.refresh}`), 120000);
+    setInterval(() => {
+      store.dispatch(`player/${PlayerActions.getDeviceList}`);
+      store.dispatch(`auth/${AuthActions.refresh}`);
+    }, 120000);
 
     async function getPlayerStatus() {
       instance
@@ -52,7 +54,11 @@ export default defineComponent({
       if (store.state.auth.me !== null) {
         setInterval(() => {
           if (document.hasFocus()) {
-            store.dispatch(`player/${PlayerActions.getDeviceList}`);
+            if (!store.state.sidebar.playlists.length)
+              store.dispatch(
+                `sidebar/${SidebarActions.getPlaylists}`,
+                "https://api.spotify.com/v1/me/playlists?limit=50"
+              );
             getPlayerStatus();
           }
         }, 1000);
