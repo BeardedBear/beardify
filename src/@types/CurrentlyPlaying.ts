@@ -1,6 +1,7 @@
 import { ReleaseDatePrecision } from "./Album";
 import { Artist } from "./Artist";
 import { Image } from "./Image";
+import { Device } from "./Device";
 
 export interface CurrentlyPlayingItem {
   album: CurrentlyPlayingAlbum;
@@ -20,21 +21,11 @@ export interface CurrentlyPlayingItem {
   uri: string;
 }
 
-export interface CurrentlyPlayingDevice {
-  id: string;
-  is_active: boolean;
-  is_private_session: boolean;
-  is_restricted: boolean;
-  name: string;
-  type: string;
-  volume_percent: number;
-}
-
 export type CurrentlyPlayingType = "track" | "episode" | "ad" | "unknown";
 export interface CurrentlyPlaying {
   context: CurrentlyPlayingContext;
   currently_playing_type: CurrentlyPlayingType;
-  device: CurrentlyPlayingDevice;
+  device: Device;
   is_playing: boolean;
   item: CurrentlyPlayingItem;
   progress_ms: number;

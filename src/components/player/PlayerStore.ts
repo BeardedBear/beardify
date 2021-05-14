@@ -34,6 +34,7 @@ const mutations: MutationTree<Player> = {
   },
 
   [Mutations.PLAYER_STATE_CHANGED](state, customEvent: CurrentlyPlaying): void {
+    state.devices.activeDevice = customEvent.device;
     state.currentlyPlaying = customEvent;
   },
 

@@ -33,6 +33,7 @@ export type PlayerError =
 export const defaultUserDevice: Device = {
   id: null,
   is_active: false,
+  is_private_session: false,
   is_restricted: false,
   name: "",
   type: "computer",
