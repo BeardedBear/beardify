@@ -12,13 +12,17 @@ import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../@types/RootState";
 import { api } from "../api";
+import { create } from "pkce";
+import { Mutations } from "./auth/AuthStore";
 
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
+    store.commit(`auth/${Mutations.GENERATE_CODE_CHALLENGE}`, create());
+
     function connect() {
-      location.href = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${api.codeChallenge}`;
+      location.href = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${store.state.auth.auth.codeChallenge}`;
     }
 
     return { connect, store };

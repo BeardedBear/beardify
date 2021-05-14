@@ -9,4 +9,6 @@ export interface AuthData {
   accessToken: string;
   refreshToken: string;
   code: string;
+  codeVerifier: string;
+  codeChallenge: string;
 }

@@ -3,3 +3,5 @@ declare module "*.vue" {
   const component: DefineComponent<unknown, unknown, any>;
   export default component;
 }
+
+declare module "pkce";

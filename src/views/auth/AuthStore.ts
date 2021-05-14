@@ -5,7 +5,6 @@ import axios from "axios";
 import type { RootState } from "../../@types/RootState";
 import type { Auth, AuthData } from "../../@types/Auth";
 import router from "../../router";
-import { defaultMe } from "../../@types/Defaults";
 import { Me } from "../../@types/Me";
 
 const state: Auth = {
@@ -13,6 +12,8 @@ const state: Auth = {
     accessToken: "",
     refreshToken: "",
     code: "",
+    codeVerifier : "",
+    codeChallenge : ""
   },
   me: null,
 };
@@ -22,6 +23,7 @@ const state: Auth = {
 export enum Mutations {
   AUTH = "AUTH",
   SET_ME = "SET_ME",
+  GENERATE_CODE_CHALLENGE = "GENERATE_CODE_CHALLENGE"
 }
 
 const mutations = {
@@ -33,6 +35,11 @@ const mutations = {
 
   [Mutations.SET_ME](state: Auth, data: Me): void {
     state.me = data;
+  },
+
+  [Mutations.GENERATE_CODE_CHALLENGE](state: Auth, data: {codeVerifier:string,codeChallenge: string }): void {
+    state.auth.codeChallenge = data.codeChallenge;
+    state.auth.codeVerifier = data.codeVerifier;
   },
 };
 
@@ -78,7 +85,7 @@ const actions = {
         code: query,
         redirect_uri: api.redirectUri,
         client_id: api.clientId,
-        code_verifier: api.codeVerifier,
+        code_verifier: store.state.auth.codeVerifier,
       }),
     });
 
