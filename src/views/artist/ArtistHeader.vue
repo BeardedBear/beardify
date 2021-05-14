@@ -22,8 +22,8 @@
         @click="
           openLink(
             `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${store.state.artist.artist.name
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')}&amp;x=0&amp;y=0`
+              .normalize('NFKC')
+              .replaceAll(/[\u0300-\u036f]/g, '')}&amp;x=0&amp;y=0`
           )
         "
         class="header-links__item"
@@ -35,6 +35,21 @@
         class="header-links__item"
       >
         <i class="icon-discogs"></i>Discogs</a
+      >
+      <a
+        @click="
+          openLink(
+            `https://rateyourmusic.com/artist/${store.state.artist.artist.name
+              .normalize('NFKC')
+              .toLowerCase()
+              .replaceAll(' ', '-')
+              .replaceAll('\'', '')
+              .replace(/[\u0300-\u036f]/g, '')}`
+          )
+        "
+        class="header-links__item"
+      >
+        <i class="icon-rym"></i>RYM</a
       >
       <a
         @click="openLink(`https://www.google.com/search?q=${store.state.artist.artist.name}+band+artist`)"
