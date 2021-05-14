@@ -13,11 +13,7 @@
     </div>
     <Search />
     <div>
-      <div v-if="store.state.auth.me?.display_name === ''">
-        <a :href="connectUrl">LOGME</a>
-        - {{ store.state.auth.me }}
-      </div>
-      <div v-else>
+      <div v-if="store.state.auth.me !== null">
         <Cover size="large" :images="store.state.auth.me?.images" class="avatar" @click="openConfig()" />
         <Config v-if="store.state.config.show" />
       </div>

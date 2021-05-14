@@ -11,14 +11,14 @@
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../@types/RootState";
-import { connectUrl } from "../api";
+import { api } from "../api";
 
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
     function connect() {
-      location.href = connectUrl;
+      location.href = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${api.codeChallenge}`;
     }
 
     return { connect, store };

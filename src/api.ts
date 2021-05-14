@@ -43,5 +43,4 @@ export const instanceAuth = axios.create({
     "Content-Type": "application/x-www-form-urlencoded"
   }
 });
-
 export const connectUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${api.codeChallenge}`;
