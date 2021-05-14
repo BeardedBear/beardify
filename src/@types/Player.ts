@@ -30,7 +30,7 @@ export type PlayerError =
   | "PREMIUM_REQUIRED"
   | "UNKNOWN";
 
-export const defaultUserDevice: Device = {
+export const defaultDevice: Device = {
   id: null,
   is_active: false,
   is_private_session: false,

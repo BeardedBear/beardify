@@ -1,6 +1,6 @@
 import { ActionTree, MutationTree } from "vuex";
 import { instance } from "../../api";
-import { Player, defaultUserDevice } from "../../@types/Player";
+import { Player, defaultDevice } from "../../@types/Player";
 import { RootState } from "../../@types/RootState";
 import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
 import { defaultCurrentlyPlaying } from "../../@types/Defaults";
@@ -8,7 +8,7 @@ import { Device, DevicesResponse } from "../../@types/Device";
 
 const state: Player = {
   devices: {
-    activeDevice: defaultUserDevice,
+    activeDevice: defaultDevice,
     list: []
   },
   currentlyPlaying: defaultCurrentlyPlaying

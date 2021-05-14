@@ -3,7 +3,6 @@ import { Artist } from "./Artist";
 import {
   CurrentlyPlaying,
   CurrentlyPlayingContext,
-  CurrentlyPlayingDevice,
   CurrentlyPlayingItem,
   CurrentlyPlayingAlbum
 } from "./CurrentlyPlaying";
@@ -13,6 +12,7 @@ import { TrackSimplified, Track } from "./Track";
 import { Followers, Me } from "./Me";
 import { PlaylistTracksRef, SimplifiedPlaylist } from "./Playlist";
 import { PublicUser } from "./PublicUser";
+import { defaultDevice } from "./Player";
 
 export const defaultImage: Image = {
   height: 0,
@@ -107,20 +107,10 @@ const defaultCurrentlyPlayingContext: CurrentlyPlayingContext = {
   uri: ""
 };
 
-const defaultCurrentlyPlayingDevice: CurrentlyPlayingDevice = {
-  id: "",
-  is_active: false,
-  is_private_session: false,
-  is_restricted: false,
-  name: "",
-  type: "",
-  volume_percent: 0
-};
-
 export const defaultCurrentlyPlaying: CurrentlyPlaying = {
   context: defaultCurrentlyPlayingContext,
   currently_playing_type: "track",
-  device: defaultCurrentlyPlayingDevice,
+  device: defaultDevice,
   is_playing: false,
   item: defaultCurrentlyPlayingItem,
   progress_ms: 0,
