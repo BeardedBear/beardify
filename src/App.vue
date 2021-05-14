@@ -24,6 +24,7 @@ import { instance } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
 import { ThemeColor } from "./@types/Config";
+import { SidebarActions } from "./components/sidebar/SidebarStore";
 
 export default defineComponent({
   components: { Dialog, Topbar, Player, Sidebar },
@@ -32,6 +33,7 @@ export default defineComponent({
 
     store.dispatch(`player/${PlayerActions.getDeviceList}`);
     store.dispatch(`auth/${AuthActions.refresh}`);
+    store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, "https://api.spotify.com/v1/me/playlists?limit=50");
 
     store.state.config.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
     store.state.config.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
