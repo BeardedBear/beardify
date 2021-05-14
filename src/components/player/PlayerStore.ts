@@ -58,16 +58,14 @@ export enum PlayerActions {
 const actions: ActionTree<Player, RootState> = {
   [PlayerActions.getDeviceList](store) {
     instance.get<DevicesResponse>("me/player/devices").then(({ data }) => {
-      // On set le dernier device actif par defaut
-      const lastActiveDevice = data.devices.filter(el => el.name === store.state.devices.activeDevice.name).shift();
       const haveDeviceActive = data.devices.filter(d => d.is_active);
+      const beardifyDevice = data.devices.filter(d => d.name === "Beardify").shift();
+
+      store.commit(Mutations.GET_DEVICE_LIST, data.devices);
 
       if (!haveDeviceActive.length) {
-        if (lastActiveDevice !== undefined) store.dispatch(PlayerActions.setDevice, lastActiveDevice);
+        store.dispatch(PlayerActions.setDevice, beardifyDevice);
       }
-
-      // On met a jour la liste des devices
-      store.commit(Mutations.GET_DEVICE_LIST, data.devices);
     });
   },
 

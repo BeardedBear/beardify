@@ -9,7 +9,7 @@
       </transition>
     </router-view>
   </div>
-  <Player />
+  <Player key="player" />
 </template>
 
 <script lang="ts">
@@ -54,11 +54,12 @@ export default defineComponent({
       if (store.state.auth.me !== null) {
         setInterval(() => {
           if (document.hasFocus()) {
-            if (!store.state.sidebar.playlists.length)
+            if (!store.state.sidebar.playlists.length) {
               store.dispatch(
                 `sidebar/${SidebarActions.getPlaylists}`,
                 "https://api.spotify.com/v1/me/playlists?limit=50"
               );
+            }
             getPlayerStatus();
           }
         }, 1000);
