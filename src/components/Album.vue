@@ -34,7 +34,7 @@ import ArtistList from "./ArtistList.vue";
 import { Mutations } from "./dialog/DialogStore";
 import { DialogType } from "../@types/Dialog";
 import { Paging } from "../@types/Paging";
-import { TrackSimplified } from "../@types/Track";
+import { TrackSimplified, TrackToRemove } from "../@types/Track";
 import { useRoute } from "vue-router";
 import { Mutations as PlaylistMutation } from "../views/playlist/PlaylistStore";
 
@@ -66,17 +66,15 @@ export default defineComponent({
 
     function deleteAlbum(albumId: string) {
       instance.get<Paging<TrackSimplified>>(`https://api.spotify.com/v1/albums/${albumId}/tracks`).then(e => {
+        let tracks: TrackToRemove[] = [];
+
+        e.data.items.map(t => t.uri).forEach(t => tracks.push({ uri: t }));
+
         instance
           .delete(`https://api.spotify.com/v1/playlists/${currentRouteId}/tracks`, {
-            data: {
-              tracks: [
-                {
-                  uri: e.data.items[0].uri
-                }
-              ]
-            }
+            data: { tracks }
           })
-          .then(f => store.commit(`playlist/${PlaylistMutation.REMOVE_TRACKS}`, e.data.items[0].uri));
+          .then(f => store.commit(`playlist/${PlaylistMutation.REMOVE_TRACKS}`, tracks));
       });
     }
 

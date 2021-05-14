@@ -37,3 +37,7 @@ export interface TrackSimplified {
   type: string;
   uri: string;
 }
+
+export interface TrackToRemove {
+  uri: string;
+}

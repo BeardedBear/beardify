@@ -1,8 +1,9 @@
 import { ActionTree, MutationTree } from "vuex";
-import { defaultPlaylist, defaultPlaylistTrack, defaultTrack } from "../../@types/Defaults";
+import { defaultPlaylist, defaultPlaylistTrack } from "../../@types/Defaults";
 import { Paging } from "../../@types/Paging";
 import { Playlist, PlaylistPage, PlaylistTrack } from "../../@types/Playlist";
 import { RootState } from "../../@types/RootState";
+import { TrackToRemove } from "../../@types/Track";
 import { instance } from "../../api";
 
 const state: PlaylistPage = {
@@ -32,8 +33,8 @@ const mutations: MutationTree<PlaylistPage> = {
     state.tracks = [];
   },
 
-  [Mutations.REMOVE_TRACKS](state, trackUri: string): void {
-    state.tracks = state.tracks.filter(e => e.track.uri !== trackUri);
+  [Mutations.REMOVE_TRACKS](state, tracks: TrackToRemove[]): void {
+    state.tracks = state.tracks.filter(e => !tracks.map(e => e.uri).includes(e.track.uri));
   }
 };
 
