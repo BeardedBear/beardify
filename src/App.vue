@@ -48,7 +48,9 @@ export default defineComponent({
     }, 120000);
 
     function getPlayerStatus() {
-      if (!store.state.sidebar.playlists.length) {
+      console.log(store.state.sidebar.playlists.length);
+
+      if (store.state.sidebar.playlists.length <= 1) {
         store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
       }
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
