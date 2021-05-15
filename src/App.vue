@@ -48,8 +48,6 @@ export default defineComponent({
     }, 120000);
 
     function getPlayerStatus() {
-      console.log(store.state.sidebar.playlists.length);
-
       if (store.state.sidebar.playlists.length <= 1) {
         store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
       }
@@ -83,6 +81,14 @@ export default defineComponent({
 @import "./assets/scss/colors";
 @import "./assets/scss/heading";
 @import "./assets/scss/mixins";
+
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+html {
+  height: -webkit-fill-available;
+}
 
 *,
 *::before,
@@ -128,13 +134,19 @@ export default defineComponent({
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--font-color);
-  height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
   overflow: hidden;
   background-color: var(--bg-color-darker);
   font-size: 0.9rem;
   font-weight: 600;
+  min-height: 100vh;
+  height: 100vh;
+
+  @media (pointer: none), (pointer: coarse) {
+    min-height: -webkit-fill-available;
+    height: -webkit-fill-available;
+  }
 
   &__content {
     display: grid;
