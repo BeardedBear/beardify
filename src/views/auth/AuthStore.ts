@@ -52,63 +52,54 @@ export enum AuthActions {
 
 const actions = {
   async [AuthActions.refresh](store: ActionContext<Auth, RootState>): Promise<void> {
-    const request = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: formurlencoded({
-        grant_type: "refresh_token",
-        refresh_token: store.state.auth.refreshToken,
-        client_id: api.clientId,
-      }),
-    });
-
-    if (request.ok) {
-      const json = await request.json();
-
-      store.commit(Mutations.AUTH, {
-        accessToken: json.access_token,
-        refreshToken: json.refresh_token,
-        code: store.state.auth.code,
-      });
-    } else {
-      console.error("From refresh", request.status);
-    }
+    axios
+      .post(
+        "https://accounts.spotify.com/api/token",
+        formurlencoded({
+          grant_type: "refresh_token",
+          refresh_token: store.state.auth.refreshToken,
+          client_id: api.clientId,
+        })
+      )
+      .then((res) => {
+        store.commit(Mutations.AUTH, {
+          accessToken: res.data.access_token,
+          refreshToken: res.data.refresh_token,
+          code: store.state.auth.code,
+        });
+      })
+      .catch((err) => console.error("From refresh token", err));
   },
 
   async [AuthActions.auth](store: ActionContext<Auth, RootState>, query: string): Promise<void> {
-    const response = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: formurlencoded({
-        grant_type: "authorization_code",
-        code: query,
-        redirect_uri: api.redirectUri,
-        client_id: api.clientId,
-        code_verifier: store.state.auth.codeVerifier,
-      }),
-    });
-
-    if (response.ok) {
-      const json = await response.json();
-
-      axios
-        .get<Me>(`${api.url}me`, {
-          headers: {
-            Authorization: `Bearer ${json.access_token}`,
-            "Content-Type": "application/json",
-          },
+    axios
+      .post(
+        "https://accounts.spotify.com/api/token",
+        formurlencoded({
+          grant_type: "authorization_code",
+          code: query,
+          redirect_uri: api.redirectUri,
+          client_id: api.clientId,
+          code_verifier: store.state.auth.codeVerifier,
         })
-        .then((p) => store.commit(Mutations.SET_ME, p.data))
-        .then(() => router.push("/"));
+      )
+      .then(({ data }) => {
+        axios
+          .get<Me>(`${api.url}me`, {
+            headers: { Authorization: `Bearer ${data.access_token}` },
+          })
+          .then((p) => {
+            store.commit(Mutations.SET_ME, p.data);
+            router.push("/");
+          });
 
-      store.commit(Mutations.AUTH, {
-        accessToken: json.access_token,
-        refreshToken: json.refresh_token,
-        code: query,
-      });
-    } else {
-      console.error("From auth", response.status);
-    }
+        store.commit(Mutations.AUTH, {
+          accessToken: data.access_token,
+          refreshToken: data.refresh_token,
+          code: query,
+        });
+      })
+      .catch((err) => console.error("From auth", err));
   },
 };
 

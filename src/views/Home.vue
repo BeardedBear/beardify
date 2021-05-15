@@ -2,6 +2,8 @@
   <div v-if="env === 'production'">Coucou c'est l'accueil, pour le moment y'a rien, mais t'inquiète ca va venir.</div>
   <div v-else class="home overflowed">
     <div class="overflowed__target">
+      <div>{{ store.state.auth.auth.refreshToken }}</div>
+      <div>{{ store.state.auth.auth.accessToken }}</div>
       <b>This device id</b> :
       <pre>{{ store.state.player.thisDeviceId }}</pre>
       <br /><br />
