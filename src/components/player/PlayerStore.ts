@@ -59,6 +59,7 @@ export enum PlayerActions {
   getDeviceList = "getDeviceList",
   setDevice = "setDevice",
   setVolume = "setVolume",
+  getPlayerState = "getPlayerState",
 }
 
 const actions: ActionTree<Player, RootState> = {
@@ -74,8 +75,11 @@ const actions: ActionTree<Player, RootState> = {
   },
 
   [PlayerActions.setVolume](store, volume: number) {
-    store.commit(Mutations.SET_VOLUME, volume);
-    instance.put(`me/player/volume?volume_percent=${volume}`);
+    instance.put(`me/player/volume?volume_percent=${volume}`).then(() => store.commit(Mutations.SET_VOLUME, volume));
+  },
+
+  [PlayerActions.getPlayerState](store) {
+    instance.get(`me/player`).then((e) => store.commit(Mutations.PLAYER_STATE_CHANGED, e.data));
   },
 };
 

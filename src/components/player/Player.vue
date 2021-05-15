@@ -1,6 +1,6 @@
 <template>
   <div v-if="!store.state.player.currentlyPlaying" class="player-loading">
-    <Loader />
+    <div class="player-loading__title">Choisir un périphérique de lecture :</div>
     <span v-if="store.state.player.devices.list.length">
       <button
         v-for="(device, _, index) in store.state.player.devices.list"
@@ -61,7 +61,9 @@
                 class="volume__cursor"
                 :style="{ width: store.state.player.devices.activeDevice.volume_percent + '%' }"
               />
-              <div class="volume__hover" :style="{ width: volume + '%' }" />
+              <div class="volume__hover" :style="{ width: volume + '%' }">
+                <div class="volume__pc">{{ volume + "%" }}</div>
+              </div>
             </div>
           </div>
           <button
@@ -108,10 +110,9 @@ import ArtistList from "../ArtistList.vue";
 import { Device } from "../../@types/Device";
 import Cover from "../Cover.vue";
 import { timecode } from "../../helpers/date";
-import Loader from "../Loader.vue";
 
 export default defineComponent({
-  components: { ArtistList, Cover, Loader },
+  components: { ArtistList, Cover },
   setup() {
     const store = useStore<RootState>();
     const current = useStore<RootState>().state.player.currentlyPlaying;
@@ -201,8 +202,15 @@ export default defineComponent({
   place-content: center;
   padding: 10px;
   background-color: var(--bg-color);
+  padding: 20px;
+  text-align: center;
+
+  &__title {
+    margin-bottom: 15px;
+  }
 }
 .device {
+  margin-left: 5px;
   &.me {
     position: relative;
     &::before {
@@ -226,8 +234,19 @@ export default defineComponent({
   height: 25px;
   width: 100px;
   display: inline-block;
-  clip-path: polygon(0 74%, 100% 0, 100% 100%, 0% 100%);
   margin-bottom: 5px;
+
+  &::before {
+    position: absolute;
+    content: "";
+    background-color: var(--bg-color);
+    top: -1px;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 9;
+    clip-path: polygon(0 0, 0 78%, 100% 0);
+  }
 
   &__cursor {
     background-color: var(--primary-color);
@@ -237,6 +256,16 @@ export default defineComponent({
     bottom: 0;
   }
 
+  &__pc {
+    // background-color: red;
+    position: relative;
+    z-index: 999;
+    position: absolute;
+    right: 0;
+    transform: translateX(50%);
+    top: -22px;
+  }
+
   &:hover {
     .volume__hover {
       display: block;
@@ -244,7 +273,7 @@ export default defineComponent({
   }
 
   &__hover {
-    background-color: rgba(black, 0.2);
+    background-color: var(--primary-color-lighter);
     position: absolute;
     top: 0;
     left: 0;
@@ -330,9 +359,10 @@ export default defineComponent({
     top: 0;
     bottom: 0;
     left: 0;
-    background: rgba(black, 0.3);
+    background-color: var(--primary-color-lighter);
     display: none;
     animation: popSeek 0.2s ease 0s both;
+    opacity: 0.5;
 
     .time {
       position: absolute;

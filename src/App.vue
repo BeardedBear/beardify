@@ -52,10 +52,7 @@ export default defineComponent({
         store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
       }
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
-      instance
-        .get(`me/player`)
-        .then((e) => store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data))
-        .catch((error) => console.error("error", error));
+      store.dispatch(`player/${PlayerActions.getPlayerState}`);
     }
 
     watchEffect(() => {
