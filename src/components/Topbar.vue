@@ -24,7 +24,6 @@
 </template>
 
 <script lang="ts">
-import { connectUrl } from "../api";
 import { useStore } from "vuex";
 import type { RootState } from "../@types/RootState";
 import { defineComponent, onMounted } from "vue";
@@ -60,7 +59,7 @@ export default defineComponent({
       document.querySelector(".avatar")?.addEventListener("click", (e) => e.stopPropagation());
     });
 
-    return { store, connectUrl, previous, next, openConfig };
+    return { store, previous, next, openConfig };
   },
 });
 </script>

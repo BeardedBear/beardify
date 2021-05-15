@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vue-tsc --noEmit && eslint --ext .ts,vue --ignore-path .gitignore . && vite build",
     "lint": "vue-tsc --noEmit && eslint --ext .ts,vue --ignore-path .gitignore ."
   },
   "dependencies": {
