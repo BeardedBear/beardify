@@ -143,7 +143,7 @@ html {
   min-height: 100vh;
   height: 100vh;
 
-  @media (pointer: none), (pointer: coarse) {
+  @supports (-webkit-touch-callout: none) {
     min-height: -webkit-fill-available;
     height: -webkit-fill-available;
   }
