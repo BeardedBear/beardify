@@ -125,8 +125,8 @@ export default defineComponent({
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
     }
 
-    function setDevice(id: Device) {
-      store.dispatch(`player/${PlayerActions.setDevice}`, id);
+    function setDevice(device: Device) {
+      store.dispatch(`player/${PlayerActions.setDevice}`, device);
     }
 
     function goPlay() {
