@@ -66,11 +66,10 @@ export default defineComponent({
     addEventListener("initdevice", ((e: CustomEvent) => {
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
       if (store.state.player.devices.list.filter(d => d.is_active).length === 0) {
+        instance.put("me/player", { device_ids: [e.detail.thisDevice] });
         store.dispatch(`player/${PlayerActions.setDevice}`, e.detail.thisDevice);
       }
       store.commit(`player/${Mutations.THIS_DEVICE}`, e.detail.thisDevice);
-
-      console.log("init device", e.detail.thisDevice);
     }) as { (evt: Event): void });
 
     addEventListener("keydown", e => {

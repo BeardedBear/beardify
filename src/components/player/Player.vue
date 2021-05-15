@@ -1,5 +1,8 @@
 <template>
-  <div class="player">
+  <div class="player-loading" v-if="!store.state.player.currentlyPlaying.device.id">
+    <Loader />
+  </div>
+  <div v-else class="player">
     <div>
       <div class="meta">
         <div class="controls">
@@ -22,7 +25,7 @@
         </div>
 
         <div>
-          <div v-if="store.state.player.currentlyPlaying.item.name !== null" class="meta__what">
+          <div class="meta__what">
             <router-link :to="`/album/${store.state.player.currentlyPlaying.item.album.id}`">
               <Cover size="small" :images="store.state.player.currentlyPlaying.item.album.images" className="cover" />
             </router-link>
@@ -35,7 +38,6 @@
               <div class="album">{{ store.state.player.currentlyPlaying.item.album.name }}</div>
             </div>
           </div>
-          <div v-else>Pas de morceaux de lancé</div>
         </div>
 
         <div class="options">
@@ -85,7 +87,7 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, defineComponent } from "vue";
+import { ref, defineComponent, watchEffect } from "vue";
 import { useStore } from "vuex";
 import { instance } from "../../api";
 import { Mutations, PlayerActions } from "./../player/PlayerStore";
@@ -94,9 +96,10 @@ import ArtistList from "../ArtistList.vue";
 import { Device } from "../../@types/Device";
 import Cover from "../Cover.vue";
 import { timecode } from "../../helpers/date";
+import Loader from "../Loader.vue";
 
 export default defineComponent({
-  components: { ArtistList, Cover },
+  components: { ArtistList, Cover, Loader },
   setup() {
     const store = useStore<RootState>();
     const current = useStore<RootState>().state.player.currentlyPlaying;
@@ -138,20 +141,20 @@ export default defineComponent({
       store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, CE.detail);
     }) as { (evt: Event): void });
 
-    onMounted(() => {
-      refVolume.value.addEventListener("mousemove", (e: MouseEvent) => {
+    watchEffect(() => {
+      refVolume.value?.addEventListener("mousemove", (e: MouseEvent) => {
         volume.value = e.offsetX;
       });
 
-      progresss.value.addEventListener("mousemove", (e: MouseEvent) => {
-        const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
+      progresss.value?.addEventListener("mousemove", (e: MouseEvent) => {
+        const positionInPercent = (e.clientX / progresss.value?.clientWidth) * 100;
         const duration = (store.state.player.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
         perc.value = positionInPercent;
         time.value = timecode(duration);
       });
 
-      progresss.value.addEventListener("click", (e: MouseEvent) => {
-        const positionInPercent = (e.clientX / progresss.value.clientWidth) * 100;
+      progresss.value?.addEventListener("click", (e: MouseEvent) => {
+        const positionInPercent = (e.clientX / progresss.value?.clientWidth) * 100;
         const duration = (store.state.player.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
         store.commit(`player/${Mutations.UPDATE_PROGRESS}`, Math.round(duration));
         instance.put(`me/player/seek?position_ms=${Math.round(duration)}`);
@@ -190,6 +193,12 @@ export default defineComponent({
   }
 }
 
+.player-loading {
+  display: grid;
+  place-content: center;
+  padding: 10px;
+  background-color: var(--bg-color);
+}
 .device {
   &.me {
     position: relative;
@@ -198,7 +207,6 @@ export default defineComponent({
       position: absolute;
       top: 0;
       right: 0;
-      // background: var(--font-color);
       background: white;
       border-top-right-radius: 3px;
       width: $s;

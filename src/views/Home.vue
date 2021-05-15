@@ -1,8 +1,10 @@
 <template>
-  <div class="home overflowed">
+  <div v-if="env === 'production'">Coucou c'est l'accueil, pour le moment y'a rien, mais t'inquiète ca va venir.</div>
+  <div v-else class="home overflowed">
     <div class="overflowed__target">
       <b>This device id</b> :
       <pre>{{ store.state.player.thisDeviceId }}</pre>
+      <div>{{ store.state.player.currentlyPlaying.device.id }}</div>
       <br /><br />
       <b>Active device</b> :
       <pre>{{ store.state.player.devices.activeDevice }}</pre>
@@ -22,8 +24,9 @@ import type { RootState } from "../@types/RootState";
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
+      const env = process.env.NODE_ENV
 
-    return { store };
+    return { store ,env};
   },
 });
 </script>
