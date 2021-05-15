@@ -73,7 +73,9 @@ export default defineComponent({
     }) as { (evt: Event): void });
 
     addEventListener("keydown", e => {
-      let currentVolume = store.state.player.devices.activeDevice.volume_percent;
+      let currentVolume = store.state.player.devices.activeDevice
+        ? store.state.player.devices.activeDevice.volume_percent
+        : 0;
       const delta = 2;
 
       function setVolume(volume: number) {

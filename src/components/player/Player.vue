@@ -1,6 +1,18 @@
 <template>
-  <div class="player-loading" v-if="!store.state.player.currentlyPlaying.device.id">
+  <div class="player-loading" v-if="!store.state.player.currentlyPlaying">
     <Loader />
+    <span v-if="store.state.player.devices.list.length">
+      <button
+        type="button"
+        v-for="(device, _, index) in store.state.player.devices.list"
+        :key="index"
+        class="device button button--x-small"
+        :class="{ me: store.state.player.thisDeviceId === device.id }"
+        @click="setDevice(device)"
+      >
+        {{ device.name }}
+      </button>
+    </span>
   </div>
   <div v-else class="player">
     <div>

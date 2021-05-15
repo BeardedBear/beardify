@@ -17,7 +17,11 @@
         class="track"
         v-for="(track, index) in store.state.playlist.tracks"
         :key="index"
-        :class="{ active: track.track.id === store.state.player.currentlyPlaying.item.id }"
+        :class="{
+          active: store.state.player.currentlyPlaying
+            ? track.track.id === store.state.player.currentlyPlaying.item.id
+            : false
+        }"
         @click="
           playSongs(
             index,

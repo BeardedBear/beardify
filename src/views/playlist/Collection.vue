@@ -17,7 +17,9 @@
         <div v-for="(album, index) in cleanAlbumList" :key="index">
           <Album
             :album="album"
-            :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri"
+            :currentlyPlayedId="
+              store.state.player.currentlyPlaying ? store.state.player.currentlyPlaying.item.album.uri : ''
+            "
             withArtists
             canDelete
             canSave
