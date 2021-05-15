@@ -25,11 +25,14 @@ import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
 import { ThemeColor } from "./@types/Config";
 import { SidebarActions } from "./components/sidebar/SidebarStore";
+import KeyboardEvents from "./composition/KeyboardEvents";
 
 export default defineComponent({
   components: { Dialog, Topbar, Player, Sidebar },
   setup() {
     const store = useStore<RootState>();
+
+    KeyboardEvents();
 
     store.dispatch(`player/${PlayerActions.getDeviceList}`);
     store.dispatch(`auth/${AuthActions.refresh}`);
@@ -39,7 +42,7 @@ export default defineComponent({
     // Keep app active
     setInterval(() => {
       if (!store.state.player.currentlyPlaying.is_playing) {
-        store.dispatch(`player/${PlayerActions.setDevice}`, store.state.player.devices.activeDevice.id);
+        store.dispatch(`player/${PlayerActions.setDevice}`, store.state.player.devices.activeDevice);
       }
       store.dispatch(`auth/${AuthActions.refresh}`);
     }, 120000);
@@ -64,32 +67,14 @@ export default defineComponent({
     });
 
     addEventListener("initdevice", ((e: CustomEvent) => {
-      store.dispatch(`player/${PlayerActions.getDeviceList}`);
       if (store.state.player.devices.list.filter(d => d.is_active).length === 0) {
         instance.put("me/player", { device_ids: [e.detail.thisDevice] });
-        store.dispatch(`player/${PlayerActions.setDevice}`, e.detail.thisDevice);
       }
       store.commit(`player/${Mutations.THIS_DEVICE}`, e.detail.thisDevice);
+      store.dispatch(`player/${PlayerActions.getDeviceList}`).then(e => {
+        // console.log(e);
+      });
     }) as { (evt: Event): void });
-
-    addEventListener("keydown", e => {
-      let currentVolume = store.state.player.devices.activeDevice
-        ? store.state.player.devices.activeDevice.volume_percent
-        : 0;
-      const delta = 2;
-
-      function setVolume(volume: number) {
-        store.dispatch(`player/${PlayerActions.setVolume}`, volume);
-      }
-
-      if (currentVolume && e.shiftKey) {
-        if (e.key === "ArrowUp") {
-          100 - delta > currentVolume ? setVolume(currentVolume + delta) : setVolume(100);
-        } else if (e.key === "ArrowDown") {
-          currentVolume - delta < 0 ? setVolume(1) : setVolume(currentVolume - delta);
-        }
-      }
-    });
 
     return { store };
   }

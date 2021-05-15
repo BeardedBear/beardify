@@ -4,7 +4,6 @@
     <div class="overflowed__target">
       <b>This device id</b> :
       <pre>{{ store.state.player.thisDeviceId }}</pre>
-      <div>{{ store.state.player.currentlyPlaying }}</div>
       <br /><br />
       <b>Active device</b> :
       <pre>{{ store.state.player.devices.activeDevice }}</pre>

@@ -69,8 +69,8 @@ const actions: ActionTree<Player, RootState> = {
 
       store.commit(Mutations.GET_DEVICE_LIST, data.devices);
 
-      // if (!haveDeviceActive.length) {
-      //   store.dispatch(PlayerActions.setDevice, beardifyDevice);
+      // if (haveDeviceActive.length) {
+      //   store.dispatch(PlayerActions.setDevice, haveDeviceActive[0]);
       // }
     });
   },
