@@ -1,5 +1,5 @@
 import { Track, TrackSimplified } from "../@types/Track";
-import { api, instance } from "../api";
+import { instance } from "../api";
 
 export function playSongs(i: number, tracks: TrackSimplified[] | Track[]): void {
   const flatTracks = tracks.map((e: TrackSimplified | Track) => e.uri);

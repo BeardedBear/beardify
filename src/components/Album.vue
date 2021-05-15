@@ -34,7 +34,7 @@ import { defineComponent, PropType } from "vue";
 import { useStore } from "vuex";
 import { Album, AlbumSimplified } from "../@types/Album";
 import { RootState } from "../@types/RootState";
-import { api, instance } from "../api";
+import { instance } from "../api";
 import { defaultAlbumSimplified } from "../@types/Defaults";
 import router from "../router";
 import Cover from "./Cover.vue";
