@@ -71,7 +71,6 @@ export default defineComponent({
         instance.put("me/player", { device_ids: [e.detail.thisDevice] });
       }
       store.commit(`player/${Mutations.THIS_DEVICE}`, e.detail.thisDevice);
-      store.dispatch(`player/${PlayerActions.getDeviceList}`);
     }) as { (evt: Event): void });
 
     return { store };

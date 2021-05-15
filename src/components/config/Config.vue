@@ -11,7 +11,6 @@
       <div class="section__title">Debug</div>
       <router-link class="button button--full" to="/login"> Login </router-link>
       <button class="button button--full" @click="refresh()">Refresh token</button>
-      <button class="button button--full" @click="getDeviceList()">Get devices</button>
     </div>
 
     <div class="section">
@@ -26,7 +25,6 @@ import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { AuthActions } from "../../views/auth/AuthStore";
-import { PlayerActions } from "../player/PlayerStore";
 import Colors from "./Colors.vue";
 
 export default defineComponent({
@@ -35,15 +33,11 @@ export default defineComponent({
     const store = useStore<RootState>();
     const env = process.env.NODE_ENV;
 
-    function getDeviceList(): void {
-      store.dispatch(`player/${PlayerActions.getDeviceList}`);
-    }
-
     function refresh(): void {
       store.dispatch(`auth/${AuthActions.refresh}`);
     }
 
-    return { store, getDeviceList, refresh, env };
+    return { store, refresh, env };
   },
 });
 </script>

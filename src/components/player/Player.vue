@@ -64,24 +64,19 @@
               <div class="volume__hover" :style="{ width: volume + '%' }" />
             </div>
           </div>
-          <div v-if="store.state.player.devices.list.length">
-            <button
-              v-for="(device, _, index) in store.state.player.devices.list"
-              :key="index"
-              type="button"
-              class="device button button--x-small"
-              :class="{
-                'button--primary': device.id === store.state.player.devices.activeDevice.id,
-                me: store.state.player.thisDeviceId === device.id,
-              }"
-              @click="setDevice(device)"
-            >
-              {{ device.name }}
-            </button>
-          </div>
-          <div v-else>
-            <button class="button button--primary" @click="getDevices()" />
-          </div>
+          <button
+            v-for="(device, _, index) in store.state.player.devices.list"
+            :key="index"
+            type="button"
+            class="device button button--x-small"
+            :class="{
+              'button--primary': device.id === store.state.player.devices.activeDevice.id,
+              me: store.state.player.thisDeviceId === device.id,
+            }"
+            @click="setDevice(device)"
+          >
+            {{ device.name }}
+          </button>
         </div>
       </div>
 
@@ -125,10 +120,6 @@ export default defineComponent({
     const time = ref();
     const refVolume = ref();
     const volume = ref(0);
-
-    function getDevices() {
-      store.dispatch(`player/${PlayerActions.getDeviceList}`);
-    }
 
     function setDevice(device: Device) {
       store.dispatch(`player/${PlayerActions.setDevice}`, device);
@@ -177,7 +168,6 @@ export default defineComponent({
     return {
       current,
       store,
-      getDevices,
       setDevice,
       setVolume,
       goPlay,
