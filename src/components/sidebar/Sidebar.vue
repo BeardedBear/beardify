@@ -54,12 +54,13 @@ import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { SidebarActions } from "./SidebarStore";
+import { api } from "../../api";
 
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, "https://api.spotify.com/v1/me/playlists?limit=50");
+    store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
 
     return { store };
   },

@@ -71,6 +71,7 @@ import { PlaylistActions, Mutations } from "./PlaylistStore";
 import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import ArtistList from "../../components/ArtistList.vue";
+import { api } from "../../api";
 
 export default defineComponent({
   components: { ArtistList, Cover },
@@ -85,8 +86,8 @@ export default defineComponent({
       return tracks.map((t: PlaylistTrack) => t.track.duration_ms).reduce((acc, value) => acc + value, 0);
     }
 
-    store.dispatch(`playlist/${PlaylistActions.getPlaylist}`, `https://api.spotify.com/v1/playlists/${props.id}`);
-    store.dispatch(`playlist/${PlaylistActions.getTracks}`, `https://api.spotify.com/v1/playlists/${props.id}/tracks`);
+    store.dispatch(`playlist/${PlaylistActions.getPlaylist}`, `${api.url}playlists/${props.id}`);
+    store.dispatch(`playlist/${PlaylistActions.getTracks}`, `${api.url}playlists/${props.id}/tracks`);
     store.commit(`playlist/${Mutations.CLEAN_TRACKS}`);
 
     return { playlistpage, store, timecode, timecodeWithUnits, playSongs, sumDuration };

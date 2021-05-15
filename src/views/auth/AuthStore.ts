@@ -92,7 +92,7 @@ const actions = {
       const json = await response.json();
 
       axios
-        .get<Me>("https://api.spotify.com/v1/me", {
+        .get<Me>(`${api.url}me`, {
           headers: {
             Authorization: `Bearer ${json.access_token}`,
             "Content-Type": "application/json",

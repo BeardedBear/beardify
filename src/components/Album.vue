@@ -34,7 +34,7 @@ import { defineComponent, PropType } from "vue";
 import { useStore } from "vuex";
 import { Album, AlbumSimplified } from "../@types/Album";
 import { RootState } from "../@types/RootState";
-import { instance } from "../api";
+import { api, instance } from "../api";
 import { defaultAlbumSimplified } from "../@types/Defaults";
 import router from "../router";
 import Cover from "./Cover.vue";
@@ -61,7 +61,7 @@ export default defineComponent({
     const currentRouteId = useRoute().params.id;
 
     function playAlbum(albumId: string) {
-      instance.put("https://api.spotify.com/v1/me/player/play", { context_uri: albumId });
+      instance.put(`${api.url}me/player/play`, { context_uri: albumId });
     }
 
     function goAlbum() {
@@ -73,13 +73,13 @@ export default defineComponent({
     }
 
     function deleteAlbum(albumId: string) {
-      instance.get<Paging<TrackSimplified>>(`https://api.spotify.com/v1/albums/${albumId}/tracks`).then((e) => {
+      instance.get<Paging<TrackSimplified>>(`${api.url}albums/${albumId}/tracks`).then((e) => {
         let tracks: TrackToRemove[] = [];
 
         e.data.items.map((t) => t.uri).forEach((t) => tracks.push({ uri: t }));
 
         instance
-          .delete(`https://api.spotify.com/v1/playlists/${currentRouteId}/tracks`, {
+          .delete(`${api.url}playlists/${currentRouteId}/tracks`, {
             data: { tracks },
           })
           .then(() => store.commit(`playlist/${PlaylistMutation.REMOVE_TRACKS}`, tracks));

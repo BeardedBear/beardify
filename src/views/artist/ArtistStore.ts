@@ -1,5 +1,5 @@
 import { ActionTree, MutationTree } from "vuex";
-import { instance } from "../../api";
+import { api, instance } from "../../api";
 import { RootState } from "../../@types/RootState";
 import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "../../@types/Artist";
 import { Paging } from "../../@types/Paging";
@@ -87,30 +87,26 @@ export enum ArtistActions {
 
 const actions: ActionTree<ArtistPage, RootState> = {
   [ArtistActions.getArtist](store, artistId: string): void {
-    instance.get<Artist>(`https://api.spotify.com/v1/artists/${artistId}`).then((e) => {
+    instance.get<Artist>(`${api.url}artists/${artistId}`).then((e) => {
       store.commit(Mutations.SET_ARTIST, e.data);
     });
   },
 
   [ArtistActions.getTopTracks](store, artistId: string): void {
-    instance.get<ArtistTopTracks>(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=FR`).then((e) => {
+    instance.get<ArtistTopTracks>(`${api.url}artists/${artistId}/top-tracks?market=FR`).then((e) => {
       store.commit(Mutations.SET_TRACKS, e.data);
     });
   },
 
   [ArtistActions.getAlbums](store, artistId: string): void {
     instance
-      .get<Paging<AlbumSimplified>>(
-        `https://api.spotify.com/v1/artists/${artistId}/albums?market=FR&include_groups=album&limit=50`
-      )
+      .get<Paging<AlbumSimplified>>(`${api.url}artists/${artistId}/albums?market=FR&include_groups=album&limit=50`)
       .then((e) => store.commit(Mutations.SET_ALBUMS, removeDuplicatesAlbums(e.data.items)));
   },
 
   [ArtistActions.getSingles](store, artistId: string): void {
     instance
-      .get<Paging<AlbumSimplified>>(
-        `https://api.spotify.com/v1/artists/${artistId}/albums?market=FR&include_groups=single&limit=50`
-      )
+      .get<Paging<AlbumSimplified>>(`${api.url}artists/${artistId}/albums?market=FR&include_groups=single&limit=50`)
       .then((e) => {
         const minimumNumberOfTracks = 3;
         const onlySingles = e.data.items.filter((e) => e.total_tracks < minimumNumberOfTracks);
@@ -121,31 +117,29 @@ const actions: ActionTree<ArtistPage, RootState> = {
   },
 
   [ArtistActions.getRelatedArtists](store, artistId: string): void {
-    instance.get<RelatedArtists>(`https://api.spotify.com/v1/artists/${artistId}/related-artists`).then((e) => {
+    instance.get<RelatedArtists>(`${api.url}artists/${artistId}/related-artists`).then((e) => {
       store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists);
     });
   },
 
   [ArtistActions.getRelatedArtists](store, artistId: string): void {
-    instance.get<RelatedArtists>(`https://api.spotify.com/v1/artists/${artistId}/related-artists`).then((e) => {
+    instance.get<RelatedArtists>(`${api.url}artists/${artistId}/related-artists`).then((e) => {
       store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists.slice(0, 15));
     });
   },
 
   [ArtistActions.getFollowStatus](store, artistId: string): void {
-    instance
-      .get<boolean[]>(`https://api.spotify.com/v1/me/following/contains?type=artist&ids=${artistId}`)
-      .then((e) => {
-        store.commit(Mutations.SET_FOLLOW_STATUS, e.data.pop());
-      });
+    instance.get<boolean[]>(`${api.url}me/following/contains?type=artist&ids=${artistId}`).then((e) => {
+      store.commit(Mutations.SET_FOLLOW_STATUS, e.data.pop());
+    });
   },
 
   [ArtistActions.switchFollow](store, artistId: string): void {
     if (store.state.followStatus) {
-      instance.delete(`https://api.spotify.com/v1/me/following?type=artist&ids=${artistId}`);
+      instance.delete(`${api.url}me/following?type=artist&ids=${artistId}`);
       store.commit(Mutations.SET_FOLLOW_STATUS, false);
     } else {
-      instance.put(`https://api.spotify.com/v1/me/following?type=artist&ids=${artistId}`);
+      instance.put(`${api.url}me/following?type=artist&ids=${artistId}`);
       store.commit(Mutations.SET_FOLLOW_STATUS, true);
     }
   },

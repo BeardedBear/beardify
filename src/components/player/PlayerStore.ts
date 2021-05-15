@@ -1,5 +1,5 @@
 import { ActionTree, MutationTree } from "vuex";
-import { instance } from "../../api";
+import { api, instance } from "../../api";
 import { Player } from "../../@types/Player";
 import { RootState } from "../../@types/RootState";
 import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
@@ -82,7 +82,7 @@ const actions: ActionTree<Player, RootState> = {
 
   [PlayerActions.setVolume](store, volume: number) {
     store.commit(Mutations.SET_VOLUME, volume);
-    instance.put(`https://api.spotify.com/v1/me/player/volume?volume_percent=${volume}`);
+    instance.put(`${api.url}me/player/volume?volume_percent=${volume}`);
   },
 };
 

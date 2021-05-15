@@ -20,7 +20,7 @@ import { Mutations, PlayerActions } from "./components/player/PlayerStore";
 import Player from "./components/player/Player.vue";
 import { RootState } from "./@types/RootState";
 import { AuthActions } from "./views/auth/AuthStore";
-import { instance } from "./api";
+import { api, instance } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
 import { ThemeColor } from "./@types/Config";
@@ -49,11 +49,11 @@ export default defineComponent({
 
     function getPlayerStatus() {
       if (!store.state.sidebar.playlists.length) {
-        store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, "https://api.spotify.com/v1/me/playlists?limit=50");
+        store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
       }
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
       instance
-        .get("https://api.spotify.com/v1/me/player")
+        .get(`${api.url}me/player`)
         .then((e) => store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data))
         .catch((error) => console.error("error", error));
     }

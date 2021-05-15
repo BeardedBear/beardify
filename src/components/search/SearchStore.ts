@@ -5,7 +5,7 @@ import { defaultAlbum, defaultArtist, defaultTrackSimplified } from "../../@type
 import { RootState } from "../../@types/RootState";
 import { Search, SearchFromAPI } from "../../@types/Search";
 import { TrackSimplified } from "../../@types/Track";
-import { instance } from "../../api";
+import { api, instance } from "../../api";
 
 const state: Search = {
   query: "coucou",
@@ -36,14 +36,12 @@ export enum SearchActions {
 
 const actions: ActionTree<Search, RootState> = {
   [SearchActions.search](store, query: string) {
-    instance
-      .get<SearchFromAPI>(`https://api.spotify.com/v1/search?q=${query}&type=artist%2Calbum%2Ctrack`)
-      .then((e) => {
-        const artists = e.data.artists.items.slice(0, 12);
-        const albums = e.data.albums.items.slice(0, 6);
-        const tracks = e.data.tracks.items.slice(0, 6);
-        store.commit(Mutations.SET_RESULTS, { artists, albums, tracks });
-      });
+    instance.get<SearchFromAPI>(`${api.url}search?q=${query}&type=artist%2Calbum%2Ctrack`).then((e) => {
+      const artists = e.data.artists.items.slice(0, 12);
+      const albums = e.data.albums.items.slice(0, 6);
+      const tracks = e.data.tracks.items.slice(0, 6);
+      store.commit(Mutations.SET_RESULTS, { artists, albums, tracks });
+    });
   },
 };
 
