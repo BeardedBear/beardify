@@ -53,7 +53,7 @@ export default defineComponent({
       }
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
       instance
-        .get(`${api.url}me/player`)
+        .get(`me/player`)
         .then((e) => store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data))
         .catch((error) => console.error("error", error));
     }

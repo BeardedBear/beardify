@@ -1,5 +1,5 @@
 import { ActionTree, MutationTree } from "vuex";
-import { api, instance } from "../../api";
+import { instance } from "../../api";
 import { RootState } from "../../@types/RootState";
 import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "../../@types/Artist";
 import { Paging } from "../../@types/Paging";
@@ -87,26 +87,26 @@ export enum ArtistActions {
 
 const actions: ActionTree<ArtistPage, RootState> = {
   [ArtistActions.getArtist](store, artistId: string): void {
-    instance.get<Artist>(`${api.url}artists/${artistId}`).then((e) => {
+    instance.get<Artist>(`artists/${artistId}`).then((e) => {
       store.commit(Mutations.SET_ARTIST, e.data);
     });
   },
 
   [ArtistActions.getTopTracks](store, artistId: string): void {
-    instance.get<ArtistTopTracks>(`${api.url}artists/${artistId}/top-tracks?market=FR`).then((e) => {
+    instance.get<ArtistTopTracks>(`artists/${artistId}/top-tracks?market=FR`).then((e) => {
       store.commit(Mutations.SET_TRACKS, e.data);
     });
   },
 
   [ArtistActions.getAlbums](store, artistId: string): void {
     instance
-      .get<Paging<AlbumSimplified>>(`${api.url}artists/${artistId}/albums?market=FR&include_groups=album&limit=50`)
+      .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=album&limit=50`)
       .then((e) => store.commit(Mutations.SET_ALBUMS, removeDuplicatesAlbums(e.data.items)));
   },
 
   [ArtistActions.getSingles](store, artistId: string): void {
     instance
-      .get<Paging<AlbumSimplified>>(`${api.url}artists/${artistId}/albums?market=FR&include_groups=single&limit=50`)
+      .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=single&limit=50`)
       .then((e) => {
         const minimumNumberOfTracks = 3;
         const onlySingles = e.data.items.filter((e) => e.total_tracks < minimumNumberOfTracks);
@@ -117,29 +117,29 @@ const actions: ActionTree<ArtistPage, RootState> = {
   },
 
   [ArtistActions.getRelatedArtists](store, artistId: string): void {
-    instance.get<RelatedArtists>(`${api.url}artists/${artistId}/related-artists`).then((e) => {
+    instance.get<RelatedArtists>(`artists/${artistId}/related-artists`).then((e) => {
       store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists);
     });
   },
 
   [ArtistActions.getRelatedArtists](store, artistId: string): void {
-    instance.get<RelatedArtists>(`${api.url}artists/${artistId}/related-artists`).then((e) => {
+    instance.get<RelatedArtists>(`artists/${artistId}/related-artists`).then((e) => {
       store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists.slice(0, 15));
     });
   },
 
   [ArtistActions.getFollowStatus](store, artistId: string): void {
-    instance.get<boolean[]>(`${api.url}me/following/contains?type=artist&ids=${artistId}`).then((e) => {
+    instance.get<boolean[]>(`me/following/contains?type=artist&ids=${artistId}`).then((e) => {
       store.commit(Mutations.SET_FOLLOW_STATUS, e.data.pop());
     });
   },
 
   [ArtistActions.switchFollow](store, artistId: string): void {
     if (store.state.followStatus) {
-      instance.delete(`${api.url}me/following?type=artist&ids=${artistId}`);
+      instance.delete(`me/following?type=artist&ids=${artistId}`);
       store.commit(Mutations.SET_FOLLOW_STATUS, false);
     } else {
-      instance.put(`${api.url}me/following?type=artist&ids=${artistId}`);
+      instance.put(`me/following?type=artist&ids=${artistId}`);
       store.commit(Mutations.SET_FOLLOW_STATUS, true);
     }
   },

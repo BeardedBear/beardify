@@ -61,7 +61,7 @@ export default defineComponent({
     const currentRouteId = useRoute().params.id;
 
     function playAlbum(albumId: string) {
-      instance.put(`${api.url}me/player/play`, { context_uri: albumId });
+      instance.put("me/player/play", { context_uri: albumId });
     }
 
     function goAlbum() {
@@ -73,13 +73,13 @@ export default defineComponent({
     }
 
     function deleteAlbum(albumId: string) {
-      instance.get<Paging<TrackSimplified>>(`${api.url}albums/${albumId}/tracks`).then((e) => {
+      instance.get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`).then((e) => {
         let tracks: TrackToRemove[] = [];
 
         e.data.items.map((t) => t.uri).forEach((t) => tracks.push({ uri: t }));
 
         instance
-          .delete(`${api.url}playlists/${currentRouteId}/tracks`, {
+          .delete(`playlists/${currentRouteId}/tracks`, {
             data: { tracks },
           })
           .then(() => store.commit(`playlist/${PlaylistMutation.REMOVE_TRACKS}`, tracks));

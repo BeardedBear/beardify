@@ -1,5 +1,5 @@
 import { ActionTree, MutationTree } from "vuex";
-import { api, instance } from "../../api";
+import { instance } from "../../api";
 import { Player } from "../../@types/Player";
 import { RootState } from "../../@types/RootState";
 import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
@@ -64,14 +64,7 @@ export enum PlayerActions {
 const actions: ActionTree<Player, RootState> = {
   [PlayerActions.getDeviceList](store) {
     instance.get<DevicesResponse>("me/player/devices").then(({ data }) => {
-      // const haveDeviceActive = data.devices.filter(d => d.is_active);
-      // const beardifyDevice = data.devices.filter(d => d.name === "Beardify").shift();
-
       store.commit(Mutations.GET_DEVICE_LIST, data.devices);
-
-      // if (haveDeviceActive.length) {
-      //   store.dispatch(PlayerActions.setDevice, haveDeviceActive[0]);
-      // }
     });
   },
 
@@ -82,7 +75,7 @@ const actions: ActionTree<Player, RootState> = {
 
   [PlayerActions.setVolume](store, volume: number) {
     store.commit(Mutations.SET_VOLUME, volume);
-    instance.put(`${api.url}me/player/volume?volume_percent=${volume}`);
+    instance.put(`me/player/volume?volume_percent=${volume}`);
   },
 };
 

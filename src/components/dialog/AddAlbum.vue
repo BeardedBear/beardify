@@ -21,7 +21,7 @@ import { useStore } from "vuex";
 import { Paging } from "../../@types/Paging";
 import { RootState } from "../../@types/RootState";
 import { TrackSimplified } from "../../@types/Track";
-import { api, instance } from "../../api";
+import { instance } from "../../api";
 import { Mutations } from "./DialogStore";
 
 export default defineComponent({
@@ -29,8 +29,8 @@ export default defineComponent({
     const store = useStore<RootState>();
 
     function add(albumId: string, playlistId: string) {
-      instance.get<Paging<TrackSimplified>>(`${api.url}albums/${albumId}/tracks`).then((e) => {
-        instance.post(`${api.url}playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`).then((f) => {
+      instance.get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`).then((e) => {
+        instance.post(`playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`).then((f) => {
           if (f.status === 201) store.commit(`dialog/${Mutations.CLOSE}`);
         });
       });
