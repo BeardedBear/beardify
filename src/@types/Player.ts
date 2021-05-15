@@ -7,6 +7,7 @@ export interface Player {
     activeDevice: Device;
     list: Device[];
   };
+  thisDeviceId: string;
   currentlyPlaying: CurrentlyPlaying;
 }
 

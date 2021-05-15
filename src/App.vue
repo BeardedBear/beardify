@@ -33,17 +33,22 @@ export default defineComponent({
 
     store.dispatch(`player/${PlayerActions.getDeviceList}`);
     store.dispatch(`auth/${AuthActions.refresh}`);
-
     store.state.config.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
     store.state.config.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
 
     // Keep app active
     setInterval(() => {
-      store.dispatch(`player/${PlayerActions.getDeviceList}`);
+      if (!store.state.player.currentlyPlaying.is_playing) {
+        store.dispatch(`player/${PlayerActions.setDevice}`, store.state.player.devices.activeDevice.id);
+      }
       store.dispatch(`auth/${AuthActions.refresh}`);
     }, 120000);
 
-    async function getPlayerStatus() {
+    function getPlayerStatus() {
+      if (!store.state.sidebar.playlists.length) {
+        store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, "https://api.spotify.com/v1/me/playlists?limit=50");
+      }
+      store.dispatch(`player/${PlayerActions.getDeviceList}`);
       instance
         .get("https://api.spotify.com/v1/me/player")
         .then(e => store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data))
@@ -53,21 +58,19 @@ export default defineComponent({
     watchEffect(() => {
       if (store.state.auth.me !== null) {
         setInterval(() => {
-          if (document.hasFocus()) {
-            if (!store.state.sidebar.playlists.length) {
-              store.dispatch(
-                `sidebar/${SidebarActions.getPlaylists}`,
-                "https://api.spotify.com/v1/me/playlists?limit=50"
-              );
-            }
-            getPlayerStatus();
-          }
+          if (document.hasFocus()) getPlayerStatus();
         }, 1000);
       }
     });
 
-    addEventListener("initdevice", (() => {
+    addEventListener("initdevice", ((e: CustomEvent) => {
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
+      if (store.state.player.devices.list.filter(d => d.is_active).length === 0) {
+        store.dispatch(`player/${PlayerActions.setDevice}`, e.detail.thisDevice);
+      }
+      store.commit(`player/${Mutations.THIS_DEVICE}`, e.detail.thisDevice);
+
+      console.log("init device", e.detail.thisDevice);
     }) as { (evt: Event): void });
 
     addEventListener("keydown", e => {

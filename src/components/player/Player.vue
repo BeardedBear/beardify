@@ -53,8 +53,11 @@
               type="button"
               v-for="(device, _, index) in store.state.player.devices.list"
               :key="index"
-              class="button button--x-small"
-              :class="{ 'button--primary': device.id === store.state.player.devices.activeDevice.id }"
+              class="device button button--x-small"
+              :class="{
+                'button--primary': device.id === store.state.player.devices.activeDevice.id,
+                me: store.state.player.thisDeviceId === device.id
+              }"
               @click="setDevice(device)"
             >
               {{ device.name }}
@@ -184,6 +187,25 @@ export default defineComponent({
   }
   to {
     opacity: 1;
+  }
+}
+
+.device {
+  &.me {
+    position: relative;
+    &::before {
+      $s: 7px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      // background: var(--font-color);
+      background: white;
+      border-top-right-radius: 3px;
+      width: $s;
+      height: $s;
+      content: "";
+      clip-path: polygon(0 0, 100% 0, 100% 100%);
+    }
   }
 }
 

@@ -1,10 +1,15 @@
 <template>
-  <div class="home">
-    <div>
-      <b>accessToken</b> :{{ store.state.auth.auth.accessToken }}<br /><br />
-      <b>refreshToken</b> :{{ store.state.auth.auth.refreshToken }}<br /><br />
-      <b>code</b> :{{ store.state.auth.auth.code }}<br /><br />
-      <b>?</b> :{{ store.state.player.devices }}<br /><br />
+  <div class="home overflowed">
+    <div class="overflowed__target">
+      <b>This device id</b> :
+      <pre>{{ store.state.player.thisDeviceId }}</pre>
+      <br /><br />
+      <b>Active device</b> :
+      <pre>{{ store.state.player.devices.activeDevice }}</pre>
+      <br /><br />
+      <b>List device</b> :
+      <pre>{{ store.state.player.devices.list }}</pre>
+      <br /><br />
     </div>
   </div>
 </template>

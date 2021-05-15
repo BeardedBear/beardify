@@ -11,6 +11,7 @@ const state: Player = {
     activeDevice: defaultDevice,
     list: []
   },
+  thisDeviceId: "",
   currentlyPlaying: defaultCurrentlyPlaying
 };
 
@@ -18,10 +19,11 @@ const state: Player = {
 
 export enum Mutations {
   GET_DEVICE_LIST = "GET_DEVICE_LIST",
-  SET_THIS_DEVICE = "SET_THIS_DEVICE",
+  SET_ACTIVE_DEVICE = "SET_ACTIVE_DEVICE",
   PLAYER_STATE_CHANGED = "PLAYER_STATE_CHANGED",
   SET_VOLUME = "SET_VOLUME",
-  UPDATE_PROGRESS = "UPDATE_PROGRESS"
+  UPDATE_PROGRESS = "UPDATE_PROGRESS",
+  THIS_DEVICE = "THIS_DEVICE"
 }
 
 const mutations: MutationTree<Player> = {
@@ -29,7 +31,7 @@ const mutations: MutationTree<Player> = {
     state.devices.list = data;
   },
 
-  [Mutations.SET_THIS_DEVICE](state, data: Device): void {
+  [Mutations.SET_ACTIVE_DEVICE](state, data: Device): void {
     state.devices.activeDevice = data;
   },
 
@@ -44,6 +46,10 @@ const mutations: MutationTree<Player> = {
 
   [Mutations.UPDATE_PROGRESS](state, progress: number): void {
     state.currentlyPlaying.progress_ms = progress;
+  },
+
+  [Mutations.THIS_DEVICE](state, deviceId: string): void {
+    state.thisDeviceId = deviceId;
   }
 };
 
@@ -58,19 +64,19 @@ export enum PlayerActions {
 const actions: ActionTree<Player, RootState> = {
   [PlayerActions.getDeviceList](store) {
     instance.get<DevicesResponse>("me/player/devices").then(({ data }) => {
-      const haveDeviceActive = data.devices.filter(d => d.is_active);
-      const beardifyDevice = data.devices.filter(d => d.name === "Beardify").shift();
+      // const haveDeviceActive = data.devices.filter(d => d.is_active);
+      // const beardifyDevice = data.devices.filter(d => d.name === "Beardify").shift();
 
       store.commit(Mutations.GET_DEVICE_LIST, data.devices);
 
-      if (!haveDeviceActive.length) {
-        store.dispatch(PlayerActions.setDevice, beardifyDevice);
-      }
+      // if (!haveDeviceActive.length) {
+      //   store.dispatch(PlayerActions.setDevice, beardifyDevice);
+      // }
     });
   },
 
   [PlayerActions.setDevice](store, device: Device) {
-    store.commit(Mutations.SET_THIS_DEVICE, device);
+    store.commit(Mutations.SET_ACTIVE_DEVICE, device);
     instance.put("me/player", { device_ids: [device.id] });
   },
 
