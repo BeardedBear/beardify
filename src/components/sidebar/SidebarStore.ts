@@ -8,39 +8,39 @@ import { instance } from "../../api";
 
 const state: Sidebar = {
   collections: [defaultSimplifiedPlaylist],
-  playlists: [defaultSimplifiedPlaylist]
+  playlists: [defaultSimplifiedPlaylist],
 };
 
 // MUTATIONS
 
 export enum Mutations {
-  SET_RESULTS = "SET_RESULTS"
+  SET_RESULTS = "SET_RESULTS",
 }
 
 const mutations: MutationTree<Sidebar> = {
   [Mutations.SET_RESULTS](state, data: SimplifiedPlaylist[]): void {
     state.playlists = state.playlists.concat(data);
-  }
+  },
 };
 
 // ACTIONS
 
 export enum SidebarActions {
-  getPlaylists = "getPlaylists"
+  getPlaylists = "getPlaylists",
 }
 
 const actions: ActionTree<Sidebar, RootState> = {
   [SidebarActions.getPlaylists](store, url: string) {
-    instance.get<Paging<SimplifiedPlaylist>>(url).then(e => {
+    instance.get<Paging<SimplifiedPlaylist>>(url).then((e) => {
       store.commit(Mutations.SET_RESULTS, e.data.items);
       if (e.data.next !== "") store.dispatch(SidebarActions.getPlaylists, e.data.next);
     });
-  }
+  },
 };
 
 export default {
   actions,
   mutations,
   namespaced: true,
-  state
+  state,
 };

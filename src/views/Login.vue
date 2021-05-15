@@ -2,7 +2,9 @@
   <div class="login">
     <div class="form">
       <img class="logo" src="/img/logo-long.svg" alt="" />
-      <div><button class="button button--primary" type="button" @click="connect()">Se connecter</button></div>
+      <div>
+        <button class="button button--primary" type="button" @click="connect()">Se connecter</button>
+      </div>
     </div>
   </div>
 </template>
@@ -26,7 +28,7 @@ export default defineComponent({
     }
 
     return { connect, store };
-  }
+  },
 });
 </script>
 

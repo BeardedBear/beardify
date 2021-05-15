@@ -9,10 +9,10 @@ import { Device, DevicesResponse } from "../../@types/Device";
 const state: Player = {
   devices: {
     activeDevice: defaultDevice,
-    list: []
+    list: [],
   },
   thisDeviceId: "",
-  currentlyPlaying: defaultCurrentlyPlaying
+  currentlyPlaying: defaultCurrentlyPlaying,
 };
 
 // MUTATIONS
@@ -23,7 +23,7 @@ export enum Mutations {
   PLAYER_STATE_CHANGED = "PLAYER_STATE_CHANGED",
   SET_VOLUME = "SET_VOLUME",
   UPDATE_PROGRESS = "UPDATE_PROGRESS",
-  THIS_DEVICE = "THIS_DEVICE"
+  THIS_DEVICE = "THIS_DEVICE",
 }
 
 const mutations: MutationTree<Player> = {
@@ -50,7 +50,7 @@ const mutations: MutationTree<Player> = {
 
   [Mutations.THIS_DEVICE](state, deviceId: string): void {
     state.thisDeviceId = deviceId;
-  }
+  },
 };
 
 // ACTIONS
@@ -58,7 +58,7 @@ const mutations: MutationTree<Player> = {
 export enum PlayerActions {
   getDeviceList = "getDeviceList",
   setDevice = "setDevice",
-  setVolume = "setVolume"
+  setVolume = "setVolume",
 }
 
 const actions: ActionTree<Player, RootState> = {
@@ -83,12 +83,12 @@ const actions: ActionTree<Player, RootState> = {
   [PlayerActions.setVolume](store, volume: number) {
     store.commit(Mutations.SET_VOLUME, volume);
     instance.put(`https://api.spotify.com/v1/me/player/volume?volume_percent=${volume}`);
-  }
+  },
 };
 
 export default {
   actions,
   mutations,
   namespaced: true,
-  state
+  state,
 };

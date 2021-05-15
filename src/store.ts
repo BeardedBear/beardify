@@ -13,10 +13,10 @@ import { RootState } from "./@types/RootState";
 
 const persisted = createPersistedState({
   key: "beardify",
-  paths: ["auth", "config"]
+  paths: ["auth", "config"],
 });
 
 export default createStore<RootState>({
   modules: { player, auth, artist, album, search, sidebar, playlist, dialog, config },
-  plugins: [persisted]
+  plugins: [persisted],
 });

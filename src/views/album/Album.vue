@@ -2,9 +2,11 @@
   <div ref="albumpage" class="overflowed">
     <div class="album-page overflowed__target">
       <div class="album-header">
-        <div class="title">{{ store.state.album.album.name }}</div>
+        <div class="title">
+          {{ store.state.album.album.name }}
+        </div>
         <div>
-          <ArtistList :artistList="store.state.album.album.artists" />
+          <ArtistList :artist-list="store.state.album.album.artists" />
           ·
           <span>{{ store.state.album.album.release_date.split("-").shift() }}</span>
           ·
@@ -13,14 +15,14 @@
       </div>
       <div class="content">
         <div class="content__cover">
-          <Album :album="store.state.album.album" withoutMetas canSave />
+          <Album :album="store.state.album.album" without-metas can-save />
         </div>
         <div class="content__tracks">
           <div
-            class="track"
-            :class="{ active: store.state.player.currentlyPlaying.item.id === track.id }"
             v-for="(track, index) in store.state.album.album.tracks.items"
             :key="index"
+            class="track"
+            :class="{ active: store.state.player.currentlyPlaying.item.id === track.id }"
             @click="playSongs(index, store.state.album.album.tracks.items)"
           >
             <span class="track__number">{{ track.track_number }}.</span>
@@ -28,7 +30,7 @@
               <div>{{ track.name }}</div>
               <div v-if="store.state.album.album.artists.length">
                 <ArtistList
-                  :artistList="track.artists.filter(e => e.name !== store.state.album.album.artists[0].name)"
+                  :artist-list="track.artists.filter((e) => e.name !== store.state.album.album.artists[0].name)"
                   feat
                 />
               </div>
@@ -50,13 +52,12 @@ import { AlbumActions } from "./AlbumStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { playSongs } from "../../helpers/play";
 import { Track, TrackSimplified } from "../../@types/Track";
-import Cover from "../../components/Cover.vue";
 import Album from "../../components/Album.vue";
 
 export default defineComponent({
-  components: { Album, ArtistList, Cover },
+  components: { Album, ArtistList },
   props: {
-    id: { default: "", type: String }
+    id: { default: "", type: String },
   },
   setup(props) {
     const store = useStore<RootState>();
@@ -72,7 +73,7 @@ export default defineComponent({
     });
 
     return { albumpage, store, timecode, timecodeWithUnits, playSongs, albumDuration, sumDuration };
-  }
+  },
 });
 </script>
 

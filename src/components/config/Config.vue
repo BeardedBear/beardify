@@ -2,12 +2,14 @@
   <div class="config">
     <div class="user">
       <div>{{ store.state.auth.me?.display_name }}</div>
-      <div class="user__mail">{{ store.state.auth.me?.email }}</div>
+      <div class="user__mail">
+        {{ store.state.auth.me?.email }}
+      </div>
     </div>
 
-    <div class="section" v-if="env !== 'production'">
+    <div v-if="env !== 'production'" class="section">
       <div class="section__title">Debug</div>
-      <router-link class=" button button--full" to="/login">Login</router-link>
+      <router-link class="button button--full" to="/login"> Login </router-link>
       <button class="button button--full" @click="refresh()">Refresh token</button>
       <button class="button button--full" @click="getDeviceList()">Get devices</button>
     </div>
@@ -42,7 +44,7 @@ export default defineComponent({
     }
 
     return { store, getDeviceList, refresh, env };
-  }
+  },
 });
 </script>
 

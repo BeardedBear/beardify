@@ -3,7 +3,7 @@
     <span class="artist" :class="{ feat }" @click.stop="goArtist(`/artist/${artist.uri.split(':').pop()}`)">
       {{ artist.name }}
     </span>
-    <span class="separator" v-if="artistList.length - 1 !== index"> /<span v-if="!feat">&nbsp;</span></span>
+    <span v-if="artistList.length - 1 !== index" class="separator"> /<span v-if="!feat">&nbsp;</span></span>
   </span>
 </template>
 
@@ -15,20 +15,20 @@ import router from "../router";
 export default defineComponent({
   props: {
     artistList: {
-      default: [],
-      type: Array as PropType<Artist[] | ArtistSimplified[]>
+      default: () => [],
+      type: Array as PropType<Artist[] | ArtistSimplified[]>,
     },
     feat: {
       default: false,
-      type: Boolean as PropType<boolean>
-    }
+      type: Boolean as PropType<boolean>,
+    },
   },
   setup() {
     function goArtist(artistUri: string) {
       router.push(artistUri);
     }
     return { goArtist };
-  }
+  },
 });
 </script>
 

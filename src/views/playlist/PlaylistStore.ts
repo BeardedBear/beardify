@@ -8,7 +8,7 @@ import { instance } from "../../api";
 
 const state: PlaylistPage = {
   playlist: defaultPlaylist,
-  tracks: [defaultPlaylistTrack]
+  tracks: [defaultPlaylistTrack],
 };
 
 // MUTATIONS
@@ -17,7 +17,7 @@ export enum Mutations {
   SET_PLAYLIST = "SET_PLAYLIST",
   SET_TRACKS = "SET_TRACKS",
   CLEAN_TRACKS = "CLEAN_TRACKS",
-  REMOVE_TRACKS = "REMOVE_TRACKS"
+  REMOVE_TRACKS = "REMOVE_TRACKS",
 }
 
 const mutations: MutationTree<PlaylistPage> = {
@@ -34,35 +34,35 @@ const mutations: MutationTree<PlaylistPage> = {
   },
 
   [Mutations.REMOVE_TRACKS](state, tracks: TrackToRemove[]): void {
-    state.tracks = state.tracks.filter(e => !tracks.map(e => e.uri).includes(e.track.uri));
-  }
+    state.tracks = state.tracks.filter((e) => !tracks.map((e) => e.uri).includes(e.track.uri));
+  },
 };
 
 // ACTIONS
 
 export enum PlaylistActions {
   getPlaylist = "getPlaylist",
-  getTracks = "getTracks"
+  getTracks = "getTracks",
 }
 
 const actions: ActionTree<PlaylistPage, RootState> = {
   [PlaylistActions.getPlaylist](store, url: string) {
-    instance.get<Playlist>(url).then(e => {
+    instance.get<Playlist>(url).then((e) => {
       store.commit(Mutations.SET_PLAYLIST, e.data);
     });
   },
 
   [PlaylistActions.getTracks](store, url: string) {
-    instance.get<Paging<PlaylistTrack>>(url).then(e => {
+    instance.get<Paging<PlaylistTrack>>(url).then((e) => {
       store.commit(Mutations.SET_TRACKS, e.data.items);
       if (e.data.next !== "") store.dispatch(PlaylistActions.getTracks, e.data.next);
     });
-  }
+  },
 };
 
 export default {
   actions,
   mutations,
   namespaced: true,
-  state
+  state,
 };

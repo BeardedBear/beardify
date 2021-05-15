@@ -4,14 +4,14 @@ import { RootState } from "../../@types/RootState";
 
 const state: Dialog = {
   show: false,
-  type: "none"
+  type: "none",
 };
 
 // MUTATIONS
 
 export enum Mutations {
   OPEN = "OPEN",
-  CLOSE = "CLOSE"
+  CLOSE = "CLOSE",
 }
 
 const mutations: MutationTree<Dialog> = {
@@ -24,7 +24,7 @@ const mutations: MutationTree<Dialog> = {
   [Mutations.CLOSE](state): void {
     state.show = false;
     state.type = "none";
-  }
+  },
 };
 
 // ACTIONS
@@ -37,5 +37,5 @@ export default {
   actions,
   mutations,
   namespaced: true,
-  state
+  state,
 };

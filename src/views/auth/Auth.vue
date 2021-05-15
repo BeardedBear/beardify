@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, onMounted, PropType } from "vue";
 import { useStore } from "vuex";
 import { PlayerActions } from "../../components/player/PlayerStore";
 import { SidebarActions } from "../../components/sidebar/SidebarStore";
@@ -8,7 +8,12 @@ import { AuthActions } from "../auth/AuthStore";
 
 export default defineComponent({
   name: "Auth",
-  props: ["query"],
+  props: {
+    query: {
+      default: "",
+      type: String as PropType<string>,
+    },
+  },
   setup(props) {
     const store = useStore();
     onMounted(() =>
@@ -18,6 +23,6 @@ export default defineComponent({
         router.push("/");
       })
     );
-  }
+  },
 });
 </script>

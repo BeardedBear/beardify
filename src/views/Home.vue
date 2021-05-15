@@ -23,9 +23,9 @@ import type { RootState } from "../@types/RootState";
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
-      const env = process.env.NODE_ENV
+    const env = process.env.NODE_ENV;
 
-    return { store ,env};
+    return { store, env };
   },
 });
 </script>

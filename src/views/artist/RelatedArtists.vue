@@ -3,13 +3,15 @@
     <div class="heading">Artistes similaires</div>
     <div class="list">
       <router-link
-        class="item"
         v-for="(artist, _, index) in store.state.artist.relatedArtists.artists"
         :key="index"
+        class="item"
         :to="`/artist/${artist.id}`"
       >
-        <Cover size="small" :images="artist.images" className="image" />
-        <div class="name">{{ artist.name }}</div>
+        <Cover size="small" :images="artist.images" class-name="image" />
+        <div class="name">
+          {{ artist.name }}
+        </div>
       </router-link>
     </div>
   </div>
@@ -27,7 +29,7 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
     return { store, timecode };
-  }
+  },
 });
 </script>
 

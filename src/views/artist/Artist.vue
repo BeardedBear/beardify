@@ -11,27 +11,35 @@
           >
             {{ store.state.artist.artist.name }} n'a rien sorti, c'est triste un peu.
           </div>
-          <div class="content__block" v-if="store.state.artist.albums.length">
+          <div v-if="store.state.artist.albums.length" class="content__block">
             <div class="heading">Albums</div>
             <div class="albums">
               <div v-for="(album, index) in store.state.artist.albums" :key="index">
-                <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" canSave />
+                <Album
+                  :album="album"
+                  :currently-played-id="store.state.player.currentlyPlaying.item.album.uri"
+                  can-save
+                />
               </div>
             </div>
           </div>
-          <div class="content__block" v-if="store.state.artist.eps.length">
+          <div v-if="store.state.artist.eps.length" class="content__block">
             <div class="heading">EP's</div>
             <div class="eps">
               <div v-for="(album, index) in store.state.artist.eps" :key="index">
-                <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" canSave />
+                <Album
+                  :album="album"
+                  :currently-played-id="store.state.player.currentlyPlaying.item.album.uri"
+                  can-save
+                />
               </div>
             </div>
           </div>
-          <div class="content__block" v-if="store.state.artist.singles.length">
+          <div v-if="store.state.artist.singles.length" class="content__block">
             <div class="heading">Singles</div>
             <div class="singles">
               <div v-for="(album, index) in store.state.artist.singles" :key="index">
-                <Album :album="album" :currentlyPlayedId="store.state.player.currentlyPlaying.item.album.uri" />
+                <Album :album="album" :currently-played-id="store.state.player.currentlyPlaying.item.album.uri" />
               </div>
             </div>
           </div>
@@ -56,7 +64,7 @@ import ArtistHeader from "./ArtistHeader.vue";
 export default defineComponent({
   components: { ArtistHeader, Album, TopTracks, RelatedArtists },
   props: {
-    id: { default: "", type: String }
+    id: { default: "", type: String },
   },
   setup(props) {
     const store = useStore<RootState>();
@@ -73,7 +81,7 @@ export default defineComponent({
     });
 
     return { artistpage, store, timecode };
-  }
+  },
 });
 </script>
 

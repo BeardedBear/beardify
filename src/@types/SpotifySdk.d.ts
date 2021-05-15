@@ -28,7 +28,7 @@ declare namespace Spotify {
   }
 
   interface PlaybackContext {
-    metadata: any;
+    metadata: unknown;
     uri: string | null;
   }
 

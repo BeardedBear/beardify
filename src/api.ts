@@ -14,7 +14,7 @@ export const api = {
   codeVerifier: cv,
   codeChallenge: cvHasedBase64url,
   scopes:
-    "user-read-private%20user-modify-playback-state%20user-read-playback-state%20user-read-currently-playing%20playlist-read-private%20playlist-read-collaborative%20playlist-modify-private%20playlist-modify-public%20user-follow-modify%20user-follow-read%20streaming%20user-read-email"
+    "user-read-private%20user-modify-playback-state%20user-read-playback-state%20user-read-currently-playing%20playlist-read-private%20playlist-read-collaborative%20playlist-modify-private%20playlist-modify-public%20user-follow-modify%20user-follow-read%20streaming%20user-read-email",
 };
 
 export const instance = axios.create({
@@ -22,17 +22,17 @@ export const instance = axios.create({
   timeout: 5000,
   headers: {
     Authorization: `Bearer ${store.state.auth.auth.accessToken}`,
-    "Content-Type": "application/json"
-  }
+    "Content-Type": "application/json",
+  },
 });
 
 // on intercepte les requetes pour mettre à jour `Authorization` depuis le refresh token
 instance.interceptors.request.use(
-  async config => {
+  async (config) => {
     config.headers = { Authorization: `Bearer ${store.state.auth.auth.accessToken}` };
     return config;
   },
-  error => Promise.reject(error)
+  (error) => Promise.reject(error)
 );
 
 export const instanceAuth = axios.create({
@@ -40,7 +40,7 @@ export const instanceAuth = axios.create({
   timeout: 5000,
   headers: {
     Authorization: `Bearer ${store.state.auth.auth.accessToken}`,
-    "Content-Type": "application/x-www-form-urlencoded"
-  }
+    "Content-Type": "application/x-www-form-urlencoded",
+  },
 });
 export const connectUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${api.codeChallenge}`;

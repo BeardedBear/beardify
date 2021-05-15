@@ -5,7 +5,7 @@
         <div class="sidebar__item">
           <div class="heading title">Collections</div>
           <div
-            v-for="(playlist, index) in store.state.sidebar.playlists.filter(p =>
+            v-for="(playlist, index) in store.state.sidebar.playlists.filter((p) =>
               p.name.toLowerCase().includes('#collection')
             )"
             :key="index"
@@ -16,7 +16,7 @@
               :to="`/collection/${playlist.id}`"
               :class="{ active: $route.params.id === playlist.id }"
             >
-              <i class="icon-folder"></i>
+              <i class="icon-folder" />
               <div>{{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}</div>
             </router-link>
           </div>
@@ -29,7 +29,7 @@
           <div class="heading title">Playlists</div>
           <div
             v-for="(playlist, index) in store.state.sidebar.playlists.filter(
-              p => !p.name.toLowerCase().includes('#collection')
+              (p) => !p.name.toLowerCase().includes('#collection')
             )"
             :key="index"
           >
@@ -39,7 +39,7 @@
               :to="`/playlist/${playlist.id}`"
               :class="{ active: $route.params.id === playlist.id }"
             >
-              <i class="icon-music"></i>
+              <i class="icon-music" />
               <div>{{ playlist.name }}</div>
             </router-link>
           </div>
@@ -62,7 +62,7 @@ export default defineComponent({
     store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, "https://api.spotify.com/v1/me/playlists?limit=50");
 
     return { store };
-  }
+  },
 });
 </script>
 

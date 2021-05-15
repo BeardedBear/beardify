@@ -13,56 +13,56 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: Home,
   },
   {
     path: "/about",
     name: "About",
-    component: About
+    component: About,
   },
   {
     path: "/login",
     name: "Alogin",
-    component: Login
+    component: Login,
   },
   {
     component: Artist,
     name: "Artist",
     path: "/artist/:id",
-    props: route => ({ id: route.params.id })
+    props: (route) => ({ id: route.params.id }),
   },
   {
     component: Album,
     name: "Album",
     path: "/album/:id",
-    props: route => ({ id: route.params.id })
+    props: (route) => ({ id: route.params.id }),
   },
   {
     component: Playlist,
     name: "Playlist",
     path: "/playlist/:id",
-    props: route => ({ id: route.params.id })
+    props: (route) => ({ id: route.params.id }),
   },
   {
     component: Collection,
     name: "Collection",
     path: "/collection/:id",
-    props: route => ({ id: route.params.id })
+    props: (route) => ({ id: route.params.id }),
   },
   {
     path: "/auth",
     name: "Auth",
     component: Auth,
-    props: (route: RouteLocation) => ({ query: route.query.code })
-  }
+    props: (route: RouteLocation) => ({ query: route.query.code }),
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory("/"),
-  routes
+  routes,
 });
 
-router.beforeEach(async to => {
+router.beforeEach(async (to) => {
   if (!store.state.auth.me?.display_name && to.path !== "/login" && to.path !== "/auth") {
     router.push("/login");
   }

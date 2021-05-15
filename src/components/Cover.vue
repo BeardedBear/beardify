@@ -12,18 +12,18 @@ import { Image, ImageSize } from "../@types/Image";
 export default defineComponent({
   props: {
     images: {
-      default: [],
-      type: Array as PropType<Image[]>
+      default: () => [],
+      type: Array as PropType<Image[]>,
     },
     size: {
       default: "medium",
-      type: String as PropType<ImageSize>
+      type: String as PropType<ImageSize>,
     },
     className: {
       default: "img",
-      type: String as PropType<string>
-    }
-  }
+      type: String as PropType<string>,
+    },
+  },
 });
 </script>
 

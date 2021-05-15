@@ -1,7 +1,9 @@
 <template>
   <div class="header">
     <div class="title">
-      <div class="name">{{ store.state.artist.artist.name }}</div>
+      <div class="name">
+        {{ store.state.artist.artist.name }}
+      </div>
       <div
         v-if="store.state.artist.followStatus"
         class="follow button button--primary"
@@ -13,12 +15,13 @@
     </div>
     <div class="header-links">
       <a
-        @click="openLink(`https://fr.wikipedia.org/wiki/${store.state.artist.artist.name}`)"
         class="header-links__item"
+        @click="openLink(`https://fr.wikipedia.org/wiki/${store.state.artist.artist.name}`)"
       >
-        <i class="icon-wikipedia"></i>Wikipedia</a
+        <i class="icon-wikipedia" />Wikipedia</a
       >
       <a
+        class="header-links__item"
         @click="
           openLink(
             `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${store.state.artist.artist.name
@@ -26,17 +29,17 @@
               .replaceAll(/[\u0300-\u036f]/g, '')}&amp;x=0&amp;y=0`
           )
         "
-        class="header-links__item"
       >
-        <i class="icon-sputnik"></i>Sputnik</a
+        <i class="icon-sputnik" />Sputnik</a
       >
       <a
+        class="header-links__item"
         @click="openLink(`https://www.discogs.com/fr/search/?q=${store.state.artist.artist.name}&amp;strict=true`)"
-        class="header-links__item"
       >
-        <i class="icon-discogs"></i>Discogs</a
+        <i class="icon-discogs" />Discogs</a
       >
       <a
+        class="header-links__item"
         @click="
           openLink(
             `https://rateyourmusic.com/artist/${store.state.artist.artist.name
@@ -47,15 +50,14 @@
               .replace(/[\u0300-\u036f]/g, '')}`
           )
         "
-        class="header-links__item"
       >
-        <i class="icon-rym"></i>RYM</a
+        <i class="icon-rym" />RYM</a
       >
       <a
-        @click="openLink(`https://www.google.com/search?q=${store.state.artist.artist.name}+band+artist`)"
         class="header-links__item"
+        @click="openLink(`https://www.google.com/search?q=${store.state.artist.artist.name}+band+artist`)"
       >
-        <i class="icon-google"></i>Google</a
+        <i class="icon-google" />Google</a
       >
     </div>
   </div>
@@ -80,7 +82,7 @@ export default defineComponent({
     }
 
     return { store, openLink, switchFollow };
-  }
+  },
 });
 </script>
 

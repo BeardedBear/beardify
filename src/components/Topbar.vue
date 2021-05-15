@@ -1,13 +1,15 @@
 <template>
   <div class="topbar">
     <div id="nav">
-      <router-link to="/"><img class="logo" src="/img/logo.svg"/></router-link>
+      <router-link to="/">
+        <img class="logo" src="/img/logo.svg" />
+      </router-link>
       <div class="navigation">
         <button class="navigation__item" @click="previous()">
-          <i class="icon-arrow-left"></i>
+          <i class="icon-arrow-left" />
         </button>
         <button class="navigation__item" @click="next()">
-          <i class="icon-arrow-right"></i>
+          <i class="icon-arrow-right" />
         </button>
       </div>
     </div>
@@ -26,11 +28,11 @@ import { connectUrl } from "../api";
 import { useStore } from "vuex";
 import type { RootState } from "../@types/RootState";
 import { defineComponent, onMounted } from "vue";
-import Search from "./search/Search.vue"
-import Cover from "./Cover.vue"
+import Search from "./search/Search.vue";
+import Cover from "./Cover.vue";
 import router from "../router";
-import Config from "./config/Config.vue"
-import { Mutations } from "./config/ConfigStore"
+import Config from "./config/Config.vue";
+import { Mutations } from "./config/ConfigStore";
 
 export default defineComponent({
   components: { Search, Cover, Config },
@@ -38,25 +40,25 @@ export default defineComponent({
     const store = useStore<RootState>();
 
     function previous() {
-      router.go(-1)
+      router.go(-1);
     }
 
     function next() {
-      router.go(1)
+      router.go(1);
     }
 
     function openConfig() {
-      store.commit(`config/${Mutations.OPEN}`)
+      store.commit(`config/${Mutations.OPEN}`);
     }
 
     onMounted(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       addEventListener("click", (e: any) => {
-        const test = e.composedPath().filter((b :HTMLElement) => b.className === "config").length
-        if (!test) store.commit(`config/${Mutations.CLOSE}`)
-      })
-      document.querySelector(".avatar")?.addEventListener("click", (e) => e.stopPropagation())
-    })
-
+        const test = e.composedPath().filter((b: HTMLElement) => b.className === "config").length;
+        if (!test) store.commit(`config/${Mutations.CLOSE}`);
+      });
+      document.querySelector(".avatar")?.addEventListener("click", (e) => e.stopPropagation());
+    });
 
     return { store, connectUrl, previous, next, openConfig };
   },

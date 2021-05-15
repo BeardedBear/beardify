@@ -7,7 +7,7 @@ import {
   themeLight,
   schemeBlue,
   schemeCrimson,
-  schemeApple
+  schemeApple,
 } from "../../@types/Config";
 import { Dialog } from "../../@types/Dialog";
 import { RootState } from "../../@types/RootState";
@@ -17,7 +17,7 @@ const state: Config = {
   theme: themeDark,
   themeLabel: "dark",
   scheme: schemeDefault,
-  schemeLabel: "default"
+  schemeLabel: "default",
 };
 
 // MUTATIONS
@@ -30,7 +30,7 @@ export enum Mutations {
   SCHEME_CRIMSON = "SCHEME_CRIMSON",
   SCHEME_APPLE = "SCHEME_APPLE",
   OPEN = "OPEN",
-  CLOSE = "CLOSE"
+  CLOSE = "CLOSE",
 }
 
 const mutations: MutationTree<Config> = {
@@ -76,22 +76,18 @@ const mutations: MutationTree<Config> = {
 
   [Mutations.CLOSE](state): void {
     state.show = false;
-  }
+  },
 };
 
 // ACTIONS
 
-export enum ConfigActions {
-  open = "open"
-}
+export enum ConfigActions {}
 
-const actions: ActionTree<Dialog, RootState> = {
-  [ConfigActions.open](store) {}
-};
+const actions: ActionTree<Dialog, RootState> = {};
 
 export default {
   actions,
   mutations,
   namespaced: true,
-  state
+  state,
 };

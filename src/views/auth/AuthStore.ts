@@ -12,8 +12,8 @@ const state: Auth = {
     accessToken: "",
     refreshToken: "",
     code: "",
-    codeVerifier : "",
-    codeChallenge : ""
+    codeVerifier: "",
+    codeChallenge: "",
   },
   me: null,
 };
@@ -23,7 +23,7 @@ const state: Auth = {
 export enum Mutations {
   AUTH = "AUTH",
   SET_ME = "SET_ME",
-  GENERATE_CODE_CHALLENGE = "GENERATE_CODE_CHALLENGE"
+  GENERATE_CODE_CHALLENGE = "GENERATE_CODE_CHALLENGE",
 }
 
 const mutations = {
@@ -37,7 +37,7 @@ const mutations = {
     state.me = data;
   },
 
-  [Mutations.GENERATE_CODE_CHALLENGE](state: Auth, data: {codeVerifier:string,codeChallenge: string }): void {
+  [Mutations.GENERATE_CODE_CHALLENGE](state: Auth, data: { codeVerifier: string; codeChallenge: string }): void {
     state.auth.codeChallenge = data.codeChallenge;
     state.auth.codeVerifier = data.codeVerifier;
   },
@@ -52,7 +52,6 @@ export enum AuthActions {
 
 const actions = {
   async [AuthActions.refresh](store: ActionContext<Auth, RootState>): Promise<void> {
-
     const request = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -69,10 +68,10 @@ const actions = {
       store.commit(Mutations.AUTH, {
         accessToken: json.access_token,
         refreshToken: json.refresh_token,
-        code : store.state.auth.code
+        code: store.state.auth.code,
       });
     } else {
-      console.error("From refresh", request.status)
+      console.error("From refresh", request.status);
     }
   },
 
@@ -108,7 +107,7 @@ const actions = {
         code: query,
       });
     } else {
-      console.error("From auth", response.status)
+      console.error("From auth", response.status);
     }
   },
 };

@@ -11,6 +11,6 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
     return { store };
-  }
+  },
 });
 </script>

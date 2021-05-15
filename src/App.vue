@@ -54,8 +54,8 @@ export default defineComponent({
       store.dispatch(`player/${PlayerActions.getDeviceList}`);
       instance
         .get("https://api.spotify.com/v1/me/player")
-        .then(e => store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data))
-        .catch(error => console.error("error", error));
+        .then((e) => store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, e.data))
+        .catch((error) => console.error("error", error));
     }
 
     watchEffect(() => {
@@ -67,17 +67,15 @@ export default defineComponent({
     });
 
     addEventListener("initdevice", ((e: CustomEvent) => {
-      if (store.state.player.devices.list.filter(d => d.is_active).length === 0) {
+      if (store.state.player.devices.list.filter((d) => d.is_active).length === 0) {
         instance.put("me/player", { device_ids: [e.detail.thisDevice] });
       }
       store.commit(`player/${Mutations.THIS_DEVICE}`, e.detail.thisDevice);
-      store.dispatch(`player/${PlayerActions.getDeviceList}`).then(e => {
-        // console.log(e);
-      });
+      store.dispatch(`player/${PlayerActions.getDeviceList}`);
     }) as { (evt: Event): void });
 
     return { store };
-  }
+  },
 });
 </script>
 

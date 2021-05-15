@@ -2,51 +2,55 @@
   <div class="search">
     <div>
       <input
+        v-model="query"
         class="input"
         :class="{ opened: query }"
         type="text"
-        v-model="query"
-        @input="search(query)"
         placeholder="Recherche..."
+        @input="search(query)"
       />
     </div>
-    <button v-if="query" class="reset" @click="reset()"><i class="icon-x"></i></button>
-    <div class="results" v-if="query">
+    <button v-if="query" class="reset" @click="reset()">
+      <i class="icon-x" />
+    </button>
+    <div v-if="query" class="results">
       <!-- Artist List -->
       <div class="artist-list">
         <router-link
-          :to="`/artist/${artist.id}`"
-          @click="reset()"
-          class="artist"
           v-for="(artist, index) in store.state.search.artists"
           :key="index"
+          :to="`/artist/${artist.id}`"
+          class="artist"
+          @click="reset()"
         >
-          <Cover size="small" :images="artist.images" className="avatar" />
+          <Cover size="small" :images="artist.images" class-name="avatar" />
           <div>{{ artist.name }}</div>
         </router-link>
       </div>
       <!-- Album List -->
       <div class="album-list">
         <router-link
-          :to="`/album/${album.id}`"
           v-for="(album, index) in store.state.search.albums"
           :key="index"
-          @click="reset()"
+          :to="`/album/${album.id}`"
           class="album"
+          @click="reset()"
         >
-          <Cover size="small" :images="album.images" className="cover" />
+          <Cover size="small" :images="album.images" class-name="cover" />
           <div>
             <div>{{ album.name }}</div>
-            <div><ArtistList :artistList="album.artists" feat /></div>
+            <div>
+              <ArtistList :artist-list="album.artists" feat />
+            </div>
           </div>
         </router-link>
       </div>
       <!-- Track List -->
       <div>
         <div
-          class="track"
           v-for="(track, index) in store.state.search.tracks"
           :key="index"
+          class="track"
           @click="
             () => {
               playSong(track.uri);
@@ -54,10 +58,12 @@
             }
           "
         >
-          <i class="track__icon icon-music"></i>
+          <i class="track__icon icon-music" />
           <div>
             <div>{{ track.name }}</div>
-            <div><ArtistList :artistList="track.artists" feat /></div>
+            <div>
+              <ArtistList :artist-list="track.artists" feat />
+            </div>
           </div>
         </div>
       </div>
@@ -93,7 +99,7 @@ export default defineComponent({
     });
 
     return { store, search, query, reset, playSong };
-  }
+  },
 });
 </script>
 

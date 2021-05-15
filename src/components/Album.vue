@@ -1,22 +1,30 @@
 <template>
   <div class="album">
-    <div class="current" v-if="currentlyPlayedId === album.uri"><i class="icon-volume-2"></i></div>
+    <div v-if="currentlyPlayedId === album.uri" class="current">
+      <i class="icon-volume-2" />
+    </div>
     <div class="cover">
-      <Cover size="medium" :images="album.images" @click="goAlbum()" class="img" />
+      <Cover size="medium" :images="album.images" class="img" @click="goAlbum()" />
       <button class="play" type="button" @click="playAlbum(album.uri)">
-        <i class="icon-play"></i>
+        <i class="icon-play" />
       </button>
       <button v-if="canSave" class="buttonAction add" type="button" @click="addAlbum('addalbum', album.id)">
-        <i class="icon-save"></i>
+        <i class="icon-save" />
       </button>
       <button v-if="canDelete" class="buttonAction delete" type="button" @click="deleteAlbum(album.id)">
-        <i class="icon-trash-2"></i>
+        <i class="icon-trash-2" />
       </button>
     </div>
     <div v-if="!withoutMetas">
-      <div class="name">{{ album.name }}</div>
-      <div v-if="withArtists"><ArtistList :artistList="album.artists" feat /></div>
-      <div class="date">{{ album.release_date.split("-").shift() }}</div>
+      <div class="name">
+        {{ album.name }}
+      </div>
+      <div v-if="withArtists">
+        <ArtistList :artist-list="album.artists" feat />
+      </div>
+      <div class="date">
+        {{ album.release_date.split("-").shift() }}
+      </div>
     </div>
   </div>
 </template>
@@ -46,7 +54,7 @@ export default defineComponent({
     withArtists: { default: false, type: Boolean as PropType<boolean> },
     withoutMetas: { default: false, type: Boolean as PropType<boolean> },
     canDelete: { default: false, type: Boolean as PropType<boolean> },
-    canSave: { default: false, type: Boolean as PropType<boolean> }
+    canSave: { default: false, type: Boolean as PropType<boolean> },
   },
   setup(props) {
     const store = useStore<RootState>();
@@ -65,21 +73,21 @@ export default defineComponent({
     }
 
     function deleteAlbum(albumId: string) {
-      instance.get<Paging<TrackSimplified>>(`https://api.spotify.com/v1/albums/${albumId}/tracks`).then(e => {
+      instance.get<Paging<TrackSimplified>>(`https://api.spotify.com/v1/albums/${albumId}/tracks`).then((e) => {
         let tracks: TrackToRemove[] = [];
 
-        e.data.items.map(t => t.uri).forEach(t => tracks.push({ uri: t }));
+        e.data.items.map((t) => t.uri).forEach((t) => tracks.push({ uri: t }));
 
         instance
           .delete(`https://api.spotify.com/v1/playlists/${currentRouteId}/tracks`, {
-            data: { tracks }
+            data: { tracks },
           })
-          .then(f => store.commit(`playlist/${PlaylistMutation.REMOVE_TRACKS}`, tracks));
+          .then(() => store.commit(`playlist/${PlaylistMutation.REMOVE_TRACKS}`, tracks));
       });
     }
 
     return { deleteAlbum, addAlbum, store, playAlbum, goAlbum };
-  }
+  },
 });
 </script>
 

@@ -2,14 +2,14 @@
   <div class="overflowed content">
     <div class="overflowed__target">
       <div
-        class="collection"
-        v-for="(playlist, index) in store.state.sidebar.playlists.filter(p =>
+        v-for="(playlist, index) in store.state.sidebar.playlists.filter((p) =>
           p.name.toLowerCase().includes('#collection')
         )"
         :key="index"
+        class="collection"
         @click="add(store.state.dialog.albumId ? store.state.dialog.albumId : '', playlist.id)"
       >
-        <div class="album"><i class="icon-folder"></i>{{ playlist.name.replace("#Collection ", "") }}</div>
+        <div class="album"><i class="icon-folder" />{{ playlist.name.replace("#Collection ", "") }}</div>
       </div>
     </div>
   </div>
@@ -29,17 +29,17 @@ export default defineComponent({
     const store = useStore<RootState>();
 
     function add(albumId: string, playlistId: string) {
-      instance.get<Paging<TrackSimplified>>(`https://api.spotify.com/v1/albums/${albumId}/tracks`).then(e => {
+      instance.get<Paging<TrackSimplified>>(`https://api.spotify.com/v1/albums/${albumId}/tracks`).then((e) => {
         instance
           .post(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`)
-          .then(f => {
+          .then((f) => {
             if (f.status === 201) store.commit(`dialog/${Mutations.CLOSE}`);
           });
       });
     }
 
     return { add, store };
-  }
+  },
 });
 </script>
 

@@ -17,141 +17,141 @@ export interface ThemeColor {
 export const schemeDefault: ThemeColor[] = [
   {
     var: "--primary-color-darker",
-    color: "#402d6e"
+    color: "#402d6e",
   },
   {
     var: "--primary-color-dark",
-    color: "#543a97"
+    color: "#543a97",
   },
   {
     var: "--primary-color",
-    color: "#6d49c9"
+    color: "#6d49c9",
   },
   {
     var: "--primary-color-light",
-    color: "#7a50e4"
+    color: "#7a50e4",
   },
   {
     var: "--primary-color-lighter",
-    color: "#9064ff"
-  }
+    color: "#9064ff",
+  },
 ];
 export const schemeBlue: ThemeColor[] = [
   {
     var: "--primary-color-darker",
-    color: "#0285b0"
+    color: "#0285b0",
   },
   {
     var: "--primary-color-dark",
-    color: "#0992bf"
+    color: "#0992bf",
   },
   {
     var: "--primary-color",
-    color: "#15acde"
+    color: "#15acde",
   },
   {
     var: "--primary-color-light",
-    color: "#1cbaee"
+    color: "#1cbaee",
   },
   {
     var: "--primary-color-lighter",
-    color: "#32ccff"
-  }
+    color: "#32ccff",
+  },
 ];
 export const schemeApple: ThemeColor[] = [
   {
     var: "--primary-color-darker",
-    color: "#228319"
+    color: "#228319",
   },
   {
     var: "--primary-color-dark",
-    color: "#228d17"
+    color: "#228d17",
   },
   {
     var: "--primary-color",
-    color: "#28aa1b"
+    color: "#28aa1b",
   },
   {
     var: "--primary-color-light",
-    color: "#2dc31e"
+    color: "#2dc31e",
   },
   {
     var: "--primary-color-lighter",
-    color: "#3fd830"
-  }
+    color: "#3fd830",
+  },
 ];
 export const schemeCrimson: ThemeColor[] = [
   {
     var: "--primary-color-darker",
-    color: "#9d152c"
+    color: "#9d152c",
   },
   {
     var: "--primary-color-dark",
-    color: "#b51833"
+    color: "#b51833",
   },
   {
     var: "--primary-color",
-    color: "#de1c3e"
+    color: "#de1c3e",
   },
   {
     var: "--primary-color-light",
-    color: "#ff4868"
+    color: "#ff4868",
   },
   {
     var: "--primary-color-lighter",
-    color: "#ff647f"
-  }
+    color: "#ff647f",
+  },
 ];
 
 export const themeDark: ThemeColor[] = [
   {
     var: "--bg-color-darker",
-    color: "#15181d"
+    color: "#15181d",
   },
   {
     var: "--bg-color-dark",
-    color: "#181b21"
+    color: "#181b21",
   },
   {
     var: "--bg-color",
-    color: "#1b1e26"
+    color: "#1b1e26",
   },
   {
     var: "--bg-color-light",
-    color: "#21242e"
+    color: "#21242e",
   },
   {
     var: "--bg-color-lighter",
-    color: "#272a35"
+    color: "#272a35",
   },
   {
     var: "--font-color",
-    color: "#d5dbe0"
-  }
+    color: "#d5dbe0",
+  },
 ];
 export const themeLight: ThemeColor[] = [
   {
     var: "--bg-color-darker",
-    color: "#ebebeb"
+    color: "#ebebeb",
   },
   {
     var: "--bg-color-dark",
-    color: "#dedede"
+    color: "#dedede",
   },
   {
     var: "--bg-color",
-    color: "#d5d5d5"
+    color: "#d5d5d5",
   },
   {
     var: "--bg-color-light",
-    color: "#eaeaea"
+    color: "#eaeaea",
   },
   {
     var: "--bg-color-lighter",
-    color: "#ffffff"
+    color: "#ffffff",
   },
   {
     var: "--font-color",
-    color: "#1b1e20"
-  }
+    color: "#1b1e20",
+  },
 ];

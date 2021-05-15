@@ -1,11 +1,11 @@
 <template>
-  <div class="player-loading" v-if="!store.state.player.currentlyPlaying">
+  <div v-if="!store.state.player.currentlyPlaying" class="player-loading">
     <Loader />
     <span v-if="store.state.player.devices.list.length">
       <button
-        type="button"
         v-for="(device, _, index) in store.state.player.devices.list"
         :key="index"
+        type="button"
         class="device button button--x-small"
         :class="{ me: store.state.player.thisDeviceId === device.id }"
         @click="setDevice(device)"
@@ -19,35 +19,37 @@
       <div class="meta">
         <div class="controls">
           <div>
-            <button class="controls__btn" v-if="!store.state.player.currentlyPlaying.is_playing" @click="goPlay()">
-              <i class="icon-play"></i>
+            <button v-if="!store.state.player.currentlyPlaying.is_playing" class="controls__btn" @click="goPlay()">
+              <i class="icon-play" />
             </button>
-            <button class="controls__btn" v-else @click="goPause()">
-              <i class="icon-pause"></i>
+            <button v-else class="controls__btn" @click="goPause()">
+              <i class="icon-pause" />
             </button>
             <button class="controls__btn" @click="goNext()">
-              <i class="icon-skip-forward"></i>
+              <i class="icon-skip-forward" />
             </button>
           </div>
           <div v-if="store.state.player.currentlyPlaying.progress_ms">
             {{ timecode(store.state.player.currentlyPlaying.progress_ms) }} /
             {{ timecode(store.state.player.currentlyPlaying.item.duration_ms) }}
           </div>
-          <div></div>
+          <div />
         </div>
 
         <div>
           <div class="meta__what">
             <router-link :to="`/album/${store.state.player.currentlyPlaying.item.album.id}`">
-              <Cover size="small" :images="store.state.player.currentlyPlaying.item.album.images" className="cover" />
+              <Cover size="small" :images="store.state.player.currentlyPlaying.item.album.images" class-name="cover" />
             </router-link>
             <div>
               <div>
-                <ArtistList :artistList="store.state.player.currentlyPlaying.item.album.artists" />
+                <ArtistList :artist-list="store.state.player.currentlyPlaying.item.album.artists" />
                 ·
                 <span class="trackname">{{ store.state.player.currentlyPlaying.item.name }}</span>
               </div>
-              <div class="album">{{ store.state.player.currentlyPlaying.item.album.name }}</div>
+              <div class="album">
+                {{ store.state.player.currentlyPlaying.item.album.name }}
+              </div>
             </div>
           </div>
         </div>
@@ -58,40 +60,43 @@
               <div
                 class="volume__cursor"
                 :style="{ width: store.state.player.devices.activeDevice.volume_percent + '%' }"
-              ></div>
-              <div class="volume__hover" :style="{ width: volume + '%' }"></div>
+              />
+              <div class="volume__hover" :style="{ width: volume + '%' }" />
             </div>
           </div>
           <div v-if="store.state.player.devices.list.length">
             <button
-              type="button"
               v-for="(device, _, index) in store.state.player.devices.list"
               :key="index"
+              type="button"
               class="device button button--x-small"
               :class="{
                 'button--primary': device.id === store.state.player.devices.activeDevice.id,
-                me: store.state.player.thisDeviceId === device.id
+                me: store.state.player.thisDeviceId === device.id,
               }"
               @click="setDevice(device)"
             >
               {{ device.name }}
             </button>
           </div>
-          <div v-else><button class="button button--primary" @click="getDevices()"></button></div>
+          <div v-else>
+            <button class="button button--primary" @click="getDevices()" />
+          </div>
         </div>
       </div>
 
       <div ref="progresss" class="progress">
         <div
           class="bar"
-          :style="
-            `width:${(store.state.player.currentlyPlaying.progress_ms /
-              store.state.player.currentlyPlaying.item.duration_ms) *
-              100}%`
-          "
-        ></div>
+          :style="`width:${
+            (store.state.player.currentlyPlaying.progress_ms / store.state.player.currentlyPlaying.item.duration_ms) *
+            100
+          }%`"
+        />
         <div class="seek" :style="`width:${perc}%`">
-          <div class="time">{{ time }}</div>
+          <div class="time">
+            {{ time }}
+          </div>
         </div>
       </div>
     </div>
@@ -131,7 +136,7 @@ export default defineComponent({
 
     function goPlay() {
       instance.put("me/player/play", {
-        device_id: store.state.player.devices.activeDevice
+        device_id: store.state.player.devices.activeDevice,
       });
     }
 
@@ -141,17 +146,13 @@ export default defineComponent({
 
     function goPause() {
       instance.put("me/player/pause", {
-        device_id: store.state.player.devices.activeDevice
+        device_id: store.state.player.devices.activeDevice,
       });
     }
 
     function setVolume() {
       store.dispatch(`player/${PlayerActions.setVolume}`, volume.value);
     }
-
-    addEventListener("playerStateChanged", ((CE: CustomEvent<Spotify.PlaybackState>) => {
-      store.commit(`player/${Mutations.PLAYER_STATE_CHANGED}`, CE.detail);
-    }) as { (evt: Event): void });
 
     watchEffect(() => {
       refVolume.value?.addEventListener("mousemove", (e: MouseEvent) => {
@@ -187,9 +188,9 @@ export default defineComponent({
       timecode,
       progresss,
       refVolume,
-      volume
+      volume,
     };
-  }
+  },
 });
 </script>
 

@@ -3,7 +3,9 @@
     <div class="dialog-content">
       <div class="head">
         <div v-if="store.state.dialog.type === 'addalbum'">Ajouter un album à une collection</div>
-        <button class="close" @click="close()"><i class="icon-x"></i></button>
+        <button class="close" @click="close()">
+          <i class="icon-x" />
+        </button>
       </div>
       <AddAlbum v-if="store.state.dialog.type === 'addalbum'" />
     </div>
@@ -27,7 +29,7 @@ export default defineComponent({
     }
 
     return { close, store };
-  }
+  },
 });
 </script>
 

@@ -5,32 +5,32 @@
         v-for="(c, index) in textColors"
         :key="index"
         class="schemes__item"
-        @click="c.fn()"
         :class="{
           current: store.state.config.schemeLabel === `${c.name}`,
           crimson: c.name === 'crimson',
           blue: c.name === 'blue',
           apple: c.name === 'apple',
-          default: c.name === 'default'
+          default: c.name === 'default',
         }"
-      ></button>
+        @click="c.fn()"
+      />
     </div>
 
     <div>
       <div class="radio">
         <button
           class="radio__item"
-          @click="switchThemeLight()"
           :class="{ current: store.state.config.themeLabel === 'light' }"
+          @click="switchThemeLight()"
         >
-          <i class="icon-sun"></i>
+          <i class="icon-sun" />
         </button>
         <button
           class="radio__item"
-          @click="switchThemeDark()"
           :class="{ current: store.state.config.themeLabel === 'dark' }"
+          @click="switchThemeDark()"
         >
-          <i class="icon-moon"></i>
+          <i class="icon-moon" />
         </button>
       </div>
     </div>
@@ -55,20 +55,20 @@ export default defineComponent({
     const textColors: TextColors[] = [
       {
         name: "default",
-        fn: () => store.commit(`config/${Mutations.SCHEME_DEFAULT}`)
+        fn: () => store.commit(`config/${Mutations.SCHEME_DEFAULT}`),
       },
       {
         name: "blue",
-        fn: () => store.commit(`config/${Mutations.SCHEME_BLUE}`)
+        fn: () => store.commit(`config/${Mutations.SCHEME_BLUE}`),
       },
       {
         name: "crimson",
-        fn: () => store.commit(`config/${Mutations.SCHEME_CRIMSON}`)
+        fn: () => store.commit(`config/${Mutations.SCHEME_CRIMSON}`),
       },
       {
         name: "apple",
-        fn: () => store.commit(`config/${Mutations.SCHEME_APPLE}`)
-      }
+        fn: () => store.commit(`config/${Mutations.SCHEME_APPLE}`),
+      },
     ];
 
     function switchThemeLight() {
@@ -83,9 +83,9 @@ export default defineComponent({
       store,
       textColors,
       switchThemeLight,
-      switchThemeDark
+      switchThemeDark,
     };
-  }
+  },
 });
 </script>
 

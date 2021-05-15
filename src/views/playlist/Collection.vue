@@ -6,7 +6,9 @@
           <div class="title">
             {{ store.state.playlist.playlist.name.replace("#Collection ", "").replace("#collection ", "") }}
           </div>
-          <div class="description">{{ store.state.playlist.playlist.description }}</div>
+          <div class="description">
+            {{ store.state.playlist.playlist.description }}
+          </div>
           <div>
             {{ store.state.playlist.playlist.owner.display_name }} ·
             {{ store.state.playlist.playlist.tracks.total }} Albums
@@ -17,12 +19,12 @@
         <div v-for="(album, index) in cleanAlbumList" :key="index">
           <Album
             :album="album"
-            :currentlyPlayedId="
+            :currently-played-id="
               store.state.player.currentlyPlaying ? store.state.player.currentlyPlaying.item.album.uri : ''
             "
-            withArtists
-            canDelete
-            canSave
+            with-artists
+            can-delete
+            can-save
           />
         </div>
       </div>
@@ -37,21 +39,21 @@ import { RootState } from "../../@types/RootState";
 import { timecode, timecodeWithUnits } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import { PlaylistActions, Mutations } from "./PlaylistStore";
-import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
-import ArtistList from "../../components/ArtistList.vue";
 import Album from "../../components/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 
 export default defineComponent({
-  components: { Album, ArtistList, Cover },
+  components: { Album },
   props: {
-    id: { default: "", type: String }
+    id: { default: "", type: String },
   },
   setup(props) {
     const store = useStore<RootState>();
     const playlistpage = ref();
-    const cleanAlbumList = computed(() => removeDuplicatesAlbums(store.state.playlist.tracks.map(a => a.track.album)));
+    const cleanAlbumList = computed(() =>
+      removeDuplicatesAlbums(store.state.playlist.tracks.map((a) => a.track.album))
+    );
 
     function sumDuration(tracks: PlaylistTrack[]) {
       return tracks.map((t: PlaylistTrack) => t.track.duration_ms).reduce((acc, value) => acc + value, 0);
@@ -69,9 +71,9 @@ export default defineComponent({
       playSongs,
       sumDuration,
       removeDuplicatesAlbums,
-      cleanAlbumList
+      cleanAlbumList,
     };
-  }
+  },
 });
 </script>
 

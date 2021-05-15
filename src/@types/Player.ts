@@ -34,14 +34,14 @@ export type PlayerError =
 const defaultAlbum: Spotify.Album = {
   uri: "",
   name: "",
-  images: [defaultImage]
+  images: [defaultImage],
 };
 
 const defaultArtist: Spotify.Artist[] = [
   {
     uri: "",
-    name: ""
-  }
+    name: "",
+  },
 ];
 
 const defaultTrack: Spotify.Track = {
@@ -52,13 +52,13 @@ const defaultTrack: Spotify.Track = {
   name: "",
   is_playable: true,
   album: defaultAlbum,
-  artists: defaultArtist
+  artists: defaultArtist,
 };
 
 const defaultTrackWindow: Spotify.PlaybackTrackWindow = {
   current_track: defaultTrack,
   previous_tracks: [defaultTrack],
-  next_tracks: [defaultTrack]
+  next_tracks: [defaultTrack],
 };
 
 const defaultPlaybackDisallows = {
@@ -68,7 +68,7 @@ const defaultPlaybackDisallows = {
   resuming: false,
   seeking: false,
   skipping_next: false,
-  skipping_prev: false
+  skipping_prev: false,
 };
 
 const defaultPlaybackRestrictions = {
@@ -78,13 +78,13 @@ const defaultPlaybackRestrictions = {
   disallow_resuming_reasons: [],
   disallow_seeking_reasons: [],
   disallow_skipping_next_reasons: [],
-  disallow_skipping_prev_reasons: []
+  disallow_skipping_prev_reasons: [],
 };
 
 export const defaultPlaybackState: Spotify.PlaybackState = {
   context: {
     metadata: "",
-    uri: null
+    uri: null,
   },
   disallows: defaultPlaybackDisallows,
   duration: 0,
@@ -93,5 +93,5 @@ export const defaultPlaybackState: Spotify.PlaybackState = {
   repeat_mode: 0,
   shuffle: false,
   restrictions: defaultPlaybackRestrictions,
-  track_window: defaultTrackWindow
+  track_window: defaultTrackWindow,
 };

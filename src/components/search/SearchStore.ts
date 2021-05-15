@@ -11,13 +11,13 @@ const state: Search = {
   query: "coucou",
   artists: [defaultArtist],
   albums: [defaultAlbum],
-  tracks: [defaultTrackSimplified]
+  tracks: [defaultTrackSimplified],
 };
 
 // MUTATIONS
 
 export enum Mutations {
-  SET_RESULTS = "SET_RESULTS"
+  SET_RESULTS = "SET_RESULTS",
 }
 
 const mutations: MutationTree<Search> = {
@@ -25,29 +25,31 @@ const mutations: MutationTree<Search> = {
     state.artists = data.artists;
     state.albums = data.albums;
     state.tracks = data.tracks;
-  }
+  },
 };
 
 // ACTIONS
 
 export enum SearchActions {
-  search = "search"
+  search = "search",
 }
 
 const actions: ActionTree<Search, RootState> = {
   [SearchActions.search](store, query: string) {
-    instance.get<SearchFromAPI>(`https://api.spotify.com/v1/search?q=${query}&type=artist%2Calbum%2Ctrack`).then(e => {
-      const artists = e.data.artists.items.slice(0, 12);
-      const albums = e.data.albums.items.slice(0, 6);
-      const tracks = e.data.tracks.items.slice(0, 6);
-      store.commit(Mutations.SET_RESULTS, { artists, albums, tracks });
-    });
-  }
+    instance
+      .get<SearchFromAPI>(`https://api.spotify.com/v1/search?q=${query}&type=artist%2Calbum%2Ctrack`)
+      .then((e) => {
+        const artists = e.data.artists.items.slice(0, 12);
+        const albums = e.data.albums.items.slice(0, 6);
+        const tracks = e.data.tracks.items.slice(0, 6);
+        store.commit(Mutations.SET_RESULTS, { artists, albums, tracks });
+      });
+  },
 };
 
 export default {
   actions,
   mutations,
   namespaced: true,
-  state
+  state,
 };

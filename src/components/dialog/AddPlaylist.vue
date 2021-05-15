@@ -1,7 +1,5 @@
 <template>
-  <div>
-    vas y créé une playlist !
-  </div>
+  <div>vas y créé une playlist !</div>
 </template>
 
 <style lang="scss" scoped>

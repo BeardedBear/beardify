@@ -2,15 +2,19 @@
   <div v-if="store.state.artist.topTracks.tracks.length">
     <div class="heading">Top tracks</div>
     <div
-      class="item"
       v-for="(trackItem, index) in store.state.artist.topTracks.tracks"
       :key="index"
+      class="item"
       :class="{ active: store.state.player.currentlyPlaying.item.id === trackItem.id }"
       @click="playSongs(index, store.state.artist.topTracks.tracks)"
     >
-      <Cover size="small" :images="trackItem.album.images" className="cover" />
-      <div class="name">{{ trackItem.name }}</div>
-      <div class="duration">{{ timecode(trackItem.duration_ms) }}</div>
+      <Cover size="small" :images="trackItem.album.images" class-name="cover" />
+      <div class="name">
+        {{ trackItem.name }}
+      </div>
+      <div class="duration">
+        {{ timecode(trackItem.duration_ms) }}
+      </div>
     </div>
   </div>
 </template>
@@ -29,7 +33,7 @@ export default defineComponent({
     const store = useStore<RootState>();
 
     return { store, timecode, playSongs };
-  }
+  },
 });
 </script>
 

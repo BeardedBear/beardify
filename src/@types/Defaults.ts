@@ -4,7 +4,7 @@ import {
   CurrentlyPlaying,
   CurrentlyPlayingContext,
   CurrentlyPlayingItem,
-  CurrentlyPlayingAlbum
+  CurrentlyPlayingAlbum,
 } from "./CurrentlyPlaying";
 import { Image } from "./Image";
 import { ExternalUrls } from "./Misc";
@@ -17,7 +17,7 @@ import { Device } from "./Device";
 export const defaultImage: Image = {
   height: 0,
   url: "",
-  width: 0
+  width: 0,
 };
 
 export const defaultPaging = {
@@ -27,11 +27,11 @@ export const defaultPaging = {
   next: "",
   offset: 0,
   previous: null,
-  total: 0
+  total: 0,
 };
 
 export const defaultExternalUrls: ExternalUrls = {
-  spotify: ""
+  spotify: "",
 };
 
 export const defaultAlbumSimplified: AlbumSimplified = {
@@ -47,16 +47,16 @@ export const defaultAlbumSimplified: AlbumSimplified = {
   release_date_precision: "year",
   total_tracks: 0,
   type: "",
-  uri: ""
+  uri: "",
 };
 
 export const defaultArtist: Artist = {
   external_urls: {
-    spotify: ""
+    spotify: "",
   },
   followers: {
     href: null,
-    total: 0
+    total: 0,
   },
   genres: [""],
   href: "",
@@ -65,7 +65,7 @@ export const defaultArtist: Artist = {
   name: "",
   popularity: 0,
   type: "",
-  uri: ""
+  uri: "",
 };
 
 const defaultCurrentlyPlayingAlbum: CurrentlyPlayingAlbum = {
@@ -80,7 +80,7 @@ const defaultCurrentlyPlayingAlbum: CurrentlyPlayingAlbum = {
   release_date_precision: "year",
   total_tracks: 0,
   type: "",
-  uri: ""
+  uri: "",
 };
 
 const defaultCurrentlyPlayingItem: CurrentlyPlayingItem = {
@@ -98,13 +98,13 @@ const defaultCurrentlyPlayingItem: CurrentlyPlayingItem = {
   preview_url: "",
   track_number: 0,
   type: "",
-  uri: ""
+  uri: "",
 };
 
 const defaultCurrentlyPlayingContext: CurrentlyPlayingContext = {
   href: "",
   type: "album",
-  uri: ""
+  uri: "",
 };
 
 export const defaultDevice: Device = {
@@ -114,7 +114,7 @@ export const defaultDevice: Device = {
   is_restricted: false,
   name: "",
   type: "computer",
-  volume_percent: null
+  volume_percent: null,
 };
 
 export const defaultCurrentlyPlaying: CurrentlyPlaying = {
@@ -126,7 +126,7 @@ export const defaultCurrentlyPlaying: CurrentlyPlaying = {
   progress_ms: 0,
   repeat_state: "",
   shuffle_state: false,
-  timestamp: 0
+  timestamp: 0,
 };
 export const defaultTrack: Track = {
   album: defaultAlbumSimplified,
@@ -144,7 +144,7 @@ export const defaultTrack: Track = {
   preview_url: "",
   track_number: 0,
   type: "",
-  uri: ""
+  uri: "",
 };
 export const defaultTrackSimplified: TrackSimplified = {
   artists: [],
@@ -153,7 +153,7 @@ export const defaultTrackSimplified: TrackSimplified = {
   duration_ms: 0,
   explicit: false,
   external_urls: {
-    spotify: ""
+    spotify: "",
   },
   href: "",
   id: "",
@@ -162,7 +162,7 @@ export const defaultTrackSimplified: TrackSimplified = {
   preview_url: "",
   track_number: 0,
   type: "",
-  uri: ""
+  uri: "",
 };
 
 export const defaultAlbum: Album = {
@@ -181,12 +181,12 @@ export const defaultAlbum: Album = {
   total_tracks: 0,
   tracks: defaultTrack,
   type: "",
-  uri: ""
+  uri: "",
 };
 
 const defaultFollowers: Followers = {
   href: null,
-  total: 0
+  total: 0,
 };
 
 export const defaultMe: Me = {
@@ -200,7 +200,7 @@ export const defaultMe: Me = {
   images: [defaultImage],
   product: "premium",
   type: "",
-  uri: ""
+  uri: "",
 };
 
 export const defaultPublicUser: PublicUser = {
@@ -211,12 +211,12 @@ export const defaultPublicUser: PublicUser = {
   id: "",
   images: [defaultImage],
   type: "",
-  uri: ""
+  uri: "",
 };
 
 export const defaultPlaylistTracksRef: PlaylistTracksRef = {
   href: "",
-  total: 0
+  total: 0,
 };
 
 export const defaultSimplifiedPlaylist: SimplifiedPlaylist = {
@@ -232,14 +232,14 @@ export const defaultSimplifiedPlaylist: SimplifiedPlaylist = {
   snapshot_id: "",
   tracks: defaultPlaylistTracksRef,
   type: "",
-  uri: ""
+  uri: "",
 };
 
 export const defaultPlaylistTrack = {
   added_at: 0,
   added_by: defaultPublicUser,
   is_local: false,
-  track: defaultTrack
+  track: defaultTrack,
 };
 
 export const defaultPlaylist = {
@@ -256,5 +256,5 @@ export const defaultPlaylist = {
   snapshot_id: "",
   tracks: defaultPaging,
   type: "",
-  uri: ""
+  uri: "",
 };
