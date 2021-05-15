@@ -1,42 +1,40 @@
 <template>
-  <div ref="albumpage" class="overflowed">
-    <div class="album-page overflowed__target">
-      <div class="album-header">
-        <div class="title">
-          {{ store.state.album.album.name }}
-        </div>
-        <div>
-          <ArtistList :artist-list="store.state.album.album.artists" />
-          ·
-          <span>{{ store.state.album.album.release_date.split("-").shift() }}</span>
-          ·
-          <span>{{ timecodeWithUnits(sumDuration(store.state.album.album.tracks.items)) }}</span>
-        </div>
+  <div ref="albumpage" class="album-page">
+    <div class="album-header">
+      <div class="title">
+        {{ store.state.album.album.name }}
       </div>
-      <div class="content">
-        <div class="content__cover">
-          <Album :album="store.state.album.album" without-metas can-save />
-        </div>
-        <div class="content__tracks">
-          <div
-            v-for="(track, index) in store.state.album.album.tracks.items"
-            :key="index"
-            class="track"
-            :class="{ active: store.state.player.currentlyPlaying.item.id === track.id }"
-            @click="playSongs(index, store.state.album.album.tracks.items)"
-          >
-            <span class="track__number">{{ track.track_number }}.</span>
-            <div>
-              <div>{{ track.name }}</div>
-              <div v-if="store.state.album.album.artists.length">
-                <ArtistList
-                  :artist-list="track.artists.filter((e) => e.name !== store.state.album.album.artists[0].name)"
-                  feat
-                />
-              </div>
+      <div>
+        <ArtistList :artist-list="store.state.album.album.artists" />
+        ·
+        <span>{{ store.state.album.album.release_date.split("-").shift() }}</span>
+        ·
+        <span>{{ timecodeWithUnits(sumDuration(store.state.album.album.tracks.items)) }}</span>
+      </div>
+    </div>
+    <div class="content">
+      <div class="content__cover">
+        <Album :album="store.state.album.album" without-metas can-save />
+      </div>
+      <div class="content__tracks">
+        <div
+          v-for="(track, index) in store.state.album.album.tracks.items"
+          :key="index"
+          class="track"
+          :class="{ active: store.state.player.currentlyPlaying.item.id === track.id }"
+          @click="playSongs(index, store.state.album.album.tracks.items)"
+        >
+          <span class="track__number">{{ track.track_number }}.</span>
+          <div>
+            <div>{{ track.name }}</div>
+            <div v-if="store.state.album.album.artists.length">
+              <ArtistList
+                :artist-list="track.artists.filter((e) => e.name !== store.state.album.album.artists[0].name)"
+                feat
+              />
             </div>
-            <div>{{ timecode(track.duration_ms) }}</div>
           </div>
+          <div>{{ timecode(track.duration_ms) }}</div>
         </div>
       </div>
     </div>
@@ -80,10 +78,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
-
-.overflowed {
-  scroll-behavior: smooth;
-}
 
 .album-header {
   text-align: center;
@@ -134,5 +128,7 @@ export default defineComponent({
 
 .album-page {
   padding: 30px 40px;
+  scroll-behavior: smooth;
+  overflow-y: scroll;
 }
 </style>

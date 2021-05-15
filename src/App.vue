@@ -2,7 +2,8 @@
   <Dialog />
   <Topbar />
   <div id="app__content">
-    <Sidebar />
+    <div></div>
+    <!-- <Sidebar /> -->
     <router-view v-slot="{ Component }" :key="$route.fullPath">
       <transition name="scale" mode="out-in">
         <component :is="Component" />
@@ -82,14 +83,6 @@ export default defineComponent({
 @import "./assets/scss/heading";
 @import "./assets/scss/mixins";
 
-body {
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-}
-html {
-  height: -webkit-fill-available;
-}
-
 *,
 *::before,
 *::after {
@@ -151,6 +144,7 @@ html {
   &__content {
     display: grid;
     grid-template-columns: 300px 1fr;
+    overflow: hidden;
   }
 }
 </style>
