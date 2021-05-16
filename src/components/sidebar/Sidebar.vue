@@ -1,5 +1,8 @@
 <template>
-  <div class="sidebar">
+  <div v-if="!store.state.sidebar.playlists.length && !store.state.sidebar.collections.length" class="sidebar loading">
+    <Loader />
+  </div>
+  <div v-else class="sidebar">
     <div class="sidebar__item">
       <div class="heading title">
         <div>Collections</div>
@@ -49,8 +52,10 @@ import { SidebarActions } from "./SidebarStore";
 import { api } from "../../api";
 import { Mutations } from "../dialog/DialogStore";
 import { Dialog } from "../../@types/Dialog";
+import Loader from "../Loader.vue";
 
 export default defineComponent({
+  components: { Loader },
   setup() {
     const store = useStore<RootState>();
     const openedPlaylist = ref("");
@@ -111,6 +116,11 @@ export default defineComponent({
   &__item {
     position: relative;
     overflow-y: auto;
+  }
+
+  &.loading {
+    display: grid;
+    place-content: center;
   }
 }
 
