@@ -1,7 +1,10 @@
 <template>
   <div class="sidebar">
     <div class="sidebar__item">
-      <div class="heading title">Collections</div>
+      <div class="heading title">
+        <div>Collections</div>
+        <button class="add" @click="openDialogAddCollection()"><i class="icon-plus"></i></button>
+      </div>
       <div v-if="!collections.length" class="empty">
         Ah bah zut alors, tu n'a pas de collection ! Pour en créer une, il suffit de créer ou de renommer une playlist
         classique, mais en commencant par "#Collection". Magique hein ?
@@ -62,9 +65,13 @@ export default defineComponent({
       store.commit(`dialog/${Mutations.OPEN}`, { type: "addPlaylist" } as Dialog);
     }
 
+    function openDialogAddCollection() {
+      store.commit(`dialog/${Mutations.OPEN}`, { type: "addCollection" } as Dialog);
+    }
+
     store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
 
-    return { openDialogAddPlaylist, store, collections, playlists, openedPlaylist };
+    return { openDialogAddPlaylist, openDialogAddCollection, store, collections, playlists, openedPlaylist };
   },
 });
 </script>

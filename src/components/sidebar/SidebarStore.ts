@@ -32,6 +32,7 @@ const mutations: MutationTree<Sidebar> = {
 export enum SidebarActions {
   getPlaylists = "getPlaylists",
   add = "add",
+  addCollection = "addCollection",
   remove = "remove",
 }
 
@@ -45,6 +46,13 @@ const actions: ActionTree<Sidebar, RootState> = {
 
   [SidebarActions.add](store, name: string) {
     instance.post(`users/${store.rootState.auth.me?.id}/playlists`, { name: name }).then(() => {
+      store.commit(Mutations.RESET);
+      store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
+    });
+  },
+
+  [SidebarActions.addCollection](store, name: string) {
+    instance.post(`users/${store.rootState.auth.me?.id}/playlists`, { name: "#Collection " + name }).then(() => {
       store.commit(Mutations.RESET);
       store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
     });
