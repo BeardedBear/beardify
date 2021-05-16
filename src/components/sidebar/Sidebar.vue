@@ -13,13 +13,16 @@
           :to="`/collection/${playlist.id}`"
           :class="{ active: $route.params.id === playlist.id }"
         >
-          <i class="icon-folder" />
+          <i class="type-icon icon-folder" />
           <div>{{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}</div>
         </router-link>
       </div>
     </div>
     <div class="sidebar__item">
-      <div class="heading title">Playlists <button @click="openDialogAddPlaylist()">add</button></div>
+      <div class="heading title">
+        <div>Playlists</div>
+        <button class="add" @click="openDialogAddPlaylist()"><i class="icon-plus"></i></button>
+      </div>
       <div v-for="(playlist, index) in playlists" :key="index">
         <router-link
           v-if="playlist.id"
@@ -27,7 +30,7 @@
           :to="`/playlist/${playlist.id}`"
           :class="{ active: $route.params.id === playlist.id }"
         >
-          <i class="icon-music" />
+          <i class="type-icon icon-music" />
           <div>{{ playlist.name }}</div>
         </router-link>
       </div>
@@ -36,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { SidebarActions } from "./SidebarStore";
@@ -47,6 +50,7 @@ import { Dialog } from "../../@types/Dialog";
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
+    const openedPlaylist = ref("");
     const collections = computed(() =>
       store.state.sidebar.playlists.filter((p) => p.name.toLowerCase().includes("#collection"))
     );
@@ -60,7 +64,7 @@ export default defineComponent({
 
     store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
 
-    return { openDialogAddPlaylist, store, collections, playlists };
+    return { openDialogAddPlaylist, store, collections, playlists, openedPlaylist };
   },
 });
 </script>
@@ -84,7 +88,7 @@ export default defineComponent({
     background-color: rgba(rgb(74, 75, 103), 0.15);
   }
 
-  i {
+  .type-icon {
     opacity: 0.3;
     margin-right: 10px;
   }
@@ -110,5 +114,24 @@ export default defineComponent({
   background-color: var(--bg-color-dark);
   z-index: 1;
   margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add {
+  padding: 1px 12px;
+  border: 0;
+  background-color: transparent;
+  color: var(--font-color);
+  cursor: pointer;
+  font-size: 1.3rem;
+  border-radius: 100px;
+  opacity: 0.4;
+
+  &:hover {
+    opacity: 1;
+    background-color: var(--bg-color-lighter);
+  }
 }
 </style>

@@ -15,10 +15,11 @@ export enum Mutations {
 }
 
 const mutations: MutationTree<Dialog> = {
-  [Mutations.OPEN](state, data: { type: DialogType; albumId?: string }): void {
+  [Mutations.OPEN](state, data: { type: DialogType; albumId?: string; playlistId?: string }): void {
     state.show = true;
     state.type = data.type;
     if (data.albumId) state.albumId = data.albumId;
+    if (data.playlistId) state.playlistId = data.playlistId;
   },
 
   [Mutations.CLOSE](state): void {

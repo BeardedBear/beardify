@@ -8,6 +8,7 @@
         <div>
           <div class="title">
             {{ store.state.playlist.playlist.name }}
+            <button @click="deletePlaylist(store.state.playlist.playlist.id)">delete</button>
           </div>
           <div class="description">
             {{ store.state.playlist.playlist.description }}
@@ -72,6 +73,8 @@ import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import ArtistList from "../../components/ArtistList.vue";
 import { api } from "../../api";
+import { Mutations as DialogMutations } from "../../components/dialog/DialogStore";
+import { Dialog } from "../../@types/Dialog";
 
 export default defineComponent({
   components: { ArtistList, Cover },
@@ -82,6 +85,17 @@ export default defineComponent({
     const store = useStore<RootState>();
     const playlistpage = ref();
 
+    function deletePlaylist(playlistId: string) {
+      store.commit(`dialog/${DialogMutations.OPEN}`, { type: "editPlaylist", playlistId } as Dialog);
+      // console.log("dzd");
+
+      // console.log("fe");
+      // instance.delete(`https://api.spotify.com/v1/playlists/${playlistId}/followers`).then(() => {
+      //   router.push("/");
+      // });
+      // https://api.spotify.com/v1/playlists/{playlist_id}/followers
+    }
+
     function sumDuration(tracks: PlaylistTrack[]) {
       return tracks.map((t: PlaylistTrack) => t.track.duration_ms).reduce((acc, value) => acc + value, 0);
     }
@@ -90,7 +104,7 @@ export default defineComponent({
     store.dispatch(`playlist/${PlaylistActions.getTracks}`, `${api.url}playlists/${props.id}/tracks`);
     store.commit(`playlist/${Mutations.CLEAN_TRACKS}`);
 
-    return { playlistpage, store, timecode, timecodeWithUnits, playSongs, sumDuration };
+    return { playlistpage, store, timecode, timecodeWithUnits, playSongs, sumDuration, deletePlaylist };
   },
 });
 </script>

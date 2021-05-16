@@ -4,13 +4,15 @@
     <div class="dialog-content">
       <div class="head">
         <div v-if="store.state.dialog.type === 'addalbum'">Ajouter un album à une collection</div>
-        <div v-if="store.state.dialog.type === 'addPlaylist'">Creer une nouvelle playlist</div>
+        <div v-if="store.state.dialog.type === 'addPlaylist'">Créer une nouvelle playlist</div>
+        <div v-if="store.state.dialog.type === 'editPlaylist'">Editer une playlist</div>
         <button class="close" @click="close()">
           <i class="icon-x" />
         </button>
       </div>
       <AddAlbum v-if="store.state.dialog.type === 'addalbum'" />
       <AddPlaylist v-if="store.state.dialog.type === 'addPlaylist'" />
+      <EditPlaylist v-if="store.state.dialog.type === 'editPlaylist'" />
     </div>
   </div>
 </template>
@@ -21,10 +23,11 @@ import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import AddAlbum from "./AddAlbum.vue";
 import AddPlaylist from "./AddPlaylist.vue";
+import EditPlaylist from "./EditPlaylist.vue";
 import { Mutations } from "./DialogStore";
 
 export default defineComponent({
-  components: { AddAlbum, AddPlaylist },
+  components: { AddAlbum, AddPlaylist, EditPlaylist },
   setup() {
     const store = useStore<RootState>();
 

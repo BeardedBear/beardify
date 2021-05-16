@@ -1,8 +1,8 @@
 <template>
-  <div>vas y créé une playlist !</div>
-  <input v-model="playlistName" type="text" />
-  <button @click="create()">GO</button>
-  {{ playlistName }}
+  <div class="content">
+    <input v-model="playlistName" class="input" type="text" placeholder="Nom de la playlist" />
+    <button class="button button--primary" @click="create()">Créer</button>
+  </div>
 </template>
 
 <script lang="ts">
@@ -10,6 +10,7 @@ import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { SidebarActions } from "../sidebar/SidebarStore";
+import { Mutations } from "../dialog/DialogStore";
 
 export default defineComponent({
   setup() {
@@ -17,7 +18,9 @@ export default defineComponent({
     const playlistName = ref("");
 
     function create() {
-      store.dispatch(`sidebar/${SidebarActions.add}`, playlistName.value);
+      store
+        .dispatch(`sidebar/${SidebarActions.add}`, playlistName.value)
+        .then(() => store.commit(`dialog/${Mutations.CLOSE}`));
     }
 
     return { playlistName, create, store };
@@ -26,5 +29,22 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/scss/colors";
+.content {
+  padding: 20px;
+  text-align: center;
+  width: 350px;
+}
+
+.input {
+  padding: 10px 15px;
+  display: block;
+  margin-bottom: 20px;
+  width: 100%;
+  background-color: var(--bg-color-light);
+  border: 0;
+  outline: 0;
+  border-radius: 4px;
+  color: currentColor;
+  font-weight: 700;
+}
 </style>

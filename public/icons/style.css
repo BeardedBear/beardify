@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?v3nw2c');
-  src:  url('fonts/icomoon.eot?v3nw2c#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?v3nw2c') format('truetype'),
-    url('fonts/icomoon.woff?v3nw2c') format('woff'),
-    url('fonts/icomoon.svg?v3nw2c#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?tf4pog');
+  src:  url('fonts/icomoon.eot?tf4pog#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?tf4pog') format('truetype'),
+    url('fonts/icomoon.woff?tf4pog') format('woff'),
+    url('fonts/icomoon.svg?tf4pog#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -73,6 +73,9 @@
 .icon-album:before {
   content: "\e923";
 }
+.icon-edit-3:before {
+  content: "\e92f";
+}
 .icon-fast-forward:before {
   content: "\e901";
 }
@@ -94,11 +97,20 @@
 .icon-moon:before {
   content: "\e927";
 }
+.icon-more-horizontal:before {
+  content: "\e92d";
+}
+.icon-more-vertical:before {
+  content: "\e92e";
+}
 .icon-music:before {
   content: "\e906";
 }
 .icon-play1:before {
   content: "\e907";
+}
+.icon-plus:before {
+  content: "\e930";
 }
 .icon-repeat:before {
   content: "\e908";

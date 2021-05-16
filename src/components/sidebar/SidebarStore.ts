@@ -32,6 +32,7 @@ const mutations: MutationTree<Sidebar> = {
 export enum SidebarActions {
   getPlaylists = "getPlaylists",
   add = "add",
+  remove = "remove",
 }
 
 const actions: ActionTree<Sidebar, RootState> = {
@@ -43,9 +44,14 @@ const actions: ActionTree<Sidebar, RootState> = {
   },
 
   [SidebarActions.add](store, name: string) {
-    console.log(name);
-
     instance.post(`users/${store.rootState.auth.me?.id}/playlists`, { name: name }).then(() => {
+      store.commit(Mutations.RESET);
+      store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
+    });
+  },
+
+  [SidebarActions.remove](store, playlistId: string) {
+    instance.delete(`https://api.spotify.com/v1/playlists/${playlistId}/followers`).then(() => {
       store.commit(Mutations.RESET);
       store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
     });
