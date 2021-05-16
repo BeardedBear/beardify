@@ -42,6 +42,7 @@ export default defineComponent({
 
     // Keep app active
     setInterval(() => {
+      store.dispatch(`player/${PlayerActions.getDeviceList}`);
       if (!store.state.player.currentlyPlaying.is_playing) {
         store.dispatch(`player/${PlayerActions.setDevice}`, store.state.player.devices.activeDevice);
       }
@@ -52,9 +53,13 @@ export default defineComponent({
       if (store.state.sidebar.playlists.length <= 1) {
         store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
       }
-      store.dispatch(`player/${PlayerActions.getDeviceList}`);
       store.dispatch(`player/${PlayerActions.getPlayerState}`);
     }
+
+    addEventListener("focus", () => {
+      store.dispatch(`player/${PlayerActions.getDeviceList}`);
+      getPlayerStatus();
+    });
 
     watchEffect(() => {
       if (store.state.auth.me !== null) {
