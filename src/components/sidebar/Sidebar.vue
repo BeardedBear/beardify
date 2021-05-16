@@ -1,48 +1,44 @@
 <template>
   <div class="sidebar">
-    <div class="overflowed">
-      <div class="overflowed__target">
-        <div class="sidebar__item">
-          <div class="heading title">Collections</div>
-          <div
-            v-for="(playlist, index) in store.state.sidebar.playlists.filter((p) =>
-              p.name.toLowerCase().includes('#collection')
-            )"
-            :key="index"
+    <div class="sidebar__item">
+      <div class="dadza">
+        <div class="heading title">Collections</div>
+        <div
+          v-for="(playlist, index) in store.state.sidebar.playlists
+            .slice(0, 12)
+            .filter((p) => p.name.toLowerCase().includes('#collection'))"
+          :key="index"
+        >
+          <router-link
+            v-if="playlist.id"
+            class="playlist-item"
+            :to="`/collection/${playlist.id}`"
+            :class="{ active: $route.params.id === playlist.id }"
           >
-            <router-link
-              v-if="playlist.id"
-              class="playlist-item"
-              :to="`/collection/${playlist.id}`"
-              :class="{ active: $route.params.id === playlist.id }"
-            >
-              <i class="icon-folder" />
-              <div>{{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}</div>
-            </router-link>
-          </div>
+            <i class="icon-folder" />
+            <div>{{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}</div>
+          </router-link>
         </div>
       </div>
     </div>
-    <div class="overflowed">
-      <div class="overflowed__target">
-        <div>
-          <div class="heading title">Playlists</div>
-          <div
-            v-for="(playlist, index) in store.state.sidebar.playlists.filter(
-              (p) => !p.name.toLowerCase().includes('#collection')
-            )"
-            :key="index"
+    <div class="sidebar__item">
+      <div class="dadza">
+        <div class="heading title">Playlists</div>
+        <div
+          v-for="(playlist, index) in store.state.sidebar.playlists.filter(
+            (p) => !p.name.toLowerCase().includes('#collection')
+          )"
+          :key="index"
+        >
+          <router-link
+            v-if="playlist.id"
+            class="playlist-item"
+            :to="`/playlist/${playlist.id}`"
+            :class="{ active: $route.params.id === playlist.id }"
           >
-            <router-link
-              v-if="playlist.id"
-              class="playlist-item"
-              :to="`/playlist/${playlist.id}`"
-              :class="{ active: $route.params.id === playlist.id }"
-            >
-              <i class="icon-music" />
-              <div>{{ playlist.name }}</div>
-            </router-link>
-          </div>
+            <i class="icon-music" />
+            <div>{{ playlist.name }}</div>
+          </router-link>
         </div>
       </div>
     </div>
@@ -94,6 +90,15 @@ export default defineComponent({
 
   &__item {
     position: relative;
+
+    .dadza {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      overflow: auto;
+    }
   }
 }
 
