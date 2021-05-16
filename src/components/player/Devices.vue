@@ -13,6 +13,9 @@
     >
       {{ device.name }}
     </button>
+    <button type="button" class="device button button--x-small" @click="refreshDevices()">
+      <i class="icon-refresh"></i>
+    </button>
   </div>
 </template>
 
@@ -32,7 +35,11 @@ export default defineComponent({
       store.dispatch(`player/${PlayerActions.setDevice}`, device);
     }
 
-    return { store, setDevice, timecode };
+    function refreshDevices() {
+      store.dispatch(`player/${PlayerActions.getDeviceList}`);
+    }
+
+    return { store, setDevice, timecode, refreshDevices };
   },
 });
 </script>
