@@ -2,8 +2,8 @@
   <PlayerLoading v-if="!store.state.player.currentlyPlaying" />
   <div v-else class="player">
     <div class="meta">
-      <Controls />
       <What />
+      <Controls />
       <div class="options">
         <Volume />
         <Devices />
@@ -42,12 +42,11 @@ export default defineComponent({
 }
 
 .meta {
-  $sidewidth: 300px;
   display: grid;
-  grid-template-columns: $sidewidth auto $sidewidth;
+  grid-template-columns: 1fr auto 1fr;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 25px;
+  padding: 15px 20px;
 }
 .options {
   text-align: right;

@@ -124,7 +124,7 @@ export const defaultCurrentlyPlaying: CurrentlyPlaying = {
   is_playing: false,
   item: defaultCurrentlyPlayingItem,
   progress_ms: 0,
-  repeat_state: "",
+  repeat_state: "off",
   shuffle_state: false,
   timestamp: 0,
 };

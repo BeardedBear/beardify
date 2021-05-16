@@ -1,5 +1,5 @@
 import { ActionTree, MutationTree } from "vuex";
-import { instance } from "../../api";
+import { api, instance } from "../../api";
 import { Player } from "../../@types/Player";
 import { RootState } from "../../@types/RootState";
 import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
@@ -60,6 +60,8 @@ export enum PlayerActions {
   setDevice = "setDevice",
   setVolume = "setVolume",
   getPlayerState = "getPlayerState",
+  toggleShuffle = "toggleShuffle",
+  toggleRepeat = "toggleRepeat",
 }
 
 const actions: ActionTree<Player, RootState> = {
@@ -80,6 +82,22 @@ const actions: ActionTree<Player, RootState> = {
 
   [PlayerActions.getPlayerState](store) {
     instance.get(`me/player`).then((e) => store.commit(Mutations.PLAYER_STATE_CHANGED, e.data));
+  },
+
+  [PlayerActions.toggleShuffle](store) {
+    if (store.state.currentlyPlaying.shuffle_state) {
+      instance.put(`${api.url}me/player/shuffle?state=false`);
+    } else {
+      instance.put(`${api.url}me/player/shuffle?state=true`);
+    }
+  },
+
+  [PlayerActions.toggleRepeat](store) {
+    if (store.state.currentlyPlaying.repeat_state === "off") {
+      instance.put(`${api.url}me/player/repeat?state=context`);
+    } else {
+      instance.put(`${api.url}me/player/repeat?state=off`);
+    }
   },
 };
 

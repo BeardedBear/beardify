@@ -29,7 +29,7 @@ export interface CurrentlyPlaying {
   is_playing: boolean;
   item: CurrentlyPlayingItem;
   progress_ms: number;
-  repeat_state: string;
+  repeat_state: "off" | "track" | "context";
   shuffle_state: boolean;
   timestamp: number;
 }

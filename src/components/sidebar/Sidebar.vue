@@ -102,7 +102,7 @@ export default defineComponent({
 
   .type-icon {
     opacity: 0.3;
-    margin-right: 10px;
+    margin-right: 15px;
   }
 }
 
@@ -127,7 +127,7 @@ export default defineComponent({
 .title {
   position: sticky;
   top: 0;
-  padding: 10px 15px;
+  padding: 10px 10px 10px 15px;
   background-color: var(--bg-color-dark);
   z-index: 1;
   margin: 0;
