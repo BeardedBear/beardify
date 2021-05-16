@@ -4,6 +4,7 @@ import { SimplifiedPlaylist } from "../../@types/Playlist";
 import { RootState } from "../../@types/RootState";
 import { Sidebar } from "../../@types/Sidebar";
 import { api, instance } from "../../api";
+import router from "../../router";
 
 const state: Sidebar = {
   collections: [],
@@ -59,11 +60,10 @@ const actions: ActionTree<Sidebar, RootState> = {
   },
 
   [SidebarActions.remove](store, playlistId: string) {
-    console.log();
-
     instance.delete(`https://api.spotify.com/v1/playlists/${playlistId}/followers`).then(() => {
       store.commit(Mutations.RESET);
       store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
+      if (location.pathname.includes(playlistId)) router.push("/");
     });
   },
 };
