@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class="sidebar__item">
-      <div class="heading title">Playlists</div>
+      <div class="heading title">Playlists <button @click="openDialogAddPlaylist()">add</button></div>
       <div v-for="(playlist, index) in playlists" :key="index">
         <router-link
           v-if="playlist.id"
@@ -41,6 +41,8 @@ import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { SidebarActions } from "./SidebarStore";
 import { api } from "../../api";
+import { Mutations } from "../dialog/DialogStore";
+import { Dialog } from "../../@types/Dialog";
 
 export default defineComponent({
   setup() {
@@ -52,9 +54,13 @@ export default defineComponent({
       store.state.sidebar.playlists.filter((p) => !p.name.toLowerCase().includes("#collection"))
     );
 
+    function openDialogAddPlaylist() {
+      store.commit(`dialog/${Mutations.OPEN}`, { type: "addPlaylist" } as Dialog);
+    }
+
     store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
 
-    return { store, collections, playlists };
+    return { openDialogAddPlaylist, store, collections, playlists };
   },
 });
 </script>

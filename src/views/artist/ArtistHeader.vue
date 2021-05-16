@@ -46,6 +46,7 @@
               .normalize('NFKC')
               .toLowerCase()
               .replaceAll(' ', '-')
+              .replaceAll(',', '')
               .replaceAll('\'', '')
               .replace(/[\u0300-\u036f]/g, '')}`
           )
