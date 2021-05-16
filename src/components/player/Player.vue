@@ -55,20 +55,8 @@
         </div>
 
         <div class="options">
-          <div><Volume /></div>
-          <button
-            v-for="(device, _, index) in store.state.player.devices.list"
-            :key="index"
-            type="button"
-            class="device button button--x-small"
-            :class="{
-              'button--primary': device.id === store.state.player.devices.activeDevice.id,
-              me: store.state.player.thisDeviceId === device.id,
-            }"
-            @click="setDevice(device)"
-          >
-            {{ device.name }}
-          </button>
+          <Volume />
+          <Devices />
         </div>
       </div>
       <SeekBar />
@@ -88,9 +76,10 @@ import Cover from "../Cover.vue";
 import { timecode } from "../../helpers/date";
 import SeekBar from "./SeekBar.vue";
 import Volume from "./Volume.vue";
+import Devices from "./Devices.vue";
 
 export default defineComponent({
-  components: { ArtistList, Cover, SeekBar, Volume },
+  components: { ArtistList, Cover, SeekBar, Volume, Devices },
   setup() {
     const store = useStore<RootState>();
     const perc = ref();
@@ -143,24 +132,6 @@ export default defineComponent({
 
   &__title {
     margin-bottom: 15px;
-  }
-}
-.device {
-  margin-left: 5px;
-  &.me {
-    position: relative;
-    &::before {
-      $s: 7px;
-      position: absolute;
-      top: 0;
-      right: 0;
-      background: white;
-      border-top-right-radius: 3px;
-      width: $s;
-      height: $s;
-      content: "";
-      clip-path: polygon(0 0, 100% 0, 100% 100%);
-    }
   }
 }
 
