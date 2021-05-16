@@ -1,5 +1,6 @@
 <template>
   <div v-if="store.state.dialog.show" class="dialog">
+    <div class="bg" @click="close()"></div>
     <div class="dialog-content">
       <div class="head">
         <div v-if="store.state.dialog.type === 'addalbum'">Ajouter un album à une collection</div>
@@ -67,8 +68,18 @@ $radius: 4px;
     background-color: var(--bg-color);
   }
 }
-.dialog {
+
+.bg {
   animation: popDialog 0.2s ease both;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: var(--bg-color-darker);
+  opacity: 0.95;
+}
+.dialog {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -77,8 +88,6 @@ $radius: 4px;
   z-index: 99999999;
   display: grid;
   place-content: center;
-  backdrop-filter: blur(90px);
-  transition: all;
 }
 
 .head {
