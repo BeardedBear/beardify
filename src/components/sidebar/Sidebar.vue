@@ -2,12 +2,11 @@
   <div class="sidebar">
     <div class="sidebar__item">
       <div class="heading title">Collections</div>
-      <div
-        v-for="(playlist, index) in store.state.sidebar.playlists.filter((p) =>
-          p.name.toLowerCase().includes('#collection')
-        )"
-        :key="index"
-      >
+      <div v-if="!collections.length" class="empty">
+        Ah bah zut alors, tu n'a pas de collection ! Pour en créer une, il suffit de créer ou de renommer une playlist
+        classique, mais en commencant par "#Collection". Magique hein ?
+      </div>
+      <div v-for="(playlist, index) in collections" v-else :key="index">
         <router-link
           v-if="playlist.id"
           class="playlist-item"
@@ -21,12 +20,7 @@
     </div>
     <div class="sidebar__item">
       <div class="heading title">Playlists</div>
-      <div
-        v-for="(playlist, index) in store.state.sidebar.playlists.filter(
-          (p) => !p.name.toLowerCase().includes('#collection')
-        )"
-        :key="index"
-      >
+      <div v-for="(playlist, index) in playlists" :key="index">
         <router-link
           v-if="playlist.id"
           class="playlist-item"
@@ -42,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { SidebarActions } from "./SidebarStore";
@@ -51,10 +45,16 @@ import { api } from "../../api";
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
+    const collections = computed(() =>
+      store.state.sidebar.playlists.filter((p) => p.name.toLowerCase().includes("#collection"))
+    );
+    const playlists = computed(() =>
+      store.state.sidebar.playlists.filter((p) => !p.name.toLowerCase().includes("#collection"))
+    );
 
     store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
 
-    return { store };
+    return { store, collections, playlists };
   },
 });
 </script>
@@ -62,6 +62,11 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
 
+.empty {
+  padding: 10px 20px 10px 15px;
+  font-style: italic;
+  opacity: 0.5;
+}
 .playlist-item {
   padding: 5px 15px;
   color: currentColor;
