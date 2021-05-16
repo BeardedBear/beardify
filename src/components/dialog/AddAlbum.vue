@@ -1,16 +1,14 @@
 <template>
-  <div class="overflowed content">
-    <div class="overflowed__target">
-      <div
-        v-for="(playlist, index) in store.state.sidebar.playlists.filter((p) =>
-          p.name.toLowerCase().includes('#collection')
-        )"
-        :key="index"
-        class="collection"
-        @click="add(store.state.dialog.albumId ? store.state.dialog.albumId : '', playlist.id)"
-      >
-        <div class="album"><i class="icon-folder" />{{ playlist.name.replace("#Collection ", "") }}</div>
-      </div>
+  <div class="content">
+    <div
+      v-for="(playlist, index) in store.state.sidebar.playlists.filter((p) =>
+        p.name.toLowerCase().includes('#collection')
+      )"
+      :key="index"
+      class="collection"
+      @click="add(store.state.dialog.albumId ? store.state.dialog.albumId : '', playlist.id)"
+    >
+      <div class="album"><i class="icon-folder" />{{ playlist.name.replace("#Collection ", "") }}</div>
     </div>
   </div>
 </template>
@@ -47,6 +45,7 @@ export default defineComponent({
 .content {
   height: 400px;
   width: 400px;
+  overflow: auto;
 }
 
 .album {

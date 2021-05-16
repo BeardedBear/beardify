@@ -60,11 +60,11 @@ $radius: 4px;
   padding: 5px 8px;
   border-radius: 4px;
   font-size: 1rem;
-  background-color: var(--primary-color-light);
+  background-color: var(--bg-color-light);
   color: currentColor;
 
   &:hover {
-    background-color: var(--primary-color-lighter);
+    background-color: var(--bg-color);
   }
 }
 .dialog {
@@ -74,16 +74,16 @@ $radius: 4px;
   bottom: 0;
   right: 0;
   left: 0;
-  background-color: rgba(black, 0.9);
   z-index: 99999999;
   display: grid;
   place-content: center;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(90px);
+  transition: all;
 }
 
 .head {
   padding: 15px 25px;
-  background-color: var(--primary-color);
+  background-color: var(--bg-color-lighter);
   border-radius: $radius $radius 0 0;
   font-size: 1rem;
   font-weight: 700;
