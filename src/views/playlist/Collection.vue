@@ -1,30 +1,32 @@
 <template>
   <div ref="playlistpage" class="playlist-page">
-    <div class="playlist-header">
-      <div>
-        <div class="title">
-          {{ store.state.playlist.playlist.name.replace("#Collection ", "").replace("#collection ", "") }}
-        </div>
-        <div class="description">
-          {{ store.state.playlist.playlist.description }}
-        </div>
+    <div class="fit">
+      <div class="playlist-header">
         <div>
-          {{ store.state.playlist.playlist.owner.display_name }} ·
-          {{ store.state.playlist.playlist.tracks.total }} Albums
+          <div class="title">
+            {{ store.state.playlist.playlist.name.replace("#Collection ", "").replace("#collection ", "") }}
+          </div>
+          <div class="description">
+            {{ store.state.playlist.playlist.description }}
+          </div>
+          <div>
+            {{ store.state.playlist.playlist.owner.display_name }} ·
+            {{ store.state.playlist.playlist.tracks.total }} Albums
+          </div>
         </div>
       </div>
-    </div>
-    <div class="album-list">
-      <div v-for="(album, index) in cleanAlbumList" :key="index">
-        <Album
-          :album="album"
-          :currently-played-id="
-            store.state.player.currentlyPlaying ? store.state.player.currentlyPlaying.item.album.uri : ''
-          "
-          with-artists
-          can-delete
-          can-save
-        />
+      <div class="album-list">
+        <div v-for="(album, index) in cleanAlbumList" :key="index">
+          <Album
+            :album="album"
+            :currently-played-id="
+              store.state.player.currentlyPlaying ? store.state.player.currentlyPlaying.item.album.uri : ''
+            "
+            with-artists
+            can-delete
+            can-save
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -116,9 +118,13 @@ export default defineComponent({
 
 .playlist-page {
   padding: 30px 40px;
-  // max-width: 1000px;
-  // margin: 0 auto;
   scroll-behavior: smooth;
   overflow-y: scroll;
+  animation: popContent 1s ease both;
+}
+
+.fit {
+  max-width: 900px;
+  margin: 0 auto;
 }
 </style>

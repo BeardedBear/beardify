@@ -161,6 +161,7 @@ export default defineComponent({
   padding: 30px 40px;
   scroll-behavior: smooth;
   overflow-y: scroll;
+  animation: popContent 1s ease both;
 }
 
 .related-artists {

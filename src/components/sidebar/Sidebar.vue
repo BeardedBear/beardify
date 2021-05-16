@@ -84,6 +84,7 @@ export default defineComponent({
   display: grid;
   grid-template-rows: auto auto;
   overflow: hidden;
+  animation: popContent 1s ease both;
 
   &__item {
     position: relative;
