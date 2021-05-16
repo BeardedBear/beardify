@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watchEffect } from "vue";
+import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
 import { Mutations, PlayerActions } from "./components/player/PlayerStore";
@@ -50,8 +50,11 @@ export default defineComponent({
     }, 120000);
 
     function getPlayerStatus() {
-      if (store.state.sidebar.playlists.length <= 1) {
+      if (!store.state.sidebar.playlists.length) {
         store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
+      }
+      if (!store.state.player.devices.list.length) {
+        store.dispatch(`player/${PlayerActions.getDeviceList}`);
       }
       store.dispatch(`player/${PlayerActions.getPlayerState}`);
     }
@@ -61,13 +64,9 @@ export default defineComponent({
       getPlayerStatus();
     });
 
-    watchEffect(() => {
-      if (store.state.auth.me !== null) {
-        setInterval(() => {
-          if (document.hasFocus()) getPlayerStatus();
-        }, 1000);
-      }
-    });
+    setInterval(() => {
+      if (document.hasFocus()) getPlayerStatus();
+    }, 1000);
 
     addEventListener("initdevice", ((e: CustomEvent) => {
       if (store.state.player.devices.list.filter((d) => d.is_active).length === 0) {

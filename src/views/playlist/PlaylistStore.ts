@@ -1,5 +1,5 @@
 import { ActionTree, MutationTree } from "vuex";
-import { defaultPlaylist, defaultPlaylistTrack } from "../../@types/Defaults";
+import { defaultPlaylist } from "../../@types/Defaults";
 import { Paging } from "../../@types/Paging";
 import { Playlist, PlaylistPage, PlaylistTrack } from "../../@types/Playlist";
 import { RootState } from "../../@types/RootState";
@@ -8,7 +8,7 @@ import { instance } from "../../api";
 
 const state: PlaylistPage = {
   playlist: defaultPlaylist,
-  tracks: [defaultPlaylistTrack],
+  tracks: [],
 };
 
 // MUTATIONS

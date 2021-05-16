@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?o9l08g');
-  src:  url('fonts/icomoon.eot?o9l08g#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?o9l08g') format('truetype'),
-    url('fonts/icomoon.woff?o9l08g') format('woff'),
-    url('fonts/icomoon.svg?o9l08g#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?v3nw2c');
+  src:  url('fonts/icomoon.eot?v3nw2c#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?v3nw2c') format('truetype'),
+    url('fonts/icomoon.woff?v3nw2c') format('woff'),
+    url('fonts/icomoon.svg?v3nw2c#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,11 +25,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-rym:before {
-  content: "\e92a";
-}
 .icon-discogs:before {
   content: "\e919";
+}
+.icon-rym:before {
+  content: "\e92a";
 }
 .icon-sputnik:before {
   content: "\e918";
@@ -42,6 +42,9 @@
 }
 .icon-single:before {
   content: "\e924";
+}
+.icon-youtube:before {
+  content: "\e92c";
 }
 .icon-airplay:before {
   content: "\e900";

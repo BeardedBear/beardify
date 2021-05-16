@@ -1,5 +1,4 @@
 import { CurrentlyPlaying } from "./CurrentlyPlaying";
-import { defaultImage } from "./Defaults";
 import { Device } from "./Device";
 
 export interface Player {
@@ -34,7 +33,7 @@ export type PlayerError =
 const defaultAlbum: Spotify.Album = {
   uri: "",
   name: "",
-  images: [defaultImage],
+  images: [],
 };
 
 const defaultArtist: Spotify.Artist[] = [
@@ -57,8 +56,8 @@ const defaultTrack: Spotify.Track = {
 
 const defaultTrackWindow: Spotify.PlaybackTrackWindow = {
   current_track: defaultTrack,
-  previous_tracks: [defaultTrack],
-  next_tracks: [defaultTrack],
+  previous_tracks: [],
+  next_tracks: [],
 };
 
 const defaultPlaybackDisallows = {

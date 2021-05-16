@@ -1,5 +1,4 @@
 import { ActionTree, MutationTree } from "vuex";
-import { defaultSimplifiedPlaylist } from "../../@types/Defaults";
 import { Paging } from "../../@types/Paging";
 import { SimplifiedPlaylist } from "../../@types/Playlist";
 import { RootState } from "../../@types/RootState";
@@ -7,8 +6,8 @@ import { Sidebar } from "../../@types/Sidebar";
 import { instance } from "../../api";
 
 const state: Sidebar = {
-  collections: [defaultSimplifiedPlaylist],
-  playlists: [defaultSimplifiedPlaylist],
+  collections: [],
+  playlists: [],
 };
 
 // MUTATIONS

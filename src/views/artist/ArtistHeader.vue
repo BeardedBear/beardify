@@ -18,8 +18,8 @@
         class="header-links__item"
         @click="openLink(`https://fr.wikipedia.org/wiki/${store.state.artist.artist.name}`)"
       >
-        <i class="icon-wikipedia" />Wikipedia</a
-      >
+        <i class="icon-wikipedia"
+      /></a>
       <a
         class="header-links__item"
         @click="
@@ -30,14 +30,14 @@
           )
         "
       >
-        <i class="icon-sputnik" />Sputnik</a
-      >
+        <i class="icon-sputnik"
+      /></a>
       <a
         class="header-links__item"
         @click="openLink(`https://www.discogs.com/fr/search/?q=${store.state.artist.artist.name}&amp;strict=true`)"
       >
-        <i class="icon-discogs" />Discogs</a
-      >
+        <i class="icon-discogs"
+      /></a>
       <a
         class="header-links__item"
         @click="
@@ -51,14 +51,20 @@
           )
         "
       >
-        <i class="icon-rym" />RYM</a
-      >
+        <i class="icon-rym"
+      /></a>
       <a
         class="header-links__item"
         @click="openLink(`https://www.google.com/search?q=${store.state.artist.artist.name}+band+artist`)"
       >
-        <i class="icon-google" />Google</a
+        <i class="icon-google"
+      /></a>
+      <a
+        class="header-links__item"
+        @click="openLink(`https://www.youtube.com/results?search_query=${store.state.artist.artist.name}+band+artist`)"
       >
+        <i class="icon-youtube"
+      /></a>
     </div>
   </div>
 </template>
@@ -121,10 +127,7 @@ export default defineComponent({
       color: currentColor;
       opacity: 0.3;
       cursor: pointer;
-
-      i {
-        margin-right: 10px;
-      }
+      font-size: 1rem;
 
       &:hover {
         opacity: 1;
