@@ -59,6 +59,8 @@ const actions: ActionTree<Sidebar, RootState> = {
   },
 
   [SidebarActions.remove](store, playlistId: string) {
+    console.log();
+
     instance.delete(`https://api.spotify.com/v1/playlists/${playlistId}/followers`).then(() => {
       store.commit(Mutations.RESET);
       store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
