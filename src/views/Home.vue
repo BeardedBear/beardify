@@ -1,7 +1,7 @@
 <template>
   <div v-if="env === 'production'">Coucou c'est l'accueil, pour le moment y'a rien, mais t'inquiète ca va venir.</div>
-  <div v-else class="home overflowed">
-    <div class="overflowed__target">
+  <div v-else class="home">
+    <div class="home__content">
       <div>{{ store.state.auth.auth.refreshToken }}</div>
       <div>{{ store.state.auth.auth.accessToken }}</div>
       <b>This device id</b> :
@@ -34,7 +34,13 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .home {
-  padding: 20px;
   line-break: anywhere;
+  overflow: hidden;
+  display: grid;
+
+  &__content {
+    padding: 20px;
+    overflow-y: auto;
+  }
 }
 </style>
