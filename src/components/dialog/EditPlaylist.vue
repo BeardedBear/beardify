@@ -1,10 +1,7 @@
 <template>
-  <div>vas y créé une playlist !</div>
-
-  {{ store.state.dialog.playlistId }}
-  editer
-
-  <button @click="remove()">SUPPRIME</button>
+  <div class="content">
+    <button class="button button--primary" @click="remove()">Supprimer la playlist</button>
+  </div>
 </template>
 
 <script lang="ts">
@@ -30,5 +27,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/scss/colors";
+.content {
+  padding: 20px;
+  text-align: center;
+  width: 350px;
+}
 </style>
