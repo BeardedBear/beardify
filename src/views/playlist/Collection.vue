@@ -3,16 +3,26 @@
     <div class="fit">
       <div class="playlist-header">
         <div>
-          <div class="title">
-            {{ store.state.playlist.playlist.name.replace("#Collection ", "").replace("#collection ", "") }}
-          </div>
-          <div class="description">
-            {{ store.state.playlist.playlist.description }}
-          </div>
           <div>
-            {{ store.state.playlist.playlist.owner.display_name }} ·
-            {{ store.state.playlist.playlist.tracks.total }} Albums
+            <div class="title">
+              {{ store.state.playlist.playlist.name.replace("#Collection ", "").replace("#collection ", "") }}
+            </div>
+            <div class="description">
+              {{ store.state.playlist.playlist.description }}
+            </div>
+            <div>
+              {{ store.state.playlist.playlist.owner.display_name }} ·
+              {{ store.state.playlist.playlist.tracks.total }} Albums
+            </div>
           </div>
+        </div>
+        <div class="playlist-header__right">
+          <button class="button button--nude">
+            <i class="icon-share"></i>
+          </button>
+          <button class="button button--nude" @click="edit(store.state.playlist.playlist.id)">
+            <i class="icon-more-vertical"></i>
+          </button>
         </div>
       </div>
       <div class="album-list">
@@ -43,6 +53,8 @@ import { PlaylistTrack } from "../../@types/Playlist";
 import Album from "../../components/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { api } from "../../api";
+import { Mutations as DialogMutations } from "../../components/dialog/DialogStore";
+import { Dialog } from "../../@types/Dialog";
 
 export default defineComponent({
   components: { Album },
@@ -55,6 +67,10 @@ export default defineComponent({
     const cleanAlbumList = computed(() =>
       removeDuplicatesAlbums(store.state.playlist.tracks.map((a) => a.track.album))
     );
+
+    function edit(playlistId: string) {
+      store.commit(`dialog/${DialogMutations.OPEN}`, { type: "editPlaylist", playlistId } as Dialog);
+    }
 
     function sumDuration(tracks: PlaylistTrack[]) {
       return tracks.map((t: PlaylistTrack) => t.track.duration_ms).reduce((acc, value) => acc + value, 0);
@@ -73,6 +89,7 @@ export default defineComponent({
       sumDuration,
       removeDuplicatesAlbums,
       cleanAlbumList,
+      edit,
     };
   },
 });
@@ -106,14 +123,17 @@ export default defineComponent({
   font-size: 2.5rem;
   font-weight: 100;
   margin-bottom: 5px;
-  text-align: center;
 }
 
 .playlist-header {
-  align-items: center;
   gap: 30px;
   margin-bottom: 40px;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+
+  &__right {
+    font-size: 1.1rem;
+  }
 }
 
 .playlist-page {

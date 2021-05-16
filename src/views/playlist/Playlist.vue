@@ -2,22 +2,32 @@
   <div ref="playlistpage" class="playlist-page">
     <div class="fit">
       <div class="playlist-header">
-        <div>
-          <Cover size="medium" :images="store.state.playlist.playlist.images" class-name="cover" />
-        </div>
-        <div>
-          <div class="title">
-            {{ store.state.playlist.playlist.name }}
-            <button @click="deletePlaylist(store.state.playlist.playlist.id)">delete</button>
-          </div>
-          <div class="description">
-            {{ store.state.playlist.playlist.description }}
+        <div class="playlist-header__left">
+          <div>
+            <Cover size="medium" :images="store.state.playlist.playlist.images" class-name="cover" />
           </div>
           <div>
-            {{ store.state.playlist.playlist.owner.display_name }} ·
-            {{ store.state.playlist.playlist.tracks.total }} Morceaux ·
-            {{ timecodeWithUnits(sumDuration(store.state.playlist.tracks)) }}
+            <div class="title">
+              {{ store.state.playlist.playlist.name }}
+            </div>
+            <div class="description">
+              {{ store.state.playlist.playlist.description }}
+            </div>
+            <div>
+              {{ store.state.playlist.playlist.owner.display_name }} ·
+              {{ store.state.playlist.playlist.tracks.total }} Morceaux ·
+              {{ timecodeWithUnits(sumDuration(store.state.playlist.tracks)) }}
+            </div>
           </div>
+        </div>
+
+        <div class="playlist-header__right">
+          <button class="button button--nude">
+            <i class="icon-share"></i>
+          </button>
+          <button class="button button--nude" @click="deletePlaylist(store.state.playlist.playlist.id)">
+            <i class="icon-more-vertical"></i>
+          </button>
         </div>
       </div>
       <div
@@ -87,13 +97,6 @@ export default defineComponent({
 
     function deletePlaylist(playlistId: string) {
       store.commit(`dialog/${DialogMutations.OPEN}`, { type: "editPlaylist", playlistId } as Dialog);
-      // console.log("dzd");
-
-      // console.log("fe");
-      // instance.delete(`https://api.spotify.com/v1/playlists/${playlistId}/followers`).then(() => {
-      //   router.push("/");
-      // });
-      // https://api.spotify.com/v1/playlists/{playlist_id}/followers
     }
 
     function sumDuration(tracks: PlaylistTrack[]) {
@@ -161,15 +164,26 @@ export default defineComponent({
   font-size: 2rem;
   font-weight: 100;
   margin-bottom: 5px;
+  margin-top: -15px;
 }
 
 .playlist-header {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
+  justify-content: space-between;
 
   img {
     margin-right: 30px;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+  }
+
+  &__right {
+    font-size: 1.1rem;
   }
 }
 
