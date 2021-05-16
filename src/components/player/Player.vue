@@ -1,19 +1,5 @@
 <template>
-  <div v-if="!store.state.player.currentlyPlaying" class="player-loading">
-    <div class="player-loading__title">Choisir un périphérique de lecture :</div>
-    <span v-if="store.state.player.devices.list.length">
-      <button
-        v-for="(device, _, index) in store.state.player.devices.list"
-        :key="index"
-        type="button"
-        class="device button button--x-small"
-        :class="{ me: store.state.player.thisDeviceId === device.id }"
-        @click="setDevice(device)"
-      >
-        {{ device.name }}
-      </button>
-    </span>
-  </div>
+  <PlayerLoading v-if="!store.state.player.currentlyPlaying" />
   <div v-else class="player">
     <div>
       <div class="meta">
@@ -35,25 +21,7 @@
           </div>
           <div />
         </div>
-
-        <div>
-          <div class="meta__what">
-            <router-link :to="`/album/${store.state.player.currentlyPlaying.item.album.id}`">
-              <Cover size="small" :images="store.state.player.currentlyPlaying.item.album.images" class-name="cover" />
-            </router-link>
-            <div>
-              <div>
-                <ArtistList :artist-list="store.state.player.currentlyPlaying.item.album.artists" />
-                ·
-                <span class="trackname">{{ store.state.player.currentlyPlaying.item.name }}</span>
-              </div>
-              <div class="album">
-                {{ store.state.player.currentlyPlaying.item.album.name }}
-              </div>
-            </div>
-          </div>
-        </div>
-
+        <What />
         <div class="options">
           <Volume />
           <Devices />
@@ -68,26 +36,19 @@
 import { ref, defineComponent } from "vue";
 import { useStore } from "vuex";
 import { instance } from "../../api";
-import { PlayerActions } from "./../player/PlayerStore";
 import { RootState } from "../../@types/RootState";
-import ArtistList from "../ArtistList.vue";
-import { Device } from "../../@types/Device";
-import Cover from "../Cover.vue";
 import { timecode } from "../../helpers/date";
 import SeekBar from "./SeekBar.vue";
 import Volume from "./Volume.vue";
 import Devices from "./Devices.vue";
+import What from "./What.vue";
+import PlayerLoading from "./PlayerLoading.vue";
 
 export default defineComponent({
-  components: { ArtistList, Cover, SeekBar, Volume, Devices },
+  components: { SeekBar, Volume, Devices, What, PlayerLoading },
   setup() {
     const store = useStore<RootState>();
-    const perc = ref();
     const time = ref();
-
-    function setDevice(device: Device) {
-      store.dispatch(`player/${PlayerActions.setDevice}`, device);
-    }
 
     function goPlay() {
       instance.put("me/player/play", {
@@ -105,58 +66,13 @@ export default defineComponent({
       });
     }
 
-    return {
-      store,
-      setDevice,
-      goPlay,
-      goNext,
-      goPause,
-      perc,
-      time,
-      timecode,
-    };
+    return { store, goPlay, goNext, goPause, time, timecode };
   },
 });
 </script>
 
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
-
-.player-loading {
-  display: grid;
-  place-content: center;
-  padding: 10px;
-  background-color: var(--bg-color);
-  padding: 20px;
-  text-align: center;
-
-  &__title {
-    margin-bottom: 15px;
-  }
-}
-
-.cover {
-  border-radius: 4px;
-  display: block;
-}
-
-.player {
-  background: var(--bg-color);
-}
-
-.trackname {
-  font-style: italic;
-}
-
-.artistname {
-  font-weight: 700;
-  text-decoration: none;
-  color: currentColor;
-}
-.album {
-  opacity: 0.5;
-  font-style: italic;
-}
 
 .controls {
   display: flex;
@@ -178,9 +94,11 @@ export default defineComponent({
     }
   }
 }
-.options {
-  text-align: right;
+
+.player {
+  background: var(--bg-color);
 }
+
 .meta {
   $sidewidth: 300px;
   display: grid;
@@ -188,15 +106,8 @@ export default defineComponent({
   justify-content: space-between;
   align-items: center;
   padding: 15px 25px;
-
-  &__what {
-    display: flex;
-    align-items: center;
-
-    img {
-      height: 50px;
-      margin-right: 15px;
-    }
-  }
+}
+.options {
+  text-align: right;
 }
 </style>
