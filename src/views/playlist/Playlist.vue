@@ -51,22 +51,23 @@
           <i class="icon-music" />
         </div>
         <div>
-          <div>{{ track.track?.name }}</div>
+          <div>{{ track.track.name }}</div>
           <div>
-            <ArtistList :artist-list="track.track?.artists" feat />
+            <ArtistList :artist-list="track.track.artists" feat />
           </div>
         </div>
-        <div class="album">
+        <div class="album" @click.stop="goAlbum(track.track.album.id)">
           <i
             :class="{
-              'icon-album': track.track?.album.album_type === 'album',
-              'icon-single': track.track?.album.album_type === 'single',
-              'icon-compilation': track.track?.album.album_type === 'compilation',
+              'icon-album': track.track.album.album_type === 'album',
+              'icon-single': track.track.album.album_type === 'single',
+              'icon-compilation': track.track.album.album_type === 'compilation',
             }"
-          />{{ track.track?.album.name }}
+          />{{ track.track.album.name }}
         </div>
+
         <div class="duration">
-          {{ timecode(track.track?.duration_ms) }}
+          {{ timecode(track.track.duration_ms) }}
         </div>
       </div>
     </div>
@@ -86,6 +87,7 @@ import ArtistList from "../../components/ArtistList.vue";
 import { api } from "../../api";
 import { Mutations as DialogMutations } from "../../components/dialog/DialogStore";
 import { Dialog } from "../../@types/Dialog";
+import router from "../../router";
 
 export default defineComponent({
   components: { ArtistList, Cover },
@@ -96,8 +98,14 @@ export default defineComponent({
     const store = useStore<RootState>();
     const playlistpage = ref();
 
+    console.log(store.state.playlist.playlist);
+
     function deletePlaylist(playlistId: string) {
       store.commit(`dialog/${DialogMutations.OPEN}`, { type: "editPlaylist", playlistId } as Dialog);
+    }
+
+    function goAlbum(albumId: string) {
+      router.push(`/album/${albumId}`);
     }
 
     function sumDuration(tracks: PlaylistTrack[]) {
@@ -110,7 +118,7 @@ export default defineComponent({
     store.dispatch(`playlist/${PlaylistActions.getTracks}`, `${api.url}playlists/${props.id}/tracks`);
     store.commit(`playlist/${Mutations.CLEAN_TRACKS}`);
 
-    return { playlistpage, store, timecode, timecodeWithUnits, playSongs, sumDuration, deletePlaylist };
+    return { playlistpage, store, timecode, timecodeWithUnits, playSongs, sumDuration, deletePlaylist, goAlbum };
   },
 });
 </script>
@@ -140,10 +148,17 @@ export default defineComponent({
 .duration {
   text-align: right;
 }
+
 .album {
   text-align: left;
   display: flex;
   align-items: center;
+  font-size: 0.8rem;
+
+  &:hover {
+    color: var(--primary-color);
+    opacity: 1;
+  }
 
   i {
     opacity: 0.3;
@@ -158,9 +173,10 @@ export default defineComponent({
 }
 
 .description {
-  margin-bottom: 7px;
+  margin-bottom: 10px;
   font-style: italic;
   opacity: 0.5;
+  max-width: 80%;
 }
 
 .title {
@@ -187,6 +203,8 @@ export default defineComponent({
 
   &__right {
     font-size: 1.1rem;
+    flex: 0 0 140px;
+    text-align: right;
   }
 }
 
@@ -202,7 +220,7 @@ export default defineComponent({
 }
 
 .fit {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 </style>

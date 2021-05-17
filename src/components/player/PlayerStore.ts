@@ -5,6 +5,7 @@ import { RootState } from "../../@types/RootState";
 import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
 import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
 import { Device, DevicesResponse } from "../../@types/Device";
+import router from "../../router";
 
 const state: Player = {
   devices: {
@@ -81,7 +82,10 @@ const actions: ActionTree<Player, RootState> = {
   },
 
   [PlayerActions.getPlayerState](store) {
-    instance.get(`me/player`).then((e) => store.commit(Mutations.PLAYER_STATE_CHANGED, e.data));
+    instance.get(`me/player`).then((e) => {
+      if (e.status === 401) router.push("login");
+      store.commit(Mutations.PLAYER_STATE_CHANGED, e.data);
+    });
   },
 
   [PlayerActions.toggleShuffle](store) {
