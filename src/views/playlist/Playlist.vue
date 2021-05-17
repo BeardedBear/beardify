@@ -35,9 +35,10 @@
         :key="index"
         class="track"
         :class="{
-          active: store.state.player.currentlyPlaying
-            ? track.track.id === store.state.player.currentlyPlaying.item.id
-            : false,
+          active:
+            store.state.player.currentlyPlaying && track.track
+              ? track.track.id === store.state.player.currentlyPlaying.item.id
+              : false,
         }"
         @click="
           playSongs(
@@ -50,22 +51,22 @@
           <i class="icon-music" />
         </div>
         <div>
-          <div>{{ track.track.name }}</div>
+          <div>{{ track.track?.name }}</div>
           <div>
-            <ArtistList :artist-list="track.track.artists" feat />
+            <ArtistList :artist-list="track.track?.artists" feat />
           </div>
         </div>
         <div class="album">
           <i
             :class="{
-              'icon-album': track.track.album.album_type === 'album',
-              'icon-single': track.track.album.album_type === 'single',
-              'icon-compilation': track.track.album.album_type === 'compilation',
+              'icon-album': track.track?.album.album_type === 'album',
+              'icon-single': track.track?.album.album_type === 'single',
+              'icon-compilation': track.track?.album.album_type === 'compilation',
             }"
-          />{{ track.track.album.name }}
+          />{{ track.track?.album.name }}
         </div>
         <div class="duration">
-          {{ timecode(track.track.duration_ms) }}
+          {{ timecode(track.track?.duration_ms) }}
         </div>
       </div>
     </div>
@@ -100,7 +101,9 @@ export default defineComponent({
     }
 
     function sumDuration(tracks: PlaylistTrack[]) {
-      return tracks.map((t: PlaylistTrack) => t.track.duration_ms).reduce((acc, value) => acc + value, 0);
+      return tracks
+        .map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0))
+        .reduce((acc, value) => acc + value, 0);
     }
 
     store.dispatch(`playlist/${PlaylistActions.getPlaylist}`, `${api.url}playlists/${props.id}`);
