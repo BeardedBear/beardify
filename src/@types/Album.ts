@@ -7,7 +7,7 @@ export interface AlbumPage {
   album: Album;
 }
 
-export type AlbumType = "album" | "single" | "compilation";
+export type AlbumType = "album" | "single" | "compilation" | "ALBUM" | "SINGLE";
 
 export type ReleaseDatePrecision = "year" | "month" | "day";
 export interface Album {

@@ -7,6 +7,7 @@ import { Sidebar } from "./Sidebar";
 import { PlaylistPage } from "./Playlist";
 import { Dialog } from "./Dialog";
 import { Config } from "./Config";
+import { HomePage } from "./Home";
 
 export interface RootState {
   auth: Auth;
@@ -18,4 +19,5 @@ export interface RootState {
   playlist: PlaylistPage;
   dialog: Dialog;
   config: Config;
+  home: HomePage;
 }

@@ -9,6 +9,7 @@ import search from "./components/search/SearchStore";
 import sidebar from "./components/sidebar/SidebarStore";
 import playlist from "./views/playlist/PlaylistStore";
 import config from "./components/config/ConfigStore";
+import home from "./views/home/HomeStore";
 import { RootState } from "./@types/RootState";
 
 const persisted = createPersistedState({
@@ -17,6 +18,6 @@ const persisted = createPersistedState({
 });
 
 export default createStore<RootState>({
-  modules: { player, auth, artist, album, search, sidebar, playlist, dialog, config },
+  modules: { player, auth, artist, album, search, sidebar, playlist, dialog, config, home },
   plugins: [persisted],
 });
