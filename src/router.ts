@@ -57,9 +57,38 @@ const routes: Array<RouteRecordRaw> = [
   },
 ];
 
+// scrollBehavior(to, from, savedPosition) {
+//   if (savedPosition) {
+//     // Keep scroll position when using browser buttons
+//     return savedPosition;
+//   } else {
+//     return { x: 0, y: 0 };
+//   }
+// },
+
 const router = createRouter({
   history: createWebHistory("/"),
+
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    console.log(to);
+    console.log(from);
+
+    if (savedPosition) {
+      setTimeout(() => {
+        console.log(savedPosition);
+
+        return {
+          // could also be
+          // el: document.getElementById('main'),
+          el: document.querySelector(".playlist-page"),
+          top: savedPosition,
+        };
+      }, 2000);
+    } else {
+      return { top: 0 };
+    }
+  },
 });
 
 router.beforeEach(async (to) => {

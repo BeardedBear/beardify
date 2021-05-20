@@ -34,19 +34,21 @@ export enum HomeActions {
 const actions: ActionTree<HomePage, RootState> = {
   [HomeActions.getRecommendedAlbums](store) {
     instance.get<Paging<Artist>>(`${api.url}me/top/artists`).then((e) => {
-      interface Test {
+      interface Top {
         seed: unknown;
         tracks: Track[];
       }
 
-      instance
-        .get<Test>(`${api.url}recommendations?market=US&seed_artists=${e.data.items[getRandomInt(0, 10)].id}&limit=50`)
-        .then((f) => {
-          store.commit(
-            Mutations.SET_RECOMMENDED_ALBUMS,
-            removeDuplicatesAlbums(f.data.tracks.map((g) => g.album).filter((h) => h.album_type === "ALBUM"))
-          );
-        });
+      const artistsSeed = `${e.data.items[getRandomInt(0, 10)].id},${e.data.items[getRandomInt(0, 10)].id},${
+        e.data.items[getRandomInt(0, 10)].id
+      },${e.data.items[getRandomInt(0, 10)].id},${e.data.items[getRandomInt(0, 10)].id}`;
+
+      instance.get<Top>(`${api.url}recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`).then((f) => {
+        store.commit(
+          Mutations.SET_RECOMMENDED_ALBUMS,
+          removeDuplicatesAlbums(f.data.tracks.map((g) => g.album).filter((h) => h.album_type === "ALBUM"))
+        );
+      });
     });
   },
 };
