@@ -10,19 +10,19 @@ const state: Dialog = {
 // MUTATIONS
 
 export enum Mutations {
-  OPEN = "OPEN",
-  CLOSE = "CLOSE",
+  OPEN_DIALOG = "OPEN_DIALOG",
+  CLOSE_DIALOG = "CLOSE_DIALOG",
 }
 
 const mutations: MutationTree<Dialog> = {
-  [Mutations.OPEN](state, data: { type: DialogType; albumId?: string; playlistId?: string }): void {
+  [Mutations.OPEN_DIALOG](state, data: { type: DialogType; albumId?: string; playlistId?: string }): void {
     state.show = true;
     state.type = data.type;
     if (data.albumId) state.albumId = data.albumId;
     if (data.playlistId) state.playlistId = data.playlistId;
   },
 
-  [Mutations.CLOSE](state): void {
+  [Mutations.CLOSE_DIALOG](state): void {
     state.show = false;
     state.type = "none";
   },
@@ -37,6 +37,5 @@ const actions: ActionTree<Dialog, RootState> = {};
 export default {
   actions,
   mutations,
-  namespaced: true,
   state,
 };

@@ -66,7 +66,7 @@ export default defineComponent({
       return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
     }
     onMounted(() => {
-      store.dispatch(`album/${AlbumActions.getAlbum}`, props.id);
+      store.dispatch(AlbumActions.getAlbum, props.id);
       // albumpage.value.scrollTop = 0;
     });
 

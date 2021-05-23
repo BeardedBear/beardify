@@ -66,6 +66,5 @@ const actions: ActionTree<PlaylistPage, RootState> = {
 export default {
   actions,
   mutations,
-  namespaced: true,
   state,
 };

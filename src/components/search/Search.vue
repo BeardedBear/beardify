@@ -87,7 +87,7 @@ export default defineComponent({
     const query = ref("");
 
     function search(q: string) {
-      store.dispatch(`search/${SearchActions.search}`, q);
+      store.dispatch(SearchActions.search, q);
     }
 
     function reset() {

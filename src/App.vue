@@ -35,32 +35,32 @@ export default defineComponent({
 
     KeyboardEvents();
 
-    store.dispatch(`player/${PlayerActions.getDeviceList}`);
-    store.dispatch(`auth/${AuthActions.refresh}`);
+    store.dispatch(PlayerActions.getDeviceList);
+    store.dispatch(AuthActions.refresh);
     store.state.config.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
     store.state.config.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
 
     // Keep app active
     setInterval(() => {
-      store.dispatch(`player/${PlayerActions.getDeviceList}`);
+      store.dispatch(PlayerActions.getDeviceList);
       if (!store.state.player.currentlyPlaying.is_playing) {
-        store.dispatch(`player/${PlayerActions.setDevice}`, store.state.player.devices.activeDevice);
+        store.dispatch(PlayerActions.setDevice, store.state.player.devices.activeDevice);
       }
-      store.dispatch(`auth/${AuthActions.refresh}`);
+      store.dispatch(AuthActions.refresh);
     }, 120000);
 
     function getPlayerStatus() {
       if (!store.state.sidebar.playlists.length) {
-        store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
+        store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
       }
       if (!store.state.player.devices.list.length) {
-        store.dispatch(`player/${PlayerActions.getDeviceList}`);
+        store.dispatch(PlayerActions.getDeviceList);
       }
-      store.dispatch(`player/${PlayerActions.getPlayerState}`);
+      store.dispatch(PlayerActions.getPlayerState);
     }
 
     addEventListener("focus", () => {
-      store.dispatch(`player/${PlayerActions.getDeviceList}`);
+      store.dispatch(PlayerActions.getDeviceList);
       getPlayerStatus();
     });
 
@@ -72,7 +72,7 @@ export default defineComponent({
       if (store.state.player.devices.list.filter((d) => d.is_active).length === 0) {
         instance.put("me/player", { device_ids: [e.detail.thisDevice] });
       }
-      store.commit(`player/${Mutations.THIS_DEVICE}`, e.detail.thisDevice);
+      store.commit(Mutations.THIS_DEVICE, e.detail.thisDevice);
     }) as { (evt: Event): void });
 
     return { store };

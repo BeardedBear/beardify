@@ -32,11 +32,11 @@ export default defineComponent({
     const store = useStore<RootState>();
 
     function setDevice(device: Device) {
-      store.dispatch(`player/${PlayerActions.setDevice}`, device);
+      store.dispatch(PlayerActions.setDevice, device);
     }
 
     function refreshDevices() {
-      store.dispatch(`player/${PlayerActions.getDeviceList}`);
+      store.dispatch(PlayerActions.getDeviceList);
     }
 
     return { store, setDevice, timecode, refreshDevices };

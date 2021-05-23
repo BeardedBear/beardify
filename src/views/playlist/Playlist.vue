@@ -98,10 +98,8 @@ export default defineComponent({
     const store = useStore<RootState>();
     const playlistpage = ref();
 
-    console.log(store.state.playlist.playlist);
-
     function deletePlaylist(playlistId: string) {
-      store.commit(`dialog/${DialogMutations.OPEN}`, { type: "editPlaylist", playlistId } as Dialog);
+      store.commit(DialogMutations.OPEN_DIALOG, { type: "editPlaylist", playlistId } as Dialog);
     }
 
     function goAlbum(albumId: string) {
@@ -114,9 +112,9 @@ export default defineComponent({
         .reduce((acc, value) => acc + value, 0);
     }
 
-    store.dispatch(`playlist/${PlaylistActions.getPlaylist}`, `${api.url}playlists/${props.id}`);
-    store.dispatch(`playlist/${PlaylistActions.getTracks}`, `${api.url}playlists/${props.id}/tracks`);
-    store.commit(`playlist/${Mutations.CLEAN_TRACKS}`);
+    store.dispatch(PlaylistActions.getPlaylist, `${api.url}playlists/${props.id}`);
+    store.dispatch(PlaylistActions.getTracks, `${api.url}playlists/${props.id}/tracks`);
+    store.commit(Mutations.CLEAN_TRACKS);
 
     return { playlistpage, store, timecode, timecodeWithUnits, playSongs, sumDuration, deletePlaylist, goAlbum };
   },

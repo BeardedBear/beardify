@@ -18,9 +18,7 @@ export default defineComponent({
     const playlistName = ref("");
 
     function create() {
-      store
-        .dispatch(`sidebar/${SidebarActions.add}`, playlistName.value)
-        .then(() => store.commit(`dialog/${Mutations.CLOSE}`));
+      store.dispatch(SidebarActions.addPlaylist, playlistName.value).then(() => store.commit(Mutations.CLOSE_DIALOG));
     }
 
     return { playlistName, create, store };

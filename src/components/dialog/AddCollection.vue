@@ -19,8 +19,8 @@ export default defineComponent({
 
     function create() {
       store
-        .dispatch(`sidebar/${SidebarActions.addCollection}`, collectionName.value)
-        .then(() => store.commit(`dialog/${Mutations.CLOSE}`));
+        .dispatch(SidebarActions.addCollection, collectionName.value)
+        .then(() => store.commit(Mutations.CLOSE_DIALOG));
     }
 
     return { collectionName, create, store };

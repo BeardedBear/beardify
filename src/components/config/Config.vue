@@ -34,7 +34,7 @@ export default defineComponent({
     const env = process.env.NODE_ENV;
 
     function refresh(): void {
-      store.dispatch(`auth/${AuthActions.refresh}`);
+      store.dispatch(AuthActions.refresh);
     }
 
     return { store, refresh, env };

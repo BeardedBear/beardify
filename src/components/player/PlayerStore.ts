@@ -108,6 +108,5 @@ const actions: ActionTree<Player, RootState> = {
 export default {
   actions,
   mutations,
-  namespaced: true,
   state,
 };

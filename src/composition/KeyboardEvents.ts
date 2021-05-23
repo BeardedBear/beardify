@@ -6,7 +6,7 @@ export default (): void => {
   const store = useStore<RootState>();
 
   function setVolume(volume: number) {
-    store.dispatch(`player/${PlayerActions.setVolume}`, volume);
+    store.dispatch(PlayerActions.setVolume, volume);
   }
 
   addEventListener("keydown", (e) => {

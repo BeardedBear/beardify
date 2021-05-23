@@ -21,7 +21,7 @@ export default defineComponent({
     const volume = ref(0);
 
     function setVolume() {
-      store.dispatch(`player/${PlayerActions.setVolume}`, volume.value);
+      store.dispatch(PlayerActions.setVolume, volume.value);
     }
 
     watchEffect(() => {

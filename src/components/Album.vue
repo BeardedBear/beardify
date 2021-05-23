@@ -40,7 +40,7 @@ import router from "../router";
 import Cover from "./Cover.vue";
 import ArtistList from "./ArtistList.vue";
 import { Mutations } from "./dialog/DialogStore";
-import { DialogType } from "../@types/Dialog";
+import { Dialog, DialogType } from "../@types/Dialog";
 import { Paging } from "../@types/Paging";
 import { TrackSimplified, TrackToRemove } from "../@types/Track";
 import { useRoute } from "vue-router";
@@ -69,7 +69,7 @@ export default defineComponent({
     }
 
     function addAlbum(type: DialogType, albumId: string) {
-      store.commit(`dialog/${Mutations.OPEN}`, { type, albumId });
+      store.commit(Mutations.OPEN_DIALOG, { type, albumId } as Dialog);
     }
 
     function deleteAlbum(albumId: string) {
@@ -82,7 +82,7 @@ export default defineComponent({
           .delete(`playlists/${currentRouteId}/tracks`, {
             data: { tracks },
           })
-          .then(() => store.commit(`playlist/${PlaylistMutation.REMOVE_TRACKS}`, tracks));
+          .then(() => store.commit(PlaylistMutation.REMOVE_TRACKS, tracks));
       });
     }
 

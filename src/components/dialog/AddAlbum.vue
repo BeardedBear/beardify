@@ -29,7 +29,7 @@ export default defineComponent({
     function add(albumId: string, playlistId: string) {
       instance.get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`).then((e) => {
         instance.post(`playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`).then((f) => {
-          if (f.status === 201) store.commit(`dialog/${Mutations.CLOSE}`);
+          if (f.status === 201) store.commit(Mutations.CLOSE_DIALOG);
         });
       });
     }

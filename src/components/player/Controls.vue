@@ -61,11 +61,11 @@ export default defineComponent({
     }
 
     function toggleShuffle() {
-      store.dispatch(`player/${PlayerActions.toggleShuffle}`);
+      store.dispatch(PlayerActions.toggleShuffle);
     }
 
     function toggleRepeat() {
-      store.dispatch(`player/${PlayerActions.toggleRepeat}`);
+      store.dispatch(PlayerActions.toggleRepeat);
     }
 
     return { store, goPlay, goNext, goPause, timecode, toggleShuffle, toggleRepeat };

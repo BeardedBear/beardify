@@ -148,6 +148,5 @@ const actions: ActionTree<ArtistPage, RootState> = {
 export default {
   actions,
   mutations,
-  namespaced: true,
   state,
 };

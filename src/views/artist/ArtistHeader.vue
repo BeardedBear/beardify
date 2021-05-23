@@ -85,7 +85,7 @@ export default defineComponent({
     }
 
     function switchFollow(artistId: string) {
-      store.dispatch(`artist/${ArtistActions.switchFollow}`, artistId);
+      store.dispatch(ArtistActions.switchFollow, artistId);
     }
 
     return { store, openLink, switchFollow };

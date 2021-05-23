@@ -35,7 +35,7 @@ export default defineComponent({
     const store = useStore<RootState>();
 
     function close() {
-      store.commit(`dialog/${Mutations.CLOSE}`);
+      store.commit(Mutations.CLOSE_DIALOG);
     }
 
     return { close, store };

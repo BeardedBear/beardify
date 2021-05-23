@@ -69,12 +69,12 @@ export default defineComponent({
     const artistpage = ref();
 
     onMounted(() => {
-      store.dispatch(`artist/${ArtistActions.getArtist}`, props.id);
-      store.dispatch(`artist/${ArtistActions.getTopTracks}`, props.id);
-      store.dispatch(`artist/${ArtistActions.getAlbums}`, props.id);
-      store.dispatch(`artist/${ArtistActions.getRelatedArtists}`, props.id);
-      store.dispatch(`artist/${ArtistActions.getSingles}`, props.id);
-      store.dispatch(`artist/${ArtistActions.getFollowStatus}`, props.id);
+      store.dispatch(ArtistActions.getArtist, props.id);
+      store.dispatch(ArtistActions.getTopTracks, props.id);
+      store.dispatch(ArtistActions.getAlbums, props.id);
+      store.dispatch(ArtistActions.getRelatedArtists, props.id);
+      store.dispatch(ArtistActions.getSingles, props.id);
+      store.dispatch(ArtistActions.getFollowStatus, props.id);
       artistpage.value.scrollTop = 0;
     });
 

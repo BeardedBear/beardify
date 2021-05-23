@@ -67,14 +67,14 @@ export default defineComponent({
     );
 
     function openDialogAddPlaylist() {
-      store.commit(`dialog/${Mutations.OPEN}`, { type: "addPlaylist" } as Dialog);
+      store.commit(Mutations.OPEN_DIALOG, { type: "addPlaylist" } as Dialog);
     }
 
     function openDialogAddCollection() {
-      store.commit(`dialog/${Mutations.OPEN}`, { type: "addCollection" } as Dialog);
+      store.commit(Mutations.OPEN_DIALOG, { type: "addCollection" } as Dialog);
     }
 
-    store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
+    store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
 
     return { openDialogAddPlaylist, openDialogAddCollection, store, collections, playlists, openedPlaylist };
   },

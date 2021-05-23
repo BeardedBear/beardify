@@ -17,8 +17,8 @@ export default defineComponent({
   setup(props) {
     const store = useStore();
     onMounted(() =>
-      store.dispatch(`auth/${AuthActions.auth}`, props.query).then(() => {
-        store.dispatch(`sidebar/${SidebarActions.getPlaylists}`, `${api.url}me/playlists?limit=50`);
+      store.dispatch(AuthActions.auth, props.query).then(() => {
+        store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
         router.push("/");
       })
     );

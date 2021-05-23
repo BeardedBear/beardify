@@ -1,5 +1,5 @@
 <template>
-  <div v-if="store.state.artist.topTracks.tracks.length">
+  <div v-if="store.state.artist.topTracks.tracks?.length">
     <div class="heading">Top tracks</div>
     <div
       v-for="(trackItem, index) in store.state.artist.topTracks.tracks"

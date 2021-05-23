@@ -38,6 +38,5 @@ const actions: ActionTree<AlbumPage, RootState> = {
 export default {
   actions,
   mutations,
-  namespaced: true,
   state,
 };

@@ -69,16 +69,16 @@ export default defineComponent({
     );
 
     function edit(playlistId: string) {
-      store.commit(`dialog/${DialogMutations.OPEN}`, { type: "editPlaylist", playlistId } as Dialog);
+      store.commit(DialogMutations.OPEN_DIALOG, { type: "editPlaylist", playlistId } as Dialog);
     }
 
     function sumDuration(tracks: PlaylistTrack[]) {
       return tracks.map((t: PlaylistTrack) => t.track.duration_ms).reduce((acc, value) => acc + value, 0);
     }
 
-    store.dispatch(`playlist/${PlaylistActions.getPlaylist}`, `${api.url}playlists/${props.id}`);
-    store.dispatch(`playlist/${PlaylistActions.getTracks}`, `${api.url}playlists/${props.id}/tracks`);
-    store.commit(`playlist/${Mutations.CLEAN_TRACKS}`);
+    store.dispatch(PlaylistActions.getPlaylist, `${api.url}playlists/${props.id}`);
+    store.dispatch(PlaylistActions.getTracks, `${api.url}playlists/${props.id}/tracks`);
+    store.commit(Mutations.CLEAN_TRACKS);
 
     return {
       playlistpage,

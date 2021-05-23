@@ -16,11 +16,11 @@ const state: Search = {
 // MUTATIONS
 
 export enum Mutations {
-  SET_RESULTS = "SET_RESULTS",
+  SEARCH_RESULTS = "SEARCH_RESULTS",
 }
 
 const mutations: MutationTree<Search> = {
-  [Mutations.SET_RESULTS](state, data: { artists: Artist[]; albums: Album[]; tracks: TrackSimplified[] }): void {
+  [Mutations.SEARCH_RESULTS](state, data: { artists: Artist[]; albums: Album[]; tracks: TrackSimplified[] }): void {
     state.artists = data.artists;
     state.albums = data.albums;
     state.tracks = data.tracks;
@@ -39,7 +39,7 @@ const actions: ActionTree<Search, RootState> = {
       const artists = e.data.artists.items.slice(0, 12);
       const albums = e.data.albums.items.slice(0, 6);
       const tracks = e.data.tracks.items.slice(0, 6);
-      store.commit(Mutations.SET_RESULTS, { artists, albums, tracks });
+      store.commit(Mutations.SEARCH_RESULTS, { artists, albums, tracks });
     });
   },
 };
@@ -47,6 +47,5 @@ const actions: ActionTree<Search, RootState> = {
 export default {
   actions,
   mutations,
-  namespaced: true,
   state,
 };

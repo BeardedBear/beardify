@@ -48,14 +48,14 @@ export default defineComponent({
     }
 
     function openConfig() {
-      store.commit(`config/${Mutations.OPEN}`);
+      store.commit(Mutations.OPEN_CONFIG);
     }
 
     onMounted(() => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       addEventListener("click", (e: any) => {
         const test = e.composedPath().filter((b: HTMLElement) => b.className === "config").length;
-        if (!test) store.commit(`config/${Mutations.CLOSE}`);
+        if (!test) store.commit(Mutations.CLOSE_CONFIG);
       });
       document.querySelector(".avatar")?.addEventListener("click", (e) => e.stopPropagation());
     });

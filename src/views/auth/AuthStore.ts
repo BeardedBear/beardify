@@ -106,6 +106,5 @@ const actions = {
 export default {
   actions,
   mutations,
-  namespaced: true,
   state,
 };

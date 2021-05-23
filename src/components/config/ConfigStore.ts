@@ -29,8 +29,8 @@ export enum Mutations {
   SCHEME_BLUE = "SCHEME_BLUE",
   SCHEME_CRIMSON = "SCHEME_CRIMSON",
   SCHEME_APPLE = "SCHEME_APPLE",
-  OPEN = "OPEN",
-  CLOSE = "CLOSE",
+  OPEN_CONFIG = "OPEN_CONFIG",
+  CLOSE_CONFIG = "CLOSE_CONFIG",
 }
 
 const mutations: MutationTree<Config> = {
@@ -70,11 +70,11 @@ const mutations: MutationTree<Config> = {
     state.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
   },
 
-  [Mutations.OPEN](state): void {
+  [Mutations.OPEN_CONFIG](state): void {
     state.show = true;
   },
 
-  [Mutations.CLOSE](state): void {
+  [Mutations.CLOSE_CONFIG](state): void {
     state.show = false;
   },
 };
@@ -88,6 +88,5 @@ const actions: ActionTree<Dialog, RootState> = {};
 export default {
   actions,
   mutations,
-  namespaced: true,
   state,
 };

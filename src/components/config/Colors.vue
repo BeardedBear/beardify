@@ -55,28 +55,28 @@ export default defineComponent({
     const textColors: TextColors[] = [
       {
         name: "default",
-        fn: () => store.commit(`config/${Mutations.SCHEME_DEFAULT}`),
+        fn: () => store.commit(Mutations.SCHEME_DEFAULT),
       },
       {
         name: "blue",
-        fn: () => store.commit(`config/${Mutations.SCHEME_BLUE}`),
+        fn: () => store.commit(Mutations.SCHEME_BLUE),
       },
       {
         name: "crimson",
-        fn: () => store.commit(`config/${Mutations.SCHEME_CRIMSON}`),
+        fn: () => store.commit(Mutations.SCHEME_CRIMSON),
       },
       {
         name: "apple",
-        fn: () => store.commit(`config/${Mutations.SCHEME_APPLE}`),
+        fn: () => store.commit(Mutations.SCHEME_APPLE),
       },
     ];
 
     function switchThemeLight() {
-      store.commit(`config/${Mutations.SWITCH_THEME_LIGHT}`);
+      store.commit(Mutations.SWITCH_THEME_LIGHT);
     }
 
     function switchThemeDark() {
-      store.commit(`config/${Mutations.SWITCH_THEME_DARK}`);
+      store.commit(Mutations.SWITCH_THEME_DARK);
     }
 
     return {
@@ -103,10 +103,6 @@ export default defineComponent({
     position: relative;
     flex: 1;
     transition: all ease 0.2s;
-
-    // &:hover {
-    //   opacity: 0.8;
-    // }
 
     &:first-of-type {
       border-radius: $s 0 0 $s;

@@ -21,7 +21,7 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    store.commit(`auth/${Mutations.GENERATE_CODE_CHALLENGE}`, create());
+    store.commit(Mutations.GENERATE_CODE_CHALLENGE, create());
 
     function connect() {
       location.href = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${store.state.auth.auth.codeChallenge}`;

@@ -26,7 +26,6 @@ const mutations: MutationTree<HomePage> = {
 };
 
 // ACTIONS
-
 export enum HomeActions {
   getRecommendedAlbums = "getRecommendedAlbums",
 }
@@ -56,6 +55,5 @@ const actions: ActionTree<HomePage, RootState> = {
 export default {
   actions,
   mutations,
-  namespaced: true,
   state,
 };

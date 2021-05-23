@@ -17,8 +17,8 @@ export default defineComponent({
 
     function remove() {
       store
-        .dispatch(`sidebar/${SidebarActions.remove}`, store.state.dialog.playlistId)
-        .then(() => store.commit(`dialog/${Mutations.CLOSE}`));
+        .dispatch(SidebarActions.removePlaylist, store.state.dialog.playlistId)
+        .then(() => store.commit(Mutations.CLOSE_DIALOG));
     }
 
     return { remove, store };
