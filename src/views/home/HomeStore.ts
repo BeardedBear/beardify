@@ -32,12 +32,12 @@ export enum HomeActions {
 
 const actions: ActionTree<HomePage, RootState> = {
   [HomeActions.getRecommendedAlbums](store) {
-    instance.get<Paging<Artist>>(`${api.url}me/top/artists`).then((e) => {
-      interface Top {
-        seed: unknown;
-        tracks: Track[];
-      }
+    interface Top {
+      seed: unknown;
+      tracks: Track[];
+    }
 
+    instance.get<Paging<Artist>>(`${api.url}me/top/artists?time_range=long_term`).then((e) => {
       const artistsSeed = `${e.data.items[getRandomInt(0, 10)].id},${e.data.items[getRandomInt(0, 10)].id},${
         e.data.items[getRandomInt(0, 10)].id
       },${e.data.items[getRandomInt(0, 10)].id},${e.data.items[getRandomInt(0, 10)].id}`;

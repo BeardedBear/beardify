@@ -3,7 +3,7 @@
     <div class="form">
       <img class="logo" src="/img/logo-long.svg" alt="" />
       <div>
-        <button class="button button--primary" type="button" @click="connect()">Se connecter</button>
+        <a class="button button--primary" :href="connectUrl">Se connecter</a>
       </div>
     </div>
   </div>
@@ -20,14 +20,11 @@ import { Mutations } from "./auth/AuthStore";
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
+    const connectUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${store.state.auth.auth.codeChallenge}`;
 
     store.commit(Mutations.GENERATE_CODE_CHALLENGE, create());
 
-    function connect() {
-      location.href = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${store.state.auth.auth.codeChallenge}`;
-    }
-
-    return { connect, store };
+    return { connectUrl, store };
   },
 });
 </script>
