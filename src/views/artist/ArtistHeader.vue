@@ -26,7 +26,7 @@
           openLink(
             `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${store.state.artist.artist.name
               .normalize('NFKC')
-              .replaceAll(/[\u0300-\u036f]/g, '')}&amp;x=0&amp;y=0`
+              .replaceAll(/[\u0300-\u036f]/g, '')}&amp;x=0&amp;y=0`,
           )
         "
       >
@@ -48,7 +48,7 @@
               .replaceAll(' ', '-')
               .replaceAll(',', '')
               .replaceAll('\'', '')
-              .replace(/[\u0300-\u036f]/g, '')}`
+              .replace(/[\u0300-\u036f]/g, '')}`,
           )
         "
       >

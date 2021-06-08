@@ -59,7 +59,7 @@ const actions = {
           grant_type: "refresh_token",
           refresh_token: store.state.auth.refreshToken,
           client_id: api.clientId,
-        })
+        }),
       )
       .then((res) => {
         store.commit(Mutations.AUTH, {
@@ -81,7 +81,7 @@ const actions = {
           redirect_uri: api.redirectUri,
           client_id: api.clientId,
           code_verifier: store.state.auth.codeVerifier,
-        })
+        }),
       )
       .then(({ data }) => {
         axios

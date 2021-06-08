@@ -17,12 +17,18 @@ import { api } from "../api";
 import { create } from "pkce";
 import { Mutations } from "./auth/AuthStore";
 
+interface Challenge {
+  codeVerifier: string;
+  codeChallenge: string;
+}
+
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
-    const connectUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${store.state.auth.auth.codeChallenge}`;
+    const code: Challenge = create();
+    const connectUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${code.codeChallenge}`;
 
-    store.commit(Mutations.GENERATE_CODE_CHALLENGE, create());
+    store.commit(Mutations.GENERATE_CODE_CHALLENGE, code);
 
     return { connectUrl, store };
   },

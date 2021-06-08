@@ -43,7 +43,7 @@
         @click="
           playSongs(
             index,
-            store.state.playlist.tracks.map((e) => e.track)
+            store.state.playlist.tracks.map((e) => e.track),
           )
         "
       >

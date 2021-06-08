@@ -16,7 +16,7 @@ export function removeDuplicatesAlbums(array: AlbumSimplified[]): AlbumSimplifie
             .replaceAll(" (In Concert)", "")
             .replaceAll(/[^a-z0-9]+/gi, " ")
             .toLowerCase()
-            .replaceAll(" ", "")
+            .replaceAll(" ", ""),
     )
       ? acc
       : acc.concat(value);

@@ -60,10 +60,10 @@ export default defineComponent({
     const store = useStore<RootState>();
     const openedPlaylist = ref("");
     const collections = computed(() =>
-      store.state.sidebar.playlists.filter((p) => p.name.toLowerCase().includes("#collection"))
+      store.state.sidebar.playlists.filter((p) => p.name.toLowerCase().includes("#collection")),
     );
     const playlists = computed(() =>
-      store.state.sidebar.playlists.filter((p) => !p.name.toLowerCase().includes("#collection"))
+      store.state.sidebar.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")),
     );
 
     function openDialogAddPlaylist() {

@@ -20,7 +20,7 @@ export default defineComponent({
       store.dispatch(AuthActions.auth, props.query).then(() => {
         store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
         router.push("/");
-      })
+      }),
     );
   },
 });

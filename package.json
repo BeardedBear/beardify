@@ -4,34 +4,35 @@
   "private": true,
   "scripts": {
     "serve": "vite",
-    "build": "vue-tsc --noEmit && eslint --ext .ts,vue --ignore-path .gitignore . && vite build",
-    "lint": "vue-tsc --noEmit && eslint --ext .ts,vue --ignore-path .gitignore ."
+    "lint": "vue-tsc --noEmit && eslint --ext .ts,vue --ignore-path .gitignore . && prettier --c './src/**/*.{ts,vue,json}'",
+    "build": "yarn lint && vite build",
+    "fix": "prettier --write './src/**/*.{ts,vue,json}'"
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "form-urlencoded": "^6.0.3",
+    "form-urlencoded": "^6.0.4",
     "pkce": "^1.0.0-beta2",
     "vue": "^3.0.11",
-    "vue-router": "^4.0.6",
-    "vuex": "^4.0.0",
+    "vue-router": "^4.0.8",
+    "vuex": "^4.0.1",
     "vuex-persistedstate": "^4.0.0-beta.3"
   },
   "devDependencies": {
-    "@types/node": "^15.0.2",
-    "@typescript-eslint/eslint-plugin": "^4.23.0",
-    "@typescript-eslint/parser": "^4.23.0",
-    "@vitejs/plugin-vue": "^1.2.2",
-    "@vue/compiler-sfc": "^3.0.11",
+    "@types/node": "^15.12.2",
+    "@typescript-eslint/eslint-plugin": "^4.26.1",
+    "@typescript-eslint/parser": "^4.26.1",
+    "@vitejs/plugin-vue": "^1.2.3",
+    "@vue/compiler-sfc": "^3.1.1",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^7.0.0",
-    "eslint": "^7.26.0",
+    "eslint": "^7.28.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-vue": "^7.9.0",
+    "eslint-plugin-vue": "^7.10.0",
     "normalize.css": "^8.0.1",
-    "prettier": "^2.3.0",
-    "sass": "^1.32.11",
-    "typescript": "^4.2.4",
-    "vite": "^2.3.2",
-    "vue-tsc": "^0.1.2"
+    "prettier": "^2.3.1",
+    "sass": "^1.34.1",
+    "typescript": "^4.3.2",
+    "vite": "^2.3.7",
+    "vue-tsc": "^0.1.7"
   }
 }

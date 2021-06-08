@@ -25,7 +25,7 @@ instance.interceptors.request.use(
     config.headers = { Authorization: `Bearer ${store.state.auth.auth.accessToken}` };
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 export const instanceAuth = axios.create({

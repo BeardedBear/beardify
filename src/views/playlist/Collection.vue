@@ -65,7 +65,7 @@ export default defineComponent({
     const store = useStore<RootState>();
     const playlistpage = ref();
     const cleanAlbumList = computed(() =>
-      removeDuplicatesAlbums(store.state.playlist.tracks.map((a) => a.track.album))
+      removeDuplicatesAlbums(store.state.playlist.tracks.map((a) => a.track.album)),
     );
 
     function edit(playlistId: string) {

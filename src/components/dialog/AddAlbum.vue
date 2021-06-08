@@ -2,7 +2,7 @@
   <div class="content">
     <div
       v-for="(playlist, index) in store.state.sidebar.playlists.filter((p) =>
-        p.name.toLowerCase().includes('#collection')
+        p.name.toLowerCase().includes('#collection'),
       )"
       :key="index"
       class="collection"

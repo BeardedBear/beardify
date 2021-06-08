@@ -12,7 +12,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     dispatchEvent(
       new CustomEvent("initdevice", {
         detail: { thisDevice: device_id },
-      })
+      }),
     );
   });
 };

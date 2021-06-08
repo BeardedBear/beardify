@@ -45,7 +45,7 @@ const actions: ActionTree<HomePage, RootState> = {
       instance.get<Top>(`${api.url}recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`).then((f) => {
         store.commit(
           Mutations.SET_RECOMMENDED_ALBUMS,
-          removeDuplicatesAlbums(f.data.tracks.map((g) => g.album).filter((h) => h.album_type === "ALBUM"))
+          removeDuplicatesAlbums(f.data.tracks.map((g) => g.album).filter((h) => h.album_type === "ALBUM")),
         );
       });
     });

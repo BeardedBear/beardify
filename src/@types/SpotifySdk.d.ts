@@ -104,7 +104,7 @@ declare namespace Spotify {
 
     removeListener(
       event: "ready" | "not_ready" | "player_state_changed" | ErrorTypes,
-      cb?: ErrorListener | PlaybackInstanceListener | PlaybackStateListener
+      cb?: ErrorListener | PlaybackInstanceListener | PlaybackStateListener,
     ): void;
 
     pause(): Promise<void>;

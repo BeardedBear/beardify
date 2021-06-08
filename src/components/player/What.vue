@@ -1,5 +1,5 @@
 <template>
-  <div class="what">
+  <div v-if="store.state.player.currentlyPlaying.item.album" class="what">
     <router-link :to="`/album/${store.state.player.currentlyPlaying.item.album.id}`">
       <Cover size="small" :images="store.state.player.currentlyPlaying.item.album.images" class-name="cover" />
     </router-link>
@@ -14,6 +14,7 @@
       </div>
     </div>
   </div>
+  <div v-else></div>
 </template>
 
 <script lang="ts">
