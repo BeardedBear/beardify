@@ -58,6 +58,7 @@ import TopTracks from "./TopTracks.vue";
 import RelatedArtists from "./RelatedArtists.vue";
 import Album from "../../components/Album.vue";
 import ArtistHeader from "./ArtistHeader.vue";
+import { useEventListener, templateRef } from "@vueuse/core";
 
 export default defineComponent({
   components: { ArtistHeader, Album, TopTracks, RelatedArtists },
@@ -66,9 +67,8 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore<RootState>();
-    const domArtistpage = ref();
+    const domArtistpage = templateRef("domArtistpage");
     const scrolledHead = ref(false);
-    const domContent = ref<HTMLDivElement>();
 
     onMounted(() => {
       store.dispatch(ArtistActions.getArtist, props.id);
@@ -77,14 +77,15 @@ export default defineComponent({
       store.dispatch(ArtistActions.getRelatedArtists, props.id);
       store.dispatch(ArtistActions.getSingles, props.id);
       store.dispatch(ArtistActions.getFollowStatus, props.id);
-      domArtistpage.value.scrollTop = 0;
 
-      domArtistpage.value.addEventListener("scroll", () => {
-        scrolledHead.value = domArtistpage.value?.scrollTop > 50 ? true : false;
+      domArtistpage.value ? (domArtistpage.value.scrollTop = 0) : null;
+
+      useEventListener(domArtistpage.value, "scroll", () => {
+        scrolledHead.value = domArtistpage.value ? domArtistpage.value.scrollTop > 50 : false;
       });
     });
 
-    return { domArtistpage, domContent, store, timecode, scrolledHead };
+    return { store, timecode, scrolledHead };
   },
 });
 </script>
@@ -92,7 +93,7 @@ export default defineComponent({
 <style lang="scss">
 .sticky-heading {
   position: sticky;
-  top: 85px;
+  top: 80px;
   z-index: 1;
   background-color: var(--bg-color-darker);
 }

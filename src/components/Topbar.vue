@@ -17,7 +17,7 @@
     <div>
       <div v-if="store.state.auth.me !== null">
         <Cover size="large" :images="store.state.auth.me?.images" class="avatar" @click="openConfig()" />
-        <Config v-if="store.state.config.show" />
+        <Config v-if="store.state.config.show" ref="domConfig" />
       </div>
     </div>
   </div>
@@ -27,17 +27,21 @@
 import { connectUrl } from "../api";
 import { useStore } from "vuex";
 import type { RootState } from "../@types/RootState";
-import { defineComponent, onMounted } from "vue";
+import { defineComponent } from "vue";
 import Search from "./search/Search.vue";
 import Cover from "./Cover.vue";
 import router from "../router";
 import Config from "./config/Config.vue";
 import { Mutations } from "./config/ConfigStore";
+import { onClickOutside, templateRef } from "@vueuse/core";
 
 export default defineComponent({
   components: { Search, Cover, Config },
   setup() {
     const store = useStore<RootState>();
+    const domConfig = templateRef("domConfig");
+
+    onClickOutside(domConfig, () => store.commit(Mutations.CLOSE_CONFIG));
 
     function previous() {
       router.go(-1);
@@ -50,15 +54,6 @@ export default defineComponent({
     function openConfig() {
       store.commit(Mutations.OPEN_CONFIG);
     }
-
-    onMounted(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      addEventListener("click", (e: any) => {
-        const test = e.composedPath().filter((b: HTMLElement) => b.className === "config").length;
-        if (!test) store.commit(Mutations.CLOSE_CONFIG);
-      });
-      document.querySelector(".avatar")?.addEventListener("click", (e) => e.stopPropagation());
-    });
 
     return { store, connectUrl, previous, next, openConfig };
   },

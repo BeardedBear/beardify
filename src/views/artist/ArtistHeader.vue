@@ -1,9 +1,69 @@
 <template>
   <div class="header" :class="{ scrolled: scrolledHead }">
-    <div class="title" :class="{ scrolled: scrolledHead }">
-      <div class="name" :class="{ scrolled: scrolledHead }">
-        {{ store.state.artist.artist.name }}
+    <div>
+      <div class="title" :class="{ scrolled: scrolledHead }">
+        <div class="name" :class="{ scrolled: scrolledHead }">
+          {{ store.state.artist.artist.name }}
+        </div>
       </div>
+      <div class="header-links">
+        <a
+          class="header-links__item"
+          @click="openLink(`https://fr.wikipedia.org/wiki/${store.state.artist.artist.name}`)"
+        >
+          <i class="icon-wikipedia"
+        /></a>
+        <a
+          class="header-links__item"
+          @click="
+            openLink(
+              `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${store.state.artist.artist.name
+                .normalize('NFKC')
+                .replaceAll(/[\u0300-\u036f]/g, '')}&amp;x=0&amp;y=0`,
+            )
+          "
+        >
+          <i class="icon-sputnik"
+        /></a>
+        <a
+          class="header-links__item"
+          @click="openLink(`https://www.discogs.com/fr/search/?q=${store.state.artist.artist.name}&amp;strict=true`)"
+        >
+          <i class="icon-discogs"
+        /></a>
+        <a
+          class="header-links__item"
+          @click="
+            openLink(
+              `https://rateyourmusic.com/artist/${store.state.artist.artist.name
+                .normalize('NFKC')
+                .toLowerCase()
+                .replaceAll(' ', '-')
+                .replaceAll(',', '')
+                .replaceAll('\'', '')
+                .replace(/[\u0300-\u036f]/g, '')}`,
+            )
+          "
+        >
+          <i class="icon-rym"
+        /></a>
+        <a
+          class="header-links__item"
+          @click="openLink(`https://www.google.com/search?q=${store.state.artist.artist.name}+band+artist`)"
+        >
+          <i class="icon-google"
+        /></a>
+        <a
+          class="header-links__item"
+          @click="
+            openLink(`https://www.youtube.com/results?search_query=${store.state.artist.artist.name}+band+artist`)
+          "
+        >
+          <i class="icon-youtube"
+        /></a>
+      </div>
+    </div>
+    <div>
       <div
         v-if="store.state.artist.followStatus"
         class="follow button button--primary"
@@ -12,60 +72,6 @@
         Suivi
       </div>
       <div v-else class="follow button" @click="switchFollow(store.state.artist.artist.id)">Suivre</div>
-    </div>
-    <div class="header-links">
-      <a
-        class="header-links__item"
-        @click="openLink(`https://fr.wikipedia.org/wiki/${store.state.artist.artist.name}`)"
-      >
-        <i class="icon-wikipedia"
-      /></a>
-      <a
-        class="header-links__item"
-        @click="
-          openLink(
-            `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${store.state.artist.artist.name
-              .normalize('NFKC')
-              .replaceAll(/[\u0300-\u036f]/g, '')}&amp;x=0&amp;y=0`,
-          )
-        "
-      >
-        <i class="icon-sputnik"
-      /></a>
-      <a
-        class="header-links__item"
-        @click="openLink(`https://www.discogs.com/fr/search/?q=${store.state.artist.artist.name}&amp;strict=true`)"
-      >
-        <i class="icon-discogs"
-      /></a>
-      <a
-        class="header-links__item"
-        @click="
-          openLink(
-            `https://rateyourmusic.com/artist/${store.state.artist.artist.name
-              .normalize('NFKC')
-              .toLowerCase()
-              .replaceAll(' ', '-')
-              .replaceAll(',', '')
-              .replaceAll('\'', '')
-              .replace(/[\u0300-\u036f]/g, '')}`,
-          )
-        "
-      >
-        <i class="icon-rym"
-      /></a>
-      <a
-        class="header-links__item"
-        @click="openLink(`https://www.google.com/search?q=${store.state.artist.artist.name}+band+artist`)"
-      >
-        <i class="icon-google"
-      /></a>
-      <a
-        class="header-links__item"
-        @click="openLink(`https://www.youtube.com/results?search_query=${store.state.artist.artist.name}+band+artist`)"
-      >
-        <i class="icon-youtube"
-      /></a>
     </div>
   </div>
 </template>
@@ -134,6 +140,9 @@ export default defineComponent({
   background-color: var(--bg-color-darker);
   z-index: 2;
   transition: padding ease 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
   &.scrolled {
     padding: 10px 40px 15px;

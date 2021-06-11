@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, watch } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import SeekBar from "./SeekBar.vue";
@@ -23,11 +23,21 @@ import Devices from "./Devices.vue";
 import What from "./What.vue";
 import PlayerLoading from "./PlayerLoading.vue";
 import Controls from "./Controls.vue";
+import { useTitle } from "@vueuse/core";
 
 export default defineComponent({
   components: { Controls, SeekBar, Volume, Devices, What, PlayerLoading },
   setup() {
     const store = useStore<RootState>();
+
+    watch(
+      () => store.state.player.currentlyPlaying,
+      () => {
+        useTitle(
+          `${store.state.player.currentlyPlaying.item.album.artists[0].name} - ${store.state.player.currentlyPlaying.item.name}`,
+        );
+      },
+    );
 
     return { store };
   },

@@ -9,6 +9,7 @@
     "fix": "prettier --write './src/**/*.{ts,vue,json}'"
   },
   "dependencies": {
+    "@vueuse/core": "^5.0.2",
     "axios": "^0.21.1",
     "form-urlencoded": "^6.0.4",
     "pkce": "^1.0.0-beta2",

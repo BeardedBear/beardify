@@ -33,5 +33,6 @@ export default defineComponent({
   border-radius: 4px;
   cursor: pointer;
   display: block;
+  aspect-ratio: 1 / 1;
 }
 </style>
