@@ -1,7 +1,7 @@
 <template>
-  <div class="header">
-    <div class="title">
-      <div class="name">
+  <div class="header" :class="{ scrolled: scrolledHead }">
+    <div class="title" :class="{ scrolled: scrolledHead }">
+      <div class="name" :class="{ scrolled: scrolledHead }">
         {{ store.state.artist.artist.name }}
       </div>
       <div
@@ -71,12 +71,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { ArtistActions } from "./ArtistStore";
 
 export default defineComponent({
+  props: {
+    scrolledHead: {
+      default: false,
+      type: Boolean as PropType<boolean>,
+    },
+  },
   setup() {
     const store = useStore<RootState>();
 
@@ -101,11 +107,20 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  &.scrolled {
+    margin-bottom: 5px;
+  }
 }
 
 .name {
   font-size: 2rem;
   font-weight: 300;
+  transition: font-size ease 0.2s;
+
+  &.scrolled {
+    font-size: 1.6rem;
+  }
 }
 
 .follow {
@@ -113,7 +128,17 @@ export default defineComponent({
   text-align: center;
 }
 .header {
-  margin-bottom: 30px;
+  padding: 30px 40px;
+  position: sticky;
+  top: 0;
+  background-color: var(--bg-color-darker);
+  z-index: 2;
+  transition: padding ease 0.2s;
+
+  &.scrolled {
+    padding: 10px 40px 15px;
+    background-color: var(--bg-color-dark);
+  }
 
   &-links {
     display: flex;

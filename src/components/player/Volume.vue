@@ -45,7 +45,7 @@ export default defineComponent({
 .volume {
   background-color: var(--bg-color-light);
   position: relative;
-  height: 25px;
+  height: 26px;
   width: 100px;
   display: inline-block;
   margin-bottom: 5px;
@@ -54,10 +54,7 @@ export default defineComponent({
     position: absolute;
     content: "";
     background-color: var(--bg-color);
-    top: -1px;
-    bottom: 0;
-    right: 0;
-    left: 0;
+    inset: 0;
     z-index: 9;
     clip-path: polygon(0 0, 0 78%, 100% 0);
   }

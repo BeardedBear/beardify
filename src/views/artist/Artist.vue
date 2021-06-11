@@ -1,6 +1,6 @@
 <template>
-  <div ref="artistpage" class="artist-page">
-    <ArtistHeader />
+  <div ref="domArtistpage" class="artist-page">
+    <ArtistHeader :scrolled-head="scrolledHead" />
     <div class="content">
       <div class="list">
         <div
@@ -11,7 +11,7 @@
           {{ store.state.artist.artist.name }} n'a rien sorti, c'est triste un peu.
         </div>
         <div v-if="store.state.artist.albums.length" class="content__block">
-          <div class="heading">Albums</div>
+          <div class="heading sticky-heading">Albums</div>
           <div class="albums">
             <div v-for="(album, index) in store.state.artist.albums" :key="index">
               <Album
@@ -23,7 +23,7 @@
           </div>
         </div>
         <div v-if="store.state.artist.eps.length" class="content__block">
-          <div class="heading">EP's</div>
+          <div class="heading sticky-heading">EP's</div>
           <div class="eps">
             <div v-for="(album, index) in store.state.artist.eps" :key="index">
               <Album
@@ -35,7 +35,7 @@
           </div>
         </div>
         <div v-if="store.state.artist.singles.length" class="content__block">
-          <div class="heading">Singles</div>
+          <div class="heading sticky-heading">Singles</div>
           <div class="singles">
             <div v-for="(album, index) in store.state.artist.singles" :key="index">
               <Album :album="album" :currently-played-id="store.state.player.currentlyPlaying.item.album.uri" />
@@ -66,7 +66,9 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore<RootState>();
-    const artistpage = ref();
+    const domArtistpage = ref();
+    const scrolledHead = ref(false);
+    const domContent = ref<HTMLDivElement>();
 
     onMounted(() => {
       store.dispatch(ArtistActions.getArtist, props.id);
@@ -75,13 +77,26 @@ export default defineComponent({
       store.dispatch(ArtistActions.getRelatedArtists, props.id);
       store.dispatch(ArtistActions.getSingles, props.id);
       store.dispatch(ArtistActions.getFollowStatus, props.id);
-      artistpage.value.scrollTop = 0;
+      domArtistpage.value.scrollTop = 0;
+
+      domArtistpage.value.addEventListener("scroll", () => {
+        scrolledHead.value = domArtistpage.value?.scrollTop > 50 ? true : false;
+      });
     });
 
-    return { artistpage, store, timecode };
+    return { domArtistpage, domContent, store, timecode, scrolledHead };
   },
 });
 </script>
+
+<style lang="scss">
+.sticky-heading {
+  position: sticky;
+  top: 85px;
+  z-index: 1;
+  background-color: var(--bg-color-darker);
+}
+</style>
 
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
@@ -132,6 +147,7 @@ export default defineComponent({
   display: grid;
   gap: 40px;
   grid-template-columns: 1fr 300px;
+  padding: 30px 40px;
 
   @include xl {
     grid-template-columns: 1fr;
@@ -158,7 +174,6 @@ export default defineComponent({
   }
 }
 .artist-page {
-  padding: 30px 40px;
   scroll-behavior: smooth;
   overflow-y: scroll;
   animation: popContent 1s ease both;

@@ -81,19 +81,13 @@ $radius: 4px;
 .bg {
   animation: popDialog 0.2s ease both;
   position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
+  inset: 0;
   background-color: var(--bg-color-darker);
   opacity: 0.95;
 }
 .dialog {
   position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
+  inset: 0;
   z-index: 99999999;
   display: grid;
   place-content: center;

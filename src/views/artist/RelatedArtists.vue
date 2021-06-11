@@ -1,6 +1,6 @@
 <template>
   <div v-if="store.state.artist.relatedArtists.artists.length">
-    <div class="heading">Artistes similaires</div>
+    <div class="heading sticky-heading">Artistes similaires</div>
     <div class="list">
       <router-link
         v-for="(artist, _, index) in store.state.artist.relatedArtists.artists"
