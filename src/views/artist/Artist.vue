@@ -1,6 +1,6 @@
 <template>
   <div ref="domArtistpage" class="artist-page">
-    <ArtistHeader :scrolled-head="scrolledHead" />
+    <ArtistHeader ref="domHead" :scrolled-head="scrolledHead" />
     <div class="content">
       <div class="list">
         <div
@@ -58,7 +58,13 @@ import TopTracks from "./TopTracks.vue";
 import RelatedArtists from "./RelatedArtists.vue";
 import Album from "../../components/Album.vue";
 import ArtistHeader from "./ArtistHeader.vue";
-import { useEventListener, templateRef } from "@vueuse/core";
+import {
+  templateRef,
+  useEventListener,
+  useWindowScroll,
+  useElementVisibility,
+  useIntersectionObserver,
+} from "@vueuse/core";
 
 export default defineComponent({
   components: { ArtistHeader, Album, TopTracks, RelatedArtists },
@@ -68,9 +74,11 @@ export default defineComponent({
   setup(props) {
     const store = useStore<RootState>();
     const domArtistpage = templateRef("domArtistpage");
+    const domHead = templateRef("domHead");
     const scrolledHead = ref(false);
 
     onMounted(() => {
+      const v = useElementVisibility(domHead);
       store.dispatch(ArtistActions.getArtist, props.id);
       store.dispatch(ArtistActions.getTopTracks, props.id);
       store.dispatch(ArtistActions.getAlbums, props.id);
@@ -80,7 +88,7 @@ export default defineComponent({
 
       domArtistpage.value ? (domArtistpage.value.scrollTop = 0) : null;
 
-      useEventListener(domArtistpage.value, "scroll", () => {
+      useEventListener(domArtistpage.value, "scroll", (e) => {
         scrolledHead.value = domArtistpage.value ? domArtistpage.value.scrollTop > 50 : false;
       });
     });
@@ -93,7 +101,7 @@ export default defineComponent({
 <style lang="scss">
 .sticky-heading {
   position: sticky;
-  top: 80px;
+  top: 88px;
   z-index: 1;
   background-color: var(--bg-color-darker);
 }

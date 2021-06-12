@@ -1,7 +1,7 @@
 <template>
   <div class="header" :class="{ scrolled: scrolledHead }">
     <div>
-      <div class="title" :class="{ scrolled: scrolledHead }">
+      <div class="title">
         <div class="name" :class="{ scrolled: scrolledHead }">
           {{ store.state.artist.artist.name }}
         </div>
@@ -113,10 +113,6 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  &.scrolled {
-    margin-bottom: 5px;
-  }
 }
 
 .name {
@@ -134,18 +130,19 @@ export default defineComponent({
   text-align: center;
 }
 .header {
-  padding: 30px 40px;
-  position: sticky;
-  top: 0;
+  padding: 30px 40px 10px;
   background-color: var(--bg-color-darker);
   z-index: 2;
-  transition: padding ease 0.2s;
+  transition: transform ease 0.1s;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  top: 0;
+  position: sticky;
+  height: 120px;
 
   &.scrolled {
-    padding: 10px 40px 15px;
+    transform: translateY(-25px);
     background-color: var(--bg-color-dark);
   }
 
