@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "serve": "vite",
-    "lint": "vue-tsc --noEmit && eslint --ext .ts,vue --ignore-path .gitignore . && prettier --c './src/**/*.{ts,vue,json}'",
+    "lint": "vue-tsc --noEmit && eslint --ext .ts,vue --ignore-path .gitignore . && prettier --c ./src/**/*.{ts,vue,json}",
     "build": "yarn lint && vite build",
-    "fix": "prettier --write './src/**/*.{ts,vue,json}'"
+    "fix": "prettier --write ./src/**/*.{ts,vue,json}"
   },
   "dependencies": {
     "@vueuse/core": "^5.0.2",
