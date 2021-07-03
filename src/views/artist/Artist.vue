@@ -58,13 +58,7 @@ import TopTracks from "./TopTracks.vue";
 import RelatedArtists from "./RelatedArtists.vue";
 import Album from "../../components/Album.vue";
 import ArtistHeader from "./ArtistHeader.vue";
-import {
-  templateRef,
-  useEventListener,
-  useWindowScroll,
-  useElementVisibility,
-  useIntersectionObserver,
-} from "@vueuse/core";
+import { templateRef, useEventListener } from "@vueuse/core";
 
 export default defineComponent({
   components: { ArtistHeader, Album, TopTracks, RelatedArtists },
@@ -74,11 +68,9 @@ export default defineComponent({
   setup(props) {
     const store = useStore<RootState>();
     const domArtistpage = templateRef("domArtistpage");
-    const domHead = templateRef("domHead");
     const scrolledHead = ref(false);
 
     onMounted(() => {
-      const v = useElementVisibility(domHead);
       store.dispatch(ArtistActions.getArtist, props.id);
       store.dispatch(ArtistActions.getTopTracks, props.id);
       store.dispatch(ArtistActions.getAlbums, props.id);
@@ -88,7 +80,7 @@ export default defineComponent({
 
       domArtistpage.value ? (domArtistpage.value.scrollTop = 0) : null;
 
-      useEventListener(domArtistpage.value, "scroll", (e) => {
+      useEventListener(domArtistpage.value, "scroll", () => {
         scrolledHead.value = domArtistpage.value ? domArtistpage.value.scrollTop > 50 : false;
       });
     });

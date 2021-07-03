@@ -2,7 +2,6 @@
   <Dialog />
   <Topbar />
   <div id="app__content">
-    <!-- <div></div> -->
     <Sidebar />
     <router-view v-slot="{ Component }" :key="$route.fullPath">
       <transition name="scale" mode="out-in">

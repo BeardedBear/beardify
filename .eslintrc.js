@@ -23,30 +23,7 @@ module.exports = {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
-    "@typescript-eslint/no-unused-vars": ["off", { argsIgnorePattern: "^_" }],
     "prettier/prettier": ["error", {}, { usePrettierrc: true }],
     "vue/no-v-html": "off",
   },
 };
-
-// {
-//   "root": true,
-//   "env": {
-//     "browser": true,
-//     "es2021": true,
-//     "node": true
-//   },
-//   "extends": [
-//     "plugin:vue/vue3-recommended",
-//     "eslint:recommended",
-//     "@vue/typescript/recommended",
-//     // 他のルールの下に追加
-//     "@vue/prettier",
-//     "@vue/prettier/@typescript-eslint"
-//   ],
-//   "parserOptions": {
-//     "ecmaVersion": 2021
-//   },
-//   "plugins": [],
-//   "rules": {}
-// }
