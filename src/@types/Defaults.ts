@@ -1,18 +1,19 @@
 import { Album, AlbumSimplified } from "./Album";
 import { Artist } from "./Artist";
+import { AuthData } from "./Auth";
 import {
   CurrentlyPlaying,
+  CurrentlyPlayingAlbum,
   CurrentlyPlayingContext,
   CurrentlyPlayingItem,
-  CurrentlyPlayingAlbum,
 } from "./CurrentlyPlaying";
+import { Device } from "./Device";
 import { Image } from "./Image";
-import { ExternalUrls } from "./Misc";
-import { TrackSimplified, Track } from "./Track";
 import { Followers, Me } from "./Me";
+import { ExternalUrls } from "./Misc";
 import { PlaylistTracksRef, SimplifiedPlaylist } from "./Playlist";
 import { PublicUser } from "./PublicUser";
-import { Device } from "./Device";
+import { Track, TrackSimplified } from "./Track";
 
 export const defaultImage: Image = {
   height: 0,
@@ -257,4 +258,12 @@ export const defaultPlaylist = {
   tracks: defaultPaging,
   type: "",
   uri: "",
+};
+
+export const defaultAuth: AuthData = {
+  accessToken: "",
+  refreshToken: "",
+  code: "",
+  codeVerifier: "",
+  codeChallenge: "",
 };

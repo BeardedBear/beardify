@@ -1,21 +1,16 @@
-import { ActionContext } from "vuex";
-import { api } from "../../api";
-import formurlencoded from "form-urlencoded";
 import axios from "axios";
-import type { RootState } from "../../@types/RootState";
+import formurlencoded from "form-urlencoded";
+import { ActionContext } from "vuex";
 import type { Auth, AuthData } from "../../@types/Auth";
-import router from "../../router";
+import { defaultAuth, defaultMe } from "../../@types/Defaults";
 import { Me } from "../../@types/Me";
+import type { RootState } from "../../@types/RootState";
+import { api } from "../../api";
+import router from "../../router";
 
 const state: Auth = {
-  auth: {
-    accessToken: "",
-    refreshToken: "",
-    code: "",
-    codeVerifier: "",
-    codeChallenge: "",
-  },
-  me: null,
+  auth: defaultAuth,
+  me: defaultMe,
 };
 
 // MUTATIONS
@@ -24,9 +19,10 @@ export enum Mutations {
   AUTH = "AUTH",
   SET_ME = "SET_ME",
   GENERATE_CODE_CHALLENGE = "GENERATE_CODE_CHALLENGE",
+  RESET_LOGIN = "RESET_LOGIN",
 }
 
-const mutations = {
+export const mutations = {
   [Mutations.AUTH](state: Auth, data: AuthData): void {
     state.auth.accessToken = data.accessToken;
     state.auth.refreshToken = data.refreshToken;
@@ -40,6 +36,11 @@ const mutations = {
   [Mutations.GENERATE_CODE_CHALLENGE](state: Auth, data: { codeVerifier: string; codeChallenge: string }): void {
     state.auth.codeChallenge = data.codeChallenge;
     state.auth.codeVerifier = data.codeVerifier;
+  },
+
+  [Mutations.RESET_LOGIN](state: Auth): void {
+    state.auth = defaultAuth;
+    state.me = defaultMe;
   },
 };
 

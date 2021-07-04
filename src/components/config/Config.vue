@@ -13,6 +13,8 @@
       <button class="button button--full" @click="refresh()">Refresh token</button>
     </div>
 
+    <button class="button button--full" @click="logout()">Logout</button>
+
     <div class="section">
       <div class="section__title">Couleurs</div>
       <Colors />
@@ -24,7 +26,8 @@
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
-import { AuthActions } from "../../views/auth/AuthStore";
+import router from "../../router";
+import { AuthActions, Mutations } from "../../views/auth/AuthStore";
 import Colors from "./Colors.vue";
 
 export default defineComponent({
@@ -37,7 +40,12 @@ export default defineComponent({
       store.dispatch(AuthActions.refresh);
     }
 
-    return { store, refresh, env };
+    function logout(): void {
+      store.commit(Mutations.RESET_LOGIN);
+      router.push("/login");
+    }
+
+    return { store, refresh, env, logout };
   },
 });
 </script>
@@ -54,7 +62,7 @@ export default defineComponent({
 .section {
   padding: 7px 10px 10px;
   border: 1px solid var(--bg-color-dark);
-  margin-top: 15px;
+  margin: 15px 0;
   border-radius: 5px;
   background: var(--bg-color-light);
   display: flex;
