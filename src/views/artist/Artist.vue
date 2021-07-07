@@ -48,45 +48,38 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+<script setup lang="ts">
+import { defineProps, onMounted, ref } from "vue";
 import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
+import type { RootState } from "../../@types/RootState";
 import { ArtistActions } from "./ArtistStore";
-import { timecode } from "../../helpers/date";
 import TopTracks from "./TopTracks.vue";
 import RelatedArtists from "./RelatedArtists.vue";
 import Album from "../../components/Album.vue";
 import ArtistHeader from "./ArtistHeader.vue";
 import { templateRef, useEventListener } from "@vueuse/core";
 
-export default defineComponent({
-  components: { ArtistHeader, Album, TopTracks, RelatedArtists },
-  props: {
-    id: { default: "", type: String },
-  },
-  setup(props) {
-    const store = useStore<RootState>();
-    const domArtistpage = templateRef("domArtistpage");
-    const scrolledHead = ref(false);
+const props = defineProps<{
+  id: string;
+}>();
 
-    onMounted(() => {
-      store.dispatch(ArtistActions.getArtist, props.id);
-      store.dispatch(ArtistActions.getTopTracks, props.id);
-      store.dispatch(ArtistActions.getAlbums, props.id);
-      store.dispatch(ArtistActions.getRelatedArtists, props.id);
-      store.dispatch(ArtistActions.getSingles, props.id);
-      store.dispatch(ArtistActions.getFollowStatus, props.id);
+const store = useStore<RootState>();
+const domArtistpage = templateRef("domArtistpage");
+const scrolledHead = ref(false);
 
-      domArtistpage.value ? (domArtistpage.value.scrollTop = 0) : null;
+onMounted(() => {
+  store.dispatch(ArtistActions.getArtist, props.id);
+  store.dispatch(ArtistActions.getTopTracks, props.id);
+  store.dispatch(ArtistActions.getAlbums, props.id);
+  store.dispatch(ArtistActions.getRelatedArtists, props.id);
+  store.dispatch(ArtistActions.getSingles, props.id);
+  store.dispatch(ArtistActions.getFollowStatus, props.id);
 
-      useEventListener(domArtistpage.value, "scroll", () => {
-        scrolledHead.value = domArtistpage.value ? domArtistpage.value.scrollTop > 50 : false;
-      });
-    });
+  domArtistpage.value ? (domArtistpage.value.scrollTop = 0) : null;
 
-    return { store, timecode, scrolledHead };
-  },
+  useEventListener(domArtistpage.value, "scroll", () => {
+    scrolledHead.value = domArtistpage.value ? domArtistpage.value.scrollTop > 50 : false;
+  });
 });
 </script>
 

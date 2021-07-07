@@ -7,37 +7,24 @@
   </div>
 </template>
 
-<script lang="ts">
-import { ref, defineComponent, watchEffect } from "vue";
+<script setup lang="ts">
+import { ref, watchEffect } from "vue";
 import { useStore } from "vuex";
 import { PlayerActions } from "./../player/PlayerStore";
-import { RootState } from "../../@types/RootState";
-import { timecode } from "../../helpers/date";
+import type { RootState } from "../../@types/RootState";
 
-export default defineComponent({
-  setup() {
-    const store = useStore<RootState>();
-    const refVolume = ref();
-    const volume = ref(0);
+const store = useStore<RootState>();
+const refVolume = ref();
+const volume = ref(0);
 
-    function setVolume() {
-      store.dispatch(PlayerActions.setVolume, volume.value);
-    }
+function setVolume() {
+  store.dispatch(PlayerActions.setVolume, volume.value);
+}
 
-    watchEffect(() => {
-      refVolume.value?.addEventListener("mousemove", (e: MouseEvent) => {
-        volume.value = e.offsetX;
-      });
-    });
-
-    return {
-      store,
-      setVolume,
-      timecode,
-      refVolume,
-      volume,
-    };
-  },
+watchEffect(() => {
+  refVolume.value?.addEventListener("mousemove", (e: MouseEvent) => {
+    volume.value = e.offsetX;
+  });
 });
 </script>
 

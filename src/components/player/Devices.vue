@@ -19,29 +19,21 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { useStore } from "vuex";
 import { PlayerActions } from "./../player/PlayerStore";
-import { RootState } from "../../@types/RootState";
-import { Device } from "../../@types/Device";
-import { timecode } from "../../helpers/date";
+import type { RootState } from "../../@types/RootState";
+import type { Device } from "../../@types/Device";
 
-export default defineComponent({
-  setup() {
-    const store = useStore<RootState>();
+const store = useStore<RootState>();
 
-    function setDevice(device: Device) {
-      store.dispatch(PlayerActions.setDevice, device);
-    }
+function setDevice(device: Device) {
+  store.dispatch(PlayerActions.setDevice, device);
+}
 
-    function refreshDevices() {
-      store.dispatch(PlayerActions.getDeviceList);
-    }
-
-    return { store, setDevice, timecode, refreshDevices };
-  },
-});
+function refreshDevices() {
+  store.dispatch(PlayerActions.getDeviceList);
+}
 </script>
 
 <style lang="scss" scoped>

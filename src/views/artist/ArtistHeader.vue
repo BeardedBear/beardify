@@ -76,33 +76,25 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script setup lang="ts">
+import { defineProps } from "vue";
 import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
+import type { RootState } from "../../@types/RootState";
 import { ArtistActions } from "./ArtistStore";
 
-export default defineComponent({
-  props: {
-    scrolledHead: {
-      default: false,
-      type: Boolean as PropType<boolean>,
-    },
-  },
-  setup() {
-    const store = useStore<RootState>();
+defineProps<{
+  scrolledHead: boolean;
+}>();
 
-    function openLink(url: string) {
-      window.open(url, "_blank");
-    }
+const store = useStore<RootState>();
 
-    function switchFollow(artistId: string) {
-      store.dispatch(ArtistActions.switchFollow, artistId);
-    }
+function openLink(url: string) {
+  window.open(url, "_blank");
+}
 
-    return { store, openLink, switchFollow };
-  },
-});
+function switchFollow(artistId: string) {
+  store.dispatch(ArtistActions.switchFollow, artistId);
+}
 </script>
 
 <style lang="scss" scoped>

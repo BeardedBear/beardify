@@ -17,21 +17,13 @@
   <div v-else></div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
+import type { RootState } from "../../@types/RootState";
 import ArtistList from "../ArtistList.vue";
 import Cover from "../Cover.vue";
 
-export default defineComponent({
-  components: { ArtistList, Cover },
-  setup() {
-    const store = useStore<RootState>();
-
-    return { store };
-  },
-});
+const store = useStore<RootState>();
 </script>
 
 <style lang="scss" scoped>

@@ -17,20 +17,12 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
-import { timecode } from "../../helpers/date";
+import type { RootState } from "../../@types/RootState";
 import Cover from "../../components/Cover.vue";
 
-export default defineComponent({
-  components: { Cover },
-  setup() {
-    const store = useStore<RootState>();
-    return { store, timecode };
-  },
-});
+const store = useStore<RootState>();
 </script>
 
 <style lang="scss" scoped>

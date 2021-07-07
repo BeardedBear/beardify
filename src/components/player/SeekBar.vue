@@ -14,45 +14,33 @@
   </div>
 </template>
 
-<script lang="ts">
-import { ref, defineComponent, watchEffect } from "vue";
+<script setup lang="ts">
+import { ref, watchEffect } from "vue";
 import { useStore } from "vuex";
 import { instance } from "../../api";
 import { Mutations } from "./../player/PlayerStore";
-import { RootState } from "../../@types/RootState";
+import type { RootState } from "../../@types/RootState";
 import { timecode } from "../../helpers/date";
 
-export default defineComponent({
-  setup() {
-    const store = useStore<RootState>();
-    const progresss = ref();
-    const perc = ref();
-    const time = ref();
+const store = useStore<RootState>();
+const progresss = ref();
+const perc = ref();
+const time = ref();
 
-    watchEffect(() => {
-      progresss.value?.addEventListener("mousemove", (e: MouseEvent) => {
-        const positionInPercent = (e.clientX / progresss.value?.clientWidth) * 100;
-        const duration = (store.state.player.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
-        perc.value = positionInPercent;
-        time.value = timecode(duration);
-      });
+watchEffect(() => {
+  progresss.value?.addEventListener("mousemove", (e: MouseEvent) => {
+    const positionInPercent = (e.clientX / progresss.value?.clientWidth) * 100;
+    const duration = (store.state.player.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
+    perc.value = positionInPercent;
+    time.value = timecode(duration);
+  });
 
-      progresss.value?.addEventListener("click", (e: MouseEvent) => {
-        const positionInPercent = (e.clientX / progresss.value?.clientWidth) * 100;
-        const duration = (store.state.player.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
-        store.commit(Mutations.UPDATE_PROGRESS, Math.round(duration));
-        instance.put(`me/player/seek?position_ms=${Math.round(duration)}`);
-      });
-    });
-
-    return {
-      store,
-      perc,
-      time,
-      timecode,
-      progresss,
-    };
-  },
+  progresss.value?.addEventListener("click", (e: MouseEvent) => {
+    const positionInPercent = (e.clientX / progresss.value?.clientWidth) * 100;
+    const duration = (store.state.player.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
+    store.commit(Mutations.UPDATE_PROGRESS, Math.round(duration));
+    instance.put(`me/player/seek?position_ms=${Math.round(duration)}`);
+  });
 });
 </script>
 

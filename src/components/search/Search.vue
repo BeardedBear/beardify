@@ -71,35 +71,28 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
+import type { RootState } from "../../@types/RootState";
 import { SearchActions } from "./SearchStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { playSong } from "../../helpers/play";
 import Cover from "../Cover.vue";
 
-export default defineComponent({
-  components: { ArtistList, Cover },
-  setup() {
-    const store = useStore<RootState>();
-    const query = ref("");
+const store = useStore<RootState>();
+const query = ref("");
 
-    function search(q: string) {
-      store.dispatch(SearchActions.search, q);
-    }
+function search(q: string) {
+  store.dispatch(SearchActions.search, q);
+}
 
-    function reset() {
-      query.value = "";
-    }
+function reset() {
+  query.value = "";
+}
 
-    document.addEventListener("keydown", (e: KeyboardEvent) => {
-      if (e.key === "Escape") query.value = "";
-    });
-
-    return { store, search, query, reset, playSong };
-  },
+document.addEventListener("keydown", (e: KeyboardEvent) => {
+  if (e.key === "Escape") query.value = "";
 });
 </script>
 

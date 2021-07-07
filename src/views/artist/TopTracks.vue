@@ -19,22 +19,14 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
+import type { RootState } from "../../@types/RootState";
 import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import Cover from "../../components/Cover.vue";
 
-export default defineComponent({
-  components: { Cover },
-  setup() {
-    const store = useStore<RootState>();
-
-    return { store, timecode, playSongs };
-  },
-});
+const store = useStore<RootState>();
 </script>
 
 <style lang="scss" scoped>

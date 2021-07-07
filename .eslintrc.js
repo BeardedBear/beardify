@@ -25,5 +25,6 @@ module.exports = {
     "@typescript-eslint/no-non-null-assertion": "off",
     "prettier/prettier": ["error", {}, { usePrettierrc: true }],
     "vue/no-v-html": "off",
+    "vue/script-setup-uses-vars": "warn",
   },
 };

@@ -7,29 +7,26 @@
   </span>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { Artist, ArtistSimplified } from "../@types/Artist";
+<script setup lang="ts">
+import type { PropType } from "vue";
+import { defineProps } from "vue";
+import type { Artist, ArtistSimplified } from "../@types/Artist";
 import router from "../router";
 
-export default defineComponent({
-  props: {
-    artistList: {
-      default: () => [],
-      type: Array as PropType<Artist[] | ArtistSimplified[]>,
-    },
-    feat: {
-      default: false,
-      type: Boolean as PropType<boolean>,
-    },
+defineProps({
+  artistList: {
+    default: () => [],
+    type: Array as PropType<Artist[] | ArtistSimplified[]>,
   },
-  setup() {
-    function goArtist(artistUri: string) {
-      router.push(artistUri);
-    }
-    return { goArtist };
+  feat: {
+    default: false,
+    type: Boolean as PropType<boolean>,
   },
 });
+
+function goArtist(artistUri: string) {
+  router.push(artistUri);
+}
 </script>
 
 <style lang="scss" scoped>

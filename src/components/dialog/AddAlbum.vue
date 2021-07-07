@@ -13,30 +13,23 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { useStore } from "vuex";
-import { Paging } from "../../@types/Paging";
-import { RootState } from "../../@types/RootState";
-import { TrackSimplified } from "../../@types/Track";
+import type { Paging } from "../../@types/Paging";
+import type { RootState } from "../../@types/RootState";
+import type { TrackSimplified } from "../../@types/Track";
 import { instance } from "../../api";
 import { Mutations } from "./DialogStore";
 
-export default defineComponent({
-  setup() {
-    const store = useStore<RootState>();
+const store = useStore<RootState>();
 
-    function add(albumId: string, playlistId: string) {
-      instance.get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`).then((e) => {
-        instance.post(`playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`).then((f) => {
-          if (f.status === 201) store.commit(Mutations.CLOSE_DIALOG);
-        });
-      });
-    }
-
-    return { add, store };
-  },
-});
+function add(albumId: string, playlistId: string) {
+  instance.get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`).then((e) => {
+    instance.post(`playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`).then((f) => {
+      if (f.status === 201) store.commit(Mutations.CLOSE_DIALOG);
+    });
+  });
+}
 </script>
 
 <style lang="scss" scoped>

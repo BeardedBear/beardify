@@ -44,41 +44,33 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { computed } from "vue";
 import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
+import type { RootState } from "../../@types/RootState";
 import { SidebarActions } from "./SidebarStore";
 import { api } from "../../api";
 import { Mutations } from "../dialog/DialogStore";
-import { Dialog } from "../../@types/Dialog";
+import type { Dialog } from "../../@types/Dialog";
 import Loader from "../Loader.vue";
 
-export default defineComponent({
-  components: { Loader },
-  setup() {
-    const store = useStore<RootState>();
-    const openedPlaylist = ref("");
-    const collections = computed(() =>
-      store.state.sidebar.playlists.filter((p) => p.name.toLowerCase().includes("#collection")),
-    );
-    const playlists = computed(() =>
-      store.state.sidebar.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")),
-    );
+const store = useStore<RootState>();
+const collections = computed(() =>
+  store.state.sidebar.playlists.filter((p) => p.name.toLowerCase().includes("#collection")),
+);
+const playlists = computed(() =>
+  store.state.sidebar.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")),
+);
 
-    function openDialogAddPlaylist() {
-      store.commit(Mutations.OPEN_DIALOG, { type: "addPlaylist" } as Dialog);
-    }
+function openDialogAddPlaylist() {
+  store.commit(Mutations.OPEN_DIALOG, { type: "addPlaylist" } as Dialog);
+}
 
-    function openDialogAddCollection() {
-      store.commit(Mutations.OPEN_DIALOG, { type: "addCollection" } as Dialog);
-    }
+function openDialogAddCollection() {
+  store.commit(Mutations.OPEN_DIALOG, { type: "addCollection" } as Dialog);
+}
 
-    store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
-
-    return { openDialogAddPlaylist, openDialogAddCollection, store, collections, playlists, openedPlaylist };
-  },
-});
+store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
 </script>
 
 <style lang="scss" scoped>

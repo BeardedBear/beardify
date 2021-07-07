@@ -5,27 +5,19 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
+import type { RootState } from "../../@types/RootState";
 import { SidebarActions } from "../sidebar/SidebarStore";
 import { Mutations } from "../dialog/DialogStore";
 
-export default defineComponent({
-  setup() {
-    const store = useStore<RootState>();
-    const collectionName = ref("");
+const store = useStore<RootState>();
+const collectionName = ref("");
 
-    function create() {
-      store
-        .dispatch(SidebarActions.addCollection, collectionName.value)
-        .then(() => store.commit(Mutations.CLOSE_DIALOG));
-    }
-
-    return { collectionName, create, store };
-  },
-});
+function create() {
+  store.dispatch(SidebarActions.addCollection, collectionName.value).then(() => store.commit(Mutations.CLOSE_DIALOG));
+}
 </script>
 
 <style lang="scss" scoped>

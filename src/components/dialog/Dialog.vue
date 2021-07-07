@@ -19,28 +19,20 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
+import type { RootState } from "../../@types/RootState";
 import AddAlbum from "./AddAlbum.vue";
 import AddPlaylist from "./AddPlaylist.vue";
 import AddCollection from "./AddCollection.vue";
 import EditPlaylist from "./EditPlaylist.vue";
 import { Mutations } from "./DialogStore";
 
-export default defineComponent({
-  components: { AddAlbum, AddCollection, AddPlaylist, EditPlaylist },
-  setup() {
-    const store = useStore<RootState>();
+const store = useStore<RootState>();
 
-    function close() {
-      store.commit(Mutations.CLOSE_DIALOG);
-    }
-
-    return { close, store };
-  },
-});
+function close() {
+  store.commit(Mutations.CLOSE_DIALOG);
+}
 </script>
 
 <style lang="scss" scoped>

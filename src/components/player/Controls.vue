@@ -32,45 +32,38 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { useStore } from "vuex";
 import { instance } from "../../api";
-import { RootState } from "../../@types/RootState";
+import type { RootState } from "../../@types/RootState";
 import { timecode } from "../../helpers/date";
 import { PlayerActions } from "./PlayerStore";
 
-export default defineComponent({
-  setup() {
-    const store = useStore<RootState>();
+const store = useStore<RootState>();
 
-    function goPlay() {
-      instance.put("me/player/play", {
-        device_id: store.state.player.devices.activeDevice,
-      });
-    }
+function goPlay() {
+  instance.put("me/player/play", {
+    device_id: store.state.player.devices.activeDevice,
+  });
+}
 
-    function goNext() {
-      instance.post("me/player/next");
-    }
+function goNext() {
+  instance.post("me/player/next");
+}
 
-    function goPause() {
-      instance.put("me/player/pause", {
-        device_id: store.state.player.devices.activeDevice,
-      });
-    }
+function goPause() {
+  instance.put("me/player/pause", {
+    device_id: store.state.player.devices.activeDevice,
+  });
+}
 
-    function toggleShuffle() {
-      store.dispatch(PlayerActions.toggleShuffle);
-    }
+function toggleShuffle() {
+  store.dispatch(PlayerActions.toggleShuffle);
+}
 
-    function toggleRepeat() {
-      store.dispatch(PlayerActions.toggleRepeat);
-    }
-
-    return { store, goPlay, goNext, goPause, timecode, toggleShuffle, toggleRepeat };
-  },
-});
+function toggleRepeat() {
+  store.dispatch(PlayerActions.toggleRepeat);
+}
 </script>
 
 <style lang="scss" scoped>
