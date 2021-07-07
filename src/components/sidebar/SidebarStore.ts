@@ -40,8 +40,10 @@ export enum SidebarActions {
 const actions: ActionTree<Sidebar, RootState> = {
   [SidebarActions.getPlaylists](store, url: string) {
     instance.get<Paging<SimplifiedPlaylist>>(url).then((e) => {
-      store.commit(Mutations.SET_RESULTS, e.data.items);
-      if (e.data.next !== "") store.dispatch(SidebarActions.getPlaylists, e.data.next);
+      if (e.data.next !== null) {
+        store.commit(Mutations.SET_RESULTS, e.data.items);
+        if (e.data.next !== "") store.dispatch(SidebarActions.getPlaylists, e.data.next);
+      }
     });
   },
 

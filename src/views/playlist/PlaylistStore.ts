@@ -4,7 +4,7 @@ import { Paging } from "../../@types/Paging";
 import { Playlist, PlaylistPage, PlaylistTrack } from "../../@types/Playlist";
 import { RootState } from "../../@types/RootState";
 import { TrackToRemove } from "../../@types/Track";
-import { instance } from "../../api";
+import { api, instance } from "../../api";
 
 const state: PlaylistPage = {
   playlist: defaultPlaylist,
@@ -53,13 +53,15 @@ const actions: ActionTree<PlaylistPage, RootState> = {
   },
 
   [PlaylistActions.getTracks](store, url: string) {
-    instance.get<Paging<PlaylistTrack>>(url).then((e) => {
-      store.commit(
-        Mutations.SET_TRACKS,
-        e.data.items.filter((e) => e.track),
-      );
-      if (e.data.next !== "") store.dispatch(PlaylistActions.getTracks, e.data.next);
-    });
+    if (url) {
+      instance.get<Paging<PlaylistTrack>>(url).then((e) => {
+        store.commit(
+          Mutations.SET_TRACKS,
+          e.data.items.filter((e) => e.track),
+        );
+        if (e.data.next !== "") store.dispatch(PlaylistActions.getTracks, e.data.next);
+      });
+    }
   },
 };
 

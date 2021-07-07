@@ -5,7 +5,7 @@
       v-for="(trackItem, index) in store.state.artist.topTracks.tracks"
       :key="index"
       class="item"
-      :class="{ active: store.state.player.currentlyPlaying.item.id === trackItem.id }"
+      :class="{ active: store.state.player.currentlyPlaying.item?.id === trackItem.id }"
       @click="playSongs(index, store.state.artist.topTracks.tracks)"
     >
       <Cover size="small" :images="trackItem.album.images" class-name="cover" />

@@ -16,7 +16,7 @@
             <div v-for="(album, index) in store.state.artist.albums" :key="index">
               <Album
                 :album="album"
-                :currently-played-id="store.state.player.currentlyPlaying.item.album.uri"
+                :currently-played-id="store.state.player.currentlyPlaying.item?.album.uri"
                 can-save
               />
             </div>
@@ -28,7 +28,7 @@
             <div v-for="(album, index) in store.state.artist.eps" :key="index">
               <Album
                 :album="album"
-                :currently-played-id="store.state.player.currentlyPlaying.item.album.uri"
+                :currently-played-id="store.state.player.currentlyPlaying.item?.album.uri"
                 can-save
               />
             </div>
@@ -38,7 +38,7 @@
           <div class="heading sticky-heading">Singles</div>
           <div class="singles">
             <div v-for="(album, index) in store.state.artist.singles" :key="index">
-              <Album :album="album" :currently-played-id="store.state.player.currentlyPlaying.item.album.uri" />
+              <Album :album="album" :currently-played-id="store.state.player.currentlyPlaying.item?.album.uri" />
             </div>
           </div>
         </div>
