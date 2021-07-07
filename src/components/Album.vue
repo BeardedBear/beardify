@@ -29,61 +29,66 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { defineProps } from "vue";
-import type { PropType } from "vue";
+<script lang="ts">
+import { defineComponent, PropType } from "vue";
 import { useStore } from "vuex";
-import type { Album, AlbumSimplified } from "../@types/Album";
-import type { RootState } from "../@types/RootState";
+import { Album, AlbumSimplified } from "../@types/Album";
+import { RootState } from "../@types/RootState";
 import { instance } from "../api";
+import { defaultAlbumSimplified } from "../@types/Defaults";
 import router from "../router";
 import Cover from "./Cover.vue";
 import ArtistList from "./ArtistList.vue";
 import { Mutations } from "./dialog/DialogStore";
-import type { Dialog, DialogType } from "../@types/Dialog";
-import type { Paging } from "../@types/Paging";
-import type { TrackSimplified, TrackToRemove } from "../@types/Track";
+import { Dialog, DialogType } from "../@types/Dialog";
+import { Paging } from "../@types/Paging";
+import { TrackSimplified, TrackToRemove } from "../@types/Track";
 import { useRoute } from "vue-router";
 import { Mutations as PlaylistMutation } from "../views/playlist/PlaylistStore";
-import { defaultAlbumSimplified } from "../@types/Defaults";
 
-const props = defineProps({
-  album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified | Album> },
-  currentlyPlayedId: { default: "", type: String as PropType<string> },
-  withArtists: { default: false, type: Boolean as PropType<boolean> },
-  withoutMetas: { default: false, type: Boolean as PropType<boolean> },
-  canDelete: { default: false, type: Boolean as PropType<boolean> },
-  canSave: { default: false, type: Boolean as PropType<boolean> },
+export default defineComponent({
+  components: { ArtistList, Cover },
+  props: {
+    album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified | Album> },
+    currentlyPlayedId: { default: "", type: String as PropType<string> },
+    withArtists: { default: false, type: Boolean as PropType<boolean> },
+    withoutMetas: { default: false, type: Boolean as PropType<boolean> },
+    canDelete: { default: false, type: Boolean as PropType<boolean> },
+    canSave: { default: false, type: Boolean as PropType<boolean> },
+  },
+  setup(props) {
+    const store = useStore<RootState>();
+    const currentRouteId = useRoute().params.id;
+
+    function playAlbum(albumId: string) {
+      instance.put("me/player/play", { context_uri: albumId });
+    }
+
+    function goAlbum() {
+      router.push(`/album/${props.album.id}`);
+    }
+
+    function addAlbum(type: DialogType, albumId: string) {
+      store.commit(Mutations.OPEN_DIALOG, { type, albumId } as Dialog);
+    }
+
+    function deleteAlbum(albumId: string) {
+      instance.get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`).then((e) => {
+        let tracks: TrackToRemove[] = [];
+
+        e.data.items.map((t) => t.uri).forEach((t) => tracks.push({ uri: t }));
+
+        instance
+          .delete(`playlists/${currentRouteId}/tracks`, {
+            data: { tracks },
+          })
+          .then(() => store.commit(PlaylistMutation.REMOVE_TRACKS, tracks));
+      });
+    }
+
+    return { deleteAlbum, addAlbum, store, playAlbum, goAlbum };
+  },
 });
-
-const store = useStore<RootState>();
-const currentRouteId = useRoute().params.id;
-
-function playAlbum(albumId: string) {
-  instance.put("me/player/play", { context_uri: albumId });
-}
-
-function goAlbum() {
-  router.push(`/album/${props.album.id}`);
-}
-
-function addAlbum(type: DialogType, albumId: string) {
-  store.commit(Mutations.OPEN_DIALOG, { type, albumId } as Dialog);
-}
-
-function deleteAlbum(albumId: string) {
-  instance.get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`).then((e) => {
-    let tracks: TrackToRemove[] = [];
-
-    e.data.items.map((t) => t.uri).forEach((t) => tracks.push({ uri: t }));
-
-    instance
-      .delete(`playlists/${currentRouteId}/tracks`, {
-        data: { tracks },
-      })
-      .then(() => store.commit(PlaylistMutation.REMOVE_TRACKS, tracks));
-  });
-}
 </script>
 
 <style lang="scss" scoped>

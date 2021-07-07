@@ -74,43 +74,51 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { defineProps, ref } from "vue";
+<script lang="ts">
+import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
-import type { RootState } from "../../@types/RootState";
+import { RootState } from "../../@types/RootState";
 import { timecode, timecodeWithUnits } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import { PlaylistActions, Mutations } from "./PlaylistStore";
 import Cover from "../../components/Cover.vue";
-import type { PlaylistTrack } from "../../@types/Playlist";
+import { PlaylistTrack } from "../../@types/Playlist";
 import ArtistList from "../../components/ArtistList.vue";
 import { api } from "../../api";
 import { Mutations as DialogMutations } from "../../components/dialog/DialogStore";
-import type { Dialog } from "../../@types/Dialog";
+import { Dialog } from "../../@types/Dialog";
 import router from "../../router";
 
-const props = defineProps<{
-  id: string;
-}>();
+export default defineComponent({
+  components: { ArtistList, Cover },
+  props: {
+    id: { default: "", type: String },
+  },
+  setup(props) {
+    const store = useStore<RootState>();
+    const playlistpage = ref();
 
-const store = useStore<RootState>();
-const playlistpage = ref();
+    function deletePlaylist(playlistId: string) {
+      store.commit(DialogMutations.OPEN_DIALOG, { type: "editPlaylist", playlistId } as Dialog);
+    }
 
-function deletePlaylist(playlistId: string) {
-  store.commit(DialogMutations.OPEN_DIALOG, { type: "editPlaylist", playlistId } as Dialog);
-}
+    function goAlbum(albumId: string) {
+      router.push(`/album/${albumId}`);
+    }
 
-function goAlbum(albumId: string) {
-  router.push(`/album/${albumId}`);
-}
+    function sumDuration(tracks: PlaylistTrack[]) {
+      return tracks
+        .map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0))
+        .reduce((acc, value) => acc + value, 0);
+    }
 
-function sumDuration(tracks: PlaylistTrack[]) {
-  return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
-}
+    store.dispatch(PlaylistActions.getPlaylist, `${api.url}playlists/${props.id}`);
+    store.dispatch(PlaylistActions.getTracks, `${api.url}playlists/${props.id}/tracks`);
+    store.commit(Mutations.CLEAN_TRACKS);
 
-store.dispatch(PlaylistActions.getPlaylist, `${api.url}playlists/${props.id}`);
-store.dispatch(PlaylistActions.getTracks, `${api.url}playlists/${props.id}/tracks`);
-store.commit(Mutations.CLEAN_TRACKS);
+    return { playlistpage, store, timecode, timecodeWithUnits, playSongs, sumDuration, deletePlaylist, goAlbum };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

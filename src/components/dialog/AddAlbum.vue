@@ -13,23 +13,30 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from "vue";
 import { useStore } from "vuex";
-import type { Paging } from "../../@types/Paging";
-import type { RootState } from "../../@types/RootState";
-import type { TrackSimplified } from "../../@types/Track";
+import { Paging } from "../../@types/Paging";
+import { RootState } from "../../@types/RootState";
+import { TrackSimplified } from "../../@types/Track";
 import { instance } from "../../api";
 import { Mutations } from "./DialogStore";
 
-const store = useStore<RootState>();
+export default defineComponent({
+  setup() {
+    const store = useStore<RootState>();
 
-function add(albumId: string, playlistId: string) {
-  instance.get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`).then((e) => {
-    instance.post(`playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`).then((f) => {
-      if (f.status === 201) store.commit(Mutations.CLOSE_DIALOG);
-    });
-  });
-}
+    function add(albumId: string, playlistId: string) {
+      instance.get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`).then((e) => {
+        instance.post(`playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`).then((f) => {
+          if (f.status === 201) store.commit(Mutations.CLOSE_DIALOG);
+        });
+      });
+    }
+
+    return { add, store };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

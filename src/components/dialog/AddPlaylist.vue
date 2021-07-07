@@ -5,19 +5,25 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from "vue";
+<script lang="ts">
+import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
-import type { RootState } from "../../@types/RootState";
+import { RootState } from "../../@types/RootState";
 import { SidebarActions } from "../sidebar/SidebarStore";
 import { Mutations } from "../dialog/DialogStore";
 
-const store = useStore<RootState>();
-const playlistName = ref("");
+export default defineComponent({
+  setup() {
+    const store = useStore<RootState>();
+    const playlistName = ref("");
 
-function create() {
-  store.dispatch(SidebarActions.addPlaylist, playlistName.value).then(() => store.commit(Mutations.CLOSE_DIALOG));
-}
+    function create() {
+      store.dispatch(SidebarActions.addPlaylist, playlistName.value).then(() => store.commit(Mutations.CLOSE_DIALOG));
+    }
+
+    return { playlistName, create, store };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

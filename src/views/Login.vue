@@ -9,9 +9,10 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from "vue";
 import { useStore } from "vuex";
-import type { RootState } from "../@types/RootState";
+import { RootState } from "../@types/RootState";
 import { api } from "../api";
 import { create } from "pkce";
 import { Mutations } from "./auth/AuthStore";
@@ -21,11 +22,17 @@ interface Challenge {
   codeChallenge: string;
 }
 
-const store = useStore<RootState>();
-const code: Challenge = create();
-const connectUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${code.codeChallenge}`;
+export default defineComponent({
+  setup() {
+    const store = useStore<RootState>();
+    const code: Challenge = create();
+    const connectUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${code.codeChallenge}`;
 
-store.commit(Mutations.GENERATE_CODE_CHALLENGE, code);
+    store.commit(Mutations.GENERATE_CODE_CHALLENGE, code);
+
+    return { connectUrl, store };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

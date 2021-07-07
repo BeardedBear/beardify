@@ -16,7 +16,7 @@
             <div v-for="(album, index) in store.state.artist.albums" :key="index">
               <Album
                 :album="album"
-                :currently-played-id="store.state.player.currentlyPlaying.item?.album.uri"
+                :currently-played-id="store.state.player.currentlyPlaying.item.album.uri"
                 can-save
               />
             </div>
@@ -28,7 +28,7 @@
             <div v-for="(album, index) in store.state.artist.eps" :key="index">
               <Album
                 :album="album"
-                :currently-played-id="store.state.player.currentlyPlaying.item?.album.uri"
+                :currently-played-id="store.state.player.currentlyPlaying.item.album.uri"
                 can-save
               />
             </div>
@@ -38,7 +38,7 @@
           <div class="heading sticky-heading">Singles</div>
           <div class="singles">
             <div v-for="(album, index) in store.state.artist.singles" :key="index">
-              <Album :album="album" :currently-played-id="store.state.player.currentlyPlaying.item?.album.uri" />
+              <Album :album="album" :currently-played-id="store.state.player.currentlyPlaying.item.album.uri" />
             </div>
           </div>
         </div>
@@ -48,38 +48,45 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { defineProps, onMounted, ref } from "vue";
+<script lang="ts">
+import { defineComponent, onMounted, ref } from "vue";
 import { useStore } from "vuex";
-import type { RootState } from "../../@types/RootState";
+import { RootState } from "../../@types/RootState";
 import { ArtistActions } from "./ArtistStore";
+import { timecode } from "../../helpers/date";
 import TopTracks from "./TopTracks.vue";
 import RelatedArtists from "./RelatedArtists.vue";
 import Album from "../../components/Album.vue";
 import ArtistHeader from "./ArtistHeader.vue";
 import { templateRef, useEventListener } from "@vueuse/core";
 
-const props = defineProps<{
-  id: string;
-}>();
+export default defineComponent({
+  components: { ArtistHeader, Album, TopTracks, RelatedArtists },
+  props: {
+    id: { default: "", type: String },
+  },
+  setup(props) {
+    const store = useStore<RootState>();
+    const domArtistpage = templateRef("domArtistpage");
+    const scrolledHead = ref(false);
 
-const store = useStore<RootState>();
-const domArtistpage = templateRef("domArtistpage");
-const scrolledHead = ref(false);
+    onMounted(() => {
+      store.dispatch(ArtistActions.getArtist, props.id);
+      store.dispatch(ArtistActions.getTopTracks, props.id);
+      store.dispatch(ArtistActions.getAlbums, props.id);
+      store.dispatch(ArtistActions.getRelatedArtists, props.id);
+      store.dispatch(ArtistActions.getSingles, props.id);
+      store.dispatch(ArtistActions.getFollowStatus, props.id);
 
-onMounted(() => {
-  store.dispatch(ArtistActions.getArtist, props.id);
-  store.dispatch(ArtistActions.getTopTracks, props.id);
-  store.dispatch(ArtistActions.getAlbums, props.id);
-  store.dispatch(ArtistActions.getRelatedArtists, props.id);
-  store.dispatch(ArtistActions.getSingles, props.id);
-  store.dispatch(ArtistActions.getFollowStatus, props.id);
+      domArtistpage.value ? (domArtistpage.value.scrollTop = 0) : null;
 
-  domArtistpage.value ? (domArtistpage.value.scrollTop = 0) : null;
+      useEventListener(domArtistpage.value, "scroll", () => {
+        scrolledHead.value = domArtistpage.value ? domArtistpage.value.scrollTop > 50 : false;
+      });
+    });
 
-  useEventListener(domArtistpage.value, "scroll", () => {
-    scrolledHead.value = domArtistpage.value ? domArtistpage.value.scrollTop > 50 : false;
-  });
+    return { store, timecode, scrolledHead };
+  },
 });
 </script>
 

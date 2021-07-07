@@ -23,11 +23,11 @@
   </div>
 </template>
 
-<script setup lang="ts">
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+<script lang="ts">
 import { connectUrl } from "../api";
 import { useStore } from "vuex";
 import type { RootState } from "../@types/RootState";
+import { defineComponent } from "vue";
 import Search from "./search/Search.vue";
 import Cover from "./Cover.vue";
 import router from "../router";
@@ -35,22 +35,29 @@ import Config from "./config/Config.vue";
 import { Mutations } from "./config/ConfigStore";
 import { onClickOutside, templateRef } from "@vueuse/core";
 
-const store = useStore<RootState>();
-const domConfig = templateRef("domConfig");
+export default defineComponent({
+  components: { Search, Cover, Config },
+  setup() {
+    const store = useStore<RootState>();
+    const domConfig = templateRef("domConfig");
 
-onClickOutside(domConfig, () => store.commit(Mutations.CLOSE_CONFIG));
+    onClickOutside(domConfig, () => store.commit(Mutations.CLOSE_CONFIG));
 
-function previous() {
-  router.go(-1);
-}
+    function previous() {
+      router.go(-1);
+    }
 
-function next() {
-  router.go(1);
-}
+    function next() {
+      router.go(1);
+    }
 
-function openConfig() {
-  store.commit(Mutations.OPEN_CONFIG);
-}
+    function openConfig() {
+      store.commit(Mutations.OPEN_CONFIG);
+    }
+
+    return { store, connectUrl, previous, next, openConfig };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

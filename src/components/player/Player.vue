@@ -13,10 +13,10 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { watch } from "vue";
+<script lang="ts">
+import { defineComponent, watch } from "vue";
 import { useStore } from "vuex";
-import type { RootState } from "../../@types/RootState";
+import { RootState } from "../../@types/RootState";
 import SeekBar from "./SeekBar.vue";
 import Volume from "./Volume.vue";
 import Devices from "./Devices.vue";
@@ -25,18 +25,23 @@ import PlayerLoading from "./PlayerLoading.vue";
 import Controls from "./Controls.vue";
 import { useTitle } from "@vueuse/core";
 
-const store = useStore<RootState>();
+export default defineComponent({
+  components: { Controls, SeekBar, Volume, Devices, What, PlayerLoading },
+  setup() {
+    const store = useStore<RootState>();
 
-watch(
-  () => store.state.player.currentlyPlaying,
-  () => {
-    if (store.state.player.currentlyPlaying.item) {
-      useTitle(
-        `${store.state.player.currentlyPlaying.item.album.artists[0].name} - ${store.state.player.currentlyPlaying.item.name}`,
-      );
-    }
+    watch(
+      () => store.state.player.currentlyPlaying,
+      () => {
+        useTitle(
+          `${store.state.player.currentlyPlaying.item.album.artists[0].name} - ${store.state.player.currentlyPlaying.item.name}`,
+        );
+      },
+    );
+
+    return { store };
   },
-);
+});
 </script>
 
 <style lang="scss" scoped>

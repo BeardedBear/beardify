@@ -4,19 +4,26 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from "vue";
 import { useStore } from "vuex";
-import type { RootState } from "../../@types/RootState";
+import { RootState } from "../../@types/RootState";
 import { SidebarActions } from "../sidebar/SidebarStore";
 import { Mutations } from "../dialog/DialogStore";
 
-const store = useStore<RootState>();
+export default defineComponent({
+  setup() {
+    const store = useStore<RootState>();
 
-function remove() {
-  store
-    .dispatch(SidebarActions.removePlaylist, store.state.dialog.playlistId)
-    .then(() => store.commit(Mutations.CLOSE_DIALOG));
-}
+    function remove() {
+      store
+        .dispatch(SidebarActions.removePlaylist, store.state.dialog.playlistId)
+        .then(() => store.commit(Mutations.CLOSE_DIALOG));
+    }
+
+    return { remove, store };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

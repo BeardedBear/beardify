@@ -37,9 +37,10 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from "vue";
 import { useStore } from "vuex";
-import type { RootState } from "../../@types/RootState";
+import { RootState } from "../../@types/RootState";
 import { Mutations } from "./ConfigStore";
 
 interface TextColors {
@@ -47,34 +48,45 @@ interface TextColors {
   fn: () => void;
 }
 
-const store = useStore<RootState>();
+export default defineComponent({
+  setup() {
+    const store = useStore<RootState>();
 
-const textColors: TextColors[] = [
-  {
-    name: "default",
-    fn: () => store.commit(Mutations.SCHEME_DEFAULT),
-  },
-  {
-    name: "blue",
-    fn: () => store.commit(Mutations.SCHEME_BLUE),
-  },
-  {
-    name: "crimson",
-    fn: () => store.commit(Mutations.SCHEME_CRIMSON),
-  },
-  {
-    name: "apple",
-    fn: () => store.commit(Mutations.SCHEME_APPLE),
-  },
-];
+    const textColors: TextColors[] = [
+      {
+        name: "default",
+        fn: () => store.commit(Mutations.SCHEME_DEFAULT),
+      },
+      {
+        name: "blue",
+        fn: () => store.commit(Mutations.SCHEME_BLUE),
+      },
+      {
+        name: "crimson",
+        fn: () => store.commit(Mutations.SCHEME_CRIMSON),
+      },
+      {
+        name: "apple",
+        fn: () => store.commit(Mutations.SCHEME_APPLE),
+      },
+    ];
 
-function switchThemeLight() {
-  store.commit(Mutations.SWITCH_THEME_LIGHT);
-}
+    function switchThemeLight() {
+      store.commit(Mutations.SWITCH_THEME_LIGHT);
+    }
 
-function switchThemeDark() {
-  store.commit(Mutations.SWITCH_THEME_DARK);
-}
+    function switchThemeDark() {
+      store.commit(Mutations.SWITCH_THEME_DARK);
+    }
+
+    return {
+      store,
+      textColors,
+      switchThemeLight,
+      switchThemeDark,
+    };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

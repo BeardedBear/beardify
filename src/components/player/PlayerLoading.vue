@@ -16,17 +16,24 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from "vue";
 import { useStore } from "vuex";
-import type { Device } from "../../@types/Device";
-import type { RootState } from "../../@types/RootState";
+import { Device } from "../../@types/Device";
+import { RootState } from "../../@types/RootState";
 import { PlayerActions } from "./PlayerStore";
 
-const store = useStore<RootState>();
+export default defineComponent({
+  setup() {
+    const store = useStore<RootState>();
 
-function setDevice(device: Device) {
-  store.dispatch(PlayerActions.setDevice, device as Device);
-}
+    function setDevice(device: Device) {
+      store.dispatch(PlayerActions.setDevice, device as Device);
+    }
+
+    return { store, setDevice };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

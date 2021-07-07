@@ -5,23 +5,24 @@
   <img v-else :class="className" src="/img/default.png" />
 </template>
 
-<script setup lang="ts">
-import type { PropType } from "vue";
-import { defineProps } from "vue";
-import type { Image, ImageSize } from "../@types/Image";
+<script lang="ts">
+import { defineComponent, PropType } from "vue";
+import { Image, ImageSize } from "../@types/Image";
 
-defineProps({
-  images: {
-    default: () => [],
-    type: Array as PropType<Image[]>,
-  },
-  size: {
-    default: "medium",
-    type: String as PropType<ImageSize>,
-  },
-  className: {
-    default: "img",
-    type: String as PropType<string>,
+export default defineComponent({
+  props: {
+    images: {
+      default: () => [],
+      type: Array as PropType<Image[]>,
+    },
+    size: {
+      default: "medium",
+      type: String as PropType<ImageSize>,
+    },
+    className: {
+      default: "img",
+      type: String as PropType<string>,
+    },
   },
 });
 </script>

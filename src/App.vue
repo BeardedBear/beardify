@@ -12,63 +12,71 @@
   <Player key="player" />
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
 import { Mutations, PlayerActions } from "./components/player/PlayerStore";
 import Player from "./components/player/Player.vue";
-import type { RootState } from "./@types/RootState";
+import { RootState } from "./@types/RootState";
 import { AuthActions } from "./views/auth/AuthStore";
 import { api, instance } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
-import type { ThemeColor } from "./@types/Config";
+import { ThemeColor } from "./@types/Config";
 import { SidebarActions } from "./components/sidebar/SidebarStore";
 import KeyboardEvents from "./composition/KeyboardEvents";
 
-const store = useStore<RootState>();
+export default defineComponent({
+  components: { Dialog, Topbar, Player, Sidebar },
+  setup() {
+    const store = useStore<RootState>();
 
-KeyboardEvents();
+    KeyboardEvents();
 
-store.dispatch(PlayerActions.getDeviceList);
-store.dispatch(AuthActions.refresh);
-store.state.config.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
-store.state.config.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
-
-// Keep app active
-setInterval(() => {
-  store.dispatch(PlayerActions.getDeviceList);
-  if (!store.state.player.currentlyPlaying.is_playing) {
-    store.dispatch(PlayerActions.setDevice, store.state.player.devices.activeDevice);
-  }
-  store.dispatch(AuthActions.refresh);
-}, 120000);
-
-function getPlayerStatus() {
-  if (!store.state.sidebar.playlists.length) {
-    store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
-  }
-  if (!store.state.player.devices.list.length) {
     store.dispatch(PlayerActions.getDeviceList);
-  }
-  store.dispatch(PlayerActions.getPlayerState);
-}
+    store.dispatch(AuthActions.refresh);
+    store.state.config.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
+    store.state.config.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
 
-addEventListener("focus", () => {
-  store.dispatch(PlayerActions.getDeviceList);
-  getPlayerStatus();
+    // Keep app active
+    setInterval(() => {
+      store.dispatch(PlayerActions.getDeviceList);
+      if (!store.state.player.currentlyPlaying.is_playing) {
+        store.dispatch(PlayerActions.setDevice, store.state.player.devices.activeDevice);
+      }
+      store.dispatch(AuthActions.refresh);
+    }, 120000);
+
+    function getPlayerStatus() {
+      if (!store.state.sidebar.playlists.length) {
+        store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
+      }
+      if (!store.state.player.devices.list.length) {
+        store.dispatch(PlayerActions.getDeviceList);
+      }
+      store.dispatch(PlayerActions.getPlayerState);
+    }
+
+    addEventListener("focus", () => {
+      store.dispatch(PlayerActions.getDeviceList);
+      getPlayerStatus();
+    });
+
+    setInterval(() => {
+      if (document.hasFocus()) getPlayerStatus();
+    }, 1000);
+
+    addEventListener("initdevice", ((e: CustomEvent) => {
+      if (store.state.player.devices.list.filter((d) => d.is_active).length === 0) {
+        instance.put("me/player", { device_ids: [e.detail.thisDevice] });
+      }
+      store.commit(Mutations.THIS_DEVICE, e.detail.thisDevice);
+    }) as { (evt: Event): void });
+
+    return { store };
+  },
 });
-
-setInterval(() => {
-  if (document.hasFocus()) getPlayerStatus();
-}, 1000);
-
-addEventListener("initdevice", ((e: CustomEvent) => {
-  if (store.state.player.devices.list.filter((d) => d.is_active).length === 0) {
-    instance.put("me/player", { device_ids: [e.detail.thisDevice] });
-  }
-  store.commit(Mutations.THIS_DEVICE, e.detail.thisDevice);
-}) as { (evt: Event): void });
 </script>
 
 <style lang="scss">

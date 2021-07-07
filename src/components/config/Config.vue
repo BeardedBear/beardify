@@ -22,24 +22,32 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from "vue";
 import { useStore } from "vuex";
-import type { RootState } from "../../@types/RootState";
+import { RootState } from "../../@types/RootState";
 import router from "../../router";
 import { AuthActions, Mutations } from "../../views/auth/AuthStore";
 import Colors from "./Colors.vue";
 
-const store = useStore<RootState>();
-const env = process.env.NODE_ENV;
+export default defineComponent({
+  components: { Colors },
+  setup() {
+    const store = useStore<RootState>();
+    const env = process.env.NODE_ENV;
 
-function refresh(): void {
-  store.dispatch(AuthActions.refresh);
-}
+    function refresh(): void {
+      store.dispatch(AuthActions.refresh);
+    }
 
-function logout(): void {
-  store.commit(Mutations.RESET_LOGIN);
-  router.push("/login");
-}
+    function logout(): void {
+      store.commit(Mutations.RESET_LOGIN);
+      router.push("/login");
+    }
+
+    return { store, refresh, env, logout };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

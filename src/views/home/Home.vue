@@ -16,15 +16,24 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import type { RootState } from "../../@types/RootState";
 import { HomeActions } from "./HomeStore";
 import Album from "../../components/Album.vue";
 
-const store = useStore<RootState>();
+export default defineComponent({
+  components: { Album },
+  setup() {
+    const store = useStore<RootState>();
+    const env = process.env.NODE_ENV;
 
-store.dispatch(HomeActions.getRecommendedAlbums);
+    store.dispatch(HomeActions.getRecommendedAlbums);
+
+    return { store, env };
+  },
+});
 </script>
 
 <style lang="scss" scoped>
