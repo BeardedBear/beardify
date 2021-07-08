@@ -35,7 +35,7 @@ export default defineComponent({
 
     KeyboardEvents();
 
-    function getPlayerStatus() {
+    function getPlayerStatus(): void {
       if (!store.state.sidebar.playlists.length) {
         store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
       }
