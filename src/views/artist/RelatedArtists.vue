@@ -3,7 +3,7 @@
     <div class="heading sticky-heading">Artistes similaires</div>
     <div class="list">
       <router-link
-        v-for="(artist, _, index) in store.state.artist.relatedArtists.artists"
+        v-for="(artist, index) in store.state.artist.relatedArtists.artists"
         :key="index"
         class="item"
         :to="`/artist/${artist.id}`"

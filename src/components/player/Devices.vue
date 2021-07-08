@@ -1,7 +1,7 @@
 <template>
   <div>
     <button
-      v-for="(device, _, index) in store.state.player.devices.list"
+      v-for="(device, index) in store.state.player.devices.list"
       :key="index"
       type="button"
       class="device button button--x-small"
