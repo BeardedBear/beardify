@@ -24,7 +24,7 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "prettier/prettier": ["error", {}, { usePrettierrc: true }],
-    "no-unused-vars": ["warn"],
+    "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["warn"],
     "vue/no-v-html": "off",
     "vue/no-unused-properties": [

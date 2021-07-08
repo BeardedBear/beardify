@@ -5,7 +5,7 @@ import { PlayerActions } from "../components/player/PlayerStore";
 export default (): void => {
   const store = useStore<RootState>();
 
-  function setVolume(volume: number) {
+  function setVolume(volume: number): void {
     store.dispatch(PlayerActions.setVolume, volume);
   }
 

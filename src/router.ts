@@ -36,30 +36,35 @@ const routes: Array<RouteRecordRaw> = [
     component: Artist,
     name: "Artist",
     path: "/artist/:id",
-    props: (route) => ({ id: route.params.id }),
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    props: (route: RouteLocation) => ({ id: route.params.id }),
   },
   {
     component: Album,
     name: "Album",
     path: "/album/:id",
-    props: (route) => ({ id: route.params.id }),
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    props: (route: RouteLocation) => ({ id: route.params.id }),
   },
   {
     component: Playlist,
     name: "Playlist",
     path: "/playlist/:id",
-    props: (route) => ({ id: route.params.id }),
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    props: (route: RouteLocation) => ({ id: route.params.id }),
   },
   {
     component: Collection,
     name: "Collection",
     path: "/collection/:id",
-    props: (route) => ({ id: route.params.id }),
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    props: (route: RouteLocation) => ({ id: route.params.id }),
   },
   {
     path: RouteName.Auth,
     name: "Auth",
     component: Auth,
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     props: (route: RouteLocation) => ({ query: route.query.code }),
   },
 ];
