@@ -3,7 +3,7 @@
     <div class="heading sticky-heading">Artistes similaires</div>
     <div class="list">
       <router-link
-        v-for="(artist, _, index) in store.state.artist.relatedArtists.artists"
+        v-for="(artist, index) in store.state.artist.relatedArtists.artists"
         :key="index"
         class="item"
         :to="`/artist/${artist.id}`"
@@ -21,14 +21,13 @@
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
-import { timecode } from "../../helpers/date";
 import Cover from "../../components/Cover.vue";
 
 export default defineComponent({
   components: { Cover },
   setup() {
     const store = useStore<RootState>();
-    return { store, timecode };
+    return { store };
   },
 });
 </script>

@@ -17,11 +17,11 @@ export default defineComponent({
     const store = useStore<RootState>();
     const playlistName = ref("");
 
-    function create() {
+    function create(): void {
       store.dispatch(SidebarActions.addPlaylist, playlistName.value).then(() => store.commit(Mutations.CLOSE_DIALOG));
     }
 
-    return { playlistName, create, store };
+    return { playlistName, create };
   },
 });
 </script>

@@ -60,19 +60,19 @@ export default defineComponent({
     const store = useStore<RootState>();
     const currentRouteId = useRoute().params.id;
 
-    function playAlbum(albumId: string) {
+    function playAlbum(albumId: string): void {
       instance.put("me/player/play", { context_uri: albumId });
     }
 
-    function goAlbum() {
+    function goAlbum(): void {
       router.push(`/album/${props.album.id}`);
     }
 
-    function addAlbum(type: DialogType, albumId: string) {
+    function addAlbum(type: DialogType, albumId: string): void {
       store.commit(Mutations.OPEN_DIALOG, { type, albumId } as Dialog);
     }
 
-    function deleteAlbum(albumId: string) {
+    function deleteAlbum(albumId: string): void {
       instance.get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`).then((e) => {
         let tracks: TrackToRemove[] = [];
 
@@ -86,7 +86,7 @@ export default defineComponent({
       });
     }
 
-    return { deleteAlbum, addAlbum, store, playAlbum, goAlbum };
+    return { deleteAlbum, addAlbum, playAlbum, goAlbum };
   },
 });
 </script>

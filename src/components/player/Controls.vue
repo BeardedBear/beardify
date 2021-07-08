@@ -44,27 +44,27 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    function goPlay() {
+    function goPlay(): void {
       instance.put("me/player/play", {
         device_id: store.state.player.devices.activeDevice,
       });
     }
 
-    function goNext() {
+    function goNext(): void {
       instance.post("me/player/next");
     }
 
-    function goPause() {
+    function goPause(): void {
       instance.put("me/player/pause", {
         device_id: store.state.player.devices.activeDevice,
       });
     }
 
-    function toggleShuffle() {
+    function toggleShuffle(): void {
       store.dispatch(PlayerActions.toggleShuffle);
     }
 
-    function toggleRepeat() {
+    function toggleRepeat(): void {
       store.dispatch(PlayerActions.toggleRepeat);
     }
 

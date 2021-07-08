@@ -1,7 +1,7 @@
 <template>
   <div>
     <button
-      v-for="(device, _, index) in store.state.player.devices.list"
+      v-for="(device, index) in store.state.player.devices.list"
       :key="index"
       type="button"
       class="device button button--x-small"
@@ -25,21 +25,20 @@ import { useStore } from "vuex";
 import { PlayerActions } from "./../player/PlayerStore";
 import { RootState } from "../../@types/RootState";
 import { Device } from "../../@types/Device";
-import { timecode } from "../../helpers/date";
 
 export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    function setDevice(device: Device) {
+    function setDevice(device: Device): void {
       store.dispatch(PlayerActions.setDevice, device);
     }
 
-    function refreshDevices() {
+    function refreshDevices(): void {
       store.dispatch(PlayerActions.getDeviceList);
     }
 
-    return { store, setDevice, timecode, refreshDevices };
+    return { store, setDevice, refreshDevices };
   },
 });
 </script>

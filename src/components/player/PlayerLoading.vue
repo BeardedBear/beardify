@@ -3,7 +3,7 @@
     <div class="player-loading__title">Choisir un périphérique de lecture :</div>
     <span v-if="store.state.player.devices.list.length">
       <button
-        v-for="(device, _, index) in store.state.player.devices.list"
+        v-for="(device, index) in store.state.player.devices.list"
         :key="index"
         type="button"
         class="device button button--x-small"
@@ -27,7 +27,7 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    function setDevice(device: Device) {
+    function setDevice(device: Device): void {
       store.dispatch(PlayerActions.setDevice, device as Device);
     }
 

@@ -60,17 +60,13 @@ export default defineComponent({
   setup(props) {
     const store = useStore<RootState>();
     const albumpage = ref();
-    const albumDuration = ref(0);
 
-    function sumDuration(tracks: TrackSimplified[] | Track[]) {
+    function sumDuration(tracks: TrackSimplified[] | Track[]): number {
       return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
     }
-    onMounted(() => {
-      store.dispatch(AlbumActions.getAlbum, props.id);
-      // albumpage.value.scrollTop = 0;
-    });
+    onMounted(() => store.dispatch(AlbumActions.getAlbum, props.id));
 
-    return { albumpage, store, timecode, timecodeWithUnits, playSongs, albumDuration, sumDuration };
+    return { albumpage, store, timecode, timecodeWithUnits, playSongs, sumDuration };
   },
 });
 </script>

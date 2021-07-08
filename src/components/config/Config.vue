@@ -26,8 +26,9 @@
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
-import router from "../../router";
+import router, { RouteName } from "../../router";
 import { AuthActions, Mutations } from "../../views/auth/AuthStore";
+import { Mutations as ConfigMutation } from "../config/ConfigStore";
 import Colors from "./Colors.vue";
 
 export default defineComponent({
@@ -41,8 +42,9 @@ export default defineComponent({
     }
 
     function logout(): void {
+      store.commit(ConfigMutation.CLOSE_CONFIG);
       store.commit(Mutations.RESET_LOGIN);
-      router.push("/login");
+      router.push(RouteName.Login);
     }
 
     return { store, refresh, env, logout };

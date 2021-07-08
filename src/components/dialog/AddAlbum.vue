@@ -26,7 +26,7 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    function add(albumId: string, playlistId: string) {
+    function add(albumId: string, playlistId: string): void {
       instance.get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`).then((e) => {
         instance.post(`playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`).then((f) => {
           if (f.status === 201) store.commit(Mutations.CLOSE_DIALOG);

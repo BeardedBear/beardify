@@ -24,7 +24,7 @@ export default defineComponent({
     },
   },
   setup() {
-    function goArtist(artistUri: string) {
+    function goArtist(artistUri: string): void {
       router.push(artistUri);
     }
     return { goArtist };
