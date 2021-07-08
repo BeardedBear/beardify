@@ -1,11 +1,12 @@
+import { routerKey } from "vue-router";
 import { ActionTree, MutationTree } from "vuex";
-import { api, instance } from "../../api";
-import { Player } from "../../@types/Player";
-import { RootState } from "../../@types/RootState";
 import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
 import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
 import { Device, DevicesResponse } from "../../@types/Device";
-import router from "../../router";
+import { Player } from "../../@types/Player";
+import { RootState } from "../../@types/RootState";
+import { api, instance } from "../../api";
+import router, { RouteName } from "../../router";
 
 const state: Player = {
   devices: {

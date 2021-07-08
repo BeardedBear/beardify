@@ -30,11 +30,11 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    function setDevice(device: Device) {
+    function setDevice(device: Device): void {
       store.dispatch(PlayerActions.setDevice, device);
     }
 
-    function refreshDevices() {
+    function refreshDevices(): void {
       store.dispatch(PlayerActions.getDeviceList);
     }
 

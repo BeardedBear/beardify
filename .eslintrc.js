@@ -19,14 +19,16 @@ module.exports = {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "@typescript-eslint/interface-name-prefix": "off",
-    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-function-return-type": ["warn"],
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "prettier/prettier": ["error", {}, { usePrettierrc: true }],
+    "no-unused-vars": ["warn"],
+    "@typescript-eslint/no-unused-vars": ["warn"],
     "vue/no-v-html": "off",
     "vue/no-unused-properties": [
-      "error",
+      "warn",
       {
         groups: ["props", "setup"],
         deepData: true,

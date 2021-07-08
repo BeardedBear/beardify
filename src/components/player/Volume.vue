@@ -19,7 +19,7 @@ export default defineComponent({
     const refVolume = ref();
     const volume = ref(0);
 
-    function setVolume() {
+    function setVolume(): void {
       store.dispatch(PlayerActions.setVolume, volume.value);
     }
 

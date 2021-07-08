@@ -65,7 +65,7 @@ export default defineComponent({
       removeDuplicatesAlbums(store.state.playlist.tracks.map((a) => a.track.album)),
     );
 
-    function edit(playlistId: string) {
+    function edit(playlistId: string): void {
       store.commit(DialogMutations.OPEN_DIALOG, { type: "editPlaylist", playlistId } as Dialog);
     }
 

@@ -61,7 +61,7 @@ export default defineComponent({
     const store = useStore<RootState>();
     const albumpage = ref();
 
-    function sumDuration(tracks: TrackSimplified[] | Track[]) {
+    function sumDuration(tracks: TrackSimplified[] | Track[]): number {
       return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
     }
     onMounted(() => store.dispatch(AlbumActions.getAlbum, props.id));

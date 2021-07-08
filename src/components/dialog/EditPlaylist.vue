@@ -15,7 +15,7 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    function remove() {
+    function remove(): void {
       store
         .dispatch(SidebarActions.removePlaylist, store.state.dialog.playlistId)
         .then(() => store.commit(Mutations.CLOSE_DIALOG));

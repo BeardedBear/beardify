@@ -86,11 +86,11 @@ export default defineComponent({
     const store = useStore<RootState>();
     const query = ref("");
 
-    function search(q: string) {
+    function search(q: string): void {
       store.dispatch(SearchActions.search, q);
     }
 
-    function reset() {
+    function reset(): void {
       query.value = "";
     }
 

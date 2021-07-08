@@ -17,7 +17,7 @@ export default defineComponent({
     const store = useStore<RootState>();
     const collectionName = ref("");
 
-    function create() {
+    function create(): void {
       store
         .dispatch(SidebarActions.addCollection, collectionName.value)
         .then(() => store.commit(Mutations.CLOSE_DIALOG));

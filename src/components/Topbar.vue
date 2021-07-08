@@ -43,19 +43,26 @@ export default defineComponent({
 
     onClickOutside(domConfig, () => store.commit(Mutations.CLOSE_CONFIG));
 
-    function previous() {
+    function previous(): void {
       router.go(-1);
     }
 
-    function next() {
+    function next(): void {
       router.go(1);
     }
 
-    function openConfig() {
+    function openConfig(): void {
       store.commit(Mutations.OPEN_CONFIG);
     }
 
-    return { store, connectUrl, previous, next, openConfig };
+    return {
+      store,
+      // eslint-disable-next-line vue/no-unused-properties
+      connectUrl,
+      previous,
+      next,
+      openConfig,
+    };
   },
 });
 </script>

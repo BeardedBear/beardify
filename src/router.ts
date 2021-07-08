@@ -1,28 +1,35 @@
-import { createRouter, createWebHistory, RouteRecordRaw, RouteLocation } from "vue-router";
-import Home from "./views/home/Home.vue";
-import About from "./views/About.vue";
-import Auth from "./views/auth/Auth.vue";
-import Artist from "./views/artist/Artist.vue";
-import Album from "./views/album/Album.vue";
-import Playlist from "./views/playlist/Playlist.vue";
-import Collection from "./views/playlist/Collection.vue";
-import Login from "./views/Login.vue";
+import { createRouter, createWebHistory, RouteLocation, RouteRecordRaw } from "vue-router";
 import store from "./store";
+import About from "./views/About.vue";
+import Album from "./views/album/Album.vue";
+import Artist from "./views/artist/Artist.vue";
+import Auth from "./views/auth/Auth.vue";
+import Home from "./views/home/Home.vue";
+import Login from "./views/Login.vue";
+import Collection from "./views/playlist/Collection.vue";
+import Playlist from "./views/playlist/Playlist.vue";
+
+export enum RouteName {
+  Home = "/",
+  Login = "/login",
+  About = "/about",
+  Auth = "/auth",
+}
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
+    path: RouteName.Home,
     name: "Home",
     component: Home,
   },
   {
-    path: "/about",
+    path: RouteName.About,
     name: "About",
     component: About,
   },
   {
-    path: "/login",
-    name: "Alogin",
+    path: RouteName.Login,
+    name: "login",
     component: Login,
   },
   {
@@ -50,7 +57,7 @@ const routes: Array<RouteRecordRaw> = [
     props: (route) => ({ id: route.params.id }),
   },
   {
-    path: "/auth",
+    path: RouteName.Auth,
     name: "Auth",
     component: Auth,
     props: (route: RouteLocation) => ({ query: route.query.code }),
@@ -63,8 +70,8 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-  if (!store.state.auth.me?.display_name && to.path !== "/login" && to.path !== "/auth") {
-    router.push("/login");
+  if (!store.state.auth.me?.display_name && to.path !== RouteName.Login && to.path !== RouteName.Auth) {
+    router.push(RouteName.Login);
   }
 });
 

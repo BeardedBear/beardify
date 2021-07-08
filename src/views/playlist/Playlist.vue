@@ -98,15 +98,15 @@ export default defineComponent({
     const store = useStore<RootState>();
     const playlistpage = ref();
 
-    function deletePlaylist(playlistId: string) {
+    function deletePlaylist(playlistId: string): void {
       store.commit(DialogMutations.OPEN_DIALOG, { type: "editPlaylist", playlistId } as Dialog);
     }
 
-    function goAlbum(albumId: string) {
+    function goAlbum(albumId: string): void {
       router.push(`/album/${albumId}`);
     }
 
-    function sumDuration(tracks: PlaylistTrack[]) {
+    function sumDuration(tracks: PlaylistTrack[]): number {
       return tracks
         .map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0))
         .reduce((acc, value) => acc + value, 0);

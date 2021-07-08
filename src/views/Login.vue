@@ -49,7 +49,7 @@ export default defineComponent({
   place-content: center;
   height: 100%;
   position: fixed;
-  z-index: 9;
+  z-index: 10;
   width: 100%;
   top: 0;
   background-color: #16181d;

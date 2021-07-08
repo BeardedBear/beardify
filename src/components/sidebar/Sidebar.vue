@@ -65,11 +65,11 @@ export default defineComponent({
       store.state.sidebar.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")),
     );
 
-    function openDialogAddPlaylist() {
+    function openDialogAddPlaylist(): void {
       store.commit(Mutations.OPEN_DIALOG, { type: "addPlaylist" } as Dialog);
     }
 
-    function openDialogAddCollection() {
+    function openDialogAddCollection(): void {
       store.commit(Mutations.OPEN_DIALOG, { type: "addCollection" } as Dialog);
     }
 

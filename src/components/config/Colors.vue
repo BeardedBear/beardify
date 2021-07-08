@@ -55,27 +55,27 @@ export default defineComponent({
     const textColors: TextColors[] = [
       {
         name: "default",
-        fn: () => store.commit(Mutations.SCHEME_DEFAULT),
+        fn: (): void => store.commit(Mutations.SCHEME_DEFAULT),
       },
       {
         name: "blue",
-        fn: () => store.commit(Mutations.SCHEME_BLUE),
+        fn: (): void => store.commit(Mutations.SCHEME_BLUE),
       },
       {
         name: "crimson",
-        fn: () => store.commit(Mutations.SCHEME_CRIMSON),
+        fn: (): void => store.commit(Mutations.SCHEME_CRIMSON),
       },
       {
         name: "apple",
-        fn: () => store.commit(Mutations.SCHEME_APPLE),
+        fn: (): void => store.commit(Mutations.SCHEME_APPLE),
       },
     ];
 
-    function switchThemeLight() {
+    function switchThemeLight(): void {
       store.commit(Mutations.SWITCH_THEME_LIGHT);
     }
 
-    function switchThemeDark() {
+    function switchThemeDark(): void {
       store.commit(Mutations.SWITCH_THEME_DARK);
     }
 

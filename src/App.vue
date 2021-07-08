@@ -26,6 +26,7 @@ import Dialog from "./components/dialog/Dialog.vue";
 import { ThemeColor } from "./@types/Config";
 import { SidebarActions } from "./components/sidebar/SidebarStore";
 import KeyboardEvents from "./composition/KeyboardEvents";
+import router, { RouteName } from "./router";
 
 export default defineComponent({
   components: { Dialog, Topbar, Player, Sidebar },
@@ -34,8 +35,19 @@ export default defineComponent({
 
     KeyboardEvents();
 
+    function getPlayerStatus() {
+      if (!store.state.sidebar.playlists.length) {
+        store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
+      }
+      if (!store.state.player.devices.list.length) {
+        store.dispatch(PlayerActions.getDeviceList);
+      }
+      store.dispatch(PlayerActions.getPlayerState);
+    }
+
     store.dispatch(PlayerActions.getDeviceList);
     store.dispatch(AuthActions.refresh);
+
     store.state.config.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
     store.state.config.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
 
@@ -48,23 +60,15 @@ export default defineComponent({
       store.dispatch(AuthActions.refresh);
     }, 120000);
 
-    function getPlayerStatus() {
-      if (!store.state.sidebar.playlists.length) {
-        store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
-      }
-      if (!store.state.player.devices.list.length) {
-        store.dispatch(PlayerActions.getDeviceList);
-      }
-      store.dispatch(PlayerActions.getPlayerState);
-    }
-
     addEventListener("focus", () => {
       store.dispatch(PlayerActions.getDeviceList);
       getPlayerStatus();
     });
 
     setInterval(() => {
-      if (document.hasFocus()) getPlayerStatus();
+      if (document.hasFocus() && router.currentRoute.value.path !== RouteName.Login) {
+        getPlayerStatus();
+      }
     }, 1000);
 
     addEventListener("initdevice", ((e: CustomEvent) => {
@@ -72,7 +76,7 @@ export default defineComponent({
         instance.put("me/player", { device_ids: [e.detail.thisDevice] });
       }
       store.commit(Mutations.THIS_DEVICE, e.detail.thisDevice);
-    }) as { (evt: Event): void });
+    }) as { (): void });
   },
 });
 </script>

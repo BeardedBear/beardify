@@ -27,7 +27,7 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    function setDevice(device: Device) {
+    function setDevice(device: Device): void {
       store.dispatch(PlayerActions.setDevice, device as Device);
     }
 

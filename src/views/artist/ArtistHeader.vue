@@ -92,11 +92,11 @@ export default defineComponent({
   setup() {
     const store = useStore<RootState>();
 
-    function openLink(url: string) {
+    function openLink(url: string): void {
       window.open(url, "_blank");
     }
 
-    function switchFollow(artistId: string) {
+    function switchFollow(artistId: string): void {
       store.dispatch(ArtistActions.switchFollow, artistId);
     }
 
