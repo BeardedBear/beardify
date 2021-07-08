@@ -46,10 +46,7 @@
 import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
-import { timecode, timecodeWithUnits } from "../../helpers/date";
-import { playSongs } from "../../helpers/play";
 import { PlaylistActions, Mutations } from "./PlaylistStore";
-import { PlaylistTrack } from "../../@types/Playlist";
 import Album from "../../components/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { api } from "../../api";
@@ -72,25 +69,11 @@ export default defineComponent({
       store.commit(DialogMutations.OPEN_DIALOG, { type: "editPlaylist", playlistId } as Dialog);
     }
 
-    function sumDuration(tracks: PlaylistTrack[]) {
-      return tracks.map((t: PlaylistTrack) => t.track.duration_ms).reduce((acc, value) => acc + value, 0);
-    }
-
     store.dispatch(PlaylistActions.getPlaylist, `${api.url}playlists/${props.id}`);
     store.dispatch(PlaylistActions.getTracks, `${api.url}playlists/${props.id}/tracks`);
     store.commit(Mutations.CLEAN_TRACKS);
 
-    return {
-      playlistpage,
-      store,
-      timecode,
-      timecodeWithUnits,
-      playSongs,
-      sumDuration,
-      removeDuplicatesAlbums,
-      cleanAlbumList,
-      edit,
-    };
+    return { playlistpage, store, cleanAlbumList, edit };
   },
 });
 </script>

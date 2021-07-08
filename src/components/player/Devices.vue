@@ -25,7 +25,6 @@ import { useStore } from "vuex";
 import { PlayerActions } from "./../player/PlayerStore";
 import { RootState } from "../../@types/RootState";
 import { Device } from "../../@types/Device";
-import { timecode } from "../../helpers/date";
 
 export default defineComponent({
   setup() {
@@ -39,7 +38,7 @@ export default defineComponent({
       store.dispatch(PlayerActions.getDeviceList);
     }
 
-    return { store, setDevice, timecode, refreshDevices };
+    return { store, setDevice, refreshDevices };
   },
 });
 </script>

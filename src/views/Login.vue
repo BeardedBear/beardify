@@ -30,7 +30,7 @@ export default defineComponent({
 
     store.commit(Mutations.GENERATE_CODE_CHALLENGE, code);
 
-    return { connectUrl, store };
+    return { connectUrl };
   },
 });
 </script>

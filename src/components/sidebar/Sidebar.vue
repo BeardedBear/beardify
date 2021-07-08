@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { SidebarActions } from "./SidebarStore";
@@ -58,7 +58,6 @@ export default defineComponent({
   components: { Loader },
   setup() {
     const store = useStore<RootState>();
-    const openedPlaylist = ref("");
     const collections = computed(() =>
       store.state.sidebar.playlists.filter((p) => p.name.toLowerCase().includes("#collection")),
     );
@@ -76,7 +75,7 @@ export default defineComponent({
 
     store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
 
-    return { openDialogAddPlaylist, openDialogAddCollection, store, collections, playlists, openedPlaylist };
+    return { openDialogAddPlaylist, openDialogAddCollection, store, collections, playlists };
   },
 });
 </script>

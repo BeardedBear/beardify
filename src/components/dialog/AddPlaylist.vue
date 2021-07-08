@@ -21,7 +21,7 @@ export default defineComponent({
       store.dispatch(SidebarActions.addPlaylist, playlistName.value).then(() => store.commit(Mutations.CLOSE_DIALOG));
     }
 
-    return { playlistName, create, store };
+    return { playlistName, create };
   },
 });
 </script>

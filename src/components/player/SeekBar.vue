@@ -49,7 +49,6 @@ export default defineComponent({
       store,
       perc,
       time,
-      timecode,
       progresss,
     };
   },

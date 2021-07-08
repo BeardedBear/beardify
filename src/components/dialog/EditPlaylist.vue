@@ -21,7 +21,7 @@ export default defineComponent({
         .then(() => store.commit(Mutations.CLOSE_DIALOG));
     }
 
-    return { remove, store };
+    return { remove };
   },
 });
 </script>

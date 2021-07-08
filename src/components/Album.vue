@@ -86,7 +86,7 @@ export default defineComponent({
       });
     }
 
-    return { deleteAlbum, addAlbum, store, playAlbum, goAlbum };
+    return { deleteAlbum, addAlbum, playAlbum, goAlbum };
   },
 });
 </script>

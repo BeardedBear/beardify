@@ -73,8 +73,6 @@ export default defineComponent({
       }
       store.commit(Mutations.THIS_DEVICE, e.detail.thisDevice);
     }) as { (evt: Event): void });
-
-    return { store };
   },
 });
 </script>

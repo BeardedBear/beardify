@@ -27,11 +27,10 @@ export default defineComponent({
   components: { Album },
   setup() {
     const store = useStore<RootState>();
-    const env = process.env.NODE_ENV;
 
     store.dispatch(HomeActions.getRecommendedAlbums);
 
-    return { store, env };
+    return { store };
   },
 });
 </script>

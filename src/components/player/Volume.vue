@@ -12,7 +12,6 @@ import { ref, defineComponent, watchEffect } from "vue";
 import { useStore } from "vuex";
 import { PlayerActions } from "./../player/PlayerStore";
 import { RootState } from "../../@types/RootState";
-import { timecode } from "../../helpers/date";
 
 export default defineComponent({
   setup() {
@@ -33,7 +32,6 @@ export default defineComponent({
     return {
       store,
       setVolume,
-      timecode,
       refVolume,
       volume,
     };

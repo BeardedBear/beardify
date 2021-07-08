@@ -21,14 +21,13 @@
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
-import { timecode } from "../../helpers/date";
 import Cover from "../../components/Cover.vue";
 
 export default defineComponent({
   components: { Cover },
   setup() {
     const store = useStore<RootState>();
-    return { store, timecode };
+    return { store };
   },
 });
 </script>

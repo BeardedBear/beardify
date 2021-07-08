@@ -23,7 +23,7 @@ export default defineComponent({
         .then(() => store.commit(Mutations.CLOSE_DIALOG));
     }
 
-    return { collectionName, create, store };
+    return { collectionName, create };
   },
 });
 </script>
