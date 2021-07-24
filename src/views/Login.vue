@@ -45,24 +45,24 @@ export default defineComponent({
   }
 }
 .login {
-  display: grid;
-  place-content: center;
-  height: 100%;
-  position: fixed;
-  z-index: 10;
-  width: 100%;
-  top: 0;
   background-color: #16181d;
   background-image: url("/img/bg-login.png");
   background-size: cover;
+  display: grid;
+  height: 100%;
+  place-content: center;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
 }
 
 .form {
   animation: popLogin 1s ease both;
-  text-align: center;
-  padding: 50px;
   background-color: rgba(var(--primary-color), 0.1);
   border-radius: 5px;
+  padding: 50px;
+  text-align: center;
   will-change: transform;
 }
 

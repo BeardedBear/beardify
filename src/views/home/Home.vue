@@ -37,24 +37,24 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .home {
+  display: grid;
   line-break: anywhere;
   overflow: hidden;
-  display: grid;
 
   &__content {
-    padding: 20px;
     overflow-y: auto;
+    padding: 20px;
   }
 }
 
 .album-gallery {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 30px;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
 .fit {
-  max-width: 900px;
   margin: 0 auto;
+  max-width: 900px;
 }
 </style>

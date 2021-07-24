@@ -91,10 +91,10 @@ export default defineComponent({
 
 <style lang="scss">
 .sticky-heading {
+  background-color: var(--bg-color-darker);
   position: sticky;
   top: 88px;
   z-index: 1;
-  background-color: var(--bg-color-darker);
 }
 </style>
 
@@ -108,8 +108,8 @@ export default defineComponent({
 
 .albums {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
+  grid-template-columns: 1fr 1fr 1fr;
 
   @include l {
     grid-template-columns: 1fr 1fr;
@@ -117,8 +117,8 @@ export default defineComponent({
 }
 .eps {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 20px;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 
   @include l {
     grid-template-columns: 1fr 1fr 1fr;
@@ -131,8 +131,8 @@ export default defineComponent({
 
 .singles {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   gap: 20px;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 
   @include xl {
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -174,9 +174,9 @@ export default defineComponent({
   }
 }
 .artist-page {
-  scroll-behavior: smooth;
-  overflow-y: scroll;
   animation: popContent 1s ease both;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 .related-artists {

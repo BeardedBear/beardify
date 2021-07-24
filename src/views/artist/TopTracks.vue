@@ -41,12 +41,12 @@ export default defineComponent({
 @import "../../assets/scss/colors";
 
 .item {
-  display: flex;
   align-items: center;
-  margin-bottom: 5px;
-  padding-right: 10px;
   border-radius: 3px;
   cursor: pointer;
+  display: flex;
+  margin-bottom: 5px;
+  padding-right: 10px;
 
   img {
     margin-right: 15px;
@@ -58,8 +58,8 @@ export default defineComponent({
 }
 
 .cover {
-  height: 25px;
   border-radius: 3px;
+  height: 25px;
 }
 
 .name {

@@ -42,51 +42,51 @@ export default defineComponent({
 <style lang="scss" scoped>
 .volume {
   background-color: var(--bg-color-light);
-  position: relative;
-  height: 26px;
-  width: 100px;
   display: inline-block;
+  height: 26px;
   margin-bottom: 5px;
+  position: relative;
+  width: 100px;
 
   &::before {
-    position: absolute;
-    content: "";
     background-color: var(--bg-color);
-    inset: 0;
-    z-index: 9;
     clip-path: polygon(0 0, 0 78%, 100% 0);
+    content: "";
+    inset: 0;
+    position: absolute;
+    z-index: 9;
   }
 
   &__cursor {
     background-color: var(--primary-color);
+    bottom: 0;
+    left: 0;
     position: absolute;
     top: 0;
-    left: 0;
-    bottom: 0;
   }
 
   &__pc {
     position: relative;
-    z-index: 999;
     position: absolute;
     right: 0;
-    transform: translateX(50%);
     top: -22px;
+    transform: translateX(50%);
+    z-index: 999;
+  }
+
+  &__hover {
+    background-color: var(--primary-color-lighter);
+    bottom: 0;
+    display: none;
+    left: 0;
+    position: absolute;
+    top: 0;
   }
 
   &:hover {
     .volume__hover {
       display: block;
     }
-  }
-
-  &__hover {
-    background-color: var(--primary-color-lighter);
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    display: none;
   }
 }
 </style>

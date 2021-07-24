@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "serve": "vite",
-    "lint": "vue-tsc --noEmit && eslint --ext .ts,vue --ignore-path .gitignore . && prettier --c ./src/**/*.{ts,vue,json}",
+    "lint": "vue-tsc --noEmit && prettier --c ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss}",
     "build": "yarn lint && vite build",
-    "fix": "prettier --write ./src/**/*.{ts,vue,json}"
+    "fix": "prettier --write ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss} --fix"
   },
   "dependencies": {
     "@vueuse/core": "^5.1.3",
@@ -32,6 +32,10 @@
     "normalize.css": "^8.0.1",
     "prettier": "^2.3.2",
     "sass": "^1.35.1",
+    "stylelint": "^13.13.1",
+    "stylelint-config-recommended": "^5.0.0",
+    "stylelint-order": "^4.1.0",
+    "stylelint-scss": "^3.20.1",
     "typescript": "^4.3.5",
     "vite": "^2.4.1",
     "vue-tsc": "^0.2.0"

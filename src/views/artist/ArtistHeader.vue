@@ -109,10 +109,10 @@ export default defineComponent({
 @import "../../assets/scss/colors";
 
 .title {
-  margin-bottom: 10px;
+  align-items: center;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  margin-bottom: 10px;
 }
 
 .name {
@@ -126,40 +126,40 @@ export default defineComponent({
 }
 
 .follow {
-  width: 100px;
   text-align: center;
+  width: 100px;
 }
 .header {
-  padding: 30px 40px 10px;
-  background-color: var(--bg-color-darker);
-  z-index: 2;
-  transition: transform ease 0.1s;
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  top: 0;
-  position: sticky;
+  background-color: var(--bg-color-darker);
+  display: flex;
   height: 120px;
+  justify-content: space-between;
+  padding: 30px 40px 10px;
+  position: sticky;
+  top: 0;
+  transition: transform ease 0.1s;
+  z-index: 2;
 
   &.scrolled {
-    transform: translateY(-25px);
     background-color: var(--bg-color-dark);
+    transform: translateY(-25px);
   }
 
   &-links {
-    display: flex;
     align-items: center;
+    display: flex;
     margin-right: 20px;
 
     &__item {
-      display: flex;
       align-items: center;
-      margin-right: 20px;
-      text-decoration: none;
       color: currentColor;
-      opacity: 0.3;
       cursor: pointer;
+      display: flex;
       font-size: 1rem;
+      margin-right: 20px;
+      opacity: 0.3;
+      text-decoration: none;
 
       &:hover {
         opacity: 1;

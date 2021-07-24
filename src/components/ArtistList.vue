@@ -39,13 +39,13 @@ export default defineComponent({
   opacity: 0.2;
 }
 .artist {
-  text-decoration: none;
   color: currentColor;
   cursor: pointer;
+  text-decoration: none;
 
   &.feat {
-    font-style: italic;
     font-size: 0.8rem;
+    font-style: italic;
     opacity: 0.5;
   }
 

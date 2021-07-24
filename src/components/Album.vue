@@ -94,6 +94,39 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import "../assets/scss/colors";
 
+.img {
+  transition: all ease 0.2s;
+}
+
+.play {
+  $offset: 1vw;
+  $size: 45px;
+  animation: popPlayButton 0.2s ease both;
+  background: var(--primary-color);
+  border: 0;
+  border-radius: $size;
+  bottom: $offset;
+  color: rgba(white, 0.8);
+  cursor: pointer;
+  display: none;
+  font-size: 1.3rem;
+  height: $size;
+  left: $offset;
+  line-height: 0;
+  position: absolute;
+  transition: transform ease 0.1s;
+  width: $size;
+  will-change: transform;
+
+  &:hover {
+    background: var(--primary-color-light);
+    color: white;
+  }
+
+  &:active {
+    background: var(--primary-color-lighter);
+  }
+}
 .album {
   animation: popAlbum 1s ease both;
   position: relative;
@@ -134,17 +167,17 @@ export default defineComponent({
 
 .buttonAction {
   animation: popAddButton 0.2s ease both;
-  position: absolute;
-  border: 0;
   background-color: transparent;
+  border: 0;
+  border-radius: 100px;
   color: currentColor;
+  cursor: pointer;
+  display: none;
   font-size: 1.5rem;
   padding: 5px 7px;
+  position: absolute;
   transition: transform ease 0.1s;
   will-change: transform;
-  display: none;
-  cursor: pointer;
-  border-radius: 100px;
 
   &:hover {
     background-color: rgba(black, 0.5);
@@ -152,8 +185,8 @@ export default defineComponent({
   }
 
   &.delete {
-    top: 1vw;
     left: 1vw;
+    top: 1vw;
   }
 
   &.add {
@@ -162,64 +195,31 @@ export default defineComponent({
   }
 }
 
-.img {
-  transition: all ease 0.2s;
-}
-
 .current {
   $size: 45px;
-  height: $size;
-  width: $size;
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1;
   background: var(--primary-color);
-  clip-path: polygon(100% 0, 0 0, 100% 100%);
   border-radius: 0 4px 0 0;
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  height: $size;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: $size;
+  z-index: 1;
 
   i {
     animation: bounce 0.5s cubic-bezier(1, 0, 1, 0) 0s infinite alternate;
-    position: absolute;
-    top: 3px;
-    right: 4px;
+    color: white;
     font-size: 1.2rem;
-    color: white;
-  }
-}
-.play {
-  $offset: 1vw;
-  $size: 45px;
-  animation: popPlayButton 0.2s ease both;
-  font-size: 1.3rem;
-  height: $size;
-  line-height: 0;
-  width: $size;
-  border-radius: $size;
-  position: absolute;
-  bottom: $offset;
-  left: $offset;
-  border: 0;
-  background: var(--primary-color);
-  color: rgba(white, 0.8);
-  cursor: pointer;
-  transition: transform ease 0.1s;
-  will-change: transform;
-  display: none;
-
-  &:hover {
-    background: var(--primary-color-light);
-    color: white;
-  }
-
-  &:active {
-    background: var(--primary-color-lighter);
+    position: absolute;
+    right: 4px;
+    top: 3px;
   }
 }
 
 .cover {
-  position: relative;
   margin-bottom: 10px;
+  position: relative;
 }
 
 .name {
@@ -227,8 +227,8 @@ export default defineComponent({
 }
 
 .date {
+  font-size: 0.8rem;
   font-style: italic;
   opacity: 0.3;
-  font-size: 0.8rem;
 }
 </style>

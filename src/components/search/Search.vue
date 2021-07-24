@@ -109,32 +109,32 @@ export default defineComponent({
 $radius: 4px;
 
 .input {
-  width: 100%;
   background-color: var(--bg-color-light);
   border: 0;
-  padding: 10px 15px;
-  outline: 0;
   border-radius: $radius;
   color: currentColor;
   font-weight: 700;
+  outline: 0;
+  padding: 10px 15px;
+  width: 100%;
 
   &.opened {
     border-radius: $radius $radius 0 0;
   }
 
   &::placeholder {
-    font-style: italic;
     color: rgba(rgb(74, 81, 103), 0.4);
+    font-style: italic;
   }
 }
 
 .track {
+  align-items: center;
+  border-radius: $radius;
+  cursor: pointer;
   display: flex;
   gap: 10px;
-  border-radius: $radius;
   padding: 10px;
-  cursor: pointer;
-  align-items: center;
 
   &__icon {
     font-size: 2.5rem;
@@ -147,19 +147,19 @@ $radius: 4px;
 }
 
 .album {
-  display: flex;
-  padding: 10px;
-  border-radius: $radius;
-  gap: 10px;
-  color: currentColor;
-  text-decoration: none;
   align-items: center;
+  border-radius: $radius;
+  color: currentColor;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  text-decoration: none;
 
   .cover {
     $size: 40px;
+    border-radius: 3px;
     height: $size;
     width: $size;
-    border-radius: 3px;
   }
 
   &:hover {
@@ -168,64 +168,64 @@ $radius: 4px;
 }
 
 .artist {
-  text-align: center;
-  padding: 10px 5px;
   border-radius: $radius;
-  text-decoration: none;
   color: currentColor;
+  padding: 10px 5px;
+  text-align: center;
+  text-decoration: none;
 
   &:hover {
     background-color: var(--bg-color-light);
   }
 
   &-list {
+    align-content: flex-start;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr 1fr;
-    align-content: flex-start;
   }
 
   .avatar {
     $size: 35px;
-    height: $size;
-    width: $size;
     border-radius: $size;
     display: inline-block;
+    height: $size;
     margin-bottom: 5px;
+    width: $size;
   }
 }
 
 .reset {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: $radius;
-  border: 0;
   background-color: var(--bg-color-light);
+  border: 0;
+  border-radius: $radius;
   color: currentColor;
+  cursor: pointer;
+  font-size: 1rem;
+  position: absolute;
+  right: 10px;
   text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
   width: 40px;
 }
 .search {
-  position: relative;
   flex: 1;
+  position: relative;
 }
 .results {
   background-color: var(--bg-color-lighter);
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 1;
+  border-radius: 0 0 $radius $radius;
   display: grid;
+  font-size: 0.8rem;
+  gap: 10px;
   grid-template-columns: 1fr 1fr 1fr;
   justify-content: space-evenly;
-  gap: 10px;
-  border-radius: 0 0 $radius $radius;
-  font-size: 0.8rem;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 1;
 
   > div {
     padding: 10px;

@@ -52,10 +52,10 @@ export default defineComponent({
 }
 
 .meta {
+  align-items: center;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   justify-content: space-between;
-  align-items: center;
   padding: 15px 20px;
 }
 .options {

@@ -96,12 +96,12 @@ export default defineComponent({
 
   &__item {
     $s: 15px;
-    height: $s;
-    padding: 0;
     border: 0;
     cursor: pointer;
-    position: relative;
     flex: 1;
+    height: $s;
+    padding: 0;
+    position: relative;
     transition: all ease 0.2s;
 
     &:first-of-type {
@@ -114,16 +114,16 @@ export default defineComponent({
 
     &::after {
       $o: 6px;
-      position: absolute;
-      top: $o;
-      bottom: $o;
-      left: $o * 2;
-      right: $o * 2;
-      content: "";
       background-color: white;
       border-radius: $s;
-      transition: all ease 0.2s;
+      bottom: $o;
+      content: "";
+      left: $o * 2;
+      position: absolute;
+      right: $o * 2;
+      top: $o;
       transform: scaleX(0);
+      transition: all ease 0.2s;
       will-change: transform;
     }
 
@@ -153,13 +153,13 @@ export default defineComponent({
 
   &__item {
     $radius: 4px;
-    width: 100%;
+    background-color: var(--bg-color);
+    border: 0;
+    color: currentColor;
+    cursor: pointer;
     margin-top: 10px;
     padding: 7px 0;
-    border: 0;
-    background-color: var(--bg-color);
-    cursor: pointer;
-    color: currentColor;
+    width: 100%;
 
     &:first-of-type {
       border-radius: $radius 0 0 $radius;

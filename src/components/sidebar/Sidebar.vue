@@ -84,37 +84,37 @@ export default defineComponent({
 @import "../../assets/scss/colors";
 
 .empty {
-  padding: 10px 20px 10px 15px;
   font-style: italic;
   opacity: 0.5;
+  padding: 10px 20px 10px 15px;
 }
 .playlist-item {
-  padding: 5px 15px;
-  color: currentColor;
-  text-decoration: none;
-  display: flex;
   align-items: center;
+  color: currentColor;
+  display: flex;
+  padding: 5px 15px;
+  text-decoration: none;
 
   &:hover {
     background-color: rgba(rgb(74, 75, 103), 0.15);
   }
 
   .type-icon {
-    opacity: 0.3;
     margin-right: 15px;
+    opacity: 0.3;
   }
 }
 
 .sidebar {
+  animation: popContent 1s ease both;
   background: var(--bg-color-dark);
   display: grid;
   grid-template-rows: auto auto;
   overflow: hidden;
-  animation: popContent 1s ease both;
 
   &__item {
-    position: relative;
     overflow-y: auto;
+    position: relative;
   }
 
   &.loading {
@@ -124,30 +124,30 @@ export default defineComponent({
 }
 
 .title {
-  position: sticky;
-  top: 0;
-  padding: 10px 10px 10px 15px;
+  align-items: center;
   background-color: var(--bg-color-dark);
-  z-index: 1;
-  margin: 0;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  margin: 0;
+  padding: 10px 10px 10px 15px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .add {
-  padding: 1px 12px;
-  border: 0;
   background-color: transparent;
+  border: 0;
+  border-radius: 100px;
   color: var(--font-color);
   cursor: pointer;
   font-size: 1.3rem;
-  border-radius: 100px;
   opacity: 0.4;
+  padding: 1px 12px;
 
   &:hover {
-    opacity: 1;
     background-color: var(--bg-color-lighter);
+    opacity: 1;
   }
 }
 </style>

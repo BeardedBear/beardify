@@ -77,27 +77,27 @@ export default defineComponent({
 @import "../../assets/scss/colors";
 
 .btns {
-  display: flex;
   align-items: center;
+  display: flex;
 }
 .time {
   width: 80px;
 }
 .controls {
+  align-items: center;
   display: flex;
   gap: 20px;
-  align-items: center;
 
   &__btn {
-    border: 0;
     background-color: transparent;
-    font-size: 1.3rem;
-    color: currentColor;
+    border: 0;
     border-radius: 5px;
-    margin-right: 5px;
+    color: currentColor;
     cursor: pointer;
-    padding: 5px 7px;
+    font-size: 1.3rem;
+    margin-right: 5px;
     opacity: 0.5;
+    padding: 5px 7px;
 
     &.active {
       opacity: 1;

@@ -38,11 +38,11 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .player-loading {
-  display: grid;
-  place-content: center;
-  padding: 10px;
   background-color: var(--bg-color);
+  display: grid;
+  padding: 10px;
   padding: 20px;
+  place-content: center;
   text-align: center;
 
   &__title {

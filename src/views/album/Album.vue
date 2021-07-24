@@ -76,8 +76,8 @@ export default defineComponent({
 @import "../../assets/scss/responsive";
 
 .album-header {
-  text-align: center;
   margin-bottom: 60px;
+  text-align: center;
 }
 
 .title {
@@ -91,11 +91,11 @@ export default defineComponent({
 }
 
 .track {
-  padding: 5px 10px;
-  cursor: pointer;
   border-radius: 3px;
+  cursor: pointer;
   display: grid;
   grid-template-columns: 30px 1fr auto;
+  padding: 5px 10px;
 
   &:hover {
     background-color: rgba(rgb(74, 75, 103), 0.15);
@@ -123,9 +123,9 @@ export default defineComponent({
 }
 
 .album-page {
+  animation: popContent 1s ease both;
+  overflow-y: scroll;
   padding: 30px 40px;
   scroll-behavior: smooth;
-  overflow-y: scroll;
-  animation: popContent 1s ease both;
 }
 </style>

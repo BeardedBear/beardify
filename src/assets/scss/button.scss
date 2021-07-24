@@ -3,14 +3,14 @@
 .button {
   background-color: var(--bg-color-lighter);
   border: 0;
-  cursor: pointer;
-  font-weight: 700;
-  color: var(--font-color);
-  padding: 10px 20px;
   border-radius: 3px;
-  text-decoration: none;
+  color: var(--font-color);
+  cursor: pointer;
   display: inline-block;
+  font-weight: 700;
+  padding: 10px 20px;
   text-align: center;
+  text-decoration: none;
 
   &:hover {
     background-color: var(--bg-color-light);

@@ -99,8 +99,8 @@ export default defineComponent({
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
   height: 5px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-corner {
@@ -127,24 +127,24 @@ export default defineComponent({
 }
 
 #app {
-  font-family: "Quicksand", Helvetica, Arial, sans-serif;
-  font-weight: 500;
-  line-height: 1.4;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-color-darker);
   color: var(--font-color);
   display: grid;
-  grid-template-rows: auto 1fr auto;
-  overflow: hidden;
-  background-color: var(--bg-color-darker);
+  font-family: "Quicksand", Helvetica, Arial, sans-serif;
   font-size: 0.9rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 500;
   font-weight: 600;
-  min-height: 100vh;
+  grid-template-rows: auto 1fr auto;
   height: 100vh;
+  line-height: 1.4;
+  min-height: 100vh;
+  overflow: hidden;
 
   @supports (-webkit-touch-callout: none) {
-    min-height: -webkit-fill-available;
     height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
   }
 
   &__content {

@@ -45,17 +45,17 @@ export default defineComponent({
 }
 
 .artistname {
+  color: currentColor;
   font-weight: 700;
   text-decoration: none;
-  color: currentColor;
 }
 .album {
-  opacity: 0.5;
   font-style: italic;
+  opacity: 0.5;
 }
 .what {
-  display: flex;
   align-items: center;
+  display: flex;
 
   img {
     height: 50px;

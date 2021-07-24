@@ -50,15 +50,15 @@ export default defineComponent({
     position: relative;
     &::before {
       $s: 7px;
-      position: absolute;
-      top: 0;
-      right: 0;
       background: white;
       border-top-right-radius: 3px;
-      width: $s;
-      height: $s;
-      content: "";
       clip-path: polygon(0 0, 100% 0, 100% 100%);
+      content: "";
+      height: $s;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: $s;
     }
   }
 }

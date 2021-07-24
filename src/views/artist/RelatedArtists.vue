@@ -37,20 +37,20 @@ export default defineComponent({
 
 .image {
   $size: 50px;
-  width: $size;
-  height: $size;
   border-radius: $size;
+  height: $size;
   margin-bottom: 5px;
+  width: $size;
 }
 
 .item {
-  text-align: center;
+  border-radius: 3px;
+  color: currentColor;
+  cursor: pointer;
   font-size: 0.8rem;
   padding: 10px;
-  border-radius: 3px;
-  cursor: pointer;
+  text-align: center;
   text-decoration: none;
-  color: currentColor;
 
   &:hover {
     background-color: rgba(rgb(74, 75, 103), 0.15);

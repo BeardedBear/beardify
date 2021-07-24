@@ -126,12 +126,12 @@ export default defineComponent({
 @import "../../assets/scss/responsive";
 
 .track {
-  padding: 5px 10px;
-  cursor: pointer;
+  align-items: center;
   border-radius: 3px;
+  cursor: pointer;
   display: grid;
   grid-template-columns: 40px 1fr 0.8fr 50px;
-  align-items: center;
+  padding: 5px 10px;
 
   &-icon {
     font-size: 1.5rem;
@@ -148,10 +148,10 @@ export default defineComponent({
 }
 
 .album {
-  text-align: left;
-  display: flex;
   align-items: center;
+  display: flex;
   font-size: 0.8rem;
+  text-align: left;
 
   &:hover {
     color: var(--primary-color);
@@ -159,9 +159,9 @@ export default defineComponent({
   }
 
   i {
-    opacity: 0.3;
     font-size: 1rem;
     margin-right: 10px;
+    opacity: 0.3;
 
     &.icon-album {
       color: var(--primary-color);
@@ -171,10 +171,10 @@ export default defineComponent({
 }
 
 .description {
-  margin-bottom: 10px;
   font-style: italic;
-  opacity: 0.5;
+  margin-bottom: 10px;
   max-width: 80%;
+  opacity: 0.5;
 }
 
 .title {
@@ -185,23 +185,23 @@ export default defineComponent({
 }
 
 .playlist-header {
-  display: flex;
   align-items: center;
-  margin-bottom: 40px;
+  display: flex;
   justify-content: space-between;
+  margin-bottom: 40px;
 
   img {
     margin-right: 30px;
   }
 
   &__left {
-    display: flex;
     align-items: center;
+    display: flex;
   }
 
   &__right {
-    font-size: 1.1rem;
     flex: 0 0 140px;
+    font-size: 1.1rem;
     text-align: right;
   }
 }
@@ -212,13 +212,13 @@ export default defineComponent({
 }
 
 .playlist-page {
-  padding: 30px 40px;
-  overflow-y: scroll;
   animation: popContent 1s ease both;
+  overflow-y: scroll;
+  padding: 30px 40px;
 }
 
 .fit {
-  max-width: 1000px;
   margin: 0 auto;
+  max-width: 1000px;
 }
 </style>

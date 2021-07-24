@@ -34,15 +34,15 @@ export default defineComponent({
 }
 
 .input {
-  padding: 10px 15px;
-  display: block;
-  margin-bottom: 20px;
-  width: 100%;
   background-color: var(--bg-color-light);
   border: 0;
-  outline: 0;
   border-radius: 4px;
   color: currentColor;
+  display: block;
   font-weight: 700;
+  margin-bottom: 20px;
+  outline: 0;
+  padding: 10px 15px;
+  width: 100%;
 }
 </style>

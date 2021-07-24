@@ -44,23 +44,23 @@ export default defineComponent({
 
 .content {
   height: 400px;
-  width: 400px;
   overflow: auto;
+  width: 400px;
 }
 
 .album {
-  display: flex;
   align-items: center;
+  display: flex;
 
   i {
-    opacity: 0.3;
     margin-right: 10px;
+    opacity: 0.3;
   }
 }
 
 .collection {
-  padding: 10px 25px;
   cursor: pointer;
+  padding: 10px 25px;
 
   &:hover {
     background: var(--bg-color-light);

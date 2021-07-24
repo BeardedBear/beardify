@@ -71,26 +71,26 @@ export default defineComponent({
 @import "../assets/scss/colors";
 
 .topbar {
+  align-items: center;
+  background: var(--bg-color);
   display: flex;
   justify-content: space-between;
-  background: var(--bg-color);
   padding: 15px;
-  align-items: center;
   position: relative;
 }
 .navigation {
   $radius: 4px;
-  margin-right: 15px;
   margin-left: 15px;
+  margin-right: 15px;
 
   &__item {
-    border: 0;
-    font-size: 1.2rem;
-    padding: 8px 7px;
-    line-height: 1;
     background-color: var(--bg-color-light);
-    cursor: pointer;
+    border: 0;
     color: currentColor;
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 8px 7px;
 
     &:hover {
       background-color: var(--bg-color-lighter);
@@ -112,24 +112,24 @@ export default defineComponent({
 .avatar {
   $size: 35px;
   border-radius: $size;
-  height: $size;
-  width: $size;
   display: block;
+  height: $size;
   margin-left: 15px;
+  width: $size;
 }
 .logo {
-  height: 30px;
   display: block;
+  height: 30px;
   opacity: 0.5;
 }
 
 #nav {
-  display: flex;
   align-items: center;
+  display: flex;
 
   a {
-    font-weight: bold;
     color: var(--bg-color-light);
+    font-weight: bold;
 
     &.router-link-exact-active {
       color: var(--primary-color);

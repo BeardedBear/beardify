@@ -62,20 +62,20 @@ export default defineComponent({
 }
 
 .section {
-  padding: 7px 10px 10px;
-  border: 1px solid var(--bg-color-dark);
-  margin: 15px 0;
-  border-radius: 5px;
   background: var(--bg-color-light);
+  border: 1px solid var(--bg-color-dark);
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin: 15px 0;
+  padding: 7px 10px 10px;
 
   &__title {
-    text-transform: uppercase;
-    font-weight: 700;
     font-size: 0.8rem;
+    font-weight: 700;
     opacity: 0.5;
+    text-transform: uppercase;
   }
 }
 
@@ -83,22 +83,22 @@ export default defineComponent({
   margin-bottom: 20px;
 
   &__mail {
-    margin-top: 2px;
     font-size: 0.8rem;
     font-style: italic;
+    margin-top: 2px;
     opacity: 0.5;
   }
 }
 .config {
   animation: popConfig ease 0.2s both;
   background-color: var(--bg-color-darker);
+  border-radius: 4px;
+  box-shadow: 0 5px 10px rgba(black, 0.2);
   padding: 20px;
   position: absolute;
-  top: calc(100% - 3px);
   right: 20px;
-  border-radius: 4px;
+  top: calc(100% - 3px);
   width: 250px;
-  box-shadow: 0 5px 10px rgba(black, 0.2);
   z-index: 999;
 }
 </style>

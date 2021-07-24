@@ -84,8 +84,8 @@ export default defineComponent({
 
 .album-list {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 30px;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 
   @include xl {
     grid-template-columns: 1fr 1fr 1fr;
@@ -97,8 +97,8 @@ export default defineComponent({
 }
 
 .description {
-  margin-bottom: 7px;
   font-style: italic;
+  margin-bottom: 7px;
   opacity: 0.5;
 }
 
@@ -109,10 +109,10 @@ export default defineComponent({
 }
 
 .playlist-header {
-  gap: 30px;
-  margin-bottom: 40px;
   display: flex;
+  gap: 30px;
   justify-content: space-between;
+  margin-bottom: 40px;
 
   &__right {
     font-size: 1.1rem;
@@ -120,14 +120,14 @@ export default defineComponent({
 }
 
 .playlist-page {
+  animation: popContent 1s ease both;
+  overflow-y: scroll;
   padding: 30px 40px;
   scroll-behavior: smooth;
-  overflow-y: scroll;
-  animation: popContent 1s ease both;
 }
 
 .fit {
-  max-width: 900px;
   margin: 0 auto;
+  max-width: 900px;
 }
 </style>

@@ -29,10 +29,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .img {
-  width: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: 4px;
   cursor: pointer;
   display: block;
-  aspect-ratio: 1 / 1;
+  width: 100%;
 }
 </style>

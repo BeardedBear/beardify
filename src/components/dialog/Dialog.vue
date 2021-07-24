@@ -61,17 +61,17 @@ $radius: 4px;
 }
 
 .close {
+  background-color: var(--bg-color-light);
+  border: 0;
+  border-radius: 4px;
+  color: currentColor;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 5px 8px;
   position: absolute;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  right: 12px;
-  border: 0;
-  cursor: pointer;
-  padding: 5px 8px;
-  border-radius: 4px;
-  font-size: 1rem;
-  background-color: var(--bg-color-light);
-  color: currentColor;
 
   &:hover {
     background-color: var(--bg-color);
@@ -80,36 +80,36 @@ $radius: 4px;
 
 .bg {
   animation: popDialog 0.2s ease both;
-  position: fixed;
-  inset: 0;
   background-color: var(--bg-color-darker);
+  inset: 0;
   opacity: 0.95;
+  position: fixed;
 }
 .dialog {
-  position: fixed;
-  inset: 0;
-  z-index: 99999999;
   display: grid;
+  inset: 0;
   place-content: center;
+  position: fixed;
+  z-index: 99999999;
 }
 
 .head {
-  padding: 15px 25px;
   background-color: var(--bg-color-lighter);
   border-radius: $radius $radius 0 0;
   font-size: 1rem;
   font-weight: 700;
+  padding: 15px 25px;
   position: relative;
 }
 .dialog-content {
   animation: popDialogContent 0.2s ease both;
   background: var(--bg-color);
-  max-width: 600px;
-  max-height: 600px;
-  position: relative;
+  border-radius: $radius;
   display: grid;
   grid-template-rows: auto 1fr;
-  border-radius: $radius;
+  max-height: 600px;
+  max-width: 600px;
+  position: relative;
   will-change: transform;
 }
 </style>

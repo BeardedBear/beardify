@@ -69,40 +69,40 @@ export default defineComponent({
 
 .progress {
   background: var(--bg-color-light);
-  height: 10px;
-  position: relative;
   cursor: pointer;
   flex: 1;
+  height: 10px;
+  position: relative;
 
   .seek {
+    animation: popSeek 0.2s ease 0s both;
+    background-color: var(--primary-color-lighter);
+    bottom: 0;
+    display: none;
+    left: 0;
+    opacity: 0.5;
     position: absolute;
     top: 0;
-    bottom: 0;
-    left: 0;
-    background-color: var(--primary-color-lighter);
-    display: none;
-    animation: popSeek 0.2s ease 0s both;
-    opacity: 0.5;
 
     .time {
-      position: absolute;
-      bottom: calc(100% + 5px);
       background: var(--primary-color);
-      color: rgba(white, 0.8);
-      padding: 5px 10px;
-      right: 0;
       border: 1px solid var(--primary-color-light);
       border-radius: 3px;
+      bottom: calc(100% + 5px);
+      color: rgba(white, 0.8);
+      padding: 5px 10px;
+      position: absolute;
+      right: 0;
       transform: translateX(50%);
     }
   }
 
   .bar {
-    position: absolute;
-    top: 0;
+    background: var(--primary-color);
     bottom: 0;
     left: 0;
-    background: var(--primary-color);
+    position: absolute;
+    top: 0;
     transition: all ease 0.25s;
   }
 
