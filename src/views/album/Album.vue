@@ -21,7 +21,7 @@
           v-for="(track, index) in store.state.album.album.tracks.items"
           :key="index"
           class="track"
-          :class="{ active: store.state.player.currentlyPlaying.item.id === track.id }"
+          :class="{ active: store.state.player.currentlyPlaying.item?.id === track.id }"
           @click="playSongs(index, store.state.album.album.tracks.items)"
         >
           <span class="track__number">{{ track.track_number }}.</span>

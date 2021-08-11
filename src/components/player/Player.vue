@@ -34,7 +34,7 @@ export default defineComponent({
       () => store.state.player.currentlyPlaying,
       () => {
         useTitle(
-          `${store.state.player.currentlyPlaying.item.album.artists[0].name} - ${store.state.player.currentlyPlaying.item.name}`,
+          `${store.state.player.currentlyPlaying.item?.album.artists[0].name} - ${store.state.player.currentlyPlaying.item?.name}`,
         );
       },
     );

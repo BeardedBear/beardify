@@ -1,13 +1,14 @@
-import { Auth } from "./Auth";
-import { Player } from "./Player";
-import { ArtistPage } from "./Artist";
 import { AlbumPage } from "./Album";
+import { ArtistPage } from "./Artist";
+import { Auth } from "./Auth";
+import { Config } from "./Config";
+import { Dialog } from "./Dialog";
+import { HomePage } from "./Home";
+import { NotificationStore } from "./Notification";
+import { Player } from "./Player";
+import { PlaylistPage } from "./Playlist";
 import { Search } from "./Search";
 import { Sidebar } from "./Sidebar";
-import { PlaylistPage } from "./Playlist";
-import { Dialog } from "./Dialog";
-import { Config } from "./Config";
-import { HomePage } from "./Home";
 
 export interface RootState {
   auth: Auth;
@@ -20,4 +21,5 @@ export interface RootState {
   dialog: Dialog;
   config: Config;
   home: HomePage;
+  notification: NotificationStore;
 }

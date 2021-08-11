@@ -82,10 +82,13 @@ const actions: ActionTree<Player, RootState> = {
   },
 
   [PlayerActions.getPlayerState](store) {
-    instance.get(`me/player`).then((e) => {
-      if (e.status === 401) router.push("login");
-      store.commit(Mutations.PLAYER_STATE_CHANGED, e.data);
-    });
+    instance
+      .get(`me/player`)
+      .then((e) => {
+        if (e.status === 401) router.push("login");
+        store.commit(Mutations.PLAYER_STATE_CHANGED, e.data);
+      })
+      .catch((e) => console.error(e));
   },
 
   [PlayerActions.toggleShuffle](store) {

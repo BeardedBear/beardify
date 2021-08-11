@@ -11,6 +11,7 @@
       <div class="section__title">Debug</div>
       <router-link class="button button--full" to="/login"> Login </router-link>
       <button class="button button--full" @click="refresh()">Refresh token</button>
+      <button class="button button--full" @click="randomNotif()">Notif</button>
     </div>
 
     <button class="button button--full" @click="logout()">Logout</button>
@@ -30,6 +31,8 @@ import router, { RouteName } from "../../router";
 import { AuthActions, Mutations } from "../../views/auth/AuthStore";
 import { Mutations as ConfigMutation } from "../config/ConfigStore";
 import Colors from "./Colors.vue";
+import { ErrorType } from "../../@types/Error";
+import { showError } from "../../helpers/errors";
 
 export default defineComponent({
   components: { Colors },
@@ -47,7 +50,11 @@ export default defineComponent({
       router.push(RouteName.Login);
     }
 
-    return { store, refresh, env, logout };
+    function randomNotif(): void {
+      showError(ErrorType.DeviceNotInitialized);
+    }
+
+    return { store, refresh, env, logout, randomNotif };
   },
 });
 </script>

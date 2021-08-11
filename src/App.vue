@@ -10,6 +10,7 @@
     </router-view>
   </div>
   <Player key="player" />
+  <Notification />
 </template>
 
 <script lang="ts">
@@ -27,15 +28,17 @@ import { ThemeColor } from "./@types/Config";
 import { SidebarActions } from "./components/sidebar/SidebarStore";
 import KeyboardEvents from "./composition/KeyboardEvents";
 import router, { RouteName } from "./router";
+import { ErrorType } from "./@types/Error";
+import Notification from "./components/notification/Notification.vue";
 
 export default defineComponent({
-  components: { Dialog, Topbar, Player, Sidebar },
+  components: { Dialog, Topbar, Player, Sidebar, Notification },
   setup() {
     const store = useStore<RootState>();
 
     KeyboardEvents();
 
-    function getPlayerStatus(): void {
+    async function getPlayerStatus(): Promise<void> {
       if (!store.state.sidebar.playlists.length) {
         store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
       }
@@ -73,7 +76,11 @@ export default defineComponent({
 
     addEventListener("initdevice", ((e: CustomEvent) => {
       if (store.state.player.devices.list.filter((d) => d.is_active).length === 0) {
-        instance.put("me/player", { device_ids: [e.detail.thisDevice] });
+        instance.put("me/player", { device_ids: [e.detail.thisDevice] }).catch((err: Error) => {
+          if (err.message === ErrorType.DeviceNotInitialized) {
+            // localStorage.removeItem("beardify");
+          }
+        });
       }
       store.commit(Mutations.THIS_DEVICE, e.detail.thisDevice);
     }) as { (): void });
@@ -92,6 +99,10 @@ export default defineComponent({
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+body {
+  overflow: hidden;
 }
 
 ::selection {
