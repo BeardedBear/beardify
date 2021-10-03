@@ -13,7 +13,7 @@
     <button v-if="query" class="reset" @click="reset()">
       <i class="icon-x" />
     </button>
-    <div v-if="query" class="results">
+    <div v-if="query" class="results" ref="result">
       <!-- Artist List -->
       <div class="artist-list">
         <router-link
@@ -77,13 +77,16 @@ import { playSong } from "../../helpers/play";
 import { useSearch } from "./SearchPinia";
 import Cover from "../Cover.vue";
 import ArtistList from "../../components/ArtistList.vue";
+import { onClickOutside } from "@vueuse/core";
 
 const searchStore = useSearch();
 const query = ref("");
+const result = ref(null);
 
 function reset(): void {
   query.value = "";
 }
+onClickOutside(result, () => reset());
 
 document.addEventListener("keydown", (e: KeyboardEvent) => {
   if (e.key === "Escape") query.value = "";
