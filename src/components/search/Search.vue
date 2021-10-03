@@ -13,7 +13,7 @@
     <button v-if="query" class="reset" @click="reset()">
       <i class="icon-x" />
     </button>
-    <div v-if="query" class="results" ref="result">
+    <div v-if="query" ref="result" class="results">
       <!-- Artist List -->
       <div class="artist-list">
         <router-link
@@ -74,7 +74,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { playSong } from "../../helpers/play";
-import { useSearch } from "./SearchPinia";
+import { useSearch } from "./SearchStore";
 import Cover from "../Cover.vue";
 import ArtistList from "../../components/ArtistList.vue";
 import { onClickOutside } from "@vueuse/core";
