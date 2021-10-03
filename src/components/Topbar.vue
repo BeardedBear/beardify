@@ -17,7 +17,7 @@
     <div>
       <div v-if="authStore.me !== null">
         <Cover size="large" :images="authStore.me?.images" class="avatar" @click="openConfig()" />
-        <Config v-if="store.state.config.show" ref="domConfig" />
+        <Config v-if="store.state.config.show" />
       </div>
     </div>
   </div>
@@ -32,17 +32,13 @@ import Cover from "./Cover.vue";
 import router from "../router";
 import Config from "./config/Config.vue";
 import { Mutations } from "./config/ConfigStore";
-import { onClickOutside, templateRef } from "@vueuse/core";
 import { useAuth } from "../views/auth/AuthStore";
 
 export default defineComponent({
   components: { Search, Cover, Config },
   setup() {
     const store = useStore<RootState>();
-    const domConfig = templateRef("domConfig");
     const authStore = useAuth();
-
-    onClickOutside(domConfig, () => store.commit(Mutations.CLOSE_CONFIG));
 
     function previous(): void {
       router.go(-1);

@@ -1,8 +1,8 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import formUrlEncoded from "form-urlencoded";
 import { defineStore } from "pinia";
 import { create } from "pkce";
-import { Auth } from "../../@types/Auth";
+import { Auth, AuthAPIResponse } from "../../@types/Auth";
 import { defaultAuth, defaultMe } from "../../@types/Defaults";
 import { Me } from "../../@types/Me";
 import { api } from "../../api";
@@ -40,7 +40,7 @@ export const useAuth = defineStore("auth", {
       const storage = localStorage.getItem("beardifyPinia");
 
       axios
-        .post(
+        .post<string, AxiosResponse<AuthAPIResponse>>(
           "https://accounts.spotify.com/api/token",
           formUrlEncoded({
             grant_type: "refresh_token",
@@ -67,7 +67,7 @@ export const useAuth = defineStore("auth", {
       const storage = localStorage.getItem("beardifyPinia") || "";
 
       axios
-        .post(
+        .post<string, AxiosResponse<AuthAPIResponse>>(
           "https://accounts.spotify.com/api/token",
           formUrlEncoded({
             grant_type: "authorization_code",

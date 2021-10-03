@@ -12,3 +12,11 @@ export interface AuthData {
   codeVerifier: string;
   codeChallenge: string;
 }
+
+export interface AuthAPIResponse {
+  access_token: string;
+  expires_in: number;
+  refresh_token: string;
+  scope: string;
+  token_type: "Bearer";
+}

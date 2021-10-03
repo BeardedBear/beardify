@@ -1,5 +1,5 @@
 <template>
-  <div class="config">
+  <div ref="test" class="config">
     <div class="user">
       <div>{{ authStore.me?.display_name }}</div>
       <div class="user__mail">
@@ -32,11 +32,16 @@ import Colors from "./Colors.vue";
 import { ErrorType } from "../../@types/Error";
 import { showError } from "../../helpers/errors";
 import { useAuth } from "../../views/auth/AuthStore";
+import { onClickOutside } from "@vueuse/core";
+import { Mutations } from "./ConfigStore";
+import { ref } from "vue";
 
 const store = useStore<RootState>();
 const env = process.env.NODE_ENV;
 const authStore = useAuth();
-console.log("authStore", authStore);
+const test = ref(null);
+
+onClickOutside(test, () => store.commit(Mutations.CLOSE_CONFIG));
 
 function logout(): void {
   store.commit(ConfigMutation.CLOSE_CONFIG);
