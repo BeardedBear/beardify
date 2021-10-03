@@ -4,11 +4,16 @@
       <i class="icon-volume-2" />
     </div>
     <div class="cover">
-      <Cover size="medium" :images="album.images" class="img" @click="goAlbum()" />
-      <button class="play" type="button" @click="playAlbum(album.uri)">
+      <Cover size="medium" :images="album.images" class="img" @click="router.push(`/album/${props.album.id}`)" />
+      <button class="play" type="button" @click="instance().put('me/player/play', { context_uri: album.uri })">
         <i class="icon-play" />
       </button>
-      <button v-if="canSave" class="buttonAction add" type="button" @click="addAlbum('addalbum', album.id)">
+      <button
+        v-if="canSave"
+        class="buttonAction add"
+        type="button"
+        @click="dialogStore.open({ type: 'addalbum', albumId: album.id })"
+      >
         <i class="icon-save" />
       </button>
       <button v-if="canDelete" class="buttonAction delete" type="button" @click="deleteAlbum(album.id)">
@@ -29,69 +34,50 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script lang="ts" setup>
+import { defineProps, PropType } from "vue";
 import { useStore } from "vuex";
 import { Album, AlbumSimplified } from "../@types/Album";
 import { RootState } from "../@types/RootState";
 import { instance } from "../api";
-import { defaultAlbumSimplified } from "../@types/Defaults";
 import router from "../router";
 import Cover from "./Cover.vue";
 import ArtistList from "./ArtistList.vue";
-import { DialogType } from "../@types/Dialog";
 import { Paging } from "../@types/Paging";
 import { TrackSimplified, TrackToRemove } from "../@types/Track";
 import { useRoute } from "vue-router";
 import { Mutations as PlaylistMutation } from "../views/playlist/PlaylistStore";
 import { useDialog } from "./dialog/DialogStore";
+import { defaultAlbumSimplified } from "../@types/Defaults";
 
-export default defineComponent({
-  components: { ArtistList, Cover },
-  props: {
-    album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified | Album> },
-    currentlyPlayedId: { default: "", type: String as PropType<string> },
-    withArtists: { default: false, type: Boolean as PropType<boolean> },
-    withoutMetas: { default: false, type: Boolean as PropType<boolean> },
-    canDelete: { default: false, type: Boolean as PropType<boolean> },
-    canSave: { default: false, type: Boolean as PropType<boolean> },
-  },
-  setup(props) {
-    const store = useStore<RootState>();
-    const currentRouteId = useRoute().params.id;
-    const dialogStore = useDialog();
-
-    function playAlbum(albumId: string): void {
-      instance().put("me/player/play", { context_uri: albumId });
-    }
-
-    function goAlbum(): void {
-      router.push(`/album/${props.album.id}`);
-    }
-
-    function addAlbum(type: DialogType, albumId: string): void {
-      dialogStore.open({ type, albumId });
-    }
-
-    function deleteAlbum(albumId: string): void {
-      instance()
-        .get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`)
-        .then((e) => {
-          let tracks: TrackToRemove[] = [];
-
-          e.data.items.map((t) => t.uri).forEach((t) => tracks.push({ uri: t }));
-
-          instance()
-            .delete(`playlists/${currentRouteId}/tracks`, {
-              data: { tracks },
-            })
-            .then(() => store.commit(PlaylistMutation.REMOVE_TRACKS, tracks));
-        });
-    }
-
-    return { deleteAlbum, addAlbum, playAlbum, goAlbum };
-  },
+const props = defineProps({
+  album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified | Album> },
+  currentlyPlayedId: { default: "", type: String as PropType<string> },
+  withArtists: { default: false, type: Boolean as PropType<boolean> },
+  withoutMetas: { default: false, type: Boolean as PropType<boolean> },
+  canDelete: { default: false, type: Boolean as PropType<boolean> },
+  canSave: { default: false, type: Boolean as PropType<boolean> },
 });
+
+const store = useStore<RootState>();
+const currentRouteId = useRoute().params.id;
+const dialogStore = useDialog();
+
+function deleteAlbum(albumId: string): void {
+  instance()
+    .get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`)
+    .then((e) => {
+      let tracks: TrackToRemove[] = [];
+
+      e.data.items.map((t) => t.uri).forEach((t) => tracks.push({ uri: t }));
+
+      instance()
+        .delete(`playlists/${currentRouteId}/tracks`, {
+          data: { tracks },
+        })
+        .then(() => store.commit(PlaylistMutation.REMOVE_TRACKS, tracks));
+    });
+}
 </script>
 
 <style lang="scss" scoped>

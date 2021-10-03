@@ -5,10 +5,10 @@
         <img class="logo" src="/img/logo.svg" />
       </router-link>
       <div class="navigation">
-        <button class="navigation__item" @click="previous()">
+        <button class="navigation__item" @click="router.go(-1)">
           <i class="icon-arrow-left" />
         </button>
-        <button class="navigation__item" @click="next()">
+        <button class="navigation__item" @click="router.go(1)">
           <i class="icon-arrow-right" />
         </button>
       </div>
@@ -33,14 +33,6 @@ import { useConfig } from "./config/ConfigStore";
 
 const authStore = useAuth();
 const configStore = useConfig();
-
-function previous(): void {
-  router.go(-1);
-}
-
-function next(): void {
-  router.go(1);
-}
 </script>
 
 <style lang="scss" scoped>
