@@ -7,7 +7,7 @@
         :class="{ opened: query }"
         type="text"
         placeholder="Recherche..."
-        @input="search()"
+        @input="searchStore.search(query)"
       />
     </div>
     <button v-if="query" class="reset" @click="reset()">
@@ -73,22 +73,13 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
-import { SearchActions } from "./SearchStore";
-import ArtistList from "../../components/ArtistList.vue";
 import { playSong } from "../../helpers/play";
-import Cover from "../Cover.vue";
 import { useSearch } from "./SearchPinia";
+import Cover from "../Cover.vue";
+import ArtistList from "../../components/ArtistList.vue";
 
-const store = useStore<RootState>();
 const searchStore = useSearch();
 const query = ref("");
-
-function search(): void {
-  store.dispatch(SearchActions.search, query.value);
-  searchStore.search(query.value);
-}
 
 function reset(): void {
   query.value = "";
