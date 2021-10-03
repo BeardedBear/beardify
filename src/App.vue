@@ -14,37 +14,46 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount, watch } from "vue";
+import { defineComponent, onBeforeMount, watch, onMounted } from "vue";
 import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
 import { Mutations, PlayerActions } from "./components/player/PlayerStore";
 import Player from "./components/player/Player.vue";
 import { RootState } from "./@types/RootState";
-// import { AuthActions } from "./views/auth/AuthStore";
 import { api, instance } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
-import { ThemeColor } from "./@types/Config";
 import { SidebarActions } from "./components/sidebar/SidebarStore";
 import KeyboardEvents from "./composition/KeyboardEvents";
 import router, { RouteName } from "./router";
 import { ErrorType } from "./@types/Error";
 import Notification from "./components/notification/Notification.vue";
 import { useAuth } from "./views/auth/AuthStore";
+import { useConfig } from "./components/config/ConfigStore";
+import { Storage } from "./@types/Storage";
 
 export default defineComponent({
   components: { Dialog, Topbar, Player, Sidebar, Notification },
   setup() {
     const store = useStore<RootState>();
-    const pinia = useAuth();
+    const authStore = useAuth();
+    const configStore = useConfig();
     const storageLabel = "beardifyPinia";
+    const localS = localStorage.getItem(storageLabel);
 
-    onBeforeMount(() => {
-      const storage = localStorage.getItem(storageLabel);
-      storage ? pinia.refreshToken() : router.push(RouteName.Login);
+    onBeforeMount(() => (localS ? authStore.refresh() : router.push(RouteName.Login)));
+
+    onMounted(() => {
+      if (localS) {
+        const storage: Storage = JSON.parse(localS || "");
+        configStore.switchTheme(storage.config.themeLabel);
+        configStore.switchScheme(storage.config.schemeLabel);
+      }
     });
 
-    watch(pinia, (state) => localStorage.setItem(storageLabel, JSON.stringify(state.auth)));
+    watch([authStore, configStore], ([auth, config]) => {
+      localStorage.setItem(storageLabel, JSON.stringify({ auth, config }));
+    });
 
     KeyboardEvents();
 
@@ -60,9 +69,6 @@ export default defineComponent({
 
     store.dispatch(PlayerActions.getDeviceList);
     // store.dispatch(AuthActions.refresh);
-
-    store.state.config.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
-    store.state.config.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
 
     // Keep app active
     setInterval(() => {

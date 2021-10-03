@@ -6,7 +6,7 @@
         :key="index"
         class="schemes__item"
         :class="{
-          current: store.state.config.schemeLabel === `${c.name}`,
+          current: configStore.schemeLabel === `${c.name}`,
           crimson: c.name === 'crimson',
           blue: c.name === 'blue',
           apple: c.name === 'apple',
@@ -20,15 +20,15 @@
       <div class="radio">
         <button
           class="radio__item"
-          :class="{ current: store.state.config.themeLabel === 'light' }"
-          @click="switchThemeLight()"
+          :class="{ current: configStore.themeLabel === 'light' }"
+          @click="configStore.switchTheme('light')"
         >
           <i class="icon-sun" />
         </button>
         <button
           class="radio__item"
-          :class="{ current: store.state.config.themeLabel === 'dark' }"
-          @click="switchThemeDark()"
+          :class="{ current: configStore.themeLabel === 'dark' }"
+          @click="configStore.switchTheme('dark')"
         >
           <i class="icon-moon" />
         </button>
@@ -37,56 +37,34 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
-import { Mutations } from "./ConfigStore";
+<script lang="ts" setup>
+import { useConfig } from "./ConfigStore";
+
+const configStore = useConfig();
 
 interface TextColors {
   name: string;
   fn: () => void;
 }
 
-export default defineComponent({
-  setup() {
-    const store = useStore<RootState>();
-
-    const textColors: TextColors[] = [
-      {
-        name: "default",
-        fn: (): void => store.commit(Mutations.SCHEME_DEFAULT),
-      },
-      {
-        name: "blue",
-        fn: (): void => store.commit(Mutations.SCHEME_BLUE),
-      },
-      {
-        name: "crimson",
-        fn: (): void => store.commit(Mutations.SCHEME_CRIMSON),
-      },
-      {
-        name: "apple",
-        fn: (): void => store.commit(Mutations.SCHEME_APPLE),
-      },
-    ];
-
-    function switchThemeLight(): void {
-      store.commit(Mutations.SWITCH_THEME_LIGHT);
-    }
-
-    function switchThemeDark(): void {
-      store.commit(Mutations.SWITCH_THEME_DARK);
-    }
-
-    return {
-      store,
-      textColors,
-      switchThemeLight,
-      switchThemeDark,
-    };
+const textColors: TextColors[] = [
+  {
+    name: "default",
+    fn: (): void => configStore.switchScheme("default"),
   },
-});
+  {
+    name: "blue",
+    fn: (): void => configStore.switchScheme("blue"),
+  },
+  {
+    name: "crimson",
+    fn: (): void => configStore.switchScheme("crimson"),
+  },
+  {
+    name: "apple",
+    fn: (): void => configStore.switchScheme("apple"),
+  },
+];
 </script>
 
 <style lang="scss" scoped>

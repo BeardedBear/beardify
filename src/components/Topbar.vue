@@ -16,51 +16,31 @@
     <Search />
     <div>
       <div v-if="authStore.me !== null">
-        <Cover size="large" :images="authStore.me?.images" class="avatar" @click="openConfig()" />
-        <Config v-if="store.state.config.show" />
+        <Cover size="large" :images="authStore.me?.images" class="avatar" @click="configStore.open()" />
+        <Config v-if="configStore.show" />
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { useStore } from "vuex";
-import type { RootState } from "../@types/RootState";
-import { defineComponent } from "vue";
+<script lang="ts" setup>
 import Search from "./search/Search.vue";
 import Cover from "./Cover.vue";
 import router from "../router";
 import Config from "./config/Config.vue";
-import { Mutations } from "./config/ConfigStore";
 import { useAuth } from "../views/auth/AuthStore";
+import { useConfig } from "./config/ConfigStore";
 
-export default defineComponent({
-  components: { Search, Cover, Config },
-  setup() {
-    const store = useStore<RootState>();
-    const authStore = useAuth();
+const authStore = useAuth();
+const configStore = useConfig();
 
-    function previous(): void {
-      router.go(-1);
-    }
+function previous(): void {
+  router.go(-1);
+}
 
-    function next(): void {
-      router.go(1);
-    }
-
-    function openConfig(): void {
-      store.commit(Mutations.OPEN_CONFIG);
-    }
-
-    return {
-      store,
-      previous,
-      next,
-      openConfig,
-      authStore,
-    };
-  },
-});
+function next(): void {
+  router.go(1);
+}
 </script>
 
 <style lang="scss" scoped>

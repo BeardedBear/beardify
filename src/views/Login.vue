@@ -5,7 +5,7 @@
       <div>
         <a
           class="button button--primary"
-          :href="`https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${authStore.$state.auth.codeChallenge}`"
+          :href="`https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${authStore.$state.codeChallenge}`"
           >Se connecter</a
         >
       </div>

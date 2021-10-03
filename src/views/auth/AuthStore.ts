@@ -3,20 +3,19 @@ import formUrlEncoded from "form-urlencoded";
 import { defineStore } from "pinia";
 import { create } from "pkce";
 import { Auth, AuthAPIResponse } from "../../@types/Auth";
-import { defaultAuth, defaultMe } from "../../@types/Defaults";
+import { defaultMe } from "../../@types/Defaults";
 import { Me } from "../../@types/Me";
+import { Storage } from "../../@types/Storage";
 import { api } from "../../api";
 import router from "../../router";
 
 export const useAuth = defineStore("auth", {
   state: (): Auth => ({
-    auth: {
-      accessToken: "",
-      refreshToken: "",
-      code: "",
-      codeVerifier: "",
-      codeChallenge: "",
-    },
+    accessToken: "",
+    refreshToken: "",
+    code: "",
+    codeVerifier: "",
+    codeChallenge: "",
     me: defaultMe,
   }),
 
@@ -27,30 +26,29 @@ export const useAuth = defineStore("auth", {
         codeChallenge: string;
       } = create();
 
-      this.auth.codeChallenge = code.codeChallenge;
-      this.auth.codeVerifier = code.codeVerifier;
+      this.codeChallenge = code.codeChallenge;
+      this.codeVerifier = code.codeVerifier;
     },
 
     resetLogin() {
-      this.auth = defaultAuth;
       this.me = defaultMe;
     },
 
-    refreshToken() {
-      const storage = localStorage.getItem("beardifyPinia");
+    refresh() {
+      const storage: Storage = JSON.parse(localStorage.getItem("beardifyPinia") || "");
 
       axios
         .post<string, AxiosResponse<AuthAPIResponse>>(
           "https://accounts.spotify.com/api/token",
           formUrlEncoded({
             grant_type: "refresh_token",
-            refresh_token: JSON.parse(storage || "").refreshToken,
+            refresh_token: storage.auth.refreshToken,
             client_id: api.clientId,
           }),
         )
         .then((res) => {
-          this.auth.accessToken = res.data.access_token;
-          this.auth.refreshToken = res.data.refresh_token;
+          this.accessToken = res.data.access_token;
+          this.refreshToken = res.data.refresh_token;
           this.getMe(res.data.access_token);
         })
         .catch((err) => console.error("From refresh token", err));
@@ -64,7 +62,7 @@ export const useAuth = defineStore("auth", {
     },
 
     async authentification(query: string) {
-      const storage = localStorage.getItem("beardifyPinia") || "";
+      const storage: Storage = JSON.parse(localStorage.getItem("beardifyPinia") || "");
 
       axios
         .post<string, AxiosResponse<AuthAPIResponse>>(
@@ -74,14 +72,14 @@ export const useAuth = defineStore("auth", {
             code: query,
             redirect_uri: api.redirectUri,
             client_id: api.clientId,
-            code_verifier: JSON.parse(storage).codeVerifier,
+            code_verifier: storage.auth.codeVerifier,
           }),
         )
         .then(({ data }) => {
           this.getMe(data.access_token);
-          this.auth.accessToken = data.access_token;
-          this.auth.refreshToken = data.refresh_token;
-          this.auth.code = query;
+          this.accessToken = data.access_token;
+          this.refreshToken = data.refresh_token;
+          this.code = query;
         })
         .catch((err) => console.error("From auth", err));
     },

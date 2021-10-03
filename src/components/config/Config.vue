@@ -1,5 +1,5 @@
 <template>
-  <div ref="test" class="config">
+  <div ref="domConfig" class="config">
     <div class="user">
       <div>{{ authStore.me?.display_name }}</div>
       <div class="user__mail">
@@ -10,7 +10,7 @@
     <div v-if="env !== 'production'" class="section">
       <div class="section__title">Debug</div>
       <router-link class="button button--full" to="/login"> Login </router-link>
-      <button class="button button--full" @click="authStore.refreshToken()">Refresh token</button>
+      <button class="button button--full" @click="authStore.refresh()">Refresh token</button>
       <button class="button button--full" @click="randomNotif()">Notif</button>
     </div>
 
@@ -24,27 +24,24 @@
 </template>
 
 <script lang="ts" setup>
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
 import router, { RouteName } from "../../router";
-import { Mutations as ConfigMutation } from "../config/ConfigStore";
 import Colors from "./Colors.vue";
 import { ErrorType } from "../../@types/Error";
 import { showError } from "../../helpers/errors";
 import { useAuth } from "../../views/auth/AuthStore";
 import { onClickOutside } from "@vueuse/core";
-import { Mutations } from "./ConfigStore";
 import { ref } from "vue";
+import { useConfig } from "./ConfigStore";
 
-const store = useStore<RootState>();
 const env = process.env.NODE_ENV;
 const authStore = useAuth();
-const test = ref(null);
+const domConfig = ref(null);
+const configStore = useConfig();
 
-onClickOutside(test, () => store.commit(Mutations.CLOSE_CONFIG));
+onClickOutside(domConfig, () => configStore.close());
 
 function logout(): void {
-  store.commit(ConfigMutation.CLOSE_CONFIG);
+  configStore.close();
   authStore.resetLogin();
   router.push(RouteName.Login);
 }

@@ -16,8 +16,7 @@
     "pkce": "^1.0.0-beta2",
     "vue": "^3.2.19",
     "vue-router": "^4.0.11",
-    "vuex": "^4.0.2",
-    "vuex-persistedstate": "^4.0.0"
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@types/node": "^16.10.2",

@@ -1,6 +1,5 @@
 import { Album, AlbumSimplified } from "./Album";
 import { Artist } from "./Artist";
-import { AuthData } from "./Auth";
 import {
   CurrentlyPlaying,
   CurrentlyPlayingAlbum,
@@ -260,10 +259,10 @@ export const defaultPlaylist = {
   uri: "",
 };
 
-export const defaultAuth: AuthData = {
-  accessToken: "",
-  refreshToken: "",
-  code: "",
-  codeVerifier: "",
-  codeChallenge: "",
-};
+// export const defaultAuth: AuthData = {
+//   accessToken: "",
+//   refreshToken: "",
+//   code: "",
+//   codeVerifier: "",
+//   codeChallenge: "",
+// };

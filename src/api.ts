@@ -17,7 +17,7 @@ export function instance(): AxiosInstance {
     baseURL: api.url,
     timeout: 5000,
     headers: {
-      Authorization: `Bearer ${authStore.auth.accessToken}`,
+      Authorization: `Bearer ${authStore.accessToken}`,
       "Content-Type": "application/json",
     },
   });
