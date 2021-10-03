@@ -38,6 +38,7 @@ export const useAuth = defineStore("auth", {
 
     refreshToken() {
       const storage = localStorage.getItem("beardifyPinia");
+
       axios
         .post(
           "https://accounts.spotify.com/api/token",
@@ -50,8 +51,16 @@ export const useAuth = defineStore("auth", {
         .then((res) => {
           this.auth.accessToken = res.data.access_token;
           this.auth.refreshToken = res.data.refresh_token;
+          this.getMe(res.data.access_token);
         })
         .catch((err) => console.error("From refresh token", err));
+    },
+
+    getMe(token: string) {
+      axios.get<Me>(`${api.url}me`, { headers: { Authorization: `Bearer ${token}` } }).then((p) => {
+        this.me = p.data;
+        router.push("/");
+      });
     },
 
     async authentification(query: string) {
@@ -69,15 +78,7 @@ export const useAuth = defineStore("auth", {
           }),
         )
         .then(({ data }) => {
-          axios
-            .get<Me>(`${api.url}me`, {
-              headers: { Authorization: `Bearer ${data.access_token}` },
-            })
-            .then((p) => {
-              this.me = p.data;
-              router.push("/");
-            });
-
+          this.getMe(data.access_token);
           this.auth.accessToken = data.access_token;
           this.auth.refreshToken = data.refresh_token;
           this.auth.code = query;
