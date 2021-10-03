@@ -1,16 +1,16 @@
 <template>
   <div class="config">
     <div class="user">
-      <div>{{ store.state.auth.me?.display_name }}</div>
+      <div>{{ authStore.me?.display_name }}</div>
       <div class="user__mail">
-        {{ store.state.auth.me?.email }}
+        {{ authStore.me?.email }}
       </div>
     </div>
 
     <div v-if="env !== 'production'" class="section">
       <div class="section__title">Debug</div>
       <router-link class="button button--full" to="/login"> Login </router-link>
-      <button class="button button--full" @click="refresh()">Refresh token</button>
+      <button class="button button--full" @click="authStore.refreshToken()">Refresh token</button>
       <button class="button button--full" @click="randomNotif()">Notif</button>
     </div>
 
@@ -23,40 +23,30 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import router, { RouteName } from "../../router";
-import { AuthActions, Mutations } from "../../views/auth/AuthStore";
 import { Mutations as ConfigMutation } from "../config/ConfigStore";
 import Colors from "./Colors.vue";
 import { ErrorType } from "../../@types/Error";
 import { showError } from "../../helpers/errors";
+import { useAuth } from "../../views/auth/AuthStore";
 
-export default defineComponent({
-  components: { Colors },
-  setup() {
-    const store = useStore<RootState>();
-    const env = process.env.NODE_ENV;
+const store = useStore<RootState>();
+const env = process.env.NODE_ENV;
+const authStore = useAuth();
+console.log("authStore", authStore);
 
-    function refresh(): void {
-      store.dispatch(AuthActions.refresh);
-    }
+function logout(): void {
+  store.commit(ConfigMutation.CLOSE_CONFIG);
+  authStore.resetLogin();
+  router.push(RouteName.Login);
+}
 
-    function logout(): void {
-      store.commit(ConfigMutation.CLOSE_CONFIG);
-      store.commit(Mutations.RESET_LOGIN);
-      router.push(RouteName.Login);
-    }
-
-    function randomNotif(): void {
-      showError(ErrorType.DeviceNotInitialized);
-    }
-
-    return { store, refresh, env, logout, randomNotif };
-  },
-});
+function randomNotif(): void {
+  showError(ErrorType.DeviceNotInitialized);
+}
 </script>
 
 <style lang="scss" scoped>

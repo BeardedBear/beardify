@@ -67,22 +67,26 @@ export enum PlayerActions {
 
 const actions: ActionTree<Player, RootState> = {
   [PlayerActions.getDeviceList](store) {
-    instance.get<DevicesResponse>("me/player/devices").then(({ data }) => {
-      store.commit(Mutations.GET_DEVICE_LIST, data.devices);
-    });
+    instance()
+      .get<DevicesResponse>("me/player/devices")
+      .then(({ data }) => {
+        store.commit(Mutations.GET_DEVICE_LIST, data.devices);
+      });
   },
 
   [PlayerActions.setDevice](store, device: Device) {
     store.commit(Mutations.SET_ACTIVE_DEVICE, device);
-    instance.put("me/player", { device_ids: [device.id] });
+    instance().put("me/player", { device_ids: [device.id] });
   },
 
   [PlayerActions.setVolume](store, volume: number) {
-    instance.put(`me/player/volume?volume_percent=${volume}`).then(() => store.commit(Mutations.SET_VOLUME, volume));
+    instance()
+      .put(`me/player/volume?volume_percent=${volume}`)
+      .then(() => store.commit(Mutations.SET_VOLUME, volume));
   },
 
   [PlayerActions.getPlayerState](store) {
-    instance
+    instance()
       .get(`me/player`)
       .then((e) => {
         if (e.status === 401) router.push("login");
@@ -93,17 +97,17 @@ const actions: ActionTree<Player, RootState> = {
 
   [PlayerActions.toggleShuffle](store) {
     if (store.state.currentlyPlaying.shuffle_state) {
-      instance.put(`${api.url}me/player/shuffle?state=false`);
+      instance().put(`${api.url}me/player/shuffle?state=false`);
     } else {
-      instance.put(`${api.url}me/player/shuffle?state=true`);
+      instance().put(`${api.url}me/player/shuffle?state=true`);
     }
   },
 
   [PlayerActions.toggleRepeat](store) {
     if (store.state.currentlyPlaying.repeat_state === "off") {
-      instance.put(`${api.url}me/player/repeat?state=context`);
+      instance().put(`${api.url}me/player/repeat?state=context`);
     } else {
-      instance.put(`${api.url}me/player/repeat?state=off`);
+      instance().put(`${api.url}me/player/repeat?state=off`);
     }
   },
 };

@@ -40,33 +40,41 @@ export enum SidebarActions {
 const actions: ActionTree<Sidebar, RootState> = {
   [SidebarActions.getPlaylists](store, url: string) {
     if (url) {
-      instance.get<Paging<SimplifiedPlaylist>>(url).then((e) => {
-        store.commit(Mutations.SET_RESULTS, e.data.items);
-        if (e.data.next !== "") store.dispatch(SidebarActions.getPlaylists, e.data.next);
-      });
+      instance()
+        .get<Paging<SimplifiedPlaylist>>(url)
+        .then((e) => {
+          store.commit(Mutations.SET_RESULTS, e.data.items);
+          if (e.data.next !== "") store.dispatch(SidebarActions.getPlaylists, e.data.next);
+        });
     }
   },
 
   [SidebarActions.addPlaylist](store, name: string) {
-    instance.post(`users/${store.rootState.auth.me?.id}/playlists`, { name: name }).then(() => {
-      store.commit(Mutations.RESET);
-      store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
-    });
+    instance()
+      .post(`users/${store.rootState.auth.me?.id}/playlists`, { name: name })
+      .then(() => {
+        store.commit(Mutations.RESET);
+        store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
+      });
   },
 
   [SidebarActions.addCollection](store, name: string) {
-    instance.post(`users/${store.rootState.auth.me?.id}/playlists`, { name: "#Collection " + name }).then(() => {
-      store.commit(Mutations.RESET);
-      store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
-    });
+    instance()
+      .post(`users/${store.rootState.auth.me?.id}/playlists`, { name: "#Collection " + name })
+      .then(() => {
+        store.commit(Mutations.RESET);
+        store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
+      });
   },
 
   [SidebarActions.removePlaylist](store, playlistId: string) {
-    instance.delete(`https://api.spotify.com/v1/playlists/${playlistId}/followers`).then(() => {
-      store.commit(Mutations.RESET);
-      store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
-      if (location.pathname.includes(playlistId)) router.push("/");
-    });
+    instance()
+      .delete(`https://api.spotify.com/v1/playlists/${playlistId}/followers`)
+      .then(() => {
+        store.commit(Mutations.RESET);
+        store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
+        if (location.pathname.includes(playlistId)) router.push("/");
+      });
   },
 };
 

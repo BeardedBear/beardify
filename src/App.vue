@@ -14,13 +14,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onBeforeMount, watch } from "vue";
 import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
 import { Mutations, PlayerActions } from "./components/player/PlayerStore";
 import Player from "./components/player/Player.vue";
 import { RootState } from "./@types/RootState";
-import { AuthActions } from "./views/auth/AuthStore";
+// import { AuthActions } from "./views/auth/AuthStore";
 import { api, instance } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
@@ -30,11 +30,21 @@ import KeyboardEvents from "./composition/KeyboardEvents";
 import router, { RouteName } from "./router";
 import { ErrorType } from "./@types/Error";
 import Notification from "./components/notification/Notification.vue";
+import { useAuth } from "./views/auth/AuthStore";
 
 export default defineComponent({
   components: { Dialog, Topbar, Player, Sidebar, Notification },
   setup() {
     const store = useStore<RootState>();
+    const pinia = useAuth();
+    const storageLabel = "beardifyPinia";
+
+    onBeforeMount(() => {
+      const storage = localStorage.getItem(storageLabel);
+      storage ? pinia.refreshToken() : router.push(RouteName.Login);
+    });
+
+    watch(pinia, (state) => localStorage.setItem(storageLabel, JSON.stringify(state.auth)));
 
     KeyboardEvents();
 
@@ -49,7 +59,7 @@ export default defineComponent({
     }
 
     store.dispatch(PlayerActions.getDeviceList);
-    store.dispatch(AuthActions.refresh);
+    // store.dispatch(AuthActions.refresh);
 
     store.state.config.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
     store.state.config.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
@@ -60,7 +70,7 @@ export default defineComponent({
       if (!store.state.player.currentlyPlaying.is_playing) {
         store.dispatch(PlayerActions.setDevice, store.state.player.devices.activeDevice);
       }
-      store.dispatch(AuthActions.refresh);
+      // store.dispatch(AuthActions.refresh);
     }, 120000);
 
     addEventListener("focus", () => {
@@ -76,11 +86,13 @@ export default defineComponent({
 
     addEventListener("initdevice", ((e: CustomEvent) => {
       if (store.state.player.devices.list.filter((d) => d.is_active).length === 0) {
-        instance.put("me/player", { device_ids: [e.detail.thisDevice] }).catch((err: Error) => {
-          if (err.message === ErrorType.DeviceNotInitialized) {
-            // localStorage.removeItem("beardify");
-          }
-        });
+        instance()
+          .put("me/player", { device_ids: [e.detail.thisDevice] })
+          .catch((err: Error) => {
+            if (err.message === ErrorType.DeviceNotInitialized) {
+              // localStorage.removeItem("beardify");
+            }
+          });
       }
       store.commit(Mutations.THIS_DEVICE, e.detail.thisDevice);
     }) as { (): void });

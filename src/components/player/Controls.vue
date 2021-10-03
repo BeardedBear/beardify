@@ -45,17 +45,17 @@ export default defineComponent({
     const store = useStore<RootState>();
 
     function goPlay(): void {
-      instance.put("me/player/play", {
+      instance().put("me/player/play", {
         device_id: store.state.player.devices.activeDevice,
       });
     }
 
     function goNext(): void {
-      instance.post("me/player/next");
+      instance().post("me/player/next");
     }
 
     function goPause(): void {
-      instance.put("me/player/pause", {
+      instance().put("me/player/pause", {
         device_id: store.state.player.devices.activeDevice,
       });
     }

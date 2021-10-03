@@ -41,7 +41,7 @@ export default defineComponent({
         const positionInPercent = (e.clientX / progresss.value?.clientWidth) * 100;
         const duration = (store.state.player.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
         store.commit(Mutations.UPDATE_PROGRESS, Math.round(duration));
-        instance.put(`me/player/seek?position_ms=${Math.round(duration)}`);
+        instance().put(`me/player/seek?position_ms=${Math.round(duration)}`);
       });
     });
 

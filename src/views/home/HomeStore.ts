@@ -6,8 +6,8 @@ import { Paging } from "../../@types/Paging";
 import { RootState } from "../../@types/RootState";
 import { Track } from "../../@types/Track";
 import { api, instance } from "../../api";
-import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { getRandomInt } from "../../helpers/random";
+import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 
 const state: HomePage = {
   recommendedAlbums: [],
@@ -37,18 +37,22 @@ const actions: ActionTree<HomePage, RootState> = {
       tracks: Track[];
     }
 
-    instance.get<Paging<Artist>>(`${api.url}me/top/artists?time_range=long_term`).then((e) => {
-      const artistsSeed = `${e.data.items[getRandomInt(0, 10)].id},${e.data.items[getRandomInt(0, 10)].id},${
-        e.data.items[getRandomInt(0, 10)].id
-      },${e.data.items[getRandomInt(0, 10)].id},${e.data.items[getRandomInt(0, 10)].id}`;
+    instance()
+      .get<Paging<Artist>>(`${api.url}me/top/artists?time_range=long_term`)
+      .then((e) => {
+        const artistsSeed = `${e.data.items[getRandomInt(0, 10)].id},${e.data.items[getRandomInt(0, 10)].id},${
+          e.data.items[getRandomInt(0, 10)].id
+        },${e.data.items[getRandomInt(0, 10)].id},${e.data.items[getRandomInt(0, 10)].id}`;
 
-      instance.get<Top>(`${api.url}recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`).then((f) => {
-        store.commit(
-          Mutations.SET_RECOMMENDED_ALBUMS,
-          removeDuplicatesAlbums(f.data.tracks.map((g) => g.album).filter((h) => h.album_type === "ALBUM")),
-        );
+        instance()
+          .get<Top>(`${api.url}recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`)
+          .then((f) => {
+            store.commit(
+              Mutations.SET_RECOMMENDED_ALBUMS,
+              removeDuplicatesAlbums(f.data.tracks.map((g) => g.album).filter((h) => h.album_type === "ALBUM")),
+            );
+          });
       });
-    });
   },
 };
 

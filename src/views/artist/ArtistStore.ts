@@ -1,11 +1,11 @@
 import { ActionTree, MutationTree } from "vuex";
-import { instance } from "../../api";
-import { RootState } from "../../@types/RootState";
-import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "../../@types/Artist";
-import { Paging } from "../../@types/Paging";
-import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { AlbumSimplified } from "../../@types/Album";
+import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "../../@types/Artist";
 import { defaultArtist } from "../../@types/Defaults";
+import { Paging } from "../../@types/Paging";
+import { RootState } from "../../@types/RootState";
+import { instance } from "../../api";
+import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 
 const state: ArtistPage = {
   artist: defaultArtist,
@@ -87,25 +87,29 @@ export enum ArtistActions {
 
 const actions: ActionTree<ArtistPage, RootState> = {
   [ArtistActions.getArtist](store, artistId: string): void {
-    instance.get<Artist>(`artists/${artistId}`).then((e) => {
-      store.commit(Mutations.SET_ARTIST, e.data);
-    });
+    instance()
+      .get<Artist>(`artists/${artistId}`)
+      .then((e) => {
+        store.commit(Mutations.SET_ARTIST, e.data);
+      });
   },
 
   [ArtistActions.getTopTracks](store, artistId: string): void {
-    instance.get<ArtistTopTracks>(`artists/${artistId}/top-tracks?market=FR`).then((e) => {
-      store.commit(Mutations.SET_TRACKS, e.data);
-    });
+    instance()
+      .get<ArtistTopTracks>(`artists/${artistId}/top-tracks?market=FR`)
+      .then((e) => {
+        store.commit(Mutations.SET_TRACKS, e.data);
+      });
   },
 
   [ArtistActions.getAlbums](store, artistId: string): void {
-    instance
+    instance()
       .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=album&limit=50`)
       .then((e) => store.commit(Mutations.SET_ALBUMS, removeDuplicatesAlbums(e.data.items)));
   },
 
   [ArtistActions.getSingles](store, artistId: string): void {
-    instance
+    instance()
       .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=single&limit=50`)
       .then((e) => {
         const minimumNumberOfTracks = 3;
@@ -117,29 +121,35 @@ const actions: ActionTree<ArtistPage, RootState> = {
   },
 
   [ArtistActions.getRelatedArtists](store, artistId: string): void {
-    instance.get<RelatedArtists>(`artists/${artistId}/related-artists`).then((e) => {
-      store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists);
-    });
+    instance()
+      .get<RelatedArtists>(`artists/${artistId}/related-artists`)
+      .then((e) => {
+        store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists);
+      });
   },
 
   [ArtistActions.getRelatedArtists](store, artistId: string): void {
-    instance.get<RelatedArtists>(`artists/${artistId}/related-artists`).then((e) => {
-      store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists.slice(0, 15));
-    });
+    instance()
+      .get<RelatedArtists>(`artists/${artistId}/related-artists`)
+      .then((e) => {
+        store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists.slice(0, 15));
+      });
   },
 
   [ArtistActions.getFollowStatus](store, artistId: string): void {
-    instance.get<boolean[]>(`me/following/contains?type=artist&ids=${artistId}`).then((e) => {
-      store.commit(Mutations.SET_FOLLOW_STATUS, e.data.pop());
-    });
+    instance()
+      .get<boolean[]>(`me/following/contains?type=artist&ids=${artistId}`)
+      .then((e) => {
+        store.commit(Mutations.SET_FOLLOW_STATUS, e.data.pop());
+      });
   },
 
   [ArtistActions.switchFollow](store, artistId: string): void {
     if (store.state.followStatus) {
-      instance.delete(`me/following?type=artist&ids=${artistId}`);
+      instance().delete(`me/following?type=artist&ids=${artistId}`);
       store.commit(Mutations.SET_FOLLOW_STATUS, false);
     } else {
-      instance.put(`me/following?type=artist&ids=${artistId}`);
+      instance().put(`me/following?type=artist&ids=${artistId}`);
       store.commit(Mutations.SET_FOLLOW_STATUS, true);
     }
   },

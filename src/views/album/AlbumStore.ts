@@ -1,9 +1,8 @@
 import { ActionTree, MutationTree } from "vuex";
-import { instance } from "../../api";
-import { RootState } from "../../@types/RootState";
-
 import { Album, AlbumPage } from "../../@types/Album";
 import { defaultAlbum } from "../../@types/Defaults";
+import { RootState } from "../../@types/RootState";
+import { instance } from "../../api";
 
 const state: AlbumPage = {
   album: defaultAlbum,
@@ -29,9 +28,11 @@ export enum AlbumActions {
 
 const actions: ActionTree<AlbumPage, RootState> = {
   [AlbumActions.getAlbum](store, albumId: string): void {
-    instance.get(`albums/${albumId}`).then((e) => {
-      store.commit(Mutations.SET_ALBUM, e.data);
-    });
+    instance()
+      .get(`albums/${albumId}`)
+      .then((e) => {
+        store.commit(Mutations.SET_ALBUM, e.data);
+      });
   },
 };
 

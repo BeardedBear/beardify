@@ -1,7 +1,7 @@
 window.onSpotifyWebPlaybackSDKReady = (): void => {
   const player = new Spotify.Player({
     name: "Beardify",
-    getOAuthToken: (cb): void => cb(JSON.parse(localStorage.getItem("beardify") || "").auth.auth.accessToken),
+    getOAuthToken: (cb): void => cb(JSON.parse(localStorage.getItem("beardifyPinia") || "").accessToken),
     volume: 1,
   });
 

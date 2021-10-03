@@ -3,36 +3,23 @@
     <div class="form">
       <img class="logo" src="/img/logo-long.svg" alt="" />
       <div>
-        <a class="button button--primary" :href="connectUrl">Se connecter</a>
+        <a
+          class="button button--primary"
+          :href="`https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${authStore.$state.auth.codeChallenge}`"
+          >Se connecter</a
+        >
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../@types/RootState";
+<script lang="ts" setup>
 import { api } from "../api";
-import { create } from "pkce";
-import { Mutations } from "./auth/AuthStore";
+import { useAuth } from "./auth/AuthStore";
 
-interface Challenge {
-  codeVerifier: string;
-  codeChallenge: string;
-}
+const authStore = useAuth();
 
-export default defineComponent({
-  setup() {
-    const store = useStore<RootState>();
-    const code: Challenge = create();
-    const connectUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${code.codeChallenge}`;
-
-    store.commit(Mutations.GENERATE_CODE_CHALLENGE, code);
-
-    return { connectUrl };
-  },
-});
+authStore.generateCodeChallenge();
 </script>
 
 <style lang="scss" scoped>

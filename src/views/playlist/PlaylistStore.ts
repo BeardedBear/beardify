@@ -47,20 +47,24 @@ export enum PlaylistActions {
 
 const actions: ActionTree<PlaylistPage, RootState> = {
   [PlaylistActions.getPlaylist](store, url: string) {
-    instance.get<Playlist>(url).then((e) => {
-      store.commit(Mutations.SET_PLAYLIST, e.data);
-    });
+    instance()
+      .get<Playlist>(url)
+      .then((e) => {
+        store.commit(Mutations.SET_PLAYLIST, e.data);
+      });
   },
 
   [PlaylistActions.getTracks](store, url: string) {
     if (url) {
-      instance.get<Paging<PlaylistTrack>>(url).then((e) => {
-        store.commit(
-          Mutations.SET_TRACKS,
-          e.data.items.filter((e) => e.track),
-        );
-        if (e.data.next !== "") store.dispatch(PlaylistActions.getTracks, e.data.next);
-      });
+      instance()
+        .get<Paging<PlaylistTrack>>(url)
+        .then((e) => {
+          store.commit(
+            Mutations.SET_TRACKS,
+            e.data.items.filter((e) => e.track),
+          );
+          if (e.data.next !== "") store.dispatch(PlaylistActions.getTracks, e.data.next);
+        });
     }
   },
 };

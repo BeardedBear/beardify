@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, RouteLocation, RouteRecordRaw } from "vue-router";
-import store from "./store";
 import About from "./views/About.vue";
 import Album from "./views/album/Album.vue";
 import Artist from "./views/artist/Artist.vue";
@@ -74,10 +73,10 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to) => {
-  if (!store.state.auth.me?.display_name && to.path !== RouteName.Login && to.path !== RouteName.Auth) {
-    router.push(RouteName.Login);
-  }
-});
+// router.beforeEach(async (to) => {
+//   if (!store.state.auth.me?.display_name && to.path !== RouteName.Login && to.path !== RouteName.Auth) {
+//     router.push(RouteName.Login);
+//   }
+// });
 
 export default router;

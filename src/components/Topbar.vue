@@ -15,8 +15,8 @@
     </div>
     <Search />
     <div>
-      <div v-if="store.state.auth.me !== null">
-        <Cover size="large" :images="store.state.auth.me?.images" class="avatar" @click="openConfig()" />
+      <div v-if="authStore.me !== null">
+        <Cover size="large" :images="authStore.me?.images" class="avatar" @click="openConfig()" />
         <Config v-if="store.state.config.show" ref="domConfig" />
       </div>
     </div>
@@ -24,7 +24,6 @@
 </template>
 
 <script lang="ts">
-import { connectUrl } from "../api";
 import { useStore } from "vuex";
 import type { RootState } from "../@types/RootState";
 import { defineComponent } from "vue";
@@ -34,12 +33,14 @@ import router from "../router";
 import Config from "./config/Config.vue";
 import { Mutations } from "./config/ConfigStore";
 import { onClickOutside, templateRef } from "@vueuse/core";
+import { useAuth } from "../views/auth/AuthStore";
 
 export default defineComponent({
   components: { Search, Cover, Config },
   setup() {
     const store = useStore<RootState>();
     const domConfig = templateRef("domConfig");
+    const authStore = useAuth();
 
     onClickOutside(domConfig, () => store.commit(Mutations.CLOSE_CONFIG));
 
@@ -57,11 +58,10 @@ export default defineComponent({
 
     return {
       store,
-      // eslint-disable-next-line vue/no-unused-properties
-      connectUrl,
       previous,
       next,
       openConfig,
+      authStore,
     };
   },
 });

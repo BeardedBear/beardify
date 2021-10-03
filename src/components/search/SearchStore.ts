@@ -35,12 +35,14 @@ export enum SearchActions {
 
 const actions: ActionTree<Search, RootState> = {
   [SearchActions.search](store, query: string) {
-    instance.get<SearchFromAPI>(`search?q=${query}&type=artist%2Calbum%2Ctrack`).then((e) => {
-      const artists = e.data.artists.items.slice(0, 12);
-      const albums = e.data.albums.items.slice(0, 6);
-      const tracks = e.data.tracks.items.slice(0, 6);
-      store.commit(Mutations.SEARCH_RESULTS, { artists, albums, tracks });
-    });
+    instance()
+      .get<SearchFromAPI>(`search?q=${query}&type=artist%2Calbum%2Ctrack`)
+      .then((e) => {
+        const artists = e.data.artists.items.slice(0, 12);
+        const albums = e.data.albums.items.slice(0, 6);
+        const tracks = e.data.tracks.items.slice(0, 6);
+        store.commit(Mutations.SEARCH_RESULTS, { artists, albums, tracks });
+      });
   },
 };
 
