@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!store.state.sidebar.playlists.length && !store.state.sidebar.collections.length" class="sidebar loading">
+  <div v-if="!sidebarStore.playlists.length && !sidebarStore.collections.length" class="sidebar loading">
     <Loader />
   </div>
   <div v-else class="sidebar">
@@ -46,23 +46,17 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
-import { SidebarActions } from "./SidebarStore";
 import { api } from "../../api";
 import Loader from "../Loader.vue";
 import { useDialog } from "../dialog/DialogStore";
+import { useSidebar } from "./SidebarStore";
 
-const store = useStore<RootState>();
 const dialogStore = useDialog();
-const collections = computed(() =>
-  store.state.sidebar.playlists.filter((p) => p.name.toLowerCase().includes("#collection")),
-);
-const playlists = computed(() =>
-  store.state.sidebar.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")),
-);
+const sidebarStore = useSidebar();
+const collections = computed(() => sidebarStore.playlists.filter((p) => p.name.toLowerCase().includes("#collection")));
+const playlists = computed(() => sidebarStore.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")));
 
-store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
+sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
 </script>
 
 <style lang="scss" scoped>

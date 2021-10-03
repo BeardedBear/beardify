@@ -23,7 +23,6 @@ import { RootState } from "./@types/RootState";
 import { api, instance } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
-import { SidebarActions } from "./components/sidebar/SidebarStore";
 import KeyboardEvents from "./composition/KeyboardEvents";
 import router, { RouteName } from "./router";
 import { ErrorType } from "./@types/Error";
@@ -31,6 +30,7 @@ import Notification from "./components/notification/Notification.vue";
 import { useAuth } from "./views/auth/AuthStore";
 import { useConfig } from "./components/config/ConfigStore";
 import { Storage } from "./@types/Storage";
+import { useSidebar } from "./components/sidebar/SidebarStore";
 
 export default defineComponent({
   components: { Dialog, Topbar, Player, Sidebar, Notification },
@@ -38,6 +38,7 @@ export default defineComponent({
     const store = useStore<RootState>();
     const authStore = useAuth();
     const configStore = useConfig();
+    const sidebarStore = useSidebar();
     const storageLabel = "beardifyPinia";
     const localS = localStorage.getItem(storageLabel);
 
@@ -58,8 +59,8 @@ export default defineComponent({
     KeyboardEvents();
 
     async function getPlayerStatus(): Promise<void> {
-      if (!store.state.sidebar.playlists.length) {
-        store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
+      if (!sidebarStore.playlists.length) {
+        sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
       }
       if (!store.state.player.devices.list.length) {
         store.dispatch(PlayerActions.getDeviceList);

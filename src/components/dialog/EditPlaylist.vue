@@ -5,16 +5,16 @@
 </template>
 
 <script lang="ts" setup>
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
-import { SidebarActions } from "../sidebar/SidebarStore";
+import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
 
-const store = useStore<RootState>();
 const dialogStore = useDialog();
+const sidebarStore = useSidebar();
 
 function remove(): void {
-  store.dispatch(SidebarActions.removePlaylist, store.state.dialog.playlistId).then(() => dialogStore.close());
+  if (dialogStore.playlistId) {
+    sidebarStore.removePlaylist(dialogStore.playlistId).then(() => dialogStore.close());
+  }
 }
 </script>
 

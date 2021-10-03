@@ -7,17 +7,15 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
-import { SidebarActions } from "../sidebar/SidebarStore";
+import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
 
-const store = useStore<RootState>();
 const dialogStore = useDialog();
+const sidebarStore = useSidebar();
 const collectionName = ref("");
 
 function create(): void {
-  store.dispatch(SidebarActions.addCollection, collectionName.value).then(() => dialogStore.close());
+  sidebarStore.addCollection(collectionName.value).then(() => dialogStore.close());
 }
 </script>
 

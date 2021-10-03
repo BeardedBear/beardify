@@ -1,9 +1,7 @@
 <template>
   <div class="content">
     <div
-      v-for="(playlist, index) in store.state.sidebar.playlists.filter((p) =>
-        p.name.toLowerCase().includes('#collection'),
-      )"
+      v-for="(playlist, index) in sidebarStore.playlists.filter((p) => p.name.toLowerCase().includes('#collection'))"
       :key="index"
       class="collection"
       @click="add(dialogStore.albumId ? dialogStore.albumId : '', playlist.id)"
@@ -14,15 +12,14 @@
 </template>
 
 <script lang="ts" setup>
-import { useStore } from "vuex";
 import { Paging } from "../../@types/Paging";
-import { RootState } from "../../@types/RootState";
 import { TrackSimplified } from "../../@types/Track";
 import { instance } from "../../api";
+import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
 
-const store = useStore<RootState>();
 const dialogStore = useDialog();
+const sidebarStore = useSidebar();
 
 function add(albumId: string, playlistId: string): void {
   instance()
