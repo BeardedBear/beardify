@@ -6,7 +6,7 @@
     <div class="sidebar__item">
       <div class="heading title">
         <div>Collections</div>
-        <button class="add" @click="openDialogAddCollection()"><i class="icon-plus"></i></button>
+        <button class="add" @click="dialogStore.open({ type: 'addCollection' })"><i class="icon-plus"></i></button>
       </div>
       <div v-if="!collections.length" class="empty">
         Ah bah zut alors, tu n'a pas de collection ! Pour en créer une, il suffit de créer ou de renommer une playlist
@@ -27,7 +27,7 @@
     <div class="sidebar__item">
       <div class="heading title">
         <div>Playlists</div>
-        <button class="add" @click="openDialogAddPlaylist()"><i class="icon-plus"></i></button>
+        <button class="add" @click="dialogStore.open({ type: 'addPlaylist' })"><i class="icon-plus"></i></button>
       </div>
       <div v-for="(playlist, index) in playlists" :key="index">
         <router-link
@@ -44,40 +44,25 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent } from "vue";
+<script lang="ts" setup>
+import { computed } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { SidebarActions } from "./SidebarStore";
 import { api } from "../../api";
-import { Mutations } from "../dialog/DialogStore";
-import { Dialog } from "../../@types/Dialog";
 import Loader from "../Loader.vue";
+import { useDialog } from "../dialog/DialogStore";
 
-export default defineComponent({
-  components: { Loader },
-  setup() {
-    const store = useStore<RootState>();
-    const collections = computed(() =>
-      store.state.sidebar.playlists.filter((p) => p.name.toLowerCase().includes("#collection")),
-    );
-    const playlists = computed(() =>
-      store.state.sidebar.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")),
-    );
+const store = useStore<RootState>();
+const dialogStore = useDialog();
+const collections = computed(() =>
+  store.state.sidebar.playlists.filter((p) => p.name.toLowerCase().includes("#collection")),
+);
+const playlists = computed(() =>
+  store.state.sidebar.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")),
+);
 
-    function openDialogAddPlaylist(): void {
-      store.commit(Mutations.OPEN_DIALOG, { type: "addPlaylist" } as Dialog);
-    }
-
-    function openDialogAddCollection(): void {
-      store.commit(Mutations.OPEN_DIALOG, { type: "addCollection" } as Dialog);
-    }
-
-    store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
-
-    return { openDialogAddPlaylist, openDialogAddCollection, store, collections, playlists };
-  },
-});
+store.dispatch(SidebarActions.getPlaylists, `${api.url}me/playlists?limit=50`);
 </script>
 
 <style lang="scss" scoped>

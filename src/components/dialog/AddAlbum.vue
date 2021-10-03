@@ -6,41 +6,35 @@
       )"
       :key="index"
       class="collection"
-      @click="add(store.state.dialog.albumId ? store.state.dialog.albumId : '', playlist.id)"
+      @click="add(dialogStore.albumId ? dialogStore.albumId : '', playlist.id)"
     >
       <div class="album"><i class="icon-folder" />{{ playlist.name.replace("#Collection ", "") }}</div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
 import { useStore } from "vuex";
 import { Paging } from "../../@types/Paging";
 import { RootState } from "../../@types/RootState";
 import { TrackSimplified } from "../../@types/Track";
 import { instance } from "../../api";
-import { Mutations } from "./DialogStore";
+import { useDialog } from "./DialogStore";
 
-export default defineComponent({
-  setup() {
-    const store = useStore<RootState>();
+const store = useStore<RootState>();
+const dialogStore = useDialog();
 
-    function add(albumId: string, playlistId: string): void {
+function add(albumId: string, playlistId: string): void {
+  instance()
+    .get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`)
+    .then((e) => {
       instance()
-        .get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`)
-        .then((e) => {
-          instance()
-            .post(`playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`)
-            .then((f) => {
-              if (f.status === 201) store.commit(Mutations.CLOSE_DIALOG);
-            });
+        .post(`playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`)
+        .then((f) => {
+          if (f.status === 201) dialogStore.close();
         });
-    }
-
-    return { add, store };
-  },
-});
+    });
+}
 </script>
 
 <style lang="scss" scoped>

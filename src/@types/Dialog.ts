@@ -5,4 +5,4 @@ export interface Dialog {
   playlistId?: string;
 }
 
-export type DialogType = "none" | "addalbum" | "addPlaylist" | "editPlaylist" | "addCollection";
+export type DialogType = null | "addalbum" | "addPlaylist" | "editPlaylist" | "addCollection";

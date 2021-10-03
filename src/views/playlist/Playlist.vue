@@ -85,9 +85,8 @@ import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import ArtistList from "../../components/ArtistList.vue";
 import { api } from "../../api";
-import { Mutations as DialogMutations } from "../../components/dialog/DialogStore";
-import { Dialog } from "../../@types/Dialog";
 import router from "../../router";
+import { useDialog } from "../../components/dialog/DialogStore";
 
 export default defineComponent({
   components: { ArtistList, Cover },
@@ -97,9 +96,10 @@ export default defineComponent({
   setup(props) {
     const store = useStore<RootState>();
     const playlistpage = ref();
+    const dialogStore = useDialog();
 
     function deletePlaylist(playlistId: string): void {
-      store.commit(DialogMutations.OPEN_DIALOG, { type: "editPlaylist", playlistId } as Dialog);
+      dialogStore.open({ type: "editPlaylist", playlistId });
     }
 
     function goAlbum(albumId: string): void {

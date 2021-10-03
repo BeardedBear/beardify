@@ -1,6 +1,5 @@
 import { createStore } from "vuex";
 import { RootState } from "./@types/RootState";
-import dialog from "./components/dialog/DialogStore";
 import notification from "./components/notification/NotificationStore";
 import player from "./components/player/PlayerStore";
 import search from "./components/search/SearchStore";
@@ -11,5 +10,5 @@ import home from "./views/home/HomeStore";
 import playlist from "./views/playlist/PlaylistStore";
 
 export default createStore<RootState>({
-  modules: { player, artist, album, search, sidebar, playlist, dialog, home, notification },
+  modules: { player, artist, album, search, sidebar, playlist, home, notification },
 });

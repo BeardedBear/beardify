@@ -1,46 +1,30 @@
 <template>
-  <div v-if="store.state.dialog.show" class="dialog">
-    <div class="bg" @click="close()"></div>
+  <div v-if="dialogStore.show" class="dialog">
+    <div class="bg" @click="dialogStore.close()"></div>
     <div class="dialog-content">
       <div class="head">
-        <div v-if="store.state.dialog.type === 'addalbum'">Ajouter un album à une collection</div>
-        <div v-if="store.state.dialog.type === 'addPlaylist'">Créer une playlist</div>
-        <div v-if="store.state.dialog.type === 'editPlaylist'">Editer une playlist</div>
-        <div v-if="store.state.dialog.type === 'addCollection'">Créer une collection</div>
-        <button class="close" @click="close()">
-          <i class="icon-x" />
-        </button>
+        <div v-if="dialogStore.type === 'addalbum'">Ajouter un album à une collection</div>
+        <div v-if="dialogStore.type === 'addPlaylist'">Créer une playlist</div>
+        <div v-if="dialogStore.type === 'editPlaylist'">Editer une playlist</div>
+        <div v-if="dialogStore.type === 'addCollection'">Créer une collection</div>
+        <button class="close" @click="dialogStore.close()"><i class="icon-x" /></button>
       </div>
-      <AddAlbum v-if="store.state.dialog.type === 'addalbum'" />
-      <AddPlaylist v-if="store.state.dialog.type === 'addPlaylist'" />
-      <EditPlaylist v-if="store.state.dialog.type === 'editPlaylist'" />
-      <AddCollection v-if="store.state.dialog.type === 'addCollection'" />
+      <AddAlbum v-if="dialogStore.type === 'addalbum'" />
+      <AddPlaylist v-if="dialogStore.type === 'addPlaylist'" />
+      <EditPlaylist v-if="dialogStore.type === 'editPlaylist'" />
+      <AddCollection v-if="dialogStore.type === 'addCollection'" />
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
+<script lang="ts" setup>
 import AddAlbum from "./AddAlbum.vue";
 import AddPlaylist from "./AddPlaylist.vue";
 import AddCollection from "./AddCollection.vue";
 import EditPlaylist from "./EditPlaylist.vue";
-import { Mutations } from "./DialogStore";
+import { useDialog } from "./DialogStore";
 
-export default defineComponent({
-  components: { AddAlbum, AddCollection, AddPlaylist, EditPlaylist },
-  setup() {
-    const store = useStore<RootState>();
-
-    function close(): void {
-      store.commit(Mutations.CLOSE_DIALOG);
-    }
-
-    return { close, store };
-  },
-});
+const dialogStore = useDialog();
 </script>
 
 <style lang="scss" scoped>

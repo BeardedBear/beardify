@@ -39,12 +39,12 @@ import { defaultAlbumSimplified } from "../@types/Defaults";
 import router from "../router";
 import Cover from "./Cover.vue";
 import ArtistList from "./ArtistList.vue";
-import { Mutations } from "./dialog/DialogStore";
-import { Dialog, DialogType } from "../@types/Dialog";
+import { DialogType } from "../@types/Dialog";
 import { Paging } from "../@types/Paging";
 import { TrackSimplified, TrackToRemove } from "../@types/Track";
 import { useRoute } from "vue-router";
 import { Mutations as PlaylistMutation } from "../views/playlist/PlaylistStore";
+import { useDialog } from "./dialog/DialogStore";
 
 export default defineComponent({
   components: { ArtistList, Cover },
@@ -59,6 +59,7 @@ export default defineComponent({
   setup(props) {
     const store = useStore<RootState>();
     const currentRouteId = useRoute().params.id;
+    const dialogStore = useDialog();
 
     function playAlbum(albumId: string): void {
       instance().put("me/player/play", { context_uri: albumId });
@@ -69,7 +70,7 @@ export default defineComponent({
     }
 
     function addAlbum(type: DialogType, albumId: string): void {
-      store.commit(Mutations.OPEN_DIALOG, { type, albumId } as Dialog);
+      dialogStore.open({ type, albumId });
     }
 
     function deleteAlbum(albumId: string): void {

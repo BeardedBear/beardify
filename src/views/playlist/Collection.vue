@@ -50,8 +50,7 @@ import { PlaylistActions, Mutations } from "./PlaylistStore";
 import Album from "../../components/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { api } from "../../api";
-import { Mutations as DialogMutations } from "../../components/dialog/DialogStore";
-import { Dialog } from "../../@types/Dialog";
+import { useDialog } from "../../components/dialog/DialogStore";
 
 export default defineComponent({
   components: { Album },
@@ -61,12 +60,13 @@ export default defineComponent({
   setup(props) {
     const store = useStore<RootState>();
     const playlistpage = ref();
+    const dialogStore = useDialog();
     const cleanAlbumList = computed(() =>
       removeDuplicatesAlbums(store.state.playlist.tracks.map((a) => a.track.album)),
     );
 
     function edit(playlistId: string): void {
-      store.commit(DialogMutations.OPEN_DIALOG, { type: "editPlaylist", playlistId } as Dialog);
+      dialogStore.open({ type: "editPlaylist", playlistId });
     }
 
     store.dispatch(PlaylistActions.getPlaylist, `${api.url}playlists/${props.id}`);
