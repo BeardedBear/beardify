@@ -11,7 +11,7 @@ export interface Search {
 }
 
 export interface SearchFromAPI {
-  artists: Paging<Artist[]>;
-  albums: Paging<Album[]>;
-  tracks: Paging<TrackSimplified[]>;
+  artists: Paging<Artist>;
+  albums: Paging<Album>;
+  tracks: Paging<TrackSimplified>;
 }

@@ -20,11 +20,11 @@ export enum Mutations {
 }
 
 const mutations: MutationTree<Search> = {
-  [Mutations.SEARCH_RESULTS](state, data: { artists: Artist[]; albums: Album[]; tracks: TrackSimplified[] }): void {
-    state.artists = data.artists;
-    state.albums = data.albums;
-    state.tracks = data.tracks;
-  },
+  // [Mutations.SEARCH_RESULTS](state, data: { artists: Artist[]; albums: Album[]; tracks: TrackSimplified[] }): void {
+  //   state.artists = data.artists;
+  //   state.albums = data.albums;
+  //   state.tracks = data.tracks;
+  // },
 };
 
 // ACTIONS
@@ -34,15 +34,8 @@ export enum SearchActions {
 }
 
 const actions: ActionTree<Search, RootState> = {
-  [SearchActions.search](store, query: string) {
-    instance()
-      .get<SearchFromAPI>(`search?q=${query}&type=artist%2Calbum%2Ctrack`)
-      .then((e) => {
-        const artists = e.data.artists.items.slice(0, 12);
-        const albums = e.data.albums.items.slice(0, 6);
-        const tracks = e.data.tracks.items.slice(0, 6);
-        store.commit(Mutations.SEARCH_RESULTS, { artists, albums, tracks });
-      });
+  [SearchActions.search](_store, query: string) {
+    instance().get<SearchFromAPI>(`search?q=s${query}&type=artist%2Calbum%2Ctrack`);
   },
 };
 

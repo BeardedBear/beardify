@@ -7,7 +7,7 @@
         :class="{ opened: query }"
         type="text"
         placeholder="Recherche..."
-        @input="search(query)"
+        @input="search()"
       />
     </div>
     <button v-if="query" class="reset" @click="reset()">
@@ -17,7 +17,7 @@
       <!-- Artist List -->
       <div class="artist-list">
         <router-link
-          v-for="(artist, index) in store.state.search.artists"
+          v-for="(artist, index) in searchStore.artists"
           :key="index"
           :to="`/artist/${artist.id}`"
           class="artist"
@@ -30,7 +30,7 @@
       <!-- Album List -->
       <div class="album-list">
         <router-link
-          v-for="(album, index) in store.state.search.albums"
+          v-for="(album, index) in searchStore.albums"
           :key="index"
           :to="`/album/${album.id}`"
           class="album"
@@ -48,7 +48,7 @@
       <!-- Track List -->
       <div>
         <div
-          v-for="(track, index) in store.state.search.tracks"
+          v-for="(track, index) in searchStore.tracks"
           :key="index"
           class="track"
           @click="
@@ -79,12 +79,15 @@ import { SearchActions } from "./SearchStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { playSong } from "../../helpers/play";
 import Cover from "../Cover.vue";
+import { useSearch } from "./SearchPinia";
 
 const store = useStore<RootState>();
+const searchStore = useSearch();
 const query = ref("");
 
-function search(q: string): void {
-  store.dispatch(SearchActions.search, q);
+function search(): void {
+  store.dispatch(SearchActions.search, query.value);
+  searchStore.search(query.value);
 }
 
 function reset(): void {
