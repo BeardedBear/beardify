@@ -10,7 +10,7 @@ export interface ArtistPage {
   eps: AlbumSimplified[];
   singles: AlbumSimplified[];
   relatedArtists: RelatedArtists;
-  followStatus: boolean;
+  followStatus: boolean | undefined;
 }
 
 export interface ArtistTopTracks {

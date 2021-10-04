@@ -3,39 +3,36 @@
     <div>
       <div class="title">
         <div class="name" :class="{ scrolled: scrolledHead }">
-          {{ store.state.artist.artist.name }}
+          {{ artistStore.artist.name }}
         </div>
       </div>
       <div class="header-links">
-        <a
-          class="header-links__item"
-          @click="openLink(`https://fr.wikipedia.org/wiki/${store.state.artist.artist.name}`)"
-        >
-          <i class="icon-wikipedia"
-        /></a>
+        <a class="header-links__item" @click="openLink(`https://fr.wikipedia.org/wiki/${artistStore.artist.name}`)">
+          <i class="icon-wikipedia" />
+        </a>
         <a
           class="header-links__item"
           @click="
             openLink(
-              `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${store.state.artist.artist.name
+              `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${artistStore.artist.name
                 .normalize('NFKC')
                 .replaceAll(/[\u0300-\u036f]/g, '')}&amp;x=0&amp;y=0`,
             )
           "
         >
-          <i class="icon-sputnik"
-        /></a>
+          <i class="icon-sputnik" />
+        </a>
         <a
           class="header-links__item"
-          @click="openLink(`https://www.discogs.com/fr/search/?q=${store.state.artist.artist.name}&amp;strict=true`)"
+          @click="openLink(`https://www.discogs.com/fr/search/?q=${artistStore.artist.name}&amp;strict=true`)"
         >
-          <i class="icon-discogs"
-        /></a>
+          <i class="icon-discogs" />
+        </a>
         <a
           class="header-links__item"
           @click="
             openLink(
-              `https://rateyourmusic.com/artist/${store.state.artist.artist.name
+              `https://rateyourmusic.com/artist/${artistStore.artist.name
                 .normalize('NFKC')
                 .toLowerCase()
                 .replaceAll(' ', '-')
@@ -45,64 +42,55 @@
             )
           "
         >
-          <i class="icon-rym"
-        /></a>
+          <i class="icon-rym" />
+        </a>
         <a
           class="header-links__item"
-          @click="openLink(`https://www.google.com/search?q=${store.state.artist.artist.name}+band+artist`)"
+          @click="openLink(`https://www.google.com/search?q=${artistStore.artist.name}+band+artist`)"
         >
-          <i class="icon-google"
-        /></a>
+          <i class="icon-google" />
+        </a>
         <a
           class="header-links__item"
-          @click="
-            openLink(`https://www.youtube.com/results?search_query=${store.state.artist.artist.name}+band+artist`)
-          "
+          @click="openLink(`https://www.youtube.com/results?search_query=${artistStore.artist.name}+band+artist`)"
         >
-          <i class="icon-youtube"
-        /></a>
+          <i class="icon-youtube" />
+        </a>
       </div>
     </div>
     <div>
       <div
-        v-if="store.state.artist.followStatus"
+        v-if="artistStore.followStatus"
         class="follow button button--primary"
-        @click="switchFollow(store.state.artist.artist.id)"
+        @click="switchFollow(artistStore.artist.id)"
       >
         Suivi
       </div>
-      <div v-else class="follow button" @click="switchFollow(store.state.artist.artist.id)">Suivre</div>
+      <div v-else class="follow button" @click="switchFollow(artistStore.artist.id)">Suivre</div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
-import { ArtistActions } from "./ArtistStore";
+<script lang="ts" setup>
+import { defineProps, PropType } from "vue";
+import { useArtist } from "./ArtistPinia";
 
-export default defineComponent({
-  props: {
-    scrolledHead: {
-      default: false,
-      type: Boolean as PropType<boolean>,
-    },
-  },
-  setup() {
-    const store = useStore<RootState>();
-
-    function openLink(url: string): void {
-      window.open(url, "_blank");
-    }
-
-    function switchFollow(artistId: string): void {
-      store.dispatch(ArtistActions.switchFollow, artistId);
-    }
-
-    return { store, openLink, switchFollow };
+defineProps({
+  scrolledHead: {
+    default: false,
+    type: Boolean as PropType<boolean>,
   },
 });
+
+const artistStore = useArtist();
+
+function openLink(url: string): void {
+  window.open(url, "_blank");
+}
+
+function switchFollow(artistId: string): void {
+  artistStore.switchFollow(artistId);
+}
 </script>
 
 <style lang="scss" scoped>

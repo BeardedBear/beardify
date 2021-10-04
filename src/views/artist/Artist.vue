@@ -3,17 +3,13 @@
     <ArtistHeader ref="domHead" :scrolled-head="scrolledHead" />
     <div class="content">
       <div class="list">
-        <div
-          v-if="
-            !store.state.artist.albums.length && !store.state.artist.eps.length && !store.state.artist.singles.length
-          "
-        >
-          {{ store.state.artist.artist.name }} n'a rien sorti, c'est triste un peu.
+        <div v-if="!artistStore.albums.length && !artistStore.eps.length && !artistStore.singles.length">
+          {{ artistStore.artist.name }} n'a rien sorti, c'est triste un peu.
         </div>
-        <div v-if="store.state.artist.albums.length" class="content__block">
+        <div v-if="artistStore.albums.length" class="content__block">
           <div class="heading sticky-heading">Albums</div>
           <div class="albums">
-            <div v-for="(album, index) in store.state.artist.albums" :key="index">
+            <div v-for="(album, index) in artistStore.albums" :key="index">
               <Album
                 :album="album"
                 :currently-played-id="store.state.player.currentlyPlaying.item?.album.uri"
@@ -22,10 +18,10 @@
             </div>
           </div>
         </div>
-        <div v-if="store.state.artist.eps.length" class="content__block">
+        <div v-if="artistStore.eps.length" class="content__block">
           <div class="heading sticky-heading">EP's</div>
           <div class="eps">
-            <div v-for="(album, index) in store.state.artist.eps" :key="index">
+            <div v-for="(album, index) in artistStore.eps" :key="index">
               <Album
                 :album="album"
                 :currently-played-id="store.state.player.currentlyPlaying.item?.album.uri"
@@ -34,10 +30,10 @@
             </div>
           </div>
         </div>
-        <div v-if="store.state.artist.singles.length" class="content__block">
+        <div v-if="artistStore.singles.length" class="content__block">
           <div class="heading sticky-heading">Singles</div>
           <div class="singles">
-            <div v-for="(album, index) in store.state.artist.singles" :key="index">
+            <div v-for="(album, index) in artistStore.singles" :key="index">
               <Album :album="album" :currently-played-id="store.state.player.currentlyPlaying.item?.album.uri" />
             </div>
           </div>
@@ -48,44 +44,39 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+<script lang="ts" setup>
+import { defineProps, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
-import { ArtistActions } from "./ArtistStore";
-import TopTracks from "./TopTracks.vue";
+import { templateRef, useEventListener } from "@vueuse/core";
+import { useArtist } from "./ArtistPinia";
 import RelatedArtists from "./RelatedArtists.vue";
 import Album from "../../components/Album.vue";
 import ArtistHeader from "./ArtistHeader.vue";
-import { templateRef, useEventListener } from "@vueuse/core";
+import TopTracks from "./TopTracks.vue";
 
-export default defineComponent({
-  components: { ArtistHeader, Album, TopTracks, RelatedArtists },
-  props: {
-    id: { default: "", type: String },
-  },
-  setup(props) {
-    const store = useStore<RootState>();
-    const domArtistpage = templateRef("domArtistpage");
-    const scrolledHead = ref(false);
+const props = defineProps<{
+  id: string;
+}>();
+const store = useStore<RootState>();
+const domArtistpage = templateRef("domArtistpage");
+const scrolledHead = ref(false);
+const artistStore = useArtist();
 
-    onMounted(() => {
-      store.dispatch(ArtistActions.getArtist, props.id);
-      store.dispatch(ArtistActions.getTopTracks, props.id);
-      store.dispatch(ArtistActions.getAlbums, props.id);
-      store.dispatch(ArtistActions.getRelatedArtists, props.id);
-      store.dispatch(ArtistActions.getSingles, props.id);
-      store.dispatch(ArtistActions.getFollowStatus, props.id);
+onMounted(() => {
+  artistStore.getArtist(props.id);
+  artistStore.getTopTracks(props.id);
+  artistStore.getAlbums(props.id);
+  artistStore.getRelatedArtists(props.id);
+  artistStore.getSingles(props.id);
+  artistStore.getTopTracks(props.id);
+  artistStore.getFollowStatus(props.id);
 
-      domArtistpage.value ? (domArtistpage.value.scrollTop = 0) : null;
+  domArtistpage.value ? (domArtistpage.value.scrollTop = 0) : null;
 
-      useEventListener(domArtistpage.value, "scroll", () => {
-        scrolledHead.value = domArtistpage.value ? domArtistpage.value.scrollTop > 50 : false;
-      });
-    });
-
-    return { store, scrolledHead };
-  },
+  useEventListener(domArtistpage.value, "scroll", () => {
+    scrolledHead.value = domArtistpage.value ? domArtistpage.value.scrollTop > 50 : false;
+  });
 });
 </script>
 

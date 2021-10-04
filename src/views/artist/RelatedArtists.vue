@@ -1,9 +1,9 @@
 <template>
-  <div v-if="store.state.artist.relatedArtists.artists.length">
+  <div v-if="artistStore.relatedArtists.artists.length">
     <div class="heading sticky-heading">Artistes similaires</div>
     <div class="list">
       <router-link
-        v-for="(artist, index) in store.state.artist.relatedArtists.artists"
+        v-for="(artist, index) in artistStore.relatedArtists.artists"
         :key="index"
         class="item"
         :to="`/artist/${artist.id}`"
@@ -17,19 +17,11 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
+<script lang="ts" setup>
 import Cover from "../../components/Cover.vue";
+import { useArtist } from "./ArtistPinia";
 
-export default defineComponent({
-  components: { Cover },
-  setup() {
-    const store = useStore<RootState>();
-    return { store };
-  },
-});
+const artistStore = useArtist();
 </script>
 
 <style lang="scss" scoped>
