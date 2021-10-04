@@ -4,35 +4,20 @@
       <div class="fit">
         <h1>Albums recommandés</h1>
         <div class="album-gallery">
-          <Album
-            v-for="(album, index) in store.state.home.recommendedAlbums"
-            :key="index"
-            :album="album"
-            with-artists
-          />
+          <Album v-for="(album, index) in homeStore.recommendedAlbums" :key="index" :album="album" with-artists />
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import { useStore } from "vuex";
-import type { RootState } from "../../@types/RootState";
-import { HomeActions } from "./HomeStore";
+<script lang="ts" setup>
 import Album from "../../components/Album.vue";
+import { useHome } from "./HomeStore";
 
-export default defineComponent({
-  components: { Album },
-  setup() {
-    const store = useStore<RootState>();
+const homeStore = useHome();
 
-    store.dispatch(HomeActions.getRecommendedAlbums);
-
-    return { store };
-  },
-});
+homeStore.getRecommendedAlbums();
 </script>
 
 <style lang="scss" scoped>
