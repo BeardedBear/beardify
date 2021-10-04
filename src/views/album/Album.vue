@@ -2,34 +2,34 @@
   <div ref="albumpage" class="album-page">
     <div class="album-header">
       <div class="title">
-        {{ store.state.album.album.name }}
+        {{ albumStore.album.name }}
       </div>
       <div>
-        <ArtistList :artist-list="store.state.album.album.artists" />
+        <ArtistList :artist-list="albumStore.album.artists" />
         ·
-        <span>{{ store.state.album.album.release_date.split("-").shift() }}</span>
+        <span>{{ albumStore.album.release_date.split("-").shift() }}</span>
         ·
-        <span>{{ timecodeWithUnits(sumDuration(store.state.album.album.tracks.items)) }}</span>
+        <span>{{ timecodeWithUnits(sumDuration(albumStore.album.tracks.items)) }}</span>
       </div>
     </div>
     <div class="content">
       <div class="content__cover">
-        <Album :album="store.state.album.album" without-metas can-save />
+        <Album :album="albumStore.album" without-metas can-save />
       </div>
       <div class="content__tracks">
         <div
-          v-for="(track, index) in store.state.album.album.tracks.items"
+          v-for="(track, index) in albumStore.album.tracks.items"
           :key="index"
           class="track"
           :class="{ active: store.state.player.currentlyPlaying.item?.id === track.id }"
-          @click="playSongs(index, store.state.album.album.tracks.items)"
+          @click="playSongs(index, albumStore.album.tracks.items)"
         >
           <span class="track__number">{{ track.track_number }}.</span>
           <div>
             <div>{{ track.name }}</div>
-            <div v-if="store.state.album.album.artists.length">
+            <div v-if="albumStore.album.artists.length">
               <ArtistList
-                :artist-list="track.artists.filter((e) => e.name !== store.state.album.album.artists[0].name)"
+                :artist-list="track.artists.filter((e) => e.name !== albumStore.album.artists[0].name)"
                 feat
               />
             </div>
@@ -41,34 +41,28 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+<script lang="ts" setup>
+import { defineProps, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { timecodeWithUnits, timecode } from "../../helpers/date";
-import { AlbumActions } from "./AlbumStore";
 import { playSongs } from "../../helpers/play";
 import { Track, TrackSimplified } from "../../@types/Track";
-import Album from "../../components/Album.vue";
 import ArtistList from "../../components/ArtistList.vue";
+import Album from "../../components/Album.vue";
+import { useAlbum } from "./AlbumPinia";
 
-export default defineComponent({
-  components: { Album, ArtistList },
-  props: {
-    id: { default: "", type: String },
-  },
-  setup(props) {
-    const store = useStore<RootState>();
-    const albumpage = ref();
-
-    function sumDuration(tracks: TrackSimplified[] | Track[]): number {
-      return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
-    }
-    onMounted(() => store.dispatch(AlbumActions.getAlbum, props.id));
-
-    return { albumpage, store, timecode, timecodeWithUnits, playSongs, sumDuration };
-  },
+const props = defineProps({
+  id: { default: "", type: String },
 });
+const store = useStore<RootState>();
+const albumpage = ref();
+const albumStore = useAlbum();
+
+function sumDuration(tracks: TrackSimplified[] | Track[]): number {
+  return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
+}
+onMounted(() => albumStore.getAlbum(props.id));
 </script>
 
 <style lang="scss" scoped>
