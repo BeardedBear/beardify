@@ -50,7 +50,7 @@ import { playSongs } from "../../helpers/play";
 import { Track, TrackSimplified } from "../../@types/Track";
 import ArtistList from "../../components/ArtistList.vue";
 import Album from "../../components/Album.vue";
-import { useAlbum } from "./AlbumPinia";
+import { useAlbum } from "./AlbumStore";
 
 const props = defineProps({
   id: { default: "", type: String },

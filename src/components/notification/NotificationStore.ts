@@ -1,42 +1,18 @@
-import { ActionTree, MutationTree } from "vuex";
+import { defineStore } from "pinia";
 import { Notification, NotificationStore } from "../../@types/Notification";
-import { RootState } from "../../@types/RootState";
 
-const state: NotificationStore = {
-  notifications: [],
-};
+export const useNotification = defineStore("notification", {
+  state: (): NotificationStore => ({
+    notifications: [],
+  }),
 
-// MUTATIONS
+  actions: {
+    async addNotification(notif: Notification) {
+      this.notifications = [...this.notifications, notif];
+    },
 
-export enum Mutations {
-  ADD_NOTIFICATION = "ADD_NOTIFICATION",
-  REMOVE_NOTIFICATION = "REMOVE_NOTIFICATION",
-}
-
-const mutations: MutationTree<NotificationStore> = {
-  [Mutations.ADD_NOTIFICATION](state, notification: Notification): void {
-    state.notifications = [...state.notifications, notification];
+    removeNotification() {
+      this.notifications.shift();
+    },
   },
-
-  [Mutations.REMOVE_NOTIFICATION](state): void {
-    state.notifications.shift();
-  },
-};
-
-// ACTIONS
-
-export enum NotificationActions {
-  addNotification = "addNotification",
-}
-
-const actions: ActionTree<NotificationStore, RootState> = {
-  [NotificationActions.addNotification](store, notif: Notification): void {
-    store.commit(Mutations.ADD_NOTIFICATION, notif);
-  },
-};
-
-export default {
-  actions,
-  mutations,
-  state,
-};
+});
