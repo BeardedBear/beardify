@@ -1,16 +1,16 @@
 <template>
-  <div v-if="store.state.player.currentlyPlaying.item.album" class="what">
-    <router-link :to="`/album/${store.state.player.currentlyPlaying.item.album.id}`">
-      <Cover size="small" :images="store.state.player.currentlyPlaying.item.album.images" class-name="cover" />
+  <div v-if="playerStore.currentlyPlaying.item.album" class="what">
+    <router-link :to="`/album/${playerStore.currentlyPlaying.item.album.id}`">
+      <Cover size="small" :images="playerStore.currentlyPlaying.item.album.images" class-name="cover" />
     </router-link>
     <div>
       <div>
-        <ArtistList :artist-list="store.state.player.currentlyPlaying.item.album.artists" />
+        <ArtistList :artist-list="playerStore.currentlyPlaying.item.album.artists" />
         ·
-        <span class="trackname">{{ store.state.player.currentlyPlaying.item.name }}</span>
+        <span class="trackname">{{ playerStore.currentlyPlaying.item.name }}</span>
       </div>
       <div class="album">
-        {{ store.state.player.currentlyPlaying.item.album.name }}
+        {{ playerStore.currentlyPlaying.item.album.name }}
       </div>
     </div>
   </div>
@@ -19,17 +19,16 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
 import Cover from "../Cover.vue";
 import ArtistList from "../ArtistList.vue";
+import { usePlayer } from "./PlayerPinia";
 
 export default defineComponent({
   components: { ArtistList, Cover },
   setup() {
-    const store = useStore<RootState>();
+    const playerStore = usePlayer();
 
-    return { store };
+    return { playerStore };
   },
 });
 </script>

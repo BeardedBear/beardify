@@ -5,7 +5,7 @@
       v-for="(trackItem, index) in artistStore.topTracks.tracks"
       :key="index"
       class="item"
-      :class="{ active: store.state.player.currentlyPlaying.item?.id === trackItem.id }"
+      :class="{ active: playerStore.currentlyPlaying.item?.id === trackItem.id }"
       @click="playSongs(index, artistStore.topTracks.tracks)"
     >
       <Cover size="small" :images="trackItem.album.images" class-name="cover" />
@@ -20,15 +20,14 @@
 </template>
 
 <script lang="ts" setup>
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
 import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import Cover from "../../components/Cover.vue";
 import { useArtist } from "./ArtistStore";
+import { usePlayer } from "../../components/player/PlayerPinia";
 
-const store = useStore<RootState>();
 const artistStore = useArtist();
+const playerStore = usePlayer();
 </script>
 
 <style lang="scss" scoped>

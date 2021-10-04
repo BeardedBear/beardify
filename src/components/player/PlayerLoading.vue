@@ -1,13 +1,13 @@
 <template>
   <div class="player-loading">
     <div class="player-loading__title">Choisir un périphérique de lecture :</div>
-    <span v-if="store.state.player.devices.list.length">
+    <span v-if="playerStore.devices.list.length">
       <button
-        v-for="(device, index) in store.state.player.devices.list"
+        v-for="(device, index) in playerStore.devices.list"
         :key="index"
         type="button"
         class="device button button--x-small"
-        :class="{ me: store.state.player.thisDeviceId === device.id }"
+        :class="{ me: playerStore.thisDeviceId === device.id }"
         @click="setDevice(device)"
       >
         {{ device.name }}
@@ -18,20 +18,18 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useStore } from "vuex";
 import { Device } from "../../@types/Device";
-import { RootState } from "../../@types/RootState";
-import { PlayerActions } from "./PlayerStore";
+import { usePlayer } from "./PlayerPinia";
 
 export default defineComponent({
   setup() {
-    const store = useStore<RootState>();
+    const playerStore = usePlayer();
 
     function setDevice(device: Device): void {
-      store.dispatch(PlayerActions.setDevice, device as Device);
+      playerStore.setDevice(device);
     }
 
-    return { store, setDevice };
+    return { playerStore, setDevice };
   },
 });
 </script>

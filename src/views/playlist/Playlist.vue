@@ -27,8 +27,8 @@
         class="track"
         :class="{
           active:
-            store.state.player.currentlyPlaying && track.track
-              ? track.track.id === store.state.player.currentlyPlaying.item.id
+            playerStore.currentlyPlaying && track.track
+              ? track.track.id === playerStore.currentlyPlaying.item.id
               : false,
         }"
         @click="
@@ -67,8 +67,6 @@
 
 <script lang="ts" setup>
 import { defineProps, ref } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
 import { timecode, timecodeWithUnits } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import Cover from "../../components/Cover.vue";
@@ -78,12 +76,13 @@ import router from "../../router";
 import { useDialog } from "../../components/dialog/DialogStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { usePlaylist } from "./PlaylistStore";
+import { usePlayer } from "../../components/player/PlayerPinia";
 
 const props = defineProps<{ id: string }>();
-const store = useStore<RootState>();
 const playlistpage = ref();
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
+const playerStore = usePlayer();
 
 function deletePlaylist(playlistId: string): void {
   dialogStore.open({ type: "editPlaylist", playlistId });

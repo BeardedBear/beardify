@@ -10,11 +10,7 @@
           <div class="heading sticky-heading">Albums</div>
           <div class="albums">
             <div v-for="(album, index) in artistStore.albums" :key="index">
-              <Album
-                :album="album"
-                :currently-played-id="store.state.player.currentlyPlaying.item?.album.uri"
-                can-save
-              />
+              <Album :album="album" :currently-played-id="playerStore.currentlyPlaying.item?.album.uri" can-save />
             </div>
           </div>
         </div>
@@ -22,11 +18,7 @@
           <div class="heading sticky-heading">EP's</div>
           <div class="eps">
             <div v-for="(album, index) in artistStore.eps" :key="index">
-              <Album
-                :album="album"
-                :currently-played-id="store.state.player.currentlyPlaying.item?.album.uri"
-                can-save
-              />
+              <Album :album="album" :currently-played-id="playerStore.currentlyPlaying.item?.album.uri" can-save />
             </div>
           </div>
         </div>
@@ -34,7 +26,7 @@
           <div class="heading sticky-heading">Singles</div>
           <div class="singles">
             <div v-for="(album, index) in artistStore.singles" :key="index">
-              <Album :album="album" :currently-played-id="store.state.player.currentlyPlaying.item?.album.uri" />
+              <Album :album="album" :currently-played-id="playerStore.currentlyPlaying.item?.album.uri" />
             </div>
           </div>
         </div>
@@ -46,22 +38,21 @@
 
 <script lang="ts" setup>
 import { defineProps, onMounted, ref } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
 import { templateRef, useEventListener } from "@vueuse/core";
 import { useArtist } from "./ArtistStore";
 import RelatedArtists from "./RelatedArtists.vue";
 import Album from "../../components/Album.vue";
 import ArtistHeader from "./ArtistHeader.vue";
 import TopTracks from "./TopTracks.vue";
+import { usePlayer } from "../../components/player/PlayerPinia";
 
 const props = defineProps<{
   id: string;
 }>();
-const store = useStore<RootState>();
 const domArtistpage = templateRef("domArtistpage");
 const scrolledHead = ref(false);
 const artistStore = useArtist();
+const playerStore = usePlayer();
 
 onMounted(() => {
   artistStore.getArtist(props.id);

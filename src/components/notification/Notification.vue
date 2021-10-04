@@ -1,23 +1,15 @@
 <template>
   <div class="notification-list">
-    <div v-for="(notif, index) in store.state.notification.notifications" :key="index" class="notification">
+    <div v-for="(notif, index) in notificationStore.notifications" :key="index" class="notification">
       {{ notif.type }}
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
+<script lang="ts" setup>
+import { useNotification } from "./NotificationStore";
 
-export default defineComponent({
-  setup() {
-    const store = useStore<RootState>();
-
-    return { store };
-  },
-});
+const notificationStore = useNotification();
 </script>
 
 <style lang="scss" scoped>

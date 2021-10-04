@@ -18,11 +18,8 @@
 
 <script lang="ts" setup>
 import { onBeforeMount, watch, onMounted } from "vue";
-import { useStore } from "vuex";
 import Topbar from "./components/Topbar.vue";
-import { Mutations, PlayerActions } from "./components/player/PlayerStore";
 import Player from "./components/player/Player.vue";
-import { RootState } from "./@types/RootState";
 import { api, instance } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
@@ -36,14 +33,15 @@ import { Storage } from "./@types/Storage";
 import { useSidebar } from "./components/sidebar/SidebarStore";
 import { useApp } from "./AppStore";
 import Loader from "./components/Loader.vue";
+import { usePlayer } from "./components/player/PlayerPinia";
 
-const store = useStore<RootState>();
 const authStore = useAuth();
 const configStore = useConfig();
 const sidebarStore = useSidebar();
 const storageLabel = "beardifyPinia";
 const localS = localStorage.getItem(storageLabel);
 const appStore = useApp();
+const playerStore = usePlayer();
 
 onBeforeMount(() => (localS ? authStore.refresh() : router.push(RouteName.Login)));
 
@@ -65,26 +63,26 @@ async function getPlayerStatus(): Promise<void> {
   if (!sidebarStore.playlists.length) {
     sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
   }
-  if (!store.state.player.devices.list.length) {
-    store.dispatch(PlayerActions.getDeviceList);
+  if (!playerStore.devices.list.length) {
+    playerStore.getDeviceList();
   }
-  store.dispatch(PlayerActions.getPlayerState);
+  playerStore.getPlayerState();
 }
 
-store.dispatch(PlayerActions.getDeviceList);
+playerStore.getDeviceList();
 // store.dispatch(AuthActions.refresh);
 
 // Keep app active
 setInterval(() => {
-  store.dispatch(PlayerActions.getDeviceList);
-  if (!store.state.player.currentlyPlaying.is_playing) {
-    store.dispatch(PlayerActions.setDevice, store.state.player.devices.activeDevice);
+  playerStore.getDeviceList();
+  if (!playerStore.currentlyPlaying.is_playing) {
+    playerStore.setDevice(playerStore.devices.activeDevice);
   }
   // store.dispatch(AuthActions.refresh);
 }, 120000);
 
 addEventListener("focus", () => {
-  store.dispatch(PlayerActions.getDeviceList);
+  playerStore.getDeviceList();
   getPlayerStatus();
 });
 
@@ -95,7 +93,7 @@ setInterval(() => {
 }, 1000);
 
 addEventListener("initdevice", ((e: CustomEvent) => {
-  if (store.state.player.devices.list.filter((d) => d.is_active).length === 0) {
+  if (playerStore.devices.list.filter((d) => d.is_active).length === 0) {
     instance()
       .put("me/player", { device_ids: [e.detail.thisDevice] })
       .catch((err: Error) => {
@@ -104,7 +102,7 @@ addEventListener("initdevice", ((e: CustomEvent) => {
         }
       });
   }
-  store.commit(Mutations.THIS_DEVICE, e.detail.thisDevice);
+  playerStore.thisDevice(e.detail.thisDevice);
 }) as { (): void });
 </script>
 

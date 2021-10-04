@@ -1,6 +1,6 @@
 <template>
   <div ref="refVolume" class="volume" @click="setVolume()">
-    <div class="volume__cursor" :style="{ width: store.state.player.devices.activeDevice.volume_percent + '%' }" />
+    <div class="volume__cursor" :style="{ width: playerStore.devices.activeDevice.volume_percent + '%' }" />
     <div class="volume__hover" :style="{ width: volume + '%' }">
       <div class="volume__pc">{{ volume + "%" }}</div>
     </div>
@@ -9,18 +9,16 @@
 
 <script lang="ts">
 import { ref, defineComponent, watchEffect } from "vue";
-import { useStore } from "vuex";
-import { PlayerActions } from "./../player/PlayerStore";
-import { RootState } from "../../@types/RootState";
+import { usePlayer } from "./PlayerPinia";
 
 export default defineComponent({
   setup() {
-    const store = useStore<RootState>();
     const refVolume = ref();
     const volume = ref(0);
+    const playerStore = usePlayer();
 
     function setVolume(): void {
-      store.dispatch(PlayerActions.setVolume, volume.value);
+      playerStore.setVolume(volume.value);
     }
 
     watchEffect(() => {
@@ -30,7 +28,7 @@ export default defineComponent({
     });
 
     return {
-      store,
+      playerStore,
       setVolume,
       refVolume,
       volume,

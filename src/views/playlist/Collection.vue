@@ -24,9 +24,7 @@
         <div v-for="(album, index) in cleanAlbumList" :key="index">
           <Album
             :album="album"
-            :currently-played-id="
-              store.state.player.currentlyPlaying ? store.state.player.currentlyPlaying.item.album.uri : ''
-            "
+            :currently-played-id="playerStore.currentlyPlaying ? playerStore.currentlyPlaying.item.album.uri : ''"
             with-artists
             can-delete
             can-save
@@ -39,20 +37,19 @@
 
 <script lang="ts" setup>
 import { computed, defineProps, ref } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
 import Album from "../../components/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { api } from "../../api";
 import { useDialog } from "../../components/dialog/DialogStore";
 import { usePlaylist } from "./PlaylistStore";
+import { usePlayer } from "../../components/player/PlayerPinia";
 
 const props = defineProps<{ id: string }>();
-const store = useStore<RootState>();
 const playlistpage = ref();
 const dialogStore = useDialog();
 const cleanAlbumList = computed(() => removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album)));
 const playlistStore = usePlaylist();
+const playerStore = usePlayer();
 
 function edit(playlistId: string): void {
   dialogStore.open({ type: "editPlaylist", playlistId });

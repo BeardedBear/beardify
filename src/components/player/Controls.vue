@@ -3,19 +3,19 @@
     <div class="btns">
       <button
         class="controls__btn"
-        :class="{ active: store.state.player.currentlyPlaying.shuffle_state }"
+        :class="{ active: playerStore.currentlyPlaying.shuffle_state }"
         @click="toggleShuffle()"
       >
         <i class="icon-shuffle" />
       </button>
       <button
         class="controls__btn"
-        :class="{ active: store.state.player.currentlyPlaying.repeat_state !== 'off' }"
+        :class="{ active: playerStore.currentlyPlaying.repeat_state !== 'off' }"
         @click="toggleRepeat()"
       >
         <i class="icon-repeat" />
       </button>
-      <button v-if="!store.state.player.currentlyPlaying.is_playing" class="controls__btn play" @click="goPlay()">
+      <button v-if="!playerStore.currentlyPlaying.is_playing" class="controls__btn play" @click="goPlay()">
         <i class="icon-play" />
       </button>
       <button v-else class="controls__btn play" @click="goPause()">
@@ -25,28 +25,26 @@
         <i class="icon-skip-forward" />
       </button>
     </div>
-    <div v-if="store.state.player.currentlyPlaying.progress_ms" class="time">
-      {{ timecode(store.state.player.currentlyPlaying.progress_ms) }} /
-      {{ timecode(store.state.player.currentlyPlaying.item.duration_ms) }}
+    <div v-if="playerStore.currentlyPlaying.progress_ms" class="time">
+      {{ timecode(playerStore.currentlyPlaying.progress_ms) }} /
+      {{ timecode(playerStore.currentlyPlaying.item.duration_ms) }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useStore } from "vuex";
 import { instance } from "../../api";
-import { RootState } from "../../@types/RootState";
 import { timecode } from "../../helpers/date";
-import { PlayerActions } from "./PlayerStore";
+import { usePlayer } from "./PlayerPinia";
 
 export default defineComponent({
   setup() {
-    const store = useStore<RootState>();
+    const playerStore = usePlayer();
 
     function goPlay(): void {
       instance().put("me/player/play", {
-        device_id: store.state.player.devices.activeDevice,
+        device_id: playerStore.devices.activeDevice,
       });
     }
 
@@ -56,19 +54,19 @@ export default defineComponent({
 
     function goPause(): void {
       instance().put("me/player/pause", {
-        device_id: store.state.player.devices.activeDevice,
+        device_id: playerStore.devices.activeDevice,
       });
     }
 
     function toggleShuffle(): void {
-      store.dispatch(PlayerActions.toggleShuffle);
+      playerStore.toggleShuffle();
     }
 
     function toggleRepeat(): void {
-      store.dispatch(PlayerActions.toggleRepeat);
+      playerStore.toggleRepeat();
     }
 
-    return { store, goPlay, goNext, goPause, timecode, toggleShuffle, toggleRepeat };
+    return { playerStore, goPlay, goNext, goPause, timecode, toggleShuffle, toggleRepeat };
   },
 });
 </script>

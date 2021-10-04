@@ -21,7 +21,7 @@
           v-for="(track, index) in albumStore.album.tracks.items"
           :key="index"
           class="track"
-          :class="{ active: store.state.player.currentlyPlaying.item?.id === track.id }"
+          :class="{ active: playerStore.currentlyPlaying.item?.id === track.id }"
           @click="playSongs(index, albumStore.album.tracks.items)"
         >
           <span class="track__number">{{ track.track_number }}.</span>
@@ -43,21 +43,20 @@
 
 <script lang="ts" setup>
 import { defineProps, onMounted, ref } from "vue";
-import { useStore } from "vuex";
-import { RootState } from "../../@types/RootState";
 import { timecodeWithUnits, timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import { Track, TrackSimplified } from "../../@types/Track";
 import ArtistList from "../../components/ArtistList.vue";
 import Album from "../../components/Album.vue";
 import { useAlbum } from "./AlbumStore";
+import { usePlayer } from "../../components/player/PlayerPinia";
 
 const props = defineProps({
   id: { default: "", type: String },
 });
-const store = useStore<RootState>();
 const albumpage = ref();
 const albumStore = useAlbum();
+const playerStore = usePlayer();
 
 function sumDuration(tracks: TrackSimplified[] | Track[]): number {
   return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);

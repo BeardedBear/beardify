@@ -1,18 +1,14 @@
-import { useStore } from "vuex";
-import { RootState } from "../@types/RootState";
-import { PlayerActions } from "../components/player/PlayerStore";
+import { usePlayer } from "../components/player/PlayerPinia";
 
 export default (): void => {
-  const store = useStore<RootState>();
+  const playerStore = usePlayer();
 
   function setVolume(volume: number): void {
-    store.dispatch(PlayerActions.setVolume, volume);
+    playerStore.setVolume(volume);
   }
 
   addEventListener("keydown", (e) => {
-    const currentVolume = store.state.player.devices.activeDevice
-      ? store.state.player.devices.activeDevice.volume_percent
-      : 0;
+    const currentVolume = playerStore.devices.activeDevice ? playerStore.devices.activeDevice.volume_percent : 0;
     const delta = 2;
 
     if (currentVolume && e.shiftKey) {

@@ -1,13 +1,13 @@
 <template>
   <div>
     <button
-      v-for="(device, index) in store.state.player.devices.list"
+      v-for="(device, index) in playerStore.devices.list"
       :key="index"
       type="button"
       class="device button button--x-small"
       :class="{
-        'button--primary': device.id === store.state.player.devices.activeDevice.id,
-        me: store.state.player.thisDeviceId === device.id,
+        'button--primary': device.id === playerStore.devices.activeDevice.id,
+        me: playerStore.thisDeviceId === device.id,
       }"
       @click="setDevice(device)"
     >
@@ -21,24 +21,22 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useStore } from "vuex";
-import { PlayerActions } from "./../player/PlayerStore";
-import { RootState } from "../../@types/RootState";
 import { Device } from "../../@types/Device";
+import { usePlayer } from "./PlayerPinia";
 
 export default defineComponent({
   setup() {
-    const store = useStore<RootState>();
+    const playerStore = usePlayer();
 
     function setDevice(device: Device): void {
-      store.dispatch(PlayerActions.setDevice, device);
+      playerStore.setDevice(device);
     }
 
     function refreshDevices(): void {
-      store.dispatch(PlayerActions.getDeviceList);
+      playerStore.getDeviceList();
     }
 
-    return { store, setDevice, refreshDevices };
+    return { playerStore, setDevice, refreshDevices };
   },
 });
 </script>
