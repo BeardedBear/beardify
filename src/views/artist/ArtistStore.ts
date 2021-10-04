@@ -45,7 +45,7 @@ const mutations: MutationTree<ArtistPage> = {
   },
 
   [Mutations.SET_ALBUMS](state, data: AlbumSimplified[]): void {
-    state.albums = state.albums.concat(data);
+    state.albums = data;
   },
 
   [Mutations.SET_SINGLES](state, data: AlbumSimplified[]): void {
@@ -103,6 +103,7 @@ const actions: ActionTree<ArtistPage, RootState> = {
   },
 
   [ArtistActions.getAlbums](store, artistId: string): void {
+    store.commit(Mutations.SET_ALBUMS, []);
     instance()
       .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=album&limit=50`)
       .then((e) => {
@@ -110,7 +111,7 @@ const actions: ActionTree<ArtistPage, RootState> = {
         if (e.data.next !== "") {
           instance()
             .get<Paging<AlbumSimplified>>(e.data.next)
-            .then((e) => store.commit(Mutations.SET_ALBUMS, removeDuplicatesAlbums(e.data.items)));
+            .then((e) => store.commit(Mutations.SET_ALBUMS, removeDuplicatesAlbums(state.albums.concat(e.data.items))));
         }
       });
   },
