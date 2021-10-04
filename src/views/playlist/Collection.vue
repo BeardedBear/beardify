@@ -5,22 +5,17 @@
         <div>
           <div>
             <div class="title">
-              {{ store.state.playlist.playlist.name.replace("#Collection ", "").replace("#collection ", "") }}
+              {{ playlistStore.playlist.name.replace("#Collection ", "").replace("#collection ", "") }}
             </div>
-            <div class="description">
-              {{ store.state.playlist.playlist.description }}
-            </div>
+            <div class="description">{{ playlistStore.playlist.description }}</div>
             <div>
-              {{ store.state.playlist.playlist.owner.display_name }} ·
-              {{ store.state.playlist.playlist.tracks.total }} Albums
+              {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} Albums
             </div>
           </div>
         </div>
         <div class="playlist-header__right">
-          <button class="button button--nude">
-            <i class="icon-share"></i>
-          </button>
-          <button class="button button--nude" @click="edit(store.state.playlist.playlist.id)">
+          <button class="button button--nude"><i class="icon-share"></i></button>
+          <button class="button button--nude" @click="edit(playlistStore.playlist.id)">
             <i class="icon-more-vertical"></i>
           </button>
         </div>
@@ -42,40 +37,28 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+<script lang="ts" setup>
+import { computed, defineProps, ref } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
-import { PlaylistActions, Mutations } from "./PlaylistStore";
 import Album from "../../components/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { api } from "../../api";
 import { useDialog } from "../../components/dialog/DialogStore";
+import { usePlaylist } from "./PlaylistStore";
 
-export default defineComponent({
-  components: { Album },
-  props: {
-    id: { default: "", type: String },
-  },
-  setup(props) {
-    const store = useStore<RootState>();
-    const playlistpage = ref();
-    const dialogStore = useDialog();
-    const cleanAlbumList = computed(() =>
-      removeDuplicatesAlbums(store.state.playlist.tracks.map((a) => a.track.album)),
-    );
+const props = defineProps<{ id: string }>();
+const store = useStore<RootState>();
+const playlistpage = ref();
+const dialogStore = useDialog();
+const cleanAlbumList = computed(() => removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album)));
+const playlistStore = usePlaylist();
 
-    function edit(playlistId: string): void {
-      dialogStore.open({ type: "editPlaylist", playlistId });
-    }
-
-    store.dispatch(PlaylistActions.getPlaylist, `${api.url}playlists/${props.id}`);
-    store.dispatch(PlaylistActions.getTracks, `${api.url}playlists/${props.id}/tracks`);
-    store.commit(Mutations.CLEAN_TRACKS);
-
-    return { playlistpage, store, cleanAlbumList, edit };
-  },
-});
+function edit(playlistId: string): void {
+  dialogStore.open({ type: "editPlaylist", playlistId });
+}
+playlistStore.getPlaylist(`${api.url}playlists/${props.id}`);
+playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
 </script>
 
 <style lang="scss" scoped>

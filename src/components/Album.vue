@@ -36,19 +36,17 @@
 
 <script lang="ts" setup>
 import { defineProps, PropType } from "vue";
-import { useStore } from "vuex";
 import { Album, AlbumSimplified } from "../@types/Album";
-import { RootState } from "../@types/RootState";
 import { instance } from "../api";
 import router from "../router";
 import Cover from "./Cover.vue";
 import { Paging } from "../@types/Paging";
 import { TrackSimplified, TrackToRemove } from "../@types/Track";
 import { useRoute } from "vue-router";
-import { Mutations as PlaylistMutation } from "../views/playlist/PlaylistStore";
 import { useDialog } from "./dialog/DialogStore";
 import { defaultAlbumSimplified } from "../@types/Defaults";
 import ArtistList from "./ArtistList.vue";
+import { usePlaylist } from "../views/playlist/PlaylistStore";
 
 const props = defineProps({
   album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified | Album> },
@@ -59,9 +57,9 @@ const props = defineProps({
   canSave: { default: false, type: Boolean as PropType<boolean> },
 });
 
-const store = useStore<RootState>();
 const currentRouteId = useRoute().params.id;
 const dialogStore = useDialog();
+const playlistStore = usePlaylist();
 
 function deleteAlbum(albumId: string): void {
   instance()
@@ -75,7 +73,7 @@ function deleteAlbum(albumId: string): void {
         .delete(`playlists/${currentRouteId}/tracks`, {
           data: { tracks },
         })
-        .then(() => store.commit(PlaylistMutation.REMOVE_TRACKS, tracks));
+        .then(() => playlistStore.removeTracks(tracks));
     });
 }
 </script>

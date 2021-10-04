@@ -73,7 +73,7 @@
 
 <script lang="ts" setup>
 import { defineProps, PropType } from "vue";
-import { useArtist } from "./ArtistPinia";
+import { useArtist } from "./ArtistStore";
 
 defineProps({
   scrolledHead: {

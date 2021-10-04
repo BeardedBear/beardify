@@ -25,7 +25,7 @@ import { RootState } from "../../@types/RootState";
 import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import Cover from "../../components/Cover.vue";
-import { useArtist } from "./ArtistPinia";
+import { useArtist } from "./ArtistStore";
 
 const store = useStore<RootState>();
 const artistStore = useArtist();

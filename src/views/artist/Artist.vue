@@ -49,7 +49,7 @@ import { defineProps, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { templateRef, useEventListener } from "@vueuse/core";
-import { useArtist } from "./ArtistPinia";
+import { useArtist } from "./ArtistStore";
 import RelatedArtists from "./RelatedArtists.vue";
 import Album from "../../components/Album.vue";
 import ArtistHeader from "./ArtistHeader.vue";

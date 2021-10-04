@@ -3,35 +3,26 @@
     <div class="fit">
       <div class="playlist-header">
         <div class="playlist-header__left">
+          <div><Cover size="medium" :images="playlistStore.playlist.images" class-name="cover" /></div>
           <div>
-            <Cover size="medium" :images="store.state.playlist.playlist.images" class-name="cover" />
-          </div>
-          <div>
-            <div class="title">
-              {{ store.state.playlist.playlist.name }}
-            </div>
-            <div class="description">
-              {{ store.state.playlist.playlist.description }}
-            </div>
+            <div class="title">{{ playlistStore.playlist.name }}</div>
+            <div class="description">{{ playlistStore.playlist.description }}</div>
             <div>
-              {{ store.state.playlist.playlist.owner.display_name }} ·
-              {{ store.state.playlist.playlist.tracks.total }} Morceaux ·
-              {{ timecodeWithUnits(sumDuration(store.state.playlist.tracks)) }}
+              {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} Morceaux ·
+              {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}
             </div>
           </div>
         </div>
 
         <div class="playlist-header__right">
-          <button class="button button--nude">
-            <i class="icon-share"></i>
-          </button>
-          <button class="button button--nude" @click="deletePlaylist(store.state.playlist.playlist.id)">
+          <button class="button button--nude"><i class="icon-share"></i></button>
+          <button class="button button--nude" @click="deletePlaylist(playlistStore.playlist.id)">
             <i class="icon-more-vertical"></i>
           </button>
         </div>
       </div>
       <div
-        v-for="(track, index) in store.state.playlist.tracks"
+        v-for="(track, index) in playlistStore.tracks"
         :key="index"
         class="track"
         :class="{
@@ -43,7 +34,7 @@
         @click="
           playSongs(
             index,
-            store.state.playlist.tracks.map((e) => e.track),
+            playlistStore.tracks.map((e) => e.track),
           )
         "
       >
@@ -74,51 +65,40 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script lang="ts" setup>
+import { defineProps, ref } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { timecode, timecodeWithUnits } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
-import { PlaylistActions, Mutations } from "./PlaylistStore";
 import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { api } from "../../api";
 import router from "../../router";
 import { useDialog } from "../../components/dialog/DialogStore";
 import ArtistList from "../../components/ArtistList.vue";
+import { usePlaylist } from "./PlaylistStore";
 
-export default defineComponent({
-  components: { ArtistList, Cover },
-  props: {
-    id: { default: "", type: String },
-  },
-  setup(props) {
-    const store = useStore<RootState>();
-    const playlistpage = ref();
-    const dialogStore = useDialog();
+const props = defineProps<{ id: string }>();
+const store = useStore<RootState>();
+const playlistpage = ref();
+const dialogStore = useDialog();
+const playlistStore = usePlaylist();
 
-    function deletePlaylist(playlistId: string): void {
-      dialogStore.open({ type: "editPlaylist", playlistId });
-    }
+function deletePlaylist(playlistId: string): void {
+  dialogStore.open({ type: "editPlaylist", playlistId });
+}
 
-    function goAlbum(albumId: string): void {
-      router.push(`/album/${albumId}`);
-    }
+function goAlbum(albumId: string): void {
+  router.push(`/album/${albumId}`);
+}
 
-    function sumDuration(tracks: PlaylistTrack[]): number {
-      return tracks
-        .map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0))
-        .reduce((acc, value) => acc + value, 0);
-    }
+function sumDuration(tracks: PlaylistTrack[]): number {
+  return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
+}
 
-    store.dispatch(PlaylistActions.getPlaylist, `${api.url}playlists/${props.id}`);
-    store.dispatch(PlaylistActions.getTracks, `${api.url}playlists/${props.id}/tracks`);
-    store.commit(Mutations.CLEAN_TRACKS);
-
-    return { playlistpage, store, timecode, timecodeWithUnits, playSongs, sumDuration, deletePlaylist, goAlbum };
-  },
-});
+playlistStore.getPlaylist(`${api.url}playlists/${props.id}`);
+playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
 </script>
 
 <style lang="scss" scoped>

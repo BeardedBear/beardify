@@ -19,7 +19,7 @@
 
 <script lang="ts" setup>
 import Cover from "../../components/Cover.vue";
-import { useArtist } from "./ArtistPinia";
+import { useArtist } from "./ArtistStore";
 
 const artistStore = useArtist();
 </script>
