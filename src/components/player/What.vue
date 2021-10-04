@@ -21,8 +21,8 @@
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
-import ArtistList from "../ArtistList.vue";
 import Cover from "../Cover.vue";
+import ArtistList from "../ArtistList.vue";
 
 export default defineComponent({
   components: { ArtistList, Cover },

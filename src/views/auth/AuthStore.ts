@@ -60,7 +60,7 @@ export const useAuth = defineStore("auth", {
     getMe(token: string) {
       axios.get<Me>(`${api.url}me`, { headers: { Authorization: `Bearer ${token}` } }).then((p) => {
         this.me = p.data;
-        router.push("/");
+        router.go(1);
       });
     },
 

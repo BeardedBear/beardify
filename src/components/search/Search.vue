@@ -76,8 +76,8 @@ import { ref } from "vue";
 import { playSong } from "../../helpers/play";
 import { useSearch } from "./SearchStore";
 import Cover from "../Cover.vue";
-import ArtistList from "../../components/ArtistList.vue";
 import { onClickOutside } from "@vueuse/core";
+import ArtistList from "../../components/ArtistList.vue";
 
 const searchStore = useSearch();
 const query = ref("");

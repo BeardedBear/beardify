@@ -45,7 +45,7 @@ const mutations: MutationTree<ArtistPage> = {
   },
 
   [Mutations.SET_ALBUMS](state, data: AlbumSimplified[]): void {
-    state.albums = data;
+    state.albums = state.albums.concat(data);
   },
 
   [Mutations.SET_SINGLES](state, data: AlbumSimplified[]): void {
@@ -105,7 +105,14 @@ const actions: ActionTree<ArtistPage, RootState> = {
   [ArtistActions.getAlbums](store, artistId: string): void {
     instance()
       .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=album&limit=50`)
-      .then((e) => store.commit(Mutations.SET_ALBUMS, removeDuplicatesAlbums(e.data.items)));
+      .then((e) => {
+        store.commit(Mutations.SET_ALBUMS, removeDuplicatesAlbums(e.data.items));
+        if (e.data.next !== "") {
+          instance()
+            .get<Paging<AlbumSimplified>>(e.data.next)
+            .then((e) => store.commit(Mutations.SET_ALBUMS, removeDuplicatesAlbums(e.data.items)));
+        }
+      });
   },
 
   [ArtistActions.getSingles](store, artistId: string): void {
@@ -117,14 +124,6 @@ const actions: ActionTree<ArtistPage, RootState> = {
         const onlyEps = e.data.items.filter((e) => e.total_tracks >= minimumNumberOfTracks);
         store.commit(Mutations.SET_SINGLES, removeDuplicatesAlbums(onlySingles));
         store.commit(Mutations.SET_EPS, removeDuplicatesAlbums(onlyEps));
-      });
-  },
-
-  [ArtistActions.getRelatedArtists](store, artistId: string): void {
-    instance()
-      .get<RelatedArtists>(`artists/${artistId}/related-artists`)
-      .then((e) => {
-        store.commit(Mutations.SET_RELATED_ARTISTS, e.data.artists);
       });
   },
 

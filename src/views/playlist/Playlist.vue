@@ -83,10 +83,10 @@ import { playSongs } from "../../helpers/play";
 import { PlaylistActions, Mutations } from "./PlaylistStore";
 import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
-import ArtistList from "../../components/ArtistList.vue";
 import { api } from "../../api";
 import router from "../../router";
 import { useDialog } from "../../components/dialog/DialogStore";
+import ArtistList from "../../components/ArtistList.vue";
 
 export default defineComponent({
   components: { ArtistList, Cover },

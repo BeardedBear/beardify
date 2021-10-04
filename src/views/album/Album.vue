@@ -47,10 +47,10 @@ import { useStore } from "vuex";
 import { RootState } from "../../@types/RootState";
 import { timecodeWithUnits, timecode } from "../../helpers/date";
 import { AlbumActions } from "./AlbumStore";
-import ArtistList from "../../components/ArtistList.vue";
 import { playSongs } from "../../helpers/play";
 import { Track, TrackSimplified } from "../../@types/Track";
 import Album from "../../components/Album.vue";
+import ArtistList from "../../components/ArtistList.vue";
 
 export default defineComponent({
   components: { Album, ArtistList },

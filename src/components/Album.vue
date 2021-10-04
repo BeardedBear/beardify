@@ -42,13 +42,13 @@ import { RootState } from "../@types/RootState";
 import { instance } from "../api";
 import router from "../router";
 import Cover from "./Cover.vue";
-import ArtistList from "./ArtistList.vue";
 import { Paging } from "../@types/Paging";
 import { TrackSimplified, TrackToRemove } from "../@types/Track";
 import { useRoute } from "vue-router";
 import { Mutations as PlaylistMutation } from "../views/playlist/PlaylistStore";
 import { useDialog } from "./dialog/DialogStore";
 import { defaultAlbumSimplified } from "../@types/Defaults";
+import ArtistList from "./ArtistList.vue";
 
 const props = defineProps({
   album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified | Album> },
