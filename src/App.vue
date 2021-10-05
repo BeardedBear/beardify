@@ -1,19 +1,16 @@
 <template>
-  <template v-if="appStore.loading"><Loader /></template>
-  <template v-else>
-    <Dialog />
-    <Topbar />
-    <div id="app__content">
-      <Sidebar />
-      <router-view v-slot="{ Component }" :key="$route.fullPath">
-        <transition name="scale" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
-    </div>
-    <Player key="player" />
-    <Notification />
-  </template>
+  <Dialog />
+  <Topbar />
+  <div id="app__content">
+    <Sidebar />
+    <router-view v-slot="{ Component }" :key="$route.fullPath">
+      <transition name="scale" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+  </div>
+  <Player key="player" />
+  <Notification />
 </template>
 
 <script lang="ts" setup>
@@ -31,8 +28,6 @@ import { useAuth } from "./views/auth/AuthStore";
 import { useConfig } from "./components/config/ConfigStore";
 import { Storage } from "./@types/Storage";
 import { useSidebar } from "./components/sidebar/SidebarStore";
-import { useApp } from "./AppStore";
-import Loader from "./components/Loader.vue";
 import { usePlayer } from "./components/player/PlayerStore";
 
 const authStore = useAuth();
@@ -40,7 +35,6 @@ const configStore = useConfig();
 const sidebarStore = useSidebar();
 const storageLabel = "beardifyPinia";
 const localS = localStorage.getItem(storageLabel);
-const appStore = useApp();
 const playerStore = usePlayer();
 
 onBeforeMount(() => (localS ? authStore.refresh() : router.push(RouteName.Login)));

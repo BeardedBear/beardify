@@ -7,7 +7,6 @@ import { defaultMe } from "../../@types/Defaults";
 import { Me } from "../../@types/Me";
 import { Storage } from "../../@types/Storage";
 import { api } from "../../api";
-import { useApp } from "../../AppStore";
 import router from "../../router";
 
 export const useAuth = defineStore("auth", {
@@ -37,7 +36,6 @@ export const useAuth = defineStore("auth", {
 
     async refresh() {
       const storage: Storage = JSON.parse(localStorage.getItem("beardifyPinia") || "");
-      const appStore = useApp();
 
       axios
         .post<string, AxiosResponse<AuthAPIResponse>>(
@@ -53,7 +51,6 @@ export const useAuth = defineStore("auth", {
           this.refreshToken = res.data.refresh_token;
           this.getMe(res.data.access_token);
         })
-        .then(() => appStore.setLoading(false))
         .catch((err) => console.error("From refresh token", err));
     },
 
