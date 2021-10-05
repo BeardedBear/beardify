@@ -6,7 +6,8 @@
     "serve": "vite",
     "lint": "vue-tsc --noEmit && prettier --c ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss}",
     "build": "yarn lint && vite build",
-    "fix": "prettier --write ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss} --fix"
+    "fix": "prettier --write ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss} --fix",
+    "preview": "yarn build && yarn vite preview"
   },
   "dependencies": {
     "@vueuse/core": "^6.5.3",

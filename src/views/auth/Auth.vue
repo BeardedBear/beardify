@@ -10,7 +10,6 @@ const props = defineProps({
   },
 });
 
-console.log("props.query", props.query);
 const authStore = useAuth();
 
 authStore.authentification(props.query);

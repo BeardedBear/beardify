@@ -1,7 +1,10 @@
+import { useAuth } from "./views/auth/AuthStore";
+
 window.onSpotifyWebPlaybackSDKReady = (): void => {
+  const authStore = useAuth();
   const player = new Spotify.Player({
     name: "Beardify",
-    getOAuthToken: (cb): void => cb(JSON.parse(localStorage.getItem("beardifyPinia") || "").auth.accessToken),
+    getOAuthToken: (cb): void => cb(authStore.accessToken),
     volume: 1,
   });
 

@@ -2,10 +2,7 @@ import { Me } from "./Me";
 
 export interface Auth {
   accessToken: string;
-  refreshToken: string;
   code: string;
-  codeVerifier: string;
-  codeChallenge: string;
   me: Me | null;
 }
 

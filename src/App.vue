@@ -14,7 +14,6 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, watch, onMounted } from "vue";
 import Topbar from "./components/Topbar.vue";
 import Player from "./components/player/Player.vue";
 import { api, instance } from "./api";
@@ -25,33 +24,27 @@ import router, { RouteName } from "./router";
 import { ErrorType } from "./@types/Error";
 import Notification from "./components/notification/Notification.vue";
 import { useAuth } from "./views/auth/AuthStore";
-import { useConfig } from "./components/config/ConfigStore";
-import { Storage } from "./@types/Storage";
 import { useSidebar } from "./components/sidebar/SidebarStore";
 import { usePlayer } from "./components/player/PlayerStore";
 
 const authStore = useAuth();
-const configStore = useConfig();
 const sidebarStore = useSidebar();
-const storageLabel = "beardifyPinia";
-const localS = localStorage.getItem(storageLabel);
 const playerStore = usePlayer();
 
-onBeforeMount(() => (localS ? authStore.refresh() : router.push(RouteName.Login)));
+// onBeforeMount(() => (localS ? authStore.refresh() : router.push(RouteName.Login)));
 
-onMounted(() => {
-  if (localS) {
-    const storage: Storage = JSON.parse(localS || "");
-    configStore.switchTheme(storage.config.themeLabel);
-    configStore.switchScheme(storage.config.schemeLabel);
-  } else {
-    localStorage.setItem(storageLabel, JSON.stringify({}));
-  }
-});
+authStore.refresh();
+// onMounted(() => {
+//   if (localS) {
+//     const storage: Storage = JSON.parse(localS || "");
+//     configStore.switchTheme(storage.config.themeLabel);
+//     configStore.switchScheme(storage.config.schemeLabel);
+//   }
+// });
 
-watch([authStore, configStore], ([auth, config]) => {
-  localStorage.setItem(storageLabel, JSON.stringify({ auth, config }));
-});
+// watch([authStore, configStore], ([auth, config]) => {
+//   localStorage.setItem(storageLabel, JSON.stringify({ auth, config }));
+// });
 
 KeyboardEvents();
 
