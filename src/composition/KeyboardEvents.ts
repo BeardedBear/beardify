@@ -1,4 +1,4 @@
-import { usePlayer } from "../components/player/PlayerPinia";
+import { usePlayer } from "../components/player/PlayerStore";
 
 export default (): void => {
   const playerStore = usePlayer();

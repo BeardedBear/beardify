@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { ref, defineComponent, watchEffect } from "vue";
-import { usePlayer } from "./PlayerPinia";
+import { usePlayer } from "./PlayerStore";
 
 export default defineComponent({
   setup() {

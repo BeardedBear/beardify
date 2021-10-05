@@ -76,7 +76,7 @@ import router from "../../router";
 import { useDialog } from "../../components/dialog/DialogStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { usePlaylist } from "./PlaylistStore";
-import { usePlayer } from "../../components/player/PlayerPinia";
+import { usePlayer } from "../../components/player/PlayerStore";
 
 const props = defineProps<{ id: string }>();
 const playlistpage = ref();

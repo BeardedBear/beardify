@@ -24,7 +24,7 @@ import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import Cover from "../../components/Cover.vue";
 import { useArtist } from "./ArtistStore";
-import { usePlayer } from "../../components/player/PlayerPinia";
+import { usePlayer } from "../../components/player/PlayerStore";
 
 const artistStore = useArtist();
 const playerStore = usePlayer();

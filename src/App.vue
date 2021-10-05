@@ -33,7 +33,7 @@ import { Storage } from "./@types/Storage";
 import { useSidebar } from "./components/sidebar/SidebarStore";
 import { useApp } from "./AppStore";
 import Loader from "./components/Loader.vue";
-import { usePlayer } from "./components/player/PlayerPinia";
+import { usePlayer } from "./components/player/PlayerStore";
 
 const authStore = useAuth();
 const configStore = useConfig();
@@ -70,7 +70,6 @@ async function getPlayerStatus(): Promise<void> {
 }
 
 playerStore.getDeviceList();
-// store.dispatch(AuthActions.refresh);
 
 // Keep app active
 setInterval(() => {

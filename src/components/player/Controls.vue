@@ -36,7 +36,7 @@
 import { defineComponent } from "vue";
 import { instance } from "../../api";
 import { timecode } from "../../helpers/date";
-import { usePlayer } from "./PlayerPinia";
+import { usePlayer } from "./PlayerStore";
 
 export default defineComponent({
   setup() {

@@ -21,7 +21,7 @@
 import { defineComponent } from "vue";
 import Cover from "../Cover.vue";
 import ArtistList from "../ArtistList.vue";
-import { usePlayer } from "./PlayerPinia";
+import { usePlayer } from "./PlayerStore";
 
 export default defineComponent({
   components: { ArtistList, Cover },

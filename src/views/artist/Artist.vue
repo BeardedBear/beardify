@@ -44,7 +44,7 @@ import RelatedArtists from "./RelatedArtists.vue";
 import Album from "../../components/Album.vue";
 import ArtistHeader from "./ArtistHeader.vue";
 import TopTracks from "./TopTracks.vue";
-import { usePlayer } from "../../components/player/PlayerPinia";
+import { usePlayer } from "../../components/player/PlayerStore";
 
 const props = defineProps<{
   id: string;

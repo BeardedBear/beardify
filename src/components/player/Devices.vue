@@ -22,7 +22,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Device } from "../../@types/Device";
-import { usePlayer } from "./PlayerPinia";
+import { usePlayer } from "./PlayerStore";
 
 export default defineComponent({
   setup() {

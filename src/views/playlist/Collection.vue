@@ -42,7 +42,7 @@ import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { api } from "../../api";
 import { useDialog } from "../../components/dialog/DialogStore";
 import { usePlaylist } from "./PlaylistStore";
-import { usePlayer } from "../../components/player/PlayerPinia";
+import { usePlayer } from "../../components/player/PlayerStore";
 
 const props = defineProps<{ id: string }>();
 const playlistpage = ref();

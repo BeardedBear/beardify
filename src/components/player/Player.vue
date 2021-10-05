@@ -22,7 +22,7 @@ import What from "./What.vue";
 import PlayerLoading from "./PlayerLoading.vue";
 import Controls from "./Controls.vue";
 import { useTitle } from "@vueuse/core";
-import { usePlayer } from "./PlayerPinia";
+import { usePlayer } from "./PlayerStore";
 
 export default defineComponent({
   components: { Controls, SeekBar, Volume, Devices, What, PlayerLoading },

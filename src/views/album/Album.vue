@@ -49,7 +49,7 @@ import { Track, TrackSimplified } from "../../@types/Track";
 import ArtistList from "../../components/ArtistList.vue";
 import Album from "../../components/Album.vue";
 import { useAlbum } from "./AlbumStore";
-import { usePlayer } from "../../components/player/PlayerPinia";
+import { usePlayer } from "../../components/player/PlayerStore";
 
 const props = defineProps({
   id: { default: "", type: String },
