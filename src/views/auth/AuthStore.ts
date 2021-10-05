@@ -27,9 +27,11 @@ export const useAuth = defineStore("auth", {
         codeChallenge: string;
       } = create();
 
-      useStorage("beardifyPinia", { auth: this.$state });
+      console.log("code", code);
+
       this.codeChallenge = code.codeChallenge;
       this.codeVerifier = code.codeVerifier;
+      useStorage("beardifyPinia", { auth: this.$state });
     },
 
     resetLogin() {
