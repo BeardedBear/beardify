@@ -1,5 +1,6 @@
 <template>
-  <div ref="albumpage" class="album-page">
+  <div v-if="albumStore.album.name === ''" class="loader"><Loader /></div>
+  <div v-else ref="albumpage" class="album-page">
     <div class="album-header">
       <div class="title">
         {{ albumStore.album.name }}
@@ -42,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, onMounted, ref } from "vue";
+import { defineProps, watch, ref } from "vue";
 import { timecodeWithUnits, timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import { Track, TrackSimplified } from "../../@types/Track";
@@ -50,6 +51,8 @@ import ArtistList from "../../components/ArtistList.vue";
 import Album from "../../components/Album.vue";
 import { useAlbum } from "./AlbumStore";
 import { usePlayer } from "../../components/player/PlayerStore";
+import { useAuth } from "../auth/AuthStore";
+import Loader from "../../components/Loader.vue";
 
 const props = defineProps({
   id: { default: "", type: String },
@@ -57,11 +60,17 @@ const props = defineProps({
 const albumpage = ref();
 const albumStore = useAlbum();
 const playerStore = usePlayer();
+const authStore = useAuth();
 
 function sumDuration(tracks: TrackSimplified[] | Track[]): number {
   return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
 }
-onMounted(() => albumStore.getAlbum(props.id));
+
+function getData(): void {
+  albumStore.getAlbum(props.id);
+}
+
+authStore.accessToken ? getData() : watch(authStore, () => getData());
 </script>
 
 <style lang="scss" scoped>
@@ -120,5 +129,10 @@ onMounted(() => albumStore.getAlbum(props.id));
   overflow-y: scroll;
   padding: 30px 40px;
   scroll-behavior: smooth;
+}
+
+.loader {
+  display: grid;
+  place-content: center;
 }
 </style>

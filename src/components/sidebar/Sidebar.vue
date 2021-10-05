@@ -46,7 +46,6 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
-import { api } from "../../api";
 import Loader from "../Loader.vue";
 import { useDialog } from "../dialog/DialogStore";
 import { useSidebar } from "./SidebarStore";
@@ -55,8 +54,6 @@ const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const collections = computed(() => sidebarStore.playlists.filter((p) => p.name.toLowerCase().includes("#collection")));
 const playlists = computed(() => sidebarStore.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")));
-
-sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
 </script>
 
 <style lang="scss" scoped>

@@ -21,7 +21,6 @@ import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
 import KeyboardEvents from "./composition/KeyboardEvents";
 import router, { RouteName } from "./router";
-import { ErrorType } from "./@types/Error";
 import Notification from "./components/notification/Notification.vue";
 import { useAuth } from "./views/auth/AuthStore";
 import { useSidebar } from "./components/sidebar/SidebarStore";
@@ -33,7 +32,6 @@ const playerStore = usePlayer();
 
 // onBeforeMount(() => (localS ? authStore.refresh() : router.push(RouteName.Login)));
 
-authStore.refresh();
 // onMounted(() => {
 //   if (localS) {
 //     const storage: Storage = JSON.parse(localS || "");
@@ -46,27 +44,20 @@ authStore.refresh();
 //   localStorage.setItem(storageLabel, JSON.stringify({ auth, config }));
 // });
 
-KeyboardEvents();
-
 async function getPlayerStatus(): Promise<void> {
-  if (!sidebarStore.playlists.length) {
-    sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
-  }
-  if (!playerStore.devices.list.length) {
-    playerStore.getDeviceList();
-  }
+  if (!sidebarStore.playlists.length) sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
+  if (!playerStore.devices.list.length) playerStore.getDeviceList();
   playerStore.getPlayerState();
 }
 
-playerStore.getDeviceList();
+KeyboardEvents();
+authStore.refresh();
 
 // Keep app active
 setInterval(() => {
   playerStore.getDeviceList();
-  if (!playerStore.currentlyPlaying.is_playing) {
-    playerStore.setDevice(playerStore.devices.activeDevice);
-  }
-  // store.dispatch(AuthActions.refresh);
+  if (!playerStore.currentlyPlaying.is_playing) playerStore.setDevice(playerStore.devices.activeDevice);
+  authStore.refresh();
 }, 120000);
 
 addEventListener("focus", () => {
@@ -82,13 +73,7 @@ setInterval(() => {
 
 addEventListener("initdevice", ((e: CustomEvent) => {
   if (playerStore.devices.list.filter((d) => d.is_active).length === 0) {
-    instance()
-      .put("me/player", { device_ids: [e.detail.thisDevice] })
-      .catch((err: Error) => {
-        if (err.message === ErrorType.DeviceNotInitialized) {
-          // localStorage.removeItem("beardify");
-        }
-      });
+    instance().put("me/player", { device_ids: [e.detail.thisDevice] });
   }
   playerStore.thisDevice(e.detail.thisDevice);
 }) as { (): void });

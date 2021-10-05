@@ -1,5 +1,6 @@
 <template>
-  <div ref="playlistpage" class="playlist-page">
+  <div v-if="playlistStore.playlist.name === ''" class="loader"><Loader /></div>
+  <div v-else ref="playlistpage" class="playlist-page">
     <div class="fit">
       <div class="playlist-header">
         <div class="playlist-header__left">
@@ -66,7 +67,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref } from "vue";
+import { defineProps, ref, watch } from "vue";
 import { timecode, timecodeWithUnits } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import Cover from "../../components/Cover.vue";
@@ -77,12 +78,15 @@ import { useDialog } from "../../components/dialog/DialogStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";
+import { useAuth } from "../auth/AuthStore";
+import Loader from "../../components/Loader.vue";
 
 const props = defineProps<{ id: string }>();
 const playlistpage = ref();
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
 const playerStore = usePlayer();
+const authStore = useAuth();
 
 function deletePlaylist(playlistId: string): void {
   dialogStore.open({ type: "editPlaylist", playlistId });
@@ -96,8 +100,12 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
 }
 
-playlistStore.getPlaylist(`${api.url}playlists/${props.id}`);
-playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
+function getData(): void {
+  playlistStore.getPlaylist(`${api.url}playlists/${props.id}`);
+  playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
+}
+
+authStore.accessToken ? getData() : watch(authStore, () => getData());
 </script>
 
 <style lang="scss" scoped>
@@ -199,5 +207,10 @@ playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
 .fit {
   margin: 0 auto;
   max-width: 1000px;
+}
+
+.loader {
+  display: grid;
+  place-content: center;
 }
 </style>

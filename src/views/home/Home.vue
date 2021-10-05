@@ -1,5 +1,6 @@
 <template>
-  <div class="home">
+  <div v-if="!homeStore.recommendedAlbums.length" class="loader"><Loader /></div>
+  <div v-else class="home">
     <div class="home__content">
       <div class="fit">
         <h1>Albums recommandés</h1>
@@ -13,11 +14,19 @@
 
 <script lang="ts" setup>
 import Album from "../../components/Album.vue";
+import { useAuth } from "../auth/AuthStore";
 import { useHome } from "./HomeStore";
+import { watch } from "vue";
+import Loader from "../../components/Loader.vue";
 
 const homeStore = useHome();
+const authStore = useAuth();
 
-homeStore.getRecommendedAlbums();
+function getData(): void {
+  homeStore.getRecommendedAlbums();
+}
+
+authStore.accessToken ? getData() : watch(authStore, () => getData());
 </script>
 
 <style lang="scss" scoped>
@@ -41,5 +50,9 @@ homeStore.getRecommendedAlbums();
 .fit {
   margin: 0 auto;
   max-width: 900px;
+}
+.loader {
+  display: grid;
+  place-content: center;
 }
 </style>

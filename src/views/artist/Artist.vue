@@ -1,5 +1,6 @@
 <template>
-  <div ref="domArtistpage" class="artist-page">
+  <div v-if="artistStore.artist.name === ''" class="loader"><Loader /></div>
+  <div v-else ref="domArtistpage" class="artist-page">
     <ArtistHeader ref="domHead" :scrolled-head="scrolledHead" />
     <div class="content">
       <div class="list">
@@ -37,7 +38,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, onMounted, ref } from "vue";
+import { defineProps, onMounted, ref, watch } from "vue";
 import { templateRef, useEventListener } from "@vueuse/core";
 import { useArtist } from "./ArtistStore";
 import RelatedArtists from "./RelatedArtists.vue";
@@ -45,6 +46,8 @@ import Album from "../../components/Album.vue";
 import ArtistHeader from "./ArtistHeader.vue";
 import TopTracks from "./TopTracks.vue";
 import { usePlayer } from "../../components/player/PlayerStore";
+import { useAuth } from "../auth/AuthStore";
+import Loader from "../../components/Loader.vue";
 
 const props = defineProps<{
   id: string;
@@ -53,8 +56,9 @@ const domArtistpage = templateRef("domArtistpage");
 const scrolledHead = ref(false);
 const artistStore = useArtist();
 const playerStore = usePlayer();
+const authStore = useAuth();
 
-onMounted(() => {
+function getData(): void {
   artistStore.getArtist(props.id);
   artistStore.getTopTracks(props.id);
   artistStore.getAlbums(props.id);
@@ -62,9 +66,12 @@ onMounted(() => {
   artistStore.getSingles(props.id);
   artistStore.getTopTracks(props.id);
   artistStore.getFollowStatus(props.id);
+}
 
+authStore.accessToken ? getData() : watch(authStore, () => getData());
+
+onMounted(() => {
   domArtistpage.value ? (domArtistpage.value.scrollTop = 0) : null;
-
   useEventListener(domArtistpage.value, "scroll", () => {
     scrolledHead.value = domArtistpage.value ? domArtistpage.value.scrollTop > 50 : false;
   });
@@ -165,5 +172,10 @@ onMounted(() => {
   @include xl {
     display: none;
   }
+}
+
+.loader {
+  display: grid;
+  place-content: center;
 }
 </style>

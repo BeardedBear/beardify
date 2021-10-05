@@ -1,5 +1,6 @@
 <template>
-  <div ref="playlistpage" class="playlist-page">
+  <div v-if="playlistStore.playlist.name === ''" class="loader"><Loader /></div>
+  <div v-else ref="playlistpage" class="playlist-page">
     <div class="fit">
       <div class="playlist-header">
         <div>
@@ -36,13 +37,15 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineProps, ref } from "vue";
+import { computed, defineProps, ref, watch } from "vue";
 import Album from "../../components/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { api } from "../../api";
 import { useDialog } from "../../components/dialog/DialogStore";
 import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";
+import { useAuth } from "../auth/AuthStore";
+import Loader from "../../components/Loader.vue";
 
 const props = defineProps<{ id: string }>();
 const playlistpage = ref();
@@ -50,12 +53,18 @@ const dialogStore = useDialog();
 const cleanAlbumList = computed(() => removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album)));
 const playlistStore = usePlaylist();
 const playerStore = usePlayer();
+const authStore = useAuth();
 
 function edit(playlistId: string): void {
   dialogStore.open({ type: "editPlaylist", playlistId });
 }
-playlistStore.getPlaylist(`${api.url}playlists/${props.id}`);
-playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
+
+function getData(): void {
+  playlistStore.getPlaylist(`${api.url}playlists/${props.id}`);
+  playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
+}
+
+authStore.accessToken ? getData() : watch(authStore, () => getData());
 </script>
 
 <style lang="scss" scoped>
@@ -109,5 +118,10 @@ playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
 .fit {
   margin: 0 auto;
   max-width: 900px;
+}
+
+.loader {
+  display: grid;
+  place-content: center;
 }
 </style>
