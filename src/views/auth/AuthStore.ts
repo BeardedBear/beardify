@@ -1,3 +1,4 @@
+import { useStorage } from "@vueuse/core";
 import axios, { AxiosResponse } from "axios";
 import formUrlEncoded from "form-urlencoded";
 import { defineStore } from "pinia";
@@ -26,6 +27,7 @@ export const useAuth = defineStore("auth", {
         codeChallenge: string;
       } = create();
 
+      useStorage("beardifyPinia", { auth: this.$state });
       this.codeChallenge = code.codeChallenge;
       this.codeVerifier = code.codeVerifier;
     },

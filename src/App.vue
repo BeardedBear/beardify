@@ -44,16 +44,14 @@ onMounted(() => {
     const storage: Storage = JSON.parse(localS || "");
     configStore.switchTheme(storage.config.themeLabel);
     configStore.switchScheme(storage.config.schemeLabel);
+  } else {
+    localStorage.setItem(storageLabel, JSON.stringify({}));
   }
 });
 
-watch(
-  [authStore, configStore],
-  ([auth, config]) => {
-    localStorage.setItem(storageLabel, JSON.stringify({ auth, config }));
-  },
-  { flush: "post" },
-);
+watch([authStore, configStore], ([auth, config]) => {
+  localStorage.setItem(storageLabel, JSON.stringify({ auth, config }));
+});
 
 KeyboardEvents();
 
