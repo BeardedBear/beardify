@@ -47,9 +47,13 @@ onMounted(() => {
   }
 });
 
-watch([authStore, configStore], ([auth, config]) => {
-  localStorage.setItem(storageLabel, JSON.stringify({ auth, config }));
-});
+watch(
+  [authStore, configStore],
+  ([auth, config]) => {
+    localStorage.setItem(storageLabel, JSON.stringify({ auth, config }));
+  },
+  { flush: "post" },
+);
 
 KeyboardEvents();
 
