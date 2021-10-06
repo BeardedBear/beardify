@@ -74,7 +74,7 @@ export default defineComponent({
 
   .seek {
     animation: popSeek 0.2s ease 0s both;
-    background-color: var(--primary-color-lighter);
+    background-color: rgba(white, 0.2);
     bottom: 0;
     display: none;
     left: 0;

@@ -4,14 +4,14 @@
       <button
         class="controls__btn"
         :class="{ active: playerStore.currentlyPlaying.shuffle_state }"
-        @click="toggleShuffle()"
+        @click="playerStore.toggleShuffle()"
       >
         <i class="icon-shuffle" />
       </button>
       <button
         class="controls__btn"
         :class="{ active: playerStore.currentlyPlaying.repeat_state !== 'off' }"
-        @click="toggleRepeat()"
+        @click="playerStore.toggleRepeat()"
       >
         <i class="icon-repeat" />
       </button>
@@ -32,43 +32,30 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
 import { instance } from "../../api";
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
 
-export default defineComponent({
-  setup() {
-    const playerStore = usePlayer();
+const playerStore = usePlayer();
 
-    function goPlay(): void {
-      instance().put("me/player/play", {
-        device_id: playerStore.devices.activeDevice,
-      });
-    }
+function goPlay(): void {
+  playerStore.currentlyPlaying.is_playing = true;
+  instance().put("me/player/play", {
+    device_id: playerStore.devices.activeDevice,
+  });
+}
 
-    function goNext(): void {
-      instance().post("me/player/next");
-    }
+function goNext(): void {
+  instance().post("me/player/next");
+}
 
-    function goPause(): void {
-      instance().put("me/player/pause", {
-        device_id: playerStore.devices.activeDevice,
-      });
-    }
-
-    function toggleShuffle(): void {
-      playerStore.toggleShuffle();
-    }
-
-    function toggleRepeat(): void {
-      playerStore.toggleRepeat();
-    }
-
-    return { playerStore, goPlay, goNext, goPause, timecode, toggleShuffle, toggleRepeat };
-  },
-});
+function goPause(): void {
+  playerStore.currentlyPlaying.is_playing = false;
+  instance().put("me/player/pause", {
+    device_id: playerStore.devices.activeDevice,
+  });
+}
 </script>
 
 <style lang="scss" scoped>

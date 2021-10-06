@@ -4,7 +4,6 @@ import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
 import { Device, DevicesResponse } from "../../@types/Device";
 import { Player } from "../../@types/Player";
 import { api, instance } from "../../api";
-import router from "../../router";
 
 export const usePlayer = defineStore("player", {
   state: (): Player => ({
@@ -29,34 +28,35 @@ export const usePlayer = defineStore("player", {
     },
 
     setVolume(volume: number) {
-      instance()
-        .put(`me/player/volume?volume_percent=${volume}`)
-        .then(() => (this.devices.activeDevice.volume_percent = volume));
+      this.devices.activeDevice.volume_percent = volume;
+      instance().put(`me/player/volume?volume_percent=${volume}`);
     },
 
-    getPlayerState(customEvent?: CurrentlyPlaying) {
+    getPlayerState() {
       instance()
-        .get(`me/player`)
+        .get<CurrentlyPlaying>(`me/player`)
         .then((e) => {
-          if (e.status === 401) router.push("login");
-          if (customEvent) this.devices.activeDevice = customEvent.device;
+          if (!this.devices.activeDevice.is_active) this.setDevice(e.data.device);
           this.currentlyPlaying = e.data;
-        })
-        .catch((e) => console.error(e));
+        });
     },
 
     toggleShuffle() {
       if (this.currentlyPlaying.shuffle_state) {
+        this.currentlyPlaying.shuffle_state = false;
         instance().put(`${api.url}me/player/shuffle?state=false`);
       } else {
+        this.currentlyPlaying.shuffle_state = true;
         instance().put(`${api.url}me/player/shuffle?state=true`);
       }
     },
 
     toggleRepeat() {
       if (this.currentlyPlaying.repeat_state === "off") {
+        this.currentlyPlaying.repeat_state = "context";
         instance().put(`${api.url}me/player/repeat?state=context`);
       } else {
+        this.currentlyPlaying.repeat_state = "off";
         instance().put(`${api.url}me/player/repeat?state=off`);
       }
     },

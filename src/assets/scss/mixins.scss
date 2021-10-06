@@ -5,11 +5,11 @@
 }
 
 .active {
-  // background-color: var(--primary-color-darker) !important;
+  $test: var(--primary-color-darker);
+  background-color: rgba(74, 75, 103, 0.15);
   color: var(--primary-color) !important;
 
   &:hover {
-    // background-color: var(--primary-color-darker) !important;
     color: var(--primary-color) !important;
   }
 }
