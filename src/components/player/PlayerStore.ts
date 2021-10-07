@@ -19,7 +19,10 @@ export const usePlayer = defineStore("player", {
     getDeviceList() {
       instance()
         .get<DevicesResponse>("me/player/devices")
-        .then(({ data }) => (this.devices.list = data.devices));
+        .then(({ data }) => {
+          this.devices.list = data.devices;
+          if (data.devices.length === 1) this.setDevice(data.devices[0]);
+        });
     },
 
     setDevice(device: Device) {

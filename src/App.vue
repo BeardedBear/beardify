@@ -25,6 +25,7 @@ import Notification from "./components/notification/Notification.vue";
 import { useAuth } from "./views/auth/AuthStore";
 import { useSidebar } from "./components/sidebar/SidebarStore";
 import { usePlayer } from "./components/player/PlayerStore";
+import { useWindowFocus } from "@vueuse/core";
 
 const authStore = useAuth();
 const sidebarStore = useSidebar();
@@ -60,10 +61,10 @@ setInterval(() => {
   authStore.refresh();
 }, 120000);
 
-addEventListener("focus", () => {
+if (useWindowFocus()) {
   playerStore.getDeviceList();
   getPlayerStatus();
-});
+}
 
 setInterval(() => {
   if (document.hasFocus() && router.currentRoute.value.path !== RouteName.Login) {
