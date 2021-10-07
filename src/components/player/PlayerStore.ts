@@ -17,11 +17,12 @@ export const usePlayer = defineStore("player", {
 
   actions: {
     getDeviceList() {
+      const playerStore = usePlayer();
       instance()
         .get<DevicesResponse>("me/player/devices")
         .then(({ data }) => {
           this.devices.list = data.devices;
-          if (data.devices.length === 1) this.setDevice(data.devices[0]);
+          if (data.devices.length === 1 && !playerStore.currentlyPlaying.is_playing) this.setDevice(data.devices[0]);
         });
     },
 
