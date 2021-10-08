@@ -13,6 +13,10 @@ export const useHome = defineStore("home", {
   }),
 
   actions: {
+    async clean() {
+      this.recommendedAlbums = [];
+    },
+
     getRecommendedAlbums() {
       interface Top {
         seed: unknown;

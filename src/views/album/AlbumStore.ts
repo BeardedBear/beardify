@@ -9,6 +9,10 @@ export const useAlbum = defineStore("album", {
   }),
 
   actions: {
+    async clean() {
+      this.album = defaultAlbum;
+    },
+
     getAlbum(albumId: string) {
       instance()
         .get(`albums/${albumId}`)

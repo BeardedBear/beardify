@@ -59,13 +59,15 @@ const playerStore = usePlayer();
 const authStore = useAuth();
 
 function getData(): void {
-  artistStore.getArtist(props.id);
-  artistStore.getTopTracks(props.id);
-  artistStore.getAlbums(props.id);
-  artistStore.getRelatedArtists(props.id);
-  artistStore.getSingles(props.id);
-  artistStore.getTopTracks(props.id);
-  artistStore.getFollowStatus(props.id);
+  artistStore.clean().finally(() => {
+    artistStore.getArtist(props.id);
+    artistStore.getTopTracks(props.id);
+    artistStore.getAlbums(props.id);
+    artistStore.getRelatedArtists(props.id);
+    artistStore.getSingles(props.id);
+    artistStore.getTopTracks(props.id);
+    artistStore.getFollowStatus(props.id);
+  });
 }
 
 authStore.accessToken ? getData() : watch(authStore, () => getData());

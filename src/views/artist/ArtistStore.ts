@@ -9,19 +9,25 @@ import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 export const useArtist = defineStore("artist", {
   state: (): ArtistPage => ({
     artist: defaultArtist,
-    topTracks: {
-      tracks: [],
-    },
+    topTracks: { tracks: [] },
     albums: [],
     eps: [],
     singles: [],
-    relatedArtists: {
-      artists: [],
-    },
+    relatedArtists: { artists: [] },
     followStatus: false,
   }),
 
   actions: {
+    async clean() {
+      this.artist = defaultArtist;
+      this.topTracks = { tracks: [] };
+      this.albums = [];
+      this.eps = [];
+      this.singles = [];
+      this.relatedArtists = { artists: [] };
+      this.followStatus = false;
+    },
+
     getArtist(artistId: string) {
       instance()
         .get<Artist>(`artists/${artistId}`)

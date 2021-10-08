@@ -60,8 +60,10 @@ function edit(playlistId: string): void {
 }
 
 function getData(): void {
-  playlistStore.getPlaylist(`${api.url}playlists/${props.id}`);
-  playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
+  playlistStore.clean().finally(() => {
+    playlistStore.getPlaylist(`${api.url}playlists/${props.id}`);
+    playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
+  });
 }
 
 authStore.accessToken ? getData() : watch(authStore, () => getData());

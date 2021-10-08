@@ -67,7 +67,9 @@ function sumDuration(tracks: TrackSimplified[] | Track[]): number {
 }
 
 function getData(): void {
-  albumStore.getAlbum(props.id);
+  albumStore.clean().finally(() => {
+    albumStore.getAlbum(props.id);
+  });
 }
 
 authStore.accessToken ? getData() : watch(authStore, () => getData());

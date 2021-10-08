@@ -23,7 +23,9 @@ const homeStore = useHome();
 const authStore = useAuth();
 
 function getData(): void {
-  homeStore.getRecommendedAlbums();
+  homeStore.clean().finally(() => {
+    homeStore.getRecommendedAlbums();
+  });
 }
 
 authStore.accessToken ? getData() : watch(authStore, () => getData());
