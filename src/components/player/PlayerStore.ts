@@ -21,8 +21,10 @@ export const usePlayer = defineStore("player", {
       instance()
         .get<DevicesResponse>("me/player/devices")
         .then(({ data }) => {
+          const noDeviceActive = data.devices.filter((e) => e.is_active === true).length === 0;
+          const onlyOneDeviceAvailable = data.devices.length === 1;
           this.devices.list = data.devices;
-          if (this.devices.list.length === 1 && !playerStore.currentlyPlaying.is_playing) {
+          if (noDeviceActive && onlyOneDeviceAvailable && !playerStore.currentlyPlaying.is_playing) {
             this.setDevice(data.devices[0]);
           }
         });

@@ -59,11 +59,11 @@ setInterval(() => {
   playerStore.getDeviceList();
   if (!playerStore.currentlyPlaying.is_playing) playerStore.setDevice(playerStore.devices.activeDevice);
   authStore.refresh();
-}, 120000);
+}, 120000); // 2 minutes
 
 if (useWindowFocus()) {
-  playerStore.getDeviceList();
   getPlayerStatus();
+  playerStore.getDeviceList();
 }
 
 setInterval(() => {
