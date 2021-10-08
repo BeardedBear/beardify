@@ -19,13 +19,18 @@ export const usePlaylist = defineStore("playlist", {
     },
 
     getTracks(url: string) {
-      this.tracks = [];
       if (url) {
         instance()
           .get<Paging<PlaylistTrack>>(url)
           .then((e) => {
-            this.tracks = this.tracks.concat(e.data.items.filter((e) => e.track));
-            if (e.data.next !== "") this.getTracks, e.data.next;
+            this.tracks = e.data.items.filter((e) => e.track);
+            if (e.data.next !== "") {
+              instance()
+                .get<Paging<PlaylistTrack>>(e.data.next)
+                .then((f) => {
+                  this.tracks = this.tracks.concat(f.data.items.filter((g) => g.track));
+                });
+            }
           });
       }
     },
