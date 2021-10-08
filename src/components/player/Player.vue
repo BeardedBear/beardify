@@ -13,8 +13,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, watch } from "vue";
+<script lang="ts" setup>
+import { watch } from "vue";
 import SeekBar from "./SeekBar.vue";
 import Volume from "./Volume.vue";
 import Devices from "./Devices.vue";
@@ -24,23 +24,16 @@ import Controls from "./Controls.vue";
 import { useTitle } from "@vueuse/core";
 import { usePlayer } from "./PlayerStore";
 
-export default defineComponent({
-  components: { Controls, SeekBar, Volume, Devices, What, PlayerLoading },
-  setup() {
-    const playerStore = usePlayer();
+const playerStore = usePlayer();
 
-    watch(
-      () => playerStore.currentlyPlaying,
-      () => {
-        useTitle(
-          `${playerStore.currentlyPlaying.item?.album.artists[0].name} - ${playerStore.currentlyPlaying.item?.name}`,
-        );
-      },
+watch(
+  () => playerStore.currentlyPlaying,
+  () => {
+    useTitle(
+      `${playerStore.currentlyPlaying.item?.album.artists[0].name} - ${playerStore.currentlyPlaying.item?.name}`,
     );
-
-    return { playerStore };
   },
-});
+);
 </script>
 
 <style lang="scss" scoped>

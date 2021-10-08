@@ -8,7 +8,7 @@
         type="button"
         class="device button button--x-small"
         :class="{ me: playerStore.thisDeviceId === device.id }"
-        @click="setDevice(device)"
+        @click="playerStore.setDevice(device)"
       >
         {{ device.name }}
       </button>
@@ -16,22 +16,10 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import { Device } from "../../@types/Device";
+<script lang="ts" setup>
 import { usePlayer } from "./PlayerStore";
 
-export default defineComponent({
-  setup() {
-    const playerStore = usePlayer();
-
-    function setDevice(device: Device): void {
-      playerStore.setDevice(device);
-    }
-
-    return { playerStore, setDevice };
-  },
-});
+const playerStore = usePlayer();
 </script>
 
 <style lang="scss" scoped>

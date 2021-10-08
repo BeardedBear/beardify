@@ -7,33 +7,22 @@
   </div>
 </template>
 
-<script lang="ts">
-import { ref, defineComponent, watchEffect } from "vue";
+<script lang="ts" setup>
+import { ref, watchEffect } from "vue";
 import { usePlayer } from "./PlayerStore";
 
-export default defineComponent({
-  setup() {
-    const refVolume = ref();
-    const volume = ref(0);
-    const playerStore = usePlayer();
+const refVolume = ref();
+const volume = ref(0);
+const playerStore = usePlayer();
 
-    function setVolume(): void {
-      playerStore.setVolume(volume.value);
-    }
+function setVolume(): void {
+  playerStore.setVolume(volume.value);
+}
 
-    watchEffect(() => {
-      refVolume.value?.addEventListener("mousemove", (e: MouseEvent) => {
-        volume.value = e.offsetX;
-      });
-    });
-
-    return {
-      playerStore,
-      setVolume,
-      refVolume,
-      volume,
-    };
-  },
+watchEffect(() => {
+  refVolume.value?.addEventListener("mousemove", (e: MouseEvent) => {
+    volume.value = e.offsetX;
+  });
 });
 </script>
 

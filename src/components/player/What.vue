@@ -17,20 +17,12 @@
   <div v-else></div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
 import Cover from "../Cover.vue";
 import ArtistList from "../ArtistList.vue";
 import { usePlayer } from "./PlayerStore";
 
-export default defineComponent({
-  components: { ArtistList, Cover },
-  setup() {
-    const playerStore = usePlayer();
-
-    return { playerStore };
-  },
-});
+const playerStore = usePlayer();
 </script>
 
 <style lang="scss" scoped>

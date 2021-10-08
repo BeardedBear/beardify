@@ -22,7 +22,9 @@ export const usePlayer = defineStore("player", {
         .get<DevicesResponse>("me/player/devices")
         .then(({ data }) => {
           this.devices.list = data.devices;
-          if (data.devices.length === 1 && !playerStore.currentlyPlaying.is_playing) this.setDevice(data.devices[0]);
+          if (this.devices.list.length === 1 && !playerStore.currentlyPlaying.is_playing) {
+            this.setDevice(data.devices[0]);
+          }
         });
     },
 

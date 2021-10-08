@@ -9,36 +9,20 @@
         'button--primary': device.id === playerStore.devices.activeDevice.id,
         me: playerStore.thisDeviceId === device.id,
       }"
-      @click="setDevice(device)"
+      @click="playerStore.setDevice(device)"
     >
       {{ device.name }}
     </button>
-    <button type="button" class="device button button--x-small" @click="refreshDevices()">
+    <button type="button" class="device button button--x-small" @click="playerStore.getDeviceList()">
       <i class="icon-refresh"></i>
     </button>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import { Device } from "../../@types/Device";
+<script lang="ts" setup>
 import { usePlayer } from "./PlayerStore";
 
-export default defineComponent({
-  setup() {
-    const playerStore = usePlayer();
-
-    function setDevice(device: Device): void {
-      playerStore.setDevice(device);
-    }
-
-    function refreshDevices(): void {
-      playerStore.getDeviceList();
-    }
-
-    return { playerStore, setDevice, refreshDevices };
-  },
-});
+const playerStore = usePlayer();
 </script>
 
 <style lang="scss" scoped>
