@@ -80,7 +80,7 @@ import { onClickOutside } from "@vueuse/core";
 import ArtistList from "../../components/ArtistList.vue";
 
 const searchStore = useSearch();
-const query = ref("");
+const query = ref<string>("");
 const result = ref(null);
 
 function reset(): void {
