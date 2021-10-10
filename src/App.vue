@@ -57,7 +57,6 @@ authStore.refresh();
 // Keep app active
 setInterval(() => {
   playerStore.getDeviceList();
-  if (!playerStore.currentlyPlaying.is_playing) playerStore.setDevice(playerStore.devices.activeDevice);
   authStore.refresh();
 }, 120000); // 2 minutes
 

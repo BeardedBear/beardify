@@ -21,10 +21,10 @@ export const usePlayer = defineStore("player", {
       instance()
         .get<DevicesResponse>("me/player/devices")
         .then(({ data }) => {
-          const noDeviceActive = data.devices.filter((e) => e.is_active === true).length === 0;
           const onlyOneDeviceAvailable = data.devices.length === 1;
+
           this.devices.list = data.devices;
-          if (noDeviceActive && onlyOneDeviceAvailable && !playerStore.currentlyPlaying.is_playing) {
+          if (onlyOneDeviceAvailable && !playerStore.currentlyPlaying.is_playing) {
             this.setDevice(data.devices[0]);
           }
         });
@@ -43,10 +43,7 @@ export const usePlayer = defineStore("player", {
     getPlayerState() {
       instance()
         .get<CurrentlyPlaying>(`me/player`)
-        .then((e) => {
-          if (!this.devices.activeDevice.is_active) this.setDevice(e.data.device);
-          this.currentlyPlaying = e.data;
-        });
+        .then((e) => (this.currentlyPlaying = e.data));
     },
 
     toggleShuffle() {

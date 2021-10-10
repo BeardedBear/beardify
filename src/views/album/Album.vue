@@ -1,18 +1,7 @@
 <template>
   <div v-if="albumStore.album.name === ''" class="loader"><Loader /></div>
   <div v-else ref="albumpage" class="album-page">
-    <div class="album-header">
-      <div class="title">
-        {{ albumStore.album.name }}
-      </div>
-      <div>
-        <ArtistList :artist-list="albumStore.album.artists" />
-        ·
-        <span>{{ albumStore.album.release_date.split("-").shift() }}</span>
-        ·
-        <span>{{ timecodeWithUnits(sumDuration(albumStore.album.tracks.items)) }}</span>
-      </div>
-    </div>
+    <Head :album="albumStore.album" />
     <div class="content">
       <div class="content__cover">
         <Album :album="albumStore.album" without-metas can-save />
@@ -44,32 +33,24 @@
 
 <script lang="ts" setup>
 import { defineProps, watch, ref } from "vue";
-import { timecodeWithUnits, timecode } from "../../helpers/date";
+import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
-import { Track, TrackSimplified } from "../../@types/Track";
 import ArtistList from "../../components/ArtistList.vue";
 import Album from "../../components/Album.vue";
 import { useAlbum } from "./AlbumStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import { useAuth } from "../auth/AuthStore";
 import Loader from "../../components/Loader.vue";
+import Head from "./Head.vue";
 
-const props = defineProps({
-  id: { default: "", type: String },
-});
+const props = defineProps({ id: { default: "", type: String } });
 const albumpage = ref();
 const albumStore = useAlbum();
 const playerStore = usePlayer();
 const authStore = useAuth();
 
-function sumDuration(tracks: TrackSimplified[] | Track[]): number {
-  return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
-}
-
 function getData(): void {
-  albumStore.clean().finally(() => {
-    albumStore.getAlbum(props.id);
-  });
+  albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 }
 
 authStore.accessToken ? getData() : watch(authStore, () => getData());
@@ -78,17 +59,6 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
-
-.album-header {
-  margin-bottom: 60px;
-  text-align: center;
-}
-
-.title {
-  font-size: 2rem;
-  font-weight: 100;
-  margin-bottom: 5px;
-}
 
 .cover {
   width: 100%;
