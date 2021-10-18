@@ -26,15 +26,15 @@ const time = ref();
 const playerStore = usePlayer();
 
 watchEffect(() => {
-  progresss.value?.addEventListener("mousemove", (e: MouseEvent) => {
-    const positionInPercent = (e.clientX / progresss.value?.clientWidth) * 100;
+  progresss.value?.addEventListener("mousemove", (event: MouseEvent) => {
+    const positionInPercent = (event.clientX / progresss.value?.clientWidth) * 100;
     const duration = (playerStore.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
     perc.value = positionInPercent;
     time.value = timecode(duration);
   });
 
-  progresss.value?.addEventListener("click", (e: MouseEvent) => {
-    const positionInPercent = (e.clientX / progresss.value?.clientWidth) * 100;
+  progresss.value?.addEventListener("click", (event: MouseEvent) => {
+    const positionInPercent = (event.clientX / progresss.value?.clientWidth) * 100;
     const duration = (playerStore.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
     playerStore.updateProgress(Math.round(duration));
     instance().put(`me/player/seek?position_ms=${Math.round(duration)}`);

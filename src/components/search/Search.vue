@@ -88,8 +88,8 @@ function reset(): void {
 }
 onClickOutside(result, () => reset());
 
-document.addEventListener("keydown", (e: KeyboardEvent) => {
-  if (e.key === "Escape") query.value = "";
+document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
+  if (keyboardEvent.key === "Escape") query.value = "";
 });
 </script>
 

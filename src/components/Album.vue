@@ -71,7 +71,7 @@ function deleteAlbum(albumId: string): void {
 
       instance()
         .delete(`playlists/${currentRouteId}/tracks`, {
-          data: { tracks },
+          data: { tracks: tracks },
         })
         .then(() => playlistStore.removeTracks(tracks));
     });

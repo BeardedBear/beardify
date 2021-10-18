@@ -22,24 +22,3 @@ export function instance(): AxiosInstance {
     },
   });
 }
-
-// on intercepte les requetes pour mettre à jour `Authorization` depuis le refresh token
-// instance().interceptors.request.use(
-//   async (config) => {
-//     console.log("test");
-
-//     const authStore = useAuth();
-//     config.headers = { Authorization: `Bearer ${authStore.auth.accessToken}` };
-//     return config;
-//   },
-//   (error) => Promise.reject(error),
-// );
-
-// instance().interceptors.request.use(
-//   async (config) => {
-//     const authStore = useAuth();
-//     config.headers = { Authorization: `Bearer ${authStore.auth.accessToken}` };
-//     return config;
-//   },
-//   (error) => Promise.reject(error),
-// );

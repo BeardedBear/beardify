@@ -11,6 +11,7 @@
 import { defineProps, PropType } from "vue";
 import { Artist, ArtistSimplified } from "../@types/Artist";
 import router from "../router";
+
 defineProps({
   artistList: {
     default: () => [],

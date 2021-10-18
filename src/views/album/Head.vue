@@ -14,9 +14,16 @@
     </div>
     <div>
       <span v-if="copySpotify.copied.value" class="copied">Copied</span>
+
       <button class="copy button button--nude" @click="copySpotify.copy()">
         <i class="icon-share"></i>
       </button>
+      <a
+        class="button button--nude"
+        @click="openLink(`https://www.google.com/search?q=${album.artists[0].name}+${album.name}`)"
+      >
+        <i class="icon-google" />
+      </a>
     </div>
   </div>
 </template>
@@ -38,6 +45,10 @@ const copySpotify = useClipboard({ source: spotifyUrl });
 
 function sumDuration(tracks: TrackSimplified[] | Track[]): number {
   return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
+}
+
+function openLink(url: string): void {
+  window.open(url, "_blank");
 }
 </script>
 

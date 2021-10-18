@@ -4,9 +4,7 @@
   <div id="app__content">
     <Sidebar />
     <router-view v-slot="{ Component }" :key="$route.fullPath">
-      <transition name="scale" mode="out-in">
-        <component :is="Component" />
-      </transition>
+      <transition name="scale" mode="out-in"><component :is="Component" /></transition>
     </router-view>
   </div>
   <Player key="player" />
@@ -47,7 +45,7 @@ const playerStore = usePlayer();
 
 async function getPlayerStatus(): Promise<void> {
   if (!sidebarStore.playlists.length) sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
-  if (!playerStore.devices.list.length) playerStore.getDeviceList();
+  playerStore.getDeviceList();
   playerStore.getPlayerState();
 }
 
@@ -61,8 +59,10 @@ setInterval(() => {
 }, 120000); // 2 minutes
 
 if (useWindowFocus()) {
-  getPlayerStatus();
-  playerStore.getDeviceList();
+  authStore.refresh().then(() => {
+    getPlayerStatus();
+    playerStore.getDeviceList();
+  });
 }
 
 setInterval(() => {
@@ -143,11 +143,6 @@ body {
   line-height: 1.4;
   min-height: 100vh;
   overflow: hidden;
-
-  @supports (-webkit-touch-callout: none) {
-    height: -webkit-fill-available;
-    min-height: -webkit-fill-available;
-  }
 
   &__content {
     display: grid;
