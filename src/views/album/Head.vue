@@ -14,7 +14,6 @@
     </div>
     <div>
       <span v-if="copySpotify.copied.value" class="copied">Copied</span>
-
       <button class="copy button button--nude" @click="copySpotify.copy()">
         <i class="icon-share"></i>
       </button>
@@ -23,6 +22,12 @@
         @click="openLink(`https://www.google.com/search?q=${album.artists[0].name}+${album.name}`)"
       >
         <i class="icon-google" />
+      </a>
+      <a
+        class="button button--nude"
+        @click="openLink(`https://www.discogs.com/fr/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
+      >
+        <i class="icon-discogs" />
       </a>
     </div>
   </div>

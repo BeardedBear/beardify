@@ -17,8 +17,6 @@ export const usePlayer = defineStore("player", {
 
   actions: {
     getDeviceList() {
-      console.log("getDeviceList");
-
       const playerStore = usePlayer();
       instance()
         .get<DevicesResponse>("me/player/devices")
@@ -27,7 +25,6 @@ export const usePlayer = defineStore("player", {
           const activeDevice = data.devices.find((d) => d.is_active);
 
           this.devices.list = data.devices;
-
           if (data.devices.filter((d) => d.is_active).length && activeDevice) {
             this.setDevice(activeDevice);
           }
@@ -38,12 +35,8 @@ export const usePlayer = defineStore("player", {
     },
 
     setDevice(device: Device) {
-      const playerStore = usePlayer();
-
-      if (!playerStore.devices.activeDevice.id) {
-        this.devices.activeDevice = device;
-        instance().put("me/player", { device_ids: [device.id] });
-      }
+      this.devices.activeDevice = device;
+      instance().put("me/player", { device_ids: [device.id] });
     },
 
     setVolume(volume: number) {

@@ -45,7 +45,7 @@ const playerStore = usePlayer();
 
 async function getPlayerStatus(): Promise<void> {
   if (!sidebarStore.playlists.length) sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
-  playerStore.getDeviceList();
+  if (!playerStore.devices.list.length) playerStore.getDeviceList();
   playerStore.getPlayerState();
 }
 
@@ -59,10 +59,8 @@ setInterval(() => {
 }, 120000); // 2 minutes
 
 if (useWindowFocus()) {
-  authStore.refresh().then(() => {
-    getPlayerStatus();
-    playerStore.getDeviceList();
-  });
+  getPlayerStatus();
+  playerStore.getDeviceList();
 }
 
 setInterval(() => {
