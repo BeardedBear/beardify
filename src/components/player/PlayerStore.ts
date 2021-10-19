@@ -25,7 +25,11 @@ export const usePlayer = defineStore("player", {
           const activeDevice = data.devices.find((d) => d.is_active);
 
           this.devices.list = data.devices;
-          if (data.devices.filter((d) => d.is_active).length && activeDevice) {
+          if (
+            data.devices.filter((d) => d.is_active).length &&
+            activeDevice &&
+            !playerStore.currentlyPlaying.is_playing
+          ) {
             this.setDevice(activeDevice);
           }
           if (onlyOneDeviceAvailable && !playerStore.currentlyPlaying.is_playing) {
