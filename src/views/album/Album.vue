@@ -4,7 +4,12 @@
     <Head :album="albumStore.album" />
     <div class="content">
       <div class="content__cover">
-        <Album :album="albumStore.album" without-metas can-save />
+        <Album
+          :album="albumStore.album"
+          :currently-played-id="playerStore.currentlyPlaying.item?.album.uri"
+          without-metas
+          can-save
+        />
       </div>
       <div class="content__tracks">
         <div

@@ -4,7 +4,7 @@
       <i class="icon-volume-2" />
     </div>
     <div class="cover">
-      <Cover size="medium" :images="album.images" class="img" @click="router.push(`/album/${props.album.id}`)" />
+      <Cover size="medium" :images="album.images" class="img" @click="router.push(`/album/${album.id}`)" />
       <button class="play" type="button" @click="instance().put('me/player/play', { context_uri: album.uri })">
         <i class="icon-play" />
       </button>
@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, PropType } from "vue";
+import { defineProps } from "vue";
 import { Album, AlbumSimplified } from "../@types/Album";
 import { instance } from "../api";
 import router from "../router";
@@ -44,18 +44,17 @@ import { Paging } from "../@types/Paging";
 import { TrackSimplified, TrackToRemove } from "../@types/Track";
 import { useRoute } from "vue-router";
 import { useDialog } from "./dialog/DialogStore";
-import { defaultAlbumSimplified } from "../@types/Defaults";
 import ArtistList from "./ArtistList.vue";
 import { usePlaylist } from "../views/playlist/PlaylistStore";
 
-const props = defineProps({
-  album: { default: defaultAlbumSimplified, type: Object as PropType<AlbumSimplified | Album> },
-  currentlyPlayedId: { default: "", type: String as PropType<string> },
-  withArtists: { default: false, type: Boolean as PropType<boolean> },
-  withoutMetas: { default: false, type: Boolean as PropType<boolean> },
-  canDelete: { default: false, type: Boolean as PropType<boolean> },
-  canSave: { default: false, type: Boolean as PropType<boolean> },
-});
+defineProps<{
+  album: AlbumSimplified | Album;
+  currentlyPlayedId: string;
+  withArtists?: boolean;
+  withoutMetas?: boolean;
+  canDelete?: boolean;
+  canSave?: boolean;
+}>();
 
 const currentRouteId = useRoute().params.id;
 const dialogStore = useDialog();

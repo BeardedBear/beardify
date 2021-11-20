@@ -5,7 +5,13 @@
       <div class="fit">
         <h1>Albums recommandés</h1>
         <div class="album-gallery">
-          <Album v-for="(album, index) in homeStore.recommendedAlbums" :key="index" :album="album" with-artists />
+          <Album
+            v-for="(album, index) in homeStore.recommendedAlbums"
+            :key="index"
+            :currently-played-id="playerStore.currentlyPlaying.item?.album.uri"
+            :album="album"
+            with-artists
+          />
         </div>
       </div>
     </div>
@@ -18,9 +24,11 @@ import { useAuth } from "../auth/AuthStore";
 import { useHome } from "./HomeStore";
 import { watch } from "vue";
 import Loader from "../../components/LoadingDots.vue";
+import { usePlayer } from "../../components/player/PlayerStore";
 
 const homeStore = useHome();
 const authStore = useAuth();
+const playerStore = usePlayer();
 
 function getData(): void {
   homeStore.clean().finally(() => {
