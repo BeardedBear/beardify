@@ -32,8 +32,9 @@ function goArtist(artistUri: string): void {
 @import "../assets/scss/colors";
 
 .separator {
-  opacity: 0.2;
+  opacity: 20%;
 }
+
 .artist {
   color: currentColor;
   cursor: pointer;
@@ -42,12 +43,12 @@ function goArtist(artistUri: string): void {
   &.feat {
     font-size: 0.8rem;
     font-style: italic;
-    opacity: 0.5;
+    opacity: 50%;
   }
 
   &:hover {
     color: var(--primary-color);
-    opacity: 1;
+    opacity: 100%;
   }
 }
 </style>

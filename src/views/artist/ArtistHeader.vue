@@ -117,6 +117,7 @@ function switchFollow(artistId: string): void {
   text-align: center;
   width: 100px;
 }
+
 .header {
   align-items: center;
   background-color: var(--bg-color-darker);
@@ -146,11 +147,11 @@ function switchFollow(artistId: string): void {
       display: flex;
       font-size: 1rem;
       margin-right: 20px;
-      opacity: 0.3;
+      opacity: 30%;
       text-decoration: none;
 
       &:hover {
-        opacity: 1;
+        opacity: 100%;
       }
     }
   }

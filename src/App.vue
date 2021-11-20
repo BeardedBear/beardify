@@ -113,16 +113,17 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: rgb(0 0 0 / 0%);
 }
 
 .scale-enter-active,
 .scale-leave-active {
   transition: all 0.1s ease;
 }
+
 .scale-enter-from,
 .scale-leave-to {
-  opacity: 0;
+  opacity: 0%;
   transform: translateY(-5px);
 }
 
@@ -130,7 +131,7 @@ body {
   background-color: var(--bg-color-darker);
   color: var(--font-color);
   display: grid;
-  font-family: "Quicksand", Helvetica, Arial, sans-serif;
+  font-family: Quicksand, Helvetica, Arial, sans-serif;
   font-size: 0.9rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

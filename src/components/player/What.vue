@@ -40,10 +40,12 @@ const playerStore = usePlayer();
   font-weight: 700;
   text-decoration: none;
 }
+
 .album {
   font-style: italic;
-  opacity: 0.5;
+  opacity: 50%;
 }
+
 .what {
   align-items: center;
   display: flex;

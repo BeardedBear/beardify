@@ -1,7 +1,7 @@
 <template>
   <div ref="refVolume" class="volume" @click="setVolume()">
     <div class="volume__cursor" :style="{ width: playerStore.devices.activeDevice.volume_percent + '%' }" />
-    <div class="volume__hover" :style="{ width: volume + '%' }">
+    <div class="volume-hover" :style="{ width: volume + '%' }">
       <div class="volume__pc">{{ volume + "%" }}</div>
     </div>
   </div>
@@ -61,7 +61,7 @@ watchEffect(() => {
     z-index: 999;
   }
 
-  &__hover {
+  &-hover {
     background-color: var(--primary-color-lighter);
     bottom: 0;
     display: none;
@@ -71,7 +71,7 @@ watchEffect(() => {
   }
 
   &:hover {
-    .volume__hover {
+    .volume-hover {
       display: block;
     }
   }

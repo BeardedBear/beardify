@@ -49,7 +49,7 @@ function add(albumId: string, playlistId: string): void {
 
   i {
     margin-right: 10px;
-    opacity: 0.3;
+    opacity: 30%;
   }
 }
 

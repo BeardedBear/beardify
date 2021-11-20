@@ -32,14 +32,15 @@ const dialogStore = useDialog();
 
 $radius: 4px;
 
-@keyframes popDialog {
+@keyframes pop-dialog {
   from {
-    opacity: 0;
+    opacity: 0%;
   }
 }
-@keyframes popDialogContent {
+
+@keyframes pop-dialog-content {
   from {
-    opacity: 0;
+    opacity: 0%;
     transform: scale(0.9);
   }
 }
@@ -63,12 +64,13 @@ $radius: 4px;
 }
 
 .bg {
-  animation: popDialog 0.2s ease both;
+  animation: pop-dialog 0.2s ease both;
   background-color: var(--bg-color-darker);
   inset: 0;
-  opacity: 0.95;
+  opacity: 95%;
   position: fixed;
 }
+
 .dialog {
   display: grid;
   inset: 0;
@@ -85,8 +87,9 @@ $radius: 4px;
   padding: 15px 25px;
   position: relative;
 }
+
 .dialog-content {
-  animation: popDialogContent 0.2s ease both;
+  animation: pop-dialog-content 0.2s ease both;
   background: var(--bg-color);
   border-radius: $radius;
   display: grid;

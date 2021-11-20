@@ -40,7 +40,7 @@ import Album from "../../components/Album.vue";
 import { useAlbum } from "./AlbumStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import { useAuth } from "../auth/AuthStore";
-import Loader from "../../components/Loader.vue";
+import Loader from "../../components/LoadingDots.vue";
 import Head from "./Head.vue";
 
 const props = defineProps({ id: { default: "", type: String } });
@@ -57,6 +57,7 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
 
@@ -72,12 +73,12 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
   padding: 5px 10px;
 
   &:hover {
-    background-color: rgba(rgb(74, 75, 103), 0.15);
+    background-color: color.change(rgb(74 75 103), $alpha: 0.15);
   }
 
   &__number {
     font-style: italic;
-    opacity: 0.5;
+    opacity: 50%;
   }
 }
 
@@ -97,7 +98,7 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 }
 
 .album-page {
-  animation: popContent 1s ease both;
+  animation: pop-content 1s ease both;
   overflow-y: scroll;
   padding: 30px 40px;
   scroll-behavior: smooth;

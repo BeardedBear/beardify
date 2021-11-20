@@ -31,6 +31,7 @@ const playerStore = usePlayer();
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @import "../../assets/scss/colors";
 
 .item {
@@ -46,7 +47,7 @@ const playerStore = usePlayer();
   }
 
   &:hover {
-    background-color: rgba(rgb(74, 75, 103), 0.15);
+    background-color: color.change(rgb(74 75 103), $alpha: 0.15);
   }
 }
 

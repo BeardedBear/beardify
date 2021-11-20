@@ -50,6 +50,7 @@ watch(
   justify-content: space-between;
   padding: 15px 20px;
 }
+
 .options {
   text-align: right;
 }

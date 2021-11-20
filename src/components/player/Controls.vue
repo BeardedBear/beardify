@@ -65,9 +65,11 @@ function goPause(): void {
   align-items: center;
   display: flex;
 }
+
 .time {
   width: 80px;
 }
+
 .controls {
   align-items: center;
   display: flex;
@@ -81,11 +83,11 @@ function goPause(): void {
     cursor: pointer;
     font-size: 1.3rem;
     margin-right: 5px;
-    opacity: 0.5;
+    opacity: 50%;
     padding: 5px 7px;
 
     &.active {
-      opacity: 1;
+      opacity: 100%;
     }
 
     &:hover {
@@ -95,7 +97,7 @@ function goPause(): void {
     &.play {
       background-color: var(--bg-color-light);
       font-size: 2rem;
-      opacity: 1;
+      opacity: 100%;
 
       &:hover {
         background-color: var(--bg-color-lighter);

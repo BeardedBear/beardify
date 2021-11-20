@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteLocation, RouteRecordRaw } from "vue-router";
-import About from "./views/About.vue";
+import About from "./views/AboutPage.vue";
 import Album from "./views/album/Album.vue";
 import Artist from "./views/artist/Artist.vue";
 import Auth from "./views/auth/Auth.vue";

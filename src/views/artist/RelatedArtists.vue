@@ -25,10 +25,12 @@ const artistStore = useArtist();
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @import "../../assets/scss/colors";
 
 .image {
   $size: 50px;
+
   border-radius: $size;
   height: $size;
   margin-bottom: 5px;
@@ -45,7 +47,7 @@ const artistStore = useArtist();
   text-decoration: none;
 
   &:hover {
-    background-color: rgba(rgb(74, 75, 103), 0.15);
+    background-color: color.change(rgb(74 75 103), $alpha: 0.15);
   }
 }
 

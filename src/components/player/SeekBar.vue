@@ -43,14 +43,16 @@ watchEffect(() => {
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @import "../../assets/scss/colors";
 
-@keyframes popSeek {
+@keyframes pop-seek {
   from {
-    opacity: 0;
+    opacity: 0%;
   }
+
   to {
-    opacity: 1;
+    opacity: 100%;
   }
 }
 
@@ -62,12 +64,12 @@ watchEffect(() => {
   position: relative;
 
   .seek {
-    animation: popSeek 0.2s ease 0s both;
-    background-color: rgba(white, 0.2);
+    animation: pop-seek 0.2s ease 0s both;
+    background-color: color.change(white, $alpha: 0.2);
     bottom: 0;
     display: none;
     left: 0;
-    opacity: 0.5;
+    opacity: 50%;
     position: absolute;
     top: 0;
 
@@ -76,7 +78,7 @@ watchEffect(() => {
       border: 1px solid var(--primary-color-light);
       border-radius: 3px;
       bottom: calc(100% + 5px);
-      color: rgba(white, 0.8);
+      color: color.change(white, $alpha: 0.8);
       padding: 5px 10px;
       position: absolute;
       right: 0;

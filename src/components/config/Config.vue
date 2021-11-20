@@ -52,9 +52,11 @@ function randomNotif(): void {
 </script>
 
 <style lang="scss" scoped>
-@keyframes popConfig {
+@use "sass:color";
+
+@keyframes pop-config {
   from {
-    opacity: 0;
+    opacity: 0%;
     transform: scale(0);
     transform-origin: top right;
   }
@@ -73,7 +75,7 @@ function randomNotif(): void {
   &__title {
     font-size: 0.8rem;
     font-weight: 700;
-    opacity: 0.5;
+    opacity: 50%;
     text-transform: uppercase;
   }
 }
@@ -85,14 +87,15 @@ function randomNotif(): void {
     font-size: 0.8rem;
     font-style: italic;
     margin-top: 2px;
-    opacity: 0.5;
+    opacity: 50%;
   }
 }
+
 .config {
-  animation: popConfig ease 0.2s both;
+  animation: pop-config ease 0.2s both;
   background-color: var(--bg-color-darker);
   border-radius: 4px;
-  box-shadow: 0 5px 10px rgba(black, 0.2);
+  box-shadow: 0 5px 10px color.change(black, $alpha: 0.2);
   padding: 20px;
   position: absolute;
   right: 20px;

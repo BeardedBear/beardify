@@ -94,6 +94,7 @@ document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @import "../../assets/scss/colors";
 
 $radius: 4px;
@@ -113,7 +114,7 @@ $radius: 4px;
   }
 
   &::placeholder {
-    color: rgba(rgb(74, 81, 103), 0.4);
+    color: color.change(rgb(74 75 103), $alpha: 0.4);
     font-style: italic;
   }
 }
@@ -128,7 +129,7 @@ $radius: 4px;
 
   &__icon {
     font-size: 2.5rem;
-    opacity: 0.1;
+    opacity: 10%;
   }
 
   &:hover {
@@ -147,6 +148,7 @@ $radius: 4px;
 
   .cover {
     $size: 40px;
+
     border-radius: 3px;
     height: $size;
     width: $size;
@@ -177,6 +179,7 @@ $radius: 4px;
 
   .avatar {
     $size: 35px;
+
     border-radius: $size;
     display: inline-block;
     height: $size;
@@ -199,10 +202,12 @@ $radius: 4px;
   transform: translateY(-50%);
   width: 40px;
 }
+
 .search {
   flex: 1;
   position: relative;
 }
+
 .results {
   background-color: var(--bg-color-lighter);
   border-radius: 0 0 $radius $radius;

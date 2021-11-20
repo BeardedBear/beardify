@@ -10,13 +10,13 @@
       </button>
       <button
         v-if="canSave"
-        class="buttonAction add"
+        class="button-action add"
         type="button"
         @click="dialogStore.open({ type: 'addalbum', albumId: album.id })"
       >
         <i class="icon-save" />
       </button>
-      <button v-if="canDelete" class="buttonAction delete" type="button" @click="deleteAlbum(album.id)">
+      <button v-if="canDelete" class="button-action delete" type="button" @click="deleteAlbum(album.id)">
         <i class="icon-trash-2" />
       </button>
     </div>
@@ -79,6 +79,7 @@ function deleteAlbum(albumId: string): void {
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @import "../assets/scss/colors";
 
 .img {
@@ -88,12 +89,13 @@ function deleteAlbum(albumId: string): void {
 .play {
   $offset: 1vw;
   $size: 45px;
-  animation: popPlayButton 0.2s ease both;
+
+  animation: pop-play-button 0.2s ease both;
   background: var(--primary-color);
   border: 0;
   border-radius: $size;
   bottom: $offset;
-  color: rgba(white, 0.8);
+  color: color.change(white, $alpha: 0.8);
   cursor: pointer;
   display: none;
   font-size: 1.3rem;
@@ -114,6 +116,7 @@ function deleteAlbum(albumId: string): void {
     background: var(--primary-color-lighter);
   }
 }
+
 .album {
   animation: popAlbum 1s ease both;
   position: relative;
@@ -126,19 +129,21 @@ function deleteAlbum(albumId: string): void {
     }
 
     .img {
-      opacity: 0.5;
+      opacity: 50%;
     }
   }
 }
-@keyframes popPlayButton {
+
+@keyframes pop-play-button {
   from {
-    opacity: 0;
+    opacity: 0%;
     transform: scale(0.8) rotate(50deg);
   }
 }
-@keyframes popAddButton {
+
+@keyframes pop-add-button {
   from {
-    opacity: 0;
+    opacity: 0%;
     transform: scale(0.8);
   }
 }
@@ -147,13 +152,14 @@ function deleteAlbum(albumId: string): void {
   0% {
     transform: scale(0.8);
   }
+
   100% {
     transform: scale(1.2);
   }
 }
 
-.buttonAction {
-  animation: popAddButton 0.2s ease both;
+.button-action {
+  animation: pop-add-button 0.2s ease both;
   background-color: transparent;
   border: 0;
   border-radius: 100px;
@@ -167,7 +173,7 @@ function deleteAlbum(albumId: string): void {
   will-change: transform;
 
   &:hover {
-    background-color: rgba(black, 0.5);
+    background-color: color.change(black, $alpha: 0.5);
     color: currentColor;
   }
 
@@ -184,6 +190,7 @@ function deleteAlbum(albumId: string): void {
 
 .current {
   $size: 45px;
+
   background: var(--primary-color);
   border-radius: 0 4px 0 0;
   clip-path: polygon(100% 0, 0 0, 100% 100%);
@@ -216,6 +223,6 @@ function deleteAlbum(albumId: string): void {
 .date {
   font-size: 0.8rem;
   font-style: italic;
-  opacity: 0.3;
+  opacity: 30%;
 }
 </style>

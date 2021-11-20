@@ -79,7 +79,7 @@ import ArtistList from "../../components/ArtistList.vue";
 import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import { useAuth } from "../auth/AuthStore";
-import Loader from "../../components/Loader.vue";
+import Loader from "../../components/LoadingDots.vue";
 
 const props = defineProps<{ id: string }>();
 const playlistpage = ref();
@@ -111,6 +111,7 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
 
@@ -124,11 +125,11 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 
   &-icon {
     font-size: 1.5rem;
-    opacity: 0.1;
+    opacity: 10%;
   }
 
   &:hover {
-    background-color: rgba(rgb(74, 75, 103), 0.1);
+    background-color: color.change(rgb(74 75 103), $alpha: 0.1);
   }
 }
 
@@ -144,17 +145,17 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 
   &:hover {
     color: var(--primary-color);
-    opacity: 1;
+    opacity: 100%;
   }
 
   i {
     font-size: 1rem;
     margin-right: 10px;
-    opacity: 0.3;
+    opacity: 30%;
 
     &.icon-album {
       color: var(--primary-color);
-      opacity: 1;
+      opacity: 100%;
     }
   }
 }
@@ -163,7 +164,7 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
   font-style: italic;
   margin-bottom: 10px;
   max-width: 80%;
-  opacity: 0.5;
+  opacity: 50%;
 }
 
 .title {
@@ -201,7 +202,7 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 }
 
 .playlist-page {
-  animation: popContent 1s ease both;
+  animation: pop-content 1s ease both;
   overflow-y: scroll;
   padding: 30px 40px;
 }

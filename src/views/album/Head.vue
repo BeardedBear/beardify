@@ -76,12 +76,13 @@ function openLink(url: string): void {
 
 @keyframes pop {
   from {
-    opacity: 0;
+    opacity: 0%;
   }
 }
+
 .copied {
   animation: pop 0.2s ease both;
   margin-right: 10px;
-  opacity: 0.5;
+  opacity: 50%;
 }
 </style>

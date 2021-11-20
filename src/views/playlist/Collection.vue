@@ -45,7 +45,7 @@ import { useDialog } from "../../components/dialog/DialogStore";
 import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import { useAuth } from "../auth/AuthStore";
-import Loader from "../../components/Loader.vue";
+import Loader from "../../components/LoadingDots.vue";
 
 const props = defineProps<{ id: string }>();
 const playlistpage = ref();
@@ -90,7 +90,7 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 .description {
   font-style: italic;
   margin-bottom: 7px;
-  opacity: 0.5;
+  opacity: 50%;
 }
 
 .title {
@@ -111,7 +111,7 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 }
 
 .playlist-page {
-  animation: popContent 1s ease both;
+  animation: pop-content 1s ease both;
   overflow-y: scroll;
   padding: 30px 40px;
   scroll-behavior: smooth;

@@ -17,7 +17,7 @@ import Album from "../../components/Album.vue";
 import { useAuth } from "../auth/AuthStore";
 import { useHome } from "./HomeStore";
 import { watch } from "vue";
-import Loader from "../../components/Loader.vue";
+import Loader from "../../components/LoadingDots.vue";
 
 const homeStore = useHome();
 const authStore = useAuth();
@@ -53,6 +53,7 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
   margin: 0 auto;
   max-width: 900px;
 }
+
 .loader {
   display: grid;
   place-content: center;

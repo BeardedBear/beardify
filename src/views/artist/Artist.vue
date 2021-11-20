@@ -47,7 +47,7 @@ import ArtistHeader from "./ArtistHeader.vue";
 import TopTracks from "./TopTracks.vue";
 import { usePlayer } from "../../components/player/PlayerStore";
 import { useAuth } from "../auth/AuthStore";
-import Loader from "../../components/Loader.vue";
+import Loader from "../../components/LoadingDots.vue";
 
 const props = defineProps<{
   id: string;
@@ -106,6 +106,7 @@ onMounted(() => {
     grid-template-columns: 1fr 1fr;
   }
 }
+
 .eps {
   display: grid;
   gap: 20px;
@@ -164,8 +165,9 @@ onMounted(() => {
     }
   }
 }
+
 .artist-page {
-  animation: popContent 1s ease both;
+  animation: pop-content 1s ease both;
   overflow-y: scroll;
   scroll-behavior: smooth;
 }

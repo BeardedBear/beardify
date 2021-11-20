@@ -46,8 +46,10 @@ const configStore = useConfig();
   padding: 15px;
   position: relative;
 }
+
 .navigation {
   $radius: 4px;
+
   margin-left: 15px;
   margin-right: 15px;
 
@@ -77,18 +79,21 @@ const configStore = useConfig();
     }
   }
 }
+
 .avatar {
   $size: 35px;
+
   border-radius: $size;
   display: block;
   height: $size;
   margin-left: 15px;
   width: $size;
 }
+
 .logo {
   display: block;
   height: 30px;
-  opacity: 0.5;
+  opacity: 50%;
 }
 
 #nav {

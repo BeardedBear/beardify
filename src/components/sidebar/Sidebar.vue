@@ -46,7 +46,7 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
-import Loader from "../Loader.vue";
+import Loader from "../LoadingDots.vue";
 import { useDialog } from "../dialog/DialogStore";
 import { useSidebar } from "./SidebarStore";
 
@@ -57,13 +57,15 @@ const playlists = computed(() => sidebarStore.playlists.filter((p) => !p.name.to
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @import "../../assets/scss/colors";
 
 .empty {
   font-style: italic;
-  opacity: 0.5;
+  opacity: 50%;
   padding: 10px 20px 10px 15px;
 }
+
 .playlist-item {
   align-items: center;
   color: currentColor;
@@ -72,17 +74,17 @@ const playlists = computed(() => sidebarStore.playlists.filter((p) => !p.name.to
   text-decoration: none;
 
   &:hover {
-    background-color: rgba(rgb(74, 75, 103), 0.15);
+    background-color: color.change(rgb(74 75 103), $alpha: 0.15);
   }
 
   .type-icon {
     margin-right: 15px;
-    opacity: 0.3;
+    opacity: 30%;
   }
 }
 
 .sidebar {
-  animation: popContent 1s ease both;
+  animation: pop-content 1s ease both;
   background: var(--bg-color-dark);
   display: grid;
   grid-template-rows: auto auto;
@@ -118,12 +120,12 @@ const playlists = computed(() => sidebarStore.playlists.filter((p) => !p.name.to
   color: var(--font-color);
   cursor: pointer;
   font-size: 1.3rem;
-  opacity: 0.4;
+  opacity: 40%;
   padding: 1px 12px;
 
   &:hover {
     background-color: var(--bg-color-lighter);
-    opacity: 1;
+    opacity: 100%;
   }
 }
 </style>

@@ -74,6 +74,7 @@ const textColors: TextColors[] = [
 
   &__item {
     $s: 15px;
+
     border: 0;
     cursor: pointer;
     flex: 1;
@@ -92,6 +93,7 @@ const textColors: TextColors[] = [
 
     &::after {
       $o: 6px;
+
       background-color: white;
       border-radius: $s;
       bottom: $o;
@@ -110,15 +112,19 @@ const textColors: TextColors[] = [
         transform: scaleX(1);
       }
     }
+
     &.blue {
       background-color: #15acde;
     }
+
     &.default {
       background-color: #6d49c9;
     }
+
     &.crimson {
       background-color: #de1c3e;
     }
+
     &.apple {
       background-color: #28aa1b;
     }
@@ -131,6 +137,7 @@ const textColors: TextColors[] = [
 
   &__item {
     $radius: 4px;
+
     background-color: var(--bg-color);
     border: 0;
     color: currentColor;

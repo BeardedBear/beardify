@@ -13,20 +13,23 @@ const notificationStore = useNotification();
 </script>
 
 <style lang="scss" scoped>
-@keyframes popNotif {
+@keyframes pop-notif {
   0%,
   100% {
-    opacity: 0;
+    opacity: 0%;
     transform: translateY(50px);
   }
+
   5%,
   95% {
-    opacity: 1;
+    opacity: 100%;
     transform: translateY(0);
   }
 }
+
 .notification-list {
   $offset: 20px;
+
   bottom: $offset;
   position: absolute;
   right: $offset;
@@ -34,8 +37,8 @@ const notificationStore = useNotification();
 }
 
 .notification {
-  animation: popNotif 4s ease-in-out both;
-  background: rgb(185, 50, 50);
+  animation: pop-notif 4s ease-in-out both;
+  background: rgb(185 50 50);
   border-radius: 5px;
   margin-top: 10px;
   padding: 10px 15px;

@@ -1,12 +1,13 @@
-@keyframes popContent {
+@keyframes pop-content {
   from {
-    opacity: 0;
+    opacity: 0%;
   }
 }
 
 .active {
   $test: var(--primary-color-darker);
-  background-color: rgba(74, 75, 103, 0.15);
+
+  background-color: rgb(74 75 103 / 15%);
   color: var(--primary-color) !important;
 
   &:hover {

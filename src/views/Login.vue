@@ -29,12 +29,13 @@ challenge.value = storage.codeChallenge;
 <style lang="scss" scoped>
 @import "../assets/scss/colors";
 
-@keyframes popLogin {
+@keyframes pop-login {
   from {
-    opacity: 0;
+    opacity: 0%;
     transform: scale(0.9);
   }
 }
+
 .login {
   background-color: #16181d;
   background-image: url("/img/bg-login.png");
@@ -49,8 +50,8 @@ challenge.value = storage.codeChallenge;
 }
 
 .form {
-  animation: popLogin 1s ease both;
-  background-color: rgba(var(--primary-color), 0.1);
+  animation: pop-login 1s ease both;
+  background-color: rgb(var(--primary-color) 0.1);
   border-radius: 5px;
   padding: 50px;
   text-align: center;
