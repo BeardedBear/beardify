@@ -6,23 +6,14 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, PropType } from "vue";
+import { defineProps } from "vue";
 import { Image, ImageSize } from "../@types/Image";
 
-defineProps({
-  images: {
-    default: () => [],
-    type: Array as PropType<Image[]>,
-  },
-  size: {
-    default: "medium",
-    type: String as PropType<ImageSize>,
-  },
-  className: {
-    default: "img",
-    type: String as PropType<string>,
-  },
-});
+defineProps<{
+  images: Image[];
+  size: ImageSize;
+  className?: string;
+}>();
 </script>
 
 <style lang="scss" scoped>

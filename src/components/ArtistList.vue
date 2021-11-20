@@ -8,20 +8,14 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, PropType } from "vue";
+import { defineProps } from "vue";
 import { Artist, ArtistSimplified } from "../@types/Artist";
 import router from "../router";
 
-defineProps({
-  artistList: {
-    default: () => [],
-    type: Array as PropType<Artist[] | ArtistSimplified[]>,
-  },
-  feat: {
-    default: false,
-    type: Boolean as PropType<boolean>,
-  },
-});
+defineProps<{
+  artistList: Artist[] | ArtistSimplified[];
+  feat?: boolean;
+}>();
 
 function goArtist(artistUri: string): void {
   router.push(artistUri);

@@ -3,12 +3,9 @@ import { defineProps } from "vue";
 import router from "../../router";
 import { useAuth } from "./AuthStore";
 
-const props = defineProps({
-  query: {
-    default: "",
-    type: String,
-  },
-});
+const props = defineProps<{
+  query: string;
+}>();
 
 const authStore = useAuth();
 
