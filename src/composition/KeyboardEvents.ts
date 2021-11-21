@@ -7,7 +7,7 @@ export default (): void => {
     playerStore.setVolume(volume);
   }
 
-  addEventListener("keydown", (e) => {
+  addEventListener("keydown", (e: KeyboardEvent) => {
     const currentVolume = playerStore.devices.activeDevice ? playerStore.devices.activeDevice.volume_percent : 0;
     const delta = 2;
 
@@ -17,6 +17,13 @@ export default (): void => {
       } else if (e.key === "ArrowDown") {
         currentVolume - delta < 0 ? setVolume(1) : setVolume(currentVolume - delta);
       }
+    }
+  });
+
+  window.addEventListener("keydown", (e: KeyboardEvent) => {
+    if (e.code === "Space" && e.target == document.body) {
+      e.preventDefault();
+      playerStore.currentlyPlaying.is_playing ? playerStore.pause() : playerStore.play();
     }
   });
 };

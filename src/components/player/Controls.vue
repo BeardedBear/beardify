@@ -15,13 +15,13 @@
       >
         <i class="icon-repeat" />
       </button>
-      <button v-if="!playerStore.currentlyPlaying.is_playing" class="controls__btn play" @click="goPlay()">
+      <button v-if="!playerStore.currentlyPlaying.is_playing" class="controls__btn play" @click="playerStore.play()">
         <i class="icon-play" />
       </button>
-      <button v-else class="controls__btn play" @click="goPause()">
+      <button v-else class="controls__btn play" @click="playerStore.pause()">
         <i class="icon-pause" />
       </button>
-      <button class="controls__btn" @click="goNext()">
+      <button class="controls__btn" @click="playerStore.next()">
         <i class="icon-skip-forward" />
       </button>
     </div>
@@ -34,29 +34,10 @@
 </template>
 
 <script lang="ts" setup>
-import { instance } from "../../api";
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
 
 const playerStore = usePlayer();
-
-function goPlay(): void {
-  playerStore.currentlyPlaying.is_playing = true;
-  instance().put("me/player/play", {
-    device_id: playerStore.devices.activeDevice,
-  });
-}
-
-function goNext(): void {
-  instance().post("me/player/next");
-}
-
-function goPause(): void {
-  playerStore.currentlyPlaying.is_playing = false;
-  instance().put("me/player/pause", {
-    device_id: playerStore.devices.activeDevice,
-  });
-}
 </script>
 
 <style lang="scss" scoped>

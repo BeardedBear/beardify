@@ -16,7 +16,6 @@
 
 <script lang="ts" setup>
 import { ref, watchEffect } from "vue";
-import { instance } from "../../api";
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
 
@@ -36,8 +35,7 @@ watchEffect(() => {
   progresss.value?.addEventListener("click", (event: MouseEvent) => {
     const positionInPercent = (event.clientX / progresss.value?.clientWidth) * 100;
     const duration = (playerStore.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
-    playerStore.updateProgress(Math.round(duration));
-    instance().put(`me/player/seek?position_ms=${Math.round(duration)}`);
+    playerStore.seek(duration);
   });
 });
 </script>

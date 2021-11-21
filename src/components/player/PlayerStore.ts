@@ -16,6 +16,22 @@ export const usePlayer = defineStore("player", {
   }),
 
   actions: {
+    play(): void {
+      instance()
+        .put("me/player/play", { device_id: this.devices.activeDevice })
+        .then(() => (this.currentlyPlaying.is_playing = true));
+    },
+
+    pause(): void {
+      instance()
+        .put("me/player/pause", { device_id: this.devices.activeDevice })
+        .then(() => (this.currentlyPlaying.is_playing = false));
+    },
+
+    next(): void {
+      instance().post("me/player/next");
+    },
+
     getDeviceList() {
       const playerStore = usePlayer();
       instance()
@@ -39,13 +55,15 @@ export const usePlayer = defineStore("player", {
     },
 
     setDevice(device: Device) {
-      this.devices.activeDevice = device;
-      instance().put("me/player", { device_ids: [device.id] });
+      instance()
+        .put("me/player", { device_ids: [device.id] })
+        .then(() => (this.devices.activeDevice = device));
     },
 
     setVolume(volume: number) {
-      this.devices.activeDevice.volume_percent = volume;
-      instance().put(`me/player/volume?volume_percent=${volume}`);
+      instance()
+        .put(`me/player/volume?volume_percent=${volume}`)
+        .then(() => (this.devices.activeDevice.volume_percent = volume));
     },
 
     getPlayerState() {
@@ -56,26 +74,32 @@ export const usePlayer = defineStore("player", {
 
     toggleShuffle() {
       if (this.currentlyPlaying.shuffle_state) {
-        this.currentlyPlaying.shuffle_state = false;
-        instance().put(`${api.url}me/player/shuffle?state=false`);
+        instance()
+          .put(`${api.url}me/player/shuffle?state=false`)
+          .then(() => (this.currentlyPlaying.shuffle_state = false));
       } else {
-        this.currentlyPlaying.shuffle_state = true;
-        instance().put(`${api.url}me/player/shuffle?state=true`);
+        instance()
+          .put(`${api.url}me/player/shuffle?state=true`)
+          .then(() => (this.currentlyPlaying.shuffle_state = true));
       }
     },
 
     toggleRepeat() {
       if (this.currentlyPlaying.repeat_state === "off") {
-        this.currentlyPlaying.repeat_state = "context";
-        instance().put(`${api.url}me/player/repeat?state=context`);
+        instance()
+          .put(`${api.url}me/player/repeat?state=context`)
+          .then(() => (this.currentlyPlaying.repeat_state = "context"));
       } else {
-        this.currentlyPlaying.repeat_state = "off";
-        instance().put(`${api.url}me/player/repeat?state=off`);
+        instance()
+          .put(`${api.url}me/player/repeat?state=off`)
+          .then(() => (this.currentlyPlaying.repeat_state = "off"));
       }
     },
 
-    updateProgress(progress: number) {
-      this.currentlyPlaying.progress_ms = progress;
+    seek(progress: number) {
+      instance()
+        .put(`me/player/seek?position_ms=${Math.round(progress)}`)
+        .then(() => (this.currentlyPlaying.progress_ms = progress));
     },
 
     thisDevice(deviceId: string) {
