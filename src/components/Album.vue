@@ -49,7 +49,7 @@ import { usePlaylist } from "../views/playlist/PlaylistStore";
 
 defineProps<{
   album: AlbumSimplified | Album;
-  currentlyPlayedId: string;
+  currentlyPlayedId?: string;
   withArtists?: boolean;
   withoutMetas?: boolean;
   canDelete?: boolean;

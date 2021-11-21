@@ -29,6 +29,7 @@
       {{ timecode(playerStore.currentlyPlaying.progress_ms) }} /
       {{ timecode(playerStore.currentlyPlaying.item.duration_ms) }}
     </div>
+    <div v-else class="time">0:00 / 0:00</div>
   </div>
 </template>
 

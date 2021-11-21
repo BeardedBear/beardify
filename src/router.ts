@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouteLocation, RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHistory, LocationQueryValue, RouteLocation, RouteRecordRaw } from "vue-router";
 import About from "./views/AboutPage.vue";
 import Album from "./views/album/Album.vue";
 import Artist from "./views/artist/Artist.vue";
@@ -10,9 +10,13 @@ import Playlist from "./views/playlist/Playlist.vue";
 
 export enum RouteName {
   Home = "/",
-  Login = "/login",
-  About = "/about",
-  Auth = "/auth",
+  Login = "/login/",
+  About = "/about/",
+  Auth = "/auth/",
+  Artist = "/artist/",
+  Collection = "/collection/",
+  Album = "/album/",
+  Playlist = "/playlist/",
 }
 
 const routes: Array<RouteRecordRaw> = [
@@ -34,37 +38,34 @@ const routes: Array<RouteRecordRaw> = [
   {
     component: Artist,
     name: "Artist",
-    path: "/artist/:id",
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    props: (route: RouteLocation) => ({ id: route.params.id }),
+    path: RouteName.Artist + ":id",
+    props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
   },
   {
     component: Album,
     name: "Album",
-    path: "/album/:id",
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    props: (route: RouteLocation) => ({ id: route.params.id }),
+    path: RouteName.Album + ":id",
+    props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
   },
   {
     component: Playlist,
     name: "Playlist",
-    path: "/playlist/:id",
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    props: (route: RouteLocation) => ({ id: route.params.id }),
+    path: RouteName.Playlist + ":id",
+    props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
   },
   {
     component: Collection,
     name: "Collection",
-    path: "/collection/:id",
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    props: (route: RouteLocation) => ({ id: route.params.id }),
+    path: RouteName.Collection + ":id",
+    props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
   },
   {
     path: RouteName.Auth,
     name: "Auth",
     component: Auth,
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    props: (route: RouteLocation) => ({ query: route.query.code }),
+    props: (route: RouteLocation): Record<string, LocationQueryValue | LocationQueryValue[]> => ({
+      query: route.query.code,
+    }),
   },
 ];
 

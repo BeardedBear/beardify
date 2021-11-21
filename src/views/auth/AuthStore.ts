@@ -6,7 +6,7 @@ import { Auth, AuthAPIResponse } from "../../@types/Auth";
 import { defaultMe } from "../../@types/Defaults";
 import { Me } from "../../@types/Me";
 import { api } from "../../api";
-import router from "../../router";
+import router, { RouteName } from "../../router";
 
 export const useAuth = defineStore("auth", {
   state: (): Auth => ({
@@ -36,7 +36,7 @@ export const useAuth = defineStore("auth", {
     async refresh() {
       const storage = JSON.parse(localStorage.getItem("Beardify") || "");
 
-      axios
+      return axios
         .post<string, AxiosResponse<AuthAPIResponse>>(
           "https://accounts.spotify.com/api/token",
           formUrlEncoded({
@@ -49,8 +49,11 @@ export const useAuth = defineStore("auth", {
           this.accessToken = res.data.access_token;
           this.getMe(res.data.access_token);
           this.syncStore("", "", res.data.refresh_token);
+          return true;
         })
-        .catch((err) => console.error("From refresh token", err));
+        .catch((err) => {
+          throw new Error(err);
+        });
     },
 
     getMe(token: string) {
@@ -79,8 +82,11 @@ export const useAuth = defineStore("auth", {
           this.accessToken = data.access_token;
           this.code = query;
           this.syncStore("", "", data.refresh_token);
+          router.push(RouteName.Home);
         })
-        .catch((err) => console.error("From auth", err));
+        .catch((err) => {
+          throw new Error(err);
+        });
     },
   },
 });

@@ -29,8 +29,6 @@ const authStore = useAuth();
 const sidebarStore = useSidebar();
 const playerStore = usePlayer();
 
-// onBeforeMount(() => (localS ? authStore.refresh() : router.push(RouteName.Login)));
-
 // onMounted(() => {
 //   if (localS) {
 //     const storage: Storage = JSON.parse(localS || "");
@@ -50,7 +48,6 @@ async function getPlayerStatus(): Promise<void> {
 }
 
 KeyboardEvents();
-authStore.refresh();
 
 // Keep app active
 setInterval(() => {
