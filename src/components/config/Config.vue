@@ -56,7 +56,7 @@ function randomNotif(): void {
 
 @keyframes pop-config {
   from {
-    opacity: 0%;
+    opacity: 0;
     transform: scale(0);
     transform-origin: top right;
   }
@@ -75,7 +75,7 @@ function randomNotif(): void {
   &__title {
     font-size: 0.8rem;
     font-weight: 700;
-    opacity: 50%;
+    opacity: 0.5;
     text-transform: uppercase;
   }
 }
@@ -87,7 +87,7 @@ function randomNotif(): void {
     font-size: 0.8rem;
     font-style: italic;
     margin-top: 2px;
-    opacity: 50%;
+    opacity: 0.5;
   }
 }
 

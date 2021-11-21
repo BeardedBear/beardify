@@ -34,13 +34,13 @@ $radius: 4px;
 
 @keyframes pop-dialog {
   from {
-    opacity: 0%;
+    opacity: 0;
   }
 }
 
 @keyframes pop-dialog-content {
   from {
-    opacity: 0%;
+    opacity: 0;
     transform: scale(0.9);
   }
 }
@@ -67,7 +67,7 @@ $radius: 4px;
   animation: pop-dialog 0.2s ease both;
   background-color: var(--bg-color-darker);
   inset: 0;
-  opacity: 95%;
+  opacity: 0.95;
   position: fixed;
 }
 

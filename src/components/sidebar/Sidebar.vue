@@ -62,7 +62,7 @@ const playlists = computed(() => sidebarStore.playlists.filter((p) => !p.name.to
 
 .empty {
   font-style: italic;
-  opacity: 50%;
+  opacity: 0.5;
   padding: 10px 20px 10px 15px;
 }
 
@@ -79,7 +79,7 @@ const playlists = computed(() => sidebarStore.playlists.filter((p) => !p.name.to
 
   .type-icon {
     margin-right: 15px;
-    opacity: 30%;
+    opacity: 0.3;
   }
 }
 
@@ -120,12 +120,12 @@ const playlists = computed(() => sidebarStore.playlists.filter((p) => !p.name.to
   color: var(--font-color);
   cursor: pointer;
   font-size: 1.3rem;
-  opacity: 40%;
+  opacity: 0.4;
   padding: 1px 12px;
 
   &:hover {
     background-color: var(--bg-color-lighter);
-    opacity: 100%;
+    opacity: 1;
   }
 }
 </style>

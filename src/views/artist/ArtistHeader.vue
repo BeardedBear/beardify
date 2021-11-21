@@ -147,11 +147,11 @@ function switchFollow(artistId: string): void {
       display: flex;
       font-size: 1rem;
       margin-right: 20px;
-      opacity: 30%;
+      opacity: 0.3;
       text-decoration: none;
 
       &:hover {
-        opacity: 100%;
+        opacity: 1;
       }
     }
   }

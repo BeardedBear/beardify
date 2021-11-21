@@ -93,7 +93,7 @@ const configStore = useConfig();
 .logo {
   display: block;
   height: 30px;
-  opacity: 50%;
+  opacity: 0.5;
 }
 
 #nav {

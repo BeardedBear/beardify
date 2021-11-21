@@ -16,13 +16,13 @@ const notificationStore = useNotification();
 @keyframes pop-notif {
   0%,
   100% {
-    opacity: 0%;
+    opacity: 0;
     transform: translateY(50px);
   }
 
   5%,
   95% {
-    opacity: 100%;
+    opacity: 1;
     transform: translateY(0);
   }
 }

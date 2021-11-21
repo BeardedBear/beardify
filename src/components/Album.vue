@@ -128,21 +128,21 @@ function deleteAlbum(albumId: string): void {
     }
 
     .img {
-      opacity: 50%;
+      opacity: 0.5;
     }
   }
 }
 
 @keyframes pop-play-button {
   from {
-    opacity: 0%;
+    opacity: 0;
     transform: scale(0.8) rotate(50deg);
   }
 }
 
 @keyframes pop-add-button {
   from {
-    opacity: 0%;
+    opacity: 0;
     transform: scale(0.8);
   }
 }
@@ -222,6 +222,6 @@ function deleteAlbum(albumId: string): void {
 .date {
   font-size: 0.8rem;
   font-style: italic;
-  opacity: 30%;
+  opacity: 0.3;
 }
 </style>

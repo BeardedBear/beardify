@@ -43,7 +43,7 @@ const playerStore = usePlayer();
 
 .album {
   font-style: italic;
-  opacity: 50%;
+  opacity: 0.5;
 }
 
 .what {

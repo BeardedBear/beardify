@@ -129,7 +129,7 @@ $radius: 4px;
 
   &__icon {
     font-size: 2.5rem;
-    opacity: 10%;
+    opacity: 0.1;
   }
 
   &:hover {

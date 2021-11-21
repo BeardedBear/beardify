@@ -37,14 +37,13 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, watch, ref } from "vue";
+import { defineProps, ref } from "vue";
 import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import ArtistList from "../../components/ArtistList.vue";
 import Album from "../../components/Album.vue";
 import { useAlbum } from "./AlbumStore";
 import { usePlayer } from "../../components/player/PlayerStore";
-import { useAuth } from "../auth/AuthStore";
 import Loader from "../../components/LoadingDots.vue";
 import Head from "./Head.vue";
 
@@ -52,13 +51,8 @@ const props = defineProps({ id: { default: "", type: String } });
 const albumpage = ref();
 const albumStore = useAlbum();
 const playerStore = usePlayer();
-const authStore = useAuth();
 
-function getData(): void {
-  albumStore.clean().finally(() => albumStore.getAlbum(props.id));
-}
-
-authStore.accessToken ? getData() : watch(authStore, () => getData());
+albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 </script>
 
 <style lang="scss" scoped>
@@ -83,7 +77,7 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 
   &__number {
     font-style: italic;
-    opacity: 50%;
+    opacity: 0.5;
   }
 }
 

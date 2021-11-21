@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref, watch } from "vue";
+import { defineProps, ref } from "vue";
 import { timecode, timecodeWithUnits } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import Cover from "../../components/Cover.vue";
@@ -78,7 +78,6 @@ import { useDialog } from "../../components/dialog/DialogStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";
-import { useAuth } from "../auth/AuthStore";
 import Loader from "../../components/LoadingDots.vue";
 
 const props = defineProps<{ id: string }>();
@@ -86,7 +85,6 @@ const playlistpage = ref();
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
 const playerStore = usePlayer();
-const authStore = useAuth();
 
 function deletePlaylist(playlistId: string): void {
   dialogStore.open({ type: "editPlaylist", playlistId });
@@ -100,14 +98,10 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
 }
 
-function getData(): void {
-  playlistStore.clean().finally(() => {
-    playlistStore.getPlaylist(`${api.url}playlists/${props.id}`);
-    playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
-  });
-}
-
-authStore.accessToken ? getData() : watch(authStore, () => getData());
+playlistStore.clean().finally(() => {
+  playlistStore.getPlaylist(`${api.url}playlists/${props.id}`);
+  playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -125,7 +119,7 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 
   &-icon {
     font-size: 1.5rem;
-    opacity: 10%;
+    opacity: 0.1;
   }
 
   &:hover {
@@ -145,17 +139,17 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 
   &:hover {
     color: var(--primary-color);
-    opacity: 100%;
+    opacity: 1;
   }
 
   i {
     font-size: 1rem;
     margin-right: 10px;
-    opacity: 30%;
+    opacity: 0.3;
 
     &.icon-album {
       color: var(--primary-color);
-      opacity: 100%;
+      opacity: 1;
     }
   }
 }
@@ -164,7 +158,7 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
   font-style: italic;
   margin-bottom: 10px;
   max-width: 80%;
-  opacity: 50%;
+  opacity: 0.5;
 }
 
 .title {

@@ -84,11 +84,11 @@ function goPause(): void {
     cursor: pointer;
     font-size: 1.3rem;
     margin-right: 5px;
-    opacity: 50%;
+    opacity: 0.5;
     padding: 5px 7px;
 
     &.active {
-      opacity: 100%;
+      opacity: 1;
     }
 
     &:hover {
@@ -98,7 +98,7 @@ function goPause(): void {
     &.play {
       background-color: var(--bg-color-light);
       font-size: 2rem;
-      opacity: 100%;
+      opacity: 1;
 
       &:hover {
         background-color: var(--bg-color-lighter);

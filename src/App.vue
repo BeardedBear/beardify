@@ -120,7 +120,7 @@ body {
 
 .scale-enter-from,
 .scale-leave-to {
-  opacity: 0%;
+  opacity: 0;
   transform: translateY(-5px);
 }
 

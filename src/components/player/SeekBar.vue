@@ -48,11 +48,11 @@ watchEffect(() => {
 
 @keyframes pop-seek {
   from {
-    opacity: 0%;
+    opacity: 0;
   }
 
   to {
-    opacity: 100%;
+    opacity: 1;
   }
 }
 
@@ -69,7 +69,7 @@ watchEffect(() => {
     bottom: 0;
     display: none;
     left: 0;
-    opacity: 50%;
+    opacity: 0.5;
     position: absolute;
     top: 0;
 

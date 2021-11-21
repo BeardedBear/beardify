@@ -31,7 +31,7 @@ challenge.value = storage.codeChallenge;
 
 @keyframes pop-login {
   from {
-    opacity: 0%;
+    opacity: 0;
     transform: scale(0.9);
   }
 }
