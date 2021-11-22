@@ -1,6 +1,7 @@
 <template>
   <div ref="progresss" class="progress">
     <div
+      v-if="playerStore.currentlyPlaying.item"
       class="bar"
       :style="`width:${
         (playerStore.currentlyPlaying.progress_ms / playerStore.currentlyPlaying.item.duration_ms) * 100
@@ -27,15 +28,17 @@ const playerStore = usePlayer();
 watchEffect(() => {
   progresss.value?.addEventListener("mousemove", (event: MouseEvent) => {
     const positionInPercent = (event.clientX / progresss.value?.clientWidth) * 100;
-    const duration = (playerStore.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
+    const duration =
+      playerStore.currentlyPlaying.item && (playerStore.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
     perc.value = positionInPercent;
-    time.value = timecode(duration);
+    if (duration) time.value = timecode(duration);
   });
 
   progresss.value?.addEventListener("click", (event: MouseEvent) => {
     const positionInPercent = (event.clientX / progresss.value?.clientWidth) * 100;
-    const duration = (playerStore.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
-    playerStore.seek(duration);
+    const duration =
+      playerStore.currentlyPlaying.item && (playerStore.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
+    if (duration) playerStore.seek(duration);
   });
 });
 </script>

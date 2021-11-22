@@ -1,5 +1,5 @@
 <template>
-  <div v-if="playerStore.currentlyPlaying.item.album" class="what">
+  <div v-if="playerStore.currentlyPlaying.item && playerStore.currentlyPlaying.item.album" class="what">
     <router-link :to="`/album/${playerStore.currentlyPlaying.item.album.id}`">
       <Cover size="small" :images="playerStore.currentlyPlaying.item.album.images" class-name="cover" />
     </router-link>

@@ -25,7 +25,7 @@
         <i class="icon-skip-forward" />
       </button>
     </div>
-    <div v-if="playerStore.currentlyPlaying.progress_ms" class="time">
+    <div v-if="playerStore.currentlyPlaying.progress_ms && playerStore.currentlyPlaying.item" class="time">
       {{ timecode(playerStore.currentlyPlaying.progress_ms) }} /
       {{ timecode(playerStore.currentlyPlaying.item.duration_ms) }}
     </div>

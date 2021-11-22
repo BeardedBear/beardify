@@ -200,10 +200,10 @@
     "@typescript-eslint/types" "5.4.0"
     eslint-visitor-keys "^3.0.0"
 
-"@vitejs/plugin-vue@^1.9.4":
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/@vitejs/plugin-vue/-/plugin-vue-1.9.4.tgz#4f48485432cbb986a9fb9d254dc33ce30ddccbfa"
-  integrity sha512-0CZqaCoChriPTTtGkERy1LGPcYjGFpi2uYRhBPIkqJqUGV5JnJFhQAgh6oH9j5XZHfrRaisX8W0xSpO4T7S78A==
+"@vitejs/plugin-vue@^1.10.0":
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/@vitejs/plugin-vue/-/plugin-vue-1.10.0.tgz#d015c12d905bb7f76274c2bb272c3662151bf3c0"
+  integrity sha512-XkSN7lduhQ3z/WMXv2spqt9TCS0znCjnvIGmbud2bxViWWWR4JWXE+x/cQZ/klR0Ug4Ts9eubL7LXAysON5Uvg==
 
 "@volar/code-gen@0.29.6":
   version "0.29.6"
@@ -381,18 +381,18 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.22.tgz#26dcbe5e530f6c1f2de5ca9aeab92ab00f523b41"
   integrity sha512-qWVav014mpjEtbWbEgl0q9pEyrrIySKum8UVYjwhC6njrKzknLZPvfuYdQyVbApsqr94tf/3dP4pCuZmmjdCWQ==
 
-"@vueuse/core@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-7.0.0.tgz#ebda73bc9dd9ec8dfb9ce965585ffbd29f85a9f9"
-  integrity sha512-dhf10icxd7w16AVaOtriVkum+CdCjskV0wht/kpGnOb2NbYBeXuiZNruMA+w8DaRPO4oXW8UhAix/S8HCz9OlQ==
+"@vueuse/core@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-7.0.1.tgz#8652c8657dc7c05cfbd74a1904eca214a10b13f8"
+  integrity sha512-xWA1o+pQK2uqm6yewjnP8JvrFCPKokTQfTzF/7f74iCgGwPmyPVgPLLGlKLE7NZz32DlWEiGvF43E14X4a19zQ==
   dependencies:
-    "@vueuse/shared" "7.0.0"
+    "@vueuse/shared" "7.0.1"
     vue-demi "*"
 
-"@vueuse/shared@7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-7.0.0.tgz#1aa769f10f58d5e385ea57ec5781f8f2a508db45"
-  integrity sha512-TG4FSjiFCTn4srJO8j9Ax4OOVKrBWgcRJY54+mHqYINEk95FFuCvk7cE642Byxq6eGTMTZRw+f8ufFIA9tqXig==
+"@vueuse/shared@7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-7.0.1.tgz#c5a4bf5277e5c5901b45dc4080488f005d1a60be"
+  integrity sha512-sZWV8Mq4R5oCO4Db/jN6OB3VS6enL7XieLbvKVggk73wFaVEMlEF140gOmp8u6K70ZbqPKwMuNntm1rjuPOrmg==
   dependencies:
     vue-demi "*"
 

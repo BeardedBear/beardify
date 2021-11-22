@@ -27,7 +27,7 @@ export interface CurrentlyPlaying {
   currently_playing_type: CurrentlyPlayingType;
   device: Device;
   is_playing: boolean;
-  item: CurrentlyPlayingItem;
+  item: CurrentlyPlayingItem | null;
   progress_ms: number;
   repeat_state: "off" | "track" | "context";
   shuffle_state: boolean;

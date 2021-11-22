@@ -22,46 +22,48 @@
           </button>
         </div>
       </div>
-      <div
-        v-for="(track, index) in playlistStore.tracks"
-        :key="index"
-        class="track"
-        :class="{
-          active:
-            playerStore.currentlyPlaying && track.track
-              ? track.track.id === playerStore.currentlyPlaying.item.id
-              : false,
-        }"
-        @click="
-          playSongs(
-            index,
-            playlistStore.tracks.map((e) => e.track),
-          )
-        "
-      >
-        <div class="track-icon">
-          <i class="icon-music" />
-        </div>
-        <div>
-          <div>{{ track.track.name }}</div>
+      <template v-if="playerStore.currentlyPlaying.item">
+        <div
+          v-for="(track, index) in playlistStore.tracks"
+          :key="index"
+          class="track"
+          :class="{
+            active:
+              playerStore.currentlyPlaying && track.track
+                ? track.track.id === playerStore.currentlyPlaying.item.id
+                : false,
+          }"
+          @click="
+            playSongs(
+              index,
+              playlistStore.tracks.map((e) => e.track),
+            )
+          "
+        >
+          <div class="track-icon">
+            <i class="icon-music" />
+          </div>
           <div>
-            <ArtistList :artist-list="track.track.artists" feat />
+            <div>{{ track.track.name }}</div>
+            <div>
+              <ArtistList :artist-list="track.track.artists" feat />
+            </div>
+          </div>
+          <div class="album" @click.stop="goAlbum(track.track.album.id)">
+            <i
+              :class="{
+                'icon-album': track.track.album.album_type === 'album',
+                'icon-single': track.track.album.album_type === 'single',
+                'icon-compilation': track.track.album.album_type === 'compilation',
+              }"
+            />{{ track.track.album.name }}
+          </div>
+
+          <div class="duration">
+            {{ timecode(track.track.duration_ms) }}
           </div>
         </div>
-        <div class="album" @click.stop="goAlbum(track.track.album.id)">
-          <i
-            :class="{
-              'icon-album': track.track.album.album_type === 'album',
-              'icon-single': track.track.album.album_type === 'single',
-              'icon-compilation': track.track.album.album_type === 'compilation',
-            }"
-          />{{ track.track.album.name }}
-        </div>
-
-        <div class="duration">
-          {{ timecode(track.track.duration_ms) }}
-        </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>

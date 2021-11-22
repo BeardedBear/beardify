@@ -1,11 +1,6 @@
 import { Album, AlbumSimplified } from "./Album";
 import { Artist } from "./Artist";
-import {
-  CurrentlyPlaying,
-  CurrentlyPlayingAlbum,
-  CurrentlyPlayingContext,
-  CurrentlyPlayingItem,
-} from "./CurrentlyPlaying";
+import { CurrentlyPlaying, CurrentlyPlayingContext } from "./CurrentlyPlaying";
 import { Device } from "./Device";
 import { Image } from "./Image";
 import { Followers, Me } from "./Me";
@@ -68,39 +63,6 @@ export const defaultArtist: Artist = {
   uri: "",
 };
 
-const defaultCurrentlyPlayingAlbum: CurrentlyPlayingAlbum = {
-  album_type: "",
-  artists: [],
-  available_markets: ["FR"],
-  href: "",
-  id: "",
-  images: [],
-  name: "",
-  release_date: "",
-  release_date_precision: "year",
-  total_tracks: 0,
-  type: "",
-  uri: "",
-};
-
-const defaultCurrentlyPlayingItem: CurrentlyPlayingItem = {
-  album: defaultCurrentlyPlayingAlbum,
-  artists: [],
-  available_markets: ["FR"],
-  disc_number: 0,
-  duration_ms: 0,
-  explicit: false,
-  href: "",
-  id: "",
-  is_local: false,
-  name: "",
-  popularity: 0,
-  preview_url: "",
-  track_number: 0,
-  type: "",
-  uri: "",
-};
-
 const defaultCurrentlyPlayingContext: CurrentlyPlayingContext = {
   href: "",
   type: "album",
@@ -122,8 +84,8 @@ export const defaultCurrentlyPlaying: CurrentlyPlaying = {
   currently_playing_type: "track",
   device: defaultDevice,
   is_playing: false,
-  item: defaultCurrentlyPlayingItem,
-  progress_ms: 0,
+  item: null,
+  progress_ms: 1,
   repeat_state: "off",
   shuffle_state: false,
   timestamp: 0,
