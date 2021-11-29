@@ -54,7 +54,6 @@ export const useSidebar = defineStore("sidebar", {
         .then(() => {
           this.reset();
           this.getPlaylists(`${api.url}me/playlists?limit=50`);
-          console.log("coucou");
 
           if (location.pathname.includes(playlistId)) router.push("/");
         });

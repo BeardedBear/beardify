@@ -14,10 +14,9 @@
 <script lang="ts" setup>
 import Topbar from "./components/Topbar.vue";
 import Player from "./components/player/Player.vue";
-import { api, instance } from "./api";
+import { api } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
-import KeyboardEvents from "./composition/KeyboardEvents";
 import router, { RouteName } from "./router";
 import Notification from "./components/notification/Notification.vue";
 import { useAuth } from "./views/auth/AuthStore";
@@ -41,35 +40,22 @@ const playerStore = usePlayer();
 //   localStorage.setItem(storageLabel, JSON.stringify({ auth, config }));
 // });
 
-async function getPlayerStatus(): Promise<void> {
-  if (!sidebarStore.playlists.length) sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
-  if (!playerStore.devices.list.length) playerStore.getDeviceList();
-  playerStore.getPlayerState();
-}
-
-KeyboardEvents();
-
 // Keep app active
 setInterval(() => {
-  playerStore.getDeviceList();
+  playerStore.getPlayerState();
   authStore.refresh();
 }, 120000); // 2 minutes
 
-if (useWindowFocus()) {
-  getPlayerStatus();
-  playerStore.getDeviceList();
-}
+if (useWindowFocus()) playerStore.getPlayerState();
 
 setInterval(() => {
   if (document.hasFocus() && router.currentRoute.value.path !== RouteName.Login) {
-    getPlayerStatus();
+    if (!sidebarStore.playlists.length) sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
+    playerStore.getPlayerState();
   }
 }, 1000);
 
 addEventListener("initdevice", ((e: CustomEvent) => {
-  if (playerStore.devices.list.filter((d) => d.is_active).length === 0) {
-    instance().put("me/player", { device_ids: [e.detail.thisDevice] });
-  }
   playerStore.thisDevice(e.detail.thisDevice);
 }) as { (): void });
 </script>

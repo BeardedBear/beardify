@@ -35,4 +35,22 @@ const playerStore = usePlayer();
     margin-bottom: 15px;
   }
 }
+
+.me {
+  position: relative;
+
+  &::before {
+    $s: 7px;
+
+    background: white;
+    border-top-right-radius: 3px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    content: "";
+    height: $s;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: $s;
+  }
+}
 </style>

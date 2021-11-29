@@ -3,6 +3,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router, { RouteName } from "./router";
 import { useAuth } from "./views/auth/AuthStore";
+import KeyboardEvents from "./composition/KeyboardEvents";
 
 const app = createApp(App);
 
@@ -12,7 +13,10 @@ app.use(router);
 useAuth()
   .refresh()
   .then((done) => {
-    if (done) app.mount("#app");
+    if (done) {
+      KeyboardEvents();
+      app.mount("#app");
+    }
   })
   .catch(() => {
     app.mount("#app");

@@ -33,23 +33,15 @@ export const usePlayer = defineStore("player", {
     },
 
     getDeviceList() {
-      const playerStore = usePlayer();
       instance()
         .get<DevicesResponse>("me/player/devices")
         .then(({ data }) => {
-          const onlyOneDeviceAvailable = data.devices.length === 1;
           const activeDevice = data.devices.find((d) => d.is_active);
-
           this.devices.list = data.devices;
-          if (
-            data.devices.filter((d) => d.is_active).length &&
-            activeDevice &&
-            !playerStore.currentlyPlaying.is_playing
-          ) {
-            this.setDevice(activeDevice);
-          }
-          if (onlyOneDeviceAvailable && !playerStore.currentlyPlaying.is_playing) {
-            this.setDevice(data.devices[0]);
+
+          if (activeDevice) this.devices.activeDevice = activeDevice;
+          if (this.devices.list.length === 1 && !this.currentlyPlaying.is_playing) {
+            this.setDevice(this.devices.list[0]);
           }
         });
     },
@@ -69,7 +61,10 @@ export const usePlayer = defineStore("player", {
     getPlayerState() {
       instance()
         .get<CurrentlyPlaying>(`me/player`)
-        .then((e) => (this.currentlyPlaying = e.data));
+        .then((e) => {
+          this.currentlyPlaying = e.data;
+          this.getDeviceList();
+        });
     },
 
     toggleShuffle() {
@@ -104,6 +99,7 @@ export const usePlayer = defineStore("player", {
 
     thisDevice(deviceId: string) {
       this.thisDeviceId = deviceId;
+      this.getDeviceList();
     },
   },
 });
