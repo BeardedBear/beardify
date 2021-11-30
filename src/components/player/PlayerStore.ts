@@ -61,10 +61,7 @@ export const usePlayer = defineStore("player", {
     getPlayerState() {
       instance()
         .get<CurrentlyPlaying>(`me/player`)
-        .then((e) => {
-          this.currentlyPlaying = e.data;
-          this.getDeviceList();
-        });
+        .then((e) => (this.currentlyPlaying = e.data));
     },
 
     toggleShuffle() {

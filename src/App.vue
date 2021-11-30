@@ -23,10 +23,12 @@ import { useAuth } from "./views/auth/AuthStore";
 import { useSidebar } from "./components/sidebar/SidebarStore";
 import { usePlayer } from "./components/player/PlayerStore";
 import { useWindowFocus } from "@vueuse/core";
+import { watch } from "vue";
 
 const authStore = useAuth();
 const sidebarStore = useSidebar();
 const playerStore = usePlayer();
+const focused = useWindowFocus();
 
 // onMounted(() => {
 //   if (localS) {
@@ -46,7 +48,9 @@ setInterval(() => {
   authStore.refresh();
 }, 120000); // 2 minutes
 
-if (useWindowFocus()) playerStore.getPlayerState();
+watch(focused, (isFocused) => {
+  if (isFocused) playerStore.getPlayerState();
+});
 
 setInterval(() => {
   if (document.hasFocus() && router.currentRoute.value.path !== RouteName.Login) {
