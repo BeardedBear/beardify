@@ -40,8 +40,16 @@ export const usePlayer = defineStore("player", {
           this.devices.list = data.devices;
 
           if (activeDevice) this.devices.activeDevice = activeDevice;
-          if (this.devices.list.length === 1 && !this.currentlyPlaying.is_playing) {
-            this.setDevice(this.devices.list[0]);
+          if (!this.currentlyPlaying.is_playing) {
+            if (this.devices.list.length === 1) {
+              console.log("this.setDevice(this.devices.list[0]);");
+
+              this.setDevice(this.devices.list[0]);
+            } else {
+              console.log("this.setDevice(this.devices.activeDevice)");
+
+              this.setDevice(this.devices.activeDevice);
+            }
           }
         });
     },

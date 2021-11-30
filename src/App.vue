@@ -45,23 +45,18 @@ const focused = useWindowFocus();
 // Keep app active
 setInterval(() => {
   playerStore.getPlayerState();
+  playerStore.getDeviceList();
   authStore.refresh();
 }, 120000); // 2 minutes
 
-watch(focused, (isFocused) => {
-  if (isFocused) playerStore.getPlayerState();
-});
+watch(focused, (isFocused) => isFocused && playerStore.getPlayerState());
 
 setInterval(() => {
   if (document.hasFocus() && router.currentRoute.value.path !== RouteName.Login) {
     if (!sidebarStore.playlists.length) sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
-    playerStore.getPlayerState();
+    // playerStore.getPlayerState();
   }
 }, 1000);
-
-addEventListener("initdevice", ((e: CustomEvent) => {
-  playerStore.thisDevice(e.detail.thisDevice);
-}) as { (): void });
 </script>
 
 <style lang="scss">

@@ -26,8 +26,7 @@
       </button>
     </div>
     <div v-if="playerStore.currentlyPlaying.progress_ms && playerStore.currentlyPlaying.item" class="time">
-      {{ timecode(playerStore.currentlyPlaying.progress_ms) }} /
-      {{ timecode(playerStore.currentlyPlaying.item.duration_ms) }}
+      {{ timecode(currentTime) }} / {{ timecode(playerStore.currentlyPlaying.item.duration_ms) }}
     </div>
     <div v-else class="time">0:00 / 0:00</div>
   </div>
@@ -36,8 +35,22 @@
 <script lang="ts" setup>
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
+import { ref, watch } from "vue";
+import { useIntervalFn } from "@vueuse/core";
 
 const playerStore = usePlayer();
+const currentTime = ref<number>(0);
+
+useIntervalFn(() => {
+  if (playerStore.currentlyPlaying.is_playing) currentTime.value = currentTime.value + 1000;
+}, 1000);
+
+watch(
+  () => playerStore.currentlyPlaying.progress_ms,
+  () => {
+    currentTime.value = playerStore.currentlyPlaying.progress_ms;
+  },
+);
 </script>
 
 <style lang="scss" scoped>
@@ -46,6 +59,7 @@ const playerStore = usePlayer();
 .btns {
   align-items: center;
   display: flex;
+  gap: 10px;
 }
 
 .time {
@@ -59,12 +73,11 @@ const playerStore = usePlayer();
 
   &__btn {
     background-color: transparent;
-    border: 0;
+    border: none;
     border-radius: 5px;
     color: currentColor;
     cursor: pointer;
     font-size: 1.3rem;
-    margin-right: 5px;
     opacity: 0.5;
     padding: 5px 7px;
 
@@ -76,12 +89,19 @@ const playerStore = usePlayer();
       background-color: var(--bg-color-light);
     }
 
+    &:active {
+      background-color: var(--bg-color-lighter);
+    }
+
     &.play {
-      background-color: var(--bg-color-light);
       font-size: 2rem;
       opacity: 1;
 
       &:hover {
+        background-color: var(--bg-color-light);
+      }
+
+      &:active {
         background-color: var(--bg-color-lighter);
       }
     }

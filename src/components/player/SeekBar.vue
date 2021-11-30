@@ -3,27 +3,25 @@
     <div
       v-if="playerStore.currentlyPlaying.item"
       class="bar"
-      :style="`width:${
-        (playerStore.currentlyPlaying.progress_ms / playerStore.currentlyPlaying.item.duration_ms) * 100
-      }%`"
+      :style="`width:${(currentTime / playerStore.currentlyPlaying.item.duration_ms) * 100}%`"
     />
     <div class="seek" :style="`width:${perc}%`">
-      <div class="time">
-        {{ time }}
-      </div>
+      <div class="time">{{ time }}</div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, watch } from "vue";
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
+import { useIntervalFn } from "@vueuse/core";
 
 const progresss = ref();
 const perc = ref();
 const time = ref();
 const playerStore = usePlayer();
+const currentTime = ref<number>(0);
 
 watchEffect(() => {
   progresss.value?.addEventListener("mousemove", (event: MouseEvent) => {
@@ -41,6 +39,17 @@ watchEffect(() => {
     if (duration) playerStore.seek(duration);
   });
 });
+
+useIntervalFn(() => {
+  if (playerStore.currentlyPlaying.is_playing) currentTime.value = currentTime.value + 200;
+}, 200);
+
+watch(
+  () => playerStore.currentlyPlaying.progress_ms,
+  () => {
+    currentTime.value = playerStore.currentlyPlaying.progress_ms;
+  },
+);
 </script>
 
 <style lang="scss" scoped>
@@ -65,7 +74,7 @@ watchEffect(() => {
   position: relative;
 
   .seek {
-    animation: pop-seek 0.2s ease 0s both;
+    animation: pop-seek 0.5s ease 0s both;
     background-color: color.change(white, $alpha: 0.2);
     bottom: 0;
     display: none;
@@ -93,7 +102,7 @@ watchEffect(() => {
     left: 0;
     position: absolute;
     top: 0;
-    transition: all ease 0.25s;
+    transition: all linear 0.2s;
   }
 
   &:hover {

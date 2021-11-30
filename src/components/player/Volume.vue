@@ -37,7 +37,7 @@ watchEffect(() => {
 
   &::before {
     background-color: var(--bg-color);
-    clip-path: polygon(0 0, 0 78%, 100% 0);
+    clip-path: polygon(-10% -10%, 0 82%, 100% 0);
     content: "";
     inset: 0;
     position: absolute;
