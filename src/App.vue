@@ -14,19 +14,15 @@
 <script lang="ts" setup>
 import Topbar from "./components/Topbar.vue";
 import Player from "./components/player/Player.vue";
-import { api } from "./api";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import Dialog from "./components/dialog/Dialog.vue";
-import router, { RouteName } from "./router";
 import Notification from "./components/notification/Notification.vue";
 import { useAuth } from "./views/auth/AuthStore";
-import { useSidebar } from "./components/sidebar/SidebarStore";
 import { usePlayer } from "./components/player/PlayerStore";
 import { useWindowFocus } from "@vueuse/core";
 import { watch } from "vue";
 
 const authStore = useAuth();
-const sidebarStore = useSidebar();
 const playerStore = usePlayer();
 const focused = useWindowFocus();
 
@@ -50,13 +46,6 @@ setInterval(() => {
 }, 120000); // 2 minutes
 
 watch(focused, (isFocused) => isFocused && playerStore.getPlayerState());
-
-setInterval(() => {
-  if (document.hasFocus() && router.currentRoute.value.path !== RouteName.Login) {
-    if (!sidebarStore.playlists.length) sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
-    // playerStore.getPlayerState();
-  }
-}, 1000);
 </script>
 
 <style lang="scss">
