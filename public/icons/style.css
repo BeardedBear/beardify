@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?agig87');
-  src:  url('fonts/icomoon.eot?agig87#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?agig87') format('truetype'),
-    url('fonts/icomoon.woff?agig87') format('woff'),
-    url('fonts/icomoon.svg?agig87#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?o8erit');
+  src:  url('fonts/icomoon.eot?o8erit#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?o8erit') format('truetype'),
+    url('fonts/icomoon.woff?o8erit') format('woff'),
+    url('fonts/icomoon.svg?o8erit#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,26 +25,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-discogs:before {
-  content: "\e919";
-}
-.icon-rym:before {
-  content: "\e92a";
-}
-.icon-sputnik:before {
-  content: "\e918";
-}
-.icon-google:before {
-  content: "\e917";
-}
-.icon-wikipedia:before {
-  content: "\e915";
-}
-.icon-single:before {
-  content: "\e924";
-}
-.icon-youtube:before {
-  content: "\e92c";
+.icon-users:before {
+  content: "\e933";
 }
 .icon-airplay:before {
   content: "\e900";
@@ -177,4 +159,25 @@
 }
 .icon-play:before {
   content: "\e914";
+}
+.icon-discogs:before {
+  content: "\e919";
+}
+.icon-rym:before {
+  content: "\e92a";
+}
+.icon-sputnik:before {
+  content: "\e918";
+}
+.icon-google:before {
+  content: "\e917";
+}
+.icon-wikipedia:before {
+  content: "\e915";
+}
+.icon-single:before {
+  content: "\e924";
+}
+.icon-youtube:before {
+  content: "\e92c";
 }

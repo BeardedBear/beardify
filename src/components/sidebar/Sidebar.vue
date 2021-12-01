@@ -36,7 +36,10 @@
           :to="`/playlist/${playlist.id}`"
           :class="{ active: $route.params.id === playlist.id }"
         >
-          <i class="type-icon icon-music" />
+          <i
+            class="type-icon"
+            :class="{ 'icon-music': !playlist.collaborative, 'icon-users': playlist.collaborative }"
+          />
           <div>{{ playlist.name }}</div>
         </router-link>
       </div>
