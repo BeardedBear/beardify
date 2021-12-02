@@ -12,6 +12,7 @@
   "dependencies": {
     "@vueuse/core": "^7.1.2",
     "axios": "^0.24.0",
+    "date-fns": "^2.27.0",
     "form-urlencoded": "^6.0.5",
     "pinia": "^2.0.5",
     "pkce": "^1.0.0-beta2",

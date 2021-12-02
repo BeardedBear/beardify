@@ -1,78 +1,84 @@
 <template>
   <div v-if="playlistStore.playlist.name === ''" class="loader"><Loader /></div>
   <div v-else ref="playlistpage" class="playlist-page">
-    <div class="fit">
-      <div class="playlist-header">
-        <div class="playlist-header__left">
-          <div><Cover size="large" :images="playlistStore.playlist.images" class-name="cover" /></div>
+    <div class="playlist-header">
+      <div class="playlist-header__left">
+        <div><Cover size="large" :images="playlistStore.playlist.images" class-name="cover" /></div>
+        <div>
+          <div class="title">{{ playlistStore.playlist.name }}</div>
+          <div class="description">{{ playlistStore.playlist.description }}</div>
           <div>
-            <div class="title">{{ playlistStore.playlist.name }}</div>
-            <div class="description">{{ playlistStore.playlist.description }}</div>
-            <div>
-              {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} Morceaux ·
-              {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}
-            </div>
+            {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} Morceaux ·
+            {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}
           </div>
-        </div>
-
-        <div class="playlist-header__right">
-          <button class="button button--nude"><i class="icon-share"></i></button>
-          <button class="button button--nude" @click="deletePlaylist(playlistStore.playlist.id)">
-            <i class="icon-more-vertical"></i>
-          </button>
         </div>
       </div>
-      <template v-if="playerStore.currentlyPlaying.item">
-        <div
-          v-for="(track, index) in playlistStore.tracks"
-          :key="index"
-          class="track"
-          :class="{
-            active:
-              playerStore.currentlyPlaying && track.track
-                ? track.track.id === playerStore.currentlyPlaying.item.id
-                : false,
-          }"
-          @dblclick="
-            playSongs(
-              index,
-              playlistStore.tracks.map((e) => e.track),
-            )
-          "
-        >
-          <div class="track-icon">
-            <i class="icon icon-music" />
-          </div>
-          <div>
-            <div class="track-name">{{ track.track.name }}</div>
-            <div>
-              <ArtistList :artist-list="track.track.artists" feat />
-            </div>
-          </div>
-          <div class="album">
-            <div v-if="track.track.album.album_type === 'album'" class="adder">
-              <i class="adder-icon icon-album" />
-              <i
-                class="adder-button icon-plus"
-                @click="dialogStore.open({ type: 'addalbum', albumId: track.track.album.id })"
-              />
-            </div>
-            <i
-              v-else
-              :class="{
-                'icon-single': track.track.album.album_type === 'single',
-                'icon-compilation': track.track.album.album_type === 'compilation',
-              }"
-            />
-            <router-link class="link" :to="`/album/${track.track.album.id}`">{{ track.track.album.name }}</router-link>
-          </div>
 
-          <div class="duration">
-            {{ timecode(track.track.duration_ms) }}
+      <div class="playlist-header__right">
+        <button class="button button--nude"><i class="icon-share"></i></button>
+        <button class="button button--nude" @click="deletePlaylist(playlistStore.playlist.id)">
+          <i class="icon-more-vertical"></i>
+        </button>
+      </div>
+    </div>
+    <template v-if="playerStore.currentlyPlaying.item">
+      <div
+        v-for="(track, index) in playlistStore.tracks"
+        :key="index"
+        class="track"
+        :class="{
+          active:
+            playerStore.currentlyPlaying && track.track
+              ? track.track.id === playerStore.currentlyPlaying.item.id
+              : false,
+        }"
+        @dblclick="
+          playSongs(
+            index,
+            playlistStore.tracks.map((e) => e.track),
+          )
+        "
+      >
+        <div class="track-icon">
+          <i class="icon icon-music" />
+        </div>
+        <div>
+          <div class="track-name">{{ track.track.name }}</div>
+          <div>
+            <ArtistList :artist-list="track.track.artists" feat />
           </div>
         </div>
-      </template>
-    </div>
+        <div class="album">
+          <div v-if="track.track.album.album_type === 'album'" class="adder">
+            <i class="adder-icon icon-album" />
+            <i
+              class="adder-button icon-plus"
+              @click="dialogStore.open({ type: 'addalbum', albumId: track.track.album.id })"
+            />
+          </div>
+          <i
+            v-else
+            :class="{
+              'icon-single': track.track.album.album_type === 'single',
+              'icon-compilation': track.track.album.album_type === 'compilation',
+            }"
+          />
+          <router-link class="link" :to="`/album/${track.track.album.id}`">{{ track.track.album.name }}</router-link>
+        </div>
+
+        <div class="owner">
+          {{ track.added_by.id }}
+        </div>
+
+        <div class="date">
+          {{ format(new Date(track.added_at), "dd/MM/yy") }}
+        </div>
+
+        <div class="duration">
+          {{ timecode(track.track.duration_ms) }}
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -88,6 +94,7 @@ import ArtistList from "../../components/ArtistList.vue";
 import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
+import { format } from "date-fns";
 
 const props = defineProps<{ id: string }>();
 const playlistpage = ref();
@@ -122,7 +129,8 @@ playlistStore.clean().finally(() => {
   align-items: center;
   border-radius: 3px;
   display: grid;
-  grid-template-columns: 40px 1fr 0.8fr 50px;
+  gap: 10px;
+  grid-template-columns: 40px 1fr 0.9fr 0.4fr 0.2fr 50px;
   margin-bottom: 5px;
   padding: 5px 10px;
 
@@ -134,12 +142,16 @@ playlistStore.clean().finally(() => {
     opacity: 0.1;
   }
 
-  .link {
+  .link,
+  .date,
+  .owner {
     color: currentColor;
     font-style: italic;
     opacity: 0.5;
     text-decoration: none;
+  }
 
+  .link {
     &:hover {
       color: var(--primary-color);
       opacity: 1;
