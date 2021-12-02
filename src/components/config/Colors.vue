@@ -118,7 +118,7 @@ const textColors: TextColors[] = [
     }
 
     &.default {
-      background-color: #6d49c9;
+      background-color: #9064ff;
     }
 
     &.crimson {

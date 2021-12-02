@@ -25,7 +25,7 @@ export const schemeDefault: ThemeColor[] = [
   },
   {
     var: "--primary-color",
-    color: "#6d49c9",
+    color: "#9064ff",
   },
   {
     var: "--primary-color-light",

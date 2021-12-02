@@ -41,7 +41,7 @@
           "
         >
           <div class="track-icon">
-            <i class="icon-music" />
+            <i class="icon icon-music" />
           </div>
           <div>
             <div>{{ track.track.name }}</div>
@@ -121,6 +121,9 @@ playlistStore.clean().finally(() => {
 
   &-icon {
     font-size: 1.5rem;
+  }
+
+  .icon {
     opacity: 0.1;
   }
 
