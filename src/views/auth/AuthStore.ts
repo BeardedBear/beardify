@@ -3,7 +3,6 @@ import formUrlEncoded from "form-urlencoded";
 import { defineStore } from "pinia";
 import { create } from "pkce";
 import { Auth, AuthAPIResponse } from "../../@types/Auth";
-import { defaultMe } from "../../@types/Defaults";
 import { Me } from "../../@types/Me";
 import { api } from "../../api";
 import router, { RouteName } from "../../router";
@@ -12,7 +11,7 @@ export const useAuth = defineStore("auth", {
   state: (): Auth => ({
     accessToken: "",
     code: "",
-    me: defaultMe,
+    me: null,
   }),
 
   actions: {
@@ -30,7 +29,7 @@ export const useAuth = defineStore("auth", {
     },
 
     resetLogin() {
-      this.me = defaultMe;
+      this.me = null;
     },
 
     async refresh() {
@@ -47,7 +46,7 @@ export const useAuth = defineStore("auth", {
         )
         .then((res) => {
           this.accessToken = res.data.access_token;
-          this.getMe(res.data.access_token);
+          if (!this.me) this.getMe(res.data.access_token);
           this.syncStore("", "", res.data.refresh_token);
           return true;
         })

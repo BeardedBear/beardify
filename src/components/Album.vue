@@ -27,7 +27,7 @@
       <div v-if="withArtists">
         <ArtistList :artist-list="album.artists" feat />
       </div>
-      <div class="date">
+      <div v-if="album.release_date" class="date">
         {{ album.release_date.split("-").shift() }}
       </div>
     </div>

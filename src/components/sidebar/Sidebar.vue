@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, watchEffect } from "vue";
 import Loader from "../LoadingDots.vue";
 import { useDialog } from "../dialog/DialogStore";
 import { useSidebar } from "./SidebarStore";
@@ -65,7 +65,10 @@ const sidebarStore = useSidebar();
 const collections = computed(() => sidebarStore.playlists.filter((p) => p.name.toLowerCase().includes("#collection")));
 const playlists = computed(() => sidebarStore.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")));
 
-sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
+watchEffect(() => {
+  if (!sidebarStore.collections.length || !sidebarStore.playlists.length)
+    sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
+});
 </script>
 
 <style lang="scss" scoped>

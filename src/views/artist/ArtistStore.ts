@@ -41,7 +41,6 @@ export const useArtist = defineStore("artist", {
     },
 
     getAlbums(artistId: string) {
-      this.albums = [];
       instance()
         .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=album&limit=50`)
         .then((e) => {

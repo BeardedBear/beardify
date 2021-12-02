@@ -3,7 +3,7 @@ import { Artist } from "./Artist";
 import { CurrentlyPlaying, CurrentlyPlayingContext } from "./CurrentlyPlaying";
 import { Device } from "./Device";
 import { Image } from "./Image";
-import { Followers, Me } from "./Me";
+import { Followers } from "./Me";
 import { ExternalUrls } from "./Misc";
 import { PlaylistTracksRef, SimplifiedPlaylist } from "./Playlist";
 import { PublicUser } from "./PublicUser";
@@ -151,20 +151,6 @@ const defaultFollowers: Followers = {
   total: 0,
 };
 
-export const defaultMe: Me = {
-  country: "",
-  display_name: "",
-  email: "",
-  external_urls: defaultExternalUrls,
-  followers: defaultFollowers,
-  href: "",
-  id: "",
-  images: [],
-  product: "premium",
-  type: "",
-  uri: "",
-};
-
 export const defaultPublicUser: PublicUser = {
   display_name: "",
   external_urls: defaultExternalUrls,
@@ -220,11 +206,3 @@ export const defaultPlaylist = {
   type: "",
   uri: "",
 };
-
-// export const defaultAuth: AuthData = {
-//   accessToken: "",
-//   refreshToken: "",
-//   code: "",
-//   codeVerifier: "",
-//   codeChallenge: "",
-// };
