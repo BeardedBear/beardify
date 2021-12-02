@@ -146,6 +146,7 @@ playlistStore.clean().finally(() => {
   .date,
   .owner {
     color: currentColor;
+    font-size: 0.8rem;
     font-style: italic;
     opacity: 0.5;
     text-decoration: none;
