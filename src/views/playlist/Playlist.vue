@@ -4,7 +4,7 @@
     <div class="fit">
       <div class="playlist-header">
         <div class="playlist-header__left">
-          <div><Cover size="medium" :images="playlistStore.playlist.images" class-name="cover" /></div>
+          <div><Cover size="large" :images="playlistStore.playlist.images" class-name="cover" /></div>
           <div>
             <div class="title">{{ playlistStore.playlist.name }}</div>
             <div class="description">{{ playlistStore.playlist.description }}</div>
