@@ -33,7 +33,7 @@
                 ? track.track.id === playerStore.currentlyPlaying.item.id
                 : false,
           }"
-          @click="
+          @dblclick="
             playSongs(
               index,
               playlistStore.tracks.map((e) => e.track),
@@ -44,19 +44,27 @@
             <i class="icon icon-music" />
           </div>
           <div>
-            <div>{{ track.track.name }}</div>
+            <div class="track-name">{{ track.track.name }}</div>
             <div>
               <ArtistList :artist-list="track.track.artists" feat />
             </div>
           </div>
-          <div class="album" @click.stop="goAlbum(track.track.album.id)">
+          <div class="album">
+            <div v-if="track.track.album.album_type === 'album'" class="adder">
+              <i class="adder-icon icon-album" />
+              <i
+                class="adder-button icon-plus"
+                @click="dialogStore.open({ type: 'addalbum', albumId: track.track.album.id })"
+              />
+            </div>
             <i
+              v-else
               :class="{
-                'icon-album': track.track.album.album_type === 'album',
                 'icon-single': track.track.album.album_type === 'single',
                 'icon-compilation': track.track.album.album_type === 'compilation',
               }"
-            />{{ track.track.album.name }}
+            />
+            <router-link class="link" :to="`/album/${track.track.album.id}`">{{ track.track.album.name }}</router-link>
           </div>
 
           <div class="duration">
@@ -75,7 +83,6 @@ import { playSongs } from "../../helpers/play";
 import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { api } from "../../api";
-import router from "../../router";
 import { useDialog } from "../../components/dialog/DialogStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { usePlaylist } from "./PlaylistStore";
@@ -90,10 +97,6 @@ const playerStore = usePlayer();
 
 function deletePlaylist(playlistId: string): void {
   dialogStore.open({ type: "editPlaylist", playlistId });
-}
-
-function goAlbum(albumId: string): void {
-  router.push(`/album/${albumId}`);
 }
 
 function sumDuration(tracks: PlaylistTrack[]): number {
@@ -111,12 +114,16 @@ playlistStore.clean().finally(() => {
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
 
+.track-name {
+  font-weight: bold;
+}
+
 .track {
   align-items: center;
   border-radius: 3px;
-  cursor: pointer;
   display: grid;
   grid-template-columns: 40px 1fr 0.8fr 50px;
+  margin-bottom: 5px;
   padding: 5px 10px;
 
   &-icon {
@@ -127,8 +134,47 @@ playlistStore.clean().finally(() => {
     opacity: 0.1;
   }
 
+  .link {
+    color: currentColor;
+    font-style: italic;
+    opacity: 0.5;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--primary-color);
+      opacity: 1;
+    }
+  }
+
   &:hover {
     background-color: color.change(rgb(74 75 103), $alpha: 0.1);
+  }
+
+  &:active {
+    background-color: color.change(rgb(74 75 103), $alpha: 0.2);
+  }
+
+  .adder {
+    &-button {
+      background: none;
+      border: none;
+      color: var(--primary-color);
+      cursor: pointer;
+      display: none;
+      opacity: 1;
+      padding: 0;
+      transform: scale(1.2);
+    }
+
+    &:hover {
+      .adder-button {
+        display: block;
+      }
+
+      .adder-icon {
+        display: none;
+      }
+    }
   }
 }
 
@@ -141,11 +187,6 @@ playlistStore.clean().finally(() => {
   display: flex;
   font-size: 0.8rem;
   text-align: left;
-
-  &:hover {
-    color: var(--primary-color);
-    opacity: 1;
-  }
 
   i {
     font-size: 1rem;
