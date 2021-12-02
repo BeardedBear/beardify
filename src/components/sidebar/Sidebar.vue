@@ -20,7 +20,8 @@
           :class="{ active: $route.params.id === playlist.id }"
         >
           <i class="type-icon icon-folder" />
-          <div>{{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}</div>
+          <div class="name">{{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}</div>
+          <i class="public-icon" title="Public" :class="{ 'icon-public': playlist.public }" />
         </router-link>
       </div>
     </div>
@@ -38,9 +39,14 @@
         >
           <i
             class="type-icon"
-            :class="{ 'icon-music': !playlist.collaborative, 'icon-users': playlist.collaborative }"
+            :class="{
+              'icon-spotify': !playlist.collaborative && playlist.owner.display_name === 'Spotify',
+              'icon-music': !playlist.collaborative && playlist.owner.display_name !== 'Spotify',
+              'icon-users': playlist.collaborative,
+            }"
           />
-          <div>{{ playlist.name }}</div>
+          <div class="name">{{ playlist.name }}</div>
+          <i class="public-icon" title="Public" :class="{ 'icon-public': playlist.public }" />
         </router-link>
       </div>
     </div>
@@ -76,6 +82,7 @@ sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
   align-items: center;
   color: currentColor;
   display: flex;
+  justify-content: space-between;
   padding: 5px 15px;
   text-decoration: none;
 
@@ -86,6 +93,15 @@ sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
   .type-icon {
     margin-right: 15px;
     opacity: 0.3;
+  }
+
+  .public-icon {
+    opacity: 0.1;
+  }
+
+  .name {
+    flex: 1;
+    text-align: left;
   }
 }
 
