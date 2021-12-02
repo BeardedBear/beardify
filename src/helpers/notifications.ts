@@ -1,9 +1,9 @@
-import { ErrorType } from "../@types/Error";
+import { Notification } from "../@types/Notification";
 import { useNotification } from "../components/notification/NotificationStore";
 
-export function showError(type: ErrorType): void {
+export function notification(notif: Notification): void {
   const notificationStore = useNotification();
-  notificationStore.addNotification({ type }).then(() => {
+  notificationStore.addNotification({ type: notif.type, msg: notif.msg }).then(() => {
     setTimeout(() => notificationStore.removeNotification(), 4000);
   });
 }

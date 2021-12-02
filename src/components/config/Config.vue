@@ -11,7 +11,12 @@
       <div class="section__title">Debug</div>
       <router-link class="button button--full" to="/login"> Login </router-link>
       <button class="button button--full" @click="authStore.refresh()">Refresh token</button>
-      <button class="button button--full" @click="randomNotif()">Notif</button>
+      <button
+        class="button button--full"
+        @click="notification({ msg: 'DeviceNotInitialized', type: NotificationType.Error })"
+      >
+        Notif
+      </button>
     </div>
 
     <button class="button button--full" @click="logout()">Logout</button>
@@ -26,12 +31,12 @@
 <script lang="ts" setup>
 import router, { RouteName } from "../../router";
 import Colors from "./Colors.vue";
-import { ErrorType } from "../../@types/Error";
-import { showError } from "../../helpers/errors";
+import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";
 import { onClickOutside } from "@vueuse/core";
 import { ref } from "vue";
 import { useConfig } from "./ConfigStore";
+import { NotificationType } from "../../@types/Notification";
 
 const env = process.env.NODE_ENV;
 const authStore = useAuth();
@@ -44,10 +49,6 @@ function logout(): void {
   configStore.close();
   authStore.resetLogin();
   router.push(RouteName.Login);
-}
-
-function randomNotif(): void {
-  showError(ErrorType.DeviceNotInitialized);
 }
 </script>
 

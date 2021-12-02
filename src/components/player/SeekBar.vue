@@ -41,8 +41,8 @@ watchEffect(() => {
 });
 
 useIntervalFn(() => {
-  if (playerStore.currentlyPlaying.is_playing) currentTime.value = currentTime.value + 200;
-}, 200);
+  if (playerStore.currentlyPlaying.is_playing) currentTime.value = currentTime.value + 1000;
+}, 1000);
 
 watch(
   () => playerStore.currentlyPlaying.progress_ms,
@@ -102,7 +102,7 @@ watch(
     left: 0;
     position: absolute;
     top: 0;
-    transition: all linear 0.2s;
+    transition: all ease 0.2s;
   }
 
   &:hover {

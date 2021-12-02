@@ -7,6 +7,8 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
+import { NotificationType } from "../../@types/Notification";
+import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
 
@@ -15,7 +17,10 @@ const sidebarStore = useSidebar();
 const collectionName = ref("");
 
 function create(): void {
-  sidebarStore.addCollection(collectionName.value).then(() => dialogStore.close());
+  sidebarStore.addCollection(collectionName.value).then(() => {
+    dialogStore.close();
+    notification({ msg: `Collection ${collectionName.value} created`, type: NotificationType.Success });
+  });
 }
 </script>
 

@@ -1,9 +1,13 @@
-import { ErrorType } from "./Error";
-
+export enum NotificationType {
+  Error,
+  Success,
+  Warning,
+}
 export interface NotificationStore {
   notifications: Notification[];
 }
 
 export interface Notification {
-  type: ErrorType;
+  type: NotificationType;
+  msg: string;
 }

@@ -1,12 +1,18 @@
 <template>
   <div class="notification-list">
-    <div v-for="(notif, index) in notificationStore.notifications" :key="index" class="notification">
-      {{ notif.type }}
+    <div
+      v-for="(notif, index) in notificationStore.notifications"
+      :key="index"
+      class="notification"
+      :class="{ error: notif.type === NotificationType.Error }"
+    >
+      {{ notif.msg }}
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { NotificationType } from "../../@types/Notification";
 import { useNotification } from "./NotificationStore";
 
 const notificationStore = useNotification();
@@ -28,21 +34,25 @@ const notificationStore = useNotification();
 }
 
 .notification-list {
-  $offset: 20px;
+  $offset: 40px;
 
-  bottom: $offset;
   position: absolute;
   right: $offset;
+  top: $offset + 40px;
   z-index: 9;
 }
 
 .notification {
   animation: pop-notif 4s ease-in-out both;
-  background: rgb(185 50 50);
+  background: rgb(33 124 33);
   border-radius: 5px;
   margin-top: 10px;
   padding: 10px 15px;
   position: relative;
   transition: all 0.5s;
+
+  &.error {
+    background: rgb(185 50 50);
+  }
 }
 </style>

@@ -12,9 +12,11 @@
 </template>
 
 <script lang="ts" setup>
+import { NotificationType } from "../../@types/Notification";
 import { Paging } from "../../@types/Paging";
 import { TrackSimplified } from "../../@types/Track";
 import { instance } from "../../api";
+import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
 
@@ -30,7 +32,8 @@ function add(albumId: string, playlistId: string): void {
         .then((f) => {
           if (f.status === 201) dialogStore.close();
         });
-    });
+    })
+    .then(() => notification({ msg: "Album added", type: NotificationType.Success }));
 }
 </script>
 

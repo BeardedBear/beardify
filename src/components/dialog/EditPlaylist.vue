@@ -5,6 +5,8 @@
 </template>
 
 <script lang="ts" setup>
+import { NotificationType } from "../../@types/Notification";
+import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
 
@@ -13,7 +15,10 @@ const sidebarStore = useSidebar();
 
 function remove(): void {
   if (dialogStore.playlistId) {
-    sidebarStore.removePlaylist(dialogStore.playlistId).then(() => dialogStore.close());
+    sidebarStore.removePlaylist(dialogStore.playlistId).then(() => {
+      dialogStore.close();
+      notification({ msg: `Deleted`, type: NotificationType.Success });
+    });
   }
 }
 </script>

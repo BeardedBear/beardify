@@ -46,6 +46,8 @@ import { useRoute } from "vue-router";
 import { useDialog } from "./dialog/DialogStore";
 import ArtistList from "./ArtistList.vue";
 import { usePlaylist } from "../views/playlist/PlaylistStore";
+import { notification } from "../helpers/notifications";
+import { NotificationType } from "../@types/Notification";
 
 defineProps<{
   album: AlbumSimplified | Album;
@@ -69,11 +71,10 @@ function deleteAlbum(albumId: string): void {
       e.data.items.map((t) => t.uri).forEach((t) => tracks.push({ uri: t }));
 
       instance()
-        .delete(`playlists/${currentRouteId}/tracks`, {
-          data: { tracks: tracks },
-        })
+        .delete(`playlists/${currentRouteId}/tracks`, { data: { tracks: tracks } })
         .then(() => playlistStore.removeTracks(tracks));
-    });
+    })
+    .then(() => notification({ msg: "Album deleted", type: NotificationType.Success }));
 }
 </script>
 
