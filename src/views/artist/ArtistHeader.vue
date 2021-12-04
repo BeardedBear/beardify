@@ -26,7 +26,7 @@ const artistStore = useArtist();
 
 .genres {
   display: flex;
-  gap: 10px;
+  gap: 5px;
   margin-bottom: 10px;
   opacity: 0.3;
 
