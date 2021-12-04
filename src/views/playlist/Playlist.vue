@@ -71,7 +71,7 @@
         </div>
 
         <div class="date">
-          {{ format(new Date(track.added_at), "dd/MM/yy") }}
+          {{ date(track.added_at) }}
         </div>
 
         <div class="duration">
@@ -84,7 +84,7 @@
 
 <script lang="ts" setup>
 import { defineProps, ref } from "vue";
-import { timecode, timecodeWithUnits } from "../../helpers/date";
+import { timecode, timecodeWithUnits, date } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
@@ -94,7 +94,6 @@ import ArtistList from "../../components/ArtistList.vue";
 import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
-import { format } from "date-fns";
 
 const props = defineProps<{ id: string }>();
 const playlistpage = ref();
@@ -130,7 +129,7 @@ playlistStore.clean().finally(() => {
   border-radius: 3px;
   display: grid;
   gap: 10px;
-  grid-template-columns: 40px 1fr 0.9fr 0.4fr 0.2fr 50px;
+  grid-template-columns: 40px 1fr 0.9fr 0.4fr 0.3fr 50px;
   margin-bottom: 5px;
   padding: 5px 10px;
 

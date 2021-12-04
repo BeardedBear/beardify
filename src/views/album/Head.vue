@@ -7,7 +7,9 @@
       <div>
         <ArtistList :artist-list="album.artists" />
         ·
-        <span>{{ album.release_date.split("-").shift() }}</span>
+        <span v-if="album.release_date_precision === 'year'">{{ album.release_date.split("-").shift() }}</span>
+        <span v-else-if="album.release_date_precision === 'month'">{{ album.release_date.split("-").shift() }}</span>
+        <span v-else>{{ date(album.release_date) }}</span>
         ·
         <span>{{ timecodeWithUnits(sumDuration(album.tracks.items)) }}</span>
       </div>
@@ -35,7 +37,7 @@
 
 <script lang="ts" setup>
 import { defineProps, ref } from "vue";
-import { timecodeWithUnits } from "../../helpers/date";
+import { timecodeWithUnits, date } from "../../helpers/date";
 import { Track, TrackSimplified } from "../../@types/Track";
 import ArtistList from "../../components/ArtistList.vue";
 import { Album } from "../../@types/Album";

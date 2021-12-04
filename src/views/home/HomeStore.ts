@@ -26,9 +26,9 @@ export const useHome = defineStore("home", {
       instance()
         .get<Paging<Artist>>(`${api.url}me/top/artists?time_range=long_term`)
         .then((e) => {
-          const artistsSeed = `${e.data.items[getRandomInt(0, 10)].id},${e.data.items[getRandomInt(0, 10)].id},${
-            e.data.items[getRandomInt(0, 10)].id
-          },${e.data.items[getRandomInt(0, 10)].id},${e.data.items[getRandomInt(0, 10)].id}`;
+          const artistsSeed = `${e.data.items[getRandomInt(0, 10)]?.id},${e.data.items[getRandomInt(0, 10)]?.id},${
+            e.data.items[getRandomInt(0, 10)]?.id
+          },${e.data.items[getRandomInt(0, 10)]?.id},${e.data.items[getRandomInt(0, 10)]?.id}`;
 
           instance()
             .get<Top>(`${api.url}recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`)

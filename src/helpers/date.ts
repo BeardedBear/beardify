@@ -1,13 +1,18 @@
+// https://date-fns.org/v2.27.0/docs/format
+
+import format from "date-fns/format";
+import { fr } from "date-fns/locale";
+
+const options = { locale: fr };
+
 export function timecode(date: number): string {
-  const minutes = new Date(date).getMinutes();
-  const seconds = new Date(date).getSeconds();
-  return minutes + ":" + (seconds < 10 ? `0${seconds}` : seconds);
+  return format(new Date(date), "m:ss", options);
 }
 
 export function timecodeWithUnits(date: number): string {
-  const hours = new Date(date).getHours();
-  const minutes = new Date(date).getMinutes();
-  const seconds = new Date(date).getSeconds();
+  return format(new Date(date), "k:m:ss", options);
+}
 
-  return (hours > 1 ? hours - 1 + "h " : "") + minutes + "m " + (seconds < 10 ? `0${seconds}` : seconds) + "s";
+export function date(date: string | number): string {
+  return format(new Date(date), "d MMM y", options);
 }
