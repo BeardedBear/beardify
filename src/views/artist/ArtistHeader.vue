@@ -58,7 +58,8 @@
         </a>
       </div>
     </div>
-    <div>
+    <div class="options">
+      <div class="followers">{{ artistStore.artist.followers.total }} followers</div>
       <div
         v-if="artistStore.followStatus"
         class="follow button button--primary"
@@ -95,6 +96,17 @@ function switchFollow(artistId: string): void {
 
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
+
+.options {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+
+  .followers {
+    font-style: italic;
+    opacity: 0.3;
+  }
+}
 
 .title {
   align-items: center;
