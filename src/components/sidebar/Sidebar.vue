@@ -6,13 +6,21 @@
     <div class="sidebar__item">
       <div v-if="!collectionSearchOpened" class="heading title">
         <div>Collections</div>
-        <div>
-          <button class="search" @click="() => (collectionSearchOpened = true)"><i class="icon-search"></i></button>
-          <button class="add" @click="dialogStore.open({ type: 'addCollection' })"><i class="icon-plus"></i></button>
+        <div class="options">
+          <button class="icon" @click="() => (collectionSearchOpened = true)"><i class="icon-search"></i></button>
+          <button class="icon add" @click="dialogStore.open({ type: 'addCollection' })">
+            <i class="icon-plus"></i>
+          </button>
         </div>
       </div>
       <div v-else class="heading title">
-        <input ref="collectionSearchInput" v-model="collectionSearchQuery" type="text" />
+        <input
+          ref="collectionSearchInput"
+          v-model="collectionSearchQuery"
+          class="search"
+          type="text"
+          placeholder="Search collection"
+        />
       </div>
       <div v-if="!collections.length" class="empty">
         Ah bah zut alors, tu n'a pas de collection ! Pour en créer une, il suffit de créer ou de renommer une playlist
@@ -34,13 +42,19 @@
     <div class="sidebar__item">
       <div v-if="!playlistSearchOpened" class="heading title">
         <div>Playlists</div>
-        <div>
-          <button class="search" @click="() => (playlistSearchOpened = true)"><i class="icon-search"></i></button>
-          <button class="add" @click="dialogStore.open({ type: 'addPlaylist' })"><i class="icon-plus"></i></button>
+        <div class="options">
+          <button class="icon" @click="() => (playlistSearchOpened = true)"><i class="icon-search"></i></button>
+          <button class="icon add" @click="dialogStore.open({ type: 'addPlaylist' })"><i class="icon-plus"></i></button>
         </div>
       </div>
       <div v-else class="heading title">
-        <input ref="playlistSearchInput" v-model="playlistSearchQuery" type="text" />
+        <input
+          ref="playlistSearchInput"
+          v-model="playlistSearchQuery"
+          class="search"
+          type="text"
+          placeholder="Search playlist"
+        />
       </div>
       <div v-for="(playlist, index) in playlists" :key="index">
         <router-link
@@ -166,6 +180,20 @@ sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
   }
 }
 
+.search {
+  background-color: var(--bg-color-light);
+  border: none;
+  border-radius: 3px;
+  color: var(--font-color);
+  font-weight: bold;
+  padding: 3px 10px 2px;
+  width: 100%;
+
+  &:focus {
+    outline: 0;
+  }
+}
+
 .title {
   align-items: center;
   background-color: var(--bg-color-dark);
@@ -178,19 +206,20 @@ sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
   z-index: 1;
 }
 
-.add {
-  background-color: transparent;
-  border: 0;
-  border-radius: 100px;
-  color: var(--font-color);
-  cursor: pointer;
-  font-size: 1.3rem;
-  opacity: 0.4;
-  padding: 1px 12px;
+.options {
+  .icon {
+    background-color: transparent;
+    border: 0;
+    border-radius: 100px;
+    color: var(--font-color);
+    cursor: pointer;
+    opacity: 0.4;
+    padding: 2px 12px;
 
-  &:hover {
-    background-color: var(--bg-color-lighter);
-    opacity: 1;
+    &:hover {
+      background-color: var(--bg-color-lighter);
+      opacity: 1;
+    }
   }
 }
 </style>

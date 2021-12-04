@@ -174,8 +174,6 @@ playlistStore.clean().finally(() => {
       cursor: pointer;
       display: none;
       opacity: 1;
-      padding: 0;
-      transform: scale(1.2);
     }
 
     &:hover {
