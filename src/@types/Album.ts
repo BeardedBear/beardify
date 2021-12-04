@@ -10,10 +10,16 @@ export interface AlbumPage {
 export type AlbumType = "album" | "single" | "compilation" | "ALBUM" | "SINGLE";
 
 export type ReleaseDatePrecision = "year" | "month" | "day";
+
+export interface Copyrights {
+  text: string;
+  type: string;
+}
 export interface Album {
   album_type: AlbumType;
   artists: Artist[];
   available_markets: string[];
+  copyrights: Copyrights[];
   external_urls: ExternalUrls;
   genres: string[];
   href: string;

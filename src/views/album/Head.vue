@@ -1,10 +1,8 @@
 <template>
   <div class="album-header">
     <div>
-      <div class="title">
-        {{ album.name }}
-      </div>
-      <div>
+      <div class="title">{{ album.name }}</div>
+      <div class="infos">
         <ArtistList :artist-list="album.artists" />
         ·
         <span v-if="album.release_date_precision === 'year'">{{ album.release_date }}</span>
@@ -62,8 +60,10 @@ function openLink(url: string): void {
 .album-header {
   display: flex;
   justify-content: space-between;
-  margin: 0 auto 60px;
-  max-width: 935px;
+}
+
+.infos {
+  opacity: 0.4;
 }
 
 .title {

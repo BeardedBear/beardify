@@ -1,37 +1,40 @@
 <template>
   <div v-if="albumStore.album.name === ''" class="loader"><Loader /></div>
   <div v-else ref="albumpage" class="album-page">
-    <Head :album="albumStore.album" />
-    <div class="content">
-      <div class="content__cover">
-        <Album
-          :album="albumStore.album"
-          :currently-played-id="playerStore.currentlyPlaying.item?.album.uri"
-          without-metas
-          can-save
-        />
-      </div>
-      <div class="content__tracks">
-        <div
-          v-for="(track, index) in albumStore.album.tracks.items"
-          :key="index"
-          class="track"
-          :class="{ active: playerStore.currentlyPlaying.item?.id === track.id }"
-          @click="playSongs(index, albumStore.album.tracks.items)"
-        >
-          <span class="track__number">{{ track.track_number }}.</span>
-          <div>
-            <div>{{ track.name }}</div>
-            <div v-if="albumStore.album.artists.length">
-              <ArtistList
-                :artist-list="track.artists.filter((e) => e.name !== albumStore.album.artists[0].name)"
-                feat
-              />
+    <div class="fit">
+      <Head :album="albumStore.album" />
+      <div class="content">
+        <div class="content__cover">
+          <Album
+            :album="albumStore.album"
+            :currently-played-id="playerStore.currentlyPlaying.item?.album.uri"
+            without-metas
+            can-save
+          />
+        </div>
+        <div class="content__tracks">
+          <div
+            v-for="(track, index) in albumStore.album.tracks.items"
+            :key="index"
+            class="track"
+            :class="{ active: playerStore.currentlyPlaying.item?.id === track.id }"
+            @click="playSongs(index, albumStore.album.tracks.items)"
+          >
+            <span class="track__number">{{ track.track_number }}.</span>
+            <div>
+              <div>{{ track.name }}</div>
+              <div v-if="albumStore.album.artists.length">
+                <ArtistList
+                  :artist-list="track.artists.filter((e) => e.name !== albumStore.album.artists[0].name)"
+                  feat
+                />
+              </div>
             </div>
+            <div>{{ timecode(track.duration_ms) }}</div>
           </div>
-          <div>{{ timecode(track.duration_ms) }}</div>
         </div>
       </div>
+      <Foot :album="albumStore.album" />
     </div>
   </div>
 </template>
@@ -46,6 +49,7 @@ import { useAlbum } from "./AlbumStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
 import Head from "./Head.vue";
+import Foot from "./Foot.vue";
 
 const props = defineProps({ id: { default: "", type: String } });
 const albumpage = ref();
@@ -62,6 +66,15 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 
 .cover {
   width: 100%;
+}
+
+.fit {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 60px;
+  margin: 0 auto;
+  width: 900px;
 }
 
 .track {
@@ -83,21 +96,20 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 
 .content {
   display: flex;
+  flex: 1;
+  gap: 30px;
   justify-content: center;
 
-  &__cover {
-    flex: 0 0 300px;
-    margin-right: 30px;
-  }
-
   &__tracks {
-    flex: 0.8;
+    flex: 1;
     font-size: 1rem;
   }
 }
 
 .album-page {
   animation: pop-content 1s ease both;
+  display: flex;
+  flex-direction: column;
   overflow-y: scroll;
   padding: 30px 40px;
   scroll-behavior: smooth;
