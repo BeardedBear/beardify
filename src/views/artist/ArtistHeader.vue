@@ -2,10 +2,13 @@
   <div class="header" :class="{ scrolled: scrolledHead }">
     <div>
       <div class="title">
-        <div class="name" :class="{ scrolled: scrolledHead }">
-          {{ artistStore.artist.name }}
-        </div>
+        <div class="name" :class="{ scrolled: scrolledHead }">{{ artistStore.artist.name }}</div>
       </div>
+      <div class="genres">
+        <span v-for="(genre, index) in artistStore.artist.genres" :key="index" class="genre">{{ genre }}</span>
+      </div>
+    </div>
+    <div class="options">
       <div class="header-links">
         <a class="header-links__item" @click="openLink(`https://fr.wikipedia.org/wiki/${artistStore.artist.name}`)">
           <i class="icon-wikipedia" />
@@ -57,8 +60,6 @@
           <i class="icon-youtube" />
         </a>
       </div>
-    </div>
-    <div class="options">
       <div class="followers">{{ artistStore.artist.followers.total }} followers</div>
       <div
         v-if="artistStore.followStatus"
@@ -97,6 +98,21 @@ function switchFollow(artistId: string): void {
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
 
+.genres {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  opacity: 0.3;
+
+  .genre {
+    background-color: var(--bg-color-lighter);
+    border-radius: 30px;
+    color: currentColor;
+    font-size: 0.8rem;
+    padding: 1px 7px 2px;
+  }
+}
+
 .options {
   align-items: center;
   display: flex;
@@ -112,7 +128,7 @@ function switchFollow(artistId: string): void {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .name {
@@ -134,9 +150,8 @@ function switchFollow(artistId: string): void {
   align-items: center;
   background-color: var(--bg-color-darker);
   display: flex;
-  height: 120px;
   justify-content: space-between;
-  padding: 30px 40px 10px;
+  padding: 10px 40px;
   position: sticky;
   top: 0;
   transition: transform ease 0.1s;
