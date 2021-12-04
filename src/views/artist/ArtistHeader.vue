@@ -47,7 +47,7 @@ const artistStore = useArtist();
 }
 
 .name {
-  font-size: 2rem;
+  font-size: 1.9rem;
   font-weight: 300;
   transition: font-size ease 0.2s;
 
