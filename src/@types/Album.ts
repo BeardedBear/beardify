@@ -14,6 +14,7 @@ export interface Album {
   album_type: AlbumType;
   artists: Artist[];
   available_markets: string[];
+  external_urls: ExternalUrls;
   genres: string[];
   href: string;
   id: string;

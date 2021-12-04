@@ -15,8 +15,8 @@
       </div>
     </div>
     <div>
-      <span v-if="copySpotify.copied.value" class="copied">Copied</span>
-      <button class="copy button button--nude" @click="copySpotify.copy()">
+      <span v-if="clipboard.copied.value" class="copied">Copied</span>
+      <button class="copy button button--nude" @click="clipboard.copy()">
         <i class="icon-share"></i>
       </button>
       <a
@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref } from "vue";
+import { defineProps } from "vue";
 import { timecodeWithUnits, date } from "../../helpers/date";
 import { Track, TrackSimplified } from "../../@types/Track";
 import ArtistList from "../../components/ArtistList.vue";
@@ -44,11 +44,7 @@ import { Album } from "../../@types/Album";
 import { useClipboard } from "@vueuse/core";
 
 const props = defineProps<{ album: Album }>();
-const spotifyUrl = ref<string>(`https://open.spotify.com/album/${props.album.id}`);
-const copySpotify = useClipboard({ source: spotifyUrl });
-
-// https://open.spotify.com/album/6lsuWX8465h9ddhhO7YOTo?si=CdnDmSBhRqCJZQLzBYJ-EQ&dl_branch=1
-// http://localhost:3000/album/6lsuWX8465h9ddhhO7YOTo
+const clipboard = useClipboard({ source: props.album.external_urls.spotify });
 
 function sumDuration(tracks: TrackSimplified[] | Track[]): number {
   return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
