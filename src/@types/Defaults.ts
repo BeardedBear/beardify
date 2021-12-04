@@ -132,6 +132,8 @@ export const defaultAlbum: Album = {
   artists: [],
   available_markets: [],
   genres: [],
+  copyrights: [],
+  external_urls: defaultExternalUrls,
   href: "",
   id: "",
   images: [],
