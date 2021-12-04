@@ -2,11 +2,17 @@
   <div v-if="!sidebarStore.playlists.length && !sidebarStore.collections.length" class="sidebar loading">
     <Loader />
   </div>
-  <div v-else class="sidebar">
+  <div v-else class="sidebar" :class="{ 'search-opened': collectionSearchOpened || playlistSearchOpened }">
     <div class="sidebar__item">
-      <div class="heading title">
+      <div v-if="!collectionSearchOpened" class="heading title">
         <div>Collections</div>
-        <button class="add" @click="dialogStore.open({ type: 'addCollection' })"><i class="icon-plus"></i></button>
+        <div>
+          <button class="search" @click="() => (collectionSearchOpened = true)"><i class="icon-search"></i></button>
+          <button class="add" @click="dialogStore.open({ type: 'addCollection' })"><i class="icon-plus"></i></button>
+        </div>
+      </div>
+      <div v-else class="heading title">
+        <input ref="collectionSearchInput" v-model="collectionSearchQuery" type="text" />
       </div>
       <div v-if="!collections.length" class="empty">
         Ah bah zut alors, tu n'a pas de collection ! Pour en créer une, il suffit de créer ou de renommer une playlist
@@ -14,7 +20,7 @@
       </div>
       <div v-for="(playlist, index) in collections" v-else :key="index">
         <router-link
-          v-if="playlist.id"
+          v-if="playlist.id && playlist.name.toLocaleLowerCase().includes(collectionSearchQuery.toLocaleLowerCase())"
           class="playlist-item"
           :to="`/collection/${playlist.id}`"
           :class="{ active: $route.params.id === playlist.id }"
@@ -26,13 +32,19 @@
       </div>
     </div>
     <div class="sidebar__item">
-      <div class="heading title">
+      <div v-if="!playlistSearchOpened" class="heading title">
         <div>Playlists</div>
-        <button class="add" @click="dialogStore.open({ type: 'addPlaylist' })"><i class="icon-plus"></i></button>
+        <div>
+          <button class="search" @click="() => (playlistSearchOpened = true)"><i class="icon-search"></i></button>
+          <button class="add" @click="dialogStore.open({ type: 'addPlaylist' })"><i class="icon-plus"></i></button>
+        </div>
+      </div>
+      <div v-else class="heading title">
+        <input ref="playlistSearchInput" v-model="playlistSearchQuery" type="text" />
       </div>
       <div v-for="(playlist, index) in playlists" :key="index">
         <router-link
-          v-if="playlist.id"
+          v-if="playlist.id && playlist.name.toLocaleLowerCase().includes(playlistSearchQuery.toLocaleLowerCase())"
           class="playlist-item"
           :to="`/playlist/${playlist.id}`"
           :class="{ active: $route.params.id === playlist.id }"
@@ -54,16 +66,43 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, ref, Ref, watch } from "vue";
 import Loader from "../LoadingDots.vue";
 import { useDialog } from "../dialog/DialogStore";
 import { useSidebar } from "./SidebarStore";
 import { api } from "../../api";
+import { onClickOutside } from "@vueuse/core";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const collections = computed(() => sidebarStore.playlists.filter((p) => p.name.toLowerCase().includes("#collection")));
 const playlists = computed(() => sidebarStore.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")));
+
+// Collection search
+const collectionSearchOpened = ref<boolean>(false);
+const collectionSearchQuery = ref<string>("");
+const collectionSearchInput: Ref<HTMLInputElement | null> = ref(null);
+
+onClickOutside(collectionSearchInput, () => {
+  collectionSearchOpened.value = false;
+  collectionSearchQuery.value = "";
+  collectionSearchInput.value = null;
+});
+
+watch(collectionSearchInput, () => collectionSearchInput.value && collectionSearchInput.value.focus());
+
+// Playlist search
+const playlistSearchOpened = ref<boolean>(false);
+const playlistSearchQuery = ref<string>("");
+const playlistSearchInput: Ref<HTMLInputElement | null> = ref(null);
+
+onClickOutside(playlistSearchInput, () => {
+  playlistSearchOpened.value = false;
+  playlistSearchQuery.value = "";
+  playlistSearchInput.value = null;
+});
+
+watch(playlistSearchInput, () => playlistSearchInput.value && playlistSearchInput.value.focus());
 
 sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
 </script>
@@ -111,6 +150,10 @@ sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
   display: grid;
   grid-template-rows: auto auto;
   overflow: hidden;
+
+  &.search-opened {
+    grid-template-rows: 1fr 1fr;
+  }
 
   &__item {
     overflow-y: auto;
