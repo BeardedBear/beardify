@@ -1,5 +1,5 @@
 <template>
-  <div class="header">
+  <div ref="domHeader" class="header">
     <div class="inner">
       <div>
         <div class="title">
@@ -19,8 +19,15 @@
 <script lang="ts" setup>
 import { useArtist } from "./ArtistStore";
 import Options from "./ArtistOptions.vue";
+import { ref, onMounted } from "vue";
 
+const domHeader = ref<HTMLDivElement | null>(null);
 const artistStore = useArtist();
+
+onMounted(() => {
+  if (domHeader.value) artistStore.updateHeaderHeight(domHeader.value?.getBoundingClientRect().height);
+  console.log(domHeader.value?.getBoundingClientRect().height);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -29,8 +36,6 @@ const artistStore = useArtist();
 .genres {
   display: flex;
   gap: 5px;
-  margin-bottom: 10px;
-  min-height: 12px;
   opacity: 0.3;
 
   .genre {

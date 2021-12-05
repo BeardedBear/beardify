@@ -15,6 +15,7 @@ export const useArtist = defineStore("artist", {
     singles: [],
     relatedArtists: { artists: [] },
     followStatus: false,
+    headerHeight: 0,
   }),
 
   actions: {
@@ -85,6 +86,10 @@ export const useArtist = defineStore("artist", {
         instance().put(`me/following?type=artist&ids=${artistId}`);
         this.followStatus = true;
       }
+    },
+
+    updateHeaderHeight(height: number) {
+      this.headerHeight = height - 5;
     },
   },
 });

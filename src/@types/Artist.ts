@@ -11,6 +11,7 @@ export interface ArtistPage {
   singles: AlbumSimplified[];
   relatedArtists: RelatedArtists;
   followStatus: boolean | undefined;
+  headerHeight: number;
 }
 
 export interface ArtistTopTracks {
