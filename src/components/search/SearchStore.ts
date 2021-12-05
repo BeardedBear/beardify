@@ -15,7 +15,7 @@ export const useSearch = defineStore("search", {
       instance()
         .get<SearchFromAPI>(`search?q=${query}&type=artist%2Calbum%2Ctrack`)
         .then((e) => {
-          this.artists = e.data.artists.items.slice(0, 12);
+          this.artists = e.data.artists.items.slice(0, 7);
           this.albums = e.data.albums.items.slice(0, 6);
           this.tracks = e.data.tracks.items.slice(0, 6);
         });

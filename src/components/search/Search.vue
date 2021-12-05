@@ -148,32 +148,31 @@ $radius: 0.3rem;
   // padding-top: 1rem;
 }
 
-.artist {
-  border-radius: $radius;
-  color: currentColor;
-  padding: 0.8rem 0.4rem;
-  text-align: center;
-  text-decoration: none;
-
-  &:hover {
-    background-color: var(--bg-color-light);
-  }
-
-  &-list {
-    align-content: flex-start;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr;
-  }
-
+.artist-list {
   .avatar {
     $size: 2.5rem;
 
     border-radius: $size;
-    display: inline-block;
+    display: block;
     height: $size;
-    margin-bottom: 0.4rem;
     width: $size;
+  }
+
+  .artist {
+    align-items: center;
+    border-radius: $radius;
+    color: currentColor;
+    display: flex;
+    font-size: 1rem;
+    font-weight: bold;
+    gap: 1rem;
+    margin-bottom: 0.4rem;
+    padding: 0.5rem;
+    text-decoration: none;
+
+    &:hover {
+      background-color: var(--bg-color-light);
+    }
   }
 }
 
@@ -203,7 +202,7 @@ $radius: 0.3rem;
   display: grid;
   font-size: 0.8rem;
   gap: 3rem;
-  grid-template-columns: 0.8fr 1fr 1fr;
+  grid-template-columns: 0.6fr 1fr 0.8fr;
   justify-content: space-evenly;
   left: 0;
   padding: 1rem;
