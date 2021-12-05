@@ -124,8 +124,8 @@ $radius: 0.3rem;
   border-radius: $radius;
   cursor: pointer;
   display: flex;
-  gap: 10px;
-  padding: 10px;
+  gap: 0.8rem;
+  padding: 0.8rem;
 
   &__icon {
     font-size: 2.5rem;
@@ -142,14 +142,14 @@ $radius: 0.3rem;
   border-radius: $radius;
   color: currentColor;
   display: flex;
-  gap: 10px;
-  padding: 10px;
+  gap: 0.8rem;
+  padding: 0.8rem;
   text-decoration: none;
 
   .cover {
-    $size: 40px;
+    $size: 2.5rem;
 
-    border-radius: 3px;
+    border-radius: 0.3rem;
     height: $size;
     width: $size;
   }
@@ -162,7 +162,7 @@ $radius: 0.3rem;
 .artist {
   border-radius: $radius;
   color: currentColor;
-  padding: 10px 5px;
+  padding: 0.8rem 0.4rem;
   text-align: center;
   text-decoration: none;
 
@@ -178,12 +178,12 @@ $radius: 0.3rem;
   }
 
   .avatar {
-    $size: 35px;
+    $size: 2.5rem;
 
     border-radius: $size;
     display: inline-block;
     height: $size;
-    margin-bottom: 5px;
+    margin-bottom: 0.4rem;
     width: $size;
   }
 }
@@ -196,11 +196,11 @@ $radius: 0.3rem;
   cursor: pointer;
   font-size: 1rem;
   position: absolute;
-  right: 10px;
+  right: 0.8rem;
   text-align: center;
   top: 50%;
   transform: translateY(-50%);
-  width: 40px;
+  width: 2.2rem;
 }
 
 .search {
@@ -213,7 +213,7 @@ $radius: 0.3rem;
   border-radius: 0 0 $radius $radius;
   display: grid;
   font-size: 0.8rem;
-  gap: 10px;
+  gap: 0.8rem;
   grid-template-columns: 1fr 1fr 1fr;
   justify-content: space-evenly;
   left: 0;
@@ -223,7 +223,7 @@ $radius: 0.3rem;
   z-index: 1;
 
   > div {
-    padding: 10px;
+    padding: 0.8rem;
   }
 }
 </style>

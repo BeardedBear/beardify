@@ -25,7 +25,7 @@ const playerStore = usePlayer();
 
 <style lang="scss" scoped>
 .cover {
-  border-radius: 4px;
+  border-radius: 0.3rem;
   display: block;
 }
 

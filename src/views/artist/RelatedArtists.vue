@@ -29,20 +29,20 @@ const artistStore = useArtist();
 @import "../../assets/scss/colors";
 
 .image {
-  $size: 50px;
+  $size: 3rem;
 
   border-radius: $size;
   height: $size;
-  margin-bottom: 5px;
+  margin-bottom: 0.4rem;
   width: $size;
 }
 
 .item {
-  border-radius: 3px;
+  border-radius: 0.3rem;
   color: currentColor;
   cursor: pointer;
   font-size: 0.8rem;
-  padding: 10px;
+  padding: 0.8rem;
   text-align: center;
   text-decoration: none;
 

@@ -47,13 +47,13 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 
   &__content {
     overflow-y: auto;
-    padding: 20px;
+    padding: 1.2rem;
   }
 }
 
 .album-gallery {
   display: grid;
-  gap: 30px;
+  gap: 2rem;
   grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 

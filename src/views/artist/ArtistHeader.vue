@@ -76,6 +76,6 @@ onMounted(() => {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 5px;
+  margin-bottom: 0.4rem;
 }
 </style>

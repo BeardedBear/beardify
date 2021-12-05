@@ -70,7 +70,7 @@ watch(
   background: var(--bg-color-light);
   cursor: pointer;
   flex: 1;
-  height: 10px;
+  height: 0.4rem;
   position: relative;
 
   .seek {
@@ -86,10 +86,10 @@ watch(
     .time {
       background: var(--primary-color);
       border: 1px solid var(--primary-color-light);
-      border-radius: 3px;
-      bottom: calc(100% + 5px);
+      border-radius: 0.4rem;
+      bottom: calc(100% + 0.4rem);
       color: color.change(white, $alpha: 0.8);
-      padding: 5px 10px;
+      padding: 0.4rem 0.8rem;
       position: absolute;
       right: 0;
       transform: translateX(50%);

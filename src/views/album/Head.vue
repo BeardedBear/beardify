@@ -69,7 +69,7 @@ function openLink(url: string): void {
 .title {
   font-size: 2rem;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 0.4rem;
 }
 
 @keyframes pop {
@@ -80,7 +80,7 @@ function openLink(url: string): void {
 
 .copied {
   animation: pop 0.2s ease both;
-  margin-right: 10px;
+  margin-right: 0.8rem;
   opacity: 0.5;
 }
 </style>

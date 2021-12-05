@@ -126,12 +126,12 @@ playlistStore.clean().finally(() => {
 
 .track {
   align-items: center;
-  border-radius: 3px;
+  border-radius: 0.3rem;
   display: grid;
-  gap: 10px;
-  grid-template-columns: 40px 1fr 0.9fr 0.4fr 0.3fr 50px;
-  margin-bottom: 5px;
-  padding: 5px 10px;
+  gap: 0.8rem;
+  grid-template-columns: 2.2rem 1fr 0.9fr 0.4fr 0.3fr 2.8rem;
+  margin-bottom: 0.4rem;
+  padding: 0.4rem 0.8rem;
 
   &-icon {
     font-size: 1.5rem;
@@ -200,7 +200,7 @@ playlistStore.clean().finally(() => {
 
   i {
     font-size: 1rem;
-    margin-right: 10px;
+    margin-right: 0.8rem;
     opacity: 0.3;
 
     &.icon-album {
@@ -212,7 +212,7 @@ playlistStore.clean().finally(() => {
 
 .description {
   font-style: italic;
-  margin-bottom: 10px;
+  margin-bottom: 0.8rem;
   max-width: 80%;
   opacity: 0.5;
 }
@@ -220,18 +220,18 @@ playlistStore.clean().finally(() => {
 .title {
   font-size: 2rem;
   font-weight: bold;
-  margin-bottom: 5px;
-  margin-top: -15px;
+  margin-bottom: 0.4rem;
+  margin-top: -1rem;
 }
 
 .playlist-header {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 40px;
+  margin-bottom: 2.2rem;
 
   img {
-    margin-right: 30px;
+    margin-right: 2rem;
   }
 
   &__left {
@@ -240,26 +240,26 @@ playlistStore.clean().finally(() => {
   }
 
   &__right {
-    flex: 0 0 140px;
+    flex: 0 0 10rem;
     font-size: 1.1rem;
     text-align: right;
   }
 }
 
 .cover {
-  border-radius: 4px;
-  height: 140px;
+  border-radius: 0.3rem;
+  height: 10rem;
 }
 
 .playlist-page {
   animation: pop-content 1s ease both;
   overflow-y: scroll;
-  padding: 30px 40px;
+  padding: 2rem 2.2rem;
 }
 
 .fit {
   margin: 0 auto;
-  max-width: 1000px;
+  max-width: 57rem;
 }
 
 .loader {

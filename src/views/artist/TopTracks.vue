@@ -34,14 +34,14 @@ const playerStore = usePlayer();
 
 .item {
   align-items: center;
-  border-radius: 3px;
+  border-radius: 0.3rem;
   cursor: pointer;
   display: flex;
-  margin-bottom: 5px;
-  padding-right: 10px;
+  margin-bottom: 0.4rem;
+  padding-right: 0.8rem;
 
   img {
-    margin-right: 15px;
+    margin-right: 1rem;
   }
 
   &:hover {
@@ -50,8 +50,8 @@ const playerStore = usePlayer();
 }
 
 .cover {
-  border-radius: 3px;
-  height: 25px;
+  border-radius: 0.3rem;
+  height: 2rem;
 }
 
 .name {

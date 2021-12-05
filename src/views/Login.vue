@@ -52,14 +52,14 @@ challenge.value = storage.codeChallenge;
 .form {
   animation: pop-login 1s ease both;
   background-color: rgb(var(--primary-color) 0.1);
-  border-radius: 5px;
-  padding: 50px;
+  border-radius: 0.4rem;
+  padding: 2rem;
   text-align: center;
   will-change: transform;
 }
 
 .logo {
-  height: 50px;
-  margin-bottom: 15px;
+  height: 2rem;
+  margin-bottom: 1rem;
 }
 </style>

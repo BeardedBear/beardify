@@ -128,7 +128,7 @@ sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
 .empty {
   font-style: italic;
   opacity: 0.5;
-  padding: 10px 20px 10px 15px;
+  padding: 0.8rem 20px 0.8rem 1rem;
 }
 
 .playlist-item {
@@ -183,10 +183,10 @@ sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
 .search {
   background-color: var(--bg-color-light);
   border: none;
-  border-radius: 3px;
+  border-radius: 0.2rem;
   color: var(--font-color);
   font-weight: bold;
-  padding: 3px 10px 2px;
+  padding: 0.2rem 0.5rem;
   width: 100%;
 
   &:focus {
@@ -210,7 +210,7 @@ sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
   .icon {
     background-color: transparent;
     border: 0;
-    border-radius: 100px;
+    border-radius: 20rem;
     color: var(--font-color);
     cursor: pointer;
     opacity: 0.4;

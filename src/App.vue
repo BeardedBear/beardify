@@ -78,8 +78,8 @@ body {
 }
 
 ::-webkit-scrollbar {
-  height: 5px;
-  width: 5px;
+  height: 0.4rem;
+  width: 0.4rem;
 }
 
 ::-webkit-scrollbar-corner {
@@ -103,7 +103,7 @@ body {
 .scale-enter-from,
 .scale-leave-to {
   opacity: 0;
-  transform: translateY(-5px);
+  transform: translateY(-0.4rem);
 }
 
 #app {

@@ -26,13 +26,13 @@ const playerStore = usePlayer();
 .player-loading {
   background-color: var(--bg-color);
   display: grid;
-  padding: 10px;
-  padding: 20px;
+  padding: 0.8rem;
+  padding: 1.5rem;
   place-content: center;
   text-align: center;
 
   &__title {
-    margin-bottom: 15px;
+    margin-bottom: 1rem;
   }
 }
 
@@ -40,10 +40,10 @@ const playerStore = usePlayer();
   position: relative;
 
   &::before {
-    $s: 7px;
+    $s: 0.5rem;
 
     background: white;
-    border-top-right-radius: 3px;
+    border-top-right-radius: 0.3rem;
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     content: "";
     height: $s;

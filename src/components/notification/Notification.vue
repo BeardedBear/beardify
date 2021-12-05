@@ -34,20 +34,20 @@ const notificationStore = useNotification();
 }
 
 .notification-list {
-  $offset: 40px;
+  $offset: 2.2rem;
 
   position: absolute;
   right: $offset;
-  top: $offset + 40px;
+  top: $offset + 2.2rem;
   z-index: 9;
 }
 
 .notification {
   animation: pop-notif 4s ease-in-out both;
   background: rgb(33 124 33);
-  border-radius: 5px;
-  margin-top: 10px;
-  padding: 10px 15px;
+  border-radius: 0.4rem;
+  margin-top: 0.8rem;
+  padding: 0.8rem 1rem;
   position: relative;
   transition: all 0.5s;
 

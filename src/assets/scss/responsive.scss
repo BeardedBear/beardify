@@ -1,6 +1,6 @@
-$mobile-width: 440px;
-$xl: 1100px;
-$l: 900px;
+$mobile-width: 20rem;
+$xl: 62rem;
+$l: 57rem;
 
 @mixin mobile {
   @media (max-width: $mobile-width) {

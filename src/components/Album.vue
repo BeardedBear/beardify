@@ -82,12 +82,8 @@ function deleteAlbum(albumId: string): void {
 @use "sass:color";
 @import "../assets/scss/colors";
 
-.img {
-  transition: all ease 0.2s;
-}
-
 .play {
-  $offset: 1vw;
+  $offset: 1rem;
   $size: 2.5rem;
 
   animation: pop-play-button 0.2s ease both;
@@ -178,13 +174,13 @@ function deleteAlbum(albumId: string): void {
   }
 
   &.delete {
-    left: 1vw;
-    top: 1vw;
+    left: 1rem;
+    top: 1rem;
   }
 
   &.add {
-    bottom: 1vw;
-    right: 1vw;
+    bottom: 1rem;
+    right: 1rem;
   }
 }
 
@@ -206,19 +202,19 @@ function deleteAlbum(albumId: string): void {
     color: white;
     font-size: 1.2rem;
     position: absolute;
-    right: 4px;
-    top: 3px;
+    right: 0.3rem;
+    top: 0.3rem;
   }
 }
 
 .cover {
-  margin-bottom: 10px;
+  margin-bottom: 0.8rem;
   position: relative;
 }
 
 .name {
   font-weight: bold;
-  margin: 3px 0 0;
+  margin: 0.3rem 0 0;
 }
 
 .date {

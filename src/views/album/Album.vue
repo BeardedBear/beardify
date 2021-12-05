@@ -64,25 +64,21 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
 
-.cover {
-  width: 100%;
-}
-
 .fit {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 60px;
+  gap: 4rem;
   margin: 0 auto;
   width: 57rem;
 }
 
 .track {
-  border-radius: 3px;
+  border-radius: 0.4rem;
   cursor: pointer;
   display: grid;
-  grid-template-columns: 30px 1fr auto;
-  padding: 5px 10px;
+  grid-template-columns: 2rem 1fr auto;
+  padding: 0.4rem 0.8rem;
 
   &:hover {
     background-color: color.change(rgb(74 75 103), $alpha: 0.15);
@@ -97,8 +93,12 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 .content {
   display: flex;
   flex: 1;
-  gap: 30px;
+  gap: 2rem;
   justify-content: center;
+
+  &__cover {
+    width: 18rem;
+  }
 
   &__tracks {
     flex: 1;
@@ -111,7 +111,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
-  padding: 30px 40px;
+  padding: 2rem 2.2rem;
   scroll-behavior: smooth;
 }
 

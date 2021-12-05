@@ -71,7 +71,7 @@ playlistStore.clean().finally(() => {
 
 .album-list {
   display: grid;
-  gap: 30px;
+  gap: 2rem;
   grid-template-columns: 1fr 1fr 1fr 1fr;
 
   @include xl {
@@ -85,21 +85,21 @@ playlistStore.clean().finally(() => {
 
 .description {
   font-style: italic;
-  margin-bottom: 7px;
+  margin-bottom: 0.5rem;
   opacity: 0.5;
 }
 
 .title {
   font-size: 2.5rem;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 0.4rem;
 }
 
 .playlist-header {
   display: flex;
-  gap: 30px;
+  gap: 2rem;
   justify-content: space-between;
-  margin-bottom: 40px;
+  margin-bottom: 2.2rem;
 
   &__right {
     font-size: 1.1rem;
@@ -109,7 +109,7 @@ playlistStore.clean().finally(() => {
 .playlist-page {
   animation: pop-content 1s ease both;
   overflow-y: scroll;
-  padding: 30px 40px;
+  padding: 2rem 2.2rem;
   scroll-behavior: smooth;
 }
 
