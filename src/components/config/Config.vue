@@ -63,13 +63,13 @@ function logout(): void {
 
 .section {
   background: var(--bg-color-light);
-  border: 1px solid var(--bg-color-dark);
-  border-radius: 5px;
+  border: 0.1rem solid var(--bg-color-dark);
+  border-radius: 0.4rem;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin: 15px 0;
-  padding: 7px 10px 10px;
+  gap: 0.8rem;
+  margin: 1rem 0;
+  padding: 0.5rem 0.8rem 0.8rem;
 
   &__title {
     font-size: 0.8rem;
@@ -81,13 +81,13 @@ function logout(): void {
 
 .user {
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 1.2rem;
 
   &__mail {
     font-size: 0.9rem;
     font-style: italic;
     font-weight: 400;
-    margin-top: 2px;
+    margin-top: 0.1rem;
     opacity: 0.5;
   }
 }
@@ -95,13 +95,13 @@ function logout(): void {
 .config {
   animation: pop-config ease 0.2s both;
   background-color: var(--bg-color-darker);
-  border-radius: 4px;
-  box-shadow: 0 5px 10px color.change(black, $alpha: 0.2);
-  padding: 20px;
+  border-radius: 0.3rem;
+  box-shadow: 0 0.3rem 0.7rem color.change(black, $alpha: 0.2);
+  padding: 1.2rem;
   position: absolute;
-  right: 20px;
-  top: calc(100% - 3px);
-  width: 250px;
+  right: 1.2rem;
+  top: calc(100% - 0.3rem);
+  width: 15rem;
   z-index: 999;
 }
 </style>

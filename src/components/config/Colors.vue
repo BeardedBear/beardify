@@ -73,7 +73,7 @@ const textColors: TextColors[] = [
   justify-content: space-evenly;
 
   &__item {
-    $s: 15px;
+    $s: 1rem;
 
     border: 0;
     cursor: pointer;
@@ -92,7 +92,7 @@ const textColors: TextColors[] = [
     }
 
     &::after {
-      $o: 6px;
+      $o: 0.3rem;
 
       background-color: white;
       border-radius: $s;
@@ -136,14 +136,14 @@ const textColors: TextColors[] = [
   justify-content: space-between;
 
   &__item {
-    $radius: 4px;
+    $radius: 0.4rem;
 
     background-color: var(--bg-color);
     border: 0;
     color: currentColor;
     cursor: pointer;
-    margin-top: 10px;
-    padding: 7px 0;
+    margin-top: 0.8rem;
+    padding: 0.5rem 0;
     width: 100%;
 
     &:first-of-type {
