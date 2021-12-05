@@ -21,22 +21,19 @@ import { useAuth } from "./views/auth/AuthStore";
 import { usePlayer } from "./components/player/PlayerStore";
 import { useWindowFocus } from "@vueuse/core";
 import { watch } from "vue";
+import { useStorage } from "@vueuse/core";
+import { useConfig } from "./components/config/ConfigStore";
 
 const authStore = useAuth();
 const playerStore = usePlayer();
 const focused = useWindowFocus();
+const config = useConfig();
 
-// onMounted(() => {
-//   if (localS) {
-//     const storage: Storage = JSON.parse(localS || "");
-//     configStore.switchTheme(storage.config.themeLabel);
-//     configStore.switchScheme(storage.config.schemeLabel);
-//   }
-// });
-
-// watch([authStore, configStore], ([auth, config]) => {
-//   localStorage.setItem(storageLabel, JSON.stringify({ auth, config }));
-// });
+// Sync local storage config
+const storage = useStorage("BeardifyConfig", config);
+config.switchScheme(storage.value.schemeLabel);
+config.switchTheme(storage.value.themeLabel);
+storage.value = config;
 
 // Keep app active
 setInterval(() => {
