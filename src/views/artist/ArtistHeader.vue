@@ -9,7 +9,9 @@
       <Options />
     </div>
     <div class="genres">
-      <span v-for="(genre, index) in artistStore.artist.genres" :key="index" class="genre">{{ genre }}</span>
+      <span v-for="(genre, index) in artistStore.artist.genres.splice(0, 8)" :key="index" class="genre">
+        {{ genre }}
+      </span>
     </div>
   </div>
 </template>
