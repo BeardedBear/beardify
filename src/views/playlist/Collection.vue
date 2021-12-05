@@ -81,6 +81,10 @@ playlistStore.clean().finally(() => {
   @include l {
     grid-template-columns: 1fr 1fr;
   }
+
+  @include hdpi {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  }
 }
 
 .description {

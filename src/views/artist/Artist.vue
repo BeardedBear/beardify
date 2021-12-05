@@ -88,6 +88,10 @@ artistStore.clean().finally(() => {
   @include l {
     grid-template-columns: 1fr 1fr;
   }
+
+  @include hdpi {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  }
 }
 
 .eps {
@@ -102,6 +106,10 @@ artistStore.clean().finally(() => {
   @include l {
     grid-template-columns: 1fr 1fr;
   }
+
+  @include hdpi {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  }
 }
 
 .singles {
@@ -115,6 +123,10 @@ artistStore.clean().finally(() => {
 
   @include l {
     grid-template-columns: 1fr 1fr;
+  }
+
+  @include hdpi {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   }
 }
 

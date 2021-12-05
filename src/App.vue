@@ -65,7 +65,7 @@ html {
   font-size: 16px;
 
   @media (min-resolution: 2.9dppx) {
-    font-size: 40px;
+    font-size: 32px;
   }
 }
 
