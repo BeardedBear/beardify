@@ -5,13 +5,11 @@
     </router-link>
     <div>
       <div>
-        <ArtistList :artist-list="playerStore.currentlyPlaying.item.album.artists" />
-        ·
         <span class="trackname">{{ playerStore.currentlyPlaying.item.name }}</span>
+        ·
+        <ArtistList :artist-list="playerStore.currentlyPlaying.item.album.artists" :feat="true" />
       </div>
-      <div class="album">
-        {{ playerStore.currentlyPlaying.item.album.name }}
-      </div>
+      <div class="album"><i class="icon-album"></i> {{ playerStore.currentlyPlaying.item.album.name }}</div>
     </div>
   </div>
   <div v-else></div>
@@ -32,7 +30,7 @@ const playerStore = usePlayer();
 }
 
 .trackname {
-  font-style: italic;
+  font-weight: bold;
 }
 
 .artistname {
@@ -42,6 +40,7 @@ const playerStore = usePlayer();
 }
 
 .album {
+  font-size: 0.9rem;
   font-style: italic;
   opacity: 0.5;
 }
