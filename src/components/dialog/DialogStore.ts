@@ -5,6 +5,7 @@ export const useDialog = defineStore("dialog", {
   state: (): Dialog => ({
     show: false,
     type: null,
+    isClosing: false,
   }),
 
   actions: {
@@ -16,7 +17,11 @@ export const useDialog = defineStore("dialog", {
     },
 
     close() {
-      this.show = false;
+      this.isClosing = true;
+      setTimeout(() => {
+        this.show = false;
+        this.isClosing = false;
+      }, 200);
     },
   },
 });

@@ -1,7 +1,7 @@
 <template>
-  <div v-if="dialogStore.show" class="dialog">
-    <div class="bg" @click="dialogStore.close()"></div>
-    <div class="dialog-content">
+  <div v-if="dialogStore.show" class="dialog" :class="{ 'is-closing': dialogStore.isClosing }">
+    <div class="bg" :class="{ 'is-closing': dialogStore.isClosing }" @click="dialogStore.close()"></div>
+    <div class="dialog-content" :class="{ 'is-closing': dialogStore.isClosing }">
       <div class="head">
         <div v-if="dialogStore.type === 'addalbum'">Ajouter un album à une collection</div>
         <div v-if="dialogStore.type === 'addPlaylist'">Créer une playlist</div>
@@ -32,19 +32,6 @@ const dialogStore = useDialog();
 
 $radius: 4px;
 
-@keyframes pop-dialog {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes pop-dialog-content {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-}
-
 .close {
   background-color: var(--bg-color-light);
   border: 0;
@@ -63,12 +50,28 @@ $radius: 4px;
   }
 }
 
+@keyframes pop-bg {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes bye-bg {
+  to {
+    opacity: 0;
+  }
+}
+
 .bg {
-  animation: pop-dialog 0.2s ease both;
+  animation: pop-bg 0.2s ease both;
   background-color: var(--bg-color-darker);
   inset: 0;
   opacity: 0.95;
   position: fixed;
+
+  &.is-closing {
+    animation: bye-bg 0.2s ease both;
+  }
 }
 
 .dialog {
@@ -77,7 +80,12 @@ $radius: 4px;
   inset: 0;
   place-content: center;
   position: fixed;
+  transition: 200ms;
   z-index: 99999999;
+
+  &.is-closing {
+    backdrop-filter: blur(0);
+  }
 }
 
 .head {
@@ -87,6 +95,20 @@ $radius: 4px;
   font-weight: 700;
   padding: 15px 25px;
   position: relative;
+}
+
+@keyframes pop-dialog-content {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes bye-dialog-content {
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
 }
 
 .dialog-content {
@@ -100,5 +122,9 @@ $radius: 4px;
   max-width: 600px;
   position: relative;
   will-change: transform;
+
+  &.is-closing {
+    animation: bye-dialog-content 0.2s ease both;
+  }
 }
 </style>
