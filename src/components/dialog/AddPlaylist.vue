@@ -26,21 +26,21 @@ function create(): void {
 
 <style lang="scss" scoped>
 .content {
-  padding: 20px;
+  padding: 1.2rem;
   text-align: center;
-  width: 350px;
+  width: 22rem;
 }
 
 .input {
   background-color: var(--bg-color-light);
   border: 0;
-  border-radius: 4px;
+  border-radius: 0.3rem;
   color: currentColor;
   display: block;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 1.2rem;
   outline: 0;
-  padding: 10px 15px;
+  padding: 0.8rem 1rem;
   width: 100%;
 }
 </style>

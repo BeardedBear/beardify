@@ -41,9 +41,9 @@ function add(albumId: string, playlistId: string): void {
 @import "../../assets/scss/colors";
 
 .content {
-  height: 400px;
+  height: 25rem;
   overflow: auto;
-  width: 400px;
+  width: 25rem;
 }
 
 .album {
@@ -51,14 +51,14 @@ function add(albumId: string, playlistId: string): void {
   display: flex;
 
   i {
-    margin-right: 10px;
+    margin-right: 1rem;
     opacity: 0.3;
   }
 }
 
 .collection {
   cursor: pointer;
-  padding: 10px 25px;
+  padding: 0.5rem 1.5rem;
 
   &:hover {
     background: var(--bg-color-light);

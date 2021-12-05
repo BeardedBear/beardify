@@ -30,18 +30,18 @@ const dialogStore = useDialog();
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
 
-$radius: 4px;
+$radius: 0.4rem;
 
 .close {
   background-color: var(--bg-color-light);
   border: 0;
-  border-radius: 4px;
+  border-radius: 0.4rem;
   color: currentColor;
   cursor: pointer;
   font-size: 1rem;
-  padding: 5px 8px;
+  padding: 0.4rem 0.5rem;
   position: absolute;
-  right: 12px;
+  right: 0.9rem;
   top: 50%;
   transform: translateY(-50%);
 
@@ -75,7 +75,7 @@ $radius: 4px;
 }
 
 .dialog {
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(0.8rem);
   display: grid;
   inset: 0;
   place-content: center;
@@ -93,7 +93,7 @@ $radius: 4px;
   border-radius: $radius $radius 0 0;
   font-size: 1rem;
   font-weight: 700;
-  padding: 15px 25px;
+  padding: 1rem 1.5rem;
   position: relative;
 }
 
@@ -115,11 +115,11 @@ $radius: 4px;
   animation: pop-dialog-content 0.2s ease both;
   background: var(--bg-color);
   border-radius: $radius;
-  box-shadow: 0 10px 30px var(--bg-color-darker);
+  box-shadow: 0 0.8rem 2rem var(--bg-color-darker);
   display: grid;
   grid-template-rows: auto 1fr;
-  max-height: 600px;
-  max-width: 600px;
+  max-height: 30rem;
+  max-width: 30rem;
   position: relative;
   will-change: transform;
 

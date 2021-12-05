@@ -25,8 +25,8 @@ function remove(): void {
 
 <style lang="scss" scoped>
 .content {
-  padding: 20px;
+  padding: 1.2rem;
   text-align: center;
-  width: 350px;
+  width: 22rem;
 }
 </style>
