@@ -46,7 +46,7 @@ export const useArtist = defineStore("artist", {
         .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=album&limit=50`)
         .then((e) => {
           this.albums = removeDuplicatesAlbums(e.data.items);
-          if (e.data.next !== "") {
+          if (e.data.next) {
             instance()
               .get<Paging<AlbumSimplified>>(e.data.next)
               .then((e) => (this.albums = removeDuplicatesAlbums(this.albums.concat(e.data.items))));

@@ -28,7 +28,7 @@ export const usePlaylist = defineStore("playlist", {
         .get<Paging<PlaylistTrack>>(url)
         .then((e) => {
           this.tracks = e.data.items.filter((e) => e.track);
-          if (e.data.next !== "") {
+          if (e.data.next) {
             instance()
               .get<Paging<PlaylistTrack>>(e.data.next)
               .then((f) => {

@@ -26,7 +26,6 @@ const artistStore = useArtist();
 
 onMounted(() => {
   if (domHeader.value) artistStore.updateHeaderHeight(domHeader.value?.getBoundingClientRect().height);
-  console.log(domHeader.value?.getBoundingClientRect().height);
 });
 </script>
 

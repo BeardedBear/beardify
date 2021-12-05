@@ -59,7 +59,6 @@ artistStore.clean().finally(() => {
   artistStore.getAlbums(props.id);
   artistStore.getRelatedArtists(props.id);
   artistStore.getSingles(props.id);
-  artistStore.getTopTracks(props.id);
   artistStore.getFollowStatus(props.id);
 });
 </script>
