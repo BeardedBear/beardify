@@ -29,21 +29,15 @@
       </div>
       <!-- Album List -->
       <div class="album-list">
-        <router-link
+        <Album
           v-for="(album, index) in searchStore.albums"
           :key="index"
-          :to="`/album/${album.id}`"
-          class="album"
+          :currently-played-id="playerStore.currentlyPlaying.item?.album.uri"
+          :album="album"
+          with-artists
+          without-release-date
           @click="reset()"
-        >
-          <Cover size="small" :images="album.images" class-name="cover" />
-          <div>
-            <div>{{ album.name }}</div>
-            <div>
-              <ArtistList :artist-list="album.artists" feat />
-            </div>
-          </div>
-        </router-link>
+        />
       </div>
       <!-- Track List -->
       <div>
@@ -60,7 +54,7 @@
         >
           <i class="track__icon icon-music" />
           <div>
-            <div>{{ track.name }}</div>
+            <div class="track-name">{{ track.name }}</div>
             <div>
               <ArtistList :artist-list="track.artists" feat />
             </div>
@@ -78,7 +72,10 @@ import { useSearch } from "./SearchStore";
 import Cover from "../Cover.vue";
 import { onClickOutside } from "@vueuse/core";
 import ArtistList from "../../components/ArtistList.vue";
+import Album from "../Album.vue";
+import { usePlayer } from "../player/PlayerStore";
 
+const playerStore = usePlayer();
 const searchStore = useSearch();
 const query = ref<string>("");
 const result = ref(null);
@@ -128,8 +125,13 @@ $radius: 0.3rem;
   padding: 0.8rem;
 
   &__icon {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     opacity: 0.1;
+  }
+
+  &-name {
+    font-size: 1rem;
+    font-weight: bold;
   }
 
   &:hover {
@@ -137,26 +139,13 @@ $radius: 0.3rem;
   }
 }
 
-.album {
-  align-items: center;
-  border-radius: $radius;
-  color: currentColor;
-  display: flex;
-  gap: 0.8rem;
-  padding: 0.8rem;
-  text-decoration: none;
+.album-list {
+  align-content: start;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr 1fr 1fr;
 
-  .cover {
-    $size: 2.5rem;
-
-    border-radius: 0.3rem;
-    height: $size;
-    width: $size;
-  }
-
-  &:hover {
-    background-color: var(--bg-color-light);
-  }
+  // padding-top: 1rem;
 }
 
 .artist {
@@ -213,17 +202,14 @@ $radius: 0.3rem;
   border-radius: 0 0 $radius $radius;
   display: grid;
   font-size: 0.8rem;
-  gap: 0.8rem;
-  grid-template-columns: 1fr 1fr 1fr;
+  gap: 3rem;
+  grid-template-columns: 0.8fr 1fr 1fr;
   justify-content: space-evenly;
   left: 0;
+  padding: 1rem;
   position: absolute;
   right: 0;
   top: 100%;
   z-index: 1;
-
-  > div {
-    padding: 0.8rem;
-  }
 }
 </style>

@@ -1,8 +1,6 @@
 <template>
   <div class="album">
-    <div v-if="currentlyPlayedId === album.uri" class="current">
-      <i class="icon-volume-2" />
-    </div>
+    <div v-if="currentlyPlayedId === album.uri" class="current"><i class="icon-volume-2" /></div>
     <div class="cover">
       <Cover size="medium" :images="album.images" class="img" @click="router.push(`/album/${album.id}`)" />
       <button class="play" type="button" @click="instance().put('me/player/play', { context_uri: album.uri })">
@@ -21,13 +19,9 @@
       </button>
     </div>
     <div v-if="!withoutMetas">
-      <div class="name">
-        {{ album.name }}
-      </div>
-      <div v-if="withArtists">
-        <ArtistList :artist-list="album.artists" feat />
-      </div>
-      <div v-if="album.release_date" class="date">
+      <div class="name">{{ album.name }}</div>
+      <div v-if="withArtists"><ArtistList :artist-list="album.artists" feat /></div>
+      <div v-if="album.release_date && withoutReleaseDate" class="date">
         {{ album.release_date.split("-").shift() }}
       </div>
     </div>
@@ -56,6 +50,7 @@ defineProps<{
   withoutMetas?: boolean;
   canDelete?: boolean;
   canSave?: boolean;
+  withoutReleaseDate?: boolean;
 }>();
 
 const currentRouteId = useRoute().params.id;
