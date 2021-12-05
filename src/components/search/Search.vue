@@ -16,50 +16,59 @@
     <div v-if="query" ref="result" class="results">
       <!-- Artist List -->
       <div class="artist-list">
-        <router-link
-          v-for="(artist, index) in searchStore.artists"
-          :key="index"
-          :to="`/artist/${artist.id}`"
-          class="artist"
-          @click="reset()"
-        >
-          <Cover size="small" :images="artist.images" class-name="avatar" />
-          <div>{{ artist.name }}</div>
-        </router-link>
+        <template v-if="searchStore.artists.length">
+          <router-link
+            v-for="(artist, index) in searchStore.artists"
+            :key="index"
+            :to="`/artist/${artist.id}`"
+            class="artist"
+            @click="reset()"
+          >
+            <Cover size="small" :images="artist.images" class-name="avatar" />
+            <div>{{ artist.name }}</div>
+          </router-link>
+        </template>
+        <template v-else>Aucun artiste trouvé</template>
       </div>
       <!-- Album List -->
       <div class="album-list">
-        <Album
-          v-for="(album, index) in searchStore.albums"
-          :key="index"
-          :currently-played-id="playerStore.currentlyPlaying.item?.album.uri"
-          :album="album"
-          with-artists
-          without-release-date
-          @click="reset()"
-        />
+        <template v-if="searchStore.albums.length">
+          <Album
+            v-for="(album, index) in searchStore.albums"
+            :key="index"
+            :currently-played-id="playerStore.currentlyPlaying.item?.album.uri"
+            :album="album"
+            with-artists
+            without-release-date
+            @click="reset()"
+          />
+        </template>
+        <template v-else>Aucun album trouvé</template>
       </div>
       <!-- Track List -->
       <div>
-        <div
-          v-for="(track, index) in searchStore.tracks"
-          :key="index"
-          class="track"
-          @click="
-            () => {
-              playSong(track.uri);
-              reset();
-            }
-          "
-        >
-          <i class="track__icon icon-music" />
-          <div>
-            <div class="track-name">{{ track.name }}</div>
+        <template v-if="searchStore.albums.length">
+          <div
+            v-for="(track, index) in searchStore.tracks"
+            :key="index"
+            class="track"
+            @click="
+              () => {
+                playSong(track.uri);
+                reset();
+              }
+            "
+          >
+            <i class="track__icon icon-music" />
             <div>
-              <ArtistList :artist-list="track.artists" feat />
+              <div class="track-name">{{ track.name }}</div>
+              <div>
+                <ArtistList :artist-list="track.artists" feat />
+              </div>
             </div>
           </div>
-        </div>
+        </template>
+        <template v-else>Aucun morceau trouvé</template>
       </div>
     </div>
   </div>
