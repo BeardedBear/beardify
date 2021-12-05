@@ -50,8 +50,8 @@ const playerStore = usePlayer();
   display: flex;
 
   img {
-    height: 50px;
-    margin-right: 15px;
+    height: 3.4rem;
+    margin-right: 1rem;
   }
 }
 </style>

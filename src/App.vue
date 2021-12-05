@@ -61,6 +61,14 @@ watch(focused, (isFocused) => isFocused && playerStore.getPlayerState());
   box-sizing: border-box;
 }
 
+html {
+  font-size: 16px;
+
+  @media (min-resolution: 2.9dppx) {
+    font-size: 40px;
+  }
+}
+
 body {
   overflow: hidden;
 }
@@ -113,7 +121,7 @@ body {
 
   &__content {
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 19rem 1fr;
     overflow: hidden;
   }
 }

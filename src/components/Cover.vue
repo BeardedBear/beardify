@@ -19,7 +19,7 @@ defineProps<{
 <style lang="scss" scoped>
 .img {
   aspect-ratio: 1 / 1;
-  border-radius: 4px;
+  border-radius: 0.4rem;
   cursor: pointer;
   display: block;
   width: 100%;

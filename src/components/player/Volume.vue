@@ -30,10 +30,10 @@ watchEffect(() => {
 .volume {
   background-color: var(--bg-color-light);
   display: inline-block;
-  height: 26px;
-  margin-bottom: 5px;
+  height: 1.3rem;
+  margin-bottom: 0.1rem;
   position: relative;
-  width: 100px;
+  width: 5rem;
 
   &::before {
     background-color: var(--bg-color);
@@ -56,7 +56,7 @@ watchEffect(() => {
     position: relative;
     position: absolute;
     right: 0;
-    top: -22px;
+    top: -1rem;
     transform: translateX(50%);
     z-index: 999;
   }

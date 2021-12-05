@@ -2,9 +2,7 @@
   <div ref="domConfig" class="config">
     <div class="user">
       <div>{{ authStore.me?.display_name }}</div>
-      <div class="user__mail">
-        {{ authStore.me?.email }}
-      </div>
+      <div class="user__mail">{{ authStore.me?.email }}</div>
     </div>
 
     <div v-if="env !== 'production'" class="section">

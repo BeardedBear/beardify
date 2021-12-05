@@ -115,7 +115,7 @@ playlistStore.clean().finally(() => {
 
 .fit {
   margin: 0 auto;
-  max-width: 900px;
+  max-width: 57rem;
 }
 
 .loader {

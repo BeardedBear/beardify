@@ -97,7 +97,7 @@ document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
 @use "sass:color";
 @import "../../assets/scss/colors";
 
-$radius: 4px;
+$radius: 0.3rem;
 
 .input {
   background-color: var(--bg-color-light);
@@ -106,7 +106,7 @@ $radius: 4px;
   color: currentColor;
   font-weight: 700;
   outline: 0;
-  padding: 10px 15px;
+  padding: 0.6rem 1rem;
   width: 100%;
 
   &.opened {

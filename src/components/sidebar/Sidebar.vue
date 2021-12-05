@@ -136,7 +136,7 @@ sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
   color: currentColor;
   display: flex;
   justify-content: space-between;
-  padding: 5px 15px;
+  padding: 0.3rem 1rem;
   text-decoration: none;
 
   &:hover {
@@ -144,7 +144,7 @@ sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
   }
 
   .type-icon {
-    margin-right: 15px;
+    margin-right: 1rem;
     opacity: 0.3;
   }
 
@@ -200,7 +200,7 @@ sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
   display: flex;
   justify-content: space-between;
   margin: 0;
-  padding: 10px 10px 10px 15px;
+  padding: 0.7rem 0.7rem 0.7rem 1rem;
   position: sticky;
   top: 0;
   z-index: 1;
@@ -214,7 +214,7 @@ sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
     color: var(--font-color);
     cursor: pointer;
     opacity: 0.4;
-    padding: 2px 12px;
+    padding: 0.2rem 0.7rem;
 
     &:hover {
       background-color: var(--bg-color-lighter);

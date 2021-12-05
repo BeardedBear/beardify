@@ -3,12 +3,12 @@
 .button {
   background-color: var(--bg-color-lighter);
   border: 0;
-  border-radius: 3px;
+  border-radius: 0.3rem;
   color: var(--font-color);
   cursor: pointer;
   display: inline-block;
   font-weight: 700;
-  padding: 7px 20px;
+  padding: 0.4rem 1.1rem;
   text-align: center;
   text-decoration: none;
 
@@ -36,11 +36,11 @@
 
   &--small {
     font-size: 0.9rem;
-    padding: 5px 10px;
+    padding: 0.4rem 0.7rem;
   }
 
   &--x-small {
     font-size: 0.8rem;
-    padding: 3px 7px 4px;
+    padding: 0.3rem 0.5rem;
   }
 }

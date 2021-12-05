@@ -10,9 +10,9 @@
 <style lang="scss" scoped>
 .lds-ellipsis {
   display: inline-block;
-  height: 80px;
+  height: 5rem;
   position: relative;
-  width: 80px;
+  width: 5rem;
 }
 
 .lds-ellipsis div {

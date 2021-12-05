@@ -27,16 +27,16 @@ const playerStore = usePlayer();
 
 <style lang="scss" scoped>
 .device {
-  margin-left: 5px;
+  margin-left: 0.4rem;
 
   &.me {
     position: relative;
 
     &::before {
-      $s: 7px;
+      $s: 0.5rem;
 
       background: white;
-      border-top-right-radius: 3px;
+      border-top-right-radius: 0.4rem;
       clip-path: polygon(0 0, 100% 0, 100% 100%);
       content: "";
       height: $s;

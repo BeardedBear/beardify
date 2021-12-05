@@ -35,15 +35,15 @@ onMounted(() => {
 
 .genres {
   display: flex;
-  gap: 5px;
+  gap: 0.4rem;
   opacity: 0.3;
 
   .genre {
     background-color: var(--bg-color-lighter);
-    border-radius: 30px;
+    border-radius: 2rem;
     color: currentColor;
     font-size: 0.8rem;
-    padding: 2px 7px;
+    padding: 0 0.5rem 0.1rem;
   }
 }
 
@@ -51,13 +51,12 @@ onMounted(() => {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 5px;
+  margin-bottom: 0.4rem;
 }
 
 .name {
   font-size: 2rem;
   font-weight: bold;
-  transition: font-size ease 0.2s;
 
   &.scrolled {
     font-size: 1.6rem;
@@ -66,7 +65,7 @@ onMounted(() => {
 
 .header {
   background-color: var(--bg-color-darker);
-  padding: 10px 40px;
+  padding: 0.7rem 2.5rem;
   position: sticky;
   top: 0;
   transition: transform ease 0.1s;

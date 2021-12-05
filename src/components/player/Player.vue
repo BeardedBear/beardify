@@ -48,7 +48,7 @@ watch(
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   justify-content: space-between;
-  padding: 15px 20px;
+  padding: 0.9rem 1.2rem;
 }
 
 .options {

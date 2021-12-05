@@ -83,7 +83,7 @@ function switchFollow(artistId: string): void {
 .options {
   align-items: center;
   display: flex;
-  gap: 15px;
+  gap: 1rem;
 
   .followers {
     font-style: italic;
@@ -93,13 +93,13 @@ function switchFollow(artistId: string): void {
 
 .follow {
   text-align: center;
-  width: 80px;
+  width: 5rem;
 }
 
 .links {
   align-items: center;
   display: flex;
-  gap: 10px;
+  gap: 0.7rem;
 
   &__item {
     align-items: center;

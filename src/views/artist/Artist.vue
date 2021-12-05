@@ -82,7 +82,7 @@ artistStore.clean().finally(() => {
 
 .albums {
   display: grid;
-  gap: 20px;
+  gap: 1.2rem;
   grid-template-columns: 1fr 1fr 1fr;
 
   @include l {
@@ -92,7 +92,7 @@ artistStore.clean().finally(() => {
 
 .eps {
   display: grid;
-  gap: 20px;
+  gap: 1.2rem;
   grid-template-columns: 1fr 1fr 1fr 1fr;
 
   @include l {
@@ -106,7 +106,7 @@ artistStore.clean().finally(() => {
 
 .singles {
   display: grid;
-  gap: 20px;
+  gap: 1.2rem;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 
   @include xl {
@@ -120,28 +120,28 @@ artistStore.clean().finally(() => {
 
 .content {
   display: grid;
-  gap: 40px;
-  grid-template-columns: 1fr 300px;
-  padding: 30px 40px;
+  gap: 2.5rem;
+  grid-template-columns: 1fr 20rem;
+  padding: 2rem 2.5rem;
 
   @include xl {
     grid-template-columns: 1fr;
   }
 
   &__block {
-    margin-bottom: 60px;
+    margin-bottom: 3rem;
   }
 }
 
 .top {
-  flex: 0 0 350px;
+  flex: 0 0 22rem;
 
   @include xl {
     order: -1;
   }
 
   &__item {
-    margin-bottom: 40px;
+    margin-bottom: 2.5rem;
 
     @include xl {
       margin-bottom: 0;

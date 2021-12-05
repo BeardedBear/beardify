@@ -59,7 +59,7 @@ authStore.accessToken ? getData() : watch(authStore, () => getData());
 
 .fit {
   margin: 0 auto;
-  max-width: 900px;
+  max-width: 57rem;
 }
 
 .loader {

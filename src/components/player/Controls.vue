@@ -59,27 +59,27 @@ watch(
 .btns {
   align-items: center;
   display: flex;
-  gap: 10px;
+  gap: 0.8rem;
 }
 
 .time {
-  width: 80px;
+  width: 6rem;
 }
 
 .controls {
   align-items: center;
   display: flex;
-  gap: 20px;
+  gap: 1.2rem;
 
   &__btn {
     background-color: transparent;
     border: none;
-    border-radius: 5px;
+    border-radius: 0.4rem;
     color: currentColor;
     cursor: pointer;
     font-size: 1.3rem;
     opacity: 0.5;
-    padding: 5px 7px;
+    padding: 0.4rem 0.5rem;
 
     &.active {
       opacity: 1;

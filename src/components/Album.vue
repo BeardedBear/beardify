@@ -88,7 +88,7 @@ function deleteAlbum(albumId: string): void {
 
 .play {
   $offset: 1vw;
-  $size: 45px;
+  $size: 2.5rem;
 
   animation: pop-play-button 0.2s ease both;
   background: var(--primary-color);
@@ -162,12 +162,12 @@ function deleteAlbum(albumId: string): void {
   animation: pop-add-button 0.2s ease both;
   background-color: transparent;
   border: 0;
-  border-radius: 100px;
+  border-radius: 20rem;
   color: currentColor;
   cursor: pointer;
   display: none;
   font-size: 1.5rem;
-  padding: 5px 7px;
+  padding: 0.4rem 0.5rem;
   position: absolute;
   transition: transform ease 0.1s;
   will-change: transform;
@@ -189,10 +189,10 @@ function deleteAlbum(albumId: string): void {
 }
 
 .current {
-  $size: 45px;
+  $size: 3rem;
 
   background: var(--primary-color);
-  border-radius: 0 4px 0 0;
+  border-radius: 0 0.4rem 0 0;
   clip-path: polygon(100% 0, 0 0, 100% 100%);
   height: $size;
   position: absolute;

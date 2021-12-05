@@ -74,7 +74,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   flex-direction: column;
   gap: 60px;
   margin: 0 auto;
-  width: 900px;
+  width: 57rem;
 }
 
 .track {

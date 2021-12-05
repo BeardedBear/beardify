@@ -1,9 +1,7 @@
 <template>
   <div class="topbar">
     <div id="nav">
-      <router-link to="/">
-        <img class="logo" src="/img/logo.svg" />
-      </router-link>
+      <router-link to="/"><img class="logo" src="/img/logo.svg" /></router-link>
       <div class="navigation">
         <button class="navigation__item" @click="router.go(-1)">
           <i class="icon-arrow-left" />
@@ -43,15 +41,15 @@ const configStore = useConfig();
   background: var(--bg-color);
   display: flex;
   justify-content: space-between;
-  padding: 15px;
+  padding: 1rem;
   position: relative;
 }
 
 .navigation {
-  $radius: 4px;
+  $radius: 0.3rem;
 
-  margin-left: 15px;
-  margin-right: 15px;
+  margin-left: 1rem;
+  margin-right: 1rem;
 
   &__item {
     background-color: var(--bg-color-light);
@@ -60,7 +58,7 @@ const configStore = useConfig();
     cursor: pointer;
     font-size: 1.2rem;
     line-height: 1;
-    padding: 8px 7px;
+    padding: 0.5rem;
 
     &:hover {
       background-color: var(--bg-color-lighter);
@@ -81,18 +79,18 @@ const configStore = useConfig();
 }
 
 .avatar {
-  $size: 35px;
+  $size: 2rem;
 
   border-radius: $size;
   display: block;
   height: $size;
-  margin-left: 15px;
+  margin-left: 1rem;
   width: $size;
 }
 
 .logo {
   display: block;
-  height: 30px;
+  height: 2rem;
   opacity: 0.5;
 }
 
