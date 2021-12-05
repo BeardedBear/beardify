@@ -30,9 +30,7 @@ const focused = useWindowFocus();
 const config = useConfig();
 
 // Sync local storage config
-const storage = useStorage("BeardifyConfig", config);
-config.switchScheme(storage.value.schemeLabel);
-config.switchTheme(storage.value.themeLabel);
+const storage = useStorage("BeardifyConfig", config.$state);
 storage.value = config;
 
 // Keep app active
