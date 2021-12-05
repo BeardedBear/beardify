@@ -68,7 +68,7 @@ function openLink(url: string): void {
 
 .title {
   font-size: 2rem;
-  font-weight: 100;
+  font-weight: bold;
   margin-bottom: 5px;
 }
 

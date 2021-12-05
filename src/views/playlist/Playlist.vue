@@ -145,7 +145,7 @@ playlistStore.clean().finally(() => {
   .date,
   .owner {
     color: currentColor;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-style: italic;
     opacity: 0.5;
     text-decoration: none;
@@ -195,7 +195,7 @@ playlistStore.clean().finally(() => {
 .album {
   align-items: center;
   display: flex;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   text-align: left;
 
   i {
@@ -219,7 +219,7 @@ playlistStore.clean().finally(() => {
 
 .title {
   font-size: 2rem;
-  font-weight: 100;
+  font-weight: bold;
   margin-bottom: 5px;
   margin-top: -15px;
 }

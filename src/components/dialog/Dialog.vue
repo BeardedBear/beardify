@@ -72,6 +72,7 @@ $radius: 4px;
 }
 
 .dialog {
+  backdrop-filter: blur(10px);
   display: grid;
   inset: 0;
   place-content: center;
@@ -92,6 +93,7 @@ $radius: 4px;
   animation: pop-dialog-content 0.2s ease both;
   background: var(--bg-color);
   border-radius: $radius;
+  box-shadow: 0 10px 30px var(--bg-color-darker);
   display: grid;
   grid-template-rows: auto 1fr;
   max-height: 600px;

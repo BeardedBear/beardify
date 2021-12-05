@@ -3,7 +3,7 @@
     <span class="artist" :class="{ feat }" @click.stop="goArtist(`/artist/${artist.uri.split(':').pop()}`)">
       {{ artist.name }}
     </span>
-    <span v-if="artistList.length - 1 !== index" class="separator"> /<span v-if="!feat">&nbsp;</span></span>
+    <span v-if="artistList.length - 1 !== index" class="separator"> / <span v-if="!feat">&nbsp;</span></span>
   </span>
 </template>
 
@@ -35,7 +35,7 @@ function goArtist(artistUri: string): void {
   text-decoration: none;
 
   &.feat {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-style: italic;
     opacity: 0.5;
   }

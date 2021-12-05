@@ -102,12 +102,9 @@ body {
   background-color: var(--bg-color-darker);
   color: var(--font-color);
   display: grid;
-  font-family: Quicksand, Helvetica, Arial, sans-serif;
-  font-size: 0.9rem;
+  font-family: "IBM Plex Sans Condensed", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-weight: 500;
-  font-weight: 600;
   grid-template-rows: auto 1fr auto;
   height: 100vh;
   line-height: 1.4;

@@ -78,7 +78,7 @@ onMounted(() => {
 .sticky-heading {
   background-color: var(--bg-color-darker);
   position: sticky;
-  top: 90px;
+  top: 95px;
   z-index: 1;
 }
 </style>

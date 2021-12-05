@@ -34,7 +34,7 @@ const artistStore = useArtist();
     background-color: var(--bg-color-lighter);
     border-radius: 30px;
     color: currentColor;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     padding: 2px 7px;
   }
 }
@@ -47,8 +47,8 @@ const artistStore = useArtist();
 }
 
 .name {
-  font-size: 1.9rem;
-  font-weight: 300;
+  font-size: 2rem;
+  font-weight: bold;
   transition: font-size ease 0.2s;
 
   &.scrolled {

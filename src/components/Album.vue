@@ -217,7 +217,8 @@ function deleteAlbum(albumId: string): void {
 }
 
 .name {
-  margin: 3px 0;
+  font-weight: bold;
+  margin: 3px 0 0;
 }
 
 .date {

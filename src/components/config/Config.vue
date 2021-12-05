@@ -82,11 +82,13 @@ function logout(): void {
 }
 
 .user {
+  font-weight: bold;
   margin-bottom: 20px;
 
   &__mail {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-style: italic;
+    font-weight: 400;
     margin-top: 2px;
     opacity: 0.5;
   }

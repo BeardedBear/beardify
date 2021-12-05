@@ -91,7 +91,7 @@ playlistStore.clean().finally(() => {
 
 .title {
   font-size: 2.5rem;
-  font-weight: 100;
+  font-weight: bold;
   margin-bottom: 5px;
 }
 
