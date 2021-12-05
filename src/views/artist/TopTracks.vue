@@ -9,9 +9,7 @@
       @click="playSongs(index, artistStore.topTracks.tracks)"
     >
       <Cover size="small" :images="trackItem.album.images" class-name="cover" />
-      <div class="name">
-        {{ trackItem.name }}
-      </div>
+      <div class="name">{{ trackItem.name }}</div>
       <div class="duration">
         {{ timecode(trackItem.duration_ms) }}
       </div>

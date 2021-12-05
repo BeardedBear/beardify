@@ -79,7 +79,7 @@ onMounted(() => {
   background-color: var(--bg-color-darker);
   position: sticky;
   top: 95px;
-  z-index: 1;
+  z-index: 2;
 }
 </style>
 

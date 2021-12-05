@@ -30,6 +30,7 @@ const artistStore = useArtist();
   display: flex;
   gap: 5px;
   margin-bottom: 10px;
+  min-height: 12px;
   opacity: 0.3;
 
   .genre {
@@ -64,7 +65,7 @@ const artistStore = useArtist();
   position: sticky;
   top: 0;
   transition: transform ease 0.1s;
-  z-index: 2;
+  z-index: 3;
 }
 
 .inner {
