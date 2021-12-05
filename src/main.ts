@@ -16,12 +16,12 @@ useAuth()
   .refresh()
   .then((done) => {
     if (done) {
+      KeyboardEvents();
+      app.mount("#app");
       if (ls) {
         useConfig().switchScheme(JSON.parse(ls).schemeLabel);
         useConfig().switchTheme(JSON.parse(ls).themeLabel);
       }
-      KeyboardEvents();
-      app.mount("#app");
     }
   })
   .catch(() => {
