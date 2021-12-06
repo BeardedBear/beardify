@@ -27,13 +27,12 @@ const playerStore = usePlayer();
 const focused = useWindowFocus();
 
 // Keep app active
-setInterval(() => {
-  playerStore.getPlayerState();
-  playerStore.getDeviceList();
-  authStore.refresh();
-}, 120000); // 2 minutes
+setInterval(() => authStore.refresh(), 1800000); // 30 minutes
 
-watch(focused, (isFocused) => isFocused && playerStore.getPlayerState());
+watch(focused, (isFocused) => {
+  if (isFocused) playerStore.getPlayerState();
+  playerStore.getDeviceList();
+});
 </script>
 
 <style lang="scss">

@@ -5,9 +5,10 @@ import router, { RouteName } from "./router";
 import { useAuth } from "./views/auth/AuthStore";
 import KeyboardEvents from "./composition/KeyboardEvents";
 import { useConfig } from "./components/config/ConfigStore";
+import { Config } from "./@types/Config";
 
 const app = createApp(App);
-const ls = localStorage.getItem("BeardifyConfig");
+const configStorage = localStorage.getItem("BeardifyConfig");
 
 app.use(createPinia());
 app.use(router);
@@ -18,9 +19,10 @@ useAuth()
     if (done) {
       KeyboardEvents();
       app.mount("#app");
-      if (ls) {
-        useConfig().switchScheme(JSON.parse(ls).schemeLabel);
-        useConfig().switchTheme(JSON.parse(ls).themeLabel);
+      if (configStorage) {
+        const ls: Config = JSON.parse(configStorage);
+        useConfig().switchScheme(ls.schemeLabel);
+        useConfig().switchTheme(ls.themeLabel);
       }
     }
   })
