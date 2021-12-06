@@ -85,11 +85,13 @@ import Loader from "../LoadingDots.vue";
 import { useDialog } from "../dialog/DialogStore";
 import { useSidebar } from "./SidebarStore";
 import { onClickOutside } from "@vueuse/core";
+import { useAuth } from "../../views/auth/AuthStore";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const collections = computed(() => sidebarStore.playlists.filter((p) => p.name.toLowerCase().includes("#collection")));
 const playlists = computed(() => sidebarStore.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")));
+const authStore = useAuth();
 
 // Collection search
 const collectionSearchOpened = ref<boolean>(false);
@@ -116,8 +118,9 @@ onClickOutside(playlistSearchInput, () => {
 });
 
 watch(playlistSearchInput, () => playlistSearchInput.value && playlistSearchInput.value.focus());
-
-sidebarStore.getPlaylists("me/playlists?limit=50");
+watch(authStore, () => {
+  if (!collections.value.length || !playlists.value.length) sidebarStore.getPlaylists("me/playlists?limit=50");
+});
 </script>
 
 <style lang="scss" scoped>

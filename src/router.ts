@@ -32,7 +32,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: RouteName.Login,
-    name: "login",
+    name: "Login",
     component: Login,
   },
   {
@@ -66,6 +66,10 @@ const routes: Array<RouteRecordRaw> = [
     props: (route: RouteLocation): Record<string, LocationQueryValue | LocationQueryValue[]> => ({
       query: route.query.code,
     }),
+  },
+  {
+    path: "/:catchAll(.*)",
+    redirect: "/",
   },
 ];
 

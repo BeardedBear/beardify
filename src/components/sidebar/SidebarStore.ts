@@ -18,15 +18,12 @@ export const useSidebar = defineStore("sidebar", {
     },
 
     getPlaylists(url: string) {
-      if (url) {
+      if (url && router.currentRoute.value.name !== "Login") {
         instance()
           .get<Paging<SimplifiedPlaylist>>(url)
           .then((e) => {
             this.playlists = this.playlists.concat(e.data.items);
             if (e.data.next) this.getPlaylists(e.data.next);
-          })
-          .catch(() => {
-            if (!this.playlists.length) this.getPlaylists("me/playlists?limit=50");
           });
       }
     },

@@ -123,7 +123,6 @@ body {
 
 .loading {
   display: grid;
-  height: 100vh;
   place-content: center;
 }
 </style>
