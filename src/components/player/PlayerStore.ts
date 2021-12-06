@@ -3,7 +3,7 @@ import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
 import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
 import { Device, DevicesResponse } from "../../@types/Device";
 import { Player } from "../../@types/Player";
-import { api, instance } from "../../api";
+import { instance } from "../../api";
 
 export const usePlayer = defineStore("player", {
   state: (): Player => ({
@@ -71,11 +71,11 @@ export const usePlayer = defineStore("player", {
     toggleShuffle() {
       if (this.currentlyPlaying.shuffle_state) {
         instance()
-          .put(`${api.url}me/player/shuffle?state=false`)
+          .put("me/player/shuffle?state=false")
           .then(() => (this.currentlyPlaying.shuffle_state = false));
       } else {
         instance()
-          .put(`${api.url}me/player/shuffle?state=true`)
+          .put("me/player/shuffle?state=true")
           .then(() => (this.currentlyPlaying.shuffle_state = true));
       }
     },
@@ -83,11 +83,11 @@ export const usePlayer = defineStore("player", {
     toggleRepeat() {
       if (this.currentlyPlaying.repeat_state === "off") {
         instance()
-          .put(`${api.url}me/player/repeat?state=context`)
+          .put("me/player/repeat?state=context")
           .then(() => (this.currentlyPlaying.repeat_state = "context"));
       } else {
         instance()
-          .put(`${api.url}me/player/repeat?state=off`)
+          .put("me/player/repeat?state=off")
           .then(() => (this.currentlyPlaying.repeat_state = "off"));
       }
     },

@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { Paging } from "../../@types/Paging";
 import { SimplifiedPlaylist } from "../../@types/Playlist";
 import { Sidebar } from "../../@types/Sidebar";
-import { api, instance } from "../../api";
+import { instance } from "../../api";
 import router from "../../router";
 import { useAuth } from "../../views/auth/AuthStore";
 
@@ -37,7 +37,7 @@ export const useSidebar = defineStore("sidebar", {
         .post(`users/${authStore.me?.id}/playlists`, { name: name })
         .then(() => {
           this.reset();
-          this.getPlaylists(`${api.url}me/playlists?limit=50`);
+          this.getPlaylists(`me/playlists?limit=50`);
         });
     },
 
@@ -47,7 +47,7 @@ export const useSidebar = defineStore("sidebar", {
         .post(`users/${authStore.me?.id}/playlists`, { name: "#Collection " + name })
         .then(() => {
           this.reset();
-          this.getPlaylists(`${api.url}me/playlists?limit=50`);
+          this.getPlaylists(`me/playlists?limit=50`);
         });
     },
 
@@ -56,7 +56,7 @@ export const useSidebar = defineStore("sidebar", {
         .delete(`https://api.spotify.com/v1/playlists/${playlistId}/followers`)
         .then(() => {
           this.reset();
-          this.getPlaylists(`${api.url}me/playlists?limit=50`);
+          this.getPlaylists(`me/playlists?limit=50`);
 
           if (location.pathname.includes(playlistId)) router.push("/");
         });

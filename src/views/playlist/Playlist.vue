@@ -88,7 +88,6 @@ import { timecode, timecodeWithUnits, date } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
-import { api } from "../../api";
 import { useDialog } from "../../components/dialog/DialogStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { usePlaylist } from "./PlaylistStore";
@@ -110,8 +109,8 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 playlistStore.clean().finally(() => {
-  playlistStore.getPlaylist(`${api.url}playlists/${props.id}`);
-  playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
+  playlistStore.getPlaylist(`playlists/${props.id}`);
+  playlistStore.getTracks(`playlists/${props.id}/tracks`);
 });
 </script>
 

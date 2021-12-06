@@ -42,7 +42,6 @@
 import { computed, defineProps, ref } from "vue";
 import Album from "../../components/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
-import { api } from "../../api";
 import { useDialog } from "../../components/dialog/DialogStore";
 import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";
@@ -60,8 +59,8 @@ function edit(playlistId: string): void {
 }
 
 playlistStore.clean().finally(() => {
-  playlistStore.getPlaylist(`${api.url}playlists/${props.id}`);
-  playlistStore.getTracks(`${api.url}playlists/${props.id}/tracks`);
+  playlistStore.getPlaylist(`playlists/${props.id}`);
+  playlistStore.getTracks(`playlists/${props.id}/tracks`);
 });
 </script>
 
