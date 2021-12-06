@@ -84,7 +84,6 @@ import { computed, ref, Ref, watch } from "vue";
 import Loader from "../LoadingDots.vue";
 import { useDialog } from "../dialog/DialogStore";
 import { useSidebar } from "./SidebarStore";
-import { api } from "../../api";
 import { onClickOutside } from "@vueuse/core";
 
 const dialogStore = useDialog();
@@ -118,7 +117,7 @@ onClickOutside(playlistSearchInput, () => {
 
 watch(playlistSearchInput, () => playlistSearchInput.value && playlistSearchInput.value.focus());
 
-sidebarStore.getPlaylists(`${api.url}me/playlists?limit=50`);
+sidebarStore.getPlaylists("me/playlists?limit=50");
 </script>
 
 <style lang="scss" scoped>

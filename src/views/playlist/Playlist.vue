@@ -66,7 +66,7 @@
           <router-link class="link" :to="`/album/${track.track.album.id}`">{{ track.track.album.name }}</router-link>
         </div>
 
-        <div class="owner">
+        <div v-if="track.added_by.id" class="owner">
           {{ track.added_by.id }}
         </div>
 

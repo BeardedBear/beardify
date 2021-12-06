@@ -6,6 +6,7 @@ import { useAuth } from "./views/auth/AuthStore";
 import KeyboardEvents from "./composition/KeyboardEvents";
 import { useConfig } from "./components/config/ConfigStore";
 import { Config } from "./@types/Config";
+import { usePlayer } from "./components/player/PlayerStore";
 
 const app = createApp(App);
 const configStorage = localStorage.getItem("BeardifyConfig");
@@ -19,6 +20,7 @@ useAuth()
     if (done) {
       KeyboardEvents();
       app.mount("#app");
+      usePlayer().getDeviceList();
       if (configStorage) {
         const ls: Config = JSON.parse(configStorage);
         useConfig().switchScheme(ls.schemeLabel);

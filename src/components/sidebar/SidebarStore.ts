@@ -25,8 +25,8 @@ export const useSidebar = defineStore("sidebar", {
             this.playlists = this.playlists.concat(e.data.items);
             if (e.data.next) this.getPlaylists(e.data.next);
           })
-          .then(() => {
-            if (!this.playlists.length) this.getPlaylists(`${api.url}me/playlists?limit=50`);
+          .catch(() => {
+            if (!this.playlists.length) this.getPlaylists("me/playlists?limit=50");
           });
       }
     },

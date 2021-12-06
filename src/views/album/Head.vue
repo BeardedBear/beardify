@@ -76,6 +76,10 @@ function openLink(url: string): void {
   from {
     opacity: 0;
   }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .copied {

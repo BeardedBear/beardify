@@ -59,6 +59,12 @@ function logout(): void {
     transform: scale(0);
     transform-origin: top right;
   }
+
+  from {
+    opacity: 1;
+    transform: scale(1);
+    transform-origin: top right;
+  }
 }
 
 .section {

@@ -130,12 +130,22 @@ function deleteAlbum(albumId: string): void {
     opacity: 0;
     transform: scale(0.8) rotate(50deg);
   }
+
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 @keyframes pop-add-button {
   from {
     opacity: 0;
     transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
