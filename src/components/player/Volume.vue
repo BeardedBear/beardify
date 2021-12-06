@@ -1,5 +1,5 @@
 <template>
-  <div ref="refVolume" class="volume" @click="setVolume()">
+  <div ref="refVolume" class="volume" @click="playerStore.setVolume(volume)">
     <div class="volume__cursor" :style="{ width: playerStore.devices.activeDevice.volume_percent + '%' }" />
     <div class="volume-hover" :style="{ width: volume + '%' }">
       <div class="volume__pc">{{ volume + "%" }}</div>
@@ -15,13 +15,11 @@ const refVolume = ref();
 const volume = ref(0);
 const playerStore = usePlayer();
 
-function setVolume(): void {
-  playerStore.setVolume(volume.value);
-}
-
 watchEffect(() => {
   refVolume.value?.addEventListener("mousemove", (e: MouseEvent) => {
-    volume.value = e.offsetX;
+    console.log(e.offsetX);
+
+    if (e.offsetX <= 100 && e.offsetX >= 0) volume.value = e.offsetX;
   });
 });
 </script>
@@ -33,7 +31,7 @@ watchEffect(() => {
   height: 1.3rem;
   margin-bottom: 0.1rem;
   position: relative;
-  width: 5rem;
+  width: 6.3rem;
 
   &::before {
     background-color: var(--bg-color);

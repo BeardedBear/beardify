@@ -26,6 +26,13 @@ const authStore = useAuth();
 const playerStore = usePlayer();
 const focused = useWindowFocus();
 
+// Check Widevine support for Brave Browser
+const config = [{ initDataTypes: ["cenc"], audioCapabilities: [{ contentType: 'audio/mp4;codecs="mp4a.40.2"' }] }];
+navigator
+  .requestMediaKeySystemAccess("com.widevine.alpha", config)
+  .then(() => console.log("widevine support ok"))
+  .catch(() => console.log("no widevine support"));
+
 // Keep app active
 setInterval(() => authStore.refresh(), 1800000); // 30 minutes
 
