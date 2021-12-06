@@ -64,7 +64,7 @@ challenge.value = storage.codeChallenge;
 }
 
 .logo {
-  height: 2rem;
+  height: 3rem;
   margin-bottom: 1rem;
 }
 </style>
