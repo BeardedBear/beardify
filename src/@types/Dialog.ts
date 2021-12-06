@@ -6,4 +6,4 @@ export interface Dialog {
   isClosing: boolean;
 }
 
-export type DialogType = null | "addalbum" | "addPlaylist" | "editPlaylist" | "addCollection";
+export type DialogType = null | "addalbum" | "addPlaylist" | "editPlaylist" | "addCollection" | "widevine";

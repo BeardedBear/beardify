@@ -7,12 +7,14 @@
         <div v-if="dialogStore.type === 'addPlaylist'">Créer une playlist</div>
         <div v-if="dialogStore.type === 'editPlaylist'">Editer une playlist</div>
         <div v-if="dialogStore.type === 'addCollection'">Créer une collection</div>
+        <div v-if="dialogStore.type === 'widevine'">Attention !</div>
         <button class="close" @click="dialogStore.close()"><i class="icon-x" /></button>
       </div>
       <AddAlbum v-if="dialogStore.type === 'addalbum'" />
       <AddPlaylist v-if="dialogStore.type === 'addPlaylist'" />
       <EditPlaylist v-if="dialogStore.type === 'editPlaylist'" />
       <AddCollection v-if="dialogStore.type === 'addCollection'" />
+      <WinevineWarning v-if="dialogStore.type === 'widevine'" />
     </div>
   </div>
 </template>
@@ -23,6 +25,7 @@ import AddPlaylist from "./AddPlaylist.vue";
 import AddCollection from "./AddCollection.vue";
 import EditPlaylist from "./EditPlaylist.vue";
 import { useDialog } from "./DialogStore";
+import WinevineWarning from "./WidevineWarning.vue";
 
 const dialogStore = useDialog();
 </script>

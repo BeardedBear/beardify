@@ -21,17 +21,18 @@ import { useAuth } from "./views/auth/AuthStore";
 import { usePlayer } from "./components/player/PlayerStore";
 import { useWindowFocus } from "@vueuse/core";
 import { watch } from "vue";
+import { useDialog } from "./components/dialog/DialogStore";
 
 const authStore = useAuth();
 const playerStore = usePlayer();
 const focused = useWindowFocus();
+const dialog = useDialog();
 
 // Check Widevine support for Brave Browser
 const config = [{ initDataTypes: ["cenc"], audioCapabilities: [{ contentType: 'audio/mp4;codecs="mp4a.40.2"' }] }];
-navigator
-  .requestMediaKeySystemAccess("com.widevine.alpha", config)
-  .then(() => console.log("widevine support ok"))
-  .catch(() => console.log("no widevine support"));
+navigator.requestMediaKeySystemAccess("com.widevine.alpha", config).catch(() => {
+  dialog.open({ type: "widevine" });
+});
 
 // Keep app active
 setInterval(() => authStore.refresh(), 1800000); // 30 minutes
