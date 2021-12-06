@@ -11,14 +11,12 @@
 import { ref, watchEffect } from "vue";
 import { usePlayer } from "./PlayerStore";
 
-const refVolume = ref();
-const volume = ref(0);
+const refVolume = ref<HTMLDivElement | null>(null);
+const volume = ref<number>(0);
 const playerStore = usePlayer();
 
 watchEffect(() => {
   refVolume.value?.addEventListener("mousemove", (e: MouseEvent) => {
-    console.log(e.offsetX);
-
     if (e.offsetX <= 100 && e.offsetX >= 0) volume.value = e.offsetX;
   });
 });
@@ -51,7 +49,7 @@ watchEffect(() => {
   }
 
   &__pc {
-    position: relative;
+    pointer-events: none;
     position: absolute;
     right: 0;
     top: -1rem;

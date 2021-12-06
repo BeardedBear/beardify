@@ -90,6 +90,7 @@ watch(
       bottom: calc(100% + 0.4rem);
       color: color.change(white, $alpha: 0.8);
       padding: 0.4rem 0.8rem;
+      pointer-events: none;
       position: absolute;
       right: 0;
       transform: translateX(50%);
