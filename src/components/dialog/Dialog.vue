@@ -76,8 +76,8 @@ $radius: 0.4rem;
 .bg {
   animation: pop-bg 0.2s ease both;
   background-color: var(--bg-color-darker);
+  filter: opacity(0.85);
   inset: 0;
-  opacity: 0.95;
   position: fixed;
 
   &.is-closing {
@@ -86,7 +86,7 @@ $radius: 0.4rem;
 }
 
 .dialog {
-  backdrop-filter: blur(0.8rem);
+  backdrop-filter: blur(1rem);
   display: grid;
   inset: 0;
   place-content: center;
