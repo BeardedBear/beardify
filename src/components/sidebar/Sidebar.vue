@@ -151,6 +151,7 @@ watch(authStore, () => {
   }
 
   .public-icon {
+    margin-left: 1rem;
     opacity: 0.1;
   }
 
