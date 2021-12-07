@@ -35,17 +35,20 @@ import { onClickOutside } from "@vueuse/core";
 import { ref } from "vue";
 import { useConfig } from "./ConfigStore";
 import { NotificationType } from "../../@types/Notification";
+import { usePlayer } from "../player/PlayerStore";
 
 const env = process.env.NODE_ENV;
 const authStore = useAuth();
 const domConfig = ref(null);
 const configStore = useConfig();
+const playerStore = usePlayer();
 
 onClickOutside(domConfig, () => configStore.close());
 
 function logout(): void {
   configStore.close();
   authStore.resetLogin();
+  playerStore.pause();
   router.push(RouteName.Login);
 }
 </script>
