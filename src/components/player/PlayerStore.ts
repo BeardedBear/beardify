@@ -1,9 +1,10 @@
 import { defineStore } from "pinia";
 import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
 import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
-import { Device, DevicesResponse } from "../../@types/Device";
+import { DevicesResponse } from "../../@types/Device";
 import { Player } from "../../@types/Player";
 import { instance } from "../../api";
+import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 
 export const usePlayer = defineStore("player", {
   state: (): Player => ({
@@ -29,7 +30,9 @@ export const usePlayer = defineStore("player", {
     },
 
     next(): void {
-      instance().post("me/player/next");
+      instance()
+        .post("me/player/next")
+        .then(() => syncOfficialSpotifyClient());
     },
 
     getDeviceList() {
@@ -39,21 +42,29 @@ export const usePlayer = defineStore("player", {
           const activeDevice = data.devices.find((d) => d.is_active);
           this.devices.list = data.devices;
 
-          if (activeDevice) this.devices.activeDevice = activeDevice;
-          if (!this.currentlyPlaying.is_playing) {
-            if (this.devices.list.length === 1) {
-              this.setDevice(this.devices.list[0]);
-            } else {
-              this.setDevice(this.devices.activeDevice);
-            }
+          if (this.currentlyPlaying.is_playing && activeDevice) {
+            this.devices.activeDevice = activeDevice;
+          } else if (activeDevice) {
+            this.devices.activeDevice = activeDevice;
+            this.setDevice(activeDevice.id);
+          } else {
+            this.setDevice(this.thisDeviceId);
           }
         });
     },
 
-    setDevice(device: Device) {
+    setDevice(deviceId: string | null) {
       instance()
-        .put("me/player", { device_ids: [device.id] })
-        .then(() => (this.devices.activeDevice = device));
+        .put("me/player", { device_ids: [deviceId] })
+        .then(() => {
+          instance()
+            .get<DevicesResponse>("me/player/devices")
+            .then(({ data }) => {
+              this.devices.list = data.devices;
+              const activeDevice = data.devices.find((d) => d.id === deviceId);
+              if (activeDevice) this.devices.activeDevice = activeDevice;
+            });
+        });
     },
 
     setVolume(volume: number) {

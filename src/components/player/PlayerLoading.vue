@@ -8,7 +8,7 @@
         type="button"
         class="device button button--x-small"
         :class="{ me: playerStore.thisDeviceId === device.id }"
-        @click="playerStore.setDevice(device)"
+        @click="playerStore.setDevice(device.id)"
       >
         {{ device.name }}
       </button>

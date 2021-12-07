@@ -12,7 +12,10 @@ window.onSpotifyWebPlaybackSDKReady = (): void => {
   player.connect();
   player.on("authentication_error", () => dispatchEvent(new CustomEvent("noAccess")));
 
-  player.addListener("ready", ({ device_id }) => usePlayer().thisDevice(device_id));
+  player.addListener("ready", ({ device_id }) => {
+    usePlayer().thisDevice(device_id);
+  });
+
   player.addListener("player_state_changed", () => {
     if (document.hasFocus()) usePlayer().getPlayerState();
   });

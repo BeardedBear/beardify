@@ -38,8 +38,10 @@ navigator.requestMediaKeySystemAccess("com.widevine.alpha", config).catch(() => 
 setInterval(() => authStore.refresh(), 1800000); // 30 minutes
 
 watch(focused, (isFocused) => {
-  if (isFocused) playerStore.getPlayerState();
-  playerStore.getDeviceList();
+  if (isFocused) {
+    playerStore.getPlayerState();
+    // playerStore.getDeviceList();
+  }
 });
 </script>
 

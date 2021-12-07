@@ -9,7 +9,7 @@
         'button--primary': device.id === playerStore.devices.activeDevice.id,
         me: playerStore.thisDeviceId === device.id,
       }"
-      @click="playerStore.setDevice(device)"
+      @click="playerStore.setDevice(device.id)"
     >
       {{ device.name }}
     </button>

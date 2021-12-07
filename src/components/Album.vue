@@ -42,7 +42,7 @@ import ArtistList from "./ArtistList.vue";
 import { usePlaylist } from "../views/playlist/PlaylistStore";
 import { notification } from "../helpers/notifications";
 import { NotificationType } from "../@types/Notification";
-import { usePlayer } from "./player/PlayerStore";
+import { syncOfficialSpotifyClient } from "../helpers/getSpotifyPlayerState";
 
 defineProps<{
   album: AlbumSimplified | Album;
@@ -57,14 +57,11 @@ defineProps<{
 const currentRouteId = useRoute().params.id;
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
-const playerStore = usePlayer();
 
 function playAlbum(albumUri: string): void {
   instance()
     .put("me/player/play", { context_uri: albumUri })
-    .then(() => {
-      if (playerStore.thisDeviceId !== playerStore.currentlyPlaying.device.id) playerStore.getPlayerState();
-    });
+    .then(() => syncOfficialSpotifyClient());
 }
 
 function deleteAlbum(albumId: string): void {

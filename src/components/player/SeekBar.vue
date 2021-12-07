@@ -16,6 +16,7 @@ import { ref, watchEffect, watch } from "vue";
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
 import { useIntervalFn } from "@vueuse/core";
+import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 
 const progresss = ref();
 const perc = ref();
@@ -42,6 +43,9 @@ watchEffect(() => {
 
 useIntervalFn(() => {
   if (playerStore.currentlyPlaying.is_playing) currentTime.value = currentTime.value + 1000;
+  if (playerStore.currentlyPlaying.item && currentTime.value > playerStore.currentlyPlaying.item.duration_ms) {
+    syncOfficialSpotifyClient();
+  }
 }, 1000);
 
 watch(
