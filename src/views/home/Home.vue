@@ -53,6 +53,7 @@ watch(authStore, () => {
   margin-bottom: 3rem;
 
   .name {
+    flex: 1;
     font-size: 2rem;
     font-weight: bold;
   }

@@ -29,10 +29,12 @@ const focused = useWindowFocus();
 const dialog = useDialog();
 
 // Check Widevine support for Brave Browser
-const config = [{ initDataTypes: ["cenc"], audioCapabilities: [{ contentType: 'audio/mp4;codecs="mp4a.40.2"' }] }];
-navigator.requestMediaKeySystemAccess("com.widevine.alpha", config).catch(() => {
-  dialog.open({ type: "widevine" });
-});
+if (!navigator.userAgent.includes("Macintosh")) {
+  const config = [{ initDataTypes: ["cenc"], audioCapabilities: [{ contentType: 'audio/mp4;codecs="mp4a.40.2"' }] }];
+  navigator.requestMediaKeySystemAccess("com.widevine.alpha", config).catch(() => {
+    dialog.open({ type: "widevine" });
+  });
+}
 
 // Keep app active
 setInterval(() => authStore.refresh(), 1800000); // 30 minutes
