@@ -26,14 +26,15 @@ import { usePlayer } from "./PlayerStore";
 
 const playerStore = usePlayer();
 
-watch(
-  () => playerStore.currentlyPlaying,
-  () => {
+watch(playerStore.currentlyPlaying, () => {
+  if (playerStore.currentlyPlaying.item?.album.artists[0].name !== undefined) {
     useTitle(
       `${playerStore.currentlyPlaying.item?.album.artists[0].name} - ${playerStore.currentlyPlaying.item?.name}`,
     );
-  },
-);
+  } else {
+    useTitle("Beardify");
+  }
+});
 </script>
 
 <style lang="scss" scoped>

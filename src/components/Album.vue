@@ -63,7 +63,7 @@ function playAlbum(albumUri: string): void {
   instance()
     .put("me/player/play", { context_uri: albumUri })
     .then(() => {
-      playerStore.getPlayerState();
+      if (playerStore.thisDeviceId !== playerStore.currentlyPlaying.device.id) playerStore.getPlayerState();
     });
 }
 
