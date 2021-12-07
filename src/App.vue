@@ -66,10 +66,12 @@ html {
 
 body {
   overflow: hidden;
+  scrollbar-color: var(--primary-color-dark) var(--bg-color-dark);
+  scrollbar-width: thin;
 }
 
 ::selection {
-  background-color: var(--primary-color);
+  background-color: var(--primary-color-dark);
 }
 
 ::-webkit-scrollbar {
