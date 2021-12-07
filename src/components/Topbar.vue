@@ -65,7 +65,7 @@ const configStore = useConfig();
     }
 
     &:active {
-      background-color: var(--bg-color);
+      background-color: var(--bg-color-lighter);
     }
 
     &:first-of-type {

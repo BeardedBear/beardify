@@ -8,12 +8,17 @@
   cursor: pointer;
   display: inline-block;
   font-weight: 700;
+  line-height: 1.5;
   padding: 0.4rem 1.1rem;
   text-align: center;
   text-decoration: none;
 
   &:hover {
     background-color: var(--bg-color-light);
+  }
+
+  &:active {
+    background-color: var(--bg-color-lighter);
   }
 
   &--full {
@@ -26,6 +31,11 @@
 
     &:hover {
       background-color: var(--primary-color-light);
+      color: white;
+    }
+
+    &:active {
+      background-color: var(--primary-color-lighter);
       color: white;
     }
   }
@@ -41,6 +51,6 @@
 
   &--x-small {
     font-size: 0.8rem;
-    padding: 0.3rem 0.5rem;
+    padding: 0.1rem 0.5rem;
   }
 }
