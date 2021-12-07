@@ -3,7 +3,7 @@
     <div v-if="currentlyPlayedId === album.uri" class="current"><i class="icon-volume-2" /></div>
     <div class="cover">
       <Cover size="medium" :images="album.images" class="img" @click="router.push(`/album/${album.id}`)" />
-      <button class="play" type="button" @click="instance().put('me/player/play', { context_uri: album.uri })">
+      <button class="play" type="button" @click="playAlbum(album.uri)">
         <i class="icon-play" />
       </button>
       <button
@@ -42,6 +42,7 @@ import ArtistList from "./ArtistList.vue";
 import { usePlaylist } from "../views/playlist/PlaylistStore";
 import { notification } from "../helpers/notifications";
 import { NotificationType } from "../@types/Notification";
+import { usePlayer } from "./player/PlayerStore";
 
 defineProps<{
   album: AlbumSimplified | Album;
@@ -56,6 +57,15 @@ defineProps<{
 const currentRouteId = useRoute().params.id;
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
+const playerStore = usePlayer();
+
+function playAlbum(albumUri: string): void {
+  instance()
+    .put("me/player/play", { context_uri: albumUri })
+    .then(() => {
+      playerStore.getPlayerState();
+    });
+}
 
 function deleteAlbum(albumId: string): void {
   instance()
