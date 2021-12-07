@@ -3,7 +3,10 @@
   <div v-else class="home">
     <div class="home__content">
       <div class="fit">
-        <h1>Albums recommandés</h1>
+        <div class="title">
+          <div class="name">Albums recommandés</div>
+          <button class="button" @click="getData()"><i class="icon-refresh"></i> Rafraichir</button>
+        </div>
         <div class="album-gallery">
           <Album
             v-for="(album, index) in homeStore.recommendedAlbums"
@@ -11,6 +14,7 @@
             :currently-played-id="playerStore.currentlyPlaying.item?.album.uri"
             :album="album"
             with-artists
+            can-save
           />
         </div>
       </div>
@@ -36,10 +40,24 @@ function getData(): void {
   });
 }
 
-authStore.accessToken ? getData() : watch(authStore, () => getData());
+watch(authStore, () => {
+  if (!homeStore.recommendedAlbums.length) getData();
+});
 </script>
 
 <style lang="scss" scoped>
+.title {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+
+  .name {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+}
+
 .home {
   display: grid;
   line-break: anywhere;
