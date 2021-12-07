@@ -18,6 +18,12 @@
       </a>
       <a
         class="links__item"
+        @click="openLink(`https://www.last.fm/fr/music/${artistStore.artist.name.replaceAll(' ', '+')}`)"
+      >
+        <i class="icon-lastfm" />
+      </a>
+      <a
+        class="links__item"
         @click="openLink(`https://www.discogs.com/fr/search/?q=${artistStore.artist.name}&amp;strict=true`)"
       >
         <i class="icon-discogs" />
