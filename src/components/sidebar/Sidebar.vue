@@ -58,7 +58,11 @@
       </div>
       <div v-for="(playlist, index) in playlists" :key="index">
         <router-link
-          v-if="playlist.id && playlist.name.toLocaleLowerCase().includes(playlistSearchQuery.toLocaleLowerCase())"
+          v-if="
+            playlist.id &&
+            playlist.name !== '' &&
+            playlist.name.toLocaleLowerCase().includes(playlistSearchQuery.toLocaleLowerCase())
+          "
           class="playlist-item"
           :to="`/playlist/${playlist.id}`"
           :class="{ active: $route.params.id === playlist.id }"

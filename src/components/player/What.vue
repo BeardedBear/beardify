@@ -2,11 +2,11 @@
   <div v-if="playerStore.currentlyPlaying.item && playerStore.currentlyPlaying.item.album" class="what">
     <div class="cover-wrap">
       <Cover size="small" :images="playerStore.currentlyPlaying.item.album.images" class-name="cover" />
-      <div class="hover">
-        <i
-          class="add icon-plus"
-          @click="dialogStore.open({ type: 'addSong', songUri: playerStore.currentlyPlaying.item?.uri })"
-        ></i>
+      <div
+        class="hover"
+        @click="dialogStore.open({ type: 'addSong', songUri: playerStore.currentlyPlaying.item?.uri })"
+      >
+        <i class="add icon-plus"></i>
       </div>
     </div>
     <div>
@@ -47,7 +47,6 @@ const dialogStore = useDialog();
   position: relative;
 
   .add {
-    cursor: pointer;
     font-size: 1.4rem;
     transition: 0.2s;
     will-change: transform;
@@ -61,6 +60,7 @@ const dialogStore = useDialog();
     align-items: center;
     background-color: color.change(black, $alpha: 0.8);
     border-radius: 0.3rem;
+    cursor: pointer;
     display: flex;
     inset: 0;
     justify-content: center;
