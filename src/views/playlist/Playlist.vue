@@ -245,7 +245,7 @@ playlistStore.clean().finally(() => {
 
 .description {
   font-style: italic;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.5rem;
   max-width: 80%;
   opacity: 0.5;
 }
@@ -253,12 +253,11 @@ playlistStore.clean().finally(() => {
 .title {
   font-size: 2rem;
   font-weight: bold;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.2rem;
   margin-top: -1rem;
 }
 
 .playlist-header {
-  align-items: center;
   display: flex;
   justify-content: space-between;
   margin-bottom: 2.2rem;
@@ -281,7 +280,7 @@ playlistStore.clean().finally(() => {
 
 .cover {
   border-radius: 0.3rem;
-  height: 8rem;
+  height: 7rem;
 }
 
 .playlist-page {
