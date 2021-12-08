@@ -1,15 +1,25 @@
 <template>
   <div v-if="playerStore.currentlyPlaying.item && playerStore.currentlyPlaying.item.album" class="what">
-    <router-link :to="`/album/${playerStore.currentlyPlaying.item.album.id}`">
+    <div class="cover-wrap">
       <Cover size="small" :images="playerStore.currentlyPlaying.item.album.images" class-name="cover" />
-    </router-link>
+      <div class="hover">
+        <i
+          class="add icon-plus"
+          @click="dialogStore.open({ type: 'addSong', songUri: playerStore.currentlyPlaying.item?.uri })"
+        ></i>
+      </div>
+    </div>
     <div>
       <div>
         <span class="trackname">{{ playerStore.currentlyPlaying.item.name }}</span>
         ·
         <ArtistList :artist-list="playerStore.currentlyPlaying.item.album.artists" :feat="true" />
       </div>
-      <div class="album"><i class="icon-album"></i> {{ playerStore.currentlyPlaying.item.album.name }}</div>
+      <div class="album">
+        <router-link :to="`/album/${playerStore.currentlyPlaying.item.album.id}`" class="link">
+          <i class="icon-album"></i> {{ playerStore.currentlyPlaying.item.album.name }}
+        </router-link>
+      </div>
     </div>
   </div>
   <div v-else></div>
@@ -19,14 +29,51 @@
 import Cover from "../Cover.vue";
 import ArtistList from "../ArtistList.vue";
 import { usePlayer } from "./PlayerStore";
+import { useDialog } from "../dialog/DialogStore";
 
 const playerStore = usePlayer();
+const dialogStore = useDialog();
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
+
 .cover {
   border-radius: 0.3rem;
   display: block;
+}
+
+.cover-wrap {
+  position: relative;
+
+  .add {
+    cursor: pointer;
+    font-size: 1.4rem;
+    transition: 0.2s;
+    will-change: transform;
+
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+
+  .hover {
+    align-items: center;
+    background-color: color.change(black, $alpha: 0.8);
+    border-radius: 0.3rem;
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    opacity: 0;
+    position: absolute;
+    transition: 0.2s;
+  }
+
+  &:hover {
+    .hover {
+      opacity: 1;
+    }
+  }
 }
 
 .trackname {
@@ -42,16 +89,29 @@ const playerStore = usePlayer();
 .album {
   font-size: 0.9rem;
   font-style: italic;
-  opacity: 0.5;
+
+  .link {
+    color: currentColor;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-style: italic;
+    opacity: 0.5;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--primary-color);
+      opacity: 1;
+    }
+  }
 }
 
 .what {
   align-items: center;
   display: flex;
+  gap: 1rem;
 
   img {
     height: 3.4rem;
-    margin-right: 1rem;
   }
 }
 </style>

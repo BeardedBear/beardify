@@ -33,7 +33,7 @@ function add(albumId: string, playlistId: string): void {
           if (f.status === 201) dialogStore.close();
         });
     })
-    .then(() => notification({ msg: "Album added", type: NotificationType.Success }));
+    .then(() => notification({ msg: "Album ajouté", type: NotificationType.Success }));
 }
 </script>
 
