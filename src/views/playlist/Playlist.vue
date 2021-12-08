@@ -31,6 +31,7 @@
             playerStore.currentlyPlaying && track.track
               ? track.track.id === playerStore.currentlyPlaying.item.id
               : false,
+          deletable: playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative,
         }"
         @dblclick="
           playSongs(
@@ -64,10 +65,6 @@
             }"
           />
           <router-link class="link" :to="`/album/${track.track.album.id}`">{{ track.track.album.name }}</router-link>
-        </div>
-
-        <div v-if="track.added_by.id" class="owner">
-          {{ track.added_by.id }}
         </div>
 
         <div class="date">
@@ -149,9 +146,13 @@ playlistStore.clean().finally(() => {
   cursor: default;
   display: grid;
   gap: 0.8rem;
-  grid-template-columns: 2.2rem 1fr 0.9fr 0.4fr 0.3fr 2.8rem auto;
+  grid-template-columns: 2.2rem 1fr 0.9fr 0.3fr 2.8rem;
   margin-bottom: 0.4rem;
   padding: 0.4rem 0.8rem;
+
+  &.deletable {
+    grid-template-columns: 2.2rem 1fr 0.9fr 0.3fr 2.8rem auto;
+  }
 
   &-icon {
     font-size: 1.5rem;
@@ -177,6 +178,10 @@ playlistStore.clean().finally(() => {
     font-style: italic;
     opacity: 0.5;
     text-decoration: none;
+  }
+
+  .date {
+    text-align: right;
   }
 
   .link {
@@ -276,7 +281,7 @@ playlistStore.clean().finally(() => {
 
 .cover {
   border-radius: 0.3rem;
-  height: 10rem;
+  height: 8rem;
 }
 
 .playlist-page {
