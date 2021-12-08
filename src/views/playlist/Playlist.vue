@@ -43,7 +43,7 @@
         <div class="track-icon">
           <i class="track-icon-item music icon-music" />
           <i
-            class="track-icon-item save icon-save"
+            class="track-icon-item save icon-plus"
             @click="dialogStore.open({ type: 'addSong', songUri: track.track.uri })"
           ></i>
         </div>

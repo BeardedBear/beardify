@@ -12,7 +12,7 @@
         type="button"
         @click="dialogStore.open({ type: 'addalbum', albumId: album.id })"
       >
-        <i class="icon-save" />
+        <i class="icon-plus" />
       </button>
       <button v-if="canDelete" class="button-action delete" type="button" @click="deleteAlbum(album.id)">
         <i class="icon-trash-2" />

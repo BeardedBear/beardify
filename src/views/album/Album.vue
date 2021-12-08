@@ -21,7 +21,7 @@
             @dblclick="playSongs(index, albumStore.album.tracks.items)"
           >
             <button class="add" @click="dialogStore.open({ type: 'addSong', songUri: track.uri })">
-              <i class="icon-save"></i>
+              <i class="icon-plus"></i>
             </button>
             <span class="track__number">{{ track.track_number }}.</span>
             <div>
