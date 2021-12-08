@@ -41,7 +41,11 @@
         "
       >
         <div class="track-icon">
-          <i class="icon icon-music" />
+          <i class="track-icon-item music icon-music" />
+          <i
+            class="track-icon-item save icon-save"
+            @click="dialogStore.open({ type: 'addSong', songUri: track.track.uri })"
+          ></i>
         </div>
         <div>
           <div class="track-name">{{ track.track.name }}</div>
@@ -155,7 +159,26 @@ playlistStore.clean().finally(() => {
   }
 
   &-icon {
-    font-size: 1.5rem;
+    &-item {
+      font-size: 1.5rem;
+      opacity: 0.1;
+    }
+
+    .save {
+      cursor: pointer;
+      display: none;
+    }
+
+    &:hover {
+      .music {
+        display: none;
+      }
+
+      .save {
+        display: block;
+        opacity: 0.8;
+      }
+    }
   }
 
   .delete {
@@ -164,10 +187,6 @@ playlistStore.clean().finally(() => {
     &:hover {
       opacity: 1;
     }
-  }
-
-  .icon {
-    opacity: 0.1;
   }
 
   .link,
