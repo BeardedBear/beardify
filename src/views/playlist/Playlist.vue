@@ -77,6 +77,12 @@
         <div class="duration">
           {{ timecode(track.track.duration_ms) }}
         </div>
+
+        <div v-if="playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative">
+          <button class="button button--nude delete" @click="deleteSong(track.track.uri)">
+            <i class="icon-trash-2"></i>
+          </button>
+        </div>
       </div>
     </template>
   </div>
@@ -93,12 +99,17 @@ import ArtistList from "../../components/ArtistList.vue";
 import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
+import { useAuth } from "../auth/AuthStore";
+import { instance } from "../../api";
+import { notification } from "../../helpers/notifications";
+import { NotificationType } from "../../@types/Notification";
 
 const props = defineProps<{ id: string }>();
 const playlistpage = ref();
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
 const playerStore = usePlayer();
+const authStore = useAuth();
 
 function deletePlaylist(playlistId: string): void {
   dialogStore.open({ type: "editPlaylist", playlistId });
@@ -106,6 +117,15 @@ function deletePlaylist(playlistId: string): void {
 
 function sumDuration(tracks: PlaylistTrack[]): number {
   return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
+}
+
+function deleteSong(songId: string): void {
+  console.log("songId", [songId]);
+
+  instance()
+    .delete(`playlists/${playlistStore.playlist.id}/tracks`, { data: { tracks: [{ uri: songId }] } })
+    .then(() => playlistStore.removeSong(songId))
+    .then(() => notification({ msg: "Album deleted", type: NotificationType.Success }));
 }
 
 playlistStore.clean().finally(() => {
@@ -129,12 +149,20 @@ playlistStore.clean().finally(() => {
   cursor: default;
   display: grid;
   gap: 0.8rem;
-  grid-template-columns: 2.2rem 1fr 0.9fr 0.4fr 0.3fr 2.8rem;
+  grid-template-columns: 2.2rem 1fr 0.9fr 0.4fr 0.3fr 2.8rem auto;
   margin-bottom: 0.4rem;
   padding: 0.4rem 0.8rem;
 
   &-icon {
     font-size: 1.5rem;
+  }
+
+  .delete {
+    opacity: 0.3;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 
   .icon {

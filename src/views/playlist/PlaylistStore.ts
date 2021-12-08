@@ -41,5 +41,9 @@ export const usePlaylist = defineStore("playlist", {
     removeTracks(tracks: TrackToRemove[]) {
       this.tracks = this.tracks.filter((e) => !tracks.map((e) => e.uri).includes(e.track.uri));
     },
+
+    removeSong(songUri: string) {
+      this.tracks = this.tracks.filter((t) => t.track.uri !== songUri);
+    },
   },
 });
