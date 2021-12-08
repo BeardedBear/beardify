@@ -126,6 +126,7 @@ playlistStore.clean().finally(() => {
 .track {
   align-items: center;
   border-radius: 0.3rem;
+  cursor: default;
   display: grid;
   gap: 0.8rem;
   grid-template-columns: 2.2rem 1fr 0.9fr 0.4fr 0.3fr 2.8rem;

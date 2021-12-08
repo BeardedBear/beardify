@@ -18,8 +18,11 @@
             :key="index"
             class="track"
             :class="{ active: playerStore.currentlyPlaying.item?.id === track.id }"
-            @click="playSongs(index, albumStore.album.tracks.items)"
+            @dblclick="playSongs(index, albumStore.album.tracks.items)"
           >
+            <button class="add" @click="dialogStore.open({ type: 'addSong', songUri: track.uri })">
+              <i class="icon-save"></i>
+            </button>
             <span class="track__number">{{ track.track_number }}.</span>
             <div>
               <div>{{ track.name }}</div>
@@ -50,11 +53,13 @@ import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
 import Head from "./Head.vue";
 import Foot from "./Foot.vue";
+import { useDialog } from "../../components/dialog/DialogStore";
 
 const props = defineProps({ id: { default: "", type: String } });
 const albumpage = ref();
 const albumStore = useAlbum();
 const playerStore = usePlayer();
+const dialogStore = useDialog();
 
 albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 </script>
@@ -73,15 +78,44 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   width: 57rem;
 }
 
+.add {
+  background: none;
+  border: none;
+  color: var(--font-color);
+  cursor: pointer;
+  font-size: 1.2rem;
+  opacity: 0;
+  padding: 0;
+  padding-right: 7px;
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: 0.2s;
+}
+
 .track {
   border-radius: 0.4rem;
-  cursor: pointer;
+  cursor: default;
   display: grid;
   grid-template-columns: 2rem 1fr auto;
   padding: 0.4rem 0.8rem;
+  position: relative;
 
   &:hover {
     background-color: color.change(rgb(74 75 103), $alpha: 0.15);
+
+    .add {
+      opacity: 0.3;
+    }
+  }
+
+  .add:hover {
+    opacity: 1;
+  }
+
+  &:active {
+    background-color: color.change(rgb(74 75 103), $alpha: 0.3);
   }
 
   &__number {
@@ -93,7 +127,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 .content {
   display: flex;
   flex: 1;
-  gap: 2rem;
+  gap: 3rem;
   justify-content: center;
 
   &__cover {

@@ -4,6 +4,7 @@
     <div class="dialog-content" :class="{ 'is-closing': dialogStore.isClosing }">
       <div class="head">
         <div v-if="dialogStore.type === 'addalbum'">Ajouter un album à une collection</div>
+        <div v-if="dialogStore.type === 'addSong'">Ajouter un morceau à une playlist</div>
         <div v-if="dialogStore.type === 'addPlaylist'">Créer une playlist</div>
         <div v-if="dialogStore.type === 'editPlaylist'">Editer une playlist</div>
         <div v-if="dialogStore.type === 'addCollection'">Créer une collection</div>
@@ -11,6 +12,7 @@
         <button class="close" @click="dialogStore.close()"><i class="icon-x" /></button>
       </div>
       <AddAlbum v-if="dialogStore.type === 'addalbum'" />
+      <AddSong v-if="dialogStore.type === 'addSong'" />
       <AddPlaylist v-if="dialogStore.type === 'addPlaylist'" />
       <EditPlaylist v-if="dialogStore.type === 'editPlaylist'" />
       <AddCollection v-if="dialogStore.type === 'addCollection'" />
@@ -21,6 +23,7 @@
 
 <script lang="ts" setup>
 import AddAlbum from "./AddAlbum.vue";
+import AddSong from "./AddSong.vue";
 import AddPlaylist from "./AddPlaylist.vue";
 import AddCollection from "./AddCollection.vue";
 import EditPlaylist from "./EditPlaylist.vue";
