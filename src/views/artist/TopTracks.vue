@@ -93,7 +93,7 @@ const dialogStore = useDialog();
 .cover {
   border-radius: 0.3rem;
   display: block;
-  height: 2rem;
+  height: 1.7rem;
 }
 
 .name {

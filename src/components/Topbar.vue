@@ -92,6 +92,10 @@ const configStore = useConfig();
   display: block;
   height: 2rem;
   opacity: 0.5;
+
+  &:hover {
+    opacity: 1;
+  }
 }
 
 #nav {
