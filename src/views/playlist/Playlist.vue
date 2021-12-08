@@ -8,7 +8,7 @@
           <div class="title">{{ playlistStore.playlist.name }}</div>
           <div class="description">{{ playlistStore.playlist.description }}</div>
           <div>
-            {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} Morceaux ·
+            {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} morceaux ·
             {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}
           </div>
         </div>
@@ -126,7 +126,7 @@ function deleteSong(songId: string): void {
   instance()
     .delete(`playlists/${playlistStore.playlist.id}/tracks`, { data: { tracks: [{ uri: songId }] } })
     .then(() => playlistStore.removeSong(songId))
-    .then(() => notification({ msg: "Album deleted", type: NotificationType.Success }));
+    .then(() => notification({ msg: "Morceau supprimé", type: NotificationType.Success }));
 }
 
 playlistStore.clean().finally(() => {

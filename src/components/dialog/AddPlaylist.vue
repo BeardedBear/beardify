@@ -19,7 +19,7 @@ const playlistName = ref("");
 function create(): void {
   sidebarStore.addPlaylist(playlistName.value).then(() => {
     dialogStore.close();
-    notification({ msg: `Playlist ${playlistName.value} created`, type: NotificationType.Success });
+    notification({ msg: `Playlist ${playlistName.value} créée`, type: NotificationType.Success });
   });
 }
 </script>

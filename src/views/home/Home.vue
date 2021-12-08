@@ -5,7 +5,7 @@
       <div class="fit">
         <div class="title">
           <div class="name">Albums recommandés</div>
-          <button class="button" @click="getData()"><i class="icon-refresh"></i> Rafraichir</button>
+          <button class="button" @click="getData()"><i class="icon-refresh"></i> Rafraîchir</button>
         </div>
         <div class="album-gallery">
           <Album

@@ -10,7 +10,7 @@
             </div>
             <div class="description">{{ playlistStore.playlist.description }}</div>
             <div>
-              {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} Albums
+              {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} albums
             </div>
           </div>
         </div>
