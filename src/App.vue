@@ -36,13 +36,16 @@ if (!navigator.userAgent.includes("Macintosh")) {
   });
 }
 
-// Keep app active
+// Keep token active
 setInterval(() => authStore.refresh(), 1800000); // 30 minutes
+
+// Keep device active
+setInterval(() => playerStore.getDeviceList(), 900000); // 15 minutes
 
 watch(focused, (isFocused) => {
   if (isFocused) {
     playerStore.getPlayerState();
-    playerStore.getDeviceList();
+    // playerStore.getDeviceList();
   }
 });
 </script>
