@@ -3,7 +3,7 @@
   <div v-else class="podcasts">
     <div class="fit">
       <div class="title">
-        <div class="name">PODCASTS</div>
+        <div class="name">Podcasts</div>
       </div>
       <div class="heading sticky-heading">Mes podcasts</div>
       <div v-if="!podcastsStore.myPodcasts.length"><Loader /></div>
@@ -59,18 +59,20 @@ podcastsStore.clean().finally(() => {
 
 .podcast-list {
   display: grid;
+  gap: 2rem;
   grid-template-columns: 1fr 1fr 1fr 1fr;
+  margin-bottom: 2rem;
 }
 
 .title {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 
   .name {
     flex: 1;
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: bold;
   }
 }
