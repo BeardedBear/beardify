@@ -14,14 +14,27 @@ export const usePodcasts = defineStore("podcasts", {
     async clean() {
       this.podcast = null;
       this.list = null;
+      this.myPodcasts = [];
     },
 
-    getMyPodcasts() {
+    // getPlaylists(url: string) {
+    //   if (url && router.currentRoute.value.name !== "Login") {
+    //     instance()
+    //       .get<Paging<SimplifiedPlaylist>>(url)
+    //       .then((e) => {
+    //         this.playlists = this.playlists.concat(e.data.items);
+    //         if (e.data.next) this.getPlaylists(e.data.next);
+    //       });
+    //   }
+    // },
+
+    getMyPodcasts(url: string) {
       instance()
-        .get<Paging<PodcastSaved>>("me/shows")
-        .then(({ data }) => {
-          this.myPodcasts = data.items;
-          console.log(data.items);
+        .get<Paging<PodcastSaved>>(url)
+        .then((e) => {
+          this.myPodcasts = this.myPodcasts.concat(e.data.items);
+
+          if (e.data.next) this.getMyPodcasts(e.data.next);
         });
 
       // this.myPodcasts = data);

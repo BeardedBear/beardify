@@ -1,11 +1,13 @@
 <template>
-  <div class="podcasts">
+  <div v-if="!podcastsStore.list && !podcastsStore.myPodcasts.length" class="loader"><Loader /></div>
+  <div v-else class="podcasts">
     <div class="fit">
       <div class="title">
         <div class="name">PODCASTS</div>
       </div>
       <div class="heading sticky-heading">Mes podcasts</div>
-      <div class="podcast-list">
+      <div v-if="!podcastsStore.myPodcasts.length"><Loader /></div>
+      <div v-else class="podcast-list">
         <PodcastCard
           v-for="(podcast, index) in podcastsStore.myPodcasts"
           :id="podcast.show.id"
@@ -15,7 +17,8 @@
         />
       </div>
       <div class="heading sticky-heading">Podcasts musique</div>
-      <div class="podcast-list">
+      <div v-if="!podcastsStore.list"><Loader /></div>
+      <div v-else class="podcast-list">
         <PodcastCard
           v-for="(podcast, index) in podcastsStore.list?.shows"
           :id="podcast.id"
@@ -31,14 +34,22 @@
 <script lang="ts" setup>
 import { usePodcasts } from "./PodcastsStore";
 import PodcastCard from "../../components/podcast/PodcastCard.vue";
+import Loader from "../../components/LoadingDots.vue";
 
 const podcastsStore = usePodcasts();
-podcastsStore.getPodcasts();
-podcastsStore.getMyPodcasts();
+podcastsStore.clean().finally(() => {
+  podcastsStore.getPodcasts();
+  podcastsStore.getMyPodcasts("me/shows?limit=50");
+});
 </script>
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
+
+.loader {
+  display: grid;
+  place-content: center;
+}
 
 .podcasts {
   animation: pop-content 1s ease both;
