@@ -8,6 +8,8 @@ export interface Player {
   };
   thisDeviceId: string;
   currentlyPlaying: CurrentlyPlaying;
+  currentFromSDK: Spotify.Track | null;
+  currentPositionFromSDK: number;
 }
 
 export type PlayerError =
@@ -52,6 +54,7 @@ const defaultTrack: Spotify.Track = {
   is_playable: true,
   album: defaultAlbum,
   artists: defaultArtist,
+  duration_ms: 0,
 };
 
 const defaultTrackWindow: Spotify.PlaybackTrackWindow = {

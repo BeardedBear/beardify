@@ -16,7 +16,8 @@ window.onSpotifyWebPlaybackSDKReady = (): void => {
     usePlayer().thisDevice(device_id);
   });
 
-  player.addListener("player_state_changed", () => {
+  player.addListener("player_state_changed", (e) => {
+    usePlayer().updateFromSDK(e.track_window.current_track, e.position);
     if (document.hasFocus()) usePlayer().getPlayerState();
   });
 };

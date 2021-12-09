@@ -1,15 +1,37 @@
 <template>
   <PlayerLoading v-if="!playerStore.currentlyPlaying" />
   <div v-else class="player">
-    <div class="meta">
-      <What />
-      <Controls />
-      <div class="options">
-        <Volume />
-        <Devices />
+    <template v-if="playerStore.currentlyPlaying.currently_playing_type === 'episode'">
+      <div class="meta">
+        <What
+          v-if="playerStore.currentFromSDK?.album.images[0].url"
+          :cover-url="playerStore.currentFromSDK?.album.images[0].url"
+        />
+        <Controls :duration="playerStore.currentFromSDK?.duration_ms" :progress="playerStore.currentPositionFromSDK" />
+        <div class="options">
+          <Volume />
+          <Devices />
+        </div>
       </div>
-    </div>
-    <SeekBar />
+      <SeekBar :duration="playerStore.currentFromSDK?.duration_ms" />
+    </template>
+    <template v-else>
+      <div class="meta">
+        <What
+          v-if="playerStore.currentlyPlaying.item?.album.images[0].url"
+          :cover-url="playerStore.currentlyPlaying.item?.album.images[0].url"
+        />
+        <Controls
+          :duration="playerStore.currentlyPlaying.item?.duration_ms"
+          :progress="playerStore.currentlyPlaying.progress_ms"
+        />
+        <div class="options">
+          <Volume />
+          <Devices />
+        </div>
+      </div>
+      <SeekBar :duration="playerStore.currentFromSDK?.duration_ms" />
+    </template>
   </div>
 </template>
 

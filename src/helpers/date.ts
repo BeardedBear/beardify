@@ -7,6 +7,10 @@ import formatDuration from "date-fns/formatDuration";
 const options = { locale: fr };
 
 export function timecode(date: number): string {
+  const hours = new Date(date).getHours() - 1;
+  if (hours > 0) {
+    return format(new Date(date), `${hours}:mm:ss`, options);
+  }
   return format(new Date(date), "m:ss", options);
 }
 

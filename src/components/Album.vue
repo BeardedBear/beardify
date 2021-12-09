@@ -3,9 +3,7 @@
     <div v-if="currentlyPlayedId === album.uri" class="current"><i class="icon-volume-2" /></div>
     <div class="cover">
       <Cover size="medium" :images="album.images" class="img" @click="router.push(`/album/${album.id}`)" />
-      <button class="play" type="button" @click="playAlbum(album.uri)">
-        <i class="icon-play" />
-      </button>
+      <button class="play" type="button" @click="playAlbum(album.uri)"><i class="icon-play" /></button>
       <button
         v-if="canSave"
         class="button-action add"

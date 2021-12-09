@@ -21,71 +21,69 @@
         </button>
       </div>
     </div>
-    <template v-if="playerStore.currentlyPlaying.item">
-      <div
-        v-for="(track, index) in playlistStore.tracks"
-        :key="index"
-        class="track"
-        :class="{
-          active:
-            playerStore.currentlyPlaying && track.track
-              ? track.track.id === playerStore.currentlyPlaying.item.id
-              : false,
-          deletable: playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative,
-        }"
-        @dblclick="
-          playSongs(
-            index,
-            playlistStore.tracks.map((e) => e.track),
-          )
-        "
-      >
-        <div class="track-icon">
-          <i class="track-icon-item music icon-music" />
-          <i
-            class="track-icon-item save icon-plus"
-            @click="dialogStore.open({ type: 'addSong', songUri: track.track.uri })"
-          ></i>
-        </div>
+    <div
+      v-for="(track, index) in playlistStore.tracks"
+      :key="index"
+      class="track"
+      :class="{
+        active:
+          playerStore.currentlyPlaying && track.track
+            ? playerStore.currentlyPlaying.item && track.track.id === playerStore.currentlyPlaying.item.id
+            : false,
+        deletable: playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative,
+      }"
+      @dblclick="
+        playSongs(
+          index,
+          playlistStore.tracks.map((e) => e.track),
+        )
+      "
+    >
+      <div class="track-icon">
+        <i class="track-icon-item music icon-music" />
+        <i
+          class="track-icon-item save icon-plus"
+          @click="dialogStore.open({ type: 'addSong', songUri: track.track.uri })"
+        ></i>
+      </div>
+      <div>
+        <div class="track-name">{{ track.track.name }}</div>
         <div>
-          <div class="track-name">{{ track.track.name }}</div>
-          <div>
-            <ArtistList :artist-list="track.track.artists" feat />
-          </div>
-        </div>
-        <div class="album">
-          <div v-if="track.track.album.album_type === 'album'" class="adder">
-            <i class="adder-icon icon-album" />
-            <i
-              class="adder-button icon-plus"
-              @click="dialogStore.open({ type: 'addalbum', albumId: track.track.album.id })"
-            />
-          </div>
-          <i
-            v-else
-            :class="{
-              'icon-single': track.track.album.album_type === 'single',
-              'icon-compilation': track.track.album.album_type === 'compilation',
-            }"
-          />
-          <router-link class="link" :to="`/album/${track.track.album.id}`">{{ track.track.album.name }}</router-link>
-        </div>
-
-        <div class="date">
-          {{ date(track.added_at) }}
-        </div>
-
-        <div class="duration">
-          {{ timecode(track.track.duration_ms) }}
-        </div>
-
-        <div v-if="playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative">
-          <button class="button button--nude delete" @click="deleteSong(track.track.uri)">
-            <i class="icon-trash-2"></i>
-          </button>
+          <ArtistList :artist-list="track.track.artists" feat />
         </div>
       </div>
-    </template>
+      <div class="album">
+        <div v-if="track.track.album.album_type === 'album'" class="adder">
+          <i class="adder-icon icon-album" />
+          <i
+            class="adder-button icon-plus"
+            @click="dialogStore.open({ type: 'addalbum', albumId: track.track.album.id })"
+          />
+        </div>
+        <i
+          v-else
+          :class="{
+            'icon-single': track.track.album.album_type === 'single',
+            'icon-compilation': track.track.album.album_type === 'compilation',
+          }"
+        />
+        <router-link class="link" :to="`/album/${track.track.album.id}`">{{ track.track.album.name }}</router-link>
+      </div>
+
+      <div class="date">
+        {{ date(track.added_at) }}
+      </div>
+
+      <div class="duration">
+        {{ timecode(track.track.duration_ms) }}
+      </div>
+
+      <div v-if="playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative">
+        <button class="button button--nude delete" @click="deleteSong(track.track.uri)">
+          <i class="icon-trash-2"></i>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 

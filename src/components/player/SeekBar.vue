@@ -1,10 +1,6 @@
 <template>
-  <div ref="progresss" class="progress">
-    <div
-      v-if="playerStore.currentlyPlaying.item"
-      class="bar"
-      :style="`width:${(currentTime / playerStore.currentlyPlaying.item.duration_ms) * 100}%`"
-    />
+  <div ref="refProgress" class="progress">
+    <div v-if="currentTime && duration" class="bar" :style="`width:${(currentTime / duration) * 100}%`" />
     <div class="seek" :style="`width:${perc}%`">
       <div class="time">{{ time }}</div>
     </div>
@@ -12,47 +8,47 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect, watch } from "vue";
+import { ref, watchEffect, watch, defineProps } from "vue";
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
 import { useIntervalFn } from "@vueuse/core";
 import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 
-const progresss = ref();
+const refProgress = ref();
 const perc = ref();
 const time = ref();
 const playerStore = usePlayer();
 const currentTime = ref<number>(0);
 
+const props = defineProps<{
+  duration: number | undefined;
+}>();
+
 watchEffect(() => {
-  progresss.value?.addEventListener("mousemove", (event: MouseEvent) => {
-    const positionInPercent = (event.clientX / progresss.value?.clientWidth) * 100;
-    const duration =
-      playerStore.currentlyPlaying.item && (playerStore.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
+  refProgress.value?.addEventListener("mousemove", (event: MouseEvent) => {
+    const positionInPercent = (event.clientX / refProgress.value?.clientWidth) * 100;
+    const durationPerc = props.duration && (props.duration / 100) * positionInPercent;
     perc.value = positionInPercent;
-    if (duration) time.value = timecode(duration);
+    if (durationPerc) time.value = timecode(durationPerc);
   });
 
-  progresss.value?.addEventListener("click", (event: MouseEvent) => {
-    const positionInPercent = (event.clientX / progresss.value?.clientWidth) * 100;
-    const duration =
-      playerStore.currentlyPlaying.item && (playerStore.currentlyPlaying.item.duration_ms / 100) * positionInPercent;
-    if (duration) playerStore.seek(duration);
+  refProgress.value?.addEventListener("click", (event: MouseEvent) => {
+    const positionInPercent = (event.clientX / refProgress.value?.clientWidth) * 100;
+    const durationPerc = props.duration && (props.duration / 100) * positionInPercent;
+    if (durationPerc) playerStore.seek(durationPerc);
   });
 });
 
 useIntervalFn(() => {
   if (playerStore.currentlyPlaying.is_playing) currentTime.value = currentTime.value + 1000;
-  if (playerStore.currentlyPlaying.item && currentTime.value > playerStore.currentlyPlaying.item.duration_ms) {
+  if (props.duration && currentTime.value > props.duration) {
     syncOfficialSpotifyClient();
   }
 }, 1000);
 
 watch(
   () => playerStore.currentlyPlaying.progress_ms,
-  () => {
-    currentTime.value = playerStore.currentlyPlaying.progress_ms;
-  },
+  () => (currentTime.value = playerStore.currentlyPlaying.progress_ms),
 );
 </script>
 

@@ -2,6 +2,7 @@
   <div class="controls">
     <div class="btns">
       <button
+        v-if="playerStore.currentlyPlaying.currently_playing_type !== 'episode'"
         class="controls__btn"
         :class="{ active: playerStore.currentlyPlaying.shuffle_state }"
         @click="playerStore.toggleShuffle()"
@@ -9,6 +10,7 @@
         <i class="icon-shuffle" />
       </button>
       <button
+        v-if="playerStore.currentlyPlaying.currently_playing_type !== 'episode'"
         class="controls__btn"
         :class="{ active: playerStore.currentlyPlaying.repeat_state !== 'off' }"
         @click="playerStore.toggleRepeat()"
@@ -21,13 +23,15 @@
       <button v-else class="controls__btn play" @click="playerStore.pause()">
         <i class="icon-pause" />
       </button>
-      <button class="controls__btn" @click="playerStore.next()">
+      <button
+        v-if="playerStore.currentlyPlaying.currently_playing_type !== 'episode'"
+        class="controls__btn"
+        @click="playerStore.next()"
+      >
         <i class="icon-skip-forward" />
       </button>
     </div>
-    <div v-if="playerStore.currentlyPlaying.progress_ms && playerStore.currentlyPlaying.item" class="time">
-      {{ timecode(currentTime) }} / {{ timecode(playerStore.currentlyPlaying.item.duration_ms) }}
-    </div>
+    <div v-if="progress && duration" class="time">{{ timecode(currentTime) }} / {{ timecode(duration) }}</div>
     <div v-else class="time">0:00 / 0:00</div>
   </div>
 </template>
@@ -35,8 +39,13 @@
 <script lang="ts" setup>
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
-import { ref, watch } from "vue";
+import { ref, watch, defineProps } from "vue";
 import { useIntervalFn } from "@vueuse/core";
+
+const props = defineProps<{
+  progress: number;
+  duration: number | undefined;
+}>();
 
 const playerStore = usePlayer();
 const currentTime = ref<number>(0);
@@ -46,10 +55,8 @@ useIntervalFn(() => {
 }, 1000);
 
 watch(
-  () => playerStore.currentlyPlaying.progress_ms,
-  () => {
-    currentTime.value = playerStore.currentlyPlaying.progress_ms;
-  },
+  () => props.progress,
+  () => (currentTime.value = props.progress),
 );
 </script>
 
@@ -63,7 +70,7 @@ watch(
 }
 
 .time {
-  width: 6rem;
+  width: 7.5rem;
 }
 
 .controls {

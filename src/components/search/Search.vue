@@ -218,6 +218,6 @@ $radius: 0.3rem;
   position: absolute;
   right: 0;
   top: 100%;
-  z-index: 1;
+  z-index: 999;
 }
 </style>

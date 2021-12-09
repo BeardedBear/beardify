@@ -23,15 +23,17 @@
       </div>
       <div class="album-list">
         <div v-for="(album, index) in cleanAlbumList" :key="index">
-          <template v-if="playerStore.currentlyPlaying.item">
-            <Album
-              :album="album"
-              :currently-played-id="playerStore.currentlyPlaying ? playerStore.currentlyPlaying.item.album.uri : ''"
-              with-artists
-              can-delete
-              can-save
-            />
-          </template>
+          <Album
+            :album="album"
+            :currently-played-id="
+              playerStore.currentlyPlaying.item && playerStore.currentlyPlaying
+                ? playerStore.currentlyPlaying.item.album.uri
+                : ''
+            "
+            with-artists
+            can-delete
+            can-save
+          />
         </div>
       </div>
     </div>

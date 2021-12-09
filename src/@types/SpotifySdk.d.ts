@@ -119,6 +119,7 @@ declare namespace Spotify {
   interface Track {
     uri: string;
     id: string | null;
+    duration_ms: number;
     type: "track" | "episode" | "ad";
     media_type: "audio" | "video";
     name: string;

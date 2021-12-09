@@ -1,8 +1,9 @@
 <template>
-  <div v-if="playerStore.currentlyPlaying.item && playerStore.currentlyPlaying.item.album" class="what">
+  <div v-if="coverUrl" class="what">
     <div class="cover-wrap">
-      <Cover size="small" :images="playerStore.currentlyPlaying.item.album.images" class-name="cover" />
+      <img :src="coverUrl" class="cover" />
       <div
+        v-if="playerStore.currentlyPlaying.item"
         class="hover"
         @click="dialogStore.open({ type: 'addSong', songUri: playerStore.currentlyPlaying.item?.uri })"
       >
@@ -11,11 +12,23 @@
     </div>
     <div>
       <div>
-        <span class="trackname">{{ playerStore.currentlyPlaying.item.name }}</span>
-        ·
-        <ArtistList :artist-list="playerStore.currentlyPlaying.item.album.artists" :feat="true" />
+        <template v-if="playerStore.currentlyPlaying.currently_playing_type === 'episode'">
+          <div class="trackname">{{ playerStore.currentFromSDK?.artists[0].name }}</div>
+          <div class="album">{{ playerStore.currentFromSDK?.name }}</div>
+        </template>
+        <template v-else>
+          <span v-if="playerStore.currentlyPlaying.item" class="trackname">
+            {{ playerStore.currentlyPlaying.item.name }} ·
+          </span>
+        </template>
+
+        <ArtistList
+          v-if="playerStore.currentlyPlaying.item"
+          :artist-list="playerStore.currentlyPlaying.item.album.artists"
+          :feat="true"
+        />
       </div>
-      <div class="album">
+      <div v-if="playerStore.currentlyPlaying.item" class="album">
         <router-link :to="`/album/${playerStore.currentlyPlaying.item.album.id}`" class="link">
           <i class="icon-album"></i> {{ playerStore.currentlyPlaying.item.album.name }}
         </router-link>
@@ -26,13 +39,18 @@
 </template>
 
 <script lang="ts" setup>
-import Cover from "../Cover.vue";
+// import Cover from "../Cover.vue";
 import ArtistList from "../ArtistList.vue";
 import { usePlayer } from "./PlayerStore";
 import { useDialog } from "../dialog/DialogStore";
+import { defineProps } from "vue";
 
 const playerStore = usePlayer();
 const dialogStore = useDialog();
+
+defineProps<{
+  coverUrl: string;
+}>();
 </script>
 
 <style lang="scss" scoped>

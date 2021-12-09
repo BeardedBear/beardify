@@ -14,6 +14,8 @@ export const usePlayer = defineStore("player", {
     },
     thisDeviceId: "",
     currentlyPlaying: defaultCurrentlyPlaying,
+    currentFromSDK: null,
+    currentPositionFromSDK: 0,
   }),
 
   actions: {
@@ -112,6 +114,11 @@ export const usePlayer = defineStore("player", {
     thisDevice(deviceId: string) {
       this.thisDeviceId = deviceId;
       this.getDeviceList();
+    },
+
+    updateFromSDK(args: Spotify.Track, position: number) {
+      this.currentFromSDK = args;
+      this.currentPositionFromSDK = position;
     },
   },
 });
