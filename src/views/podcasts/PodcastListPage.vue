@@ -1,17 +1,29 @@
 <template>
   <div class="podcasts">
-    <div class="title">
-      <div class="name">PODCASTS</div>
-    </div>
-
-    <div class="list">
-      <PodcastCard
-        v-for="(podcast, index) in podcastsStore.list"
-        :id="podcast.id"
-        :key="index"
-        :covers="podcast.images"
-        :name="podcast.name"
-      />
+    <div class="fit">
+      <div class="title">
+        <div class="name">PODCASTS</div>
+      </div>
+      <div class="heading sticky-heading">Mes podcasts</div>
+      <div class="podcast-list">
+        <PodcastCard
+          v-for="(podcast, index) in podcastsStore.myPodcasts"
+          :id="podcast.show.id"
+          :key="index"
+          :covers="podcast?.show.images"
+          :name="podcast?.show.name"
+        />
+      </div>
+      <div class="heading sticky-heading">Podcasts musique</div>
+      <div class="podcast-list">
+        <PodcastCard
+          v-for="(podcast, index) in podcastsStore.list?.shows"
+          :id="podcast.id"
+          :key="index"
+          :covers="podcast?.images"
+          :name="podcast?.name"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -22,6 +34,7 @@ import PodcastCard from "../../components/podcast/PodcastCard.vue";
 
 const podcastsStore = usePodcasts();
 podcastsStore.getPodcasts();
+podcastsStore.getMyPodcasts();
 </script>
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
@@ -31,6 +44,11 @@ podcastsStore.getPodcasts();
   animation: pop-content 1s ease both;
   overflow-y: scroll;
   padding: 2rem 2.2rem;
+}
+
+.podcast-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
 .title {
@@ -44,5 +62,10 @@ podcastsStore.getPodcasts();
     font-size: 2rem;
     font-weight: bold;
   }
+}
+
+.fit {
+  margin: 0 auto;
+  max-width: 57rem;
 }
 </style>

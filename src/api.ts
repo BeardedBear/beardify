@@ -7,7 +7,7 @@ export const api = {
   redirectUri:
     process.env.NODE_ENV !== "production" ? "http://localhost:3000/auth" : "http://beardify.netlify.app/auth",
   scopes:
-    "user-read-private%20user-modify-playback-state%20user-read-playback-state%20user-read-currently-playing%20playlist-read-private%20playlist-read-collaborative%20playlist-modify-private%20playlist-modify-public%20user-follow-modify%20user-follow-read%20streaming%20user-read-email%20user-top-read",
+    "user-read-private,user-modify-playback-state,user-read-playback-state,user-read-currently-playing,playlist-read-private,playlist-read-collaborative,playlist-modify-private,playlist-modify-public,user-follow-modify,user-follow-read,streaming,user-read-email,user-top-read,user-library-read",
 };
 
 export function instance(): AxiosInstance {

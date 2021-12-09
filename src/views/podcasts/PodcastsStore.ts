@@ -1,17 +1,38 @@
 import { defineStore } from "pinia";
-import { Podcast, PodcastsPage } from "../../@types/Podcast";
+import { Paging } from "../../@types/Paging";
+import { Podcast, PodcastItem, PodcastSaved, PodcastsPage } from "../../@types/Podcast";
 import { instance } from "../../api";
 
 export const usePodcasts = defineStore("podcasts", {
   state: (): PodcastsPage => ({
     podcast: null,
-    list: [],
+    list: null,
+    myPodcasts: [],
   }),
 
   actions: {
     async clean() {
       this.podcast = null;
-      this.list = [];
+      this.list = null;
+    },
+
+    getMyPodcasts() {
+      instance()
+        .get<Paging<PodcastSaved>>("me/shows")
+        .then(({ data }) => {
+          this.myPodcasts = data.items;
+          console.log(data.items);
+        });
+
+      // this.myPodcasts = data);
+      // if (e.data.next) {
+      //   instance()
+      //     .get<Paging<PlaylistTrack>>(e.data.next)
+      //     .then((f) => {
+      //       this.tracks = this.tracks.concat(f.data.items.filter((g) => g.track));
+      //     });
+      // }
+      // });
     },
 
     getPodcasts() {
@@ -21,9 +42,9 @@ export const usePodcasts = defineStore("podcasts", {
       ];
 
       instance()
-        .get<{ shows: Podcast[] }>(`/shows?ids=${podcasts.join()}`)
+        .get<PodcastItem>(`/shows?ids=${podcasts.join()}`)
         .then(({ data }) => {
-          this.list = data.shows;
+          this.list = data;
         });
     },
 

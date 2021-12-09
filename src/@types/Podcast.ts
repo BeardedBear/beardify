@@ -5,7 +5,16 @@ import { ExternalUrls } from "./Misc";
 
 export interface PodcastsPage {
   podcast: Podcast | null;
-  list: Podcast[];
+  list: PodcastItem | null;
+  myPodcasts: PodcastSaved[];
+}
+
+export interface PodcastSaved {
+  added_at: string;
+  show: Podcast;
+}
+export interface PodcastItem {
+  shows: Podcast[];
 }
 
 export interface Podcast {
