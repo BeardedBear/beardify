@@ -8,8 +8,8 @@
 
 ## Roadmap
 
-- [ ] Add songs to song playlists
-- [ ] Sharing
+- [x] Add songs to song playlists
+- [x] Sharing
 - [ ] Integrate my other client to check the new album releases
 
 ## Collections
