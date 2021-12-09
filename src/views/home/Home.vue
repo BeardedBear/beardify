@@ -60,6 +60,7 @@ watch(authStore, () => {
 }
 
 .home {
+  animation: pop-content 1s ease both;
   display: grid;
   line-break: anywhere;
   overflow: hidden;

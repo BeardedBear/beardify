@@ -9,6 +9,12 @@ window.onSpotifyWebPlaybackSDKReady = (): void => {
     volume: 1,
   });
 
+  function getState(state: Spotify.PlaybackState | null): void {
+    if (state && state.track_window) {
+      usePlayer().updateFromSDK(state?.track_window.current_track, state.position);
+    }
+  }
+
   player.connect();
   player.on("authentication_error", () => dispatchEvent(new CustomEvent("noAccess")));
 
@@ -16,8 +22,14 @@ window.onSpotifyWebPlaybackSDKReady = (): void => {
     usePlayer().thisDevice(device_id);
   });
 
-  player.addListener("player_state_changed", (e) => {
-    usePlayer().updateFromSDK(e.track_window.current_track, e.position);
+  document.addEventListener("updateState", () => {
+    player.getCurrentState().then((state) => getState(state));
+  });
+
+  player.addListener("player_state_changed", (state) => {
+    console.log(state);
+
+    getState(state);
     if (document.hasFocus()) usePlayer().getPlayerState();
   });
 };

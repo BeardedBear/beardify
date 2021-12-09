@@ -45,7 +45,7 @@ setInterval(() => playerStore.getDeviceList(), 900000); // 15 minutes
 watch(focused, (isFocused) => {
   if (isFocused) {
     playerStore.getPlayerState();
-    // playerStore.getDeviceList();
+    document.dispatchEvent(new CustomEvent("updateState"));
   }
 });
 </script>

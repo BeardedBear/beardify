@@ -2,7 +2,9 @@
   <div v-if="!sidebarStore.playlists.length && !sidebarStore.collections.length" class="sidebar loading">
     <Loader />
   </div>
+
   <div v-else class="sidebar" :class="{ 'search-opened': collectionSearchOpened || playlistSearchOpened }">
+    <Menu />
     <div class="sidebar__item">
       <div v-if="!collectionSearchOpened" class="heading title">
         <div>Collections</div>
@@ -90,6 +92,7 @@ import { useDialog } from "../dialog/DialogStore";
 import { useSidebar } from "./SidebarStore";
 import { onClickOutside } from "@vueuse/core";
 import { useAuth } from "../../views/auth/AuthStore";
+import Menu from "./MainMenu.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -173,7 +176,7 @@ watch(authStore, () => {
   overflow: hidden;
 
   &.search-opened {
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: auto 1fr 1fr;
   }
 
   &__item {

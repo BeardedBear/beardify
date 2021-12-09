@@ -7,6 +7,8 @@ import Home from "./views/home/Home.vue";
 import Login from "./views/Login.vue";
 import Collection from "./views/playlist/Collection.vue";
 import Playlist from "./views/playlist/Playlist.vue";
+import PodcastListPage from "./views/podcasts/PodcastListPage.vue";
+import PodcastPage from "./views/podcasts/PodcastPage.vue";
 
 export enum RouteName {
   Home = "/",
@@ -17,6 +19,7 @@ export enum RouteName {
   Collection = "/collection/",
   Album = "/album/",
   Playlist = "/playlist/",
+  Podcasts = "/podcasts/",
 }
 
 const routes: Array<RouteRecordRaw> = [
@@ -68,6 +71,17 @@ const routes: Array<RouteRecordRaw> = [
     }),
   },
   {
+    path: RouteName.Podcasts,
+    name: "PodcastList",
+    component: PodcastListPage,
+  },
+  {
+    path: RouteName.Podcasts + ":id",
+    name: "Podcast",
+    component: PodcastPage,
+    props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
+  },
+  {
     path: "/:catchAll(.*)",
     redirect: "/",
   },
@@ -77,11 +91,5 @@ const router = createRouter({
   history: createWebHistory("/"),
   routes,
 });
-
-// router.beforeEach(async (to) => {
-//   if (!store.state.auth.me?.display_name && to.path !== RouteName.Login && to.path !== RouteName.Auth) {
-//     router.push(RouteName.Login);
-//   }
-// });
 
 export default router;

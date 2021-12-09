@@ -3,10 +3,8 @@
   <div v-else class="player">
     <template v-if="playerStore.currentlyPlaying.currently_playing_type === 'episode'">
       <div class="meta">
-        <What
-          v-if="playerStore.currentFromSDK?.album.images[0].url"
-          :cover-url="playerStore.currentFromSDK?.album.images[0].url"
-        />
+        <What v-if="playerStore.currentFromSDK" :cover-url="playerStore.currentFromSDK?.album.images[1].url" />
+        <div v-else></div>
         <Controls :duration="playerStore.currentFromSDK?.duration_ms" :progress="playerStore.currentPositionFromSDK" />
         <div class="options">
           <Volume />
@@ -18,8 +16,8 @@
     <template v-else>
       <div class="meta">
         <What
-          v-if="playerStore.currentlyPlaying.item?.album.images[0].url"
-          :cover-url="playerStore.currentlyPlaying.item?.album.images[0].url"
+          v-if="playerStore.currentlyPlaying.item"
+          :cover-url="playerStore.currentlyPlaying.item?.album.images[1].url"
         />
         <Controls
           :duration="playerStore.currentlyPlaying.item?.duration_ms"
