@@ -1,3 +1,4 @@
+import { useTitle } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
 import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
@@ -78,7 +79,16 @@ export const usePlayer = defineStore("player", {
     getPlayerState() {
       instance()
         .get<CurrentlyPlaying>(`me/player`)
-        .then((e) => (this.currentlyPlaying = e.data));
+        .then((e) => {
+          this.currentlyPlaying = e.data;
+          if (this.currentlyPlaying.item) {
+            useTitle(`${this.currentlyPlaying.item?.album.artists[0].name} - ${this.currentlyPlaying.item?.name}`);
+          } else if (this.currentFromSDK) {
+            useTitle(`${this.currentFromSDK.artists[0].name} - ${this.currentFromSDK.name}`);
+          } else {
+            useTitle("Beardify");
+          }
+        });
     },
 
     toggleShuffle() {

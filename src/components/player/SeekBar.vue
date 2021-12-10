@@ -21,7 +21,7 @@ const playerStore = usePlayer();
 const currentTime = ref<number>(0);
 
 const props = defineProps<{
-  duration: number | undefined;
+  duration: number | null;
 }>();
 
 watchEffect(() => {

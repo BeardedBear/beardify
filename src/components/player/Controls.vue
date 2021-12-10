@@ -44,7 +44,7 @@ import { useIntervalFn } from "@vueuse/core";
 
 const props = defineProps<{
   progress: number;
-  duration: number | undefined;
+  duration: number | null;
 }>();
 
 const playerStore = usePlayer();
