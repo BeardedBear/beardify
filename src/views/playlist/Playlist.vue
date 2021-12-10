@@ -119,8 +119,6 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 function deleteSong(songId: string): void {
-  console.log("songId", [songId]);
-
   instance()
     .delete(`playlists/${playlistStore.playlist.id}/tracks`, { data: { tracks: [{ uri: songId }] } })
     .then(() => playlistStore.removeSong(songId))

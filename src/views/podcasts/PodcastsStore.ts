@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { Paging } from "../../@types/Paging";
-import { Podcast, PodcastItem, PodcastSaved, PodcastsPage } from "../../@types/Podcast";
+import { Episode, Podcast, PodcastItem, PodcastSaved, PodcastsPage } from "../../@types/Podcast";
 import { instance } from "../../api";
 
 export const usePodcasts = defineStore("podcasts", {
@@ -8,6 +8,7 @@ export const usePodcasts = defineStore("podcasts", {
     podcast: null,
     list: null,
     myPodcasts: [],
+    episodes: [],
   }),
 
   actions: {
@@ -15,37 +16,25 @@ export const usePodcasts = defineStore("podcasts", {
       this.podcast = null;
       this.list = null;
       this.myPodcasts = [];
+      this.episodes = [];
     },
-
-    // getPlaylists(url: string) {
-    //   if (url && router.currentRoute.value.name !== "Login") {
-    //     instance()
-    //       .get<Paging<SimplifiedPlaylist>>(url)
-    //       .then((e) => {
-    //         this.playlists = this.playlists.concat(e.data.items);
-    //         if (e.data.next) this.getPlaylists(e.data.next);
-    //       });
-    //   }
-    // },
 
     getMyPodcasts(url: string) {
       instance()
         .get<Paging<PodcastSaved>>(url)
         .then((e) => {
           this.myPodcasts = this.myPodcasts.concat(e.data.items);
-
           if (e.data.next) this.getMyPodcasts(e.data.next);
         });
+    },
 
-      // this.myPodcasts = data);
-      // if (e.data.next) {
-      //   instance()
-      //     .get<Paging<PlaylistTrack>>(e.data.next)
-      //     .then((f) => {
-      //       this.tracks = this.tracks.concat(f.data.items.filter((g) => g.track));
-      //     });
-      // }
-      // });
+    getPodcastEpisodes(url: string) {
+      instance()
+        .get<Paging<Episode>>(url)
+        .then((e) => {
+          this.episodes = this.episodes.concat(e.data.items);
+          if (e.data.next) this.getMyPodcasts(e.data.next);
+        });
     },
 
     getPodcasts() {
@@ -56,20 +45,13 @@ export const usePodcasts = defineStore("podcasts", {
 
       instance()
         .get<PodcastItem>(`/shows?ids=${podcasts.join()}`)
-        .then(({ data }) => {
-          this.list = data;
-        });
+        .then(({ data }) => (this.list = data));
     },
 
     getPodcast(podcastId: string) {
       instance()
         .get<Podcast>(`/shows/${podcastId}`)
-        .then(({ data }) => {
-          this.podcast = data;
-          console.log(data);
-
-          // this.list = data.shows;
-        });
+        .then(({ data }) => (this.podcast = data));
     },
   },
 });

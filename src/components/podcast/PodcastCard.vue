@@ -1,7 +1,7 @@
 <template>
   <router-link :to="`/podcasts/${id}`" class="podcast">
     <img class="cover" :src="covers[1].url" />
-    <div class="name">{{ name }}</div>
+    <div v-if="name" class="name">{{ name }}</div>
   </router-link>
 </template>
 
@@ -11,8 +11,8 @@ import { Image } from "../../@types/Image";
 
 defineProps<{
   covers: Image[];
-  name: string;
   id: string;
+  name?: string;
 }>();
 </script>
 

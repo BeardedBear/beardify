@@ -2,9 +2,7 @@
   <div v-if="!podcastsStore.list && !podcastsStore.myPodcasts.length" class="loader"><Loader /></div>
   <div v-else class="podcasts">
     <div class="fit">
-      <div class="title">
-        <div class="name">Podcasts</div>
-      </div>
+      <div class="title"><div class="name">Podcasts</div></div>
       <div class="heading sticky-heading">Mes podcasts</div>
       <div v-if="!podcastsStore.myPodcasts.length"><Loader /></div>
       <div v-else class="podcast-list">
@@ -13,7 +11,6 @@
           :id="podcast.show.id"
           :key="index"
           :covers="podcast?.show.images"
-          :name="podcast?.show.name"
         />
       </div>
       <div class="heading sticky-heading">Podcasts musique</div>
@@ -60,7 +57,7 @@ podcastsStore.clean().finally(() => {
 .podcast-list {
   display: grid;
   gap: 2rem;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   margin-bottom: 2rem;
 }
 
