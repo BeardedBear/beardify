@@ -28,7 +28,7 @@
           <Devices />
         </div>
       </div>
-      <SeekBar :duration="playerStore.currentFromSDK?.duration_ms" />
+      <SeekBar :duration="playerStore.currentlyPlaying.item?.duration_ms" />
     </template>
   </div>
 </template>
