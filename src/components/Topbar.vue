@@ -12,7 +12,10 @@
     <Search />
     <div>
       <div v-if="authStore.me !== null">
-        <Cover size="large" :images="authStore.me?.images" class="avatar" @click="configStore.open()" />
+        <div class="avatar" @click="configStore.open()">
+          <Cover size="large" :images="authStore.me?.images" class="avatar-image" />
+          <i class="icon icon-chevron-down"></i>
+        </div>
         <Config />
       </div>
     </div>
@@ -77,13 +80,38 @@ const configStore = useConfig();
 }
 
 .avatar {
-  $size: 2rem;
-
-  border-radius: $size;
-  display: block;
-  height: $size;
+  cursor: pointer;
   margin-left: 1rem;
-  width: $size;
+  position: relative;
+  transition: 0.2s;
+  will-change: transform;
+
+  &:hover {
+    transform: scale(1.15);
+  }
+
+  &-image {
+    $size: 2rem;
+
+    border-radius: $size;
+    display: block;
+    height: $size;
+    width: $size;
+  }
+
+  .icon {
+    $offset: -0.3rem;
+
+    background-color: var(--font-color);
+    border: 0.2rem solid var(--bg-color);
+    border-radius: 2rem;
+    bottom: $offset;
+    color: var(--bg-color);
+    font-size: 0.7rem;
+    font-weight: bold;
+    position: absolute;
+    right: $offset;
+  }
 }
 
 .logo {

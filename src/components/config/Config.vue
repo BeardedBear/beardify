@@ -1,11 +1,11 @@
 <template>
-  <div v-if="configStore.show" class="config" :class="{ bye: configStore.bye }">
+  <div v-if="configStore.show" ref="domConfig" class="config" :class="{ bye: configStore.bye }">
     <div class="user">
       <div>{{ authStore.me?.display_name }}</div>
       <div class="user__mail">{{ authStore.me?.email }}</div>
     </div>
 
-    <div v-if="env !== 'production'" ref="domConfig" class="section">
+    <div v-if="env !== 'production'" class="section">
       <div class="section__title">Debug</div>
       <router-link class="button button--full" to="/login">Login</router-link>
       <button class="button button--full" @click="authStore.refresh()">Refresh token</button>
@@ -17,7 +17,10 @@
       </button>
     </div>
 
-    <div class="section"><button class="button button--full" @click="logout()">Logout</button></div>
+    <div class="section">
+      <div class="section__title">Compte</div>
+      <button class="button button--full" @click="logout()">Logout</button>
+    </div>
 
     <div class="section">
       <div class="section__title">Couleurs</div>
@@ -113,8 +116,8 @@ function logout(): void {
 .config {
   animation: pop-config ease 0.2s both;
   background-color: var(--bg-color-darker);
-  border-radius: 0.3rem;
-  box-shadow: 0 0.3rem 0.7rem color.change(black, $alpha: 0.2);
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 30%);
   padding: 1.2rem;
   position: absolute;
   right: 1.2rem;
