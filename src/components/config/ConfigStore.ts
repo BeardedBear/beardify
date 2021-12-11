@@ -15,6 +15,7 @@ import {
 
 export const useConfig = defineStore("config", {
   state: (): Config => ({
+    bye: false,
     show: false,
     theme: themeDark,
     themeLabel: "dark",
@@ -54,7 +55,11 @@ export const useConfig = defineStore("config", {
     },
 
     close() {
-      this.show = false;
+      this.bye = true;
+      setTimeout(() => {
+        this.show = false;
+        this.bye = false;
+      }, 200);
     },
   },
 });

@@ -1,13 +1,13 @@
 <template>
-  <div ref="domConfig" class="config">
+  <div v-if="configStore.show" class="config" :class="{ bye: configStore.bye }">
     <div class="user">
       <div>{{ authStore.me?.display_name }}</div>
       <div class="user__mail">{{ authStore.me?.email }}</div>
     </div>
 
-    <div v-if="env !== 'production'" class="section">
+    <div v-if="env !== 'production'" ref="domConfig" class="section">
       <div class="section__title">Debug</div>
-      <router-link class="button button--full" to="/login"> Login </router-link>
+      <router-link class="button button--full" to="/login">Login</router-link>
       <button class="button button--full" @click="authStore.refresh()">Refresh token</button>
       <button
         class="button button--full"
@@ -17,7 +17,7 @@
       </button>
     </div>
 
-    <button class="button button--full" @click="logout()">Logout</button>
+    <div class="section"><button class="button button--full" @click="logout()">Logout</button></div>
 
     <div class="section">
       <div class="section__title">Couleurs</div>
@@ -39,9 +39,9 @@ import { usePlayer } from "../player/PlayerStore";
 
 const env = process.env.NODE_ENV;
 const authStore = useAuth();
-const domConfig = ref(null);
 const configStore = useConfig();
 const playerStore = usePlayer();
+const domConfig = ref<HTMLDivElement | null>(null);
 
 onClickOutside(domConfig, () => configStore.close());
 
@@ -56,29 +56,14 @@ function logout(): void {
 <style lang="scss" scoped>
 @use "sass:color";
 
-@keyframes pop-config {
-  from {
-    opacity: 0;
-    transform: scale(0);
-    transform-origin: top right;
-  }
-
-  from {
-    opacity: 1;
-    transform: scale(1);
-    transform-origin: top right;
-  }
-}
-
 .section {
-  background: var(--bg-color-light);
-  border: 0.1rem solid var(--bg-color-dark);
+  background: var(--bg-color);
   border-radius: 0.4rem;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-  margin: 1rem 0;
-  padding: 0.5rem 0.8rem 0.8rem;
+  margin-top: 1rem;
+  padding: 0.8rem;
 
   &__title {
     font-size: 0.8rem;
@@ -101,6 +86,30 @@ function logout(): void {
   }
 }
 
+@keyframes pop-config {
+  from {
+    opacity: 0;
+    transform: translateY(-2rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bye-config {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-2rem);
+  }
+}
+
 .config {
   animation: pop-config ease 0.2s both;
   background-color: var(--bg-color-darker);
@@ -112,5 +121,9 @@ function logout(): void {
   top: calc(100% - 0.3rem);
   width: 15rem;
   z-index: 999;
+
+  &.bye {
+    animation: bye-config ease 0.2s both;
+  }
 }
 </style>

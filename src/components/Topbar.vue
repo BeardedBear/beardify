@@ -3,9 +3,7 @@
     <div id="nav">
       <router-link to="/"><img class="logo" src="/img/logo.svg" /></router-link>
       <div class="navigation">
-        <button class="navigation__item" @click="router.go(-1)">
-          <i class="icon-arrow-left" />
-        </button>
+        <button class="navigation__item" @click="router.go(-1)"><i class="icon-arrow-left" /></button>
         <button class="navigation__item" @click="router.go(1)">
           <i class="icon-arrow-right" />
         </button>
@@ -15,7 +13,7 @@
     <div>
       <div v-if="authStore.me !== null">
         <Cover size="large" :images="authStore.me?.images" class="avatar" @click="configStore.open()" />
-        <Config v-if="configStore.show" />
+        <Config />
       </div>
     </div>
   </div>

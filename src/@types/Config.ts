@@ -1,4 +1,5 @@
 export interface Config {
+  bye: boolean;
   show: boolean;
   theme: ThemeColor[];
   themeLabel: ThemeLabel;
