@@ -47,9 +47,8 @@ export const usePlayer = defineStore("player", {
 
           if (this.currentlyPlaying.is_playing && activeDevice) {
             this.devices.activeDevice = activeDevice;
-          } else if (activeDevice) {
+          } else if (activeDevice?.is_active) {
             this.devices.activeDevice = activeDevice;
-            this.setDevice(activeDevice.id);
           } else {
             this.setDevice(this.thisDeviceId);
           }
