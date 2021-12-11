@@ -1,12 +1,8 @@
 <template>
   <PlayerLoading v-if="!playerStore.currentlyPlaying" />
   <div v-else class="player">
-    <template v-if="playerStore.currentlyPlaying.currently_playing_type === 'episode'">
-      <PlayerEpisode />
-    </template>
-    <template v-else>
-      <PlayerSong />
-    </template>
+    <template v-if="playerStore.currentlyPlaying.currently_playing_type === 'episode'"><PlayerEpisode /></template>
+    <template v-else><PlayerSong /></template>
   </div>
 </template>
 

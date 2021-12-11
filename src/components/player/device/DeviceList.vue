@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts" setup>
-import { usePlayer } from "./PlayerStore";
+import { usePlayer } from "../PlayerStore";
 
 const playerStore = usePlayer();
 </script>

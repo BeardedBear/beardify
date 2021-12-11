@@ -9,7 +9,7 @@
 
 <script lang="ts" setup>
 import { ref, watchEffect } from "vue";
-import { usePlayer } from "./PlayerStore";
+import { usePlayer } from "../PlayerStore";
 
 const refVolume = ref<HTMLDivElement | null>(null);
 const volume = ref<number>(0);

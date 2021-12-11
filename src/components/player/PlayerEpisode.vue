@@ -1,26 +1,23 @@
 <template>
   <div class="meta">
     <What v-if="playerStore.currentFromSDK" :cover-url="playerStore.currentFromSDK?.album.images[1].url" />
-    <div v-else></div>
+    <Loader v-else />
     <Controls
       :duration="playerStore.currentFromSDK && playerStore.currentFromSDK.duration_ms"
       :progress="playerStore.currentPositionFromSDK"
     />
-    <div class="options">
-      <Volume />
-      <Devices />
-    </div>
+    <Device />
   </div>
   <SeekBar :duration="playerStore.currentFromSDK && playerStore.currentFromSDK.duration_ms" />
 </template>
 
 <script lang="ts" setup>
+import Loader from "../LoadingDots.vue";
 import Controls from "./Controls.vue";
-import Devices from "./Devices.vue";
 import { usePlayer } from "./PlayerStore";
 import SeekBar from "./SeekBar.vue";
-import Volume from "./Volume.vue";
 import What from "./What.vue";
+import Device from "./device/Device.vue";
 
 const playerStore = usePlayer();
 </script>
@@ -33,10 +30,6 @@ const playerStore = usePlayer();
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   justify-content: space-between;
-  padding: 0.9rem 1.2rem;
-}
-
-.options {
-  text-align: right;
+  padding: 0.9rem 1.2rem 0;
 }
 </style>

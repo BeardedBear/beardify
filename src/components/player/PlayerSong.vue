@@ -4,25 +4,24 @@
       v-if="playerStore.currentlyPlaying.item"
       :cover-url="playerStore.currentlyPlaying.item?.album.images[1].url"
     />
+    <Loader v-else />
     <Controls
       :duration="playerStore.currentlyPlaying.item && playerStore.currentlyPlaying.item.duration_ms"
       :progress="playerStore.currentlyPlaying.progress_ms"
     />
-    <div class="options">
-      <Volume />
-      <Devices />
-    </div>
+    <Device />
   </div>
   <SeekBar :duration="playerStore.currentlyPlaying.item && playerStore.currentlyPlaying.item.duration_ms" />
 </template>
 
 <script lang="ts" setup>
 import Controls from "./Controls.vue";
-import Devices from "./Devices.vue";
 import { usePlayer } from "./PlayerStore";
 import SeekBar from "./SeekBar.vue";
-import Volume from "./Volume.vue";
 import What from "./What.vue";
+import Loader from "../LoadingDots.vue";
+import Device from "./device/Device.vue";
+
 const playerStore = usePlayer();
 </script>
 
@@ -34,7 +33,7 @@ const playerStore = usePlayer();
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   justify-content: space-between;
-  padding: 0.9rem 1.2rem;
+  padding: 0.9rem 1.2rem 0;
 }
 
 .options {
