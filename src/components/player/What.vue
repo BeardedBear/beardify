@@ -1,5 +1,5 @@
 <template>
-  <div v-if="coverUrl" class="what">
+  <div class="what">
     <div class="cover-wrap">
       <img :src="coverUrl" class="cover" />
       <div
@@ -35,7 +35,6 @@
       </div>
     </div>
   </div>
-  <div v-else></div>
 </template>
 
 <script lang="ts" setup>
@@ -129,7 +128,7 @@ defineProps<{
   gap: 1rem;
 
   img {
-    height: 3.4rem;
+    height: 3rem;
   }
 }
 </style>
