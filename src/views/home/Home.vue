@@ -40,6 +40,8 @@ function getData(): void {
   });
 }
 
+getData();
+
 watch(authStore, () => {
   if (!homeStore.recommendedAlbums.length) getData();
 });
