@@ -15,14 +15,51 @@
     <link href="/icons/style.css" rel="stylesheet" />
     <title>Beardify</title>
   </head>
-
   <body>
     <noscript>
       <strong>
         We're sorry but Beardify doesn't work properly without JavaScript enabled. Please enable it to continue.
       </strong>
     </noscript>
-    <div id="app"></div>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        font-size: 16px;
+      }
+
+      .loading-app {
+        background: #181b21;
+        height: 100vh;
+        width: 100vw;
+        display: grid;
+        place-content: center;
+      }
+
+      .loader-app {
+        animation: spin 0.3s linear infinite;
+        border: 0.4rem solid #1b1e26;
+        border-radius: 50%;
+        border-top: 0.4rem solid #9064ff;
+        height: 2.8rem;
+        width: 2.8rem;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <div id="app">
+      <div class="loading-app"><div class="loader-app"></div></div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
     <script type="module" src="/src/spotify.ts"></script>
   </body>
