@@ -6,9 +6,10 @@ $size: 2.8rem;
 
 .loader {
   animation: spin 0.3s linear infinite;
-  border: $border solid var(--bg-color); /* Light grey */
+  border: $border solid var(--bg-color);
   border-radius: 50%;
-  border-top: $border solid var(--primary-color); /* Blue */
+  border-top: $border solid var(--primary-color);
+  display: inline-block;
   height: $size;
   width: $size;
 }
