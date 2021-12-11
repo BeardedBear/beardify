@@ -30,6 +30,6 @@ const playerStore = usePlayer();
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   justify-content: space-between;
-  padding: 0.9rem 1.2rem 0;
+  padding: 0.9rem 1.2rem 0.5rem;
 }
 </style>

@@ -75,7 +75,7 @@ watch(
   background: var(--bg-color-light);
   border-radius: 1rem;
   flex: 1;
-  height: 0.4rem;
+  height: 0.2rem;
   position: relative;
 
   .seek {
@@ -117,7 +117,7 @@ watch(
 }
 
 .progress-wrap {
-  padding: 0.8rem 0;
+  padding: 0.3rem 0 0.8rem;
 
   &:hover {
     .seek {
