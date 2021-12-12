@@ -14,11 +14,17 @@ export const useSearch = defineStore("search", {
   actions: {
     updateQuery(query: string) {
       this.query = query;
-      this.search();
+      this.query.length && this.search();
+    },
+
+    clear() {
+      this.query = "";
+      this.artists = [];
+      this.albums = [];
+      this.tracks = [];
     },
 
     reset() {
-      this.query = "";
       this.search();
       useDialog().close();
     },

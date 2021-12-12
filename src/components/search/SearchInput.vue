@@ -4,12 +4,11 @@
       ref="input"
       v-model="query"
       class="input"
-      :class="{ opened: query }"
       type="text"
       placeholder="Recherche..."
       @input="searchStore.updateQuery(query)"
     />
-    <button v-if="query" class="reset" @click="searchStore.reset()"><i class="icon-x" /></button>
+    <button v-if="query" class="reset" @click="clearQuery()"><i class="icon-x" /></button>
   </div>
 </template>
 
@@ -21,7 +20,18 @@ const searchStore = useSearch();
 const query = ref<string>("");
 const input = ref<HTMLInputElement | null>(null);
 
-onMounted(() => input.value && input.value.focus());
+function clearQuery(): void {
+  searchStore.clear();
+  query.value = "";
+}
+
+onMounted(() => {
+  if (input.value) {
+    input.value.focus();
+    input.value.value = searchStore.query;
+    input.value.setSelectionRange(0, searchStore.query.length);
+  }
+});
 </script>
 
 <style lang="scss" scoped>
@@ -30,19 +40,21 @@ onMounted(() => input.value && input.value.focus());
 
 $radius: 0.3rem;
 
+.search {
+  padding: 1rem;
+  position: relative;
+}
+
 .input {
   background-color: var(--bg-color-light);
   border: 0;
   border-radius: $radius;
   color: currentColor;
+  font-size: 1.2rem;
   font-weight: 700;
   outline: 0;
-  padding: 0.6rem 1rem;
+  padding: 0.8rem 1.2rem;
   width: 100%;
-
-  &.opened {
-    border-radius: $radius $radius 0 0;
-  }
 
   &::placeholder {
     color: color.change(rgb(74 75 103), $alpha: 0.4);
@@ -51,16 +63,17 @@ $radius: 0.3rem;
 }
 
 .reset {
-  background-color: var(--bg-color-light);
+  background-color: var(--bg-color-lighter);
   border: 0;
   border-radius: $radius;
   color: currentColor;
   cursor: pointer;
   font-size: 1rem;
+  padding: 0.3rem;
   position: absolute;
-  right: 0.8rem;
+  right: 1.8rem;
   text-align: center;
-  top: 1rem;
+  top: 50%;
   transform: translateY(-50%);
   width: 2.2rem;
 }
