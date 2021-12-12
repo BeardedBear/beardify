@@ -1,7 +1,7 @@
 @import "./colors";
 
 .button {
-  background-color: var(--bg-color-lighter);
+  background-color: var(--bg-color-light);
   border: 0;
   border-radius: 0.3rem;
   color: var(--font-color);
@@ -14,7 +14,7 @@
   text-decoration: none;
 
   &:hover {
-    background-color: var(--bg-color-light);
+    background-color: var(--bg-color-lighter);
   }
 
   &:active {

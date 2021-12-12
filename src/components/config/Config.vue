@@ -19,7 +19,7 @@
 
     <div class="section">
       <div class="section__title">Compte</div>
-      <button class="button button--full" @click="logout()">Logout</button>
+      <button class="button button--full" @click="logout()">Se déconnecter</button>
     </div>
 
     <div class="section">
