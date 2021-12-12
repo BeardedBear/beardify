@@ -2,17 +2,16 @@
   <div class="search">
     <div>
       <input
+        ref="input"
         v-model="query"
         class="input"
         :class="{ opened: query }"
         type="text"
         placeholder="Recherche..."
-        @input="searchStore.search(query)"
+        @input="searchStore.updateQuery(query)"
       />
     </div>
-    <button v-if="query" class="reset" @click="reset()">
-      <i class="icon-x" />
-    </button>
+    <button v-if="query" class="reset" @click="reset()"><i class="icon-x" /></button>
     <div v-if="query" ref="result" class="results">
       <!-- Artist List -->
       <div class="artist-list">
@@ -75,27 +74,31 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { playSong } from "../../helpers/play";
 import { useSearch } from "./SearchStore";
 import Cover from "../Cover.vue";
-import { onClickOutside } from "@vueuse/core";
 import ArtistList from "../../components/ArtistList.vue";
 import Album from "../Album.vue";
 import { usePlayer } from "../player/PlayerStore";
+import { useDialog } from "../dialog/DialogStore";
 
 const playerStore = usePlayer();
 const searchStore = useSearch();
+const dialogStore = useDialog();
 const query = ref<string>("");
-const result = ref(null);
+const result = ref<HTMLDivElement | null>(null);
+const input = ref<HTMLInputElement | null>(null);
+
+onMounted(() => input.value && input.value.focus());
 
 function reset(): void {
   query.value = "";
+  dialogStore.close();
 }
-onClickOutside(result, () => reset());
 
 document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
-  if (keyboardEvent.key === "Escape") query.value = "";
+  if (keyboardEvent.key === "Escape") reset();
 });
 </script>
 
@@ -195,7 +198,7 @@ $radius: 0.3rem;
   position: absolute;
   right: 0.8rem;
   text-align: center;
-  top: 50%;
+  top: 1rem;
   transform: translateY(-50%);
   width: 2.2rem;
 }
@@ -206,8 +209,8 @@ $radius: 0.3rem;
 }
 
 .results {
-  background-color: var(--bg-color-lighter);
-  border-radius: 0 0 $radius $radius;
+  // background-color: var(--bg-color-lighter);
+  // border-radius: 0 0 $radius $radius;
   display: grid;
   font-size: 0.8rem;
   gap: 3rem;
@@ -215,7 +218,8 @@ $radius: 0.3rem;
   justify-content: space-evenly;
   left: 0;
   padding: 1rem;
-  position: absolute;
+
+  // position: absolute;
   right: 0;
   top: 100%;
   z-index: 999;

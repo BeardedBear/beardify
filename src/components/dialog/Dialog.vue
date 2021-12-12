@@ -1,12 +1,12 @@
 <template>
   <div v-if="dialogStore.show" class="dialog" :class="{ 'is-closing': dialogStore.isClosing }">
     <div class="bg" :class="{ 'is-closing': dialogStore.isClosing }" @click="dialogStore.close()"></div>
-    <div class="dialog-content" :class="{ 'is-closing': dialogStore.isClosing }">
+    <div class="dialog-content" :class="{ 'is-closing': dialogStore.isClosing, big }">
       <div v-if="withTitle" class="head">
         <div>{{ title }}</div>
         <button class="close" @click="dialogStore.close()"><i class="icon-x" /></button>
       </div>
-      <div class="content"><slot /></div>
+      <div class="content" :class="{ big }"><slot /></div>
     </div>
   </div>
 </template>
@@ -18,6 +18,7 @@ import { defineProps } from "vue";
 defineProps<{
   withTitle: boolean;
   title?: string;
+  big?: boolean;
 }>();
 
 const dialogStore = useDialog();
@@ -144,5 +145,12 @@ $radius: 0.4rem;
   max-height: 25rem;
   overflow: auto;
   width: 25rem;
+
+  &.big {
+    height: 80vh;
+    max-height: 80vh;
+    max-width: 90vw;
+    width: 70rem;
+  }
 }
 </style>

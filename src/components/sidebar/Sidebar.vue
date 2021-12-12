@@ -2,7 +2,6 @@
   <div v-if="!sidebarStore.playlists.length && !sidebarStore.collections.length" class="sidebar loading">
     <Loader />
   </div>
-
   <div v-else class="sidebar" :class="{ 'search-opened': collectionSearchOpened || playlistSearchOpened }">
     <Menu />
     <div class="sidebar__item">

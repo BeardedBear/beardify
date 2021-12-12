@@ -11,9 +11,19 @@ export const useSearch = defineStore("search", {
   }),
 
   actions: {
-    search(query: string) {
+    updateQuery(query: string) {
+      this.query = query;
+      this.search();
+    },
+
+    reset() {
+      this.query = "";
+      this.search();
+    },
+
+    search() {
       instance()
-        .get<SearchFromAPI>(`search?q=${query}&type=artist%2Calbum%2Ctrack`)
+        .get<SearchFromAPI>(`search?q=${this.query}&type=artist%2Calbum%2Ctrack`)
         .then((e) => {
           this.artists = e.data.artists.items.slice(0, 7);
           this.albums = e.data.albums.items.slice(0, 6);

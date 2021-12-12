@@ -14,4 +14,5 @@ export type DialogType =
   | "addalbum"
   | "addSong"
   | "editPlaylist"
+  | "search"
   | "widevine";

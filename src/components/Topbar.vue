@@ -7,6 +7,9 @@
         <button class="navigation__item" @click="router.go(1)">
           <i class="icon-arrow-right" />
         </button>
+        <button class="navigation__item" @click="dialogStore.open({ type: 'search' })">
+          <i class="icon-search" />
+        </button>
       </div>
     </div>
     <Search />
@@ -29,9 +32,11 @@ import router from "../router";
 import Config from "./config/Config.vue";
 import { useAuth } from "../views/auth/AuthStore";
 import { useConfig } from "./config/ConfigStore";
+import { useDialog } from "./dialog/DialogStore";
 
 const authStore = useAuth();
 const configStore = useConfig();
+const dialogStore = useDialog();
 </script>
 
 <style lang="scss" scoped>
