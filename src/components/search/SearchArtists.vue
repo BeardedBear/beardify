@@ -17,18 +17,10 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
 import Cover from "../Cover.vue";
 import { useSearch } from "./SearchStore";
 
 const searchStore = useSearch();
-const input = ref<HTMLInputElement | null>(null);
-
-onMounted(() => input.value && input.value.focus());
-
-document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
-  if (keyboardEvent.key === "Escape") searchStore.reset();
-});
 </script>
 
 <style lang="scss" scoped>

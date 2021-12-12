@@ -14,20 +14,7 @@
     <button v-if="query" class="reset" @click="reset()"><i class="icon-x" /></button>
     <div v-if="query" ref="result" class="results">
       <SearchArtists />
-      <div class="album-list">
-        <template v-if="searchStore.albums.length">
-          <Album
-            v-for="(album, index) in searchStore.albums"
-            :key="index"
-            :currently-played-id="playerStore.currentlyPlaying.item?.album.uri"
-            :album="album"
-            with-artists
-            without-release-date
-            @click="reset()"
-          />
-        </template>
-        <template v-else>Aucun album trouvé</template>
-      </div>
+      <SearchAlbums />
       <!-- Track List -->
       <div>
         <template v-if="searchStore.albums.length">
@@ -64,12 +51,10 @@ import { useSearch } from "./SearchStore";
 import ArtistList from "../../components/ArtistList.vue";
 import { useDialog } from "../dialog/DialogStore";
 import SearchArtists from "./SearchArtists.vue";
-import { usePlayer } from "../player/PlayerStore";
-import Album from "../Album.vue";
+import SearchAlbums from "./SearchAlbums.vue";
 
 const searchStore = useSearch();
 const dialogStore = useDialog();
-const playerStore = usePlayer();
 const query = ref<string>("");
 const result = ref<HTMLDivElement | null>(null);
 const input = ref<HTMLInputElement | null>(null);
@@ -133,13 +118,6 @@ $radius: 0.3rem;
   &:hover {
     background-color: var(--bg-color-light);
   }
-}
-
-.album-list {
-  align-content: start;
-  display: grid;
-  gap: 1.5rem;
-  grid-template-columns: 1fr 1fr 1fr;
 }
 
 .reset {
