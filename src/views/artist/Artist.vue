@@ -82,10 +82,10 @@ artistStore.clean().finally(() => {
 .albums {
   display: grid;
   gap: 1.2rem;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 
   @include l {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 
   @include hdpi {

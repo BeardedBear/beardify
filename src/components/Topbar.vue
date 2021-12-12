@@ -12,7 +12,6 @@
         </button>
       </div>
     </div>
-    <Search />
     <div>
       <div v-if="authStore.me !== null">
         <div class="avatar" @click="configStore.open()">
@@ -26,7 +25,6 @@
 </template>
 
 <script lang="ts" setup>
-import Search from "./search/Search.vue";
 import Cover from "./Cover.vue";
 import router from "../router";
 import Config from "./config/Config.vue";

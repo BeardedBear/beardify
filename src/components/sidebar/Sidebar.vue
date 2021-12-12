@@ -3,6 +3,7 @@
     <Loader />
   </div>
   <div v-else class="sidebar" :class="{ 'search-opened': collectionSearchOpened || playlistSearchOpened }">
+    <Topbar />
     <Menu />
     <div class="sidebar__item">
       <div v-if="!collectionSearchOpened" class="heading title">
@@ -94,6 +95,7 @@ import { useSidebar } from "./SidebarStore";
 import { onClickOutside } from "@vueuse/core";
 import { useAuth } from "../../views/auth/AuthStore";
 import Menu from "./MainMenu.vue";
+import Topbar from "../Topbar.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -173,11 +175,11 @@ watch(authStore, () => {
   animation: pop-content 1s ease both;
   background: var(--bg-color-dark);
   display: grid;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   overflow: hidden;
 
   &.search-opened {
-    grid-template-rows: auto 1fr 1fr;
+    grid-template-rows: auto auto 1fr 1fr;
   }
 
   &__item {

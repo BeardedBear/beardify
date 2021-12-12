@@ -1,6 +1,5 @@
 <template>
   <DialogList />
-  <Topbar />
   <div id="app__content">
     <Sidebar />
     <router-view v-slot="{ Component }" :key="$route.fullPath">
@@ -12,7 +11,6 @@
 </template>
 
 <script lang="ts" setup>
-import Topbar from "./components/Topbar.vue";
 import Player from "./components/player/Player.vue";
 import Sidebar from "./components/sidebar/Sidebar.vue";
 import DialogList from "./components/dialog/DialogList.vue";
@@ -118,7 +116,7 @@ body {
   font-family: "IBM Plex Sans Condensed", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 1fr auto;
   height: 100vh;
   line-height: 1.4;
   min-height: 100vh;
