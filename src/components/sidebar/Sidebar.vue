@@ -148,12 +148,8 @@ watch(authStore, () => {
   color: currentColor;
   display: flex;
   justify-content: space-between;
-  padding: 0.2rem 1.2rem 0.2rem 1rem;
+  padding: 0.3rem 1.2rem 0.3rem 1rem;
   text-decoration: none;
-
-  &:hover {
-    background-color: color.change(rgb(74 75 103), $alpha: 0.15);
-  }
 
   .type-icon {
     margin-right: 1rem;
@@ -168,6 +164,15 @@ watch(authStore, () => {
   .name {
     flex: 1;
     text-align: left;
+    transition: 0.2s;
+  }
+
+  &:hover {
+    background-color: color.change(rgb(74 75 103), $alpha: 0.15);
+
+    .name {
+      text-indent: 0.2rem;
+    }
   }
 }
 

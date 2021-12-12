@@ -64,7 +64,7 @@ onMounted(() => {
 
 .header {
   background-color: var(--bg-color-darker);
-  padding: 0.7rem 2.5rem;
+  padding: 1.2rem 2.5rem 0.7rem;
   position: sticky;
   top: 0;
   transition: transform ease 0.1s;

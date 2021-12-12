@@ -1,17 +1,15 @@
 <template>
   <div class="topbar">
-    <div id="nav">
-      <router-link to="/"><img class="logo" src="/img/logo.svg" /></router-link>
-      <div class="navigation">
-        <button class="navigation__item" @click="router.go(-1)"><i class="icon-arrow-left" /></button>
-        <button class="navigation__item" @click="router.go(1)">
-          <i class="icon-arrow-right" />
-        </button>
-        <button class="navigation__item" @click="dialogStore.open({ type: 'search' })">
-          <i class="icon-search" />
-        </button>
-      </div>
+    <router-link to="/"><img class="logo" src="/img/logo.svg" /></router-link>
+    <div class="navigation">
+      <button class="navigation__item" @click="router.go(-1)"><i class="icon-arrow-left" /></button>
+      <button class="navigation__item" @click="router.go(1)">
+        <i class="icon-arrow-right" />
+      </button>
     </div>
+    <button class="button" @click="dialogStore.open({ type: 'search' })">
+      <i class="icon-search" />
+    </button>
     <div>
       <div v-if="authStore.me !== null">
         <div class="avatar" @click="configStore.open()">
@@ -62,7 +60,7 @@ const dialogStore = useDialog();
     cursor: pointer;
     font-size: 1.2rem;
     line-height: 1;
-    padding: 0.5rem;
+    padding: 0.5rem 1rem;
 
     &:hover {
       background-color: var(--bg-color-lighter);
