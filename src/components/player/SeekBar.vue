@@ -2,7 +2,7 @@
   <div :style="{ padding: '0 1.2rem' }">
     <div ref="progressWrap" class="progress-wrap">
       <div class="progress">
-        <div v-if="currentTime && duration" class="bar" :style="`width:${(currentTime / duration) * 100}%`" />
+        <div v-if="duration" class="bar" :style="`width:${(currentTime / duration) * 100}%`" />
         <div class="seek" :style="`width:${perc}%`">
           <div class="time">{{ time }}</div>
         </div>
@@ -15,30 +15,29 @@
 import { ref, watchEffect, watch, defineProps } from "vue";
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
-import { useIntervalFn } from "@vueuse/core";
+import { useIntervalFn, useMouseInElement } from "@vueuse/core";
 import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 
-const progressWrap = ref();
-const perc = ref<number>(0);
+const progressWrap = ref<HTMLDivElement>();
+const { elementX, elementWidth } = useMouseInElement(progressWrap);
+const perc = ref<number | null | undefined>(0);
 const time = ref<string>("");
 const playerStore = usePlayer();
 const currentTime = ref<number>(0);
-const HtmlFontSizeRemToPx = 17.2; // 16px = 1.2rem
-
 const props = defineProps<{
   duration: number | null;
 }>();
 
 watchEffect(() => {
-  progressWrap.value?.addEventListener("mousemove", (event: MouseEvent) => {
-    const positionInPercent = ((event.clientX - HtmlFontSizeRemToPx) / progressWrap.value.clientWidth) * 100;
-    const durationPerc = props.duration && (props.duration / 100) * positionInPercent;
+  progressWrap.value?.addEventListener("mousemove", () => {
+    const positionInPercent = (elementX.value / elementWidth.value) * 100;
     perc.value = positionInPercent;
+    const durationPerc = props.duration && (props.duration / 100) * positionInPercent;
     if (durationPerc) time.value = timecode(durationPerc);
   });
 
-  progressWrap.value?.addEventListener("click", (event: MouseEvent) => {
-    const positionInPercent = ((event.clientX - HtmlFontSizeRemToPx) / progressWrap.value?.clientWidth) * 100;
+  progressWrap.value?.addEventListener("click", () => {
+    const positionInPercent = (elementX.value / elementWidth.value) * 100;
     const durationPerc = props.duration && (props.duration / 100) * positionInPercent;
     if (durationPerc) playerStore.seek(durationPerc);
   });
@@ -46,9 +45,7 @@ watchEffect(() => {
 
 useIntervalFn(() => {
   if (playerStore.currentlyPlaying.is_playing) currentTime.value = currentTime.value + 1000;
-  if (props.duration && currentTime.value > props.duration) {
-    syncOfficialSpotifyClient();
-  }
+  props.duration && currentTime.value > props.duration && syncOfficialSpotifyClient();
 }, 1000);
 
 watch(

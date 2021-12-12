@@ -34,8 +34,7 @@ import router, { RouteName } from "../../router";
 import Colors from "./Colors.vue";
 import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";
-import { onClickOutside } from "@vueuse/core";
-import { ref } from "vue";
+import { onClickOutside, templateRef } from "@vueuse/core";
 import { useConfig } from "./ConfigStore";
 import { NotificationType } from "../../@types/Notification";
 import { usePlayer } from "../player/PlayerStore";
@@ -44,9 +43,8 @@ const env = process.env.NODE_ENV;
 const authStore = useAuth();
 const configStore = useConfig();
 const playerStore = usePlayer();
-const domConfig = ref<HTMLDivElement | null>(null);
 
-onClickOutside(domConfig, () => configStore.close());
+onClickOutside(templateRef("domConfig"), () => configStore.close());
 
 function logout(): void {
   configStore.close();
