@@ -148,7 +148,7 @@ watch(authStore, () => {
   color: currentColor;
   display: flex;
   justify-content: space-between;
-  padding: 0.3rem 1rem;
+  padding: 0.2rem 1.2rem 0.2rem 1rem;
   text-decoration: none;
 
   &:hover {
@@ -227,7 +227,7 @@ watch(authStore, () => {
     color: var(--font-color);
     cursor: pointer;
     opacity: 0.4;
-    padding: 0.2rem 0.7rem;
+    padding: 0.2rem 0.5rem;
 
     &:hover {
       background-color: var(--bg-color-lighter);
