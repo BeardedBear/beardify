@@ -1,5 +1,5 @@
 <template>
-  <Dialog />
+  <DialogList />
   <Topbar />
   <div id="app__content">
     <Sidebar />
@@ -15,7 +15,7 @@
 import Topbar from "./components/Topbar.vue";
 import Player from "./components/player/Player.vue";
 import Sidebar from "./components/sidebar/Sidebar.vue";
-import Dialog from "./components/dialog/Dialog.vue";
+import DialogList from "./components/dialog/DialogList.vue";
 import Notification from "./components/notification/Notification.vue";
 import { useAuth } from "./views/auth/AuthStore";
 import { usePlayer } from "./components/player/PlayerStore";

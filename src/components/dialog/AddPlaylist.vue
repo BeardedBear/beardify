@@ -1,8 +1,10 @@
 <template>
-  <div class="content">
-    <input v-model="playlistName" class="input" type="text" placeholder="Nom de la playlist" />
-    <button class="button button--primary" @click="create()">Créer</button>
-  </div>
+  <Dialog with-title title="Créer une playlist">
+    <div class="wrap">
+      <input v-model="playlistName" class="input" type="text" placeholder="Nom de la playlist" />
+      <button class="button button--primary" @click="create()">Créer</button>
+    </div>
+  </Dialog>
 </template>
 
 <script lang="ts" setup>
@@ -10,6 +12,7 @@ import { ref } from "vue";
 import { NotificationType } from "../../@types/Notification";
 import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
+import Dialog from "./Dialog.vue";
 import { useDialog } from "./DialogStore";
 
 const dialogStore = useDialog();
@@ -25,10 +28,9 @@ function create(): void {
 </script>
 
 <style lang="scss" scoped>
-.content {
+.wrap {
   padding: 1.2rem;
   text-align: center;
-  width: 22rem;
 }
 
 .input {

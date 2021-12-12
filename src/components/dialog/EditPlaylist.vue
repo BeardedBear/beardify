@@ -1,13 +1,16 @@
 <template>
-  <div class="content">
-    <button class="button button--primary" @click="remove()">Supprimer la playlist</button>
-  </div>
+  <Dialog with-title title="Editer une playlist">
+    <div class="wrap">
+      <button class="button button--primary" @click="remove()">Supprimer la playlist</button>
+    </div>
+  </Dialog>
 </template>
 
 <script lang="ts" setup>
 import { NotificationType } from "../../@types/Notification";
 import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
+import Dialog from "./Dialog.vue";
 import { useDialog } from "./DialogStore";
 
 const dialogStore = useDialog();
@@ -24,9 +27,8 @@ function remove(): void {
 </script>
 
 <style lang="scss" scoped>
-.content {
+.wrap {
   padding: 1.2rem;
   text-align: center;
-  width: 22rem;
 }
 </style>

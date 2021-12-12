@@ -1,14 +1,14 @@
 <template>
-  <div class="content">
+  <Dialog with-title title="Ajouter un morceau à une playlist">
     <div
       v-for="(playlist, index) in sidebarStore.playlists.filter((p) => !p.name.toLowerCase().includes('#collection'))"
       :key="index"
       class="collection"
       @click="add(dialogStore.songUri ? dialogStore.songUri : '', playlist.id)"
     >
-      <div class="album"><i class="icon-music" />{{ playlist.name.replace("#Collection ", "") }}</div>
+      <div class="playlist"><i class="icon-music" />{{ playlist.name }}</div>
     </div>
-  </div>
+  </Dialog>
 </template>
 
 <script lang="ts" setup>
@@ -17,6 +17,7 @@ import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
+import Dialog from "./Dialog.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -34,13 +35,7 @@ function add(songUri: string, playlistId: string): void {
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
 
-.content {
-  height: 25rem;
-  overflow: auto;
-  width: 25rem;
-}
-
-.album {
+.playlist {
   align-items: center;
   display: flex;
 

@@ -1,22 +1,27 @@
 <template>
-  <div class="content">
-    <p>
-      En tant qu'utilisateur de Brave, afin de pouvoir utiliser <b>Beardify</b>, vous devez activer l'option
-      <b>Widevine</b> afin de pouvoir lire des morceaux provenant de <b>Spotify</b>.
-    </p>
+  <Dialog :with-title="false">
+    <div class="wrap">
+      <p>
+        En tant qu'utilisateur de Brave, afin de pouvoir utiliser <b>Beardify</b>, vous devez activer l'option
+        <b>Widevine</b> afin de pouvoir lire des morceaux provenant de <b>Spotify</b>.
+      </p>
 
-    <p>
-      Pour ce faire, entrez l'adresse suivante <code>brave://settings/?search=widevine</code>puis activez
-      <b>Widevine</b>.
-    </p>
-  </div>
+      <p>
+        Pour ce faire, entrez l'adresse suivante <code>brave://settings/?search=widevine</code>puis activez
+        <b>Widevine</b>.
+      </p>
+    </div>
+  </Dialog>
 </template>
 
+<script lang="ts" setup>
+import Dialog from "./Dialog.vue";
+</script>
+
 <style lang="scss" scoped>
-.content {
+.wrap {
   padding: 1.2rem;
   text-align: center;
-  width: 22rem;
 }
 
 code {

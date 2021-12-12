@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <Dialog with-title title="Ajouter un album à une collection">
     <div
       v-for="(playlist, index) in sidebarStore.playlists.filter((p) => p.name.toLowerCase().includes('#collection'))"
       :key="index"
@@ -8,7 +8,7 @@
     >
       <div class="album"><i class="icon-folder" />{{ playlist.name.replace("#Collection ", "") }}</div>
     </div>
-  </div>
+  </Dialog>
 </template>
 
 <script lang="ts" setup>
@@ -19,6 +19,7 @@ import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
+import Dialog from "./Dialog.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -39,12 +40,6 @@ function add(albumId: string, playlistId: string): void {
 
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
-
-.content {
-  height: 25rem;
-  overflow: auto;
-  width: 25rem;
-}
 
 .album {
   align-items: center;

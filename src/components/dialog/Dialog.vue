@@ -2,33 +2,23 @@
   <div v-if="dialogStore.show" class="dialog" :class="{ 'is-closing': dialogStore.isClosing }">
     <div class="bg" :class="{ 'is-closing': dialogStore.isClosing }" @click="dialogStore.close()"></div>
     <div class="dialog-content" :class="{ 'is-closing': dialogStore.isClosing }">
-      <div class="head">
-        <div v-if="dialogStore.type === 'addalbum'">Ajouter un album à une collection</div>
-        <div v-if="dialogStore.type === 'addSong'">Ajouter un morceau à une playlist</div>
-        <div v-if="dialogStore.type === 'addPlaylist'">Créer une playlist</div>
-        <div v-if="dialogStore.type === 'editPlaylist'">Editer une playlist</div>
-        <div v-if="dialogStore.type === 'addCollection'">Créer une collection</div>
-        <div v-if="dialogStore.type === 'widevine'">Attention !</div>
+      <div v-if="withTitle" class="head">
+        <div>{{ title }}</div>
         <button class="close" @click="dialogStore.close()"><i class="icon-x" /></button>
       </div>
-      <AddAlbum v-if="dialogStore.type === 'addalbum'" />
-      <AddSong v-if="dialogStore.type === 'addSong'" />
-      <AddPlaylist v-if="dialogStore.type === 'addPlaylist'" />
-      <EditPlaylist v-if="dialogStore.type === 'editPlaylist'" />
-      <AddCollection v-if="dialogStore.type === 'addCollection'" />
-      <WinevineWarning v-if="dialogStore.type === 'widevine'" />
+      <div class="content"><slot /></div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import AddAlbum from "./AddAlbum.vue";
-import AddSong from "./AddSong.vue";
-import AddPlaylist from "./AddPlaylist.vue";
-import AddCollection from "./AddCollection.vue";
-import EditPlaylist from "./EditPlaylist.vue";
 import { useDialog } from "./DialogStore";
-import WinevineWarning from "./WidevineWarning.vue";
+import { defineProps } from "vue";
+
+defineProps<{
+  withTitle: boolean;
+  title?: string;
+}>();
 
 const dialogStore = useDialog();
 </script>
@@ -142,13 +132,17 @@ $radius: 0.4rem;
   box-shadow: 0 0.8rem 2rem var(--bg-color-darker);
   display: grid;
   grid-template-rows: auto 1fr;
-  max-height: 30rem;
-  max-width: 30rem;
   position: relative;
   will-change: transform;
 
   &.is-closing {
     animation: bye-dialog-content 0.2s ease both;
   }
+}
+
+.content {
+  max-height: 25rem;
+  overflow: auto;
+  width: 25rem;
 }
 </style>
