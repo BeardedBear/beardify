@@ -18,27 +18,26 @@ import { usePlayer } from "./PlayerStore";
 import { useIntervalFn, useMouseInElement } from "@vueuse/core";
 import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 
-const progressWrap = ref<HTMLDivElement>();
-const { elementX, elementWidth } = useMouseInElement(progressWrap);
-const perc = ref<number | null | undefined>(0);
-const time = ref<string>("");
-const playerStore = usePlayer();
-const currentTime = ref<number>(0);
 const props = defineProps<{
   duration: number | null;
 }>();
 
+const progressWrap = ref<HTMLDivElement>();
+const { elementX, elementWidth } = useMouseInElement(progressWrap);
+const perc = ref<number>(0);
+const time = ref<string>("");
+const playerStore = usePlayer();
+const currentTime = ref<number>(0);
+
 watchEffect(() => {
   progressWrap.value?.addEventListener("mousemove", () => {
-    const positionInPercent = (elementX.value / elementWidth.value) * 100;
-    perc.value = positionInPercent;
-    const durationPerc = props.duration && (props.duration / 100) * positionInPercent;
+    perc.value = (elementX.value / elementWidth.value) * 100;
+    const durationPerc = props.duration && (props.duration / 100) * perc.value;
     if (durationPerc) time.value = timecode(durationPerc);
   });
 
   progressWrap.value?.addEventListener("click", () => {
-    const positionInPercent = (elementX.value / elementWidth.value) * 100;
-    const durationPerc = props.duration && (props.duration / 100) * positionInPercent;
+    const durationPerc = props.duration && (props.duration / 100) * perc.value;
     if (durationPerc) playerStore.seek(durationPerc);
   });
 });
