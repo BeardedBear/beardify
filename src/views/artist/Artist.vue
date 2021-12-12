@@ -8,7 +8,10 @@
           {{ artistStore.artist.name }} n'a rien sorti, c'est triste un peu.
         </div>
         <div v-if="artistStore.albums.length" class="content__block">
-          <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">Albums</div>
+          <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">
+            <i class="icon-album"></i>
+            Albums
+          </div>
           <div class="albums">
             <div v-for="(album, index) in artistStore.albums" :key="index">
               <Album :album="album" :currently-played-id="playerStore.currentlyPlaying.item?.album.uri" can-save />
@@ -24,7 +27,10 @@
           </div>
         </div>
         <div v-if="artistStore.singles.length" class="content__block">
-          <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">Singles</div>
+          <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">
+            <i class="icon-single"></i>
+            Singles
+          </div>
           <div class="singles">
             <div v-for="(album, index) in artistStore.singles" :key="index">
               <Album :album="album" :currently-played-id="playerStore.currentlyPlaying.item?.album.uri" />

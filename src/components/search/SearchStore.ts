@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { Search, SearchFromAPI } from "../../@types/Search";
 import { instance } from "../../api";
+import { useDialog } from "../dialog/DialogStore";
 
 export const useSearch = defineStore("search", {
   state: (): Search => ({
@@ -19,6 +20,7 @@ export const useSearch = defineStore("search", {
     reset() {
       this.query = "";
       this.search();
+      useDialog().close();
     },
 
     search() {

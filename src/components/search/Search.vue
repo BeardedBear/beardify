@@ -13,23 +13,7 @@
     </div>
     <button v-if="query" class="reset" @click="reset()"><i class="icon-x" /></button>
     <div v-if="query" ref="result" class="results">
-      <!-- Artist List -->
-      <div class="artist-list">
-        <template v-if="searchStore.artists.length">
-          <router-link
-            v-for="(artist, index) in searchStore.artists"
-            :key="index"
-            :to="`/artist/${artist.id}`"
-            class="artist"
-            @click="reset()"
-          >
-            <Cover size="small" :images="artist.images" class-name="avatar" />
-            <div>{{ artist.name }}</div>
-          </router-link>
-        </template>
-        <template v-else>Aucun artiste trouvé</template>
-      </div>
-      <!-- Album List -->
+      <SearchArtists />
       <div class="album-list">
         <template v-if="searchStore.albums.length">
           <Album
@@ -77,15 +61,15 @@
 import { onMounted, ref } from "vue";
 import { playSong } from "../../helpers/play";
 import { useSearch } from "./SearchStore";
-import Cover from "../Cover.vue";
 import ArtistList from "../../components/ArtistList.vue";
-import Album from "../Album.vue";
-import { usePlayer } from "../player/PlayerStore";
 import { useDialog } from "../dialog/DialogStore";
+import SearchArtists from "./SearchArtists.vue";
+import { usePlayer } from "../player/PlayerStore";
+import Album from "../Album.vue";
 
-const playerStore = usePlayer();
 const searchStore = useSearch();
 const dialogStore = useDialog();
+const playerStore = usePlayer();
 const query = ref<string>("");
 const result = ref<HTMLDivElement | null>(null);
 const input = ref<HTMLInputElement | null>(null);
@@ -156,36 +140,6 @@ $radius: 0.3rem;
   display: grid;
   gap: 1.5rem;
   grid-template-columns: 1fr 1fr 1fr;
-
-  // padding-top: 1rem;
-}
-
-.artist-list {
-  .avatar {
-    $size: 2.5rem;
-
-    border-radius: $size;
-    display: block;
-    height: $size;
-    width: $size;
-  }
-
-  .artist {
-    align-items: center;
-    border-radius: $radius;
-    color: currentColor;
-    display: flex;
-    font-size: 1rem;
-    font-weight: bold;
-    gap: 1rem;
-    margin-bottom: 0.4rem;
-    padding: 0.5rem;
-    text-decoration: none;
-
-    &:hover {
-      background-color: var(--bg-color-light);
-    }
-  }
 }
 
 .reset {
@@ -209,8 +163,6 @@ $radius: 0.3rem;
 }
 
 .results {
-  // background-color: var(--bg-color-lighter);
-  // border-radius: 0 0 $radius $radius;
   display: grid;
   font-size: 0.8rem;
   gap: 3rem;
@@ -218,8 +170,6 @@ $radius: 0.3rem;
   justify-content: space-evenly;
   left: 0;
   padding: 1rem;
-
-  // position: absolute;
   right: 0;
   top: 100%;
   z-index: 999;
