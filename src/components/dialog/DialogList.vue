@@ -1,9 +1,9 @@
 <template>
   <AddAlbum v-if="dialogStore.type === 'addalbum'" />
-  <AddPlaylist v-else-if="dialogStore.type === 'addPlaylist'" />
+  <AddPlaylist v-else-if="dialogStore.type === 'createPlaylist'" />
   <AddSong v-else-if="dialogStore.type === 'addSong'" />
   <EditPlaylist v-else-if="dialogStore.type === 'editPlaylist'" />
-  <AddCollection v-else-if="dialogStore.type === 'addCollection'" />
+  <AddCollection v-else-if="dialogStore.type === 'createCollection'" />
   <WidevineWarning v-else-if="dialogStore.type === 'widevine'" />
 </template>
 

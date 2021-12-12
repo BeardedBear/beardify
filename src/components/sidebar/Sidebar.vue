@@ -10,7 +10,7 @@
         <div>Collections</div>
         <div class="options">
           <button class="icon" @click="() => (collectionSearchOpened = true)"><i class="icon-search"></i></button>
-          <button class="icon add" @click="dialogStore.open({ type: 'addCollection' })">
+          <button class="icon add" @click="dialogStore.open({ type: 'createCollection' })">
             <i class="icon-plus"></i>
           </button>
         </div>
@@ -46,7 +46,9 @@
         <div>Playlists</div>
         <div class="options">
           <button class="icon" @click="() => (playlistSearchOpened = true)"><i class="icon-search"></i></button>
-          <button class="icon add" @click="dialogStore.open({ type: 'addPlaylist' })"><i class="icon-plus"></i></button>
+          <button class="icon add" @click="dialogStore.open({ type: 'createPlaylist' })">
+            <i class="icon-plus"></i>
+          </button>
         </div>
       </div>
       <div v-else class="heading title">
