@@ -11,63 +11,31 @@
         @input="searchStore.updateQuery(query)"
       />
     </div>
-    <button v-if="query" class="reset" @click="reset()"><i class="icon-x" /></button>
+    <button v-if="query" class="reset" @click="searchStore.reset()"><i class="icon-x" /></button>
     <div v-if="query" ref="result" class="results">
       <SearchArtists />
       <SearchAlbums />
-      <!-- Track List -->
-      <div>
-        <template v-if="searchStore.albums.length">
-          <div
-            v-for="(track, index) in searchStore.tracks"
-            :key="index"
-            class="track"
-            @click="
-              () => {
-                playSong(track.uri);
-                reset();
-              }
-            "
-          >
-            <i class="track__icon icon-music" />
-            <div>
-              <div class="track-name">{{ track.name }}</div>
-              <div>
-                <ArtistList :artist-list="track.artists" feat />
-              </div>
-            </div>
-          </div>
-        </template>
-        <template v-else>Aucun morceau trouvé</template>
-      </div>
+      <SearchSongs />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
-import { playSong } from "../../helpers/play";
 import { useSearch } from "./SearchStore";
-import ArtistList from "../../components/ArtistList.vue";
-import { useDialog } from "../dialog/DialogStore";
 import SearchArtists from "./SearchArtists.vue";
 import SearchAlbums from "./SearchAlbums.vue";
+import SearchSongs from "./SearchSongs.vue";
 
 const searchStore = useSearch();
-const dialogStore = useDialog();
 const query = ref<string>("");
 const result = ref<HTMLDivElement | null>(null);
 const input = ref<HTMLInputElement | null>(null);
 
 onMounted(() => input.value && input.value.focus());
 
-function reset(): void {
-  query.value = "";
-  dialogStore.close();
-}
-
 document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
-  if (keyboardEvent.key === "Escape") reset();
+  if (keyboardEvent.key === "Escape") searchStore.reset();
 });
 </script>
 
@@ -94,29 +62,6 @@ $radius: 0.3rem;
   &::placeholder {
     color: color.change(rgb(74 75 103), $alpha: 0.4);
     font-style: italic;
-  }
-}
-
-.track {
-  align-items: center;
-  border-radius: $radius;
-  cursor: pointer;
-  display: flex;
-  gap: 0.8rem;
-  padding: 0.8rem;
-
-  &__icon {
-    font-size: 1.5rem;
-    opacity: 0.1;
-  }
-
-  &-name {
-    font-size: 1rem;
-    font-weight: bold;
-  }
-
-  &:hover {
-    background-color: var(--bg-color-light);
   }
 }
 
