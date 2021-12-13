@@ -298,11 +298,6 @@ playlistStore.clean().finally(() => {
   height: 7rem;
 }
 
-.fit {
-  margin: 0 auto;
-  max-width: 57rem;
-}
-
 .loader {
   display: grid;
   place-content: center;

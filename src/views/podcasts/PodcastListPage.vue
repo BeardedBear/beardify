@@ -1,7 +1,7 @@
 <template>
   <div v-if="!podcastsStore.list && !podcastsStore.myPodcasts.length" class="loader"><Loader /></div>
   <div v-else class="podcasts">
-    <div class="fit">
+    <PageFit>
       <div class="title"><div class="name">Podcasts</div></div>
       <div class="heading sticky-heading">Mes podcasts</div>
       <div v-if="!podcastsStore.myPodcasts.length"><Loader /></div>
@@ -24,7 +24,7 @@
           :name="podcast?.name"
         />
       </div>
-    </div>
+    </PageFit>
   </div>
 </template>
 
@@ -32,6 +32,7 @@
 import { usePodcasts } from "./PodcastsStore";
 import PodcastCard from "../../components/podcast/PodcastCard.vue";
 import Loader from "../../components/LoadingDots.vue";
+import PageFit from "../../components/PageFit.vue";
 
 const podcastsStore = usePodcasts();
 podcastsStore.clean().finally(() => {
@@ -72,10 +73,5 @@ podcastsStore.clean().finally(() => {
     font-size: 2.5rem;
     font-weight: bold;
   }
-}
-
-.fit {
-  margin: 0 auto;
-  max-width: 57rem;
 }
 </style>

@@ -1,17 +1,16 @@
 <template>
   <div v-if="!podcastsStore.podcast" class="loader"><Loader /></div>
   <div v-else class="podcast">
-    <div class="fit">
+    <PageFit>
       <div class="title">
         <div class="name">{{ podcastsStore.podcast?.name }}</div>
       </div>
       <div>
-        <!-- {{ podcastsStore.episodes }} -->
         <div v-for="(episode, index) in podcastsStore.episodes" :key="index">
           <PodcastEpisode :episode="episode" />
         </div>
       </div>
-    </div>
+    </PageFit>
   </div>
 </template>
 
@@ -20,6 +19,7 @@ import { defineProps } from "vue";
 import { usePodcasts } from "./PodcastsStore";
 import Loader from "../../components/LoadingDots.vue";
 import PodcastEpisode from "../../components/podcast/PodcastEpisode.vue";
+import PageFit from "../../components/PageFit.vue";
 
 const props = defineProps<{ id: string }>();
 const podcastsStore = usePodcasts();
@@ -53,10 +53,5 @@ podcastsStore.clean().finally(() => {
     font-size: 2.5rem;
     font-weight: bold;
   }
-}
-
-.fit {
-  margin: 0 auto;
-  max-width: 57rem;
 }
 </style>

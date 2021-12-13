@@ -2,7 +2,7 @@
   <div v-if="!homeStore.recommendedAlbums.length" class="loader"><Loader /></div>
   <div v-else class="home">
     <div class="home__content">
-      <div class="fit">
+      <PageFit>
         <div class="title">
           <div class="name">Albums recommandés</div>
           <button class="button" @click="getData()"><i class="icon-refresh"></i> Rafraîchir</button>
@@ -17,7 +17,7 @@
             can-save
           />
         </div>
-      </div>
+      </PageFit>
     </div>
   </div>
 </template>
@@ -29,6 +29,7 @@ import { useHome } from "./HomeStore";
 import { watch } from "vue";
 import Loader from "../../components/LoadingDots.vue";
 import { usePlayer } from "../../components/player/PlayerStore";
+import PageFit from "../../components/PageFit.vue";
 
 const homeStore = useHome();
 const authStore = useAuth();
@@ -77,11 +78,6 @@ watch(authStore, () => {
   display: grid;
   gap: 2rem;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-}
-
-.fit {
-  margin: 0 auto;
-  max-width: 57rem;
 }
 
 .loader {

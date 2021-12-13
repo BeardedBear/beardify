@@ -1,13 +1,11 @@
 <template>
   <div v-if="playlistStore.playlist.name === ''" class="loader"><Loader /></div>
   <PageScroller v-else>
-    <div class="fit">
+    <PageFit>
       <div class="playlist-header">
         <div>
           <div>
-            <div class="title">
-              {{ playlistStore.playlist.name.replace("#Collection ", "").replace("#collection ", "") }}
-            </div>
+            <div class="title">{{ playlistStore.playlist.name.replace("#Collection ", "") }}</div>
             <div class="description">{{ playlistStore.playlist.description }}</div>
             <div>
               {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} albums
@@ -36,7 +34,7 @@
           />
         </div>
       </div>
-    </div>
+    </PageFit>
   </PageScroller>
 </template>
 
@@ -49,6 +47,7 @@ import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";
+import PageFit from "../../components/PageFit.vue";
 
 const props = defineProps<{ id: string }>();
 const dialogStore = useDialog();
@@ -109,11 +108,6 @@ playlistStore.clean().finally(() => {
   &__right {
     font-size: 1.1rem;
   }
-}
-
-.fit {
-  margin: 0 auto;
-  max-width: 57rem;
 }
 
 .loader {
