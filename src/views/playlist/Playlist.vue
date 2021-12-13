@@ -1,6 +1,6 @@
 <template>
   <div v-if="playlistStore.playlist.name === ''" class="loader"><Loader /></div>
-  <div v-else ref="playlistpage" class="playlist-page">
+  <PageScroller v-else>
     <div class="playlist-header">
       <div class="playlist-header__left">
         <div><Cover size="large" :images="playlistStore.playlist.images" class-name="cover" /></div>
@@ -84,11 +84,11 @@
         </button>
       </div>
     </div>
-  </div>
+  </PageScroller>
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref } from "vue";
+import { defineProps } from "vue";
 import { timecode, timecodeWithUnits, date } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import Cover from "../../components/Cover.vue";
@@ -102,9 +102,9 @@ import { useAuth } from "../auth/AuthStore";
 import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
 import { NotificationType } from "../../@types/Notification";
+import PageScroller from "../../components/PageScroller.vue";
 
 const props = defineProps<{ id: string }>();
-const playlistpage = ref();
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
 const playerStore = usePlayer();
@@ -296,12 +296,6 @@ playlistStore.clean().finally(() => {
 .cover {
   border-radius: 0.3rem;
   height: 7rem;
-}
-
-.playlist-page {
-  animation: pop-content 1s ease both;
-  overflow-y: scroll;
-  padding: 2rem 2.2rem;
 }
 
 .fit {

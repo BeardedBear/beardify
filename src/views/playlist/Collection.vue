@@ -1,6 +1,6 @@
 <template>
   <div v-if="playlistStore.playlist.name === ''" class="loader"><Loader /></div>
-  <div v-else ref="playlistpage" class="playlist-page">
+  <PageScroller v-else>
     <div class="fit">
       <div class="playlist-header">
         <div>
@@ -37,20 +37,20 @@
         </div>
       </div>
     </div>
-  </div>
+  </PageScroller>
 </template>
 
 <script lang="ts" setup>
-import { computed, defineProps, ref } from "vue";
+import { computed, defineProps } from "vue";
 import Album from "../../components/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { useDialog } from "../../components/dialog/DialogStore";
 import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
+import PageScroller from "../../components/PageScroller.vue";
 
 const props = defineProps<{ id: string }>();
-const playlistpage = ref();
 const dialogStore = useDialog();
 const cleanAlbumList = computed(() => removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album)));
 const playlistStore = usePlaylist();
@@ -109,13 +109,6 @@ playlistStore.clean().finally(() => {
   &__right {
     font-size: 1.1rem;
   }
-}
-
-.playlist-page {
-  animation: pop-content 1s ease both;
-  overflow-y: scroll;
-  padding: 2rem 2.2rem;
-  scroll-behavior: smooth;
 }
 
 .fit {

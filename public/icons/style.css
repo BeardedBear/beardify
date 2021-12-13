@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?lk1pc2');
-  src:  url('fonts/icomoon.eot?lk1pc2#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?lk1pc2') format('truetype'),
-    url('fonts/icomoon.woff?lk1pc2') format('woff'),
-    url('fonts/icomoon.svg?lk1pc2#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?y6fpo7');
+  src:  url('fonts/icomoon.eot?y6fpo7#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?y6fpo7') format('truetype'),
+    url('fonts/icomoon.woff?y6fpo7') format('woff'),
+    url('fonts/icomoon.svg?y6fpo7#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -34,6 +34,30 @@
 .icon-youtube:before {
   content: "\e92c";
 }
+.icon-arrow-down-left:before {
+  content: "\e91a";
+}
+.icon-arrow-down-right:before {
+  content: "\e91b";
+}
+.icon-arrow-up-left:before {
+  content: "\e938";
+}
+.icon-arrow-up-right:before {
+  content: "\e939";
+}
+.icon-arrow-right:before {
+  content: "\e93a";
+}
+.icon-arrow-left:before {
+  content: "\e93b";
+}
+.icon-arrow-down:before {
+  content: "\e93c";
+}
+.icon-arrow-up:before {
+  content: "\e93d";
+}
 .icon-podcast:before {
   content: "\e937";
 }
@@ -45,12 +69,6 @@
 }
 .icon-airplay:before {
   content: "\e900";
-}
-.icon-arrow-left:before {
-  content: "\e91a";
-}
-.icon-arrow-right:before {
-  content: "\e91b";
 }
 .icon-chevron-down:before {
   content: "\e91c";

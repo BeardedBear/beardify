@@ -22,6 +22,7 @@ defineProps<{
   border-radius: 0.4rem;
   cursor: pointer;
   display: block;
+  transition: 0.3s;
   width: 100%;
 }
 </style>
