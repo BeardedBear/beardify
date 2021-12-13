@@ -1,5 +1,6 @@
 <template>
   <div ref="domHeader" class="header">
+    <img class="img" :src="artistStore.artist.images[0].url" alt="" />
     <div class="inner">
       <div>
         <div class="title">
@@ -31,6 +32,16 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
+
+.img {
+  filter: blur(15px);
+  inset: 0;
+  opacity: 0.2;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-33%);
+  width: 100%;
+}
 
 .genres {
   display: flex;
@@ -64,6 +75,7 @@ onMounted(() => {
 
 .header {
   background-color: var(--bg-color-darker);
+  overflow: hidden;
   padding: 1.2rem 2.5rem 0.7rem;
   position: sticky;
   top: 0;
@@ -76,5 +88,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.4rem;
+  position: relative;
+  z-index: 1;
 }
 </style>
