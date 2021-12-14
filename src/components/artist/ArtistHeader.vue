@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useArtist } from "./ArtistStore";
+import { useArtist } from "../../views/artist/ArtistStore";
 import Options from "./ArtistOptions.vue";
 import { ref, onMounted } from "vue";
 

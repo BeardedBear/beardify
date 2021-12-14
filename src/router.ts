@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory, LocationQueryValue, RouteLocation, RouteRecordRaw } from "vue-router";
-import About from "./views/AboutPage.vue";
-import Album from "./views/album/Album.vue";
-import Artist from "./views/artist/Artist.vue";
-import Auth from "./views/auth/Auth.vue";
-import Home from "./views/home/Home.vue";
-import Login from "./views/Login.vue";
-import Collection from "./views/playlist/Collection.vue";
-import Playlist from "./views/playlist/Playlist.vue";
+import AboutPage from "./views/AboutPage.vue";
+import AlbumPage from "./views/album/AlbumPage.vue";
+import ArtistPage from "./views/artist/ArtistPage.vue";
+import AuthPage from "./views/auth/AuthPage.vue";
+import HomePage from "./views/home/HomePage.vue";
+import LoginPage from "./views/LoginPage.vue";
+import CollectionPage from "./views/playlist/CollectionPage.vue";
+import PlaylistPage from "./views/playlist/PlaylistPage.vue";
 import PodcastListPage from "./views/podcasts/PodcastListPage.vue";
 import PodcastPage from "./views/podcasts/PodcastPage.vue";
 
@@ -26,38 +26,38 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: RouteName.Home,
     name: "Home",
-    component: Home,
+    component: HomePage,
   },
   {
     path: RouteName.About,
     name: "About",
-    component: About,
+    component: AboutPage,
   },
   {
     path: RouteName.Login,
     name: "Login",
-    component: Login,
+    component: LoginPage,
   },
   {
-    component: Artist,
+    component: ArtistPage,
     name: "Artist",
     path: RouteName.Artist + ":id",
     props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
   },
   {
-    component: Album,
+    component: AlbumPage,
     name: "Album",
     path: RouteName.Album + ":id",
     props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
   },
   {
-    component: Playlist,
+    component: PlaylistPage,
     name: "Playlist",
     path: RouteName.Playlist + ":id",
     props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
   },
   {
-    component: Collection,
+    component: CollectionPage,
     name: "Collection",
     path: RouteName.Collection + ":id",
     props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
@@ -65,7 +65,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: RouteName.Auth,
     name: "Auth",
-    component: Auth,
+    component: AuthPage,
     props: (route: RouteLocation): Record<string, LocationQueryValue | LocationQueryValue[]> => ({
       query: route.query.code,
     }),

@@ -25,10 +25,10 @@
 <script lang="ts" setup>
 import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
-import Cover from "../../components/Cover.vue";
-import { useArtist } from "./ArtistStore";
-import { usePlayer } from "../../components/player/PlayerStore";
-import { useDialog } from "../../components/dialog/DialogStore";
+import Cover from "../Cover.vue";
+import { useArtist } from "../../views/artist/ArtistStore";
+import { usePlayer } from "../player/PlayerStore";
+import { useDialog } from "../dialog/DialogStore";
 
 const artistStore = useArtist();
 const playerStore = usePlayer();

@@ -18,8 +18,8 @@
 </template>
 
 <script lang="ts" setup>
-import Cover from "../../components/Cover.vue";
-import { useArtist } from "./ArtistStore";
+import Cover from "../Cover.vue";
+import { useArtist } from "../../views/artist/ArtistStore";
 
 const artistStore = useArtist();
 </script>

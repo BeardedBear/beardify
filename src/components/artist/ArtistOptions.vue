@@ -70,7 +70,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useArtist } from "./ArtistStore";
+import { useArtist } from "../../views/artist/ArtistStore";
 
 const artistStore = useArtist();
 

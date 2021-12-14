@@ -51,8 +51,8 @@ import Album from "../../components/Album.vue";
 import { useAlbum } from "./AlbumStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
-import Head from "./Head.vue";
-import Foot from "./Foot.vue";
+import Head from "../../components/album/Head.vue";
+import Foot from "../../components/album/Foot.vue";
 import { useDialog } from "../../components/dialog/DialogStore";
 
 const props = defineProps({ id: { default: "", type: String } });
