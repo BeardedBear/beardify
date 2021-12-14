@@ -3,9 +3,9 @@ import { AlbumSimplified } from "../@types/Album";
 export function removeDuplicatesAlbums(array: AlbumSimplified[]): AlbumSimplified[] {
   return array.reduce((acc: AlbumSimplified[], value) => {
     return acc.some(
-      (i) =>
-        i.name.toLowerCase() === value.name.toLowerCase() ||
-        i.name
+      (album) =>
+        album.name.toLowerCase() === value.name.toLowerCase() ||
+        album.name
           .replaceAll(" (Live)", "")
           .replaceAll(" (In Concert)", "")
           .replaceAll(/[^a-z0-9]+/gi, " ")

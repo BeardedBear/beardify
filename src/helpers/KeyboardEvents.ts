@@ -7,22 +7,22 @@ export default (): void => {
     playerStore.setVolume(volume);
   }
 
-  addEventListener("keydown", (e: KeyboardEvent) => {
+  addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
     const currentVolume = playerStore.devices.activeDevice ? playerStore.devices.activeDevice.volume_percent : 0;
     const delta = 2;
 
-    if (currentVolume && e.shiftKey) {
-      if (e.key === "ArrowUp") {
+    if (currentVolume && keyboardEvent.shiftKey) {
+      if (keyboardEvent.key === "ArrowUp") {
         100 - delta > currentVolume ? setVolume(currentVolume + delta) : setVolume(100);
-      } else if (e.key === "ArrowDown") {
+      } else if (keyboardEvent.key === "ArrowDown") {
         currentVolume - delta < 0 ? setVolume(1) : setVolume(currentVolume - delta);
       }
     }
   });
 
-  window.addEventListener("keydown", (e: KeyboardEvent) => {
-    if (e.code === "Space" && e.target == document.body) {
-      e.preventDefault();
+  window.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
+    if (keyboardEvent.code === "Space" && keyboardEvent.target == document.body) {
+      keyboardEvent.preventDefault();
       playerStore.currentlyPlaying.is_playing ? playerStore.pause() : playerStore.play();
     }
   });
