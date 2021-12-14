@@ -1,6 +1,6 @@
 import { Track, TrackSimplified } from "../@types/Track";
 import { instance } from "../api";
-import { syncOfficialSpotifyClient } from "./getSpotifyPlayerState";
+import { syncOfficialSpotifyClient } from "./GetSpotifyPlayerState";
 
 export function playSongs(i: number, tracks: TrackSimplified[] | Track[]): void {
   const flatTracks = tracks.map((e: TrackSimplified | Track) => e.uri);

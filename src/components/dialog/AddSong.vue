@@ -14,7 +14,7 @@
 <script lang="ts" setup>
 import { NotificationType } from "../../@types/Notification";
 import { instance } from "../../api";
-import { notification } from "../../helpers/notifications";
+import { notification } from "../../helpers/Notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
 import Dialog from "./Dialog.vue";

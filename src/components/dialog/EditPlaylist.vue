@@ -8,7 +8,7 @@
 
 <script lang="ts" setup>
 import { NotificationType } from "../../@types/Notification";
-import { notification } from "../../helpers/notifications";
+import { notification } from "../../helpers/Notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
 import Dialog from "./Dialog.vue";
 import { useDialog } from "./DialogStore";

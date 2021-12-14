@@ -23,8 +23,8 @@
 <script lang="ts" setup>
 import { defineProps } from "vue";
 import { Episode } from "../../@types/Podcast";
-import { timecodeWithUnits, date } from "../../helpers/date";
-import { playSong } from "../../helpers/play";
+import { timecodeWithUnits, date } from "../../helpers/Date";
+import { playSong } from "../../helpers/Play";
 
 defineProps<{
   episode: Episode;

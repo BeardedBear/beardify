@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts" setup>
-import { timecode } from "../../helpers/date";
+import { timecode } from "../../helpers/Date";
 import { usePlayer } from "./PlayerStore";
 import { ref, watch, defineProps } from "vue";
 import { useIntervalFn } from "@vueuse/core";

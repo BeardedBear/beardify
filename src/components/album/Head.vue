@@ -35,7 +35,7 @@
 
 <script lang="ts" setup>
 import { defineProps } from "vue";
-import { timecodeWithUnits, date } from "../../helpers/date";
+import { timecodeWithUnits, date } from "../../helpers/Date";
 import { Track, TrackSimplified } from "../../@types/Track";
 import ArtistList from "../ArtistList.vue";
 import { Album } from "../../@types/Album";

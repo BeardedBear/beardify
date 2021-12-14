@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import { playSong } from "../../helpers/play";
+import { playSong } from "../../helpers/Play";
 import ArtistList from "../ArtistList.vue";
 import { useSearch } from "./SearchStore";
 

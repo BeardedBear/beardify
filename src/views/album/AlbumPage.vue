@@ -44,8 +44,8 @@
 
 <script lang="ts" setup>
 import { defineProps, ref } from "vue";
-import { timecode } from "../../helpers/date";
-import { playSongs } from "../../helpers/play";
+import { timecode } from "../../helpers/Date";
+import { playSongs } from "../../helpers/Play";
 import ArtistList from "../../components/ArtistList.vue";
 import Album from "../../components/Album.vue";
 import { useAlbum } from "./AlbumStore";

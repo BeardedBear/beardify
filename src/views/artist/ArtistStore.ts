@@ -4,7 +4,7 @@ import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "../../@type
 import { defaultArtist } from "../../@types/Defaults";
 import { Paging } from "../../@types/Paging";
 import { instance } from "../../api";
-import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
+import { removeDuplicatesAlbums } from "../../helpers/RemoveDuplicate";
 
 export const useArtist = defineStore("artist", {
   state: (): ArtistPage => ({
