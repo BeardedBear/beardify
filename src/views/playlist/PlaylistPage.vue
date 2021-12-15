@@ -89,8 +89,8 @@
 
 <script lang="ts" setup>
 import { defineProps } from "vue";
-import { timecode, timecodeWithUnits, date } from "../../helpers/Date";
-import { playSongs } from "../../helpers/Play";
+import { timecode, timecodeWithUnits, date } from "../../helpers/date";
+import { playSongs } from "../../helpers/play";
 import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { useDialog } from "../../components/dialog/DialogStore";
@@ -100,7 +100,7 @@ import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
 import { useAuth } from "../auth/AuthStore";
 import { instance } from "../../api";
-import { notification } from "../../helpers/Notifications";
+import { notification } from "../../helpers/notifications";
 import { NotificationType } from "../../@types/Notification";
 import PageScroller from "../../components/PageScroller.vue";
 

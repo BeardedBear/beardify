@@ -38,9 +38,9 @@ import { useRoute } from "vue-router";
 import { useDialog } from "../dialog/DialogStore";
 import ArtistList from "../artist/ArtistList.vue";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";
-import { notification } from "../../helpers/Notifications";
+import { notification } from "../../helpers/notifications";
 import { NotificationType } from "../../@types/Notification";
-import { syncOfficialSpotifyClient } from "../../helpers/GetSpotifyPlayerState";
+import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 
 defineProps<{
   album: AlbumSimplified | Album;

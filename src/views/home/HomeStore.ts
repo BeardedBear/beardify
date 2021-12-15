@@ -4,8 +4,8 @@ import { HomePage } from "../../@types/Home";
 import { Paging } from "../../@types/Paging";
 import { Track } from "../../@types/Track";
 import { instance } from "../../api";
-import { getRandomInt } from "../../helpers/Random";
-import { removeDuplicatesAlbums } from "../../helpers/RemoveDuplicate";
+import { getRandomInt } from "../../helpers/random";
+import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 
 export const useHome = defineStore("home", {
   state: (): HomePage => ({

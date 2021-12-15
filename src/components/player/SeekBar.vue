@@ -13,10 +13,10 @@
 
 <script lang="ts" setup>
 import { ref, watchEffect, watch, defineProps } from "vue";
-import { timecode } from "../../helpers/Date";
+import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
 import { useIntervalFn, useMouseInElement } from "@vueuse/core";
-import { syncOfficialSpotifyClient } from "../../helpers/GetSpotifyPlayerState";
+import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 
 const props = defineProps<{
   duration: number | null;

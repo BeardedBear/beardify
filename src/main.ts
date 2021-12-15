@@ -3,7 +3,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router, { RouteName } from "./router";
 import { useAuth } from "./views/auth/AuthStore";
-import KeyboardEvents from "./helpers/KeyboardEvents";
+import KeyboardEvents from "./helpers/keyboardEvents";
 import { useConfig } from "./components/config/ConfigStore";
 import { Config } from "./@types/Config";
 

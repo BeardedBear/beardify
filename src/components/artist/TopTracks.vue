@@ -23,8 +23,8 @@
 </template>
 
 <script lang="ts" setup>
-import { timecode } from "../../helpers/Date";
-import { playSongs } from "../../helpers/Play";
+import { timecode } from "../../helpers/date";
+import { playSongs } from "../../helpers/play";
 import Cover from "../Cover.vue";
 import { useArtist } from "../../views/artist/ArtistStore";
 import { usePlayer } from "../player/PlayerStore";

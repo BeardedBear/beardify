@@ -5,7 +5,7 @@ import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
 import { DevicesResponse } from "../../@types/Device";
 import { Player } from "../../@types/Player";
 import { instance } from "../../api";
-import { syncOfficialSpotifyClient } from "../../helpers/GetSpotifyPlayerState";
+import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 
 export const usePlayer = defineStore("player", {
   state: (): Player => ({

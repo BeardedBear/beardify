@@ -41,7 +41,7 @@
 <script lang="ts" setup>
 import { computed, defineProps } from "vue";
 import Album from "../../components/album/Album.vue";
-import { removeDuplicatesAlbums } from "../../helpers/RemoveDuplicate";
+import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { useDialog } from "../../components/dialog/DialogStore";
 import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";

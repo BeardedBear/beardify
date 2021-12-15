@@ -32,7 +32,7 @@
 <script lang="ts" setup>
 import router, { RouteName } from "../../router";
 import Colors from "./Colors.vue";
-import { notification } from "../../helpers/Notifications";
+import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";
 import { onClickOutside, templateRef } from "@vueuse/core";
 import { useConfig } from "./ConfigStore";
