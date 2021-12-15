@@ -1,7 +1,7 @@
 <template>
   <Dialog with-title title="Ajouter un morceau à une playlist">
     <div
-      v-for="(playlist, index) in sidebarStore.playlists.filter((p) => !p.name.toLowerCase().includes('#collection'))"
+      v-for="(playlist, index) in sidebarStore.playlists"
       :key="index"
       class="collection"
       @click="add(dialogStore.songUri ? dialogStore.songUri : '', playlist.id)"
