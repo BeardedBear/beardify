@@ -40,7 +40,7 @@
 
 <script lang="ts" setup>
 import { computed, defineProps } from "vue";
-import Album from "../../components/Album.vue";
+import Album from "../../components/album/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/RemoveDuplicate";
 import { useDialog } from "../../components/dialog/DialogStore";
 import { usePlaylist } from "./PlaylistStore";

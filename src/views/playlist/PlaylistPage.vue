@@ -94,7 +94,7 @@ import { playSongs } from "../../helpers/Play";
 import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { useDialog } from "../../components/dialog/DialogStore";
-import ArtistList from "../../components/ArtistList.vue";
+import ArtistList from "../../components/artist/ArtistList.vue";
 import { usePlaylist } from "./PlaylistStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";

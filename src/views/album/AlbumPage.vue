@@ -46,8 +46,8 @@
 import { defineProps, ref } from "vue";
 import { timecode } from "../../helpers/Date";
 import { playSongs } from "../../helpers/Play";
-import ArtistList from "../../components/ArtistList.vue";
-import Album from "../../components/Album.vue";
+import ArtistList from "../../components/artist/ArtistList.vue";
+import Album from "../../components/album/Album.vue";
 import { useAlbum } from "./AlbumStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";

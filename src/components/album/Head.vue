@@ -37,7 +37,7 @@
 import { defineProps } from "vue";
 import { timecodeWithUnits, date } from "../../helpers/Date";
 import { Track, TrackSimplified } from "../../@types/Track";
-import ArtistList from "../ArtistList.vue";
+import ArtistList from "../artist/ArtistList.vue";
 import { Album } from "../../@types/Album";
 import { useClipboard } from "@vueuse/core";
 

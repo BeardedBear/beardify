@@ -9,8 +9,8 @@
 
 <script lang="ts" setup>
 import { defineProps } from "vue";
-import { Artist, ArtistSimplified } from "../@types/Artist";
-import router from "../router";
+import { Artist, ArtistSimplified } from "../../@types/Artist";
+import router from "../../router";
 
 defineProps<{
   artistList: Artist[] | ArtistSimplified[];
@@ -23,7 +23,7 @@ function goArtist(artistUri: string): void {
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/scss/colors";
+@import "../../assets/scss/colors";
 
 .separator {
   opacity: 0.2;

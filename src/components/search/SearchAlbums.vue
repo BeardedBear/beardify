@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import Album from "../Album.vue";
+import Album from "../album/Album.vue";
 import { usePlayer } from "../player/PlayerStore";
 import { useSearch } from "./SearchStore";
 

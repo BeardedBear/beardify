@@ -47,7 +47,7 @@
 import { defineProps, ref } from "vue";
 import { useArtist } from "./ArtistStore";
 import RelatedArtists from "../../components/artist/RelatedArtists.vue";
-import Album from "../../components/Album.vue";
+import Album from "../../components/album/Album.vue";
 import ArtistHeader from "../../components/artist/ArtistHeader.vue";
 import TopTracks from "../../components/artist/TopTracks.vue";
 import { usePlayer } from "../../components/player/PlayerStore";

@@ -28,19 +28,19 @@
 
 <script lang="ts" setup>
 import { defineProps } from "vue";
-import { Album, AlbumSimplified } from "../@types/Album";
-import { instance } from "../api";
-import router from "../router";
-import Cover from "./Cover.vue";
-import { Paging } from "../@types/Paging";
-import { TrackSimplified, TrackToRemove } from "../@types/Track";
+import { Album, AlbumSimplified } from "../../@types/Album";
+import { instance } from "../../api";
+import router from "../../router";
+import Cover from "../Cover.vue";
+import { Paging } from "../../@types/Paging";
+import { TrackSimplified, TrackToRemove } from "../../@types/Track";
 import { useRoute } from "vue-router";
-import { useDialog } from "./dialog/DialogStore";
-import ArtistList from "./ArtistList.vue";
-import { usePlaylist } from "../views/playlist/PlaylistStore";
-import { notification } from "../helpers/Notifications";
-import { NotificationType } from "../@types/Notification";
-import { syncOfficialSpotifyClient } from "../helpers/GetSpotifyPlayerState";
+import { useDialog } from "../dialog/DialogStore";
+import ArtistList from "../artist/ArtistList.vue";
+import { usePlaylist } from "../../views/playlist/PlaylistStore";
+import { notification } from "../../helpers/Notifications";
+import { NotificationType } from "../../@types/Notification";
+import { syncOfficialSpotifyClient } from "../../helpers/GetSpotifyPlayerState";
 
 defineProps<{
   album: AlbumSimplified | Album;
@@ -80,7 +80,7 @@ function deleteAlbum(albumId: string): void {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../assets/scss/colors";
+@import "../../assets/scss/colors";
 
 .play {
   $offset: 1rem;

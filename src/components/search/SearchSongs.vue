@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import { playSong } from "../../helpers/Play";
-import ArtistList from "../ArtistList.vue";
+import ArtistList from "../artist/ArtistList.vue";
 import { useSearch } from "./SearchStore";
 
 const searchStore = useSearch();
