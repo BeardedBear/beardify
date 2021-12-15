@@ -32,9 +32,8 @@ export const useSidebar = defineStore("sidebar", {
       const authStore = useAuth();
       instance()
         .post(`users/${authStore.me?.id}/playlists`, { name: name })
-        .then(() => {
-          this.reset();
-          this.getPlaylists(`me/playlists?limit=50`);
+        .then(({ data }) => {
+          this.playlists = [data, ...this.playlists];
         });
     },
 
@@ -42,9 +41,8 @@ export const useSidebar = defineStore("sidebar", {
       const authStore = useAuth();
       instance()
         .post(`users/${authStore.me?.id}/playlists`, { name: "#Collection " + name })
-        .then(() => {
-          this.reset();
-          this.getPlaylists(`me/playlists?limit=50`);
+        .then(({ data }) => {
+          this.collections = [data, ...this.collections];
         });
     },
 
