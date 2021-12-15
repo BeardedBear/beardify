@@ -52,9 +52,8 @@ export const useSidebar = defineStore("sidebar", {
       instance()
         .delete(`https://api.spotify.com/v1/playlists/${playlistId}/followers`)
         .then(() => {
-          this.reset();
-          this.getPlaylists(`me/playlists?limit=50`);
-
+          this.playlists = this.playlists.filter((playlist) => playlist.id !== playlistId);
+          this.collections = this.collections.filter((collection) => collection.id !== playlistId);
           if (location.pathname.includes(playlistId)) router.push("/");
         });
     },
