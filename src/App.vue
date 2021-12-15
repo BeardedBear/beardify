@@ -56,6 +56,7 @@ watch(focused, (isFocused) => {
 @import "../node_modules/normalize.css/normalize.css";
 @import "./assets/scss/button";
 @import "./assets/scss/colors";
+@import "./assets/scss/responsive";
 @import "./assets/scss/heading";
 @import "./assets/scss/mixins";
 
@@ -129,6 +130,10 @@ body {
     display: grid;
     grid-template-columns: 19rem 1fr;
     overflow: hidden;
+
+    @include hdpi {
+      grid-template-columns: 25rem 1fr;
+    }
   }
 }
 
