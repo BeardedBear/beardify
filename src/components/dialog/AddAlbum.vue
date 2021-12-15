@@ -1,7 +1,9 @@
 <template>
   <Dialog with-title title="Ajouter un album à une collection">
     <div
-      v-for="(playlist, index) in sidebarStore.collections"
+      v-for="(playlist, index) in sidebarStore.collections.filter(
+        (playlist) => playlist.collaborative || playlist.owner.id === authStore.me?.id,
+      )"
       :key="index"
       class="collection"
       @click="add(dialogStore.albumId ? dialogStore.albumId : '', playlist.id)"
@@ -20,9 +22,11 @@ import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
 import Dialog from "./Dialog.vue";
+import { useAuth } from "../../views/auth/AuthStore";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
+const authStore = useAuth();
 
 function add(albumId: string, playlistId: string): void {
   instance()

@@ -1,12 +1,21 @@
 <template>
   <Dialog with-title title="Ajouter un morceau à une playlist">
     <div
-      v-for="(playlist, index) in sidebarStore.playlists"
+      v-for="(playlist, index) in sidebarStore.playlists.filter(
+        (playlist) => playlist.collaborative || playlist.owner.id === authStore.me?.id,
+      )"
       :key="index"
       class="collection"
       @click="add(dialogStore.songUri ? dialogStore.songUri : '', playlist.id)"
     >
-      <div class="playlist"><i class="icon-music" />{{ playlist.name }}</div>
+      <div class="playlist">
+        <i
+          :class="{
+            'icon-music': !playlist.collaborative && playlist.owner.display_name !== 'Spotify',
+            'icon-users': playlist.collaborative,
+          }"
+        />{{ playlist.name }}
+      </div>
     </div>
   </Dialog>
 </template>
@@ -18,9 +27,11 @@ import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
 import Dialog from "./Dialog.vue";
+import { useAuth } from "../../views/auth/AuthStore";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
+const authStore = useAuth();
 
 function add(songUri: string, playlistId: string): void {
   instance()
