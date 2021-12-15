@@ -75,7 +75,12 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   flex-direction: column;
   gap: 4rem;
   margin: 0 auto;
-  width: 57rem;
+  max-width: 57rem;
+  width: 100%;
+
+  @include hdpi {
+    max-width: 100rem;
+  }
 }
 
 .add {

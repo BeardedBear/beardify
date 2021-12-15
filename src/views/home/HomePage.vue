@@ -49,6 +49,8 @@ watch(authStore, () => {
 </script>
 
 <style lang="scss" scoped>
+@import "../../assets/scss/responsive";
+
 .title {
   align-items: center;
   display: flex;
@@ -78,6 +80,10 @@ watch(authStore, () => {
   display: grid;
   gap: 2rem;
   grid-template-columns: 1fr 1fr 1fr 1fr;
+
+  @include hdpi {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  }
 }
 
 .loader {

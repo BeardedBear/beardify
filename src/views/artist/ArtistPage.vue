@@ -95,7 +95,7 @@ artistStore.clean().finally(() => {
   }
 
   @include hdpi {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   }
 }
 
@@ -139,6 +139,8 @@ artistStore.clean().finally(() => {
   display: grid;
   gap: 2.5rem;
   grid-template-columns: 1fr 20rem;
+  margin: 0 auto;
+  max-width: 120rem;
   padding: 2rem 2.5rem;
 
   @include xl {
