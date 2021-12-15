@@ -11,7 +11,7 @@
       <div class="playlist">
         <i
           :class="{
-            'icon-music': !playlist.collaborative && playlist.owner.display_name !== 'Spotify',
+            'icon-music': !playlist.collaborative && playlist.owner.id === authStore.me?.id,
             'icon-users': playlist.collaborative,
           }"
         />{{ playlist.name }}
