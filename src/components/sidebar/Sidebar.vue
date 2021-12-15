@@ -24,11 +24,11 @@
           placeholder="Search collection"
         />
       </div>
-      <div v-if="!collections.length" class="empty">
+      <div v-if="!sidebarStore.collections.length" class="empty">
         Ah bah zut alors, tu n'a pas de collection ! Pour en créer une, il suffit de créer ou de renommer une playlist
         classique, mais en commencant par "#Collection". Magique hein ?
       </div>
-      <div v-for="(playlist, index) in collections" v-else :key="index">
+      <div v-for="(playlist, index) in sidebarStore.collections" v-else :key="index">
         <router-link
           v-if="playlist.id && playlist.name.toLocaleLowerCase().includes(collectionSearchQuery.toLocaleLowerCase())"
           class="playlist-item"
@@ -60,7 +60,7 @@
           placeholder="Search playlist"
         />
       </div>
-      <div v-for="(playlist, index) in playlists" :key="index">
+      <div v-for="(playlist, index) in sidebarStore.playlists" :key="index">
         <router-link
           v-if="
             playlist.id &&
@@ -88,7 +88,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, Ref, watch } from "vue";
+import { ref, Ref, watch } from "vue";
 import Loader from "../LoadingDots.vue";
 import { useDialog } from "../dialog/DialogStore";
 import { useSidebar } from "./SidebarStore";
@@ -99,8 +99,6 @@ import Topbar from "../Topbar.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
-const collections = computed(() => sidebarStore.playlists.filter((p) => p.name.toLowerCase().includes("#collection")));
-const playlists = computed(() => sidebarStore.playlists.filter((p) => !p.name.toLowerCase().includes("#collection")));
 const authStore = useAuth();
 
 // Collection search
@@ -129,7 +127,8 @@ onClickOutside(playlistSearchInput, () => {
 
 watch(playlistSearchInput, () => playlistSearchInput.value && playlistSearchInput.value.focus());
 watch(authStore, () => {
-  if (!collections.value.length || !playlists.value.length) sidebarStore.getPlaylists("me/playlists?limit=50");
+  if (!sidebarStore.collections.length || !sidebarStore.playlists.length)
+    sidebarStore.getPlaylists("me/playlists?limit=50");
 });
 </script>
 

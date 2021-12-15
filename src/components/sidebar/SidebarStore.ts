@@ -13,16 +13,17 @@ export const useSidebar = defineStore("sidebar", {
   }),
 
   actions: {
-    reset() {
-      this.playlists = [];
-    },
-
     getPlaylists(url: string) {
       if (url && router.currentRoute.value.name !== "Login") {
         instance()
           .get<Paging<SimplifiedPlaylist>>(url)
           .then((e) => {
-            this.playlists = this.playlists.concat(e.data.items);
+            this.playlists = this.playlists
+              .concat(e.data.items)
+              .filter((p) => !p.name.toLowerCase().includes("#collection"));
+            this.collections = this.collections
+              .concat(e.data.items)
+              .filter((p) => p.name.toLowerCase().includes("#collection"));
             if (e.data.next) this.getPlaylists(e.data.next);
           });
       }
