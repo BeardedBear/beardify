@@ -20,9 +20,9 @@ import { usePlayer } from "./components/player/PlayerStore";
 import { useWindowFocus } from "@vueuse/core";
 import { watch } from "vue";
 import { useDialog } from "./components/dialog/DialogStore";
-import KeyboardEvents from "./helpers/keyboardEvents";
+import { useKeyboardEvents } from "./helpers/useKeyboardEvents";
 
-KeyboardEvents();
+useKeyboardEvents();
 
 const authStore = useAuth();
 const playerStore = usePlayer();
