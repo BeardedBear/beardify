@@ -1,6 +1,6 @@
 import { usePlayer } from "../components/player/PlayerStore";
 
-export default (): void => {
+export default function (): void {
   const playerStore = usePlayer();
 
   function setVolume(volume: number): void {
@@ -26,4 +26,4 @@ export default (): void => {
       playerStore.currentlyPlaying.is_playing ? playerStore.pause() : playerStore.play();
     }
   });
-};
+}
