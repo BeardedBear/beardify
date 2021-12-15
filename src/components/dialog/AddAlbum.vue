@@ -1,7 +1,7 @@
 <template>
   <Dialog with-title title="Ajouter un album à une collection">
     <div
-      v-for="(playlist, index) in sidebarStore.playlists.filter((p) => p.name.toLowerCase().includes('#collection'))"
+      v-for="(playlist, index) in sidebarStore.collections"
       :key="index"
       class="collection"
       @click="add(dialogStore.albumId ? dialogStore.albumId : '', playlist.id)"
