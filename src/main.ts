@@ -3,7 +3,6 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router, { RouteName } from "./router";
 import { useAuth } from "./views/auth/AuthStore";
-import KeyboardEvents from "./helpers/keyboardEvents";
 import { useConfig } from "./components/config/ConfigStore";
 import { Config } from "./@types/Config";
 
@@ -17,7 +16,6 @@ useAuth()
   .refresh()
   .then((done) => {
     if (done) {
-      KeyboardEvents();
       app.mount("#app");
       if (configStorage) {
         const ls: Config = JSON.parse(configStorage);
