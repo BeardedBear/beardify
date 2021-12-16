@@ -120,7 +120,18 @@ function remove(): void {
   place-content: center;
 }
 
+@keyframes pop-wrap {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .wrap {
+  animation: pop-wrap 0.5s ease 0.1s both;
   padding: 1.2rem;
 }
 
