@@ -38,6 +38,9 @@
           <i class="type-icon icon-folder" />
           <div class="name">{{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}</div>
           <i class="public-icon" title="Public" :class="{ 'icon-public': playlist.public }" />
+          <button class="edit" @click.prevent="dialogStore.open({ type: 'editPlaylist', playlistId: playlist.id })">
+            <i class="icon-more-vertical"></i>
+          </button>
         </router-link>
       </div>
     </div>
@@ -81,6 +84,9 @@
           />
           <div class="name">{{ playlist.name }}</div>
           <i class="public-icon" title="Public" :class="{ 'icon-public': playlist.public }" />
+          <button class="edit" @click.prevent="dialogStore.open({ type: 'editPlaylist', playlistId: playlist.id })">
+            <i class="icon-more-vertical"></i>
+          </button>
         </router-link>
       </div>
     </div>
@@ -155,6 +161,22 @@ watch(authStore, () => {
     opacity: 0.3;
   }
 
+  .edit {
+    background-color: var(--bg-color);
+    border: none;
+    border-radius: 2rem;
+    color: var(--font-color);
+    cursor: pointer;
+    opacity: 0;
+    padding: 0.2rem 0.7rem;
+    position: absolute;
+    right: 0.5rem;
+
+    &:hover {
+      background-color: var(--bg-color-lighter);
+    }
+  }
+
   .public-icon {
     margin-left: 1rem;
     opacity: 0.1;
@@ -167,10 +189,14 @@ watch(authStore, () => {
   }
 
   &:hover {
-    background-color: color.change(rgb(74 75 103), $alpha: 0.15);
+    background-color: var(--bg-color);
 
     .name {
       text-indent: 0.2rem;
+    }
+
+    .edit {
+      opacity: 1;
     }
   }
 }

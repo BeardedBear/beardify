@@ -143,7 +143,7 @@ label {
 
 .input,
 .textarea {
-  background-color: var(--bg-color-lighter);
+  background-color: var(--bg-color-light);
   border: none;
   border-radius: 0.4rem;
   color: var(--font-color);
