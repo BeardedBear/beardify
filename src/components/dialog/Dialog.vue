@@ -142,7 +142,7 @@ $radius: 0.4rem;
 }
 
 .content {
-  max-height: 25rem;
+  max-height: 30rem;
   overflow: auto;
   width: 25rem;
 
