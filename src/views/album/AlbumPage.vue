@@ -18,9 +18,9 @@
             :key="index"
             class="track"
             :class="{ active: playerStore.currentlyPlaying.item?.id === track.id }"
-            @dblclick="playSongs(index, albumStore.album.tracks.items)"
+            @click="playSongs(index, albumStore.album.tracks.items)"
           >
-            <button class="add" @click="dialogStore.open({ type: 'addSong', songUri: track.uri })">
+            <button class="add" @click.prevent.stop="dialogStore.open({ type: 'addSong', songUri: track.uri })">
               <i class="icon-plus"></i>
             </button>
             <span class="track__number">{{ track.track_number }}.</span>
@@ -101,7 +101,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 
 .track {
   border-radius: 0.4rem;
-  cursor: default;
+  cursor: pointer;
   display: grid;
   grid-template-columns: 2rem 1fr auto;
   padding: 0.4rem 0.8rem;

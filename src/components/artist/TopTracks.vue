@@ -6,11 +6,11 @@
       :key="index"
       class="item"
       :class="{ active: playerStore.currentlyPlaying.item?.id === trackItem.id }"
-      @dblclick="playSongs(index, artistStore.topTracks.tracks)"
+      @click="playSongs(index, artistStore.topTracks.tracks)"
     >
       <div class="cover-wrap">
         <Cover size="small" :images="trackItem.album.images" class-name="cover" />
-        <div class="hover" @click="dialogStore.open({ type: 'addSong', songUri: trackItem.uri })">
+        <div class="hover" @click.prevent.stop="dialogStore.open({ type: 'addSong', songUri: trackItem.uri })">
           <i class="add icon-plus"></i>
         </div>
       </div>
@@ -75,7 +75,7 @@ const dialogStore = useDialog();
 .item {
   align-items: center;
   border-radius: 0.3rem;
-  cursor: default;
+  cursor: pointer;
   display: flex;
   gap: 1rem;
   margin-bottom: 0.5rem;

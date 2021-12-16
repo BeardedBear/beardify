@@ -19,7 +19,10 @@
 
         <div class="playlist-header__right">
           <button class="button button--nude"><i class="icon-share"></i></button>
-          <button class="button button--nude" @click="deletePlaylist(playlistStore.playlist.id)">
+          <button
+            class="button button--nude"
+            @click="dialogStore.open({ type: 'editPlaylist', playlistId: playlistStore.playlist.id })"
+          >
             <i class="icon-more-vertical"></i>
           </button>
         </div>
@@ -35,7 +38,7 @@
               : false,
           deletable: playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative,
         }"
-        @dblclick="
+        @click="
           playSongs(
             index,
             playlistStore.tracks.map((e) => e.track),
@@ -46,7 +49,7 @@
           <i class="track-icon-item music icon-music" />
           <i
             class="track-icon-item save icon-plus"
-            @click="dialogStore.open({ type: 'addSong', songUri: track.track.uri })"
+            @click.prevent.stop="dialogStore.open({ type: 'addSong', songUri: track.track.uri })"
           ></i>
         </div>
         <div>
@@ -70,7 +73,7 @@
               'icon-compilation': track.track.album.album_type === 'compilation',
             }"
           />
-          <router-link class="link" :to="`/album/${track.track.album.id}`">{{ track.track.album.name }}</router-link>
+          <AlbumLink :album="track.track.album" no-icon />
         </div>
 
         <div class="date">
@@ -82,7 +85,7 @@
         </div>
 
         <div v-if="playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative">
-          <button class="button button--nude delete" @click="deleteSong(track.track.uri)">
+          <button class="button button--nude delete" @click.prevent.stop="deleteSong(track.track.uri)">
             <i class="icon-trash-2"></i>
           </button>
         </div>
@@ -107,16 +110,13 @@ import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
 import { NotificationType } from "../../@types/Notification";
 import PageScroller from "../../components/PageScroller.vue";
+import AlbumLink from "../../components/album/AlbumLink.vue";
 
 const props = defineProps<{ id: string }>();
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
 const playerStore = usePlayer();
 const authStore = useAuth();
-
-function deletePlaylist(playlistId: string): void {
-  dialogStore.open({ type: "editPlaylist", playlistId });
-}
 
 function sumDuration(tracks: PlaylistTrack[]): number {
   return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
@@ -152,7 +152,7 @@ playlistStore.clean().finally(() => {
 .track {
   align-items: center;
   border-radius: 0.3rem;
-  cursor: default;
+  cursor: pointer;
   display: grid;
   gap: 0.8rem;
   grid-template-columns: 2.2rem 1fr 0.9fr 0.3fr 2.8rem;
