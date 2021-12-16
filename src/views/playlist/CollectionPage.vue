@@ -6,7 +6,9 @@
         <div>
           <div>
             <div class="title">{{ playlistStore.playlist.name.replace("#Collection ", "") }}</div>
-            <div class="description">{{ playlistStore.playlist.description }}</div>
+            <div v-if="playlistStore.playlist.description !== 'No description'" class="description">
+              {{ playlistStore.playlist.description }}
+            </div>
             <div>
               {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} albums
             </div>

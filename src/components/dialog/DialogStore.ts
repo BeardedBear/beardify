@@ -36,7 +36,7 @@ export const useDialog = defineStore("dialog", {
         name: isCollection ? `#Collection ${value.name}` : value.name,
         public: value.public,
         collaborative: value.collaborative,
-        description: value.description,
+        description: value.description === "" ? "No description" : value.description,
       };
 
       instance()
@@ -47,7 +47,7 @@ export const useDialog = defineStore("dialog", {
             ? sidebarStore.collections.find((collection) => collection.id === playlistId)
             : sidebarStore.playlists.find((playlist) => playlist.id === playlistId);
 
-          this.updatePlaylistCurrentPage(value, playlistId);
+          this.updatePlaylistCurrentPage(data, playlistId);
 
           if (updatedPlaylist) {
             updatedPlaylist.description = data.description;

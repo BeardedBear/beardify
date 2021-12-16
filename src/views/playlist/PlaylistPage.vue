@@ -7,7 +7,9 @@
           <div><Cover size="large" :images="playlistStore.playlist.images" class-name="cover" /></div>
           <div>
             <div class="title">{{ playlistStore.playlist.name }}</div>
-            <div class="description">{{ playlistStore.playlist.description }}</div>
+            <div v-if="playlistStore.playlist.description !== 'No description'" class="description">
+              {{ playlistStore.playlist.description }}
+            </div>
             <div>
               {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} morceaux ·
               {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}
