@@ -2,7 +2,12 @@
   <div class="album">
     <div v-if="currentlyPlayedId === album.uri" class="current"><i class="icon-volume-2" /></div>
     <div class="cover">
-      <Cover size="medium" :images="album.images" class="img" @click="router.push(`/album/${album.id}`)" />
+      <Cover
+        :size="coverSize ? coverSize : 'medium'"
+        :images="album.images"
+        class="img"
+        @click="router.push(`/album/${album.id}`)"
+      />
       <button class="play" type="button" @click="playAlbum(album.uri)"><i class="icon-play" /></button>
       <button
         v-if="canSave"
@@ -41,6 +46,7 @@ import { usePlaylist } from "../../views/playlist/PlaylistStore";
 import { notification } from "../../helpers/notifications";
 import { NotificationType } from "../../@types/Notification";
 import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
+import { ImageSize } from "../../@types/Image";
 
 defineProps<{
   album: AlbumSimplified | Album;
@@ -50,6 +56,7 @@ defineProps<{
   canDelete?: boolean;
   canSave?: boolean;
   withoutReleaseDate?: boolean;
+  coverSize?: ImageSize | undefined;
 }>();
 
 const currentRouteId = useRoute().params.id;

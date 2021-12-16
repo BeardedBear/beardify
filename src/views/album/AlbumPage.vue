@@ -10,6 +10,7 @@
             :currently-played-id="playerStore.currentlyPlaying.item?.album.uri"
             without-metas
             can-save
+            :cover-size="'large'"
           />
         </div>
         <div class="content__tracks">
