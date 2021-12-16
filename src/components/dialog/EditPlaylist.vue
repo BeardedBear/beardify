@@ -10,7 +10,13 @@
         </div>
         <div class="section">
           <label for="description">Description</label>
-          <textarea v-if="isEditable" id="description" v-model="values.description" class="textarea"></textarea>
+          <textarea
+            v-if="isEditable"
+            id="description"
+            v-model="values.description"
+            placeholder="Add description"
+            class="textarea"
+          ></textarea>
           <div v-else>{{ values.description }}</div>
         </div>
         <div v-if="isEditable" class="option-list section">
@@ -96,7 +102,7 @@ watchEffect(() => {
         isEditable.value = data.owner.id === useAuth().me?.id;
         isCollection.value = data.name.toLowerCase().startsWith("#collection");
         values.name = data.name.replaceAll("#Collection ", "");
-        values.description = data.description;
+        values.description = data.description === "" || data.description === "No description" ? "" : data.description;
         values.public = data.public;
         values.collaborative = data.collaborative;
       });
@@ -178,6 +184,13 @@ label {
   padding: 0.8rem 1rem;
   transition: 0.2s;
   width: 100%;
+
+  &::placeholder {
+    color: var(--font-color);
+    font-style: italic;
+    font-weight: normal;
+    opacity: 0.2;
+  }
 
   &:focus {
     box-shadow: 0 0 0 0.1rem var(--primary-color);
