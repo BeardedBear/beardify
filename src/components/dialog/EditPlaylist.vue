@@ -1,5 +1,5 @@
 <template>
-  <Dialog with-title title="Editer une playlist">
+  <Dialog with-title :title="`Editer une ${isCollection ? 'collection' : 'playlist'}`">
     <div v-if="values.name === ''" class="loading"><Loading /></div>
     <div v-else class="wrap">
       <div>
@@ -62,7 +62,9 @@
         </div>
       </div>
       <div class="actions">
-        <button class="button button" @click="remove()">Supprimer la playlist</button>
+        <button class="button button" @click="remove()">
+          Supprimer la {{ isCollection ? "collection" : "playlist" }}
+        </button>
         <button
           v-if="isEditable"
           class="button button--primary"
