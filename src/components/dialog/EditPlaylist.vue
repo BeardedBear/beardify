@@ -1,15 +1,19 @@
 <template>
   <Dialog with-title title="Editer une playlist">
-    <div class="wrap">
+    <div v-if="values.name === ''" class="loading"><Loading /></div>
+    <div v-else class="wrap">
       <div>
         <div class="section">
-          <label for="name">Nom</label> <input id="name" v-model="values.name" class="input" type="text" />
+          <label for="name">Nom</label>
+          <input v-if="isEditable" id="name" v-model="values.name" class="input" type="text" />
+          <div v-else>{{ values.name }}</div>
         </div>
         <div class="section">
           <label for="description">Description</label>
-          <textarea id="description" v-model="values.description" class="textarea"></textarea>
+          <textarea v-if="isEditable" id="description" v-model="values.description" class="textarea"></textarea>
+          <div v-else>{{ values.description }}</div>
         </div>
-        <div class="option-list section">
+        <div v-if="isEditable" class="option-list section">
           <div class="option">
             <label for="public">Visibilité</label>
             <button
@@ -54,6 +58,7 @@
       <div class="actions">
         <button class="button button" @click="remove()">Supprimer la playlist</button>
         <button
+          v-if="isEditable"
           class="button button--primary"
           @click="dialogStore.updatePlaylist(values, dialogStore.playlistId, isCollection)"
         >
@@ -71,6 +76,8 @@ import { NotificationType } from "../../@types/Notification";
 import { Playlist } from "../../@types/Playlist";
 import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
+import { useAuth } from "../../views/auth/AuthStore";
+import Loading from "../LoadingDots.vue";
 import { useSidebar } from "../sidebar/SidebarStore";
 import Dialog from "./Dialog.vue";
 import { useDialog } from "./DialogStore";
@@ -79,12 +86,14 @@ const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const values: UpdatePlaylistValues = reactive({ name: "", collaborative: false, description: "", public: false });
 const isCollection = ref<boolean>(false);
+const isEditable = ref<boolean>(false);
 
 watchEffect(() => {
   if (dialogStore.show && dialogStore.type === "editPlaylist") {
     instance()
       .get<Playlist>(`playlists/${dialogStore.playlistId}`)
       .then(({ data }) => {
+        isEditable.value = data.owner.id === useAuth().me?.id;
         isCollection.value = data.name.toLowerCase().startsWith("#collection");
         values.name = data.name.replaceAll("#Collection ", "");
         values.description = data.description;
@@ -105,6 +114,12 @@ function remove(): void {
 </script>
 
 <style lang="scss" scoped>
+.loading {
+  display: grid;
+  height: 10rem;
+  place-content: center;
+}
+
 .wrap {
   padding: 1.2rem;
 }
