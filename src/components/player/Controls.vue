@@ -70,6 +70,8 @@ watch(
 }
 
 .time {
+  font-size: 0.9rem;
+  font-weight: bold;
   width: 7.5rem;
 }
 
