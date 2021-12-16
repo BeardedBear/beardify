@@ -1,6 +1,7 @@
 <template>
   <div ref="domHeader" class="header">
-    <img class="img" :src="artistStore.artist.images[0].url" alt="" />
+    <img v-if="artistStore.artist.images.length" class="img" :src="artistStore.artist.images[0].url" alt="" />
+    <img v-else class="img" src="/img/default.png" />
     <div class="inner">
       <div>
         <div class="title">
