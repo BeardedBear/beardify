@@ -33,7 +33,7 @@ export const usePodcasts = defineStore("podcasts", {
         .get<Paging<Episode>>(url)
         .then((e) => {
           this.episodes = this.episodes.concat(e.data.items);
-          if (e.data.next) this.getMyPodcasts(e.data.next);
+          if (e.data.next) this.getPodcastEpisodes(e.data.next);
         });
     },
 

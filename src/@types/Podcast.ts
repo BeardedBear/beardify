@@ -27,6 +27,10 @@ export interface Episode {
   name: string;
   release_date: string;
   release_date_precision: string;
+  resume_point: {
+    fully_played: boolean;
+    resume_position_ms: number;
+  };
   type: string;
   uri: string;
 }

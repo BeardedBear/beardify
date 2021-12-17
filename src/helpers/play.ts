@@ -10,8 +10,8 @@ export function playSongs(sliceIndex: number, tracks: TrackSimplified[] | Track[
     .then(() => syncOfficialSpotifyClient());
 }
 
-export function playSong(trackUri: string): void {
+export function playSong(trackUri: string, position?: number): void {
   instance()
-    .put(`me/player/play`, { uris: [trackUri] })
+    .put(`me/player/play`, position ? { uris: [trackUri], position_ms: position } : { uris: [trackUri] })
     .then(() => syncOfficialSpotifyClient());
 }

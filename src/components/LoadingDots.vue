@@ -1,4 +1,12 @@
-<template><div class="loader"></div></template>
+<template><div class="loader" :class="{ small: size === 'small' }"></div></template>
+
+<script lang="ts" setup>
+import { defineProps } from "vue";
+
+defineProps<{
+  size?: "small" | "normal";
+}>();
+</script>
 
 <style lang="scss" scoped>
 $border: 0.4rem;
@@ -12,6 +20,16 @@ $size: 2.8rem;
   display: inline-block;
   height: $size;
   width: $size;
+
+  &.small {
+    $border: 0.3rem;
+    $size: 1.8rem;
+
+    border: $border solid var(--bg-color);
+    border-top: $border solid var(--primary-color);
+    height: $size;
+    width: $size;
+  }
 }
 
 @keyframes spin {
