@@ -26,5 +26,5 @@ useAuth()
   })
   .catch(() => {
     app.mount("#app");
-    router.push(RouteName.Login);
+    router.push(`${RouteName.Login}?ref=${window.location.pathname}`);
   });

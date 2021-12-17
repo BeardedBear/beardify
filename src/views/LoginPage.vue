@@ -6,8 +6,9 @@
         <a
           class="button button--primary"
           :href="`https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${challenge}`"
-          >Se connecter</a
         >
+          Se connecter
+        </a>
       </div>
     </div>
   </div>
@@ -17,11 +18,12 @@
 import { api } from "../api";
 import { useAuth } from "./auth/AuthStore";
 import { ref } from "vue";
+import router from "../router";
 
 const authStore = useAuth();
 const challenge = ref<string>("");
 
-authStore.generateCodeChallenge();
+authStore.generateStorage(router.currentRoute.value.query.ref?.toString());
 const storage = JSON.parse(localStorage.getItem("Beardify") || "");
 challenge.value = storage.codeChallenge;
 </script>

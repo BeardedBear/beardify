@@ -5,7 +5,7 @@ import { create } from "pkce";
 import { Auth, AuthAPIResponse } from "../../@types/Auth";
 import { Me } from "../../@types/Me";
 import { api } from "../../api";
-import router, { RouteName } from "../../router";
+import router from "../../router";
 
 export const useAuth = defineStore("auth", {
   state: (): Auth => ({
@@ -15,17 +15,17 @@ export const useAuth = defineStore("auth", {
   }),
 
   actions: {
-    syncStore(codeChallenge: string, codeVerifier: string, refreshToken: string) {
-      localStorage.setItem("Beardify", JSON.stringify({ codeChallenge, codeVerifier, refreshToken }));
+    syncStore(codeChallenge: string, codeVerifier: string, refreshToken: string, referer: string) {
+      localStorage.setItem("Beardify", JSON.stringify({ codeChallenge, codeVerifier, refreshToken, referer }));
     },
 
-    async generateCodeChallenge(): Promise<void> {
+    async generateStorage(referer?: string): Promise<void> {
       const code: {
         codeVerifier: string;
         codeChallenge: string;
       } = create();
 
-      this.syncStore(code.codeChallenge, code.codeVerifier, "");
+      this.syncStore(code.codeChallenge, code.codeVerifier, "", referer ? referer : "");
     },
 
     resetLogin() {
@@ -47,7 +47,7 @@ export const useAuth = defineStore("auth", {
         .then((res) => {
           this.accessToken = res.data.access_token;
           if (!this.me) this.getMe(res.data.access_token);
-          this.syncStore("", "", res.data.refresh_token);
+          this.syncStore("", "", res.data.refresh_token, "");
           return true;
         })
         .catch((err) => {
@@ -80,8 +80,8 @@ export const useAuth = defineStore("auth", {
           this.getMe(data.access_token);
           this.accessToken = data.access_token;
           this.code = query;
-          this.syncStore("", "", data.refresh_token);
-          router.push(RouteName.Home);
+          this.syncStore("", "", data.refresh_token, storage.referer);
+          router.push(storage.referer);
         })
         .catch((err) => {
           throw new Error(err);
