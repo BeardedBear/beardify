@@ -67,6 +67,10 @@
             />
           </div>
           <i
+            v-else-if="track.track.album.album_type === 'single' && track.track.album.total_tracks >= 3"
+            class="icon-ep"
+          />
+          <i
             v-else
             :class="{
               'icon-single': track.track.album.album_type === 'single',

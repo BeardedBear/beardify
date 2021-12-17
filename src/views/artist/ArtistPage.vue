@@ -19,7 +19,10 @@
           </div>
         </div>
         <div v-if="artistStore.eps.length" class="content__block">
-          <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">EP's</div>
+          <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">
+            <i class="icon-ep"></i>
+            EP's
+          </div>
           <div class="eps">
             <div v-for="(album, index) in artistStore.eps" :key="index">
               <Album :album="album" :currently-played-id="playerStore.currentlyPlaying.item?.album.uri" can-save />
