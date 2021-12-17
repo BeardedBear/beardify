@@ -22,42 +22,44 @@
         <div v-if="isEditable" class="option-list section">
           <div class="option">
             <label for="public">Visibilité</label>
-            <button
-              class="button"
-              :class="{ 'button--primary': values.public && !values.collaborative }"
-              @click="
-                () => {
-                  values.collaborative = false;
-                  values.public = true;
-                }
-              "
-            >
-              Publique
-            </button>
-            <button
-              class="button"
-              :class="{ 'button--primary': !values.public && !values.collaborative }"
-              @click="
-                () => {
-                  values.collaborative = false;
-                  values.public = false;
-                }
-              "
-            >
-              Privée
-            </button>
-            <button
-              class="button"
-              :class="{ 'button--primary': values.collaborative && !values.public }"
-              @click="
-                () => {
-                  values.collaborative = true;
-                  values.public = false;
-                }
-              "
-            >
-              Collaborative
-            </button>
+            <div class="buttons">
+              <button
+                class="button"
+                :class="{ 'button--primary': values.public && !values.collaborative }"
+                @click="
+                  () => {
+                    values.collaborative = false;
+                    values.public = true;
+                  }
+                "
+              >
+                Publique
+              </button>
+              <button
+                class="button"
+                :class="{ 'button--primary': !values.public && !values.collaborative }"
+                @click="
+                  () => {
+                    values.collaborative = false;
+                    values.public = false;
+                  }
+                "
+              >
+                Privée
+              </button>
+              <button
+                class="button"
+                :class="{ 'button--primary': values.collaborative && !values.public }"
+                @click="
+                  () => {
+                    values.collaborative = true;
+                    values.public = false;
+                  }
+                "
+              >
+                Collaborative
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -156,6 +158,11 @@ function remove(): void {
   display: flex;
   justify-content: space-between;
   margin-top: 3rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 0.5rem;
 }
 
 label {

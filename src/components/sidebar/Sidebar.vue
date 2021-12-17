@@ -167,10 +167,12 @@ watch(authStore, () => {
     border-radius: 2rem;
     color: var(--font-color);
     cursor: pointer;
+    font-size: 0.9rem;
     opacity: 0;
     padding: 0.2rem 0.7rem;
     position: absolute;
     right: 0.5rem;
+    transition: 0.2s;
 
     &:hover {
       background-color: var(--bg-color-lighter);
