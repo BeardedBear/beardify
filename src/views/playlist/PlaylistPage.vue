@@ -216,11 +216,11 @@ playlistStore.clean().finally(() => {
   }
 
   &:hover {
-    background-color: color.change(rgb(74 75 103), $alpha: 0.1);
+    background-color: var(--bg-color-dark);
   }
 
   &:active {
-    background-color: color.change(rgb(74 75 103), $alpha: 0.2);
+    background-color: var(--bg-color);
   }
 
   .adder {

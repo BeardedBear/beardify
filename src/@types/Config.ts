@@ -133,15 +133,15 @@ export const themeDark: ThemeColor[] = [
 export const themeLight: ThemeColor[] = [
   {
     var: "--bg-color-darker",
-    color: "#ebebeb",
+    color: "#e2e2e2",
   },
   {
     var: "--bg-color-dark",
-    color: "#dedede",
+    color: "#ededed",
   },
   {
     var: "--bg-color",
-    color: "#d5d5d5",
+    color: "#f8f8f8",
   },
   {
     var: "--bg-color-light",

@@ -94,7 +94,7 @@ $radius: 0.4rem;
 }
 
 .head {
-  background-color: var(--bg-color-lighter);
+  background-color: var(--bg-color-light);
   border-radius: $radius $radius 0 0;
   font-size: 1rem;
   font-weight: 700;

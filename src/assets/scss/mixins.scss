@@ -11,7 +11,7 @@
 .active {
   $test: var(--primary-color-darker);
 
-  background-color: rgb(74 75 103 / 15%);
+  background-color: var(--bg-color);
   color: var(--primary-color) !important;
 
   &:hover {

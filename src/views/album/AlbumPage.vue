@@ -105,11 +105,12 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   cursor: pointer;
   display: grid;
   grid-template-columns: 2rem 1fr auto;
+  margin-bottom: 0.3rem;
   padding: 0.4rem 0.8rem;
   position: relative;
 
   &:hover {
-    background-color: color.change(rgb(74 75 103), $alpha: 0.15);
+    background-color: var(--bg-color-dark);
 
     .add {
       opacity: 0.3;
@@ -121,7 +122,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   }
 
   &:active {
-    background-color: color.change(rgb(74 75 103), $alpha: 0.3);
+    background-color: var(--bg-color);
   }
 
   &__number {

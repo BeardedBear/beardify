@@ -47,7 +47,7 @@ const artistStore = useArtist();
   text-decoration: none;
 
   &:hover {
-    background-color: color.change(rgb(74 75 103), $alpha: 0.15);
+    background-color: var(--bg-color-dark);
   }
 }
 
