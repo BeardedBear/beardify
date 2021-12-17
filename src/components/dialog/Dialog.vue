@@ -1,5 +1,5 @@
 <template>
-  <div v-if="dialogStore.show" class="dialog" :class="{ 'is-closing': dialogStore.isClosing }">
+  <div v-if="dialogStore.show" class="dialog">
     <div class="bg" :class="{ 'is-closing': dialogStore.isClosing }" @click="dialogStore.close()"></div>
     <div class="dialog-content" :class="{ 'is-closing': dialogStore.isClosing, big }">
       <div v-if="withTitle" class="head">
@@ -70,7 +70,7 @@ $radius: 0.4rem;
 .bg {
   animation: pop-bg 0.2s ease both;
   background-color: var(--bg-color-darker);
-  filter: opacity(0.85);
+  filter: opacity(0.95);
   inset: 0;
   position: fixed;
 
@@ -80,17 +80,12 @@ $radius: 0.4rem;
 }
 
 .dialog {
-  backdrop-filter: blur(1rem);
   display: grid;
   inset: 0;
   place-content: center;
   position: fixed;
   transition: 200ms;
   z-index: 99999999;
-
-  &.is-closing {
-    backdrop-filter: blur(0);
-  }
 }
 
 .head {
@@ -130,7 +125,7 @@ $radius: 0.4rem;
   animation: pop-dialog-content 0.2s ease both;
   background: var(--bg-color);
   border-radius: $radius;
-  box-shadow: 0 0.8rem 2rem var(--bg-color-darker);
+  box-shadow: 0 1rem 1rem rgb(0 0 0 / 10%);
   display: grid;
   grid-template-rows: auto 1fr;
   position: relative;

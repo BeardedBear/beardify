@@ -115,7 +115,7 @@ function logout(): void {
   animation: pop-config ease 0.2s both;
   background-color: var(--bg-color-darker);
   border-radius: 1rem;
-  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 30%);
+  box-shadow: 0 0.5rem 0.5rem rgb(0 0 0 / 15%);
   padding: 1.2rem;
   position: absolute;
   right: 1.2rem;
