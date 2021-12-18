@@ -250,6 +250,7 @@ playlistStore.clean().finally(() => {
 }
 
 .duration {
+  padding-right: 0.5rem;
   text-align: right;
 }
 

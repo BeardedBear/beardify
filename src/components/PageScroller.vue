@@ -44,8 +44,9 @@ function scrollToTop(): void {
   animation: pop-nav 0.5s ease 0.5s both;
   bottom: 7rem;
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
   position: absolute;
-  right: 2rem;
+  right: 1.5rem;
 }
 </style>
