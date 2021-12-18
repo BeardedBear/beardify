@@ -132,10 +132,9 @@ onClickOutside(playlistSearchInput, () => {
 });
 
 watch(playlistSearchInput, () => playlistSearchInput.value && playlistSearchInput.value.focus());
-watch(authStore, () => {
-  if (!sidebarStore.collections.length || !sidebarStore.playlists.length)
-    sidebarStore.getPlaylists("me/playlists?limit=50");
-});
+
+if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlists.length)
+  sidebarStore.getPlaylists("me/playlists?limit=50");
 </script>
 
 <style lang="scss" scoped>

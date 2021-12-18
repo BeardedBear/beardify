@@ -50,10 +50,7 @@ challenge.value = storage.codeChallenge;
   display: grid;
   height: 100%;
   place-content: center;
-  position: fixed;
-  top: 0;
   width: 100%;
-  z-index: 10;
 }
 
 .form {

@@ -1,13 +1,16 @@
 <template>
-  <DialogList />
-  <div id="app__content">
-    <Sidebar />
-    <router-view v-slot="{ Component }" :key="$route.fullPath">
-      <transition name="scale" mode="out-in"><component :is="Component" /></transition>
-    </router-view>
-  </div>
-  <Player key="player" />
-  <Notification />
+  <template v-if="$route.name === 'Login'"><router-view></router-view></template>
+  <template v-else>
+    <DialogList />
+    <div id="app__content">
+      <Sidebar />
+      <router-view v-slot="{ Component }" :key="$route.fullPath">
+        <transition name="scale" mode="out-in"><component :is="Component" /></transition>
+      </router-view>
+    </div>
+    <Player key="player" />
+    <Notification />
+  </template>
 </template>
 
 <script lang="ts" setup>
