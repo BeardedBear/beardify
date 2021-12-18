@@ -19,7 +19,7 @@
 
     <div class="section">
       <div class="section__title">Compte</div>
-      <button class="button button--full" @click="logout()">Se déconnecter</button>
+      <button class="button button--full" @click="authStore.logout()">Se déconnecter</button>
     </div>
 
     <div class="section">
@@ -30,28 +30,18 @@
 </template>
 
 <script lang="ts" setup>
-import router, { RouteName } from "../../router";
 import Colors from "./Colors.vue";
 import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";
 import { onClickOutside, templateRef } from "@vueuse/core";
 import { useConfig } from "./ConfigStore";
 import { NotificationType } from "../../@types/Notification";
-import { usePlayer } from "../player/PlayerStore";
 
 const env = process.env.NODE_ENV;
 const authStore = useAuth();
 const configStore = useConfig();
-const playerStore = usePlayer();
 
 onClickOutside(templateRef("domConfig"), () => configStore.close());
-
-function logout(): void {
-  configStore.close();
-  authStore.resetLogin();
-  playerStore.pause();
-  router.push(RouteName.Login);
-}
 </script>
 
 <style lang="scss" scoped>

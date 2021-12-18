@@ -3,9 +3,17 @@ import formUrlEncoded from "form-urlencoded";
 import { defineStore } from "pinia";
 import { create } from "pkce";
 import { Auth, AuthAPIResponse } from "../../@types/Auth";
-import { Me } from "../../@types/Me";
-import { api } from "../../api";
-import router from "../../router";
+import { api, instance } from "../../api";
+import { useConfig } from "../../components/config/ConfigStore";
+import { usePlayer } from "../../components/player/PlayerStore";
+import router, { RouteName } from "../../router";
+
+interface StorageAuth {
+  codeChallenge: string;
+  codeVerifier: string;
+  refreshToken: string;
+  referer: string;
+}
 
 export const useAuth = defineStore("auth", {
   state: (): Auth => ({
@@ -15,8 +23,16 @@ export const useAuth = defineStore("auth", {
   }),
 
   actions: {
-    syncStore(codeChallenge: string, codeVerifier: string, refreshToken: string, referer: string) {
-      localStorage.setItem("Beardify", JSON.stringify({ codeChallenge, codeVerifier, refreshToken, referer }));
+    syncStore(data: StorageAuth) {
+      localStorage.setItem(
+        "Beardify",
+        JSON.stringify({
+          codeChallenge: data.codeChallenge,
+          codeVerifier: data.codeVerifier,
+          refreshToken: data.refreshToken,
+          referer: data.referer,
+        } as StorageAuth),
+      );
     },
 
     async generateStorage(referer?: string): Promise<void> {
@@ -25,15 +41,23 @@ export const useAuth = defineStore("auth", {
         codeChallenge: string;
       } = create();
 
-      this.syncStore(code.codeChallenge, code.codeVerifier, "", referer ? referer : "");
+      this.syncStore({
+        codeChallenge: code.codeChallenge,
+        codeVerifier: code.codeVerifier,
+        refreshToken: "",
+        referer: referer ? referer : "",
+      });
     },
 
-    resetLogin() {
-      this.me = null;
+    logout() {
+      useConfig().close();
+      usePlayer().pause();
+      router.push(RouteName.Login);
+      localStorage.removeItem("Beardify");
     },
 
     async refresh() {
-      const storage = JSON.parse(localStorage.getItem("Beardify") || "");
+      const storage: StorageAuth = JSON.parse(localStorage.getItem("Beardify") || "");
 
       return axios
         .post<string, AxiosResponse<AuthAPIResponse>>(
@@ -46,8 +70,12 @@ export const useAuth = defineStore("auth", {
         )
         .then((res) => {
           this.accessToken = res.data.access_token;
-          if (!this.me) this.getMe(res.data.access_token);
-          this.syncStore("", "", res.data.refresh_token, "");
+          if (!this.me) {
+            instance()
+              .get("me")
+              .then(({ data }) => (this.me = data));
+          }
+          this.syncStore({ codeChallenge: "", codeVerifier: "", refreshToken: res.data.refresh_token, referer: "" });
           return true;
         })
         .catch((err) => {
@@ -55,15 +83,8 @@ export const useAuth = defineStore("auth", {
         });
     },
 
-    getMe(token: string) {
-      axios.get<Me>(`${api.url}me`, { headers: { Authorization: `Bearer ${token}` } }).then((p) => {
-        this.me = p.data;
-        router.go(1);
-      });
-    },
-
     async authentification(query: string) {
-      const storage = JSON.parse(localStorage.getItem("Beardify") || "");
+      const storage: StorageAuth = JSON.parse(localStorage.getItem("Beardify") || "");
 
       axios
         .post<string, AxiosResponse<AuthAPIResponse>>(
@@ -77,13 +98,18 @@ export const useAuth = defineStore("auth", {
           }),
         )
         .then(({ data }) => {
-          this.getMe(data.access_token);
+          router.push(storage.referer);
           this.accessToken = data.access_token;
           this.code = query;
-          this.syncStore("", "", data.refresh_token, storage.referer);
-          router.push(storage.referer);
+          this.syncStore({
+            codeChallenge: "",
+            codeVerifier: "",
+            refreshToken: data.refresh_token,
+            referer: storage.referer,
+          });
         })
         .catch((err) => {
+          router.push(RouteName.Home);
           throw new Error(err);
         });
     },
