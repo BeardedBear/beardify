@@ -19,7 +19,7 @@ import { useIntervalFn, useMouseInElement } from "@vueuse/core";
 import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 
 const props = defineProps<{
-  duration: number | null;
+  duration: number | null | undefined;
 }>();
 
 const progressWrap = ref<HTMLDivElement>();

@@ -43,20 +43,22 @@ import { ref, watch, defineProps } from "vue";
 import { useIntervalFn } from "@vueuse/core";
 
 const props = defineProps<{
-  progress: number;
-  duration: number | null;
+  progress: number | null | undefined;
+  duration: number | null | undefined;
 }>();
 
 const playerStore = usePlayer();
-const currentTime = ref<number>(0);
+const currentTime = ref<number | null | undefined>(0);
 
 useIntervalFn(() => {
-  if (playerStore.currentlyPlaying.is_playing) currentTime.value = currentTime.value + 1000;
+  if (playerStore.currentlyPlaying.is_playing) currentTime.value = currentTime.value && currentTime.value + 1000;
 }, 1000);
 
 watch(
   () => props.progress,
-  () => (currentTime.value = props.progress),
+  () => {
+    if (props.progress) currentTime.value = props.progress;
+  },
 );
 </script>
 
