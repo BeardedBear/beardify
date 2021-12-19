@@ -18,6 +18,17 @@
             </div>
           </div>
         </div>
+        <div v-if="artistStore.albumsLive.length" class="content__block">
+          <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">
+            <i class="icon-album"></i>
+            Albums live
+          </div>
+          <div class="albums">
+            <div v-for="(album, index) in artistStore.albumsLive" :key="index">
+              <Album :album="album" :currently-played-id="playerStore.currentlyPlaying.item?.album.uri" can-save />
+            </div>
+          </div>
+        </div>
         <div v-if="artistStore.eps.length" class="content__block">
           <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">
             <i class="icon-ep"></i>
@@ -65,7 +76,7 @@ const domHead = ref<HTMLDivElement | null>(null);
 artistStore.clean().finally(() => {
   artistStore.getArtist(props.id);
   artistStore.getTopTracks(props.id);
-  artistStore.getAlbums(props.id);
+  artistStore.getAlbums(`artists/${props.id}/albums?market=FR&include_groups=album&limit=50`);
   artistStore.getRelatedArtists(props.id);
   artistStore.getSingles(props.id);
   artistStore.getFollowStatus(props.id);

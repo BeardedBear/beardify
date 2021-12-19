@@ -11,6 +11,7 @@ export const useArtist = defineStore("artist", {
     artist: defaultArtist,
     topTracks: { tracks: [] },
     albums: [],
+    albumsLive: [],
     eps: [],
     singles: [],
     relatedArtists: { artists: [] },
@@ -23,6 +24,7 @@ export const useArtist = defineStore("artist", {
       this.artist = defaultArtist;
       this.topTracks = { tracks: [] };
       this.albums = [];
+      this.albumsLive = [];
       this.eps = [];
       this.singles = [];
       this.relatedArtists = { artists: [] };
@@ -41,16 +43,34 @@ export const useArtist = defineStore("artist", {
         .then((e) => (this.topTracks = e.data));
     },
 
-    getAlbums(artistId: string) {
+    getAlbums(url: string) {
       instance()
-        .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=album&limit=50`)
+        .get<Paging<AlbumSimplified>>(url)
         .then((e) => {
-          this.albums = removeDuplicatesAlbums(e.data.items);
-          if (e.data.next) {
-            instance()
-              .get<Paging<AlbumSimplified>>(e.data.next)
-              .then((e) => (this.albums = removeDuplicatesAlbums(this.albums.concat(e.data.items))));
+          function isLive(albumName: string): boolean {
+            const albumNameCleaned = albumName.toLowerCase();
+            return (
+              albumNameCleaned.includes("live in") ||
+              albumNameCleaned.includes("live on") ||
+              albumNameCleaned.includes("live at") ||
+              albumNameCleaned.includes("(live") ||
+              albumNameCleaned.includes("live series") ||
+              albumNameCleaned.includes("live session") ||
+              albumNameCleaned.includes("- live") ||
+              albumNameCleaned.includes("…live") ||
+              albumNameCleaned.includes("...live") ||
+              albumNameCleaned.includes("live;") ||
+              albumNameCleaned.includes(": live") ||
+              albumNameCleaned.includes("world tour") ||
+              albumNameCleaned.includes("in concert")
+            );
           }
+          const lives = e.data.items.filter((album) => isLive(album.name));
+          const albums = e.data.items.filter((album) => !isLive(album.name));
+
+          this.albums = removeDuplicatesAlbums(this.albums.concat(albums));
+          this.albumsLive = removeDuplicatesAlbums(this.albumsLive.concat(lives));
+          if (e.data.next) this.getAlbums(e.data.next);
         });
     },
 

@@ -6,14 +6,10 @@ export function removeDuplicatesAlbums(array: AlbumSimplified[]): AlbumSimplifie
       (album) =>
         album.name.toLowerCase() === value.name.toLowerCase() ||
         album.name
-          .replaceAll(" (Live)", "")
-          .replaceAll(" (In Concert)", "")
           .replaceAll(/[^a-z0-9]+/gi, " ")
           .toLowerCase()
           .replaceAll(" ", "") ===
           value.name
-            .replaceAll(" (Live)", "")
-            .replaceAll(" (In Concert)", "")
             .replaceAll(/[^a-z0-9]+/gi, " ")
             .toLowerCase()
             .replaceAll(" ", ""),
