@@ -151,6 +151,8 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   align-items: center;
   color: currentColor;
   display: flex;
+  font-size: 0.9rem;
+  font-weight: bold;
   justify-content: space-between;
   padding: 0.3rem 1.2rem 0.3rem 1rem;
   text-decoration: none;
