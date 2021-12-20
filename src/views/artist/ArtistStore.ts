@@ -42,7 +42,6 @@ export const useArtist = defineStore("artist", {
         .get<ArtistTopTracks>(`artists/${artistId}/top-tracks?market=FR`)
         .then((e) => (this.topTracks = e.data));
     },
-
     getAlbums(url: string) {
       instance()
         .get<Paging<AlbumSimplified>>(url)
@@ -50,23 +49,38 @@ export const useArtist = defineStore("artist", {
           function isLive(albumName: string): boolean {
             const albumNameCleaned = albumName.toLowerCase();
             return (
+              albumNameCleaned.includes(" live", -5) ||
               albumNameCleaned.includes("live in") ||
               albumNameCleaned.includes("live on") ||
               albumNameCleaned.includes("live at") ||
               albumNameCleaned.includes("(live") ||
+              albumNameCleaned.includes("[live") ||
+              albumNameCleaned.includes("official live") ||
+              albumNameCleaned.includes("live olympia") ||
               albumNameCleaned.includes("live series") ||
               albumNameCleaned.includes("live session") ||
+              albumNameCleaned.includes("live performance") ||
+              albumNameCleaned.includes("live anthology") ||
+              albumNameCleaned.includes("live bootleg") ||
               albumNameCleaned.includes("- live") ||
+              albumNameCleaned.includes("live!") ||
               albumNameCleaned.includes("…live") ||
+              albumNameCleaned.includes("live '") ||
+              albumNameCleaned.includes("live 1") ||
+              albumNameCleaned.includes("live, 1") ||
+              albumNameCleaned.includes("live 2") ||
+              albumNameCleaned.includes("live, 2") ||
               albumNameCleaned.includes("...live") ||
               albumNameCleaned.includes("live;") ||
               albumNameCleaned.includes(": live") ||
               albumNameCleaned.includes("world tour") ||
-              albumNameCleaned.includes("in concert")
+              albumNameCleaned.includes("in concert") ||
+              albumNameCleaned.includes("royal albert hall")
             );
           }
-          const lives = e.data.items.filter((album) => isLive(album.name));
-          const albums = e.data.items.filter((album) => !isLive(album.name));
+          const removeBadMarket = e.data.items.filter((album) => album.available_markets.includes("FR"));
+          const lives = removeBadMarket.filter((album) => isLive(album.name));
+          const albums = removeBadMarket.filter((album) => !isLive(album.name));
 
           this.albums = removeDuplicatesAlbums(this.albums.concat(albums));
           this.albumsLive = removeDuplicatesAlbums(this.albumsLive.concat(lives));

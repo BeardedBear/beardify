@@ -33,6 +33,7 @@ export const defaultAlbumSimplified: AlbumSimplified = {
   album_group: "album",
   album_type: "album",
   artists: [],
+  available_markets: [],
   external_urls: defaultExternalUrls,
   href: "",
   id: "",

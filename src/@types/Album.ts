@@ -40,6 +40,7 @@ export interface AlbumSimplified {
   album_group: AlbumGroup;
   album_type: AlbumType;
   artists: Artist[];
+  available_markets: string[];
   external_urls: ExternalUrls;
   href: string;
   id: string;
