@@ -47,40 +47,49 @@ export const useArtist = defineStore("artist", {
         .get<Paging<AlbumSimplified>>(url)
         .then((e) => {
           function isLive(albumName: string): boolean {
-            const albumNameCleaned = albumName.toLowerCase();
-            return (
-              albumNameCleaned.includes(" live", -5) ||
-              albumNameCleaned.includes("live in") ||
-              albumNameCleaned.includes("live on") ||
-              albumNameCleaned.includes("live at") ||
-              albumNameCleaned.includes("(live") ||
-              albumNameCleaned.includes("[live") ||
-              albumNameCleaned.includes("official live") ||
-              albumNameCleaned.includes("live olympia") ||
-              albumNameCleaned.includes("live series") ||
-              albumNameCleaned.includes("live session") ||
-              albumNameCleaned.includes("live performance") ||
-              albumNameCleaned.includes("live anthology") ||
-              albumNameCleaned.includes("live bootleg") ||
-              albumNameCleaned.includes("- live") ||
-              albumNameCleaned.includes("live!") ||
-              albumNameCleaned.includes("…live") ||
-              albumNameCleaned.includes("live '") ||
-              albumNameCleaned.includes("live 1") ||
-              albumNameCleaned.includes("live, 1") ||
-              albumNameCleaned.includes("live 2") ||
-              albumNameCleaned.includes("live, 2") ||
-              albumNameCleaned.includes("...live") ||
-              albumNameCleaned.includes("live;") ||
-              albumNameCleaned.includes(": live") ||
-              albumNameCleaned.includes("world tour") ||
-              albumNameCleaned.includes("in concert") ||
-              albumNameCleaned.includes("royal albert hall")
-            );
+            const cleanedName = albumName.toLowerCase().trim();
+            const matches = [
+              "live in",
+              "live on",
+              "live at",
+              "live from",
+              "live over",
+              "in live",
+              "on live",
+              "\\(live",
+              "\\[live",
+              "official live",
+              "live olympia",
+              "live series",
+              "live session",
+              "live performance",
+              "live anthology",
+              "live bootleg",
+              "\\- live",
+              "live\\!",
+              "\\…live",
+              "live \\'",
+              "live 1",
+              "live\\, 1",
+              "live 2",
+              "live\\, 2",
+              "\\.\\.\\.live",
+              "live\\;",
+              "\\: live",
+              "world tour",
+              "in concert",
+              "concert",
+              "royal albert hall",
+              "wacken",
+              "mtv unplugged",
+              "live & unplugged",
+              "live and unplugged",
+            ];
+            return new RegExp(`(${matches.join("|")})`).test(cleanedName) || cleanedName.split(" ").pop() === "live)";
           }
-          const removeBadMarket = e.data.items.filter((album) => album.available_markets.includes("FR"));
-          const lives = removeBadMarket.filter((album) => isLive(album.name));
-          const albums = removeBadMarket.filter((album) => !isLive(album.name));
+          const cleanFromOtherMarkets = e.data.items.filter((album) => album.available_markets.includes("FR"));
+          const lives = cleanFromOtherMarkets.filter((album) => isLive(album.name));
+          const albums = cleanFromOtherMarkets.filter((album) => !isLive(album.name));
 
           this.albums = removeDuplicatesAlbums(this.albums.concat(albums));
           this.albumsLive = removeDuplicatesAlbums(this.albumsLive.concat(lives));
