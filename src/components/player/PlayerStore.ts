@@ -6,6 +6,7 @@ import { DevicesResponse } from "../../@types/Device";
 import { Player } from "../../@types/Player";
 import { instance } from "../../api";
 import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
+import { useAuth } from "../../views/auth/AuthStore";
 
 export const usePlayer = defineStore("player", {
   state: (): Player => ({
@@ -87,7 +88,15 @@ export const usePlayer = defineStore("player", {
           } else {
             useTitle("Beardify");
           }
-        });
+        })
+        .catch(() =>
+          useAuth()
+            .refresh()
+            .then(() => {
+              usePlayer().getDeviceList();
+              this.getPlayerState();
+            }),
+        );
     },
 
     toggleShuffle() {

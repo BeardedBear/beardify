@@ -44,7 +44,7 @@ if (!navigator.userAgent.includes("Macintosh")) {
 setInterval(() => authStore.refresh(), 1800000); // 30 minutes
 
 // Keep device active
-setInterval(() => playerStore.getDeviceList(), 900000); // 15 minutes
+setInterval(() => playerStore.getDeviceList(), 600000); // 10 minutes
 
 watch(focused, (isFocused) => {
   if (isFocused) {
