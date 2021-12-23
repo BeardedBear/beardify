@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@vueuse/core": "^7.4.0",
+    "@vueuse/firebase": "^7.4.0",
     "axios": "^0.24.0",
     "date-fns": "^2.27.0",
+    "firebase": "^8.10.0",
     "form-urlencoded": "^6.0.5",
     "pinia": "^2.0.6",
     "pkce": "^1.0.0-beta2",

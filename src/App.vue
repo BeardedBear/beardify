@@ -25,6 +25,21 @@ import { watch } from "vue";
 import { useDialog } from "./components/dialog/DialogStore";
 import { useKeyboardEvents } from "./helpers/useKeyboardEvents";
 
+import firebase from "firebase/app";
+import "firebase/firestore";
+import { useFirestore } from "@vueuse/firebase/useFirestore";
+
+const db = firebase.initializeApp({ projectId: "beardify-b8fcc" }).firestore();
+
+const todos = useFirestore(db.collection("test"));
+
+console.log(todos.value);
+console.log(todos.value);
+
+watch(todos, () => {
+  console.log(todos.value);
+});
+
 useKeyboardEvents();
 
 const authStore = useAuth();
