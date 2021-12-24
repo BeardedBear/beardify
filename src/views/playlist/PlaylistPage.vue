@@ -18,13 +18,15 @@
         </div>
 
         <div class="playlist-header__right">
-          <button class="button button--nude"><i class="icon-share"></i></button>
-          <button
-            class="button button--nude"
-            @click="dialogStore.open({ type: 'editPlaylist', playlistId: playlistStore.playlist.id })"
-          >
-            <i class="icon-more-vertical"></i>
-          </button>
+          <div>
+            <button
+              class="button button--nude"
+              @click="dialogStore.open({ type: 'editPlaylist', playlistId: playlistStore.playlist.id })"
+            >
+              <i class="icon-more-vertical"></i>
+            </button>
+          </div>
+          <ShareContent :spotify-url="playlistStore.playlist.external_urls.spotify" :beardify-url="$route.fullPath" />
         </div>
       </div>
       <div
@@ -115,6 +117,7 @@ import { notification } from "../../helpers/notifications";
 import { NotificationType } from "../../@types/Notification";
 import PageScroller from "../../components/PageScroller.vue";
 import AlbumLink from "../../components/album/AlbumLink.vue";
+import ShareContent from "../../components/ShareContent.vue";
 
 const props = defineProps<{ id: string }>();
 const dialogStore = useDialog();
@@ -301,9 +304,10 @@ playlistStore.clean().finally(() => {
   }
 
   &__right {
-    flex: 0 0 10rem;
+    align-items: center;
+    display: flex;
     font-size: 1.1rem;
-    text-align: right;
+    gap: 0.5rem;
   }
 }
 
