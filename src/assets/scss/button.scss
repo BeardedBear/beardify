@@ -42,6 +42,15 @@
 
   &--nude {
     background-color: transparent;
+    padding: 0.3rem 0.9rem;
+
+    &:hover {
+      background-color: var(--bg-color);
+    }
+
+    &:active {
+      background-color: var(--bg-color-light);
+    }
   }
 
   &--small {

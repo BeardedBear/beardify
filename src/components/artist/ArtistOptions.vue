@@ -58,10 +58,10 @@
       </a>
     </div>
     <ShareContent :spotify-url="artistStore.artist.external_urls.spotify" :beardify-url="$route.fullPath" />
-    <div class="followers">{{ artistStore.artist.followers.total }} followers</div>
     <div
       v-if="artistStore.followStatus"
       class="follow button button--primary"
+      :title="artistStore.artist.followers.total + ' followers'"
       @click="switchFollow(artistStore.artist.id)"
     >
       Followed
@@ -91,11 +91,6 @@ function switchFollow(artistId: string): void {
   align-items: center;
   display: flex;
   gap: 1rem;
-
-  .followers {
-    font-style: italic;
-    opacity: 0.3;
-  }
 }
 
 .follow {

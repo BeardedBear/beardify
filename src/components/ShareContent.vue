@@ -23,25 +23,28 @@ const clipboardBeardify = useClipboard({ source: window.location.origin + props.
 </script>
 
 <style lang="scss" scoped>
+$radius: 0.3rem;
+
 .sharing {
+  background-color: var(--bg-color);
   border: 0.05rem solid var(--bg-color-light);
-  border-radius: 2rem;
+  border-radius: $radius;
   display: flex;
-  height: 2rem;
+  height: 2.2rem;
   position: relative;
 }
 
 .title {
   align-items: center;
   background-color: var(--bg-color-light);
-  border-radius: 2rem 0 0 2rem;
+  border-radius: $radius - 0.1rem 0 0 $radius - 0.1rem;
   display: flex;
 }
 
 .share-icon {
   font-size: 0.8rem;
   opacity: 0.2;
-  padding: 0.3rem 0.5rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.5rem;
 }
 
 .copy {
@@ -52,6 +55,7 @@ const clipboardBeardify = useClipboard({ source: window.location.origin + props.
   font-size: 1.1rem;
   line-height: 1;
   opacity: 0.3;
+  padding: 0 0.5rem;
   transition: 0.2s;
 
   &:hover {
@@ -66,7 +70,7 @@ const clipboardBeardify = useClipboard({ source: window.location.origin + props.
 .content {
   align-items: center;
   display: flex;
-  padding: 0 0.5rem 0 0.3rem;
+  padding: 0 0.3rem 0 0.2rem;
 }
 
 @keyframes pop {
