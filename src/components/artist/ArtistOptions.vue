@@ -57,6 +57,7 @@
         <i class="icon-youtube" />
       </a>
     </div>
+    <ShareContent :spotify-url="artistStore.artist.external_urls.spotify" :beardify-url="$route.fullPath" />
     <div class="followers">{{ artistStore.artist.followers.total }} followers</div>
     <div
       v-if="artistStore.followStatus"
@@ -71,7 +72,7 @@
 
 <script lang="ts" setup>
 import { useArtist } from "../../views/artist/ArtistStore";
-
+import ShareContent from "../ShareContent.vue";
 const artistStore = useArtist();
 
 function openLink(url: string): void {
