@@ -63,7 +63,7 @@
             <i class="adder-icon icon-album" />
             <i
               class="adder-button icon-plus"
-              @click="dialogStore.open({ type: 'addalbum', albumId: track.track.album.id })"
+              @click.prevent.stop="dialogStore.open({ type: 'addalbum', albumId: track.track.album.id })"
             />
           </div>
           <i
