@@ -253,6 +253,8 @@ playlistStore.clean().finally(() => {
 }
 
 .duration {
+  font-size: 0.9rem;
+  font-weight: bold;
   padding-right: 0.5rem;
   text-align: right;
 }
