@@ -39,7 +39,7 @@ function add(songUri: string, playlistId: string): void {
     .then((f) => {
       if (f.status === 201) dialogStore.close();
     })
-    .then(() => notification({ msg: "Morceau ajouté", type: NotificationType.Success }));
+    .then(() => notification({ msg: "Track added", type: NotificationType.Success }));
 }
 </script>
 

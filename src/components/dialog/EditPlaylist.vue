@@ -115,7 +115,7 @@ function remove(): void {
   if (dialogStore.playlistId) {
     sidebarStore.removePlaylist(dialogStore.playlistId).then(() => {
       dialogStore.close();
-      notification({ msg: `Playlist supprimée`, type: NotificationType.Success });
+      notification({ msg: `Playlist deleted`, type: NotificationType.Success });
     });
   }
 }

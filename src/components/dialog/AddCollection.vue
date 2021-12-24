@@ -22,7 +22,7 @@ const collectionName = ref("");
 function create(): void {
   sidebarStore.addCollection(collectionName.value).then(() => {
     dialogStore.close();
-    notification({ msg: `Collection ${collectionName.value} créée`, type: NotificationType.Success });
+    notification({ msg: `Collection ${collectionName.value} created`, type: NotificationType.Success });
   });
 }
 </script>

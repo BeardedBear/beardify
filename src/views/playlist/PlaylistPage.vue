@@ -130,7 +130,7 @@ function deleteSong(songId: string): void {
   instance()
     .delete(`playlists/${playlistStore.playlist.id}/tracks`, { data: { tracks: [{ uri: songId }] } })
     .then(() => playlistStore.removeSong(songId))
-    .then(() => notification({ msg: "Morceau supprimé", type: NotificationType.Success }));
+    .then(() => notification({ msg: "Track deleted", type: NotificationType.Success }));
 }
 
 playlistStore.clean().finally(() => {
