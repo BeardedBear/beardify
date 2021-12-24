@@ -1,8 +1,8 @@
 <template>
-  <Dialog with-title title="Créer une playlist">
+  <Dialog with-title title="Create a playlist">
     <div class="wrap">
-      <input v-model="playlistName" class="input" type="text" placeholder="Nom de la playlist" />
-      <button class="button button--primary" @click="create()">Créer</button>
+      <input v-model="playlistName" class="input" type="text" placeholder="Playlist's name" />
+      <button class="button button--primary" @click="create()">Create</button>
     </div>
   </Dialog>
 </template>

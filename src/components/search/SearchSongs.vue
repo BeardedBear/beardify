@@ -21,7 +21,7 @@
         </div>
       </div>
     </template>
-    <template v-else>Aucun morceau trouvé</template>
+    <template v-else>No track found</template>
   </div>
 </template>
 

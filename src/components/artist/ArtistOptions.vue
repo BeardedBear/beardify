@@ -63,9 +63,9 @@
       class="follow button button--primary"
       @click="switchFollow(artistStore.artist.id)"
     >
-      Suivi
+      Followed
     </div>
-    <div v-else class="follow button" @click="switchFollow(artistStore.artist.id)">Suivre</div>
+    <div v-else class="follow button" @click="switchFollow(artistStore.artist.id)">Follow</div>
   </div>
 </template>
 
@@ -99,7 +99,7 @@ function switchFollow(artistId: string): void {
 
 .follow {
   text-align: center;
-  width: 5rem;
+  width: 6rem;
 }
 
 .links {

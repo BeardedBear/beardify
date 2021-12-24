@@ -3,7 +3,7 @@
   <div v-else class="podcasts">
     <PageFit>
       <div class="title"><div class="name">Podcasts</div></div>
-      <div class="heading sticky-heading">Mes podcasts</div>
+      <div class="heading sticky-heading">My podcasts</div>
       <div v-if="!podcastsStore.myPodcasts.length"><Loader /></div>
       <div v-else class="podcast-list">
         <PodcastCard
@@ -13,7 +13,7 @@
           :covers="podcast?.show.images"
         />
       </div>
-      <div class="heading sticky-heading">Podcasts musique</div>
+      <!-- <div class="heading sticky-heading">Podcasts musique</div>
       <div v-if="!podcastsStore.list"><Loader /></div>
       <div v-else class="podcast-list">
         <PodcastCard
@@ -23,7 +23,7 @@
           :covers="podcast?.images"
           :name="podcast?.name"
         />
-      </div>
+      </div> -->
     </PageFit>
   </div>
 </template>

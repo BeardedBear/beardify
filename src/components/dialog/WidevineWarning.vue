@@ -2,12 +2,12 @@
   <Dialog :with-title="false">
     <div class="wrap">
       <p>
-        En tant qu'utilisateur de Brave, afin de pouvoir utiliser <b>Beardify</b>, vous devez activer l'option
-        <b>Widevine</b> afin de pouvoir lire des morceaux provenant de <b>Spotify</b>.
+        As a Brave user, in order to use <b>Beardify</b>, you need to enable the <b>Widevine</b> option to play songs
+        from <b>Spotify</b>
       </p>
 
       <p>
-        Pour ce faire, entrez l'adresse suivante <code>brave://settings/?search=widevine</code>puis activez
+        To do this, enter the following address <code>brave://settings/?search=widevine</code>then activate
         <b>Widevine</b>.
       </p>
     </div>

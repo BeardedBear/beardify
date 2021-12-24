@@ -1,10 +1,10 @@
 // https://date-fns.org/v2.27.0/docs/format
 
 import format from "date-fns/format";
-import { fr } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import formatDuration from "date-fns/formatDuration";
 
-const options = { locale: fr };
+const options = { locale: enUS };
 
 export function timecode(date: number | null | undefined): string {
   if (date) {

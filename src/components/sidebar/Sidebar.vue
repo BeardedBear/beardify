@@ -25,8 +25,8 @@
         />
       </div>
       <div v-if="!sidebarStore.collections.length" class="empty">
-        Ah bah zut alors, tu n'a pas de collection ! Pour en créer une, il suffit de créer ou de renommer une playlist
-        classique, mais en commencant par "#Collection". Magique hein ?
+        Oh well, you don't have a collection ! To create one, you just have to create one with + button or rename a
+        classic playlist but start with "#Collection". Magical, isn't it?
       </div>
       <div v-for="(playlist, index) in sidebarStore.collections" v-else :key="index">
         <router-link

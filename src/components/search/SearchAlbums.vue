@@ -11,7 +11,7 @@
         @click="searchStore.reset()"
       />
     </template>
-    <template v-else>Aucun album trouvé</template>
+    <template v-else>No album found</template>
   </div>
 </template>
 

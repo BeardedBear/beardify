@@ -11,7 +11,7 @@
               {{ playlistStore.playlist.description }}
             </div>
             <div>
-              {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} morceaux ·
+              {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} tracks ·
               {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}
             </div>
           </div>

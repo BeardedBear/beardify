@@ -4,8 +4,8 @@
     <div class="home__content">
       <PageFit>
         <div class="title">
-          <div class="name">Albums recommandés</div>
-          <button class="button" @click="getData()"><i class="icon-refresh"></i> Rafraîchir</button>
+          <div class="name">Recommanded albums</div>
+          <button class="button" @click="getData()"><i class="icon-refresh"></i> Refresh</button>
         </div>
         <div class="album-gallery">
           <Album

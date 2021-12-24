@@ -5,7 +5,7 @@
     <div class="content">
       <div class="list">
         <div v-if="!artistStore.albums.length && !artistStore.eps.length && !artistStore.singles.length">
-          {{ artistStore.artist.name }} n'a rien sorti, c'est triste un peu.
+          {{ artistStore.artist.name }} didn't release anything, it's a bit sad.
         </div>
         <div v-if="artistStore.albums.length" class="content__block">
           <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">
@@ -21,7 +21,7 @@
         <div v-if="artistStore.albumsLive.length" class="content__block">
           <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">
             <i class="icon-album"></i>
-            Albums live
+            Live albums
           </div>
           <div class="albums">
             <div v-for="(album, index) in artistStore.albumsLive" :key="index">

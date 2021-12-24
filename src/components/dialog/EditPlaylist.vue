@@ -1,5 +1,5 @@
 <template>
-  <Dialog with-title :title="`Editer une ${isCollection ? 'collection' : 'playlist'}`">
+  <Dialog with-title :title="`Edit a ${isCollection ? 'collection' : 'playlist'}`">
     <div v-if="values.name === ''" class="loading"><Loading /></div>
     <div v-else class="wrap">
       <div>
@@ -21,7 +21,7 @@
         </div>
         <div v-if="isEditable" class="option-list section">
           <div class="option">
-            <label for="public">Visibilité</label>
+            <label for="public">Visibility</label>
             <div class="buttons">
               <button
                 class="button"
@@ -33,7 +33,7 @@
                   }
                 "
               >
-                Publique
+                Public
               </button>
               <button
                 class="button"
@@ -45,7 +45,7 @@
                   }
                 "
               >
-                Privée
+                Private
               </button>
               <button
                 class="button"
@@ -64,15 +64,13 @@
         </div>
       </div>
       <div class="actions">
-        <button class="button button" @click="remove()">
-          Supprimer la {{ isCollection ? "collection" : "playlist" }}
-        </button>
+        <button class="button button" @click="remove()">Delete {{ isCollection ? "collection" : "playlist" }}</button>
         <button
           v-if="isEditable"
           class="button button--primary"
           @click="dialogStore.updatePlaylist(values, dialogStore.playlistId, isCollection)"
         >
-          Valider
+          Confirm
         </button>
       </div>
     </div>

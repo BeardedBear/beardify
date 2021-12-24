@@ -18,12 +18,12 @@
     </div>
 
     <div class="section">
-      <div class="section__title">Compte</div>
-      <button class="button button--full" @click="authStore.logout()">Se déconnecter</button>
+      <div class="section__title">Account</div>
+      <button class="button button--full" @click="authStore.logout()">Logout</button>
     </div>
 
     <div class="section">
-      <div class="section__title">Couleurs</div>
+      <div class="section__title">Colors</div>
       <Colors />
     </div>
   </div>

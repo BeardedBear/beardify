@@ -1,8 +1,8 @@
 <template>
-  <Dialog with-title title="Créer une collection">
+  <Dialog with-title title="Create a collection">
     <div class="wrap">
-      <input v-model="collectionName" class="input" type="text" placeholder="Nom de la collection" />
-      <button class="button button--primary" @click="create()">Créer</button>
+      <input v-model="collectionName" class="input" type="text" placeholder="Collection's name" />
+      <button class="button button--primary" @click="create()">Create</button>
     </div>
   </Dialog>
 </template>

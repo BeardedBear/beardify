@@ -3,13 +3,13 @@
     <div class="form">
       <img class="logo" src="/img/logo-long.svg" alt="" />
       <div class="pres">
-        <b>Beardify</b> est un client Spotify web qui permet l'ajout de nouvelles fonctionnalités ainsi que des fix
-        ergonomiques par rapport au client officiel :
+        <b>Beardify</b> is a web-based Spotify client that allows for the addition of new features and ergonomic fixes
+        compared to the official client:
         <ul>
-          <li>Gérer des <b>collections d'albums</b></li>
-          <li>Ergonomie plus claire</li>
-          <li>Séparation nette entre les albums, les EP, et les singles</li>
-          <li>Pouvoir basculer entre des themes <b>sombres</b> et <b>clairs</b></li>
+          <li>Manage <b>album collections</b>></li>
+          <li>Easier ergonomics</li>
+          <li>Clear separation between studio albums, live albums (beta), EPs, and singles</li>
+          <li>Be able to switch between <b>light</b> and <b>dark</b> themes</li>
         </ul>
       </div>
       <div>
@@ -17,7 +17,7 @@
           class="button button--primary"
           :href="`https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${challenge}`"
         >
-          <i class="icon icon-spotify"></i> Se connecter avec Spotify
+          <i class="icon icon-spotify"></i> Connect with Spotify (Premium)
         </a>
       </div>
     </div>

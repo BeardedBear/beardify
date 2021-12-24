@@ -12,7 +12,7 @@
         <div>{{ artist.name }}</div>
       </router-link>
     </template>
-    <template v-else>Aucun artiste trouvé</template>
+    <template v-else>No artist found</template>
   </div>
 </template>
 

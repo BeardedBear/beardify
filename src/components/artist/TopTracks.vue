@@ -1,6 +1,6 @@
 <template>
   <div v-if="artistStore.topTracks.tracks?.length">
-    <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">Top morceaux</div>
+    <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">Top tracks</div>
     <div
       v-for="(trackItem, index) in artistStore.topTracks.tracks"
       :key="index"

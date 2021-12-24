@@ -1,5 +1,5 @@
 <template>
-  <Dialog with-title title="Ajouter un morceau à une playlist">
+  <Dialog with-title title="Add track to a playlist">
     <div
       v-for="(playlist, index) in sidebarStore.playlists.filter(
         (playlist) => playlist.collaborative || playlist.owner.id === authStore.me?.id,

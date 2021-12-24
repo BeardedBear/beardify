@@ -37,9 +37,9 @@
             class="button button--small button--primary"
             @click="playSong(episode.uri)"
           >
-            Reprendre la lecture
+            Resume
           </button>
-          <button v-else class="button button--small" @click="playSong(episode.uri, 0)">Ecouter l'épisode</button>
+          <button v-else class="button button--small" @click="playSong(episode.uri, 0)">Play episode</button>
         </div>
       </div>
     </div>
