@@ -28,7 +28,7 @@
             <i class="icon-discogs" />
           </a>
         </div>
-        <SharingContent :spotify-url="props.album.external_urls.spotify" :beardify-url="$route.fullPath" />
+        <ShareContent :spotify-url="props.album.external_urls.spotify" :beardify-url="$route.fullPath" />
       </div>
     </div>
   </div>
@@ -39,7 +39,7 @@ import { defineProps } from "vue";
 import { timecodeWithUnits, date } from "../../helpers/date";
 import { Track, TrackSimplified } from "../../@types/Track";
 import ArtistList from "../artist/ArtistList.vue";
-import SharingContent from "../ShareContent.vue";
+import ShareContent from "../ShareContent.vue";
 import { Album } from "../../@types/Album";
 
 const props = defineProps<{ album: Album }>();
