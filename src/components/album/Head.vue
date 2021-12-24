@@ -13,22 +13,23 @@
       </div>
     </div>
     <div>
-      <span v-if="clipboard.copied.value" class="copied">Copied</span>
-      <button class="copy button button--nude" @click="clipboard.copy()">
-        <i class="icon-share"></i>
-      </button>
-      <a
-        class="button button--nude"
-        @click="openLink(`https://www.google.com/search?q=${album.artists[0].name}+${album.name}`)"
-      >
-        <i class="icon-google" />
-      </a>
-      <a
-        class="button button--nude"
-        @click="openLink(`https://www.discogs.com/fr/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
-      >
-        <i class="icon-discogs" />
-      </a>
+      <div class="options">
+        <div>
+          <a
+            class="button button--nude"
+            @click="openLink(`https://www.google.com/search?q=${album.artists[0].name}+${album.name}`)"
+          >
+            <i class="icon-google" />
+          </a>
+          <a
+            class="button button--nude"
+            @click="openLink(`https://www.discogs.com/fr/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
+          >
+            <i class="icon-discogs" />
+          </a>
+        </div>
+        <SharingContent :spotify-url="props.album.external_urls.spotify" :beardify-url="$route.fullPath" />
+      </div>
     </div>
   </div>
 </template>
@@ -38,11 +39,10 @@ import { defineProps } from "vue";
 import { timecodeWithUnits, date } from "../../helpers/date";
 import { Track, TrackSimplified } from "../../@types/Track";
 import ArtistList from "../artist/ArtistList.vue";
+import SharingContent from "../ShareContent.vue";
 import { Album } from "../../@types/Album";
-import { useClipboard } from "@vueuse/core";
 
 const props = defineProps<{ album: Album }>();
-const clipboard = useClipboard({ source: props.album.external_urls.spotify });
 
 function sumDuration(tracks: TrackSimplified[] | Track[]): number {
   return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
@@ -72,19 +72,9 @@ function openLink(url: string): void {
   margin-bottom: 0.4rem;
 }
 
-@keyframes pop {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-.copied {
-  animation: pop 0.2s ease both;
-  margin-right: 0.8rem;
-  opacity: 0.5;
+.options {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
 }
 </style>

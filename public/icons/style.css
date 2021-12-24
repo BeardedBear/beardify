@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?xpjyb0');
-  src:  url('fonts/icomoon.eot?xpjyb0#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?xpjyb0') format('truetype'),
-    url('fonts/icomoon.woff?xpjyb0') format('woff'),
-    url('fonts/icomoon.svg?xpjyb0#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?49jxc2');
+  src:  url('fonts/icomoon.eot?49jxc2#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?49jxc2') format('truetype'),
+    url('fonts/icomoon.woff?49jxc2') format('woff'),
+    url('fonts/icomoon.svg?49jxc2#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-beardify:before {
+  content: "\e940";
+}
 .icon-ep:before {
   content: "\e93f";
 }
