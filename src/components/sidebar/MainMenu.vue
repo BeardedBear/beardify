@@ -3,6 +3,9 @@
     <router-link class="link" :to="`/podcasts`" :class="{ 'active-route': $route.path.includes('/podcasts') }">
       <i class="icon icon-podcast"></i>Podcasts
     </router-link>
+    <router-link class="link" :to="`/releases`" :class="{ 'active-route': $route.path.includes('/releases') }">
+      <i class="icon icon-album"></i>Releases
+    </router-link>
   </div>
 </template>
 
@@ -11,6 +14,8 @@
 @import "../../assets/scss/colors";
 
 .menu {
+  display: flex;
+  gap: 1rem;
   padding: 1rem 1rem 0.3rem;
 }
 
@@ -19,7 +24,7 @@
   border-radius: 0.4rem;
   color: var(--font-color);
   display: block;
-  font-size: 1.2rem;
+  flex: 1;
   font-weight: bold;
   padding: 0.4rem 0.8rem;
   text-decoration: none;
