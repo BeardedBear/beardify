@@ -98,7 +98,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background-clip: content-box;
-  background-color: var(--primary-color-dark);
+  background-color: var(--bg-color-lighter);
 }
 
 ::-webkit-scrollbar-track {

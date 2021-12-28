@@ -86,6 +86,7 @@ artistStore.clean().finally(() => {
 <style lang="scss">
 .sticky-heading {
   background-color: var(--bg-color-darker);
+  margin-bottom: 0.8rem;
   position: sticky;
   z-index: 2;
 }
