@@ -49,8 +49,6 @@ releasesStore.getReleases();
 .month {
   background-color: var(--bg-color-darker);
   color: var(--primary-color);
-
-  // font-size: 1.2rem;
   font-weight: bold;
   padding: 1rem 0.5rem;
   position: sticky;
@@ -72,7 +70,8 @@ releasesStore.getReleases();
   font-weight: bold;
   grid-template-columns: 0.6fr 0.6fr 1fr;
   justify-content: space-between;
-  padding: 0.5rem 0.8rem;
+  margin-bottom: 0.3rem;
+  padding: 0.3rem 0.8rem;
   transition: background-color 0.1s;
 
   &:nth-child(even) {
@@ -86,22 +85,20 @@ releasesStore.getReleases();
   .tags {
     align-items: center;
     display: flex;
-    font-style: italic;
-    font-weight: normal;
+    font-size: 0.6rem;
     gap: 0.3rem;
     justify-content: end;
     text-align: right;
+    text-transform: uppercase;
 
     .slug {
       background-color: var(--bg-color-lighter);
       border-radius: 2rem;
       display: inline-block;
-      font-size: 0.8rem;
-      opacity: 0.5;
-      padding: 0 0.5rem;
+      opacity: 0.3;
+      padding: 0.1rem 0.5rem;
 
       &.selected {
-        background-color: var(--primary-color);
         opacity: 1;
       }
     }

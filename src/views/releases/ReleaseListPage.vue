@@ -4,7 +4,7 @@
     <div class="side">
       <ReleaseSide />
     </div>
-    <div class="list">
+    <div ref="listDOM" class="list">
       <ReleaseList />
     </div>
   </div>
@@ -15,8 +15,16 @@ import { useReleases } from "./ReleasesStore";
 import Loader from "../../components/LoadingDots.vue";
 import ReleaseList from "./ReleaseList.vue";
 import ReleaseSide from "./ReleaseSide.vue";
+import { ref, watch } from "vue";
 
 const releasesStore = useReleases();
+const listDOM = ref<HTMLElement | null>(null);
+
+watch(
+  () => releasesStore.activeSlug,
+  () => listDOM.value?.scrollTo(0, 0),
+);
+
 if (!releasesStore.releases.length) releasesStore.getReleases();
 </script>
 
