@@ -22,33 +22,29 @@ export const useReleases = defineStore("releases", {
     },
 
     async getReleases() {
-      axios
-        .get<Release[]>(
-          "https://api.apify.com/v2/actor-tasks/PkjaWZek2hn3JjXgG/runs/last/dataset/items?token=FJP765r6HtGXjJXYC9cmjnCco&clean=true&status=SUCCEEDED",
-        )
-        .then(({ data }) => {
-          const categories = Array.from(new Set(data.map((release) => release.category)));
-          function getSlugsByCategory(category: string): string[] {
-            const array: string[] = [];
-            const mergedSlugs = data
-              .filter((release) => release.category === category)
-              .map((e) => array.concat(e.slug))
-              .flat();
-            return Array.from(new Set(mergedSlugs));
-          }
+      axios.get<{ data: { releases: Release[] } }>("https://beardictus.com/items/releases").then(({ data }) => {
+        const categories = Array.from(new Set(data.data.releases.map((release) => release.category)));
+        function getSlugsByCategory(category: string): string[] {
+          const array: string[] = [];
+          const mergedSlugs = data.data.releases
+            .filter((release) => release.category === category)
+            .map((e) => array.concat(e.slug))
+            .flat();
+          return Array.from(new Set(mergedSlugs));
+        }
 
-          categories.forEach((category): void => {
-            const teee: MenuItem = {
-              name: category,
-              slugs: getSlugsByCategory(category),
-            };
-            if (!this.menu.find((e) => e.name == teee.name)) this.menu.push(teee);
-          });
-
-          const dataWithMergedSlugs = useMergeReleaseSlugs(data);
-          this.monthList = Array.from(new Set(dataWithMergedSlugs.map((release) => release.releaseDate)));
-          this.releases = dataWithMergedSlugs.sort((a, b) => b.releaseDateRaw - a.releaseDateRaw);
+        categories.forEach((category): void => {
+          const teee: MenuItem = {
+            name: category,
+            slugs: getSlugsByCategory(category),
+          };
+          if (!this.menu.find((e) => e.name == teee.name)) this.menu.push(teee);
         });
+
+        const dataWithMergedSlugs = useMergeReleaseSlugs(data.data.releases);
+        this.monthList = Array.from(new Set(dataWithMergedSlugs.map((release) => release.releaseDate)));
+        this.releases = dataWithMergedSlugs.sort((a, b) => b.releaseDateRaw - a.releaseDateRaw);
+      });
     },
   },
 });
