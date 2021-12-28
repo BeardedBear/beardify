@@ -9,6 +9,10 @@
             (releasesStore.activeSlug && release.slug.includes(releasesStore.activeSlug))
           "
           class="release"
+          :class="{
+            'is-playing':
+              playerStore.currentlyPlaying.item?.artists[0].name.toLowerCase() === release.artist.toLowerCase(),
+          }"
           @click="search(release.artist, release.album)"
         >
           <div>{{ release.artist }}</div>
@@ -19,8 +23,9 @@
               :key="ii"
               class="slug"
               :class="{ selected: releasesStore.activeSlug === slug }"
-              >{{ slug }}</span
             >
+              {{ slug }}
+            </span>
           </div>
         </div>
       </template>
@@ -30,12 +35,14 @@
 
 <script lang="ts" setup>
 import { useDialog } from "../../components/dialog/DialogStore";
+import { usePlayer } from "../../components/player/PlayerStore";
 import { useSearch } from "../../components/search/SearchStore";
 import { useReleases } from "./ReleasesStore";
 
 const releasesStore = useReleases();
 const searchStore = useSearch();
 const dialogStore = useDialog();
+const playerStore = usePlayer();
 
 function search(artist: string, album: string): void {
   searchStore.updateQuery(`artist:${artist} & album:${album}`);
@@ -80,6 +87,10 @@ releasesStore.getReleases();
 
   &:hover {
     background-color: var(--bg-color-light);
+  }
+
+  &.is-playing {
+    background-color: var(--primary-color);
   }
 
   .tags {

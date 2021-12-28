@@ -1,5 +1,5 @@
 <template>
-  <div class="album">
+  <div class="album" :class="{ 'exact-search': exactSearch }">
     <div v-if="currentlyPlayedId === album.uri" class="current"><i class="icon-volume-2" /></div>
     <div class="cover">
       <Cover
@@ -57,6 +57,7 @@ defineProps<{
   canSave?: boolean;
   withoutReleaseDate?: boolean;
   coverSize?: ImageSize | undefined;
+  exactSearch?: boolean;
 }>();
 
 const currentRouteId = useRoute().params.id;

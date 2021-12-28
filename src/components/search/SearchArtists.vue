@@ -6,6 +6,7 @@
         :key="index"
         :to="`/artist/${artist.id}`"
         class="artist"
+        :class="{ 'exact-search': exactArtistSearched === artist.name.toLowerCase() }"
         @click="searchStore.reset()"
       >
         <Cover size="small" :images="artist.images" class-name="avatar" />
@@ -17,10 +18,16 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, ComputedRef } from "vue";
 import Cover from "../Cover.vue";
 import { useSearch } from "./SearchStore";
 
 const searchStore = useSearch();
+const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
+  if (!searchStore.query.includes(" & ")) return undefined;
+  return searchStore.query.split(":")[1].split("&").shift()?.split("(").shift()?.toLowerCase().trim();
+});
+console.log(exactArtistSearched.value);
 </script>
 
 <style lang="scss" scoped>
@@ -47,10 +54,30 @@ const searchStore = useSearch();
     gap: 1rem;
     margin-bottom: 0.4rem;
     padding: 0.5rem;
+    position: relative;
     text-decoration: none;
 
     &:hover {
       background-color: var(--bg-color-light);
+    }
+
+    &.exact-search {
+      background: var(--bg-color-lighter);
+
+      &::after {
+        $size: 0.8rem;
+
+        background-color: var(--primary-color);
+        border-radius: $size;
+        content: "";
+        height: $size;
+        left: 0;
+        position: "";
+        position: absolute;
+        top: 0;
+        transform: translate(-20%, -20%);
+        width: $size;
+      }
     }
   }
 }
