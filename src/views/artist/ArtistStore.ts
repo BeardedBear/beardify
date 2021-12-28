@@ -5,6 +5,7 @@ import { defaultArtist } from "../../@types/Defaults";
 import { Paging } from "../../@types/Paging";
 import { instance } from "../../api";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
+import { useCheckLiveAlbum } from "../../helpers/useCleanAlbums";
 
 export const useArtist = defineStore("artist", {
   state: (): ArtistPage => ({
@@ -46,50 +47,9 @@ export const useArtist = defineStore("artist", {
       instance()
         .get<Paging<AlbumSimplified>>(url)
         .then((e) => {
-          function isLive(albumName: string): boolean {
-            const cleanedName = albumName.toLowerCase().trim();
-            const matches = [
-              "live in",
-              "live on",
-              "live at",
-              "live from",
-              "live over",
-              "in live",
-              "on live",
-              "\\(live",
-              "\\[live",
-              "official live",
-              "live olympia",
-              "live series",
-              "live session",
-              "live performance",
-              "live anthology",
-              "live bootleg",
-              "\\- live",
-              "live\\!",
-              "\\…live",
-              "live \\'",
-              "live 1",
-              "live\\, 1",
-              "live 2",
-              "live\\, 2",
-              "\\.\\.\\.live",
-              "live\\;",
-              "\\: live",
-              "world tour",
-              "in concert",
-              "concert",
-              "royal albert hall",
-              "wacken",
-              "mtv unplugged",
-              "live & unplugged",
-              "live and unplugged",
-            ];
-            return new RegExp(`(${matches.join("|")})`).test(cleanedName) || cleanedName.split(" ").pop() === "live)";
-          }
           const cleanFromOtherMarkets = e.data.items.filter((album) => album.available_markets.includes("FR"));
-          const lives = cleanFromOtherMarkets.filter((album) => isLive(album.name));
-          const albums = cleanFromOtherMarkets.filter((album) => !isLive(album.name));
+          const lives = cleanFromOtherMarkets.filter((album) => useCheckLiveAlbum(album.name));
+          const albums = cleanFromOtherMarkets.filter((album) => !useCheckLiveAlbum(album.name));
 
           this.albums = removeDuplicatesAlbums(this.albums.concat(albums));
           this.albumsLive = removeDuplicatesAlbums(this.albumsLive.concat(lives));
