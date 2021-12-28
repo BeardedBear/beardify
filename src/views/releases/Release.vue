@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="releasesStore.activeSlug && month === release.releaseDate && release.slug.includes(releasesStore.activeSlug)"
     class="release"
     :class="{
       'is-playing': playerStore.currentlyPlaying.item?.artists[0].name.toLowerCase() === release.artist.toLowerCase(),
@@ -29,9 +28,9 @@ import { useSearch } from "../../components/search/SearchStore";
 import { useReleases } from "./ReleasesStore";
 import { defineProps } from "vue";
 import { Release } from "../../@types/Releases";
+
 defineProps<{
   release: Release;
-  month: string;
 }>();
 
 const releasesStore = useReleases();
