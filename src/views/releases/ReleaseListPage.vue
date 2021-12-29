@@ -13,8 +13,8 @@
 <script lang="ts" setup>
 import { useReleases } from "./ReleasesStore";
 import Loader from "../../components/LoadingDots.vue";
-import ReleaseList from "./ReleaseList.vue";
-import ReleaseSide from "./ReleaseSide.vue";
+import ReleaseList from "../../components/releases/ReleaseList.vue";
+import ReleaseSide from "../../components/releases/ReleaseSide.vue";
 import { ref, watch } from "vue";
 
 const releasesStore = useReleases();

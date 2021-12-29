@@ -23,10 +23,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useDialog } from "../../components/dialog/DialogStore";
-import { usePlayer } from "../../components/player/PlayerStore";
-import { useSearch } from "../../components/search/SearchStore";
-import { useReleases } from "./ReleasesStore";
+import { useDialog } from "../dialog/DialogStore";
+import { usePlayer } from "../player/PlayerStore";
+import { useSearch } from "../search/SearchStore";
+import { useReleases } from "../../views/releases/ReleasesStore";
 import { defineProps } from "vue";
 import { Release } from "../../@types/Releases";
 

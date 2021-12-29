@@ -16,7 +16,7 @@
 
 <script lang="ts" setup>
 import Release from "./Release.vue";
-import { useReleases } from "./ReleasesStore";
+import { useReleases } from "../../views/releases/ReleasesStore";
 
 const releasesStore = useReleases();
 
