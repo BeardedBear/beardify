@@ -21,10 +21,6 @@ window.onSpotifyWebPlaybackSDKReady = (): void => {
     usePlayer().thisDevice(device_id);
   });
 
-  document.addEventListener("updateState", () => {
-    player.getCurrentState().then((state) => getState(state));
-  });
-
   player.addListener("player_state_changed", (state) => {
     getState(state);
     if (document.hasFocus()) usePlayer().getPlayerState();

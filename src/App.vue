@@ -50,7 +50,6 @@ watch(focused, (isFocused) => {
   if (isFocused) {
     playerStore.getDeviceList();
     playerStore.getPlayerState();
-    document.dispatchEvent(new CustomEvent("updateState"));
   }
 });
 </script>
