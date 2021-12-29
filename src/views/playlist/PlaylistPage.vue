@@ -61,7 +61,7 @@
           </div>
         </div>
         <div class="album">
-          <div v-if="track.track.album.album_type === 'album'" class="adder">
+          <div v-if="isAlbum(track.track.album)" class="adder">
             <i class="adder-icon icon-album" />
             <i
               class="adder-button icon-plus"
@@ -69,14 +69,11 @@
             />
           </div>
           <i
-            v-else-if="track.track.album.album_type === 'single' && track.track.album.total_tracks >= 3"
-            class="icon-ep"
-          />
-          <i
             v-else
             :class="{
-              'icon-single': track.track.album.album_type === 'single',
-              'icon-compilation': track.track.album.album_type === 'compilation',
+              'icon-ep': isEP(track.track.album),
+              'icon-single': isSingle(track.track.album),
+              'icon-compilation': isCompilation(track.track.album),
             }"
           />
           <AlbumLink :album="track.track.album" no-icon />
@@ -118,6 +115,7 @@ import { NotificationType } from "../../@types/Notification";
 import PageScroller from "../../components/PageScroller.vue";
 import AlbumLink from "../../components/album/AlbumLink.vue";
 import ShareContent from "../../components/ShareContent.vue";
+import { isEP, isSingle, isCompilation, isAlbum } from "../../helpers/useCleanAlbums";
 
 const props = defineProps<{ id: string }>();
 const dialogStore = useDialog();

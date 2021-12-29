@@ -1,17 +1,12 @@
 <template>
-  <i
-    v-if="!noIcon"
-    :class="{
-      'icon-single': album.album_type === 'single',
-      'icon-compilation': album.album_type === 'compilation',
-    }"
-  />
+  <i v-if="!noIcon" :class="{ 'icon-single': isSingle(album), 'icon-compilation': isCompilation(album) }" />
   <span class="artist" @click.prevent.stop="goAlbum(`/album/${album.id}`)">{{ album.name }}</span>
 </template>
 
 <script lang="ts" setup>
 import { defineProps } from "vue";
 import { AlbumSimplified } from "../../@types/Album";
+import { isSingle, isCompilation } from "../../helpers/useCleanAlbums";
 import router from "../../router";
 
 defineProps<{

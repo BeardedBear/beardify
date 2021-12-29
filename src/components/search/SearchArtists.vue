@@ -24,10 +24,9 @@ import { useSearch } from "./SearchStore";
 
 const searchStore = useSearch();
 const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
-  if (!searchStore.query.includes(" & ")) return undefined;
-  return searchStore.query.split(":")[1].split("&").shift()?.split("(").shift()?.toLowerCase().trim();
+  if (!searchStore.query.includes("  &  ")) return undefined;
+  return searchStore.query.split(":")[1].split("&").shift()?.toLowerCase().trim();
 });
-console.log(exactArtistSearched.value);
 </script>
 
 <style lang="scss" scoped>
@@ -49,7 +48,7 @@ console.log(exactArtistSearched.value);
     border-radius: 0.3rem;
     color: currentColor;
     display: flex;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: bold;
     gap: 1rem;
     margin-bottom: 0.4rem;

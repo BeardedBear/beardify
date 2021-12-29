@@ -30,7 +30,13 @@
       </div>
       <div v-if="playerStore.currentlyPlaying.item" class="album">
         <router-link :to="`/album/${playerStore.currentlyPlaying.item.album.id}`" class="link">
-          <i class="icon-album"></i> {{ playerStore.currentlyPlaying.item.album.name }}
+          <i
+            :class="{
+              'icon-ep': isEP(playerStore.currentlyPlaying.item.album),
+              'icon-album': isAlbum(playerStore.currentlyPlaying.item.album),
+            }"
+          ></i>
+          {{ playerStore.currentlyPlaying.item.album.name }}
         </router-link>
       </div>
     </div>
@@ -43,6 +49,7 @@ import ArtistList from "../artist/ArtistList.vue";
 import { usePlayer } from "./PlayerStore";
 import { useDialog } from "../dialog/DialogStore";
 import { defineProps } from "vue";
+import { isEP, isAlbum } from "../../helpers/useCleanAlbums";
 
 const playerStore = usePlayer();
 const dialogStore = useDialog();

@@ -1,4 +1,4 @@
-import { ReleaseDatePrecision } from "./Album";
+import { AlbumType, ReleaseDatePrecision } from "./Album";
 import { Artist } from "./Artist";
 import { Image } from "./Image";
 import { Device } from "./Device";
@@ -42,7 +42,7 @@ export interface CurrentlyPlayingContext {
 }
 
 export interface CurrentlyPlayingAlbum {
-  album_type: string;
+  album_type: AlbumType;
   artists: Artist[];
   available_markets: string[];
   href: string;

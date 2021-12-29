@@ -5,7 +5,7 @@ import { defaultArtist } from "../../@types/Defaults";
 import { Paging } from "../../@types/Paging";
 import { instance } from "../../api";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
-import { useCheckLiveAlbum } from "../../helpers/useCleanAlbums";
+import { isEP, useCheckLiveAlbum } from "../../helpers/useCleanAlbums";
 
 export const useArtist = defineStore("artist", {
   state: (): ArtistPage => ({
@@ -61,9 +61,8 @@ export const useArtist = defineStore("artist", {
       instance()
         .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=single&limit=50`)
         .then((e) => {
-          const minimumNumberOfTracks = 3;
-          const onlySingles = e.data.items.filter((e) => e.total_tracks < minimumNumberOfTracks);
-          const onlyEps = e.data.items.filter((e) => e.total_tracks >= minimumNumberOfTracks);
+          const onlySingles = e.data.items.filter((e) => !isEP(e));
+          const onlyEps = e.data.items.filter((e) => isEP(e));
           this.singles = removeDuplicatesAlbums(onlySingles);
           this.eps = removeDuplicatesAlbums(onlyEps);
         });

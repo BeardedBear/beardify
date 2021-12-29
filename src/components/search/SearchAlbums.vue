@@ -26,10 +26,9 @@ import { useSearch } from "./SearchStore";
 const playerStore = usePlayer();
 const searchStore = useSearch();
 const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
-  if (!searchStore.query.includes(" & ")) return undefined;
+  if (!searchStore.query.includes("  &  ")) return undefined;
   return searchStore.query.split(":").pop()?.toLowerCase();
 });
-console.log(exactAlbumSearched.value);
 </script>
 
 <style lang="scss" scoped>

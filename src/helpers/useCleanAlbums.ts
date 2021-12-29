@@ -1,3 +1,6 @@
+import { Album, AlbumSimplified } from "../@types/Album";
+import { CurrentlyPlayingAlbum } from "../@types/CurrentlyPlaying";
+
 export function useCheckLiveAlbum(albumName: string): boolean {
   const cleanedName = albumName.toLowerCase().trim();
   const matches = [
@@ -45,4 +48,22 @@ export function useCheckReissueAlbum(albumName: string): boolean {
   const cleanedName = albumName.toLowerCase().trim();
   const matches = ["\\(reissue"];
   return new RegExp(`(${matches.join("|")})`).test(cleanedName);
+}
+
+export function isAlbum(album: AlbumSimplified | Album | CurrentlyPlayingAlbum): boolean {
+  return album.album_type === "album";
+}
+
+export function isEP(album: AlbumSimplified | Album | CurrentlyPlayingAlbum): boolean {
+  const minimumNumberOfTracks = 3;
+  return album.total_tracks >= minimumNumberOfTracks && album.album_type === "single";
+}
+
+export function isSingle(album: AlbumSimplified | Album | CurrentlyPlayingAlbum): boolean {
+  const minimumNumberOfTracks = 3;
+  return album.total_tracks < minimumNumberOfTracks && album.album_type === "single";
+}
+
+export function isCompilation(album: AlbumSimplified | Album | CurrentlyPlayingAlbum): boolean {
+  return album.album_type === "compilation";
 }

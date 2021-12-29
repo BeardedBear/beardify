@@ -34,7 +34,8 @@
   }
 
   &.active-route {
-    background-color: var(--primary-color-darker);
+    background-color: var(--primary-color);
+    color: white;
   }
 }
 

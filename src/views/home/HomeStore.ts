@@ -6,6 +6,7 @@ import { Track } from "../../@types/Track";
 import { instance } from "../../api";
 import { getRandomInt } from "../../helpers/random";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
+import { isAlbum } from "../../helpers/useCleanAlbums";
 
 export const useHome = defineStore("home", {
   state: (): HomePage => ({
@@ -34,7 +35,7 @@ export const useHome = defineStore("home", {
             .get<Top>(`recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`)
             .then((f) => {
               this.recommendedAlbums = removeDuplicatesAlbums(
-                f.data.tracks.map((g) => g.album).filter((h) => h.album_type === "ALBUM"),
+                f.data.tracks.map((g) => g.album).filter((h) => isAlbum(h)),
               );
             });
         });

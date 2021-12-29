@@ -1,6 +1,7 @@
 <template>
   <div
     class="release"
+    loading="lazy"
     :class="{
       'is-playing': playerStore.currentlyPlaying.item?.artists[0].name.toLowerCase() === release.artist.toLowerCase(),
     }"
@@ -39,7 +40,7 @@ const dialogStore = useDialog();
 const playerStore = usePlayer();
 
 function search(artist: string, album: string): void {
-  searchStore.updateQuery(`artist:${artist} & album:${album}`);
+  searchStore.updateQuery(`artist:${artist}  &  album:${album}`);
   dialogStore.open({ type: "search" });
 }
 </script>
