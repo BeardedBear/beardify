@@ -4,7 +4,14 @@
     <ArtistHeader ref="domHead" :scrolled-head="scrolledHead" />
     <div class="content">
       <div class="list">
-        <div v-if="!artistStore.albums.length && !artistStore.eps.length && !artistStore.singles.length">
+        <div
+          v-if="
+            !artistStore.albums.length &&
+            !artistStore.eps.length &&
+            !artistStore.singles.length &&
+            !artistStore.albumsLive.length
+          "
+        >
           {{ artistStore.artist.name }} didn't release anything, it's a bit sad.
         </div>
         <BlockAlbums />
