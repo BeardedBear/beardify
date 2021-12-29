@@ -35,7 +35,7 @@ const playerStore = usePlayer();
     &::before {
       $s: 0.5rem;
 
-      background: white;
+      background: var(--primary-color);
       border-top-right-radius: 0.4rem;
       clip-path: polygon(0 0, 100% 0, 100% 100%);
       content: "";

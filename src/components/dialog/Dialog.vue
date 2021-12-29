@@ -69,7 +69,7 @@ $radius: 0.4rem;
 
 .bg {
   animation: pop-bg 0.2s ease both;
-  background-color: var(--bg-color-darker);
+  background-color: #0d0d0d;
   filter: opacity(0.95);
   inset: 0;
   position: fixed;

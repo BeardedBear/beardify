@@ -45,6 +45,7 @@ releasesStore.getReleases();
 
   &.selected {
     background-color: var(--primary-color);
+    color: white;
   }
 }
 </style>
