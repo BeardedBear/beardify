@@ -4,9 +4,7 @@
     <DialogList />
     <div id="app__content">
       <Sidebar />
-      <router-view v-slot="{ Component }" :key="$route.fullPath">
-        <transition name="scale" mode="out-in"><component :is="Component" /></transition>
-      </router-view>
+      <router-view v-slot="{ Component }" :key="$route.fullPath"><component :is="Component" /></router-view>
     </div>
     <Player key="player" />
     <Notification />
@@ -102,17 +100,6 @@ body {
 
 ::-webkit-scrollbar-track {
   background-color: rgb(0 0 0 / 0%);
-}
-
-.scale-enter-active,
-.scale-leave-active {
-  transition: all 0.1s ease;
-}
-
-.scale-enter-from,
-.scale-leave-to {
-  opacity: 0;
-  transform: translateY(-0.4rem);
 }
 
 #app {
