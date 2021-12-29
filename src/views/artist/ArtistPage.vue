@@ -7,52 +7,15 @@
         <div v-if="!artistStore.albums.length && !artistStore.eps.length && !artistStore.singles.length">
           {{ artistStore.artist.name }} didn't release anything, it's a bit sad.
         </div>
-        <div v-if="artistStore.albums.length" class="content__block">
-          <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">
-            <i class="icon-album"></i>
-            Albums
-          </div>
-          <div class="albums">
-            <div v-for="(album, index) in artistStore.albums" :key="index">
-              <Album :album="album" :currently-played-id="playerStore.currentlyPlaying.item?.album.uri" can-save />
-            </div>
-          </div>
-        </div>
-        <div v-if="artistStore.albumsLive.length" class="content__block">
-          <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">
-            <i class="icon-album"></i>
-            Live albums
-          </div>
-          <div class="albums">
-            <div v-for="(album, index) in artistStore.albumsLive" :key="index">
-              <Album :album="album" :currently-played-id="playerStore.currentlyPlaying.item?.album.uri" can-save />
-            </div>
-          </div>
-        </div>
-        <div v-if="artistStore.eps.length" class="content__block">
-          <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">
-            <i class="icon-ep"></i>
-            EP's
-          </div>
-          <div class="eps">
-            <div v-for="(album, index) in artistStore.eps" :key="index">
-              <Album :album="album" :currently-played-id="playerStore.currentlyPlaying.item?.album.uri" can-save />
-            </div>
-          </div>
-        </div>
-        <div v-if="artistStore.singles.length" class="content__block">
-          <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">
-            <i class="icon-single"></i>
-            Singles
-          </div>
-          <div class="singles">
-            <div v-for="(album, index) in artistStore.singles" :key="index">
-              <Album :album="album" :currently-played-id="playerStore.currentlyPlaying.item?.album.uri" />
-            </div>
-          </div>
-        </div>
+        <BlockAlbums />
+        <BlockAlbumsLive />
+        <BlockEps />
+        <BlockSingles />
       </div>
-      <div class="top"><TopTracks class="top__item" /> <RelatedArtists class="top__item related-artists" /></div>
+      <div class="top">
+        <TopTracks class="top-item" />
+        <RelatedArtists class="top-item related-artists" />
+      </div>
     </div>
   </div>
 </template>
@@ -61,16 +24,17 @@
 import { defineProps, ref } from "vue";
 import { useArtist } from "./ArtistStore";
 import RelatedArtists from "../../components/artist/RelatedArtists.vue";
-import Album from "../../components/album/Album.vue";
 import ArtistHeader from "../../components/artist/ArtistHeader.vue";
 import TopTracks from "../../components/artist/TopTracks.vue";
-import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
+import BlockAlbums from "../../components/artist/BlockAlbums.vue";
+import BlockAlbumsLive from "../../components/artist/BlockAlbumsLive.vue";
+import BlockEps from "../../components/artist/BlockEps.vue";
+import BlockSingles from "../../components/artist/BlockSingles.vue";
 
 const props = defineProps<{ id: string }>();
 const scrolledHead = ref(false);
 const artistStore = useArtist();
-const playerStore = usePlayer();
 const domHead = ref<HTMLDivElement | null>(null);
 
 artistStore.clean().finally(() => {
@@ -100,56 +64,6 @@ artistStore.clean().finally(() => {
   flex: 1;
 }
 
-.albums {
-  display: grid;
-  gap: 1.2rem;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-
-  @include l {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-
-  @include hdpi {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  }
-}
-
-.eps {
-  display: grid;
-  gap: 1.2rem;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-
-  @include l {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-
-  @include l {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  @include hdpi {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  }
-}
-
-.singles {
-  display: grid;
-  gap: 1.2rem;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-
-  @include xl {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-  }
-
-  @include l {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  @include hdpi {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  }
-}
-
 .content {
   display: grid;
   gap: 2.5rem;
@@ -173,13 +87,13 @@ artistStore.clean().finally(() => {
   @include xl {
     order: -1;
   }
+}
 
-  &__item {
-    margin-bottom: 2.5rem;
+.top-item {
+  margin-bottom: 2.5rem;
 
-    @include xl {
-      margin-bottom: 0;
-    }
+  @include xl {
+    margin-bottom: 0;
   }
 }
 
