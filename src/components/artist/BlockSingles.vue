@@ -5,8 +5,13 @@
       Singles
     </div>
     <div class="singles">
-      <div v-for="(album, index) in artistStore.singles" :key="index">
-        <Album :album="album" />
+      <div
+        v-for="(album, index) in artistStore.singles.sort(
+          (a, b) => parseInt(b.release_date, 10) - parseInt(a.release_date, 10),
+        )"
+        :key="index"
+      >
+        <SingleTrack :single="album" />
       </div>
     </div>
   </div>
@@ -14,30 +19,7 @@
 
 <script lang="ts" setup>
 import { useArtist } from "../../views/artist/ArtistStore";
-import Album from "../album/Album.vue";
+import SingleTrack from "./SingleTrack.vue";
 
 const artistStore = useArtist();
 </script>
-
-<style lang="scss" scoped>
-@import "../../assets/scss/colors";
-@import "../../assets/scss/responsive";
-
-.singles {
-  display: grid;
-  gap: 1.2rem;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-
-  @include xl {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-  }
-
-  @include l {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  @include hdpi {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  }
-}
-</style>

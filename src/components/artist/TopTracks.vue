@@ -84,11 +84,11 @@ const dialogStore = useDialog();
   padding-right: 0.8rem;
 
   &:hover {
-    background-color: var(--bg-color-dark);
+    background-color: var(--bg-color);
   }
 
   &:active {
-    background-color: var(--bg-color);
+    background-color: var(--bg-color-light);
   }
 }
 
