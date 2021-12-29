@@ -45,6 +45,7 @@ onMounted(() => {
 }
 
 .genres {
+  margin-bottom: 0.3rem;
   opacity: 0.4;
 
   .genre {
@@ -62,7 +63,6 @@ onMounted(() => {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.4rem;
 }
 
 .name {

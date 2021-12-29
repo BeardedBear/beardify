@@ -51,7 +51,7 @@ export function useCheckReissueAlbum(albumName: string): boolean {
 }
 
 export function isAlbum(album: AlbumSimplified | Album | CurrentlyPlayingAlbum): boolean {
-  return album.album_type === "album";
+  return album.album_type === "album" || album.album_type === "ALBUM";
 }
 
 export function isEP(album: AlbumSimplified | Album | CurrentlyPlayingAlbum): boolean {

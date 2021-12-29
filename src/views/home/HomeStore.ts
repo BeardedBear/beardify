@@ -34,9 +34,8 @@ export const useHome = defineStore("home", {
           instance()
             .get<Top>(`recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`)
             .then((f) => {
-              this.recommendedAlbums = removeDuplicatesAlbums(
-                f.data.tracks.map((g) => g.album).filter((h) => isAlbum(h)),
-              );
+              const cleanedList = removeDuplicatesAlbums(f.data.tracks.map((g) => g.album).filter((h) => isAlbum(h)));
+              this.recommendedAlbums = cleanedList;
             });
         });
     },

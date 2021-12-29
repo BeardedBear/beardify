@@ -54,7 +54,7 @@ $radius: 0.3rem;
   cursor: pointer;
   font-size: 1.1rem;
   line-height: 1;
-  opacity: 0.3;
+  opacity: 0.5;
   padding: 0 0.5rem;
   transition: 0.2s;
 
