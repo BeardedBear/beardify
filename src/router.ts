@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, LocationQueryValue, RouteLocation, RouteRecordRaw } from "vue-router";
-import AboutPage from "./views/AboutPage.vue";
 import AlbumPage from "./views/album/AlbumPage.vue";
 import ArtistPage from "./views/artist/ArtistPage.vue";
 import AuthPage from "./views/auth/AuthPage.vue";
@@ -29,11 +28,6 @@ const routes: Array<RouteRecordRaw> = [
     path: RouteName.Home,
     name: "Home",
     component: HomePage,
-  },
-  {
-    path: RouteName.About,
-    name: "About",
-    component: AboutPage,
   },
   {
     path: RouteName.Login,
