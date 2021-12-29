@@ -8,12 +8,7 @@
           : false,
       deletable: playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative,
     }"
-    @click="
-      playSongs(
-        index,
-        playlistStore.tracks.map((e) => e.track),
-      )
-    "
+    @click="playSongs(index, currentPlaylistTracks)"
   >
     <div class="track-icon">
       <i class="track-icon-item music icon-music" />
@@ -44,15 +39,8 @@
       />
       <AlbumLink :album="track.track.album" no-icon />
     </div>
-
-    <div class="date">
-      {{ date(track.added_at) }}
-    </div>
-
-    <div class="duration">
-      {{ timecode(track.track.duration_ms) }}
-    </div>
-
+    <div class="date">{{ date(track.added_at) }}</div>
+    <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
     <div v-if="playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative">
       <button class="button button--nude delete" @click.prevent.stop="deleteSong(track.track.uri)">
         <i class="icon-trash-2"></i>
@@ -65,6 +53,7 @@
 import { defineProps } from "vue";
 import { NotificationType } from "../../@types/Notification";
 import { PlaylistTrack } from "../../@types/Playlist";
+import { Track } from "../../@types/Track";
 import { instance } from "../../api";
 import { date, timecode } from "../../helpers/date";
 import { notification } from "../../helpers/notifications";
@@ -86,6 +75,8 @@ const dialogStore = useDialog();
 const playlistStore = usePlaylist();
 const playerStore = usePlayer();
 const authStore = useAuth();
+
+const currentPlaylistTracks = playlistStore.tracks.map((e) => e.track) as Track[];
 
 function deleteSong(songId: string): void {
   instance()

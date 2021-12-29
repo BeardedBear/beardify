@@ -46,7 +46,7 @@ import { usePlaylist } from "./PlaylistStore";
 import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";
 import ShareContent from "../../components/ShareContent.vue";
-import TrackItem from "../../components/track/TrackItem.vue";
+import TrackItem from "../../components/playlist/Track.vue";
 
 const props = defineProps<{ id: string }>();
 const dialogStore = useDialog();

@@ -43,6 +43,7 @@ export const useArtist = defineStore("artist", {
         .get<ArtistTopTracks>(`artists/${artistId}/top-tracks?market=FR`)
         .then((e) => (this.topTracks = e.data));
     },
+
     getAlbums(url: string) {
       instance()
         .get<Paging<AlbumSimplified>>(url)
