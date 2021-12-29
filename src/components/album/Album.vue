@@ -1,6 +1,8 @@
 <template>
   <div class="album" :class="{ 'exact-search': exactSearch }">
-    <div v-if="currentlyPlayedId === album.uri" class="current"><i class="icon-volume-2" /></div>
+    <div v-if="album.uri === playerStore.currentlyPlaying.item?.album.uri" class="current">
+      <i class="icon-volume-2" />
+    </div>
     <div class="cover">
       <Cover
         :size="coverSize ? coverSize : 'medium'"
@@ -47,10 +49,10 @@ import { notification } from "../../helpers/notifications";
 import { NotificationType } from "../../@types/Notification";
 import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 import { ImageSize } from "../../@types/Image";
+import { usePlayer } from "../player/PlayerStore";
 
 defineProps<{
   album: AlbumSimplified | Album;
-  currentlyPlayedId?: string;
   withArtists?: boolean;
   withoutMetas?: boolean;
   canDelete?: boolean;
@@ -63,6 +65,7 @@ defineProps<{
 const currentRouteId = useRoute().params.id;
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
+const playerStore = usePlayer();
 
 function playAlbum(albumUri: string): void {
   instance()

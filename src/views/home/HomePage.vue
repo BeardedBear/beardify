@@ -11,7 +11,6 @@
           <Album
             v-for="(album, index) in homeStore.recommendedAlbums"
             :key="index"
-            :currently-played-id="playerStore.currentlyPlaying.item?.album.uri"
             :album="album"
             with-artists
             can-save
@@ -28,12 +27,10 @@ import { useAuth } from "../auth/AuthStore";
 import { useHome } from "./HomeStore";
 import { watch } from "vue";
 import Loader from "../../components/LoadingDots.vue";
-import { usePlayer } from "../../components/player/PlayerStore";
 import PageFit from "../../components/PageFit.vue";
 
 const homeStore = useHome();
 const authStore = useAuth();
-const playerStore = usePlayer();
 
 function getData(): void {
   homeStore.clean().finally(() => {

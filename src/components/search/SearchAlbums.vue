@@ -5,7 +5,6 @@
         v-for="(album, index) in searchStore.albums"
         :key="index"
         class="album"
-        :currently-played-id="playerStore.currentlyPlaying.item?.album.uri"
         :album="album"
         with-artists
         without-release-date
@@ -20,10 +19,8 @@
 <script lang="ts" setup>
 import { computed, ComputedRef } from "vue";
 import Album from "../album/Album.vue";
-import { usePlayer } from "../player/PlayerStore";
 import { useSearch } from "./SearchStore";
 
-const playerStore = usePlayer();
 const searchStore = useSearch();
 const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
   if (!searchStore.query.includes("  &  ")) return undefined;

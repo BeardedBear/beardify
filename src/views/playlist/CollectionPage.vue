@@ -25,17 +25,7 @@
       </div>
       <div class="album-list">
         <div v-for="(album, index) in cleanAlbumList" :key="index">
-          <Album
-            :album="album"
-            :currently-played-id="
-              playerStore.currentlyPlaying.item && playerStore.currentlyPlaying
-                ? playerStore.currentlyPlaying.item.album.uri
-                : ''
-            "
-            with-artists
-            can-delete
-            can-save
-          />
+          <Album :album="album" with-artists can-delete can-save />
         </div>
       </div>
     </PageFit>
@@ -48,7 +38,6 @@ import Album from "../../components/album/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { useDialog } from "../../components/dialog/DialogStore";
 import { usePlaylist } from "./PlaylistStore";
-import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";
 import PageFit from "../../components/PageFit.vue";
@@ -58,7 +47,6 @@ const props = defineProps<{ id: string }>();
 const dialogStore = useDialog();
 const cleanAlbumList = computed(() => removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album)));
 const playlistStore = usePlaylist();
-const playerStore = usePlayer();
 
 function edit(playlistId: string): void {
   dialogStore.open({ type: "editPlaylist", playlistId });

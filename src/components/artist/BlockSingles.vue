@@ -6,7 +6,7 @@
     </div>
     <div class="singles">
       <div v-for="(album, index) in artistStore.singles" :key="index">
-        <Album :album="album" :currently-played-id="playerStore.currentlyPlaying.item?.album.uri" />
+        <Album :album="album" />
       </div>
     </div>
   </div>
@@ -14,11 +14,9 @@
 
 <script lang="ts" setup>
 import { useArtist } from "../../views/artist/ArtistStore";
-import { usePlayer } from "../player/PlayerStore";
 import Album from "../album/Album.vue";
 
 const artistStore = useArtist();
-const playerStore = usePlayer();
 </script>
 
 <style lang="scss" scoped>
