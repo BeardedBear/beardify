@@ -45,15 +45,15 @@ onMounted(() => {
 }
 
 .genres {
-  display: flex;
-  gap: 0.4rem;
-  opacity: 0.3;
+  opacity: 0.4;
 
   .genre {
     background-color: var(--bg-color-lighter);
     border-radius: 2rem;
     color: currentColor;
+    display: inline-block;
     font-size: 0.8rem;
+    margin-right: 0.3rem;
     padding: 0 0.5rem 0.1rem;
   }
 }
