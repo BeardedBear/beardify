@@ -8,7 +8,7 @@
         class="item"
         :to="`/artist/${artist.id}`"
       >
-        <Cover size="small" :images="artist.images" class-name="image" />
+        <Cover size="small" :images="artist.images" class="image" />
         <div class="name">
           {{ artist.name }}
         </div>

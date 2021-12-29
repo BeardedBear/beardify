@@ -9,7 +9,7 @@
       @click="playSongs(index, artistStore.topTracks.tracks)"
     >
       <div class="cover-wrap">
-        <Cover size="small" :images="trackItem.album.images" class-name="cover" />
+        <Cover size="small" :images="trackItem.album.images" class="cover" />
         <div class="hover" @click.prevent.stop="dialogStore.open({ type: 'addSong', songUri: trackItem.uri })">
           <i class="add icon-plus"></i>
         </div>

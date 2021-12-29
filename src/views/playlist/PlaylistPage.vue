@@ -4,7 +4,7 @@
     <div class="playlist">
       <div class="playlist-header">
         <div class="playlist-header__left">
-          <div><Cover size="large" :images="playlistStore.playlist.images" class-name="cover" /></div>
+          <div><Cover size="large" :images="playlistStore.playlist.images" class="cover" /></div>
           <div>
             <div class="title">{{ playlistStore.playlist.name }}</div>
             <div v-if="playlistStore.playlist.description !== 'No description'" class="description">

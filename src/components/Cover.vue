@@ -1,8 +1,8 @@
 <template>
-  <img v-if="size === 'small' && images.length >= 3" :class="className" :src="images[2].url" loading="lazy" />
-  <img v-else-if="size === 'medium' && images.length >= 2" :class="className" :src="images[1].url" loading="lazy" />
-  <img v-else-if="size === 'large' && images.length >= 1" :class="className" :src="images[0].url" loading="lazy" />
-  <img v-else :class="className" src="/img/default.png" />
+  <img v-if="size === 'small' && images.length >= 3" :src="images[2].url" loading="lazy" />
+  <img v-else-if="size === 'medium' && images.length >= 2" :src="images[1].url" loading="lazy" />
+  <img v-else-if="size === 'large' && images.length >= 1" :src="images[0].url" loading="lazy" />
+  <img v-else src="/img/default.png" />
 </template>
 
 <script lang="ts" setup>
@@ -12,7 +12,6 @@ import { Image, ImageSize } from "../@types/Image";
 defineProps<{
   images: Image[];
   size: ImageSize;
-  className?: string;
 }>();
 </script>
 

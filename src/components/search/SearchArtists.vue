@@ -9,7 +9,7 @@
         :class="{ 'exact-search': exactArtistSearched === artist.name.toLowerCase() }"
         @click="searchStore.reset()"
       >
-        <Cover size="small" :images="artist.images" class-name="avatar" />
+        <Cover size="small" :images="artist.images" class="avatar" />
         <div>{{ artist.name }}</div>
       </router-link>
     </template>
