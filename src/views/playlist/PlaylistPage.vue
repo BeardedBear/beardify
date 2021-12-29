@@ -29,109 +29,31 @@
           <ShareContent :spotify-url="playlistStore.playlist.external_urls.spotify" :beardify-url="$route.fullPath" />
         </div>
       </div>
-      <div
-        v-for="(track, index) in playlistStore.tracks"
-        :key="index"
-        class="track"
-        :class="{
-          active:
-            playerStore.currentlyPlaying && track.track
-              ? playerStore.currentlyPlaying.item && track.track.id === playerStore.currentlyPlaying.item.id
-              : false,
-          deletable: playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative,
-        }"
-        @click="
-          playSongs(
-            index,
-            playlistStore.tracks.map((e) => e.track),
-          )
-        "
-      >
-        <div class="track-icon">
-          <i class="track-icon-item music icon-music" />
-          <i
-            class="track-icon-item save icon-plus"
-            @click.prevent.stop="dialogStore.open({ type: 'addSong', songUri: track.track.uri })"
-          ></i>
-        </div>
-        <div>
-          <div class="track-name">{{ track.track.name }}</div>
-          <div>
-            <ArtistList :artist-list="track.track.artists" feat />
-          </div>
-        </div>
-        <div class="album">
-          <div v-if="isAlbum(track.track.album)" class="adder">
-            <i class="adder-icon icon-album" />
-            <i
-              class="adder-button icon-plus"
-              @click.prevent.stop="dialogStore.open({ type: 'addalbum', albumId: track.track.album.id })"
-            />
-          </div>
-          <i
-            v-else
-            :class="{
-              'icon-ep': isEP(track.track.album),
-              'icon-single': isSingle(track.track.album),
-              'icon-compilation': isCompilation(track.track.album),
-            }"
-          />
-          <AlbumLink :album="track.track.album" no-icon />
-        </div>
-
-        <div class="date">
-          {{ date(track.added_at) }}
-        </div>
-
-        <div class="duration">
-          {{ timecode(track.track.duration_ms) }}
-        </div>
-
-        <div v-if="playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative">
-          <button class="button button--nude delete" @click.prevent.stop="deleteSong(track.track.uri)">
-            <i class="icon-trash-2"></i>
-          </button>
-        </div>
-      </div>
+      <template v-for="(track, index) in playlistStore.tracks" :key="track">
+        <TrackItem :track="track" :index="index" />
+      </template>
     </div>
   </PageScroller>
 </template>
 
 <script lang="ts" setup>
 import { defineProps } from "vue";
-import { timecode, timecodeWithUnits, date } from "../../helpers/date";
-import { playSongs } from "../../helpers/play";
+import { timecodeWithUnits } from "../../helpers/date";
 import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { useDialog } from "../../components/dialog/DialogStore";
-import ArtistList from "../../components/artist/ArtistList.vue";
 import { usePlaylist } from "./PlaylistStore";
-import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
-import { useAuth } from "../auth/AuthStore";
-import { instance } from "../../api";
-import { notification } from "../../helpers/notifications";
-import { NotificationType } from "../../@types/Notification";
 import PageScroller from "../../components/PageScroller.vue";
-import AlbumLink from "../../components/album/AlbumLink.vue";
 import ShareContent from "../../components/ShareContent.vue";
-import { isEP, isSingle, isCompilation, isAlbum } from "../../helpers/useCleanAlbums";
+import TrackItem from "../../components/track/TrackItem.vue";
 
 const props = defineProps<{ id: string }>();
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
-const playerStore = usePlayer();
-const authStore = useAuth();
 
 function sumDuration(tracks: PlaylistTrack[]): number {
   return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
-}
-
-function deleteSong(songId: string): void {
-  instance()
-    .delete(`playlists/${playlistStore.playlist.id}/tracks`, { data: { tracks: [{ uri: songId }] } })
-    .then(() => playlistStore.removeSong(songId))
-    .then(() => notification({ msg: "Track deleted", type: NotificationType.Success }));
 }
 
 playlistStore.clean().finally(() => {
@@ -148,131 +70,6 @@ playlistStore.clean().finally(() => {
 .playlist {
   margin: 0 auto;
   max-width: 100rem;
-}
-
-.track-name {
-  font-weight: bold;
-}
-
-.track {
-  align-items: center;
-  border-radius: 0.3rem;
-  cursor: pointer;
-  display: grid;
-  gap: 0.8rem;
-  grid-template-columns: 2.2rem 1fr 0.9fr 0.3fr 2.8rem;
-  margin-bottom: 0.4rem;
-  padding: 0.4rem 0.8rem;
-
-  &.deletable {
-    grid-template-columns: 2.2rem 1fr 0.9fr 0.3fr 2.8rem auto;
-  }
-
-  &-icon {
-    &-item {
-      font-size: 1.5rem;
-      opacity: 0.1;
-    }
-
-    .save {
-      cursor: pointer;
-      display: none;
-    }
-
-    &:hover {
-      .music {
-        display: none;
-      }
-
-      .save {
-        display: block;
-        opacity: 0.8;
-      }
-    }
-  }
-
-  .delete {
-    opacity: 0.3;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-
-  .link,
-  .date,
-  .owner {
-    color: currentColor;
-    font-size: 0.9rem;
-    font-style: italic;
-    opacity: 0.5;
-    text-decoration: none;
-  }
-
-  .date {
-    text-align: right;
-  }
-
-  .link {
-    &:hover {
-      color: var(--primary-color);
-      opacity: 1;
-    }
-  }
-
-  &:hover {
-    background-color: var(--bg-color-dark);
-  }
-
-  &:active {
-    background-color: var(--bg-color);
-  }
-
-  .adder {
-    &-button {
-      background: none;
-      border: none;
-      color: var(--primary-color);
-      cursor: pointer;
-      display: none;
-      opacity: 1;
-    }
-
-    &:hover {
-      .adder-button {
-        display: block;
-      }
-
-      .adder-icon {
-        display: none;
-      }
-    }
-  }
-}
-
-.duration {
-  font-size: 0.9rem;
-  font-weight: bold;
-  padding-right: 0.5rem;
-  text-align: right;
-}
-
-.album {
-  align-items: center;
-  display: flex;
-  font-size: 0.9rem;
-  text-align: left;
-
-  i {
-    font-size: 1rem;
-    margin-right: 0.8rem;
-    opacity: 0.3;
-
-    &.icon-album {
-      color: var(--primary-color);
-      opacity: 1;
-    }
-  }
 }
 
 .description {
