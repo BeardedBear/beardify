@@ -42,7 +42,7 @@ if (!releasesStore.releases.length) releasesStore.getReleases();
 
 .side {
   overflow: auto;
-  padding: 0 1rem;
+  padding: 0 1rem 1rem;
   position: sticky;
   top: 0;
   width: 12rem;
