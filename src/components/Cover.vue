@@ -1,7 +1,7 @@
 <template>
-  <img v-if="size === 'small' && images.length >= 3" :src="images[2].url" loading="lazy" />
-  <img v-else-if="size === 'medium' && images.length >= 2" :src="images[1].url" loading="lazy" />
-  <img v-else-if="size === 'large' && images.length >= 1" :src="images[0].url" loading="lazy" />
+  <img v-if="size === 'small' && images.length >= 3" :src="images[2].url" />
+  <img v-else-if="size === 'medium' && images.length >= 2" :src="images[1].url" />
+  <img v-else-if="size === 'large' && images.length >= 1" :src="images[0].url" />
   <img v-else src="/img/default.png" />
 </template>
 

@@ -1,7 +1,6 @@
 <template>
   <div
     class="release"
-    loading="lazy"
     :class="{
       'is-playing': playerStore.currentlyPlaying.item?.artists[0].name.toLowerCase() === release.artist.toLowerCase(),
     }"
