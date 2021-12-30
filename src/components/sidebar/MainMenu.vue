@@ -25,6 +25,7 @@
   color: var(--font-color);
   display: block;
   flex: 1;
+  font-size: 1rem;
   font-weight: bold;
   padding: 0.4rem 0.8rem;
   text-decoration: none;

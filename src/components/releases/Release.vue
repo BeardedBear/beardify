@@ -72,10 +72,7 @@ function search(artist: string, album: string): void {
   }
 
   .tags {
-    align-items: center;
-    display: flex;
     font-size: 0.6rem;
-    gap: 0.3rem;
     justify-content: end;
     text-align: right;
     text-transform: uppercase;
@@ -84,6 +81,8 @@ function search(artist: string, album: string): void {
       background-color: var(--bg-color-lighter);
       border-radius: 2rem;
       display: inline-block;
+      margin: 0.1rem 0;
+      margin-left: 0.3rem;
       opacity: 0.3;
       padding: 0.1rem 0.5rem;
 
