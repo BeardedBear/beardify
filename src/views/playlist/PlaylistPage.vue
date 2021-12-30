@@ -7,12 +7,12 @@
           <div><Cover size="large" :images="playlistStore.playlist.images" class="cover" /></div>
           <div>
             <div class="title">{{ playlistStore.playlist.name }}</div>
+            <div class="metas">
+              {{ playlistStore.playlist.owner.display_name }} — {{ playlistStore.playlist.tracks.total }} tracks —
+              {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}
+            </div>
             <div v-if="playlistStore.playlist.description !== 'No description'" class="description">
               {{ playlistStore.playlist.description }}
-            </div>
-            <div>
-              {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} tracks ·
-              {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}
             </div>
           </div>
         </div>
@@ -95,10 +95,16 @@ playlistStore.clean().finally(() => {
 }
 
 .description {
+  font-size: 0.9rem;
   font-style: italic;
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
   max-width: 80%;
   opacity: 0.5;
+}
+
+.metas {
+  font-size: 0.9rem;
+  font-weight: bold;
 }
 
 .title {

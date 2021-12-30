@@ -18,7 +18,7 @@
         </template>
         <template v-else>
           <span v-if="playerStore.currentlyPlaying.item" class="trackname">
-            {{ playerStore.currentlyPlaying.item.name }} ·
+            {{ playerStore.currentlyPlaying.item.name }} —
           </span>
         </template>
 

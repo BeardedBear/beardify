@@ -47,6 +47,6 @@ function scrollToTop(): void {
   gap: 0.5rem;
   position: absolute;
   right: 1.5rem;
-  z-index: 2;
+  z-index: 4;
 }
 </style>

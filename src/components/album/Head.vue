@@ -4,11 +4,11 @@
       <div class="title">{{ album.name }}</div>
       <div class="infos">
         <ArtistList :artist-list="album.artists" />
-        ·
+        —
         <span v-if="album.release_date_precision === 'year'">{{ album.release_date }}</span>
         <span v-else-if="album.release_date_precision === 'month'">{{ album.release_date.split("-").shift() }}</span>
         <span v-else>{{ date(album.release_date) }}</span>
-        ·
+        —
         <span>{{ timecodeWithUnits(sumDuration(album.tracks.items)) }}</span>
       </div>
     </div>

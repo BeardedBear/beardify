@@ -2,30 +2,32 @@
   <div v-if="playlistStore.playlist.name === ''" class="loader"><Loader /></div>
   <PageScroller v-else>
     <PageFit>
-      <div class="playlist-header">
-        <div>
+      <div class="page">
+        <div class="playlist-header">
           <div>
-            <div class="title">{{ playlistStore.playlist.name.replace("#Collection ", "") }}</div>
-            <div v-if="playlistStore.playlist.description !== 'No description'" class="description">
-              {{ playlistStore.playlist.description }}
-            </div>
             <div>
-              {{ playlistStore.playlist.owner.display_name }} · {{ playlistStore.playlist.tracks.total }} albums
+              <div class="title">{{ playlistStore.playlist.name.replace("#Collection ", "") }}</div>
+              <div v-if="playlistStore.playlist.description !== 'No description'" class="description">
+                {{ playlistStore.playlist.description }}
+              </div>
+              <div>
+                {{ playlistStore.playlist.owner.display_name }} — {{ playlistStore.playlist.tracks.total }} albums
+              </div>
             </div>
           </div>
-        </div>
-        <div class="playlist-header__right">
-          <div>
-            <button class="button button--nude" @click="edit(playlistStore.playlist.id)">
-              <i class="icon-more-vertical"></i>
-            </button>
+          <div class="playlist-header__right">
+            <div>
+              <button class="button button--nude" @click="edit(playlistStore.playlist.id)">
+                <i class="icon-more-vertical"></i>
+              </button>
+            </div>
+            <ShareContent :spotify-url="playlistStore.playlist.external_urls.spotify" :beardify-url="$route.fullPath" />
           </div>
-          <ShareContent :spotify-url="playlistStore.playlist.external_urls.spotify" :beardify-url="$route.fullPath" />
         </div>
-      </div>
-      <div class="album-list">
-        <div v-for="(album, index) in cleanAlbumList" :key="index">
-          <Album :album="album" with-artists can-delete can-save />
+        <div class="album-list">
+          <div v-for="(album, index) in cleanAlbumList" :key="index">
+            <Album :album="album" with-artists can-delete can-save />
+          </div>
         </div>
       </div>
     </PageFit>
@@ -62,6 +64,10 @@ playlistStore.clean().finally(() => {
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
 
+.page {
+  padding: 2rem 0;
+}
+
 .album-list {
   display: grid;
   gap: 2rem;
@@ -97,7 +103,6 @@ playlistStore.clean().finally(() => {
   gap: 2rem;
   justify-content: space-between;
   margin-bottom: 2.2rem;
-  padding: 2rem 0;
 
   &__right {
     align-items: center;
