@@ -97,6 +97,7 @@ playlistStore.clean().finally(() => {
   gap: 2rem;
   justify-content: space-between;
   margin-bottom: 2.2rem;
+  padding: 2rem 0;
 
   &__right {
     align-items: center;

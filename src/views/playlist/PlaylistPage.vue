@@ -29,7 +29,15 @@
           <ShareContent :spotify-url="playlistStore.playlist.external_urls.spotify" :beardify-url="$route.fullPath" />
         </div>
       </div>
-      <template v-for="(track, index) in playlistStore.tracks" :key="track">
+      <template v-if="playlistStore.playlist.owner.display_name === 'Spotify'">
+        <AlbumGallery title="Albums" :icon-name="'album'" :album-list="albums" class="block" />
+        <AlbumGallery title="EP's" :icon-name="'ep'" :album-list="eps" class="block" />
+        <div class="heading sticky"><i class="icon-single"></i>Singles</div>
+        <template v-for="(track, index) in singles" :key="track">
+          <TrackItem :track="track" :index="index" />
+        </template>
+      </template>
+      <template v-for="(track, index) in playlistStore.tracks" v-else :key="track">
         <TrackItem :track="track" :index="index" />
       </template>
     </div>
@@ -37,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
+import { computed, defineProps } from "vue";
 import { timecodeWithUnits } from "../../helpers/date";
 import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
@@ -47,10 +55,19 @@ import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";
 import ShareContent from "../../components/ShareContent.vue";
 import TrackItem from "../../components/playlist/Track.vue";
+import AlbumGallery from "../../components/AlbumGallery.vue";
+import { isAlbum, isEP, isSingle, useCheckLiveAlbum } from "../../helpers/useCleanAlbums";
 
 const props = defineProps<{ id: string }>();
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
+const albums = computed(() =>
+  playlistStore.tracks
+    .filter((track) => isAlbum(track.track.album) && !useCheckLiveAlbum(track.track.album.name))
+    .map((e) => e.track.album),
+);
+const eps = computed(() => playlistStore.tracks.filter((track) => isEP(track.track.album)).map((e) => e.track.album));
+const singles = computed(() => playlistStore.tracks.filter((track) => isSingle(track.track.album)));
 
 function sumDuration(tracks: PlaylistTrack[]): number {
   return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
@@ -67,9 +84,14 @@ playlistStore.clean().finally(() => {
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
 
+.block {
+  margin-bottom: 2rem;
+}
+
 .playlist {
   margin: 0 auto;
   max-width: 100rem;
+  padding: 2rem;
 }
 
 .description {

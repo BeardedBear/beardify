@@ -1,5 +1,5 @@
 <template>
-  <div ref="page" class="page" :class="{ 'no-padding': noPadding }">
+  <div ref="page" class="page">
     <slot />
     <div class="nav">
       <button class="button button--small" @click="scrollToTop()"><i class="icon-arrow-up"></i></button>
@@ -9,11 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps } from "vue";
-
-defineProps<{
-  noPadding?: boolean;
-}>();
+import { ref } from "vue";
 
 const page = ref<HTMLElement | null>(null);
 
@@ -30,12 +26,7 @@ function scrollToTop(): void {
 .page {
   animation: pop-content 1s ease both;
   overflow-y: scroll;
-  padding: 2rem 2.2rem;
   scroll-behavior: smooth;
-
-  &.no-padding {
-    padding: 0;
-  }
 }
 
 @keyframes pop-nav {
@@ -56,5 +47,6 @@ function scrollToTop(): void {
   gap: 0.5rem;
   position: absolute;
   right: 1.5rem;
+  z-index: 2;
 }
 </style>
