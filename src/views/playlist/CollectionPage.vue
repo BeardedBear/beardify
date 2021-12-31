@@ -107,7 +107,7 @@ playlistStore.clean().finally(() => {
     display: flex;
     font-size: 1.1rem;
     gap: 0.5rem;
-    padding-top: 0.3rem;
+    padding-top: 0.2rem;
   }
 }
 
