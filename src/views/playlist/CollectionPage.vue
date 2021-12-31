@@ -93,9 +93,8 @@ playlistStore.clean().finally(() => {
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
-  margin-bottom: 0.4rem;
 }
 
 .playlist-header {
@@ -108,6 +107,7 @@ playlistStore.clean().finally(() => {
     display: flex;
     font-size: 1.1rem;
     gap: 0.5rem;
+    padding-top: 0.3rem;
   }
 }
 
