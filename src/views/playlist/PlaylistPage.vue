@@ -129,7 +129,6 @@ playlistStore.clean().finally(() => {
   }
 
   &__right {
-    align-items: center;
     display: flex;
     font-size: 1.1rem;
     gap: 0.5rem;

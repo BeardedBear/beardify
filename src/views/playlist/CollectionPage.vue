@@ -2,7 +2,7 @@
   <div v-if="playlistStore.playlist.name === ''" class="loader"><Loader /></div>
   <PageScroller v-else>
     <PageFit>
-      <div class="page">
+      <div class="collection">
         <div class="playlist-header">
           <div>
             <div>
@@ -64,8 +64,8 @@ playlistStore.clean().finally(() => {
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
 
-.page {
-  padding: 2rem 0;
+.collection {
+  padding: 2rem;
 }
 
 .album-list {
@@ -105,7 +105,6 @@ playlistStore.clean().finally(() => {
   margin-bottom: 2.2rem;
 
   &__right {
-    align-items: center;
     display: flex;
     font-size: 1.1rem;
     gap: 0.5rem;
