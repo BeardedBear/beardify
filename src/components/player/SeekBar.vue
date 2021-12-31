@@ -88,12 +88,12 @@ watch(
 
     .time {
       background: var(--primary-color);
-      border: 1px solid var(--primary-color-light);
-      border-radius: 0.4rem;
+      border-radius: 0.3rem;
       bottom: calc(100% + 0.4rem);
       color: color.change(white, $alpha: 0.8);
       font-size: 0.9rem;
-      padding: 0.2rem 0.6rem;
+      font-weight: bold;
+      padding: 0.1rem 0.4rem;
       pointer-events: none;
       position: absolute;
       right: 0;

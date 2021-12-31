@@ -26,6 +26,8 @@ watchEffect(() => {
 .volume {
   background-color: var(--bg-color-light);
   display: inline-block;
+  font-size: 0.9rem;
+  font-weight: bold;
   height: 1.3rem;
   margin-bottom: 0.1rem;
   position: relative;

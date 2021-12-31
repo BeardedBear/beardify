@@ -30,7 +30,7 @@ $radius: 0.3rem;
   border: 0.05rem solid var(--bg-color-light);
   border-radius: $radius;
   display: flex;
-  height: 2.2rem;
+  height: 2.25rem;
   position: relative;
 }
 

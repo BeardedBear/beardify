@@ -138,6 +138,7 @@ playlistStore.clean().finally(() => {
 .cover {
   border-radius: 0.3rem;
   height: 7rem;
+  width: 7rem;
 }
 
 .loader {
