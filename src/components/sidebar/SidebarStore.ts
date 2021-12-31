@@ -6,6 +6,10 @@ import { instance } from "../../api";
 import router from "../../router";
 import { useAuth } from "../../views/auth/AuthStore";
 
+function isACollection(playlistName: SimplifiedPlaylist): boolean {
+  return playlistName.name.toLowerCase().includes("#collection");
+}
+
 export const useSidebar = defineStore("sidebar", {
   state: (): Sidebar => ({
     collections: [],
@@ -13,19 +17,14 @@ export const useSidebar = defineStore("sidebar", {
   }),
 
   actions: {
-    getPlaylists(url: string) {
+    async getPlaylists(url: string) {
       if (url && router.currentRoute.value.name !== "Login") {
-        instance()
-          .get<Paging<SimplifiedPlaylist>>(url)
-          .then((e) => {
-            this.playlists = this.playlists
-              .concat(e.data.items)
-              .filter((p) => !p.name.toLowerCase().includes("#collection"));
-            this.collections = this.collections
-              .concat(e.data.items)
-              .filter((p) => p.name.toLowerCase().includes("#collection"));
-            if (e.data.next) this.getPlaylists(e.data.next);
-          });
+        const { data } = await instance().get<Paging<SimplifiedPlaylist>>(url);
+
+        this.playlists = this.playlists.concat(data.items).filter((p) => !isACollection(p));
+        this.collections = this.collections.concat(data.items).filter((p) => isACollection(p));
+
+        if (data.next) this.getPlaylists(data.next);
       }
     },
 
@@ -55,6 +54,12 @@ export const useSidebar = defineStore("sidebar", {
           this.collections = this.collections.filter((collection) => collection.id !== playlistId);
           if (location.pathname.includes(playlistId)) router.push("/");
         });
+    },
+
+    refreshPlaylists() {
+      this.playlists = [];
+      this.collections = [];
+      this.getPlaylists("me/playlists?limit=50");
     },
   },
 });

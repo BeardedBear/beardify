@@ -9,6 +9,9 @@
       <div v-if="!collectionSearchOpened" class="heading title">
         <div>Collections</div>
         <div class="options">
+          <button class="icon" @click="sidebarStore.refreshPlaylists()">
+            <i class="icon-refresh"></i>
+          </button>
           <button class="icon" @click="() => (collectionSearchOpened = true)"><i class="icon-search"></i></button>
           <button class="icon add" @click="dialogStore.open({ type: 'createCollection' })">
             <i class="icon-plus"></i>
@@ -48,6 +51,9 @@
       <div v-if="!playlistSearchOpened" class="heading title">
         <div>Playlists</div>
         <div class="options">
+          <button class="icon" @click="sidebarStore.refreshPlaylists()">
+            <i class="icon-refresh"></i>
+          </button>
           <button class="icon" @click="() => (playlistSearchOpened = true)"><i class="icon-search"></i></button>
           <button class="icon add" @click="dialogStore.open({ type: 'createPlaylist' })">
             <i class="icon-plus"></i>
