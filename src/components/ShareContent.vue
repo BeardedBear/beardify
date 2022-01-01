@@ -17,7 +17,10 @@
 <script lang="ts" setup>
 import { defineProps } from "vue";
 import { useClipboard } from "@vueuse/core";
-const props = defineProps<{ spotifyUrl: string; beardifyUrl: string }>();
+const props = defineProps<{
+  spotifyUrl: string;
+  beardifyUrl: string;
+}>();
 const clipboardSpotify = useClipboard({ source: props.spotifyUrl });
 const clipboardBeardify = useClipboard({ source: window.location.origin + props.beardifyUrl });
 </script>
@@ -59,7 +62,7 @@ $radius: 0.3rem;
   transition: 0.2s;
 
   &:hover {
-    opacity: 0.5;
+    opacity: 1;
   }
 
   &:active {

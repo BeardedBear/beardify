@@ -4,16 +4,19 @@
     <div class="head">
       <img class="avatar-bg" :src="userStore.user.images[0].url" alt="" />
       <div class="inner">
-        <img class="avatar" :src="userStore.user.images[0].url" alt="" />
-        <div>
-          <div class="name">{{ userStore.user?.display_name }}</div>
-          <div class="metas">{{ userStore.user?.followers.total }} followers</div>
+        <div class="metas">
+          <img class="avatar" :src="userStore.user.images[0].url" alt="" />
+          <div>
+            <div class="name">{{ userStore.user?.display_name }}</div>
+            <div class="followers">{{ userStore.user?.followers.total }} followers</div>
+          </div>
         </div>
+        <ShareContent :beardify-url="$route.fullPath" :spotify-url="userStore.user.external_urls.spotify" />
       </div>
     </div>
 
     <div class="content">
-      <div>
+      <div v-if="userStore.collections.length">
         <div class="heading sticky title">Collections</div>
         <div class="gallery">
           <router-link
@@ -27,7 +30,7 @@
           </router-link>
         </div>
       </div>
-      <div>
+      <div v-if="userStore.playlists.length">
         <div class="heading sticky title">Playlists</div>
         <div class="gallery">
           <router-link
@@ -50,6 +53,7 @@ import { useUserStore } from "./UserStore";
 import { defineProps } from "vue";
 import LoadingDots from "../../components/LoadingDots.vue";
 import Cover from "../../components/Cover.vue";
+import ShareContent from "../../components/ShareContent.vue";
 
 const userStore = useUserStore();
 const props = defineProps<{
@@ -76,10 +80,17 @@ userStore.clean().finally(() => {
     align-items: center;
     display: flex;
     gap: 1rem;
+    justify-content: space-between;
     margin: 0 auto;
     max-width: 100rem;
     position: relative;
     z-index: 1;
+  }
+
+  .metas {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
   }
 
   .avatar {
