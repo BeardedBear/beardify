@@ -2,8 +2,9 @@
   <div v-if="!userStore.user" class="loader"><LoadingDots /></div>
   <div v-else class="user-page">
     <div class="head">
-      <img class="avatar" :src="userStore.user.images[0].url" alt="" />
+      <img class="avatar-bg" :src="userStore.user.images[0].url" alt="" />
       <div class="inner">
+        <img class="avatar" :src="userStore.user.images[0].url" alt="" />
         <div class="name">{{ userStore.user?.display_name }}</div>
       </div>
     </div>
@@ -65,14 +66,25 @@ userStore.clean().finally(() => {
 
 .head {
   overflow: hidden;
-  padding: 2rem;
+  padding: 2rem 5rem;
   position: relative;
 
   .inner {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
     margin: 0 auto;
     max-width: 100rem;
     position: relative;
     z-index: 1;
+  }
+
+  .avatar {
+    $size: 4rem;
+
+    border-radius: 100%;
+    height: $size;
+    width: $size;
   }
 
   .name {
@@ -80,8 +92,8 @@ userStore.clean().finally(() => {
     font-weight: bold;
   }
 
-  .avatar {
-    filter: blur(15px);
+  .avatar-bg {
+    filter: blur(5rem);
     inset: 0;
     opacity: 0.2;
     position: absolute;
