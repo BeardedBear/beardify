@@ -19,6 +19,7 @@
 
     <div class="section">
       <div class="section__title">Account</div>
+      <router-link class="button button--full" :to="`/user/${authStore.me?.id}`">My profile</router-link>
       <button class="button button--full" @click="authStore.logout()">Logout</button>
     </div>
 
