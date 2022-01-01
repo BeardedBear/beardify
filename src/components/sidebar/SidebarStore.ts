@@ -3,8 +3,10 @@ import { Paging } from "../../@types/Paging";
 import { SimplifiedPlaylist } from "../../@types/Playlist";
 import { Sidebar } from "../../@types/Sidebar";
 import { instance } from "../../api";
+import { isPlaylistOwner } from "../../helpers/playlist";
 import router from "../../router";
 import { useAuth } from "../../views/auth/AuthStore";
+import { usePlaylist } from "../../views/playlist/PlaylistStore";
 
 function isACollection(playlistName: SimplifiedPlaylist): boolean {
   return playlistName.name.toLowerCase().includes("#collection");
@@ -47,12 +49,16 @@ export const useSidebar = defineStore("sidebar", {
     },
 
     async removePlaylist(playlistId: string) {
+      const playlistStore = usePlaylist();
       instance()
         .delete(`https://api.spotify.com/v1/playlists/${playlistId}/followers`)
         .then(() => {
           this.playlists = this.playlists.filter((playlist) => playlist.id !== playlistId);
           this.collections = this.collections.filter((collection) => collection.id !== playlistId);
-          if (location.pathname.includes(playlistId)) router.push("/");
+          playlistStore.followed = false;
+          if (isPlaylistOwner(playlistStore.playlist.owner)) {
+            router.push("/");
+          }
         });
     },
 

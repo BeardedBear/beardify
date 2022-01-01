@@ -52,4 +52,5 @@ export interface Playlist {
 export interface PlaylistPage {
   playlist: Playlist;
   tracks: PlaylistTrack[];
+  followed: boolean | undefined;
 }

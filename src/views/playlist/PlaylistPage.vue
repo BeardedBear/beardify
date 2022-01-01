@@ -18,14 +18,7 @@
         </div>
 
         <div class="playlist-header__right">
-          <div>
-            <button
-              class="button button--nude"
-              @click="dialogStore.open({ type: 'editPlaylist', playlistId: playlistStore.playlist.id })"
-            >
-              <i class="icon-more-vertical"></i>
-            </button>
-          </div>
+          <Actions />
           <ShareContent :spotify-url="playlistStore.playlist.external_urls.spotify" :beardify-url="$route.fullPath" />
         </div>
       </div>
@@ -49,7 +42,6 @@ import { computed, defineProps } from "vue";
 import { timecodeWithUnits } from "../../helpers/date";
 import Cover from "../../components/Cover.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
-import { useDialog } from "../../components/dialog/DialogStore";
 import { usePlaylist } from "./PlaylistStore";
 import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";
@@ -57,9 +49,9 @@ import ShareContent from "../../components/ShareContent.vue";
 import TrackItem from "../../components/playlist/Track.vue";
 import AlbumGallery from "../../components/AlbumGallery.vue";
 import { isAlbum, isEP, isSingle, useCheckLiveAlbum } from "../../helpers/useCleanAlbums";
+import Actions from "../../components/playlist/Actions.vue";
 
 const props = defineProps<{ id: string }>();
-const dialogStore = useDialog();
 const playlistStore = usePlaylist();
 const albums = computed(() =>
   playlistStore.tracks

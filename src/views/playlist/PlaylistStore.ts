@@ -4,18 +4,22 @@ import { Paging } from "../../@types/Paging";
 import { Playlist, PlaylistPage, PlaylistTrack } from "../../@types/Playlist";
 import { TrackToRemove } from "../../@types/Track";
 import { instance } from "../../api";
+import { useSidebar } from "../../components/sidebar/SidebarStore";
+import { useAuth } from "../auth/AuthStore";
 
 export const usePlaylist = defineStore("playlist", {
   state: (): PlaylistPage => ({
     playlist: defaultPlaylist,
     tracks: [],
+    followed: false,
   }),
 
   actions: {
-    getPlaylist(url: string) {
-      instance()
-        .get<Playlist>(url)
-        .then((e) => (this.playlist = e.data));
+    async getPlaylist(url: string) {
+      this.playlist = (await instance().get<Playlist>(url)).data;
+      this.followed = (
+        await instance().get<boolean[]>(`playlists/${this.playlist.id}/followers/contains?ids=${useAuth().me?.id}`)
+      ).data.shift();
     },
 
     async clean() {
@@ -44,6 +48,15 @@ export const usePlaylist = defineStore("playlist", {
 
     removeSong(songUri: string) {
       this.tracks = this.tracks.filter((t) => t.track.uri !== songUri);
+    },
+
+    followPlaylist(playlistId: string) {
+      instance()
+        .put(`playlists/${playlistId}/followers`)
+        .then(() => {
+          this.followed = true;
+          useSidebar().refreshPlaylists();
+        });
     },
   },
 });

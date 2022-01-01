@@ -7,20 +7,16 @@
           <div>
             <div>
               <div class="title">{{ playlistStore.playlist.name.replace("#Collection ", "") }}</div>
+              <div class="metas">
+                {{ playlistStore.playlist.owner.display_name }} — {{ playlistStore.playlist.tracks.total }} albums
+              </div>
               <div v-if="playlistStore.playlist.description !== 'No description'" class="description">
                 {{ playlistStore.playlist.description }}
-              </div>
-              <div>
-                {{ playlistStore.playlist.owner.display_name }} — {{ playlistStore.playlist.tracks.total }} albums
               </div>
             </div>
           </div>
           <div class="playlist-header__right">
-            <div>
-              <button class="button button--nude" @click="edit(playlistStore.playlist.id)">
-                <i class="icon-more-vertical"></i>
-              </button>
-            </div>
+            <Actions />
             <ShareContent :spotify-url="playlistStore.playlist.external_urls.spotify" :beardify-url="$route.fullPath" />
           </div>
         </div>
@@ -38,21 +34,16 @@
 import { computed, defineProps } from "vue";
 import Album from "../../components/album/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
-import { useDialog } from "../../components/dialog/DialogStore";
 import { usePlaylist } from "./PlaylistStore";
 import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";
 import PageFit from "../../components/PageFit.vue";
 import ShareContent from "../../components/ShareContent.vue";
+import Actions from "../../components/playlist/Actions.vue";
 
 const props = defineProps<{ id: string }>();
-const dialogStore = useDialog();
 const cleanAlbumList = computed(() => removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album)));
 const playlistStore = usePlaylist();
-
-function edit(playlistId: string): void {
-  dialogStore.open({ type: "editPlaylist", playlistId });
-}
 
 playlistStore.clean().finally(() => {
   playlistStore.getPlaylist(`playlists/${props.id}`);
@@ -66,6 +57,11 @@ playlistStore.clean().finally(() => {
 
 .collection {
   padding: 2rem;
+}
+
+.metas {
+  font-size: 0.9rem;
+  font-weight: bold;
 }
 
 .album-list {
@@ -87,8 +83,10 @@ playlistStore.clean().finally(() => {
 }
 
 .description {
+  font-size: 0.9rem;
   font-style: italic;
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  max-width: 80%;
   opacity: 0.5;
 }
 

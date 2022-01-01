@@ -201,7 +201,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
     background-color: var(--bg-color);
 
     .name {
-      text-indent: 0.2rem;
+      padding-left: 0.2rem;
     }
 
     .edit {

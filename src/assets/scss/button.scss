@@ -9,7 +9,7 @@
   display: inline-block;
   font-weight: 700;
   line-height: 1.5;
-  padding: 0.35rem 1.1rem;
+  padding: 0.3rem 1.1rem;
   text-align: center;
   text-decoration: none;
 
@@ -42,7 +42,6 @@
 
   &--nude {
     background-color: transparent;
-    padding: 0.3rem 0.9rem;
 
     &:hover {
       background-color: var(--bg-color);
