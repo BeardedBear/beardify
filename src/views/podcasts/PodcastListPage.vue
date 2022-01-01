@@ -58,7 +58,7 @@ podcastsStore.clean().finally(() => {
 .podcast-list {
   display: grid;
   gap: 2rem;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   margin-bottom: 2rem;
 }
 

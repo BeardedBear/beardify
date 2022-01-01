@@ -9,6 +9,7 @@ import PlaylistPage from "./views/playlist/PlaylistPage.vue";
 import PodcastListPage from "./views/podcasts/PodcastListPage.vue";
 import PodcastPage from "./views/podcasts/PodcastPage.vue";
 import ReleaseListPage from "./views/releases/ReleaseListPage.vue";
+import UserPage from "./views/user/UserPage.vue";
 
 export enum RouteName {
   Home = "/",
@@ -21,6 +22,7 @@ export enum RouteName {
   Playlist = "/playlist/",
   Podcasts = "/podcasts/",
   Releases = "/releases/",
+  User = "/user/",
 }
 
 const routes: Array<RouteRecordRaw> = [
@@ -81,6 +83,12 @@ const routes: Array<RouteRecordRaw> = [
     path: RouteName.Releases,
     name: "Releases",
     component: ReleaseListPage,
+  },
+  {
+    path: RouteName.User + ":id",
+    name: "User",
+    component: UserPage,
+    props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
   },
   {
     path: "/:catchAll(.*)",

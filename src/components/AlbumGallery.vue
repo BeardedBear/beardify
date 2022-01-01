@@ -31,14 +31,14 @@ defineProps<{
 .albums {
   display: grid;
   gap: 2rem;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(7, 1fr);
 
   @include l {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(8, 1fr);
   }
 
   @include hdpi {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(9, 1fr);
   }
 }
 </style>

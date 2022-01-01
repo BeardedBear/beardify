@@ -53,6 +53,6 @@ const artistStore = useArtist();
 
 .list {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
 }
 </style>

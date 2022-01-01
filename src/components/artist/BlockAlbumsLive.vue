@@ -26,14 +26,14 @@ const artistStore = useArtist();
 .albums {
   display: grid;
   gap: 1.2rem;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
 
   @include l {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(5, 1fr);
   }
 
   @include hdpi {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(8, 1fr);
   }
 }
 </style>

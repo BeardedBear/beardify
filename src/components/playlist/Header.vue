@@ -5,7 +5,14 @@
       <div>
         <div class="title">{{ playlistStore.playlist.name.replace("#Collection ", "") }}</div>
         <div class="metas">
-          <span>{{ playlistStore.playlist.owner.display_name }}</span>
+          <router-link
+            v-if="playlistStore.playlist.owner.display_name !== 'Spotify'"
+            :to="`/user/${playlistStore.playlist.owner.id}`"
+            class="owner"
+          >
+            {{ playlistStore.playlist.owner.display_name }}
+          </router-link>
+          <span v-else>{{ playlistStore.playlist.owner.display_name }}</span>
           <span> — {{ playlistStore.playlist.tracks.total }} items</span>
           <span v-if="!noDuration"> — {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
         </div>
@@ -58,6 +65,11 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 .metas {
   font-size: 0.9rem;
   font-weight: bold;
+
+  .owner {
+    color: var(--primary-color);
+    text-decoration: none;
+  }
 }
 
 .title {

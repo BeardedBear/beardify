@@ -1,5 +1,6 @@
 import { ExternalUrls } from "./Misc";
 import { Image } from "./Image";
+import { SimplifiedPlaylist } from "./Playlist";
 
 export type Product = "premium" | "free" | "open";
 export interface Me {
@@ -19,4 +20,10 @@ export interface Me {
 export interface Followers {
   href: null;
   total: number;
+}
+
+export interface UserStore {
+  user: Me | null;
+  collections: SimplifiedPlaylist[];
+  playlists: SimplifiedPlaylist[];
 }
