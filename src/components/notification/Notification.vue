@@ -23,31 +23,33 @@ const notificationStore = useNotification();
   0%,
   100% {
     opacity: 0;
-    transform: translateY(50px);
+    transform: translateX(5rem);
   }
 
   5%,
   95% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
 .notification-list {
-  $offset: 2.2rem;
+  $offset: 4rem;
 
+  bottom: $offset + 4rem;
   position: absolute;
-  right: $offset;
-  top: $offset + 2.2rem;
+  right: $offset + 1rem;
   z-index: 9;
 }
 
 .notification {
   animation: pop-notif 4s ease-in-out both;
-  background: rgb(33 124 33);
-  border-radius: 0.4rem;
+  background: rgb(73 145 52);
+  border-radius: 0.3rem;
+  font-size: 0.9rem;
+  font-weight: bold;
   margin-top: 0.8rem;
-  padding: 0.8rem 1rem;
+  padding: 0.4rem 1rem;
   position: relative;
   transition: all 0.5s;
 

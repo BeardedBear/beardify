@@ -49,6 +49,8 @@ function add(songUri: string, playlistId: string): void {
 .playlist {
   align-items: center;
   display: flex;
+  font-size: 0.9rem;
+  font-weight: bold;
 
   i {
     margin-right: 1rem;
@@ -58,10 +60,14 @@ function add(songUri: string, playlistId: string): void {
 
 .collection {
   cursor: pointer;
+  opacity: 0.5;
   padding: 0.5rem 1.5rem;
+  transition: 0.15s;
 
   &:hover {
     background: var(--bg-color-light);
+    opacity: 1;
+    padding-left: 1.7rem;
   }
 }
 </style>

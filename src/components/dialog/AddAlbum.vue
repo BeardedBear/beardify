@@ -57,10 +57,16 @@ function add(albumId: string, playlistId: string): void {
 
 .collection {
   cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  opacity: 0.5;
   padding: 0.5rem 1.5rem;
+  transition: 0.15s;
 
   &:hover {
     background: var(--bg-color-light);
+    opacity: 1;
+    padding-left: 1.7rem;
   }
 }
 </style>

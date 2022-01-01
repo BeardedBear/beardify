@@ -85,7 +85,7 @@ function deleteAlbum(albumId: string): void {
         .delete(`playlists/${currentRouteId}/tracks`, { data: { tracks: tracks } })
         .then(() => playlistStore.removeTracks(tracks));
     })
-    .then(() => notification({ msg: "Album added", type: NotificationType.Success }));
+    .then(() => notification({ msg: "Album deleted", type: NotificationType.Success }));
 }
 </script>
 
