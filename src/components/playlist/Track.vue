@@ -76,7 +76,9 @@ const playlistStore = usePlaylist();
 const playerStore = usePlayer();
 const authStore = useAuth();
 
-const currentPlaylistTracks = playlistStore.tracks.map((e) => e.track) as Track[];
+const currentPlaylistTracks = playlistStore.tracks
+  .filter((e) => isSingle(e.track.album))
+  .map((e) => e.track) as Track[];
 
 function deleteSong(songId: string): void {
   instance()
