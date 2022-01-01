@@ -1,59 +1,65 @@
 <template>
-  <div
-    class="track"
-    :class="{
-      active:
-        playerStore.currentlyPlaying && track.track
-          ? playerStore.currentlyPlaying.item && track.track.id === playerStore.currentlyPlaying.item.id
-          : false,
-      deletable: playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative,
-    }"
-    @click="playSongs(index, currentPlaylistTracks)"
-  >
-    <div class="track-icon">
-      <i class="track-icon-item music icon-music" />
-      <i
-        class="track-icon-item save icon-plus"
-        @click.prevent.stop="dialogStore.open({ type: 'addSong', songUri: track.track.uri })"
-      ></i>
-    </div>
-    <div>
-      <div class="track-name">{{ track.track.name }}</div>
-      <ArtistList :artist-list="track.track.artists" feat />
-    </div>
-    <div class="album">
-      <div v-if="isAlbum(track.track.album)" class="adder">
-        <i class="adder-icon icon-album" />
+  <template v-for="(track, index) in trackList" :key="track">
+    <div
+      class="track"
+      :class="{
+        active:
+          playerStore.currentlyPlaying && track.track
+            ? playerStore.currentlyPlaying.item && track.track.id === playerStore.currentlyPlaying.item.id
+            : false,
+        deletable: playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative,
+      }"
+      @click="
+        playSongs(
+          index,
+          trackList.map((e) => e.track),
+        )
+      "
+    >
+      <div class="track-icon">
+        <i class="track-icon-item music icon-music" />
         <i
-          class="adder-button icon-plus"
-          @click.prevent.stop="dialogStore.open({ type: 'addalbum', albumId: track.track.album.id })"
-        />
+          class="track-icon-item save icon-plus"
+          @click.prevent.stop="dialogStore.open({ type: 'addSong', songUri: track.track.uri })"
+        ></i>
       </div>
-      <i
-        v-else
-        :class="{
-          'icon-ep': isEP(track.track.album),
-          'icon-single': isSingle(track.track.album),
-          'icon-compilation': isCompilation(track.track.album),
-        }"
-      />
-      <AlbumLink :album="track.track.album" no-icon />
+      <div>
+        <div class="track-name">{{ track.track.name }}</div>
+        <ArtistList :artist-list="track.track.artists" feat />
+      </div>
+      <div class="album">
+        <div v-if="isAlbum(track.track.album)" class="adder">
+          <i class="adder-icon icon-album" />
+          <i
+            class="adder-button icon-plus"
+            @click.prevent.stop="dialogStore.open({ type: 'addalbum', albumId: track.track.album.id })"
+          />
+        </div>
+        <i
+          v-else
+          :class="{
+            'icon-ep': isEP(track.track.album),
+            'icon-single': isSingle(track.track.album),
+            'icon-compilation': isCompilation(track.track.album),
+          }"
+        />
+        <AlbumLink :album="track.track.album" no-icon />
+      </div>
+      <div class="date">{{ date(track.added_at) }}</div>
+      <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
+      <div v-if="playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative">
+        <button class="button button--nude delete" @click.prevent.stop="deleteSong(track.track.uri)">
+          <i class="icon-trash-2"></i>
+        </button>
+      </div>
     </div>
-    <div class="date">{{ date(track.added_at) }}</div>
-    <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
-    <div v-if="playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative">
-      <button class="button button--nude delete" @click.prevent.stop="deleteSong(track.track.uri)">
-        <i class="icon-trash-2"></i>
-      </button>
-    </div>
-  </div>
+  </template>
 </template>
 
 <script lang="ts" setup>
 import { defineProps } from "vue";
 import { NotificationType } from "../../@types/Notification";
 import { PlaylistTrack } from "../../@types/Playlist";
-import { Track } from "../../@types/Track";
 import { instance } from "../../api";
 import { date, timecode } from "../../helpers/date";
 import { notification } from "../../helpers/notifications";
@@ -67,16 +73,13 @@ import { useDialog } from "../dialog/DialogStore";
 import { usePlayer } from "../player/PlayerStore";
 
 defineProps<{
-  track: PlaylistTrack;
-  index: number;
+  trackList: PlaylistTrack[];
 }>();
 
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
 const playerStore = usePlayer();
 const authStore = useAuth();
-
-const currentPlaylistTracks = playlistStore.tracks.map((e) => e.track) as Track[];
 
 function deleteSong(songId: string): void {
   instance()

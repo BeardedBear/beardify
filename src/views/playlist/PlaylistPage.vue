@@ -26,13 +26,9 @@
         <AlbumGallery title="Albums" :icon-name="'album'" :album-list="albums" class="block" />
         <AlbumGallery title="EP's" :icon-name="'ep'" :album-list="eps" class="block" />
         <div class="heading sticky"><i class="icon-single"></i>Singles</div>
-        <template v-for="(track, index) in singles" :key="track">
-          <TrackItem :track="track" :index="index" />
-        </template>
+        <Tracks :track-list="singles" />
       </template>
-      <template v-for="(track, index) in playlistStore.tracks" v-else :key="track">
-        <TrackItem :track="track" :index="index" />
-      </template>
+      <Tracks v-else :track-list="playlistStore.tracks" />
     </div>
   </PageScroller>
 </template>
@@ -46,7 +42,7 @@ import { usePlaylist } from "./PlaylistStore";
 import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";
 import ShareContent from "../../components/ShareContent.vue";
-import TrackItem from "../../components/playlist/Track.vue";
+import Tracks from "../../components/playlist/Tracks.vue";
 import AlbumGallery from "../../components/AlbumGallery.vue";
 import { isAlbum, isEP, isSingle, useCheckLiveAlbum } from "../../helpers/useCleanAlbums";
 import Actions from "../../components/playlist/Actions.vue";
