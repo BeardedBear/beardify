@@ -5,7 +5,10 @@
       <img class="avatar-bg" :src="userStore.user.images[0].url" alt="" />
       <div class="inner">
         <img class="avatar" :src="userStore.user.images[0].url" alt="" />
-        <div class="name">{{ userStore.user?.display_name }}</div>
+        <div>
+          <div class="name">{{ userStore.user?.display_name }}</div>
+          <div class="metas">{{ userStore.user?.followers.total }} followers</div>
+        </div>
       </div>
     </div>
 
