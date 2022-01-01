@@ -3,7 +3,7 @@ import { Image } from "./Image";
 import { SimplifiedPlaylist } from "./Playlist";
 
 export type Product = "premium" | "free" | "open";
-export interface Me {
+export interface User {
   country: string;
   display_name: string;
   email: string;
@@ -23,7 +23,7 @@ export interface Followers {
 }
 
 export interface UserStore {
-  user: Me | null;
+  user: User | null;
   collections: SimplifiedPlaylist[];
   playlists: SimplifiedPlaylist[];
 }

@@ -3,7 +3,7 @@ import { Artist } from "./Artist";
 import { CurrentlyPlaying, CurrentlyPlayingContext } from "./CurrentlyPlaying";
 import { Device } from "./Device";
 import { Image } from "./Image";
-import { Followers } from "./Me";
+import { Followers } from "./User";
 import { ExternalUrls } from "./Misc";
 import { PlaylistTracksRef, SimplifiedPlaylist } from "./Playlist";
 import { PublicUser } from "./PublicUser";

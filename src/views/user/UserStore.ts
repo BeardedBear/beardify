@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { Paging } from "../../@types/Paging";
 import { SimplifiedPlaylist } from "../../@types/Playlist";
-import { Me, UserStore } from "../../@types/User";
+import { User, UserStore } from "../../@types/User";
 import { instance } from "../../api";
 
 function isACollection(playlistName: SimplifiedPlaylist): boolean {
@@ -23,7 +23,7 @@ export const useUserStore = defineStore("user", {
     },
 
     async getUser(userId: string) {
-      this.user = (await instance().get<Me>(`users/${userId}`)).data;
+      this.user = (await instance().get<User>(`users/${userId}`)).data;
     },
 
     async getUserPlaylists(url: string) {

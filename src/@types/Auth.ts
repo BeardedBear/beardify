@@ -1,9 +1,9 @@
-import { Me } from "./Me";
+import { User } from "./User";
 
 export interface Auth {
   accessToken: string;
   code: string;
-  me: Me | null;
+  me: User | null;
 }
 
 export interface AuthAPIResponse {

@@ -1,5 +1,5 @@
 import { Image } from "./Image";
-import { Followers } from "./Me";
+import { Followers } from "./User";
 import { ExternalUrls } from "./Misc";
 import { Paging } from "./Paging";
 import { PublicUser } from "./PublicUser";
