@@ -12,3 +12,11 @@ export interface PublicUser {
   type: string;
   uri: string;
 }
+export interface SimplifiedPublicUser {
+  display_name: string;
+  external_urls: ExternalUrls;
+  href: string;
+  id: string;
+  type: string;
+  uri: string;
+}

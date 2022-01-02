@@ -38,7 +38,7 @@
           :to="`/collection/${playlist.id}`"
           :class="{ active: $route.params.id === playlist.id }"
         >
-          <i class="type-icon icon-folder" />
+          <PlaylistIcon :playlist="playlist" />
           <div class="name">{{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}</div>
           <VisibilityIcon :playlist="playlist" />
           <button class="edit" @click.prevent="dialogStore.open({ type: 'editPlaylist', playlistId: playlist.id })">
@@ -80,14 +80,7 @@
           :to="`/playlist/${playlist.id}`"
           :class="{ active: $route.params.id === playlist.id }"
         >
-          <i
-            class="type-icon"
-            :class="{
-              'icon-spotify': !playlist.collaborative && playlist.owner.display_name === 'Spotify',
-              'icon-music': !playlist.collaborative && playlist.owner.display_name !== 'Spotify',
-              'icon-users': playlist.collaborative,
-            }"
-          />
+          <PlaylistIcon :playlist="playlist" />
           <div class="name">{{ playlist.name }}</div>
           <VisibilityIcon :playlist="playlist" />
           <button class="edit" @click.prevent="dialogStore.open({ type: 'editPlaylist', playlistId: playlist.id })">
@@ -109,6 +102,7 @@ import { useAuth } from "../../views/auth/AuthStore";
 import Menu from "./MainMenu.vue";
 import Topbar from "../Topbar.vue";
 import VisibilityIcon from "./VisibilityIcon.vue";
+import PlaylistIcon from "./PlaylistIcon.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -163,11 +157,6 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   justify-content: space-between;
   padding: 0.3rem 1.2rem 0.3rem 1rem;
   text-decoration: none;
-
-  .type-icon {
-    margin-right: 1rem;
-    opacity: 0.3;
-  }
 
   .edit {
     background-color: var(--bg-color);

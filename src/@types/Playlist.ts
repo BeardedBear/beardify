@@ -2,7 +2,7 @@ import { Image } from "./Image";
 import { Followers } from "./User";
 import { ExternalUrls } from "./Misc";
 import { Paging } from "./Paging";
-import { PublicUser } from "./PublicUser";
+import { PublicUser, SimplifiedPublicUser } from "./PublicUser";
 import { Track } from "./Track";
 
 export interface SimplifiedPlaylist {
@@ -13,7 +13,7 @@ export interface SimplifiedPlaylist {
   id: string;
   images: Image[];
   name: string;
-  owner: PublicUser;
+  owner: SimplifiedPublicUser;
   public: boolean;
   snapshot_id: string;
   tracks: PlaylistTracksRef;
