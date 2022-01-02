@@ -4,18 +4,30 @@
     <PageFit>
       <div class="collection">
         <Header no-cover no-duration />
-        <div class="album-list">
-          <div v-for="(album, index) in cleanAlbumList" :key="index">
-            <Album :album="album" with-artists can-delete can-save />
-          </div>
-        </div>
+        <SlickList
+          v-model:list="albumList"
+          axis="xy"
+          class="album-list"
+          :press-delay="200"
+          :accept="true"
+          @sort-end="syncNewPositions"
+        >
+          <SlickItem
+            v-for="(item, i) in albumList"
+            :key="i"
+            :index="i"
+            :disabled="playlistStore.playlist.owner.id !== authStore.me?.id"
+          >
+            <Album :album="item" with-artists can-delete can-save />
+          </SlickItem>
+        </SlickList>
       </div>
     </PageFit>
   </PageScroller>
 </template>
 
 <script lang="ts" setup>
-import { computed, defineProps } from "vue";
+import { defineProps, ref, watch } from "vue";
 import Album from "../../components/album/Album.vue";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { usePlaylist } from "./PlaylistStore";
@@ -23,10 +35,23 @@ import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";
 import PageFit from "../../components/PageFit.vue";
 import Header from "../../components/playlist/Header.vue";
+import { SlickList, SlickItem } from "vue-slicksort";
+import { AlbumSimplified } from "../../@types/Album";
+import { useAuth } from "../auth/AuthStore";
 
 const props = defineProps<{ id: string }>();
-const cleanAlbumList = computed(() => removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album)));
 const playlistStore = usePlaylist();
+const albumList = ref<AlbumSimplified[]>([]);
+const authStore = useAuth();
+
+function syncNewPositions(event: { oldIndex: number; newIndex: number }): void {
+  playlistStore.updateCollectionPosition(event.oldIndex, event.newIndex);
+}
+
+watch(
+  () => playlistStore.tracks,
+  () => (albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album))),
+);
 
 playlistStore.clean().finally(() => {
   playlistStore.getPlaylist(`playlists/${props.id}`);

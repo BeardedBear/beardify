@@ -58,5 +58,12 @@ export const usePlaylist = defineStore("playlist", {
           useSidebar().refreshPlaylists();
         });
     },
+
+    updateCollectionPosition(oldIndex: number, newIndex: number) {
+      instance().put(`playlists/${this.playlist.id}/tracks`, {
+        insert_before: oldIndex < newIndex ? newIndex + 1 : newIndex,
+        range_start: oldIndex,
+      });
+    },
   },
 });

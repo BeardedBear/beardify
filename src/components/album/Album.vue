@@ -126,6 +126,9 @@ function deleteAlbum(albumId: string): void {
 
 .album {
   animation: popAlbum 1s ease both;
+  color: var(--font-color);
+  font-family: "IBM Plex Sans Condensed", Helvetica, Arial, sans-serif;
+  line-height: 1.4;
   position: relative;
 
   &:hover {
