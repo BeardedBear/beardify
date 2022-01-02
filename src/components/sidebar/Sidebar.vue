@@ -40,7 +40,7 @@
         >
           <i class="type-icon icon-folder" />
           <div class="name">{{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}</div>
-          <i class="public-icon" title="Public" :class="{ 'icon-public': playlist.public }" />
+          <VisibilityIcon :playlist="playlist" />
           <button class="edit" @click.prevent="dialogStore.open({ type: 'editPlaylist', playlistId: playlist.id })">
             <i class="icon-more-vertical"></i>
           </button>
@@ -89,7 +89,7 @@
             }"
           />
           <div class="name">{{ playlist.name }}</div>
-          <i class="public-icon" title="Public" :class="{ 'icon-public': playlist.public }" />
+          <VisibilityIcon :playlist="playlist" />
           <button class="edit" @click.prevent="dialogStore.open({ type: 'editPlaylist', playlistId: playlist.id })">
             <i class="icon-more-vertical"></i>
           </button>
@@ -108,6 +108,7 @@ import { onClickOutside } from "@vueuse/core";
 import { useAuth } from "../../views/auth/AuthStore";
 import Menu from "./MainMenu.vue";
 import Topbar from "../Topbar.vue";
+import VisibilityIcon from "./VisibilityIcon.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -184,11 +185,6 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
     &:hover {
       background-color: var(--bg-color-lighter);
     }
-  }
-
-  .public-icon {
-    margin-left: 1rem;
-    opacity: 0.1;
   }
 
   .name {
