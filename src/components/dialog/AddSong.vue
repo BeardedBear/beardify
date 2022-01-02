@@ -1,20 +1,18 @@
 <template>
   <Dialog with-title title="Add track to a playlist">
-    <div
-      v-for="(playlist, index) in sidebarStore.playlists.filter(
-        (playlist) => playlist.collaborative || playlist.owner.id === authStore.me?.id,
-      )"
-      :key="index"
-      class="collection"
-      @click="add(dialogStore.songUri ? dialogStore.songUri : '', playlist.id)"
-    >
-      <div class="playlist">
-        <i
-          :class="{
-            'icon-music': !playlist.collaborative && playlist.owner.id === authStore.me?.id,
-            'icon-users': playlist.collaborative,
-          }"
-        />{{ playlist.name }}
+    <div class="content">
+      <div
+        v-for="(playlist, index) in sidebarStore.playlists.filter(
+          (playlist) => playlist.collaborative || playlist.owner.id === authStore.me?.id,
+        )"
+        :key="index"
+        class="collection"
+        @click="add(dialogStore.songUri ? dialogStore.songUri : '', playlist.id)"
+      >
+        <div class="playlist">
+          <div><PlaylistIcon :playlist="playlist" /> {{ playlist.name }}</div>
+          <VisibilityIcon :playlist="playlist" />
+        </div>
       </div>
     </div>
   </Dialog>
@@ -28,6 +26,8 @@ import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
 import Dialog from "./Dialog.vue";
 import { useAuth } from "../../views/auth/AuthStore";
+import PlaylistIcon from "../sidebar/PlaylistIcon.vue";
+import VisibilityIcon from "../sidebar/VisibilityIcon.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -46,11 +46,16 @@ function add(songUri: string, playlistId: string): void {
 <style lang="scss" scoped>
 @import "../../assets/scss/colors";
 
+.content {
+  padding: 0.5rem;
+}
+
 .playlist {
   align-items: center;
   display: flex;
   font-size: 0.9rem;
   font-weight: bold;
+  justify-content: space-between;
 
   i {
     margin-right: 1rem;
@@ -59,15 +64,18 @@ function add(songUri: string, playlistId: string): void {
 }
 
 .collection {
+  border-radius: 0.3rem;
   cursor: pointer;
-  opacity: 0.5;
-  padding: 0.5rem 1.5rem;
-  transition: 0.15s;
+  font-size: 0.9rem;
+  font-weight: bold;
+  opacity: 0.7;
+  padding: 0.5rem 1rem;
+  transition: 0.1s;
 
   &:hover {
     background: var(--bg-color-light);
     opacity: 1;
-    padding-left: 1.7rem;
+    padding-left: 1.2rem;
   }
 }
 </style>
