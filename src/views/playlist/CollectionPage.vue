@@ -9,7 +9,6 @@
           axis="xy"
           class="album-list"
           :press-delay="200"
-          :accept="true"
           @sort-end="syncNewPositions"
         >
           <SlickItem
