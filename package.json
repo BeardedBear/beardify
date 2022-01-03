@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vite",
-    "lint": "vue-tsc --noEmit && prettier --c ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss}",
+    "lint": "vue-tsc --noEmit && eslint src/**/*.{vue,ts} && prettier --c ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss}",
     "build": "yarn lint && vite build",
     "fix": "prettier --write ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss} --fix",
     "preview": "yarn build && yarn vite preview"

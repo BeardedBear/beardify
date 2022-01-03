@@ -4,22 +4,24 @@
     <PageFit>
       <div class="collection">
         <Header no-cover no-duration />
-        <SlickList
-          v-model:list="albumList"
-          axis="xy"
-          class="album-list"
-          :press-delay="200"
-          @sort-end="syncNewPositions"
-        >
-          <SlickItem
-            v-for="(item, i) in albumList"
-            :key="i"
-            :index="i"
-            :disabled="playlistStore.playlist.owner.id !== authStore.me?.id"
+        <div class="content">
+          <SlickList
+            v-model:list="albumList"
+            axis="xy"
+            class="album-list"
+            :press-delay="200"
+            @sort-end="syncNewPositions"
           >
-            <Album :album="item" with-artists can-delete can-save />
-          </SlickItem>
-        </SlickList>
+            <SlickItem
+              v-for="(item, i) in albumList"
+              :key="item.id"
+              :index="i"
+              :disabled="playlistStore.playlist.owner.id !== authStore.me?.id"
+            >
+              <Album :album="item" with-artists can-delete can-save />
+            </SlickItem>
+          </SlickList>
+        </div>
       </div>
     </PageFit>
   </PageScroller>
@@ -63,13 +65,29 @@ playlistStore.clean().finally(() => {
 @import "../../assets/scss/responsive";
 
 .collection {
-  padding: 2rem;
+  display: grid;
+  grid-template-rows: auto 1fr;
+
+  // padding: 2rem;
+  height: 100%;
+}
+
+.content {
+  position: relative;
 }
 
 .album-list {
+  $padd: 10rem;
+
   display: grid;
   gap: 2rem;
   grid-template-columns: repeat(4, 1fr);
+  inset: 0;
+  overflow: auto;
+  padding: 2rem 5rem;
+  padding-left: $padd;
+  padding-right: $padd;
+  position: absolute;
 
   @include xl {
     grid-template-columns: repeat(3, 1fr);
@@ -80,7 +98,11 @@ playlistStore.clean().finally(() => {
   }
 
   @include hdpi {
-    grid-template-columns: repeat(7, 1fr);
+    $padd: 50rem;
+
+    grid-template-columns: repeat(11, 1fr);
+    padding-left: $padd;
+    padding-right: $padd;
   }
 }
 

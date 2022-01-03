@@ -7,10 +7,14 @@
 
 .fit {
   margin: 0 auto;
-  max-width: 57rem;
+  width: 100%;
 
-  @include hdpi {
-    max-width: 120rem;
-  }
+  // @include hdpi {
+  //   $padd: 50rem;
+
+  //   padding-left: $padd;
+  //   padding-right: $padd;
+
+  // }
 }
 </style>

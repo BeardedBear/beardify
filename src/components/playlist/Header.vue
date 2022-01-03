@@ -1,5 +1,5 @@
 <template>
-  <div class="playlist-header">
+  <div class="playlist-header" :class="{ 'not-fit': notFit }">
     <div class="playlist-header__left">
       <Cover v-if="!noCover" size="large" :images="playlistStore.playlist.images" class="cover" />
       <div>
@@ -41,6 +41,7 @@ import { defineProps } from "vue";
 defineProps<{
   noCover?: boolean;
   noDuration?: boolean;
+  notFit?: boolean;
 }>();
 
 const playlistStore = usePlaylist();
@@ -80,9 +81,22 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 .playlist-header {
+  $padd: 10rem;
+
   display: flex;
   justify-content: space-between;
-  margin-bottom: 2.2rem;
+  padding: 2rem $padd 1rem;
+
+  &.not-fit {
+    padding: 0 0 2rem;
+  }
+
+  @include hdpi {
+    $padd: 50rem;
+
+    padding-left: $padd;
+    padding-right: $padd;
+  }
 
   img {
     margin-right: 2rem;

@@ -2,7 +2,7 @@
   <div v-if="playlistStore.playlist.name === ''" class="loader"><Loader /></div>
   <PageScroller v-else>
     <div class="playlist">
-      <Header />
+      <Header not-fit />
       <template v-if="playlistStore.playlist.owner.display_name === 'Spotify'">
         <AlbumGallery title="Albums" :icon-name="'album'" :album-list="albums" class="block" />
         <AlbumGallery title="EP's" :icon-name="'ep'" :album-list="eps" class="block" />
@@ -51,8 +51,8 @@ playlistStore.clean().finally(() => {
 
 .playlist {
   margin: 0 auto;
-  max-width: 100rem;
   padding: 2rem;
+  width: 100%;
 }
 
 .loader {

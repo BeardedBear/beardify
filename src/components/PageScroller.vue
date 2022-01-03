@@ -25,6 +25,7 @@ function scrollToTop(): void {
 <style lang="scss" scoped>
 .page {
   animation: pop-content 1s ease both;
+  display: grid;
   overflow-y: scroll;
   scroll-behavior: smooth;
 }
