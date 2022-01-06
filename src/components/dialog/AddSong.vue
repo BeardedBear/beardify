@@ -28,18 +28,23 @@ import Dialog from "./Dialog.vue";
 import { useAuth } from "../../views/auth/AuthStore";
 import PlaylistIcon from "../sidebar/PlaylistIcon.vue";
 import VisibilityIcon from "../sidebar/VisibilityIcon.vue";
+import { trackAllreadyExist } from "../../helpers/playlist";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const authStore = useAuth();
 
-function add(songUri: string, playlistId: string): void {
-  instance()
-    .post(`playlists/${playlistId}/tracks?uris=${songUri}`)
-    .then((f) => {
-      if (f.status === 201) dialogStore.close();
-    })
-    .then(() => notification({ msg: "Track added", type: NotificationType.Success }));
+async function add(songUri: string, playlistId: string): Promise<void> {
+  if (await trackAllreadyExist(`playlists/${playlistId}/tracks?limit=50`, songUri)) {
+    notification({ msg: "This track allready exists in this playlist", type: NotificationType.Error });
+  } else {
+    instance()
+      .post(`playlists/${playlistId}/tracks?uris=${songUri}`)
+      .then(() => {
+        dialogStore.close();
+        notification({ msg: "Track added", type: NotificationType.Success });
+      });
+  }
 }
 </script>
 

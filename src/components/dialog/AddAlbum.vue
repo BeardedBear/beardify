@@ -38,7 +38,7 @@ const authStore = useAuth();
 
 async function add(albumId: string, playlistId: string): Promise<void> {
   if (await albumAllreadyExist(`playlists/${playlistId}/tracks?limit=50`, albumId)) {
-    notification({ msg: "This album allready exist in this collection", type: NotificationType.Error });
+    notification({ msg: "This album allready exists in this collection", type: NotificationType.Error });
   } else {
     instance()
       .get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`)
