@@ -30,24 +30,14 @@ import Dialog from "./Dialog.vue";
 import { useAuth } from "../../views/auth/AuthStore";
 import PlaylistIcon from "../sidebar/PlaylistIcon.vue";
 import VisibilityIcon from "../sidebar/VisibilityIcon.vue";
-import { PlaylistTrack } from "../../@types/Playlist";
+import { albumAllreadyExist } from "../../helpers/playlist";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const authStore = useAuth();
 
 async function add(albumId: string, playlistId: string): Promise<void> {
-  let tempTracks: PlaylistTrack[] = [];
-  async function albumAllreadyExist(url: string): Promise<boolean | undefined> {
-    return instance()
-      .get<Paging<PlaylistTrack>>(url)
-      .then(({ data }) => {
-        tempTracks = tempTracks.concat(data.items);
-        return data.next ? albumAllreadyExist(data.next) : tempTracks.some((e) => e.track.album.id === albumId);
-      });
-  }
-
-  if (await albumAllreadyExist(`playlists/${playlistId}/tracks?limit=50`)) {
+  if (await albumAllreadyExist(`playlists/${playlistId}/tracks?limit=50`, albumId)) {
     notification({ msg: "Album allready in collection", type: NotificationType.Error });
   } else {
     instance()
