@@ -85,7 +85,7 @@ $radius: 0.4rem;
   place-content: center;
   position: fixed;
   transition: 200ms;
-  z-index: 99999999;
+  z-index: 99;
 }
 
 .head {

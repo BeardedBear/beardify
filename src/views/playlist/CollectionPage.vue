@@ -30,7 +30,6 @@
 <script lang="ts" setup>
 import { defineProps, ref, watch } from "vue";
 import Album from "../../components/album/Album.vue";
-import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { usePlaylist } from "./PlaylistStore";
 import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";
@@ -51,7 +50,7 @@ function syncNewPositions(event: { oldIndex: number; newIndex: number }): void {
 
 watch(
   () => playlistStore.tracks,
-  () => (albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album))),
+  () => (albumList.value = playlistStore.tracks.map((a) => a.track.album)),
 );
 
 playlistStore.clean().finally(() => {
@@ -67,8 +66,6 @@ playlistStore.clean().finally(() => {
 .collection {
   display: grid;
   grid-template-rows: auto 1fr;
-
-  // padding: 2rem;
   height: 100%;
 }
 

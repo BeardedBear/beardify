@@ -37,9 +37,10 @@ const notificationStore = useNotification();
   $offset: 4rem;
 
   bottom: $offset + 4rem;
+  isolation: isolate;
   position: absolute;
   right: $offset + 1rem;
-  z-index: 9;
+  z-index: 9999;
 }
 
 .notification {
