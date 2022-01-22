@@ -8,23 +8,18 @@
         class="links__item"
         @click="
           openLink(
-            `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${artistStore.artist.name
-              .normalize('NFKC')
-              .replaceAll(/[\u0300-\u036f]/g, '')}&amp;x=0&amp;y=0`,
+            `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${artistNameNormalized}&amp;x=0&amp;y=0`,
           )
         "
       >
         <i class="icon-sputnik" />
       </a>
-      <a
-        class="links__item"
-        @click="openLink(`https://www.last.fm/fr/music/${artistStore.artist.name.replaceAll(' ', '+')}`)"
-      >
+      <a class="links__item" @click="openLink(`https://www.last.fm/fr/music/${artistNameNormalized}`)">
         <i class="icon-lastfm" />
       </a>
       <a
         class="links__item"
-        @click="openLink(`https://www.discogs.com/fr/search/?q=${artistStore.artist.name}&amp;strict=true`)"
+        @click="openLink(`https://www.discogs.com/fr/search/?q=${artistNameNormalized}&amp;strict=true`)"
       >
         <i class="icon-discogs" />
       </a>
@@ -32,27 +27,21 @@
         class="links__item"
         @click="
           openLink(
-            `https://rateyourmusic.com/artist/${artistStore.artist.name
-              .normalize('NFKC')
+            `https://rateyourmusic.com/artist/${artistNameNormalized
               .toLowerCase()
               .replaceAll(' ', '-')
-              .replaceAll(',', '')
-              .replaceAll('\'', '')
-              .replace(/[\u0300-\u036f]/g, '')}`,
+              .replaceAll(',', '')}`,
           )
         "
       >
         <i class="icon-rym" />
       </a>
-      <a
-        class="links__item"
-        @click="openLink(`https://www.google.com/search?q=${artistStore.artist.name}+band+artist`)"
-      >
+      <a class="links__item" @click="openLink(`https://www.google.com/search?q=${artistNameNormalized}+band+artist`)">
         <i class="icon-google" />
       </a>
       <a
         class="links__item"
-        @click="openLink(`https://www.youtube.com/results?search_query=${artistStore.artist.name}+band+artist`)"
+        @click="openLink(`https://www.youtube.com/results?search_query=${artistNameNormalized}+band+artist`)"
       >
         <i class="icon-youtube" />
       </a>
@@ -73,7 +62,11 @@
 <script lang="ts" setup>
 import { useArtist } from "../../views/artist/ArtistStore";
 import ShareContent from "../ShareContent.vue";
+import { normalize } from "normalize-diacritics";
+import { onMounted, ref } from "vue";
+
 const artistStore = useArtist();
+const artistNameNormalized = ref<string>("");
 
 function openLink(url: string): void {
   window.open(url, "_blank");
@@ -82,6 +75,12 @@ function openLink(url: string): void {
 function switchFollow(artistId: string): void {
   artistStore.switchFollow(artistId);
 }
+
+onMounted(async () => {
+  artistNameNormalized.value = (await normalize(artistStore.artist.name))
+    .replace(/[\u0300-\u036f]/g, "")
+    .replaceAll("&", "and");
+});
 </script>
 
 <style lang="scss" scoped>
