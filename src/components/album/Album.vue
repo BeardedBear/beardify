@@ -183,7 +183,7 @@ function deleteAlbum(albumId: string): void {
   background-color: transparent;
   border: 0;
   border-radius: 20rem;
-  color: currentColor;
+  color: currentcolor;
   cursor: pointer;
   display: none;
   font-size: 1.5rem;
@@ -194,7 +194,7 @@ function deleteAlbum(albumId: string): void {
 
   &:hover {
     background-color: color.change(black, $alpha: 0.5);
-    color: currentColor;
+    color: currentcolor;
   }
 
   &.delete {

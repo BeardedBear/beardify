@@ -86,7 +86,7 @@ watch(
     background-color: transparent;
     border: none;
     border-radius: 0.4rem;
-    color: currentColor;
+    color: currentcolor;
     cursor: pointer;
     font-size: 1.3rem;
     opacity: 0.5;

@@ -104,7 +104,7 @@ onMounted(async () => {
 
   &__item {
     align-items: center;
-    color: currentColor;
+    color: currentcolor;
     cursor: pointer;
     display: flex;
     font-size: 1rem;

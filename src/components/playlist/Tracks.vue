@@ -146,7 +146,7 @@ function deleteSong(songId: string): void {
   .link,
   .date,
   .owner {
-    color: currentColor;
+    color: currentcolor;
     font-size: 0.9rem;
     font-style: italic;
     opacity: 0.5;

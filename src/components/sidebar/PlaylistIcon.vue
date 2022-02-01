@@ -44,7 +44,7 @@ const authStore = useAuth();
     &::after {
       $size: 0.2rem;
 
-      background-color: currentColor;
+      background-color: currentcolor;
       border-radius: 100%;
       content: "";
       height: $size;

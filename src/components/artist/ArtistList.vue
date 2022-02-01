@@ -33,7 +33,7 @@ function goArtist(artistUri: string): void {
 }
 
 .artist {
-  color: currentColor;
+  color: currentcolor;
   cursor: pointer;
   text-decoration: none;
 

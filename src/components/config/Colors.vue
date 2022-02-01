@@ -140,7 +140,7 @@ const textColors: TextColors[] = [
 
     background-color: var(--bg-color);
     border: 0;
-    color: currentColor;
+    color: currentcolor;
     cursor: pointer;
     margin-top: 0.8rem;
     padding: 0.5rem 0;

@@ -105,7 +105,7 @@ defineProps<{
 }
 
 .artistname {
-  color: currentColor;
+  color: currentcolor;
   font-weight: 700;
   text-decoration: none;
 }
@@ -115,7 +115,7 @@ defineProps<{
   font-style: italic;
 
   .link {
-    color: currentColor;
+    color: currentcolor;
     cursor: pointer;
     font-size: 0.9rem;
     font-style: italic;

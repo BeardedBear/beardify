@@ -56,7 +56,7 @@ const dialogStore = useDialog();
   &__item {
     background-color: var(--bg-color-light);
     border: 0;
-    color: currentColor;
+    color: currentcolor;
     cursor: pointer;
     font-size: 1.2rem;
     line-height: 1;

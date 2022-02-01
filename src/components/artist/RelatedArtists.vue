@@ -39,7 +39,7 @@ const artistStore = useArtist();
 
 .item {
   border-radius: 0.3rem;
-  color: currentColor;
+  color: currentcolor;
   cursor: pointer;
   font-size: 0.8rem;
   padding: 0.8rem;

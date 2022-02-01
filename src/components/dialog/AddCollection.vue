@@ -37,7 +37,7 @@ function create(): void {
   background-color: var(--bg-color-light);
   border: 0;
   border-radius: 0.3rem;
-  color: currentColor;
+  color: currentcolor;
   display: block;
   font-weight: 700;
   margin-bottom: 1.2rem;

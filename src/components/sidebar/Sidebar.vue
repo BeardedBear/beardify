@@ -150,7 +150,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 
 .playlist-item {
   align-items: center;
-  color: currentColor;
+  color: currentcolor;
   display: flex;
   font-size: 0.9rem;
   font-weight: bold;

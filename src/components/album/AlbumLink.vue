@@ -27,7 +27,7 @@ function goAlbum(albumId: string): void {
 }
 
 .artist {
-  color: currentColor;
+  color: currentcolor;
   cursor: pointer;
   font-size: 0.9rem;
   font-style: italic;

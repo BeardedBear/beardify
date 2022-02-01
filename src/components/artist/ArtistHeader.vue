@@ -51,7 +51,7 @@ onMounted(() => {
   .genre {
     background-color: var(--bg-color-lighter);
     border-radius: 2rem;
-    color: currentColor;
+    color: currentcolor;
     display: inline-block;
     font-size: 0.8rem;
     margin-right: 0.3rem;

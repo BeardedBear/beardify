@@ -46,7 +46,7 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
   .artist {
     align-items: center;
     border-radius: 0.3rem;
-    color: currentColor;
+    color: currentcolor;
     display: flex;
     font-size: 0.9rem;
     font-weight: bold;

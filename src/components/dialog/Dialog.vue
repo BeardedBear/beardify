@@ -33,7 +33,7 @@ $radius: 0.4rem;
   background-color: var(--bg-color-light);
   border: 0;
   border-radius: 0.4rem;
-  color: currentColor;
+  color: currentcolor;
   cursor: pointer;
   font-size: 1rem;
   padding: 0.4rem 0.5rem;
