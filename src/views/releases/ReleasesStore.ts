@@ -1,8 +1,9 @@
 import axios from "axios";
 import { defineStore } from "pinia";
-import { MenuItem, Release, ReleasesPage } from "../../@types/Releases";
+import { MenuItem, Release, ReleasesCheck, ReleasesPage } from "../../@types/Releases";
 import { useCheckLiveAlbum, useCheckReissueAlbum } from "../../helpers/useCleanAlbums";
 import { useMergeReleaseSlugs } from "../../helpers/useMergeReleaseSlugs";
+import { useAuth } from "../auth/AuthStore";
 
 export const useReleases = defineStore("releases", {
   state: (): ReleasesPage => ({
@@ -10,6 +11,8 @@ export const useReleases = defineStore("releases", {
     releases: [],
     monthList: [],
     activeSlug: null,
+    checks: null,
+    uid: null,
   }),
 
   actions: {
@@ -20,6 +23,37 @@ export const useReleases = defineStore("releases", {
 
     setActiveSlug(slug: string | null) {
       this.activeSlug = this.activeSlug === slug ? null : slug;
+    },
+
+    async createReleasesCheckEntry() {
+      const authStore = useAuth();
+      const userId = authStore.me?.id;
+      const { data } = await axios.get<{ data: ReleasesCheck[] }>(
+        `https://beardictus.com/items/ReleasesCheck?filter[user][_eq]=${userId}`,
+      );
+
+      if (!data.data.length) {
+        axios
+          .post("https://beardictus.com/items/ReleasesCheck", {
+            user: useAuth().me?.id,
+            checks: [],
+          })
+          .then(() => (this.checks = []));
+      } else {
+        this.checks = data.data[0].checks;
+        this.uid = data.data[0].id;
+      }
+    },
+
+    async checkRelease(releaseId: string) {
+      const newChecks = this.checks && this.checks?.concat(releaseId);
+
+      if (!this.checks?.includes(releaseId)) {
+        axios.patch(`https://beardictus.com/items/ReleasesCheck/${this.uid}`, {
+          checks: newChecks,
+        });
+        this.checks = newChecks;
+      }
     },
 
     async getReleases() {

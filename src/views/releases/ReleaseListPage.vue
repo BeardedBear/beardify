@@ -16,13 +16,20 @@ import Loader from "../../components/LoadingDots.vue";
 import ReleaseList from "../../components/releases/ReleaseList.vue";
 import ReleaseSide from "../../components/releases/ReleaseSide.vue";
 import { ref, watch } from "vue";
+import { useAuth } from "../auth/AuthStore";
 
 const releasesStore = useReleases();
+const authStore = useAuth();
 const listDOM = ref<HTMLElement | null>(null);
 
 watch(
   () => releasesStore.activeSlug,
   () => listDOM.value?.scrollTo(0, 0),
+);
+
+watch(
+  () => authStore.me,
+  () => authStore.me && releasesStore.createReleasesCheckEntry(),
 );
 
 if (!releasesStore.releases.length) releasesStore.getReleases();

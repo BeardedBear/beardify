@@ -1,22 +1,29 @@
 <template>
-  <div
-    class="release"
-    :class="{
-      'is-playing': playerStore.currentlyPlaying.item?.artists[0].name.toLowerCase() === release.artist.toLowerCase(),
-    }"
-    @click="search(release.artist, release.album)"
-  >
-    <div>{{ release.artist }}</div>
-    <div>{{ release.album }}</div>
-    <div class="tags">
-      <span
-        v-for="(slug, ii) in release.slug"
-        :key="ii"
-        class="slug"
-        :class="{ selected: releasesStore.activeSlug === slug }"
-      >
-        {{ slug }}
-      </span>
+  <div class="release-wrap">
+    <button class="check" @click="releasesStore.checkRelease(release.id)">
+      <i v-if="releasesStore.checks?.includes(release.id)" class="icon-check"></i>
+      <i v-else class="icon-circle"></i>
+    </button>
+    <div
+      class="release"
+      :class="{
+        'is-playing': playerStore.currentlyPlaying.item?.artists[0].name.toLowerCase() === release.artist.toLowerCase(),
+        checked: releasesStore.checks?.includes(release.id),
+      }"
+      @click="search(release.artist, release.album)"
+    >
+      <div>{{ release.artist }}</div>
+      <div>{{ release.album }}</div>
+      <div class="tags">
+        <span
+          v-for="(slug, ii) in release.slug"
+          :key="ii"
+          class="slug"
+          :class="{ selected: releasesStore.activeSlug === slug }"
+        >
+          {{ slug }}
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -45,11 +52,33 @@ function search(artist: string, album: string): void {
 </script>
 
 <style lang="scss" scoped>
+.release-wrap {
+  display: flex;
+  gap: 0.3rem;
+  transition: 0.2s;
+}
+
+.check {
+  background-color: transparent;
+  border: none;
+  color: var(--font-color);
+  cursor: pointer;
+  opacity: 0.2;
+  position: relative;
+  top: -0.1rem;
+  transition: 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
 .release {
   align-items: center;
   border-radius: 0.4rem;
   cursor: pointer;
   display: grid;
+  flex: 1;
   font-size: 0.9rem;
   font-weight: bold;
   grid-template-columns: 0.6fr 0.6fr 1fr;
@@ -64,6 +93,10 @@ function search(artist: string, album: string): void {
 
   &:hover {
     background-color: var(--bg-color-light);
+  }
+
+  &.checked {
+    opacity: 0.2;
   }
 
   &.is-playing {

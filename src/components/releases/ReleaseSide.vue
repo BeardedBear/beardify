@@ -17,7 +17,6 @@
 import { useReleases } from "../../views/releases/ReleasesStore";
 
 const releasesStore = useReleases();
-releasesStore.getReleases();
 </script>
 
 <style lang="scss" scoped>

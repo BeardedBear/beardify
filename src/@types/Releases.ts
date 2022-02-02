@@ -14,9 +14,17 @@ export interface MenuItem {
   slugs: string[];
 }
 
+export interface ReleasesCheck {
+  checks: string[];
+  id: number;
+  user: string;
+}
+
 export interface ReleasesPage {
   menu: MenuItem[];
   releases: Release[];
   monthList: string[];
   activeSlug: string | null;
+  checks: string[] | null;
+  uid: number | null;
 }
