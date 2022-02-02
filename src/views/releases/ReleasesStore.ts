@@ -45,15 +45,14 @@ export const useReleases = defineStore("releases", {
       }
     },
 
-    async checkRelease(releaseId: string) {
-      const newChecks = this.checks && this.checks?.concat(releaseId);
+    toggleRelease(releaseId: string) {
+      const addChecks = this.checks && this.checks?.concat(releaseId);
+      const delChecks = this.checks && this.checks?.filter((r) => r !== releaseId);
 
-      if (!this.checks?.includes(releaseId)) {
-        axios.patch(`https://beardictus.com/items/ReleasesCheck/${this.uid}`, {
-          checks: newChecks,
-        });
-        this.checks = newChecks;
-      }
+      axios.patch(`https://beardictus.com/items/ReleasesCheck/${this.uid}`, {
+        checks: !this.checks?.includes(releaseId) ? addChecks : delChecks,
+      });
+      this.checks = !this.checks?.includes(releaseId) ? addChecks : delChecks;
     },
 
     async getReleases() {

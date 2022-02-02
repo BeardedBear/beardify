@@ -1,6 +1,6 @@
 <template>
   <div class="release-wrap">
-    <button class="check" @click="releasesStore.checkRelease(release.id)">
+    <button class="check" @click="releasesStore.toggleRelease(release.id)">
       <i v-if="releasesStore.checks?.includes(release.id)" class="icon-check"></i>
       <i v-else class="icon-circle"></i>
     </button>
