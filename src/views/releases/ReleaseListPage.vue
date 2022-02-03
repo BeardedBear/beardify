@@ -1,12 +1,8 @@
 <template>
   <div v-if="!releasesStore.releases.length" class="loader"><Loader /></div>
   <div v-else class="releases">
-    <div class="side">
-      <ReleaseSide />
-    </div>
-    <div ref="listDOM" class="list">
-      <ReleaseList />
-    </div>
+    <div class="side"><ReleaseSide /></div>
+    <div ref="listDOM" class="list"><ReleaseList /></div>
   </div>
 </template>
 

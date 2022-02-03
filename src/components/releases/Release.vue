@@ -1,14 +1,14 @@
 <template>
   <div class="release-wrap">
     <button class="check" @click="releasesStore.toggleRelease(release.id)">
-      <i v-if="releasesStore.checks?.includes(release.id)" class="icon-check"></i>
+      <i v-if="releasesStore.checks?.find((r) => r.id === release.id)" class="icon-check"></i>
       <i v-else class="icon-circle"></i>
     </button>
     <div
       class="release"
       :class="{
         'is-playing': playerStore.currentlyPlaying.item?.artists[0].name.toLowerCase() === release.artist.toLowerCase(),
-        checked: releasesStore.checks?.includes(release.id),
+        checked: releasesStore.checks?.find((r) => r.id === release.id),
       }"
       @click="search(release.artist, release.album)"
     >

@@ -15,9 +15,14 @@ export interface MenuItem {
 }
 
 export interface ReleasesCheck {
-  checks: string[];
+  checks: Check[];
   id: number;
   user: string;
+}
+
+export interface Check {
+  id: string;
+  createdAt: number;
 }
 
 export interface ReleasesPage {
@@ -25,6 +30,6 @@ export interface ReleasesPage {
   releases: Release[];
   monthList: string[];
   activeSlug: string | null;
-  checks: string[] | null;
+  checks: Check[] | null;
   uid: number | null;
 }
