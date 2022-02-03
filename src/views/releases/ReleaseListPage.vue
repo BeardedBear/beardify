@@ -32,7 +32,8 @@ watch(
   () => authStore.me && releasesStore.createReleasesCheckEntry(),
 );
 
-if (!releasesStore.releases.length) releasesStore.getReleases();
+authStore.me && !releasesStore.checks && releasesStore.createReleasesCheckEntry();
+!releasesStore.releases.length && releasesStore.getReleases();
 </script>
 
 <style lang="scss" scoped>
