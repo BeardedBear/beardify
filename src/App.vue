@@ -22,6 +22,7 @@ import { useWindowFocus } from "@vueuse/core";
 import { watch } from "vue";
 import { useDialog } from "./components/dialog/DialogStore";
 import { useKeyboardEvents } from "./helpers/useKeyboardEvents";
+import { RouterView } from "vue-router";
 
 useKeyboardEvents();
 

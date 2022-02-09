@@ -27,12 +27,7 @@ module.exports = {
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": "warn",
     "vue/script-setup-uses-vars": "warn",
-    "vue/no-unused-properties": [
-      "warn",
-      {
-        groups: ["props", "setup"],
-        deepData: true,
-      },
-    ],
+    "vue/no-undef-components": "error",
+    "vue/no-unused-properties": "warn",
   },
 };

@@ -54,6 +54,7 @@ import { defineProps } from "vue";
 import LoadingDots from "../../components/LoadingDots.vue";
 import Cover from "../../components/Cover.vue";
 import ShareContent from "../../components/ShareContent.vue";
+import { RouterLink } from "vue-router";
 
 const userStore = useUserStore();
 const props = defineProps<{

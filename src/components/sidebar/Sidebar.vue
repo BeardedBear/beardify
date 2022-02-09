@@ -103,6 +103,7 @@ import Menu from "./MainMenu.vue";
 import Topbar from "../Topbar.vue";
 import VisibilityIcon from "./VisibilityIcon.vue";
 import PlaylistIcon from "./PlaylistIcon.vue";
+import { RouterLink } from "vue-router";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();

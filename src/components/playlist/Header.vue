@@ -37,6 +37,7 @@ import Actions from "../../components/playlist/Actions.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";
 import { defineProps } from "vue";
+import { RouterLink } from "vue-router";
 
 defineProps<{
   noCover?: boolean;

@@ -37,6 +37,7 @@ import { useAuth } from "../../views/auth/AuthStore";
 import { onClickOutside, templateRef } from "@vueuse/core";
 import { useConfig } from "./ConfigStore";
 import { NotificationType } from "../../@types/Notification";
+import { RouterLink } from "vue-router";
 
 const env = process.env.NODE_ENV;
 const authStore = useAuth();

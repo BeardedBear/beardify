@@ -21,6 +21,7 @@
 import { computed, ComputedRef } from "vue";
 import Cover from "../Cover.vue";
 import { useSearch } from "./SearchStore";
+import { RouterLink } from "vue-router";
 
 const searchStore = useSearch();
 const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {

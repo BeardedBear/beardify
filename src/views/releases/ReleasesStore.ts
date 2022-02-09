@@ -34,10 +34,7 @@ export const useReleases = defineStore("releases", {
 
       if (!data.data.length) {
         axios
-          .post("https://beardictus.com/items/ReleasesCheck", {
-            user: useAuth().me?.id,
-            checks: [],
-          })
+          .post("https://beardictus.com/items/ReleasesCheck", { user: useAuth().me?.id, checks: [] })
           .then(() => (this.checks = []));
       } else {
         this.checks = data.data[0].checks;
@@ -49,11 +46,10 @@ export const useReleases = defineStore("releases", {
       const addChecks = this.checks && this.checks?.concat({ createdAt: Date.now(), id: releaseId });
       const delChecks = this.checks && this.checks?.filter((r) => r.id !== releaseId);
       const allreadyExist = this.checks?.some((r) => r.id === releaseId);
+      const checks = !allreadyExist ? addChecks : delChecks;
 
-      axios.patch(`https://beardictus.com/items/ReleasesCheck/${this.uid}`, {
-        checks: !allreadyExist ? addChecks : delChecks,
-      });
-      this.checks = !allreadyExist ? addChecks : delChecks;
+      axios.patch(`https://beardictus.com/items/ReleasesCheck/${this.uid}`, { checks });
+      this.checks = checks;
     },
 
     async getReleases() {

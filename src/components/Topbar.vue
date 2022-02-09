@@ -29,6 +29,7 @@ import Config from "./config/Config.vue";
 import { useAuth } from "../views/auth/AuthStore";
 import { useConfig } from "./config/ConfigStore";
 import { useDialog } from "./dialog/DialogStore";
+import { RouterLink } from "vue-router";
 
 const authStore = useAuth();
 const configStore = useConfig();

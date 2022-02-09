@@ -9,6 +9,10 @@
   </div>
 </template>
 
+<script lang="ts" setup>
+import { RouterLink } from "vue-router";
+</script>
+
 <style lang="scss" scoped>
 @use "sass:color";
 @import "../../assets/scss/colors";

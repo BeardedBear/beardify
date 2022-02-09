@@ -50,6 +50,7 @@ import { usePlayer } from "./PlayerStore";
 import { useDialog } from "../dialog/DialogStore";
 import { defineProps } from "vue";
 import { isEP, isAlbum } from "../../helpers/useCleanAlbums";
+import { RouterLink } from "vue-router";
 
 const playerStore = usePlayer();
 const dialogStore = useDialog();
