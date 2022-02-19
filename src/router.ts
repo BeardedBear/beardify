@@ -39,25 +39,25 @@ const routes: Array<RouteRecordRaw> = [
   {
     component: ArtistPage,
     name: "Artist",
-    path: RouteName.Artist + ":id",
+    path: `${RouteName.Artist}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
   },
   {
     component: AlbumPage,
     name: "Album",
-    path: RouteName.Album + ":id",
+    path: `${RouteName.Album}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
   },
   {
     component: PlaylistPage,
     name: "Playlist",
-    path: RouteName.Playlist + ":id",
+    path: `${RouteName.Playlist}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
   },
   {
     component: CollectionPage,
     name: "Collection",
-    path: RouteName.Collection + ":id",
+    path: `${RouteName.Collection}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
   },
   {
@@ -74,7 +74,7 @@ const routes: Array<RouteRecordRaw> = [
     component: PodcastListPage,
   },
   {
-    path: RouteName.Podcasts + ":id",
+    path: `${RouteName.Podcasts}:id`,
     name: "Podcast",
     component: PodcastPage,
     props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),
@@ -85,7 +85,7 @@ const routes: Array<RouteRecordRaw> = [
     component: ReleaseListPage,
   },
   {
-    path: RouteName.User + ":id",
+    path: `${RouteName.User}:id`,
     name: "User",
     component: UserPage,
     props: (route: RouteLocation): Record<string, string | string[]> => ({ id: route.params.id }),

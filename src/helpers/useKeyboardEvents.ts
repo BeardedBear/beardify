@@ -10,13 +10,21 @@ export function useKeyboardEvents(): void {
   watch(shift_up, (v) => {
     const currentVolume = playerStore.devices.activeDevice ? playerStore.devices.activeDevice.volume_percent : 0;
     if (v && currentVolume)
-      100 - delta > currentVolume ? playerStore.setVolume(currentVolume + delta) : playerStore.setVolume(100);
+      if (100 - delta > currentVolume) {
+        playerStore.setVolume(currentVolume + delta);
+      } else {
+        playerStore.setVolume(100);
+      }
   });
 
   watch(shift_down, (v) => {
     const currentVolume = playerStore.devices.activeDevice ? playerStore.devices.activeDevice.volume_percent : 0;
     if (v && currentVolume)
-      currentVolume - delta < 0 ? playerStore.setVolume(1) : playerStore.setVolume(currentVolume - delta);
+      if (currentVolume - delta < 0) {
+        playerStore.setVolume(1);
+      } else {
+        playerStore.setVolume(currentVolume - delta);
+      }
   });
 
   useMagicKeys({
@@ -24,7 +32,11 @@ export function useKeyboardEvents(): void {
     onEventFired(keyboardEvent) {
       if (keyboardEvent.key === " " && keyboardEvent.target === document.body) {
         keyboardEvent.preventDefault();
-        playerStore.currentlyPlaying.is_playing ? playerStore.pause() : playerStore.play();
+        if (playerStore.currentlyPlaying.is_playing) {
+          playerStore.pause();
+        } else {
+          playerStore.play();
+        }
       }
     },
   });
