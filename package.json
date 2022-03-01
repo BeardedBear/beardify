@@ -8,7 +8,7 @@
     "build": "yarn lint && vite build",
     "fix": "prettier --write ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss} --fix",
     "preview": "yarn build && yarn vite preview",
-    "lint:commit": "",
+    "lint:commit": "vue-tsc --noEmit",
     "pre-commit": "yarn lint:commit"
   },
   "dependencies": {
@@ -48,6 +48,5 @@
     "typescript": "^4.6.2",
     "vite": "^2.8.5",
     "vue-tsc": "^0.32.1"
-  },
-  "packageManager": "yarn@3.2.0"
+  }
 }
