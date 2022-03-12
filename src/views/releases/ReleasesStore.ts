@@ -76,9 +76,9 @@ export const useReleases = defineStore("releases", {
         const removedLives = dataWithMergedSlugs.filter((release) => !useCheckLiveAlbum(release.album));
         const removedReissues = removedLives.filter((release) => !useCheckReissueAlbum(release.album));
 
-        this.monthList = Array.from(new Set(dataWithMergedSlugs.map((release) => release.releaseDate)))
-          .sort()
-          .sort((a, b) => Number(b.split(" ").pop()) - Number(a.split(" ").pop()));
+        this.monthList = Array.from(new Set(dataWithMergedSlugs.map((release) => release.releaseDate))).sort(
+          (a, b) => Number(b.split(" ").pop()) - Number(a.split(" ").pop()),
+        );
         this.releases = removedReissues.sort((a, b) => b.releaseDateRaw - a.releaseDateRaw);
       });
     },
