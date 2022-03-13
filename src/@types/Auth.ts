@@ -4,6 +4,14 @@ export interface Auth {
   accessToken: string;
   code: string;
   me: User | null;
+  storage: StorageAuth | null;
+}
+
+export interface StorageAuth {
+  codeChallenge: string;
+  codeVerifier: string;
+  refreshToken: string;
+  referer: string;
 }
 
 export interface AuthAPIResponse {

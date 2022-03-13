@@ -31,11 +31,10 @@ import { ref } from "vue";
 import router from "../router";
 
 const authStore = useAuth();
-const challenge = ref<string>("");
+const challenge = ref<string | undefined>(undefined);
 
 authStore.generateStorage(router.currentRoute.value.query.ref?.toString());
-const storage = JSON.parse(localStorage.getItem("Beardify") || "");
-challenge.value = storage.codeChallenge;
+challenge.value = useAuth().storage?.codeChallenge;
 </script>
 
 <style lang="scss" scoped>

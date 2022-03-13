@@ -22,9 +22,10 @@ useAuth()
   .then((done) => {
     if (done) {
       app.mount("#app");
-      syncLS("beardify-config", JSON.stringify(useConfig().$state));
       useConfig().switchScheme(useConfig().schemeLabel);
       useConfig().switchTheme(useConfig().themeLabel);
+      syncLS("beardify-config", JSON.stringify(useConfig().$state));
+      syncLS("beardify-auth", JSON.stringify(useAuth().$state));
     }
   })
   .catch(() => {
