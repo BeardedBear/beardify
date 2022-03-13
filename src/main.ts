@@ -4,12 +4,17 @@ import App from "./App.vue";
 import router, { RouteName } from "./router";
 import { useAuth } from "./views/auth/AuthStore";
 import { useConfig } from "./components/config/ConfigStore";
-import { Config } from "./@types/Config";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 const app = createApp(App);
-const configStorage = localStorage.getItem("BeardifyConfig");
+const pinia = createPinia();
 
-app.use(createPinia());
+function syncLS(key: string, value: string): void {
+  if (!localStorage.getItem(key)) localStorage.setItem(key, value);
+}
+
+app.use(pinia);
+pinia.use(piniaPluginPersistedstate);
 app.use(router);
 
 useAuth()
@@ -17,11 +22,9 @@ useAuth()
   .then((done) => {
     if (done) {
       app.mount("#app");
-      if (configStorage) {
-        const ls: Config = JSON.parse(configStorage);
-        useConfig().switchScheme(ls.schemeLabel);
-        useConfig().switchTheme(ls.themeLabel);
-      }
+      syncLS("beardify-config", JSON.stringify(useConfig().$state));
+      useConfig().switchScheme(useConfig().schemeLabel);
+      useConfig().switchTheme(useConfig().themeLabel);
     }
   })
   .catch(() => {

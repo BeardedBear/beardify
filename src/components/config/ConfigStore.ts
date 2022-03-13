@@ -1,4 +1,3 @@
-import { useStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
 import {
   Config,
@@ -28,7 +27,6 @@ export const useConfig = defineStore("config", {
       this.themeLabel = themeLabel;
       this.theme = themeLabel === "light" ? themeLight : themeDark;
       this.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
-      useStorage("BeardifyConfig", this.$state).value = this.$state;
     },
 
     switchScheme(schemeLabel: SchemeLabel) {
@@ -47,7 +45,6 @@ export const useConfig = defineStore("config", {
           this.scheme = schemeDefault;
       }
       this.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
-      useStorage("BeardifyConfig", this.$state).value = this.$state;
     },
 
     open() {
@@ -61,5 +58,8 @@ export const useConfig = defineStore("config", {
         this.bye = false;
       }, 200);
     },
+  },
+  persist: {
+    key: "beardify-config",
   },
 });
