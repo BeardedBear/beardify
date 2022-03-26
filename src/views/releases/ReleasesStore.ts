@@ -58,7 +58,6 @@ export const useReleases = defineStore("releases", {
         process.env.NODE_ENV === "production" ? { mode: "no-cors" } : { mode: "cors" },
       ).then(async (e) => {
         const data: Release[] = await e.json();
-        const categories = Array.from(new Set(data.map((release) => release.category)));
         function getSlugsByCategory(category: string): string[] {
           const array: string[] = [];
           const mergedSlugs = data
@@ -67,7 +66,7 @@ export const useReleases = defineStore("releases", {
             .flat();
           return Array.from(new Set(mergedSlugs));
         }
-        categories.forEach((category_1): void => {
+        Array.from(new Set(data.map((release) => release.category))).forEach((category_1): void => {
           const teee: MenuItem = {
             name: category_1,
             slugs: getSlugsByCategory(category_1),
