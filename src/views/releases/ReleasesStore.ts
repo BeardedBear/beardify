@@ -53,9 +53,11 @@ export const useReleases = defineStore("releases", {
     },
 
     async getReleases() {
-      axios
-        .get<Release[]>("https://2fpx4328.directus.app/assets/6d6a9ed6-64ba-4724-a583-fc77b0ca039a")
-        .then(({ data }) => {
+      const addNoCors: Record<string, unknown> =
+        process.env.NODE_ENV === "production" ? { mode: "no-cors" } : { mode: "cors" };
+
+      fetch("https://2fpx4328.directus.app/assets/6d6a9ed6-64ba-4724-a583-fc77b0ca039a", addNoCors).then((e) => {
+        e.json().then((data: Release[]) => {
           const categories = Array.from(new Set(data.map((release) => release.category)));
           function getSlugsByCategory(category: string): string[] {
             const array: string[] = [];
@@ -83,6 +85,7 @@ export const useReleases = defineStore("releases", {
           );
           this.releases = removedReissues.sort((a, b) => b.releaseDateRaw - a.releaseDateRaw);
         });
+      });
     },
   },
 });
