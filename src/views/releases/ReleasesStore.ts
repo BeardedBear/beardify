@@ -53,38 +53,34 @@ export const useReleases = defineStore("releases", {
     },
 
     async getReleases() {
-      const addNoCors: Record<string, unknown> =
-        process.env.NODE_ENV === "production" ? { mode: "no-cors" } : { mode: "cors" };
-
-      fetch("https://2fpx4328.directus.app/assets/6d6a9ed6-64ba-4724-a583-fc77b0ca039a", addNoCors).then((e) => {
-        e.json().then((data: Release[]) => {
-          const categories = Array.from(new Set(data.map((release) => release.category)));
-          function getSlugsByCategory(category: string): string[] {
-            const array: string[] = [];
-            const mergedSlugs = data
-              .filter((release) => release.category === category)
-              .map((e) => array.concat(e.slug))
-              .flat();
-            return Array.from(new Set(mergedSlugs));
-          }
-
-          categories.forEach((category): void => {
-            const teee: MenuItem = {
-              name: category,
-              slugs: getSlugsByCategory(category),
-            };
-            if (!this.menu.find((e) => e.name == teee.name)) this.menu.push(teee);
-          });
-
-          const dataWithMergedSlugs = useMergeReleaseSlugs(data);
-          const removedLives = dataWithMergedSlugs.filter((release) => !useCheckLiveAlbum(release.album));
-          const removedReissues = removedLives.filter((release) => !useCheckReissueAlbum(release.album));
-
-          this.monthList = Array.from(new Set(dataWithMergedSlugs.map((release) => release.releaseDate))).sort(
-            (a, b) => Number(b.split(" ").pop()) - Number(a.split(" ").pop()),
-          );
-          this.releases = removedReissues.sort((a, b) => b.releaseDateRaw - a.releaseDateRaw);
+      fetch(
+        "https://2fpx4328.directus.app/assets/6d6a9ed6-64ba-4724-a583-fc77b0ca039a",
+        process.env.NODE_ENV === "production" ? { mode: "no-cors" } : { mode: "cors" },
+      ).then(async (e) => {
+        const data: Release[] = await e.json();
+        const categories = Array.from(new Set(data.map((release) => release.category)));
+        function getSlugsByCategory(category: string): string[] {
+          const array: string[] = [];
+          const mergedSlugs = data
+            .filter((release_1) => release_1.category === category)
+            .map((e_1) => array.concat(e_1.slug))
+            .flat();
+          return Array.from(new Set(mergedSlugs));
+        }
+        categories.forEach((category_1): void => {
+          const teee: MenuItem = {
+            name: category_1,
+            slugs: getSlugsByCategory(category_1),
+          };
+          if (!this.menu.find((e_2) => e_2.name == teee.name)) this.menu.push(teee);
         });
+        const dataWithMergedSlugs = useMergeReleaseSlugs(data);
+        const removedLives = dataWithMergedSlugs.filter((release_2) => !useCheckLiveAlbum(release_2.album));
+        const removedReissues = removedLives.filter((release_3) => !useCheckReissueAlbum(release_3.album));
+        this.monthList = Array.from(new Set(dataWithMergedSlugs.map((release_4) => release_4.releaseDate))).sort(
+          (a, b) => Number(b.split(" ").pop()) - Number(a.split(" ").pop()),
+        );
+        this.releases = removedReissues.sort((a_1, b_1) => b_1.releaseDateRaw - a_1.releaseDateRaw);
       });
     },
   },
