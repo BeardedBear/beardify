@@ -15,12 +15,12 @@
 </template>
 
 <script lang="ts" setup>
-import Controls from "./Controls.vue";
+import Controls from "./PlayerControls.vue";
 import { usePlayer } from "./PlayerStore";
 import SeekBar from "./SeekBar.vue";
-import What from "./What.vue";
+import What from "./PlayerMetas.vue";
 import Loader from "../LoadingDots.vue";
-import Device from "./device/Device.vue";
+import Device from "./device/DeviceIndex.vue";
 
 const playerStore = usePlayer();
 </script>

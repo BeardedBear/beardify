@@ -31,9 +31,9 @@
 
 <script lang="ts" setup>
 import { timecodeWithUnits } from "../../helpers/date";
-import Cover from "../../components/Cover.vue";
+import Cover from "../../components/AlbumCover.vue";
 import ShareContent from "../../components/ShareContent.vue";
-import Actions from "../../components/playlist/Actions.vue";
+import Actions from "../../components/playlist/PlaylistActions.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";
 import { defineProps } from "vue";

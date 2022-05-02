@@ -44,7 +44,6 @@
 </template>
 
 <script lang="ts" setup>
-// import Cover from "../Cover.vue";
 import ArtistList from "../artist/ArtistList.vue";
 import { usePlayer } from "./PlayerStore";
 import { useDialog } from "../dialog/DialogStore";

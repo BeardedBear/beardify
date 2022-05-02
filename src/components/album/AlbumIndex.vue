@@ -38,7 +38,7 @@ import { defineProps } from "vue";
 import { Album, AlbumSimplified } from "../../@types/Album";
 import { instance } from "../../api";
 import router from "../../router";
-import Cover from "../Cover.vue";
+import Cover from "../AlbumCover.vue";
 import { Paging } from "../../@types/Paging";
 import { TrackSimplified, TrackToRemove } from "../../@types/Track";
 import { useRoute } from "vue-router";

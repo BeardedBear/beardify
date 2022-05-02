@@ -14,7 +14,7 @@
 
 <script lang="ts" setup>
 import { useArtist } from "../../views/artist/ArtistStore";
-import Album from "../album/Album.vue";
+import Album from "../album/AlbumIndex.vue";
 
 const artistStore = useArtist();
 </script>

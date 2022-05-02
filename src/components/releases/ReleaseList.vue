@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import Release from "./Release.vue";
+import Release from "./ReleaseIndex.vue";
 import { useReleases } from "../../views/releases/ReleasesStore";
 
 const releasesStore = useReleases();

@@ -29,12 +29,12 @@
 
 <script lang="ts" setup>
 import { defineProps, ref, watch } from "vue";
-import Album from "../../components/album/Album.vue";
+import Album from "../../components/album/AlbumIndex.vue";
 import { usePlaylist } from "./PlaylistStore";
 import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";
 import PageFit from "../../components/PageFit.vue";
-import Header from "../../components/playlist/Header.vue";
+import Header from "../../components/playlist/PlaylistHeader.vue";
 import { SlickList, SlickItem } from "vue-slicksort";
 import { AlbumSimplified } from "../../@types/Album";
 import { useAuth } from "../auth/AuthStore";

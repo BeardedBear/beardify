@@ -18,7 +18,7 @@
 
 <script lang="ts" setup>
 import { computed, ComputedRef } from "vue";
-import Album from "../album/Album.vue";
+import Album from "../album/AlbumIndex.vue";
 import { useSearch } from "./SearchStore";
 
 const searchStore = useSearch();

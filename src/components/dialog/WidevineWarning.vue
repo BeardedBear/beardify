@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import Dialog from "./Dialog.vue";
+import Dialog from "./DialogWrap.vue";
 </script>
 
 <style lang="scss" scoped>

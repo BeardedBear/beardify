@@ -10,7 +10,7 @@
 import Loader from "../../LoadingDots.vue";
 import { usePlayer } from "../PlayerStore";
 import DevicesList from "./DeviceList.vue";
-import Volume from "./Volume.vue";
+import Volume from "./DeviceVolume.vue";
 
 const playerStore = usePlayer();
 </script>

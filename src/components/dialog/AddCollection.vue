@@ -12,7 +12,7 @@ import { ref } from "vue";
 import { NotificationType } from "../../@types/Notification";
 import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
-import Dialog from "./Dialog.vue";
+import Dialog from "./DialogWrap.vue";
 import { useDialog } from "./DialogStore";
 
 const dialogStore = useDialog();

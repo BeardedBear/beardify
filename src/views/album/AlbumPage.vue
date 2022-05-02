@@ -42,12 +42,12 @@ import { defineProps, ref } from "vue";
 import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import ArtistList from "../../components/artist/ArtistList.vue";
-import Album from "../../components/album/Album.vue";
+import Album from "../../components/album/AlbumIndex.vue";
 import { useAlbum } from "./AlbumStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import Loader from "../../components/LoadingDots.vue";
-import Head from "../../components/album/Head.vue";
-import Foot from "../../components/album/Foot.vue";
+import Head from "../../components/album/AlbumHead.vue";
+import Foot from "../../components/album/AlbumFoot.vue";
 import { useDialog } from "../../components/dialog/DialogStore";
 
 const props = defineProps({ id: { default: "", type: String } });

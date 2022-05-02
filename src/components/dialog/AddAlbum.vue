@@ -26,7 +26,7 @@ import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";
-import Dialog from "./Dialog.vue";
+import Dialog from "./DialogWrap.vue";
 import { useAuth } from "../../views/auth/AuthStore";
 import PlaylistIcon from "../sidebar/PlaylistIcon.vue";
 import VisibilityIcon from "../sidebar/VisibilityIcon.vue";

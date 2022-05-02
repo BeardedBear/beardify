@@ -23,9 +23,9 @@
 </template>
 
 <script lang="ts" setup>
-import Cover from "./Cover.vue";
+import Cover from "./AlbumCover.vue";
 import router from "../router";
-import Config from "./config/Config.vue";
+import Config from "./config/ConfigIndex.vue";
 import { useAuth } from "../views/auth/AuthStore";
 import { useConfig } from "./config/ConfigStore";
 import { useDialog } from "./dialog/DialogStore";

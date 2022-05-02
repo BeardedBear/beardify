@@ -19,7 +19,7 @@
 
 <script lang="ts" setup>
 import { computed, ComputedRef } from "vue";
-import Cover from "../Cover.vue";
+import Cover from "../AlbumCover.vue";
 import { useSearch } from "./SearchStore";
 import { RouterLink } from "vue-router";
 

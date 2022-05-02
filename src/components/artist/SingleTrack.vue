@@ -21,7 +21,7 @@ import { AlbumSimplified } from "../../@types/Album";
 import { instance } from "../../api";
 import { date } from "../../helpers/date";
 import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
-import Cover from "../Cover.vue";
+import Cover from "../AlbumCover.vue";
 import { usePlayer } from "../player/PlayerStore";
 import ArtistList from "./ArtistList.vue";
 

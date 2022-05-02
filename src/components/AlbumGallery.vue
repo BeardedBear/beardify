@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import { defineProps } from "vue";
 import { AlbumSimplified } from "../@types/Album";
-import Album from "./album/Album.vue";
+import Album from "./album/AlbumIndex.vue";
 
 defineProps<{
   title: string;

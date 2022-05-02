@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-import Colors from "./Colors.vue";
+import Colors from "./ColorsTheme.vue";
 import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";
 import { onClickOutside, templateRef } from "@vueuse/core";

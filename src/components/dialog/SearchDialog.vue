@@ -5,6 +5,6 @@
 </template>
 
 <script lang="ts" setup>
-import Search from "../search/Search.vue";
-import Dialog from "./Dialog.vue";
+import Search from "../search/SearchIndex.vue";
+import Dialog from "./DialogWrap.vue";
 </script>

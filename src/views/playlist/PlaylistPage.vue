@@ -19,10 +19,10 @@ import { computed, defineProps } from "vue";
 import { usePlaylist } from "./PlaylistStore";
 import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";
-import Tracks from "../../components/playlist/Tracks.vue";
+import Tracks from "../../components/playlist/PlaylistTracks.vue";
 import AlbumGallery from "../../components/AlbumGallery.vue";
 import { isAlbum, isEP, isSingle, useCheckLiveAlbum } from "../../helpers/useCleanAlbums";
-import Header from "../../components/playlist/Header.vue";
+import Header from "../../components/playlist/PlaylistHeader.vue";
 
 const props = defineProps<{ id: string }>();
 const playlistStore = usePlaylist();

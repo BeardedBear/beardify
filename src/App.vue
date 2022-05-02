@@ -12,10 +12,10 @@
 </template>
 
 <script lang="ts" setup>
-import Player from "./components/player/Player.vue";
-import Sidebar from "./components/sidebar/Sidebar.vue";
+import Player from "./components/player/PlayerIndex.vue";
+import Sidebar from "./components/sidebar/SidebarIndex.vue";
 import DialogList from "./components/dialog/DialogList.vue";
-import Notification from "./components/notification/Notification.vue";
+import Notification from "./components/notification/NotificationIndex.vue";
 import { useAuth } from "./views/auth/AuthStore";
 import { useDialog } from "./components/dialog/DialogStore";
 import { useKeyboardEvents } from "./helpers/useKeyboardEvents";

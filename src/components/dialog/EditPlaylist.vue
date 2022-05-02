@@ -87,7 +87,7 @@ import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";
 import Loading from "../LoadingDots.vue";
 import { useSidebar } from "../sidebar/SidebarStore";
-import Dialog from "./Dialog.vue";
+import Dialog from "./DialogWrap.vue";
 import { useDialog } from "./DialogStore";
 
 const dialogStore = useDialog();

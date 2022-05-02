@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import Album from "../../components/album/Album.vue";
+import Album from "../../components/album/AlbumIndex.vue";
 import { useAuth } from "../auth/AuthStore";
 import { useHome } from "./HomeStore";
 import { watch } from "vue";

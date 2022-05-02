@@ -100,7 +100,7 @@ import { useSidebar } from "./SidebarStore";
 import { onClickOutside } from "@vueuse/core";
 import { useAuth } from "../../views/auth/AuthStore";
 import Menu from "./MainMenu.vue";
-import Topbar from "../Topbar.vue";
+import Topbar from "../SidebarHead.vue";
 import VisibilityIcon from "./VisibilityIcon.vue";
 import PlaylistIcon from "./PlaylistIcon.vue";
 import { RouterLink } from "vue-router";
