@@ -6,6 +6,7 @@ import { DevicesResponse } from "../../@types/Device";
 import { Player } from "../../@types/Player";
 import { instance } from "../../api";
 import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
+import { updatePlayerState } from "../../helpers/play";
 import { useAuth } from "../../views/auth/AuthStore";
 
 export const usePlayer = defineStore("player", {
@@ -39,7 +40,7 @@ export const usePlayer = defineStore("player", {
         .then(() => syncOfficialSpotifyClient());
     },
 
-    getDeviceList() {
+    async getDeviceList() {
       instance()
         .get<DevicesResponse>("me/player/devices")
         .then(({ data }) => {
@@ -79,24 +80,25 @@ export const usePlayer = defineStore("player", {
     getPlayerState() {
       instance()
         .get<CurrentlyPlaying>(`me/player`)
-        .then((e) => {
-          this.currentlyPlaying = e.data;
-          if (this.currentlyPlaying.item) {
-            useTitle(`${this.currentlyPlaying.item?.album.artists[0].name} - ${this.currentlyPlaying.item?.name}`);
-          } else if (this.currentFromSDK) {
+        .then(({ data }) => {
+          if (data) {
+            this.currentlyPlaying = data;
+            useTitle(`${data.item?.album.artists[0].name} - ${data.item?.name}`);
+          } else {
+            useTitle("Beardify");
+          }
+
+          if (this.currentFromSDK) {
             useTitle(`${this.currentFromSDK.artists[0].name} - ${this.currentFromSDK.name}`);
           } else {
             useTitle("Beardify");
           }
         })
-        .catch(() =>
+        .catch(() => {
           useAuth()
             .refresh()
-            .then(() => {
-              usePlayer().getDeviceList();
-              this.getPlayerState();
-            }),
-        );
+            .finally(() => updatePlayerState());
+        });
     },
 
     toggleShuffle() {
@@ -131,7 +133,7 @@ export const usePlayer = defineStore("player", {
 
     thisDevice(deviceId: string) {
       this.thisDeviceId = deviceId;
-      this.getDeviceList();
+      updatePlayerState();
     },
 
     updateFromSDK(args: Spotify.Track, position: number) {

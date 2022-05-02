@@ -6,12 +6,12 @@
     />
     <Loader v-else />
     <Controls
-      :duration="playerStore.currentlyPlaying.item && playerStore.currentlyPlaying.item.duration_ms"
-      :progress="playerStore.currentlyPlaying.progress_ms"
+      :duration="playerStore.currentlyPlaying.item?.duration_ms ?? 0"
+      :progress="playerStore.currentlyPlaying.progress_ms ?? 0"
     />
     <Device />
   </div>
-  <SeekBar :duration="playerStore.currentlyPlaying.item && playerStore.currentlyPlaying.item.duration_ms" />
+  <SeekBar :duration="playerStore.currentlyPlaying.item?.duration_ms ?? 0" />
 </template>
 
 <script lang="ts" setup>

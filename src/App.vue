@@ -17,18 +17,14 @@ import Sidebar from "./components/sidebar/Sidebar.vue";
 import DialogList from "./components/dialog/DialogList.vue";
 import Notification from "./components/notification/Notification.vue";
 import { useAuth } from "./views/auth/AuthStore";
-import { usePlayer } from "./components/player/PlayerStore";
-import { useWindowFocus } from "@vueuse/core";
-import { watch } from "vue";
 import { useDialog } from "./components/dialog/DialogStore";
 import { useKeyboardEvents } from "./helpers/useKeyboardEvents";
 import { RouterView } from "vue-router";
+import { updatePlayerState } from "./helpers/play";
 
 useKeyboardEvents();
 
 const authStore = useAuth();
-const playerStore = usePlayer();
-const focused = useWindowFocus();
 const dialog = useDialog();
 
 // Check Widevine support for Brave Browser
@@ -42,16 +38,11 @@ if (!navigator.userAgent.includes("Macintosh")) {
 // Keep token active
 setInterval(() => authStore.refresh(), 1_800_000); // 30 minutes
 
-function updatePlayerState(): void {
-  playerStore.getDeviceList();
-  playerStore.getPlayerState();
-}
-
 // Keep device active every 5 minutes
 setInterval(() => updatePlayerState(), 300_000);
 
-watch(focused, (isFocused) => {
-  if (isFocused) updatePlayerState();
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) updatePlayerState();
 });
 </script>
 

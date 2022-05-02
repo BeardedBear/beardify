@@ -95,8 +95,13 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   @include hdpi {
     $padd: 50rem;
 
-    padding-left: $padd;
-    padding-right: $padd;
+    padding: 2rem $padd 1rem;
+  }
+
+  @include xl {
+    $padd: 2rem;
+
+    padding: 2rem $padd 1rem;
   }
 
   img {
