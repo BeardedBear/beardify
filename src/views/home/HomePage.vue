@@ -7,27 +7,19 @@
           <div class="name">Recommanded albums</div>
           <button class="button" @click="getData()"><i class="icon-refresh"></i> Refresh</button>
         </div>
-        <div class="album-gallery">
-          <Album
-            v-for="(album, index) in homeStore.recommendedAlbums"
-            :key="index"
-            :album="album"
-            with-artists
-            can-save
-          />
-        </div>
+        <AlbumGallery no-title :album-list="homeStore.recommendedAlbums" />
       </PageFit>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import Album from "../../components/album/AlbumIndex.vue";
 import { useAuth } from "../auth/AuthStore";
 import { useHome } from "./HomeStore";
 import { watch } from "vue";
 import Loader from "../../components/LoadingDots.vue";
 import PageFit from "../../components/PageFit.vue";
+import AlbumGallery from "../../components/AlbumGallery.vue";
 
 const homeStore = useHome();
 const authStore = useAuth();
@@ -69,17 +61,7 @@ watch(authStore, () => {
 
   &__content {
     overflow-y: auto;
-    padding: 1.2rem;
-  }
-}
-
-.album-gallery {
-  display: grid;
-  gap: 2rem;
-  grid-template-columns: repeat(4, 1fr);
-
-  @include hdpi {
-    grid-template-columns: repeat(8, 1fr);
+    padding: 1rem 5rem;
   }
 }
 

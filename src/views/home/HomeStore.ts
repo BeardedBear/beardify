@@ -18,26 +18,25 @@ export const useHome = defineStore("home", {
       this.recommendedAlbums = [];
     },
 
-    getRecommendedAlbums() {
+    async getRecommendedAlbums() {
       interface Top {
         seed: unknown;
         tracks: Track[];
       }
 
-      instance()
-        .get<Paging<Artist>>("me/top/artists?time_range=long_term")
-        .then((e) => {
-          const artistsSeed = `${e.data.items[getRandomInt(0, 10)]?.id},${e.data.items[getRandomInt(0, 10)]?.id},${
-            e.data.items[getRandomInt(0, 10)]?.id
-          },${e.data.items[getRandomInt(0, 10)]?.id},${e.data.items[getRandomInt(0, 10)]?.id}`;
+      const { data } = await instance().get<Paging<Artist>>("me/top/artists");
 
-          instance()
-            .get<Top>(`recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`)
-            .then((f) => {
-              const cleanedList = removeDuplicatesAlbums(f.data.tracks.map((g) => g.album).filter((h) => isAlbum(h)));
-              this.recommendedAlbums = cleanedList;
-            });
-        });
+      if (data.items.length) {
+        const artistsSeed = `${data.items[getRandomInt(0, 10)]?.id},${data.items[getRandomInt(0, 10)]?.id},${
+          data.items[getRandomInt(0, 10)]?.id
+        },${data.items[getRandomInt(0, 10)]?.id},${data.items[getRandomInt(0, 10)]?.id}`;
+        instance()
+          .get<Top>(`recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`)
+          .then((f) => {
+            const cleanedList = removeDuplicatesAlbums(f.data.tracks.map((g) => g.album).filter((h) => isAlbum(h)));
+            this.recommendedAlbums = cleanedList;
+          });
+      } else if (!this.recommendedAlbums.length) this.getRecommendedAlbums();
     },
   },
 });

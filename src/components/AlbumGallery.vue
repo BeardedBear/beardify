@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="heading sticky">
+    <div v-if="!noTitle" class="heading sticky">
       <i :class="`icon-${iconName}`"></i>
       {{ title }}
     </div>
@@ -18,9 +18,10 @@ import { AlbumSimplified } from "../@types/Album";
 import Album from "./album/AlbumIndex.vue";
 
 defineProps<{
-  title: string;
-  iconName: string;
   albumList: AlbumSimplified[];
+  title?: string;
+  iconName?: string;
+  noTitle?: boolean;
 }>();
 </script>
 

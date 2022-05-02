@@ -8,13 +8,5 @@
 .fit {
   margin: 0 auto;
   width: 100%;
-
-  // @include hdpi {
-  //   $padd: 50rem;
-
-  //   padding-left: $padd;
-  //   padding-right: $padd;
-
-  // }
 }
 </style>
