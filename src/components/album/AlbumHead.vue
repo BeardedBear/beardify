@@ -60,6 +60,10 @@ function openLink(url: string): void {
 .album-header {
   display: flex;
   justify-content: space-between;
+
+  @include l {
+    flex-direction: column;
+  }
 }
 
 .infos {

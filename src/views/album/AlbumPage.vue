@@ -12,7 +12,10 @@
             v-for="(track, index) in albumStore.album.tracks.items"
             :key="index"
             class="track"
-            :class="{ active: playerStore.currentlyPlaying.item?.id === track.id }"
+            :class="{
+              active: playerStore.currentlyPlaying.item?.id === track.id,
+              unavailable: !track.available_markets.length,
+            }"
             @click="playSongs(index, albumStore.album.tracks.items)"
           >
             <button class="add" @click.prevent.stop="dialogStore.open({ type: 'addSong', songUri: track.uri })">
@@ -113,6 +116,12 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
     }
   }
 
+  &.unavailable {
+    cursor: default;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
   .add:hover {
     opacity: 1;
   }
@@ -140,6 +149,10 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   &__tracks {
     flex: 1;
     font-size: 1rem;
+  }
+
+  @include l {
+    flex-direction: column;
   }
 }
 

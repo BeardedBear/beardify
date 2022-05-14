@@ -5,6 +5,7 @@ import { ExternalUrls } from "./Misc";
 export interface Track {
   album: AlbumSimplified;
   artists: ArtistSimplified[];
+  available_markets: string[];
   disc_number: number;
   duration_ms: number;
   explicit: boolean;

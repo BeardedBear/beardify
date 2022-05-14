@@ -94,6 +94,7 @@ export const defaultCurrentlyPlaying: CurrentlyPlaying = {
 export const defaultTrack: Track = {
   album: defaultAlbumSimplified,
   artists: [],
+  available_markets: [],
   disc_number: 0,
   duration_ms: 0,
   explicit: false,
