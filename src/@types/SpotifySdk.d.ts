@@ -56,7 +56,11 @@ declare namespace Spotify {
     context: PlaybackContext;
     disallows: PlaybackDisallows;
     duration: number;
+    loading: boolean;
     paused: boolean;
+    playback_features: { hifi_status: string };
+    playback_id: string;
+    playback_quality: string;
     position: number;
     /**
      * 0: NO_REPEAT
@@ -65,6 +69,7 @@ declare namespace Spotify {
      */
     repeat_mode: 0 | 1 | 2;
     shuffle: boolean;
+    timestamp: number;
     restrictions: PlaybackRestrictions;
     track_window: PlaybackTrackWindow;
   }
@@ -117,15 +122,17 @@ declare namespace Spotify {
   }
 
   interface Track {
-    uri: string;
-    id: string | null;
+    album: Album;
+    artists: Artist[];
     duration_ms: number;
+    id: string | null;
+    is_playable: boolean;
     type: "track" | "episode" | "ad";
     media_type: "audio" | "video";
     name: string;
     is_playable: boolean;
-    album: Album;
-    artists: Artist[];
+    uid: string;
+    uri: string;
   }
 
   interface WebPlaybackInstance {

@@ -23,6 +23,12 @@ import Loader from "../LoadingDots.vue";
 import Device from "./device/DeviceIndex.vue";
 
 const playerStore = usePlayer();
+
+setInterval(() => {
+  if (!playerStore.currentlyPlaying.item) {
+    playerStore.getPlayerState();
+  }
+}, 1000);
 </script>
 
 <style lang="scss" scoped>

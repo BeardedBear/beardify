@@ -47,6 +47,7 @@ const defaultArtist: Spotify.Artist[] = [
 
 const defaultTrack: Spotify.Track = {
   uri: "",
+  uid: "",
   id: null,
   type: "track",
   media_type: "audio",
@@ -88,6 +89,11 @@ export const defaultPlaybackState: Spotify.PlaybackState = {
     metadata: "",
     uri: null,
   },
+  loading: false,
+  playback_features: { hifi_status: "NONE" },
+  playback_id: "",
+  playback_quality: "VERY_HIGH",
+  timestamp: 0,
   disallows: defaultPlaybackDisallows,
   duration: 0,
   position: 0,
