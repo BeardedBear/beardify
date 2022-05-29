@@ -54,7 +54,7 @@ export const useReleases = defineStore("releases", {
 
     async getReleases() {
       const { data } = await axios.get<Release[]>(
-        "https://api.allorigins.win/raw?url=https://2fpx4328.directus.app/assets/7e053788-71a4-46b3-b349-44b300a1b0a2",
+        "https://2fpx4328.directus.app/assets/7e053788-71a4-46b3-b349-44b300a1b0a2",
       );
 
       function getSlugsByCategory(category: string): string[] {
