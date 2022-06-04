@@ -77,14 +77,18 @@ export const usePlayer = defineStore("player", {
         .then(() => (this.devices.activeDevice.volume_percent = volume));
     },
 
-    getPlayerState() {
+    getPlayerState(options?: { fullState: boolean }) {
       instance()
         .get<CurrentlyPlaying>(`me/player`)
         .then(({ data }) => {
           if (data) {
-            this.currentlyPlaying.item = data.item;
-            this.currentlyPlaying.progress_ms = data.progress_ms;
-            this.currentlyPlaying.timestamp = data.timestamp;
+            if (options?.fullState) {
+              this.currentlyPlaying = data;
+            } else {
+              this.currentlyPlaying.item = data.item;
+              this.currentlyPlaying.progress_ms = data.progress_ms;
+              this.currentlyPlaying.timestamp = data.timestamp;
+            }
             useTitle(`${data.item?.album.artists[0].name} - ${data.item?.name}`);
           } else {
             useTitle("Beardify");
