@@ -54,7 +54,7 @@ export const useReleases = defineStore("releases", {
 
     async getReleases() {
       const { data } = await axios.get<Release[]>(
-        "https://2fpx4328.directus.app/assets/7e053788-71a4-46b3-b349-44b300a1b0a2",
+        `https://2fpx4328.directus.app/assets/7e053788-71a4-46b3-b349-44b300a1b0a2?t=${new Date().getTime()}`,
       );
 
       function getSlugsByCategory(category: string): string[] {
@@ -78,9 +78,23 @@ export const useReleases = defineStore("releases", {
       const removedLives = dataWithMergedSlugs.filter((release) => !useCheckLiveAlbum(release.album));
       const removedReissues = removedLives.filter((release) => !useCheckReissueAlbum(release.album));
 
-      this.monthList = Array.from(new Set(dataWithMergedSlugs.map((release) => release.releaseDate))).sort(
-        (a, b) => Number(b.split(" ").pop()) - Number(a.split(" ").pop()),
-      );
+      const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      this.monthList = Array.from(new Set(dataWithMergedSlugs.map((release) => release.releaseDate))).sort((a, b) => {
+        return months.indexOf(String(b.split(" ").shift())) - months.indexOf(String(a.split(" ").shift()));
+      });
       this.releases = removedReissues.sort((a, b) => b.releaseDateRaw - a.releaseDateRaw);
     },
   },
