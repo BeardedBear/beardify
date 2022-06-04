@@ -34,16 +34,16 @@ defineProps<{
   gap: 2rem;
   grid-template-columns: repeat(6, 1fr);
 
-  @include xl {
-    grid-template-columns: repeat(4, 1fr);
+  @include l {
+    grid-template-columns: repeat(6, 1fr);
   }
 
-  @include l {
-    grid-template-columns: repeat(3, 1fr);
+  @include xl {
+    grid-template-columns: repeat(8, 1fr);
   }
 
   @include hdpi {
-    grid-template-columns: repeat(9, 1fr);
+    grid-template-columns: repeat(12, 1fr);
   }
 }
 </style>

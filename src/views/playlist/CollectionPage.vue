@@ -97,17 +97,13 @@ playlistStore.clean().finally(() => {
   @include l {
     $padd: 2rem;
 
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(8, 1fr);
     padding-left: $padd;
     padding-right: $padd;
   }
 
   @include hdpi {
-    $padd: 50rem;
-
-    grid-template-columns: repeat(11, 1fr);
-    padding-left: $padd;
-    padding-right: $padd;
+    grid-template-columns: repeat(12, 1fr);
   }
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div :to="`/podcasts/${episode.id}`" class="episode-wrap">
+  <div class="episode-wrap">
     <div v-if="episode.resume_point.fully_played" class="played"><i class="icon icon-check"></i></div>
     <div class="episode">
       <img class="cover" :src="episode.images[1].url" />

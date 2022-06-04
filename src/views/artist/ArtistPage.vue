@@ -1,7 +1,7 @@
 <template>
   <div v-if="artistStore.artist.name === ''" class="loader"><Loader /></div>
   <div v-else class="artist-page">
-    <ArtistHeader ref="domHead" :scrolled-head="scrolledHead" />
+    <ArtistHeader ref="domHead" />
     <div class="content">
       <div class="list">
         <div
@@ -40,7 +40,6 @@ import BlockEps from "../../components/artist/BlockEps.vue";
 import BlockSingles from "../../components/artist/BlockSingles.vue";
 
 const props = defineProps<{ id: string }>();
-const scrolledHead = ref(false);
 const artistStore = useArtist();
 const domHead = ref<HTMLDivElement | null>(null);
 

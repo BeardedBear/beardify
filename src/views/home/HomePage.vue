@@ -62,10 +62,6 @@ watch(authStore, () => {
   &__content {
     overflow-y: auto;
     padding: 1rem 5rem;
-
-    @include hdpi {
-      padding: 1rem 50rem;
-    }
   }
 }
 
