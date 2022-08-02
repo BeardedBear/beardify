@@ -77,7 +77,7 @@ function deleteAlbum(albumId: string): void {
   instance()
     .get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`)
     .then((e) => {
-      let tracks: TrackToRemove[] = [];
+      const tracks: TrackToRemove[] = [];
 
       e.data.items.map((t) => t.uri).forEach((t) => tracks.push({ uri: t }));
 

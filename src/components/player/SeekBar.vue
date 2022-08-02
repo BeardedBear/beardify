@@ -2,7 +2,11 @@
   <div :style="{ padding: '0 1.2rem' }">
     <div ref="progressWrap" class="progress-wrap">
       <div class="progress">
-        <div v-if="duration" class="bar" :style="`width:${(currentTime / duration) * 100}%`" />
+        <div
+          v-if="playerStore.playerState"
+          class="bar"
+          :style="`width:${(currentTime / playerStore.playerState.duration) * 100}%`"
+        />
         <div class="seek" :style="`width:${perc}%`">
           <div class="time">{{ time }}</div>
         </div>
@@ -12,15 +16,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect, watch, defineProps } from "vue";
+import { ref, watchEffect, watch } from "vue";
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
 import { useIntervalFn, useMouseInElement } from "@vueuse/core";
-import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
-
-const props = defineProps<{
-  duration: number | null | undefined;
-}>();
 
 const progressWrap = ref<HTMLDivElement>();
 const { elementX, elementWidth } = useMouseInElement(progressWrap);
@@ -32,24 +31,25 @@ const currentTime = ref<number>(0);
 watchEffect(() => {
   progressWrap.value?.addEventListener("mousemove", () => {
     perc.value = (elementX.value / elementWidth.value) * 100;
-    const durationPerc = props.duration && (props.duration / 100) * perc.value;
+    const durationPerc = playerStore.playerState?.duration && (playerStore.playerState?.duration / 100) * perc.value;
     if (durationPerc) time.value = timecode(durationPerc);
   });
 
   progressWrap.value?.addEventListener("click", () => {
-    const durationPerc = props.duration && (props.duration / 100) * perc.value;
+    const durationPerc = playerStore.playerState?.duration && (playerStore.playerState?.duration / 100) * perc.value;
     if (durationPerc) playerStore.seek(durationPerc);
   });
 });
 
+const freq = 200;
 useIntervalFn(() => {
-  if (playerStore.currentlyPlaying.is_playing) currentTime.value = currentTime.value + 1000;
-  props.duration && currentTime.value > props.duration && syncOfficialSpotifyClient();
-}, 1000);
+  if (!playerStore.playerState) return;
+  if (!playerStore.playerState.paused) currentTime.value = currentTime.value + freq;
+}, freq);
 
 watch(
-  () => playerStore.currentlyPlaying.progress_ms,
-  () => (currentTime.value = playerStore.currentlyPlaying.progress_ms),
+  () => playerStore.playerState?.position,
+  () => playerStore.playerState && (currentTime.value = playerStore.playerState?.position),
 );
 </script>
 

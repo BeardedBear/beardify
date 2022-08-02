@@ -19,6 +19,7 @@ export const usePlayer = defineStore("player", {
     currentlyPlaying: defaultCurrentlyPlaying,
     currentFromSDK: null,
     currentPositionFromSDK: 0,
+    playerState: null,
   }),
 
   actions: {
@@ -75,6 +76,10 @@ export const usePlayer = defineStore("player", {
       instance()
         .put(`me/player/volume?volume_percent=${volume}`)
         .then(() => (this.devices.activeDevice.volume_percent = volume));
+    },
+
+    syncPlayerState(state: Spotify.PlaybackState) {
+      this.playerState = state;
     },
 
     getPlayerState(options?: { fullState: boolean }) {

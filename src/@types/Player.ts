@@ -10,6 +10,7 @@ export interface Player {
   currentlyPlaying: CurrentlyPlaying;
   currentFromSDK: Spotify.Track | null;
   currentPositionFromSDK: number;
+  playerState: Spotify.PlaybackState | null;
 }
 
 export type PlayerError =

@@ -1,17 +1,11 @@
 <template>
-  <div class="meta">
-    <What
-      v-if="playerStore.currentlyPlaying.item"
-      :cover-url="playerStore.currentlyPlaying.item?.album.images[1].url"
-    />
-    <Loader v-else />
-    <Controls
-      :duration="playerStore.currentlyPlaying.item?.duration_ms ?? 0"
-      :progress="playerStore.currentlyPlaying.progress_ms ?? 0"
-    />
+  <div v-if="currentTrack" class="meta">
+    <What />
+    <Controls />
     <Device />
   </div>
-  <SeekBar :duration="playerStore.currentlyPlaying.item?.duration_ms ?? 0" />
+  <Loader v-else />
+  <SeekBar />
 </template>
 
 <script lang="ts" setup>
@@ -21,8 +15,10 @@ import SeekBar from "./SeekBar.vue";
 import What from "./PlayerMetas.vue";
 import Loader from "../LoadingDots.vue";
 import Device from "./device/DeviceIndex.vue";
+import { computed } from "vue";
 
 const playerStore = usePlayer();
+const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
 
 setInterval(() => {
   if (!playerStore.currentlyPlaying.item) {

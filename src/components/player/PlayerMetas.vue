@@ -1,7 +1,7 @@
 <template>
-  <div class="what">
+  <div v-if="currentTrack" class="what">
     <div class="cover-wrap">
-      <img :src="coverUrl" class="cover" />
+      <img :src="currentTrack.album.images[1].url" class="cover" />
       <div
         v-if="playerStore.currentlyPlaying.item"
         class="hover"
@@ -13,20 +13,14 @@
     <div>
       <div>
         <template v-if="playerStore.currentlyPlaying.currently_playing_type === 'episode'">
-          <div class="trackname">{{ playerStore.currentFromSDK?.artists[0].name }}</div>
-          <div class="album">{{ playerStore.currentFromSDK?.name }}</div>
+          <div class="trackname">{{ currentTrack.artists[0].name }}</div>
+          <div class="album">{{ currentTrack.name }}</div>
         </template>
         <template v-else>
-          <span v-if="playerStore.currentlyPlaying.item" class="trackname">
-            {{ playerStore.currentlyPlaying.item.name }} —
-          </span>
+          <span v-if="playerStore.currentlyPlaying.item" class="trackname"> {{ currentTrack.name }} — </span>
         </template>
 
-        <ArtistList
-          v-if="playerStore.currentlyPlaying.item"
-          :artist-list="playerStore.currentlyPlaying.item.album.artists"
-          :feat="true"
-        />
+        <ArtistList v-if="playerStore.currentlyPlaying.item" :artist-list="currentTrack.artists" :feat="true" />
       </div>
       <div v-if="playerStore.currentlyPlaying.item" class="album">
         <router-link :to="`/album/${playerStore.currentlyPlaying.item.album.id}`" class="link">
@@ -47,16 +41,13 @@
 import ArtistList from "../artist/ArtistList.vue";
 import { usePlayer } from "./PlayerStore";
 import { useDialog } from "../dialog/DialogStore";
-import { defineProps } from "vue";
+import { computed } from "vue";
 import { isEP, isAlbum } from "../../helpers/useCleanAlbums";
 import { RouterLink } from "vue-router";
 
 const playerStore = usePlayer();
 const dialogStore = useDialog();
-
-defineProps<{
-  coverUrl: string;
-}>();
+const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
 </script>
 
 <style lang="scss" scoped>

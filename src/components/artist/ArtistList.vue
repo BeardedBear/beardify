@@ -12,10 +12,17 @@ import { defineProps } from "vue";
 import { Artist, ArtistSimplified } from "../../@types/Artist";
 import router from "../../router";
 import { useDialog } from "../dialog/DialogStore";
+
 const dialogStore = useDialog();
 
 defineProps<{
-  artistList: Artist[] | ArtistSimplified[];
+  artistList:
+    | Artist[]
+    | ArtistSimplified[]
+    | {
+        name: string;
+        uri: string;
+      }[];
   feat?: boolean;
 }>();
 

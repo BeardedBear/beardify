@@ -17,7 +17,7 @@
       >
         <i class="icon-repeat" />
       </button>
-      <button v-if="!playerStore.currentlyPlaying.is_playing" class="controls__btn play" @click="playerStore.play()">
+      <button v-if="playerStore.playerState?.paused" class="controls__btn play" @click="playerStore.play()">
         <i class="icon-play" />
       </button>
       <button v-else class="controls__btn play" @click="playerStore.pause()">
@@ -31,34 +31,28 @@
         <i class="icon-skip-forward" />
       </button>
     </div>
-    <div v-if="progress && duration" class="time">{{ timecode(currentTime) }} / {{ timecode(duration) }}</div>
-    <div v-else class="time">0:00 / 0:00</div>
+    <div class="time">{{ timecode(currentTime) || "00:00" }} / {{ timecode(duration) || "00:00" }}</div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
-import { ref, watch, defineProps } from "vue";
+import { ref, watch, computed } from "vue";
 import { useIntervalFn } from "@vueuse/core";
 
-const props = defineProps<{
-  progress: number | null | undefined;
-  duration: number | null | undefined;
-}>();
-
 const playerStore = usePlayer();
-const currentTime = ref<number | null | undefined>(0);
+const currentTime = ref<number>(0);
+const duration = computed(() => playerStore.playerState?.duration);
 
 useIntervalFn(() => {
-  if (playerStore.currentlyPlaying.is_playing) currentTime.value = currentTime.value && currentTime.value + 1000;
+  if (!playerStore.playerState) return;
+  if (!playerStore.playerState.paused) currentTime.value = currentTime.value + 1000;
 }, 1000);
 
 watch(
-  () => props.progress,
-  () => {
-    if (props.progress) currentTime.value = props.progress;
-  },
+  () => playerStore.playerState?.position,
+  () => playerStore.playerState && (currentTime.value = playerStore.playerState?.position),
 );
 </script>
 
