@@ -23,14 +23,14 @@
         <ArtistList v-if="playerStore.currentlyPlaying.item" :artist-list="currentTrack.artists" :feat="true" />
       </div>
       <div v-if="playerStore.currentlyPlaying.item" class="album">
-        <router-link :to="`/album/${playerStore.currentlyPlaying.item.album.id}`" class="link">
+        <router-link :to="`/album/${transformUriToid(currentTrack.album.uri)}`" class="link">
           <i
             :class="{
               'icon-ep': isEP(playerStore.currentlyPlaying.item.album),
               'icon-album': isAlbum(playerStore.currentlyPlaying.item.album),
             }"
           ></i>
-          {{ playerStore.currentlyPlaying.item.album.name }}
+          {{ currentTrack.album.name }}
         </router-link>
       </div>
     </div>
@@ -44,6 +44,7 @@ import { useDialog } from "../dialog/DialogStore";
 import { computed } from "vue";
 import { isEP, isAlbum } from "../../helpers/useCleanAlbums";
 import { RouterLink } from "vue-router";
+import { transformUriToid } from "../../helpers/helper";
 
 const playerStore = usePlayer();
 const dialogStore = useDialog();
