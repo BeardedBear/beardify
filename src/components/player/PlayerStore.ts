@@ -8,6 +8,7 @@ import { instance } from "../../api";
 import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 import { updatePlayerState } from "../../helpers/play";
 import { useAuth } from "../../views/auth/AuthStore";
+import spotify from "../../spotify";
 
 export const usePlayer = defineStore("player", {
   state: (): Player => ({
@@ -24,15 +25,11 @@ export const usePlayer = defineStore("player", {
 
   actions: {
     play(): void {
-      instance()
-        .put("me/player/play", { device_id: this.devices.activeDevice })
-        .then(() => (this.currentlyPlaying.is_playing = true));
+      instance().put("me/player/play", { device_id: this.devices.activeDevice });
     },
 
     pause(): void {
-      instance()
-        .put("me/player/pause", { device_id: this.devices.activeDevice })
-        .then(() => (this.currentlyPlaying.is_playing = false));
+      instance().put("me/player/pause", { device_id: this.devices.activeDevice });
     },
 
     next(): void {
@@ -47,8 +44,8 @@ export const usePlayer = defineStore("player", {
         .then(({ data }) => {
           const activeDevice = data.devices.find((d) => d.is_active);
           this.devices.list = data.devices;
-
-          if (this.currentlyPlaying.is_playing && activeDevice) {
+          if (!data.devices.length) spotify().connect();
+          if (!this.playerState?.paused && activeDevice) {
             this.devices.activeDevice = activeDevice;
           } else if (activeDevice?.is_active) {
             this.devices.activeDevice = activeDevice;

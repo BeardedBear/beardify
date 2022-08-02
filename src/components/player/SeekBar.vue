@@ -108,7 +108,6 @@ watch(
     left: 0;
     position: absolute;
     top: 0;
-    transition: all ease 0.2s;
   }
 }
 

@@ -4,18 +4,12 @@ import { useNotification } from "./components/notification/NotificationStore";
 import { usePlayer } from "./components/player/PlayerStore";
 import { useAuth } from "./views/auth/AuthStore";
 
-window.onSpotifyWebPlaybackSDKReady = (): void => {
+export default window.onSpotifyWebPlaybackSDKReady = (): Spotify.Player => {
   const player = new Spotify.Player({
     name: "Beardify",
     getOAuthToken: (cb): void => cb(useAuth().accessToken),
     volume: 1,
   });
-
-  // function getState(state: Spotify.PlaybackState | null): void {
-  //   if (state?.track_window) {
-  //     usePlayer().updateFromSDK(state?.track_window.current_track, state.position);
-  //   }
-  // }
 
   player.connect();
 
@@ -24,10 +18,6 @@ window.onSpotifyWebPlaybackSDKReady = (): void => {
     const msg = "Failed to initialize";
     console.error(msg, message);
     useNotification().addNotification({ type: NotificationType.Error, msg });
-  });
-
-  player.resume().then(() => {
-    console.log("Resumed!");
   });
 
   player.on("authentication_error", ({ message }) => {
@@ -59,12 +49,9 @@ window.onSpotifyWebPlaybackSDKReady = (): void => {
   });
 
   player.addListener("player_state_changed", (state) => {
-    console.log("playerstate", state);
     usePlayer().syncPlayerState(state);
-    // getState(state);
     if (document.hasFocus()) usePlayer().syncPlayerState(state);
   });
-  player.nextTrack().then(() => {
-    console.log("Skipped to next track!");
-  });
+
+  return player;
 };
