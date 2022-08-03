@@ -19,12 +19,6 @@ import { computed } from "vue";
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
-
-setInterval(() => {
-  if (!playerStore.currentlyPlaying.item) {
-    playerStore.getPlayerState();
-  }
-}, 1000);
 </script>
 
 <style lang="scss" scoped>

@@ -1,7 +1,7 @@
 <template>
   <div
     class="single"
-    :class="{ active: playerStore.currentlyPlaying.item?.album.uri === single.uri }"
+    :class="{ active: playerStore.playerState?.track_window.current_track.uri === single.uri }"
     @click="playSingle(single.uri)"
   >
     <div class="what">
@@ -20,7 +20,6 @@ import { defineProps } from "vue";
 import { AlbumSimplified } from "../../@types/Album";
 import { instance } from "../../api";
 import { date } from "../../helpers/date";
-import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 import Cover from "../AlbumCover.vue";
 import { usePlayer } from "../player/PlayerStore";
 import ArtistList from "./ArtistList.vue";
@@ -32,9 +31,7 @@ defineProps<{
 const playerStore = usePlayer();
 
 function playSingle(albumUri: string): void {
-  instance()
-    .put("me/player/play", { context_uri: albumUri })
-    .then(() => syncOfficialSpotifyClient());
+  instance().put("me/player/play", { context_uri: albumUri });
 }
 </script>
 

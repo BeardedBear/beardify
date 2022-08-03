@@ -1,6 +1,6 @@
 <template>
   <div class="album" :class="{ 'exact-search': exactSearch }">
-    <div v-if="album.uri === playerStore.currentlyPlaying.item?.album.uri" class="current">
+    <div v-if="album.uri === playerStore.playerState?.track_window.current_track.album.uri" class="current">
       <i class="icon-volume-2" />
     </div>
     <div class="cover">
@@ -47,7 +47,6 @@ import ArtistList from "../artist/ArtistList.vue";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";
 import { notification } from "../../helpers/notifications";
 import { NotificationType } from "../../@types/Notification";
-import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 import { ImageSize } from "../../@types/Image";
 import { usePlayer } from "../player/PlayerStore";
 
@@ -68,9 +67,7 @@ const playlistStore = usePlaylist();
 const playerStore = usePlayer();
 
 function playAlbum(albumUri: string): void {
-  instance()
-    .put("me/player/play", { context_uri: albumUri })
-    .then(() => syncOfficialSpotifyClient());
+  instance().put("me/player/play", { context_uri: albumUri });
 }
 
 function deleteAlbum(albumId: string): void {

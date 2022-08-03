@@ -2,34 +2,17 @@
   <div v-if="currentTrack" class="what">
     <div class="cover-wrap">
       <img :src="currentTrack.album.images[1].url" class="cover" />
-      <div
-        v-if="playerStore.currentlyPlaying.item"
-        class="hover"
-        @click="dialogStore.open({ type: 'addSong', songUri: playerStore.currentlyPlaying.item?.uri })"
-      >
+      <div class="hover" @click="dialogStore.open({ type: 'addSong', songUri: currentTrack && currentTrack.uri })">
         <i class="add icon-plus"></i>
       </div>
     </div>
     <div>
       <div>
-        <template v-if="playerStore.currentlyPlaying.currently_playing_type === 'episode'">
-          <div class="trackname">{{ currentTrack.artists[0].name }}</div>
-          <div class="album">{{ currentTrack.name }}</div>
-        </template>
-        <template v-else>
-          <span v-if="playerStore.currentlyPlaying.item" class="trackname"> {{ currentTrack.name }} — </span>
-        </template>
-
-        <ArtistList v-if="playerStore.currentlyPlaying.item" :artist-list="currentTrack.artists" :feat="true" />
+        <span class="trackname"> {{ currentTrack.name }} — </span>
+        <ArtistList :artist-list="currentTrack.artists" :feat="true" />
       </div>
-      <div v-if="playerStore.currentlyPlaying.item" class="album">
+      <div class="album">
         <router-link :to="`/album/${transformUriToid(currentTrack.album.uri)}`" class="link">
-          <i
-            :class="{
-              'icon-ep': isEP(playerStore.currentlyPlaying.item.album),
-              'icon-album': isAlbum(playerStore.currentlyPlaying.item.album),
-            }"
-          ></i>
           {{ currentTrack.album.name }}
         </router-link>
       </div>
@@ -42,7 +25,6 @@ import ArtistList from "../artist/ArtistList.vue";
 import { usePlayer } from "./PlayerStore";
 import { useDialog } from "../dialog/DialogStore";
 import { computed } from "vue";
-import { isEP, isAlbum } from "../../helpers/useCleanAlbums";
 import { RouterLink } from "vue-router";
 import { transformUriToid } from "../../helpers/helper";
 

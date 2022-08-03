@@ -1,13 +1,9 @@
-import { useTitle } from "@vueuse/core";
 import { defineStore } from "pinia";
-import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
 import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
 import { DevicesResponse } from "../../@types/Device";
 import { Player } from "../../@types/Player";
 import { instance } from "../../api";
-import { syncOfficialSpotifyClient } from "../../helpers/getSpotifyPlayerState";
 import { updatePlayerState } from "../../helpers/play";
-import { useAuth } from "../../views/auth/AuthStore";
 import spotify from "../../spotify";
 
 export const usePlayer = defineStore("player", {
@@ -33,9 +29,7 @@ export const usePlayer = defineStore("player", {
     },
 
     next(): void {
-      instance()
-        .post("me/player/next")
-        .then(() => syncOfficialSpotifyClient());
+      instance().post("me/player/next");
     },
 
     async getDeviceList() {
@@ -77,36 +71,6 @@ export const usePlayer = defineStore("player", {
 
     syncPlayerState(state: Spotify.PlaybackState) {
       this.playerState = state;
-    },
-
-    getPlayerState(options?: { fullState: boolean }) {
-      instance()
-        .get<CurrentlyPlaying>(`me/player`)
-        .then(({ data }) => {
-          if (data) {
-            if (options?.fullState) {
-              this.currentlyPlaying = data;
-            } else {
-              this.currentlyPlaying.item = data.item;
-              this.currentlyPlaying.progress_ms = data.progress_ms;
-              this.currentlyPlaying.timestamp = data.timestamp;
-            }
-            useTitle(`${data.item?.album.artists[0].name} - ${data.item?.name}`);
-          } else {
-            useTitle("Beardify");
-          }
-
-          if (this.currentFromSDK) {
-            useTitle(`${this.currentFromSDK.artists[0].name} - ${this.currentFromSDK.name}`);
-          } else {
-            useTitle("Beardify");
-          }
-        })
-        .catch(() => {
-          useAuth()
-            .refresh()
-            .finally(() => updatePlayerState());
-        });
     },
 
     toggleShuffle() {

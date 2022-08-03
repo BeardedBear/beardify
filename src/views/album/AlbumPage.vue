@@ -13,7 +13,7 @@
             :key="index"
             class="track"
             :class="{
-              active: playerStore.currentlyPlaying.item?.id === track.id,
+              active: playerStore.playerState?.track_window.current_track.uri === track.uri,
               unavailable: !track.available_markets.length,
             }"
             @click="playSongs(index, albumStore.album.tracks.items)"

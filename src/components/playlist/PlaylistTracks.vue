@@ -3,10 +3,7 @@
     <div
       class="track"
       :class="{
-        active:
-          playerStore.currentlyPlaying && track.track
-            ? playerStore.currentlyPlaying.item && track.track.id === playerStore.currentlyPlaying.item.id
-            : false,
+        active: playerStore.playerState?.track_window.current_track.uri === track.track.uri,
         deletable: playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative,
       }"
       @click="
