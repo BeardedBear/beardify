@@ -3,7 +3,6 @@ import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
 import { DevicesResponse } from "../../@types/Device";
 import { Player } from "../../@types/Player";
 import { instance } from "../../api";
-import { updatePlayerState } from "../../helpers/play";
 import spotify from "../../spotify";
 
 export const usePlayer = defineStore("player", {
@@ -105,7 +104,7 @@ export const usePlayer = defineStore("player", {
 
     thisDevice(deviceId: string) {
       this.thisDeviceId = deviceId;
-      updatePlayerState();
+      this.getDeviceList();
     },
 
     updateFromSDK(args: Spotify.Track, position: number) {

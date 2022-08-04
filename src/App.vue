@@ -20,7 +20,7 @@ import { useAuth } from "./views/auth/AuthStore";
 import { useDialog } from "./components/dialog/DialogStore";
 import { useKeyboardEvents } from "./helpers/useKeyboardEvents";
 import { RouterView } from "vue-router";
-import { updatePlayerState } from "./helpers/play";
+import { usePlayer } from "./components/player/PlayerStore";
 
 useKeyboardEvents();
 
@@ -39,7 +39,11 @@ if (!navigator.userAgent.includes("Macintosh")) {
 setInterval(() => authStore.refresh(), 1_800_000); // 30 minutes
 
 // Keep device active every 5 minutes
-setInterval(() => updatePlayerState(), 300_000);
+setInterval(() => usePlayer().getDeviceList(), 300_000);
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) usePlayer().getDeviceList();
+});
 </script>
 
 <style lang="scss">
