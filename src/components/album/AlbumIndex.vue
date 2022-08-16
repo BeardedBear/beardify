@@ -34,7 +34,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
 import { Album, AlbumSimplified } from "../../@types/Album";
 import { instance } from "../../api";
 import router from "../../router";

@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineProps } from "vue";
+import { computed } from "vue";
 import { usePlaylist } from "./PlaylistStore";
 import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";

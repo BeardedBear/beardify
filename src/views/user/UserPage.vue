@@ -50,7 +50,7 @@
 
 <script lang="ts" setup>
 import { useUserStore } from "./UserStore";
-import { defineProps } from "vue";
+
 import LoadingDots from "../../components/LoadingDots.vue";
 import Cover from "../../components/AlbumCover.vue";
 import ShareContent from "../../components/ShareContent.vue";

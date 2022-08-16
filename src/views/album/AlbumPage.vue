@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref } from "vue";
+import { ref } from "vue";
 import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
 import ArtistList from "../../components/artist/ArtistList.vue";

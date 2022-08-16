@@ -16,7 +16,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
 import { AlbumSimplified } from "../../@types/Album";
 import { instance } from "../../api";
 import { date } from "../../helpers/date";

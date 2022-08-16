@@ -33,7 +33,7 @@ import { useDialog } from "../dialog/DialogStore";
 import { usePlayer } from "../player/PlayerStore";
 import { useSearch } from "../search/SearchStore";
 import { useReleases } from "../../views/releases/ReleasesStore";
-import { defineProps } from "vue";
+
 import { Release } from "../../@types/Releases";
 
 defineProps<{

@@ -6,7 +6,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
 import { Album } from "../../@types/Album";
 
 defineProps<{ album: Album }>();

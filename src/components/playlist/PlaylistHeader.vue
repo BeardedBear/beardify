@@ -36,7 +36,7 @@ import ShareContent from "../../components/ShareContent.vue";
 import Actions from "../../components/playlist/PlaylistActions.vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";
-import { defineProps } from "vue";
+
 import { RouterLink } from "vue-router";
 
 defineProps<{

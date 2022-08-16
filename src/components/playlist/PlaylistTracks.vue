@@ -54,7 +54,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
 import { NotificationType } from "../../@types/Notification";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { instance } from "../../api";

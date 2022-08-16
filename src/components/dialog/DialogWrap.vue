@@ -13,7 +13,6 @@
 
 <script lang="ts" setup>
 import { useDialog } from "./DialogStore";
-import { defineProps } from "vue";
 
 defineProps<{
   withTitle: boolean;

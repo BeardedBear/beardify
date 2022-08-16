@@ -15,7 +15,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
 import { usePodcasts } from "./PodcastsStore";
 import Loader from "../../components/LoadingDots.vue";
 import PodcastEpisode from "../../components/podcast/PodcastEpisode.vue";

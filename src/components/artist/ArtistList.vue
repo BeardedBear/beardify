@@ -8,7 +8,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
 import { Artist, ArtistSimplified } from "../../@types/Artist";
 import router from "../../router";
 import { useDialog } from "../dialog/DialogStore";

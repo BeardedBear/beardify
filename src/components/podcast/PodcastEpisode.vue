@@ -47,7 +47,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
 import { Episode } from "../../@types/Podcast";
 import { timecodeWithUnits, date } from "../../helpers/date";
 import { playSong } from "../../helpers/play";

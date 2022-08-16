@@ -4,7 +4,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
 import { AlbumSimplified } from "../../@types/Album";
 import { isSingle, isCompilation } from "../../helpers/useCleanAlbums";
 import router from "../../router";

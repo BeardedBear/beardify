@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref } from "vue";
+import { ref } from "vue";
 import { useArtist } from "./ArtistStore";
 import RelatedArtists from "../../components/artist/RelatedArtists.vue";
 import ArtistHeader from "../../components/artist/ArtistHeader.vue";

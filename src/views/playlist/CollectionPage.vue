@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import Album from "../../components/album/AlbumIndex.vue";
 import { usePlaylist } from "./PlaylistStore";
 import Loader from "../../components/LoadingDots.vue";

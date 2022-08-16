@@ -15,7 +15,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
 import { useClipboard } from "@vueuse/core";
 const props = defineProps<{
   spotifyUrl: string;
