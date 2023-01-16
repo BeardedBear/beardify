@@ -25,14 +25,7 @@
       </a>
       <a
         class="links__item"
-        @click="
-          openLink(
-            `https://rateyourmusic.com/artist/${artistNameNormalized
-              .toLowerCase()
-              .replaceAll(' ', '-')
-              .replaceAll(',', '')}`,
-          )
-        "
+        @click="openLink(`https://rateyourmusic.com/search?searchterm=${artistNameNormalized}&searchtype=a`)"
       >
         <i class="icon-rym" />
       </a>
@@ -60,10 +53,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useArtist } from "../../views/artist/ArtistStore";
-import ShareContent from "../ShareContent.vue";
 import { normalize } from "normalize-diacritics";
 import { onMounted, ref } from "vue";
+import { useArtist } from "../../views/artist/ArtistStore";
+import ShareContent from "../ShareContent.vue";
 
 const artistStore = useArtist();
 const artistNameNormalized = ref<string>("");

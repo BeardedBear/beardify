@@ -19,9 +19,9 @@
 </template>
 
 <script lang="ts" setup>
+import { onMounted, ref } from "vue";
 import { useArtist } from "../../views/artist/ArtistStore";
 import Options from "./ArtistOptions.vue";
-import { ref, onMounted } from "vue";
 
 const domHeader = ref<HTMLDivElement | null>(null);
 const artistStore = useArtist();

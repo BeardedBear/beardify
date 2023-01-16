@@ -1,18 +1,19 @@
 <template>
   <div>
-    <button
-      v-for="(device, index) in playerStore.devices.list"
-      :key="index"
-      type="button"
-      class="device button button--x-small"
-      :class="{
-        'button--primary': device.id === playerStore.devices.activeDevice.id,
-        me: playerStore.thisDeviceId === device.id,
-      }"
-      @click="playerStore.setDevice(device.id)"
-    >
-      {{ device.name }}
-    </button>
+    <template v-for="(device, _key) in playerStore.devices.list" :key="_key">
+      <button
+        v-if="device.id === playerStore.devices.activeDevice.id"
+        type="button"
+        class="device button button--x-small"
+        :class="{
+          'button--primary': device.id === playerStore.devices.activeDevice.id,
+          me: playerStore.thisDeviceId === device.id,
+        }"
+        @click="playerStore.setDevice(device.id)"
+      >
+        {{ device.name }}
+      </button>
+    </template>
     <button type="button" class="device button button--x-small" @click="playerStore.getDeviceList()">
       <i class="icon-refresh"></i>
     </button>

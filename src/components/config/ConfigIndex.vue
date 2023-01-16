@@ -34,16 +34,18 @@
 import Colors from "./ColorsTheme.vue";
 import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";
-import { onClickOutside, templateRef } from "@vueuse/core";
+import { onClickOutside } from "@vueuse/core";
 import { useConfig } from "./ConfigStore";
 import { NotificationType } from "../../@types/Notification";
 import { RouterLink } from "vue-router";
+import { ref } from "vue";
 
 const env = process.env.NODE_ENV;
 const authStore = useAuth();
 const configStore = useConfig();
+const domConfig = ref<HTMLElement | null>(null);
 
-onClickOutside(templateRef("domConfig"), () => configStore.close());
+onClickOutside(domConfig, (): void => configStore.close());
 </script>
 
 <style lang="scss" scoped>
