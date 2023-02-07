@@ -17,7 +17,9 @@ const playerStore = usePlayer();
 
 watchEffect(() => {
   refVolume.value?.addEventListener("mousemove", (e: MouseEvent) => {
-    if (e.offsetX <= 100 && e.offsetX >= 0) volume.value = e.offsetX;
+    if (e.offsetX <= 100 && e.offsetX >= 0) {
+      volume.value = e.offsetX;
+    }
   });
 });
 </script>

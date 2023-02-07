@@ -64,7 +64,7 @@ export const usePlayer = defineStore("player", {
 
     setVolume(volume: number) {
       instance()
-        .put(`me/player/volume?volume_percent=${volume}`)
+        .put(`me/player/volume?volume_percent=${Math.round(Math.expm1(volume / 100) * 0.582 * 100)}`)
         .then(() => (this.devices.activeDevice.volume_percent = volume));
     },
 
