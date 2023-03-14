@@ -1,10 +1,10 @@
 import { createPinia } from "pinia";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import { createApp } from "vue";
 import App from "./App.vue";
+import { useConfig } from "./components/config/ConfigStore";
 import router, { RouteName } from "./router";
 import { useAuth } from "./views/auth/AuthStore";
-import { useConfig } from "./components/config/ConfigStore";
-import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 const app = createApp(App);
 const pinia = createPinia();
