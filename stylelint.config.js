@@ -7,7 +7,5 @@ module.exports = {
     "order/order": ["custom-properties", "declarations"],
     "order/properties-alphabetical-order": true,
     "declaration-colon-newline-after": null,
-    "max-empty-lines": 1,
-    "max-line-length": 120,
   },
 };

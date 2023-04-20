@@ -96,12 +96,9 @@ const textColors: TextColors[] = [
 
       background-color: white;
       border-radius: $s;
-      bottom: $o;
       content: "";
-      left: $o * 2;
+      inset: $o $o * 2 $o $o * 2;
       position: absolute;
-      right: $o * 2;
-      top: $o;
       transform: scaleX(0);
       transition: all ease 0.2s;
       will-change: transform;

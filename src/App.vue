@@ -63,7 +63,7 @@ document.addEventListener("visibilitychange", () => {
 html {
   font-size: 16px;
 
-  @media (min-resolution: 2.9dppx) {
+  @media (resolution >= 2.9dppx) {
     font-size: 32px;
   }
 }
