@@ -1,12 +1,15 @@
 <template>
   <div v-if="dialogStore.show" class="dialog">
     <div class="bg" :class="{ 'is-closing': dialogStore.isClosing }" @click="dialogStore.close()"></div>
-    <div class="dialog-content" :class="{ 'is-closing': dialogStore.isClosing, big }">
-      <div v-if="withTitle" class="head">
-        <div>{{ title }}</div>
-        <button class="close" @click="dialogStore.close()"><i class="icon-x" /></button>
+    <div class="wrapper" :class="{ 'is-closing': dialogStore.isClosing, big }">
+      <div v-if="preContent" class="pre-content"><slot name="pre-content" /></div>
+      <div class="dialog-content">
+        <div v-if="withTitle" class="head">
+          <div>{{ title }}</div>
+          <button class="close" @click="dialogStore.close()"><i class="icon-x" /></button>
+        </div>
+        <div class="content" :class="{ big }"><slot /></div>
       </div>
-      <div class="content" :class="{ big }"><slot /></div>
     </div>
   </div>
 </template>
@@ -18,6 +21,7 @@ defineProps<{
   withTitle: boolean;
   title?: string;
   big?: boolean;
+  preContent?: boolean;
 }>();
 
 const dialogStore = useDialog();
@@ -120,19 +124,32 @@ $radius: 0.4rem;
   }
 }
 
-.dialog-content {
+.pre-content {
+  position: relative;
+  z-index: 1;
+}
+
+.wrapper {
   animation: pop-dialog-content 0.2s ease both;
-  background: var(--bg-color);
-  border-radius: $radius;
-  box-shadow: 0 1rem 1rem rgb(0 0 0 / 10%);
-  display: grid;
-  grid-template-rows: auto 1fr;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
   position: relative;
   will-change: transform;
 
   &.is-closing {
     animation: bye-dialog-content 0.2s ease both;
   }
+}
+
+.dialog-content {
+  background: var(--bg-color);
+  border-radius: $radius;
+  box-shadow: 0 1rem 1rem rgb(0 0 0 / 10%);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  position: relative;
 }
 
 .content {

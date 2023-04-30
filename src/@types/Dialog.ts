@@ -1,3 +1,5 @@
+import { Track, TrackSimplified } from "./Track";
+
 export interface UpdatePlaylistValues {
   name: string;
   public: boolean;
@@ -10,7 +12,7 @@ export interface Dialog {
   type: DialogType;
   isClosing: boolean;
   albumId?: string;
-  songUri?: string;
+  track?: Track | TrackSimplified | Spotify.Track;
   playlistId?: string;
 }
 

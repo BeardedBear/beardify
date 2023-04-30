@@ -10,7 +10,7 @@
     >
       <div class="cover-wrap">
         <Cover size="small" :images="trackItem.album.images" class="cover" />
-        <div class="hover" @click.prevent.stop="dialogStore.open({ type: 'addSong', songUri: trackItem.uri })">
+        <div class="hover" @click.prevent.stop="dialogStore.open({ type: 'addSong', track: trackItem })">
           <i class="add icon-plus"></i>
         </div>
       </div>
@@ -25,10 +25,10 @@
 <script lang="ts" setup>
 import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
-import Cover from "../AlbumCover.vue";
 import { useArtist } from "../../views/artist/ArtistStore";
-import { usePlayer } from "../player/PlayerStore";
+import Cover from "../AlbumCover.vue";
 import { useDialog } from "../dialog/DialogStore";
+import { usePlayer } from "../player/PlayerStore";
 
 const artistStore = useArtist();
 const playerStore = usePlayer();

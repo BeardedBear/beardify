@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { Dialog, DialogType, UpdatePlaylistValues } from "../../@types/Dialog";
+import { Track, TrackSimplified } from "../../@types/Track";
 import { instance } from "../../api";
 import router from "../../router";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";
@@ -13,11 +14,16 @@ export const useDialog = defineStore("dialog", {
   }),
 
   actions: {
-    open(data: { type: DialogType; albumId?: string; playlistId?: string; songUri?: string }) {
+    open(data: {
+      type: DialogType;
+      albumId?: string;
+      playlistId?: string;
+      track?: Track | TrackSimplified | Spotify.Track;
+    }) {
       this.show = true;
       this.type = data.type;
       if (data.albumId) this.albumId = data.albumId;
-      if (data.songUri) this.songUri = data.songUri;
+      if (data.track?.uri) this.track = data.track;
       if (data.playlistId) this.playlistId = data.playlistId;
     },
 

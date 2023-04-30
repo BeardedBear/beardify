@@ -2,7 +2,7 @@
   <div v-if="currentTrack" class="what">
     <div class="cover-wrap">
       <img :src="currentTrack.album.images[1].url" class="cover" />
-      <div class="hover" @click="dialogStore.open({ type: 'addSong', songUri: currentTrack && currentTrack.uri })">
+      <div class="hover" @click="dialogStore.open({ type: 'addSong', track: currentTrack })">
         <i class="add icon-plus"></i>
       </div>
     </div>
@@ -21,12 +21,12 @@
 </template>
 
 <script lang="ts" setup>
-import ArtistList from "../artist/ArtistList.vue";
-import { usePlayer } from "./PlayerStore";
-import { useDialog } from "../dialog/DialogStore";
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 import { transformUriToid } from "../../helpers/helper";
+import ArtistList from "../artist/ArtistList.vue";
+import { useDialog } from "../dialog/DialogStore";
+import { usePlayer } from "./PlayerStore";
 
 const playerStore = usePlayer();
 const dialogStore = useDialog();

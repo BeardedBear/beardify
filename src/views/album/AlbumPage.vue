@@ -18,7 +18,7 @@
             }"
             @click="playSongs(index, albumStore.album.tracks.items)"
           >
-            <button class="add" @click.prevent.stop="dialogStore.open({ type: 'addSong', songUri: track.uri })">
+            <button class="add" @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })">
               <i class="icon-plus"></i>
             </button>
             <span class="track__number">{{ track.track_number }}.</span>
@@ -42,16 +42,16 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
+import Loader from "../../components/LoadingDots.vue";
+import Foot from "../../components/album/AlbumFoot.vue";
+import Head from "../../components/album/AlbumHead.vue";
+import Album from "../../components/album/AlbumIndex.vue";
+import ArtistList from "../../components/artist/ArtistList.vue";
+import { useDialog } from "../../components/dialog/DialogStore";
+import { usePlayer } from "../../components/player/PlayerStore";
 import { timecode } from "../../helpers/date";
 import { playSongs } from "../../helpers/play";
-import ArtistList from "../../components/artist/ArtistList.vue";
-import Album from "../../components/album/AlbumIndex.vue";
 import { useAlbum } from "./AlbumStore";
-import { usePlayer } from "../../components/player/PlayerStore";
-import Loader from "../../components/LoadingDots.vue";
-import Head from "../../components/album/AlbumHead.vue";
-import Foot from "../../components/album/AlbumFoot.vue";
-import { useDialog } from "../../components/dialog/DialogStore";
 
 const props = defineProps({ id: { default: "", type: String } });
 const albumpage = ref();

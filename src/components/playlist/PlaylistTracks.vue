@@ -17,7 +17,7 @@
         <i class="track-icon-item music icon-note" />
         <i
           class="track-icon-item save icon-plus"
-          @click.prevent.stop="dialogStore.open({ type: 'addSong', songUri: track.track.uri })"
+          @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track.track })"
         ></i>
       </div>
       <div>

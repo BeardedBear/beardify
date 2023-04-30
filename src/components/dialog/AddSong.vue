@@ -1,5 +1,6 @@
 <template>
-  <Dialog with-title title="Add track to a playlist">
+  <Dialog with-title :title="`Add to a playlist`" pre-content>
+    <template v-if="dialogStore.track" #pre-content><PreContentTrack :track="dialogStore.track" /></template>
     <div class="content">
       <div
         v-for="(playlist, index) in sidebarStore.playlists.filter(
@@ -7,7 +8,7 @@
         )"
         :key="index"
         class="collection"
-        @click="add(dialogStore.songUri ? dialogStore.songUri : '', playlist.id)"
+        @click="add(dialogStore.track?.uri ? dialogStore.track?.uri : '', playlist.id)"
       >
         <div class="playlist">
           <div><PlaylistIcon :playlist="playlist" /> {{ playlist.name }}</div>
@@ -22,13 +23,14 @@
 import { NotificationType } from "../../@types/Notification";
 import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
-import { useSidebar } from "../sidebar/SidebarStore";
-import { useDialog } from "./DialogStore";
-import Dialog from "./DialogWrap.vue";
+import { trackAllreadyExist } from "../../helpers/playlist";
 import { useAuth } from "../../views/auth/AuthStore";
 import PlaylistIcon from "../sidebar/PlaylistIcon.vue";
+import { useSidebar } from "../sidebar/SidebarStore";
 import VisibilityIcon from "../sidebar/VisibilityIcon.vue";
-import { trackAllreadyExist } from "../../helpers/playlist";
+import { useDialog } from "./DialogStore";
+import Dialog from "./DialogWrap.vue";
+import PreContentTrack from "./PreContentTrack.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
