@@ -7,7 +7,7 @@
       <button class="copy" @click="clipboardSpotify.copy()">
         <i class="icon-spotify"></i>
       </button>
-      <button class="copy" @click="clipboardBeardify.copy()">
+      <button v-if="beardifyUrl" class="copy" @click="clipboardBeardify.copy()">
         <i class="icon-beardify"></i>
       </button>
     </div>
@@ -18,7 +18,7 @@
 import { useClipboard } from "@vueuse/core";
 const props = defineProps<{
   spotifyUrl: string;
-  beardifyUrl: string;
+  beardifyUrl?: string;
 }>();
 const clipboardSpotify = useClipboard({ source: props.spotifyUrl });
 const clipboardBeardify = useClipboard({ source: window.location.origin + props.beardifyUrl });

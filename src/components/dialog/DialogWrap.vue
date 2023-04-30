@@ -134,7 +134,6 @@ $radius: 0.4rem;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  overflow: hidden;
   position: relative;
   will-change: transform;
 

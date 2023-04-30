@@ -1,19 +1,35 @@
 <template>
   <div class="track">
-    <i class="icon-note note" />
-    <div>
-      <div class="name">{{ track?.name }}</div>
-      <div class="artist">{{ track?.artists[0].name }}</div>
+    <div class="meta">
+      <i class="icon-note note" />
+      <div>
+        <div class="name">{{ track?.name }}</div>
+        <div class="artist">{{ track?.artists[0].name }}</div>
+      </div>
+    </div>
+    <div class="options">
+      <a
+        class="link"
+        @click="openLink(`https://www.youtube.com/results?search_query=${track?.artists[0].name}+${track?.name}`)"
+      >
+        <i class="icon-youtube" />
+      </a>
+      <ShareContent :spotify-url="`https://open.spotify.com/track/${track.id}`" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Track, TrackSimplified } from "../../@types/Track";
+import ShareContent from "../ShareContent.vue";
 
 defineProps<{
   track: Track | TrackSimplified | Spotify.Track;
 }>();
+
+function openLink(url: string): void {
+  window.open(url, "_blank");
+}
 </script>
 
 <style lang="scss" scoped>
@@ -22,7 +38,13 @@ defineProps<{
 .track {
   align-items: center;
   display: flex;
-  gap: 0.8rem;
+  justify-content: space-between;
+
+  .meta {
+    align-items: center;
+    display: flex;
+    gap: 0.8rem;
+  }
 }
 
 .note {
@@ -41,5 +63,25 @@ defineProps<{
 
 .name {
   font-weight: bold;
+}
+
+.options {
+  align-items: center;
+  display: flex;
+  gap: 0.7rem;
+
+  .link {
+    align-items: center;
+    color: currentcolor;
+    cursor: pointer;
+    display: flex;
+    font-size: 1.5rem;
+    opacity: 0.3;
+    text-decoration: none;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 </style>
