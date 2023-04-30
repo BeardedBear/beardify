@@ -8,19 +8,21 @@
     </div>
     <Player key="player" />
     <Notification />
+    <Frame />
   </template>
 </template>
 
 <script lang="ts" setup>
-import Player from "./components/player/PlayerIndex.vue";
-import Sidebar from "./components/sidebar/SidebarIndex.vue";
-import DialogList from "./components/dialog/DialogList.vue";
-import Notification from "./components/notification/NotificationIndex.vue";
-import { useAuth } from "./views/auth/AuthStore";
-import { useDialog } from "./components/dialog/DialogStore";
-import { useKeyboardEvents } from "./helpers/useKeyboardEvents";
 import { RouterView } from "vue-router";
+import DialogList from "./components/dialog/DialogList.vue";
+import { useDialog } from "./components/dialog/DialogStore";
+import Frame from "./components/frame/FrameIndex.vue";
+import Notification from "./components/notification/NotificationIndex.vue";
+import Player from "./components/player/PlayerIndex.vue";
 import { usePlayer } from "./components/player/PlayerStore";
+import Sidebar from "./components/sidebar/SidebarIndex.vue";
+import { useKeyboardEvents } from "./helpers/useKeyboardEvents";
+import { useAuth } from "./views/auth/AuthStore";
 
 useKeyboardEvents();
 
