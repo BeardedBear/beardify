@@ -38,6 +38,7 @@ function openLink(url: string): void {
 .track {
   align-items: center;
   display: flex;
+  gap: 30px;
   justify-content: space-between;
 
   .meta {
