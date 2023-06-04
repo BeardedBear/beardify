@@ -1,10 +1,10 @@
 <template>
-  <template v-if="$route.name === 'Login'"><router-view></router-view></template>
+  <template v-if="useRoute().name === 'Login'"><router-view></router-view></template>
   <template v-else>
     <DialogList />
     <div id="app__content">
       <Sidebar />
-      <router-view v-slot="{ Component }" :key="$route.fullPath"><component :is="Component" /></router-view>
+      <router-view v-slot="{ Component }" :key="useRoute().fullPath"><component :is="Component" /></router-view>
     </div>
     <Player key="player" />
     <Notification />
@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts" setup>
-import { RouterView } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 import DialogList from "./components/dialog/DialogList.vue";
 import { useDialog } from "./components/dialog/DialogStore";
 import Frame from "./components/frame/FrameIndex.vue";
