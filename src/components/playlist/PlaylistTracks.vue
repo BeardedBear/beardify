@@ -3,8 +3,9 @@
     <div
       class="track"
       :class="{
-        active: playerStore.playerState?.track_window.current_track.uri === track.track.uri,
-        deletable: playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative,
+        active:
+          currentTrack?.artists[0].name === track.track.artists[0].name && currentTrack?.name === track.track.name,
+        deletable: playlist.owner.id === me?.id || playlist.collaborative,
       }"
       @click="
         playSongs(
@@ -17,7 +18,7 @@
         <i class="track-icon-item music icon-note" />
         <i
           class="track-icon-item save icon-plus"
-          @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track.track })"
+          @click.prevent.stop="open({ type: 'addSong', track: track.track })"
         ></i>
       </div>
       <div>
@@ -29,7 +30,7 @@
           <i class="adder-icon icon-album" />
           <i
             class="adder-button icon-plus"
-            @click.prevent.stop="dialogStore.open({ type: 'addalbum', albumId: track.track.album.id })"
+            @click.prevent.stop="open({ type: 'addalbum', albumId: track.track.album.id })"
           />
         </div>
         <i
@@ -44,7 +45,7 @@
       </div>
       <div class="date">{{ date(track.added_at) }}</div>
       <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
-      <div v-if="playlistStore.playlist.owner.id === authStore.me?.id || playlistStore.playlist.collaborative">
+      <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
         <button class="button button--nude delete" @click.prevent.stop="deleteSong(track.track.uri)">
           <i class="icon-trash-2"></i>
         </button>
@@ -54,6 +55,7 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
 import { NotificationType } from "../../@types/Notification";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { instance } from "../../api";
@@ -72,15 +74,15 @@ defineProps<{
   trackList: PlaylistTrack[];
 }>();
 
-const dialogStore = useDialog();
-const playlistStore = usePlaylist();
-const playerStore = usePlayer();
-const authStore = useAuth();
+const { open } = useDialog();
+const { playlist, removeSong } = usePlaylist();
+const { me } = useAuth();
+const currentTrack = computed(() => usePlayer().playerState?.track_window.current_track);
 
 function deleteSong(songId: string): void {
   instance()
-    .delete(`playlists/${playlistStore.playlist.id}/tracks`, { data: { tracks: [{ uri: songId }] } })
-    .then(() => playlistStore.removeSong(songId))
+    .delete(`playlists/${playlist.id}/tracks`, { data: { tracks: [{ uri: songId }] } })
+    .then(() => removeSong(songId))
     .then(() => notification({ msg: "Track deleted", type: NotificationType.Success }));
 }
 </script>
