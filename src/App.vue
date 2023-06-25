@@ -93,7 +93,6 @@ body {
   background-clip: content-box;
   background-color: var(--bg-color-light);
   border: 2px solid transparent;
-  border-radius: 0.3rem;
 }
 
 ::-webkit-scrollbar-track {

@@ -1,10 +1,11 @@
 <template>
-  <div>
+  <div class="wrap">
+    <QueuedTracks />
     <template v-for="(device, _key) in playerStore.devices.list" :key="_key">
       <button
         v-if="device.id === playerStore.devices.activeDevice.id"
         type="button"
-        class="device button button--x-small"
+        class="device button button--small"
         :class="{
           'button--primary': device.id === playerStore.devices.activeDevice.id,
           me: playerStore.thisDeviceId === device.id,
@@ -14,7 +15,7 @@
         {{ device.name }}
       </button>
     </template>
-    <button type="button" class="device button button--x-small" @click="playerStore.getDeviceList()">
+    <button type="button" class="device button button--small" @click="playerStore.getDeviceList()">
       <i class="icon-refresh"></i>
     </button>
   </div>
@@ -22,14 +23,18 @@
 
 <script lang="ts" setup>
 import { usePlayer } from "../PlayerStore";
+import QueuedTracks from "./QueuedTracks.vue";
 
 const playerStore = usePlayer();
 </script>
 
 <style lang="scss" scoped>
-.device {
-  margin-left: 0.4rem;
+.wrap {
+  display: flex;
+  gap: 10px;
+}
 
+.device {
   &.me {
     position: relative;
 

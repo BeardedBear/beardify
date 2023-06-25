@@ -7,7 +7,7 @@
     <Menu />
     <div class="sidebar__item">
       <div v-if="!collectionSearchOpened" class="heading title">
-        <div>Collections</div>
+        <div class="title-name">Collections</div>
         <div class="options">
           <button class="icon" @click="sidebarStore.refreshPlaylists()">
             <i class="icon-refresh"></i>
@@ -49,7 +49,7 @@
     </div>
     <div class="sidebar__item">
       <div v-if="!playlistSearchOpened" class="heading title">
-        <div>Playlists</div>
+        <div class="title-name">Playlists</div>
         <div class="options">
           <button class="icon" @click="sidebarStore.refreshPlaylists()">
             <i class="icon-refresh"></i>
@@ -93,17 +93,17 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, Ref, watch } from "vue";
-import Loader from "../LoadingDots.vue";
-import { useDialog } from "../dialog/DialogStore";
-import { useSidebar } from "./SidebarStore";
 import { onClickOutside } from "@vueuse/core";
-import { useAuth } from "../../views/auth/AuthStore";
-import Menu from "./MainMenu.vue";
-import Topbar from "../SidebarHead.vue";
-import VisibilityIcon from "./VisibilityIcon.vue";
-import PlaylistIcon from "./PlaylistIcon.vue";
+import { ref, Ref, watch } from "vue";
 import { RouterLink } from "vue-router";
+import { useAuth } from "../../views/auth/AuthStore";
+import { useDialog } from "../dialog/DialogStore";
+import Loader from "../LoadingDots.vue";
+import Topbar from "../SidebarHead.vue";
+import Menu from "./MainMenu.vue";
+import PlaylistIcon from "./PlaylistIcon.vue";
+import { useSidebar } from "./SidebarStore";
+import VisibilityIcon from "./VisibilityIcon.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -196,6 +196,27 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   }
 }
 
+.options {
+  opacity: 0;
+  transition: 0.2s;
+  visibility: hidden;
+
+  .icon {
+    background-color: transparent;
+    border: 0;
+    border-radius: 20rem;
+    color: var(--font-color);
+    cursor: pointer;
+    opacity: 0.4;
+    padding: 0.2rem 0.5rem;
+
+    &:hover {
+      background-color: var(--bg-color-lighter);
+      opacity: 1;
+    }
+  }
+}
+
 .sidebar {
   animation: pop-content 1s ease both;
   background: var(--bg-color-dark);
@@ -210,6 +231,13 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   &__item {
     overflow-y: auto;
     position: relative;
+
+    &:hover {
+      .options {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
   }
 
   &.loading {
@@ -235,6 +263,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 .title {
   align-items: center;
   background-color: var(--bg-color-dark);
+  color: var(--font-color);
   display: flex;
   justify-content: space-between;
   margin: 0;
@@ -242,22 +271,9 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   position: sticky;
   top: 0;
   z-index: 1;
-}
 
-.options {
-  .icon {
-    background-color: transparent;
-    border: 0;
-    border-radius: 20rem;
-    color: var(--font-color);
-    cursor: pointer;
-    opacity: 0.4;
-    padding: 0.2rem 0.5rem;
-
-    &:hover {
-      background-color: var(--bg-color-lighter);
-      opacity: 1;
-    }
+  .title-name {
+    opacity: 0.2;
   }
 }
 </style>

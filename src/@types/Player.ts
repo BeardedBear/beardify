@@ -12,6 +12,7 @@ export interface Player {
   currentPositionFromSDK: number;
   playerState: Spotify.PlaybackState | null;
   queue: Spotify.Track[];
+  queueOpened: boolean;
 }
 
 export type PlayerError =

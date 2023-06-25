@@ -1,58 +1,39 @@
 <template>
   <div class="wrap">
-    <div class="content">
-      <div class="head">
-        <button class="heading" :class="{ active: activeTab === 'queue' }" @click="activeTab = 'queue'">Queue</button>
-        <button class="heading" :class="{ active: activeTab === 'history' }" @click="activeTab = 'history'">
-          History
-        </button>
-      </div>
-      <div class="tab-content">
-        <div v-if="activeTab === 'queue'" class="queue-list">
-          <div class="wrap-current">
-            <div v-if="currentTrack" class="track current">
-              <img :src="currentTrack.album.images[0].url" class="cover" />
-              <div>
-                <div>
-                  {{ currentTrack.name.length }}
-                  {{ currentTrack.name.length > 20 ? currentTrack.name.substring(0, 20) + "..." : currentTrack.name }}
-                </div>
-                <ArtistList :artist-list="currentTrack.artists" feat />
-              </div>
-            </div>
-          </div>
-          <div v-for="(track, key) in playerStore.queue" :key="key" class="track">
-            <img :src="track.album.images[2].url" class="cover" />
-            <div>
-              <div>
-                {{ key + 1 }}.
-                {{ track.name.length > 20 ? track.name.substring(0, 20) + "..." : track.name }}
-              </div>
-              <div><ArtistList :artist-list="track.artists" feat /></div>
-            </div>
+    <div v-if="playerStore.queueOpened" ref="popup" class="content">
+      <div class="head"><div class="heading">Queue</div></div>
+      <div class="body">
+        <div class="queue-list">
+          <div class="section-title">Now</div>
+          <TrackHistory v-if="currentTrack" :track="currentTrack" :cover-url="currentTrack.album.images[1].url" />
+          <div class="section-title">Next</div>
+          <div v-for="(track, key) in playerStore.queue" :key="key">
+            <TrackHistory :track="track" :index="key" :cover-url="track.album.images[2].url" />
           </div>
         </div>
-        <div v-else>history</div>
       </div>
     </div>
-    <button @click="playerStore.getQueue()">Queue</button>
+    <button class="button button--small" @click="playerStore.openQueue()"><i class="icon-queue"></i></button>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { onClickOutside } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
-import ArtistList from "../../artist/ArtistList.vue";
 import { usePlayer } from "../PlayerStore";
+import TrackHistory from "../history/TrackHistory.vue";
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
-const activeTab = ref<"queue" | "history">("queue");
+const popup = ref<HTMLElement | null>();
 
 watch(currentTrack, (track) => {
   if (track) {
     playerStore.getQueue();
   }
 });
+
+onClickOutside(popup, () => playerStore.closeQueue());
 </script>
 
 <style lang="scss" scoped>
@@ -60,9 +41,10 @@ watch(currentTrack, (track) => {
   display: flex;
   flex-direction: column;
   position: relative;
+  text-align: left;
 }
 
-.tab-content {
+.body {
   background-color: var(--bg-color-dark);
   border: 1px solid var(--bg-color-lighter);
   border-radius: 0 0 10px 10px;
@@ -73,7 +55,7 @@ watch(currentTrack, (track) => {
 }
 
 .content {
-  bottom: 100%;
+  bottom: calc(100% + 10px);
   left: 50%;
   position: absolute;
   transform: translateX(-50%);
@@ -89,52 +71,23 @@ watch(currentTrack, (track) => {
   z-index: 3;
 
   .heading {
-    background-color: transparent;
-    border: none;
     color: var(--text-color-dark);
-    cursor: pointer;
     font-size: 0.9rem;
-    font-weight: 600;
-    padding: 5px 10px;
-
-    &.active {
-      color: var(--text-color);
-    }
+    padding: 3px 10px;
   }
+}
+
+.section-title {
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-top: 10px;
+  opacity: 0.5;
+  padding: 0 10px;
+  text-transform: uppercase;
 }
 
 .queue-list {
   font-size: 0.9rem;
   white-space: nowrap;
-}
-
-.wrap-current {
-  background-image: linear-gradient(to bottom, var(--bg-color-dark), var(--bg-color-darker), rgb(0 0 0 / 0%));
-  padding: 10px;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.track {
-  align-items: center;
-  display: flex;
-  gap: 10px;
-  padding: 10px 15px;
-
-  &.current {
-    $o: 10px;
-
-    background-color: var(--bg-color);
-    border: 1px solid var(--bg-color-light);
-    border-radius: 5px;
-    padding: 10px;
-  }
-
-  .cover {
-    border-radius: 5px;
-    height: 40px;
-    width: 40px;
-  }
 }
 </style>

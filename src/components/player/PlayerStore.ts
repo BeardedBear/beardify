@@ -20,6 +20,7 @@ export const usePlayer = defineStore("player", {
     currentPositionFromSDK: 0,
     playerState: null,
     queue: [],
+    queueOpened: false,
   }),
 
   actions: {
@@ -139,6 +140,15 @@ export const usePlayer = defineStore("player", {
           useNotification().addNotification({ type: NotificationType.Error, msg: "Error getting queue" });
           this.queue = [];
         });
+    },
+
+    openQueue() {
+      this.getQueue();
+      this.queueOpened = true;
+    },
+
+    closeQueue() {
+      this.queueOpened = false;
     },
   },
 });
