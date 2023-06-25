@@ -1,9 +1,12 @@
 import { defineStore } from "pinia";
 import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
 import { DevicesResponse } from "../../@types/Device";
+import { NotificationType } from "../../@types/Notification";
 import { Player } from "../../@types/Player";
 import { instance } from "../../api";
+import { notification } from "../../helpers/notifications";
 import spotify from "../../spotify";
+import { useNotification } from "../notification/NotificationStore";
 
 export const usePlayer = defineStore("player", {
   state: (): Player => ({
@@ -16,6 +19,7 @@ export const usePlayer = defineStore("player", {
     currentFromSDK: null,
     currentPositionFromSDK: 0,
     playerState: null,
+    queue: [],
   }),
 
   actions: {
@@ -110,6 +114,31 @@ export const usePlayer = defineStore("player", {
     updateFromSDK(args: Spotify.Track, position: number) {
       this.currentFromSDK = args;
       this.currentPositionFromSDK = position;
+    },
+
+    // Queue
+    addTrackToQueue(trackUri: string) {
+      instance()
+        .post(`me/player/queue?uri=${trackUri}`)
+        .then(() => {
+          this.getQueue();
+          notification({ type: NotificationType.Success, msg: "Song added to queue" });
+        })
+        .catch(() => {
+          notification({ type: NotificationType.Error, msg: "Error adding song to queue" });
+        });
+    },
+
+    getQueue() {
+      instance()
+        .get<{ queue: Spotify.Track[] }>("me/player/queue")
+        .then(({ data }) => {
+          this.queue = data.queue;
+        })
+        .catch(() => {
+          useNotification().addNotification({ type: NotificationType.Error, msg: "Error getting queue" });
+          this.queue = [];
+        });
     },
   },
 });

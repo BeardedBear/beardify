@@ -3,7 +3,9 @@
     <span class="artist" :class="{ feat }" @click.stop="goArtist(`/artist/${artist.uri.split(':').pop()}`)">
       {{ artist.name }}
     </span>
-    <span v-if="artistList.length - 1 !== index" class="separator"> / <span v-if="!feat">&nbsp;</span></span>
+    <span v-if="artistList && artistList.length - 1 !== index" class="separator">
+      / <span v-if="!feat">&nbsp;</span>
+    </span>
   </span>
 </template>
 
@@ -21,7 +23,8 @@ defineProps<{
     | {
         name: string;
         uri: string;
-      }[];
+      }[]
+    | undefined;
   feat?: boolean;
 }>();
 

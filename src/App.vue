@@ -81,8 +81,8 @@ body {
 }
 
 ::-webkit-scrollbar {
-  height: 0.4rem;
-  width: 0.4rem;
+  height: 0.6rem;
+  width: 0.6rem;
 }
 
 ::-webkit-scrollbar-corner {
@@ -91,7 +91,9 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background-clip: content-box;
-  background-color: var(--bg-color-lighter);
+  background-color: var(--bg-color-light);
+  border: 2px solid transparent;
+  border-radius: 0.3rem;
 }
 
 ::-webkit-scrollbar-track {

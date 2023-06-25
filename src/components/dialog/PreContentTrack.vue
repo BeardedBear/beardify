@@ -8,6 +8,7 @@
       </div>
     </div>
     <div class="options">
+      <button @click="addTrackToQueue(track.uri)">Add</button>
       <a
         class="link"
         @click="openLink(`https://www.youtube.com/results?search_query=${track?.artists[0].name}+${track?.name}`)"
@@ -22,6 +23,9 @@
 <script lang="ts" setup>
 import { Track, TrackSimplified } from "../../@types/Track";
 import ShareContent from "../ShareContent.vue";
+import { usePlayer } from "../player/PlayerStore";
+
+const { addTrackToQueue } = usePlayer();
 
 defineProps<{
   track: Track | TrackSimplified | Spotify.Track;

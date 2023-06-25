@@ -34,19 +34,19 @@
 </template>
 
 <script lang="ts" setup>
+import { useRoute } from "vue-router";
 import { Album, AlbumSimplified } from "../../@types/Album";
-import { instance } from "../../api";
-import router from "../../router";
-import Cover from "../AlbumCover.vue";
+import { ImageSize } from "../../@types/Image";
+import { NotificationType } from "../../@types/Notification";
 import { Paging } from "../../@types/Paging";
 import { TrackSimplified, TrackToRemove } from "../../@types/Track";
-import { useRoute } from "vue-router";
-import { useDialog } from "../dialog/DialogStore";
-import ArtistList from "../artist/ArtistList.vue";
-import { usePlaylist } from "../../views/playlist/PlaylistStore";
+import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
-import { NotificationType } from "../../@types/Notification";
-import { ImageSize } from "../../@types/Image";
+import router from "../../router";
+import { usePlaylist } from "../../views/playlist/PlaylistStore";
+import Cover from "../AlbumCover.vue";
+import ArtistList from "../artist/ArtistList.vue";
+import { useDialog } from "../dialog/DialogStore";
 import { usePlayer } from "../player/PlayerStore";
 
 defineProps<{
@@ -79,9 +79,17 @@ function deleteAlbum(albumId: string): void {
 
       instance()
         .delete(`playlists/${currentRouteId}/tracks`, { data: { tracks: tracks } })
-        .then(() => playlistStore.removeTracks(tracks));
+        .then(() => playlistStore.removeTracks(tracks))
+        .catch((error) =>
+          notification({
+            msg: error.response.data?.error?.message ?? "Album delete failed",
+            type: NotificationType.Error,
+          }),
+        );
     })
-    .then(() => notification({ msg: "Album deleted", type: NotificationType.Success }));
+    .catch((error) =>
+      notification({ msg: error.response.data?.error?.message ?? "Album delete failed", type: NotificationType.Error }),
+    );
 }
 </script>
 
