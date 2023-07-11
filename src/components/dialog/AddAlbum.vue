@@ -10,7 +10,10 @@
         @click="add(dialogStore.albumId ? dialogStore.albumId : '', playlist.id)"
       >
         <div class="album">
-          <div><PlaylistIcon :playlist="playlist" /> {{ playlist.name.replace("#Collection ", "") }}</div>
+          <div>
+            <PlaylistIcon :playlist="playlist" />
+            {{ playlist.name.replace("#Collection ", "") }}
+          </div>
           <VisibilityIcon :playlist="playlist" />
         </div>
       </div>
@@ -24,13 +27,13 @@ import { Paging } from "../../@types/Paging";
 import { TrackSimplified } from "../../@types/Track";
 import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
-import { useSidebar } from "../sidebar/SidebarStore";
-import { useDialog } from "./DialogStore";
-import Dialog from "./DialogWrap.vue";
+import { albumAllreadyExist } from "../../helpers/playlist";
 import { useAuth } from "../../views/auth/AuthStore";
 import PlaylistIcon from "../sidebar/PlaylistIcon.vue";
+import { useSidebar } from "../sidebar/SidebarStore";
 import VisibilityIcon from "../sidebar/VisibilityIcon.vue";
-import { albumAllreadyExist } from "../../helpers/playlist";
+import { useDialog } from "./DialogStore";
+import Dialog from "./DialogWrap.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -38,7 +41,10 @@ const authStore = useAuth();
 
 async function add(albumId: string, playlistId: string): Promise<void> {
   if (await albumAllreadyExist(`playlists/${playlistId}/tracks?limit=50`, albumId)) {
-    notification({ msg: "This album allready exists in this collection", type: NotificationType.Error });
+    notification({
+      msg: "This album allready exists in this collection",
+      type: NotificationType.Error,
+    });
   } else {
     instance()
       .get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`)
@@ -47,7 +53,10 @@ async function add(albumId: string, playlistId: string): Promise<void> {
           .post(`playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`)
           .then(() => {
             dialogStore.close();
-            notification({ msg: "Album added", type: NotificationType.Success });
+            notification({
+              msg: "Album added",
+              type: NotificationType.Success,
+            });
           });
       });
   }

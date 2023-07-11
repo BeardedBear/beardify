@@ -25,11 +25,15 @@ export const usePlayer = defineStore("player", {
 
   actions: {
     play(): void {
-      instance().put("me/player/play", { device_id: this.devices.activeDevice });
+      instance().put("me/player/play", {
+        device_id: this.devices.activeDevice,
+      });
     },
 
     pause(): void {
-      instance().put("me/player/pause", { device_id: this.devices.activeDevice });
+      instance().put("me/player/pause", {
+        device_id: this.devices.activeDevice,
+      });
     },
 
     next(): void {
@@ -123,10 +127,16 @@ export const usePlayer = defineStore("player", {
         .post(`me/player/queue?uri=${trackUri}`)
         .then(() => {
           this.getQueue();
-          notification({ type: NotificationType.Success, msg: "Song added to queue" });
+          notification({
+            type: NotificationType.Success,
+            msg: "Song added to queue",
+          });
         })
         .catch(() => {
-          notification({ type: NotificationType.Error, msg: "Error adding song to queue" });
+          notification({
+            type: NotificationType.Error,
+            msg: "Error adding song to queue",
+          });
         });
     },
 
@@ -137,7 +147,10 @@ export const usePlayer = defineStore("player", {
           this.queue = data.queue;
         })
         .catch(() => {
-          useNotification().addNotification({ type: NotificationType.Error, msg: "Error getting queue" });
+          useNotification().addNotification({
+            type: NotificationType.Error,
+            msg: "Error getting queue",
+          });
           this.queue = [];
         });
     },

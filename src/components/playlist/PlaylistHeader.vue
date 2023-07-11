@@ -3,7 +3,9 @@
     <div class="playlist-header__left">
       <Cover v-if="!noCover" size="large" :images="playlistStore.playlist.images" class="cover" />
       <div>
-        <div class="title">{{ playlistStore.playlist.name.replace("#Collection ", "") }}</div>
+        <div class="title">
+          {{ playlistStore.playlist.name.replace("#Collection ", "") }}
+        </div>
         <div class="metas">
           <router-link
             v-if="playlistStore.playlist.owner.display_name !== 'Spotify'"
@@ -14,7 +16,7 @@
           </router-link>
           <span v-else>{{ playlistStore.playlist.owner.display_name }}</span>
           <span> — {{ playlistStore.playlist.tracks.total }} items</span>
-          <span v-if="!noDuration"> — {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
+          <span v-if="!noDuration"> — {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }} </span>
         </div>
         <div v-if="playlistStore.playlist.description !== 'No description'" class="description">
           {{ playlistStore.playlist.description }}
@@ -30,11 +32,11 @@
 </template>
 
 <script lang="ts" setup>
-import { timecodeWithUnits } from "../../helpers/date";
+import { PlaylistTrack } from "../../@types/Playlist";
 import Cover from "../../components/AlbumCover.vue";
 import ShareContent from "../../components/ShareContent.vue";
 import Actions from "../../components/playlist/PlaylistActions.vue";
-import { PlaylistTrack } from "../../@types/Playlist";
+import { timecodeWithUnits } from "../../helpers/date";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";
 
 import { RouterLink } from "vue-router";

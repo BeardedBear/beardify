@@ -1,5 +1,11 @@
 <template>
-  <i v-if="!noIcon" :class="{ 'icon-single': isSingle(album), 'icon-compilation': isCompilation(album) }" />
+  <i
+    v-if="!noIcon"
+    :class="{
+      'icon-single': isSingle(album),
+      'icon-compilation': isCompilation(album),
+    }"
+  />
   <span class="artist" @click.prevent.stop="goAlbum(`/album/${album.id}`)">{{ album.name }}</span>
 </template>
 

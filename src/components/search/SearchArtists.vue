@@ -6,7 +6,9 @@
         :key="index"
         :to="`/artist/${artist.id}`"
         class="artist"
-        :class="{ 'exact-search': exactArtistSearched === artist.name.toLowerCase() }"
+        :class="{
+          'exact-search': exactArtistSearched === artist.name.toLowerCase(),
+        }"
         @click="searchStore.reset()"
       >
         <Cover size="small" :images="artist.images" class="avatar" />
@@ -19,9 +21,9 @@
 
 <script lang="ts" setup>
 import { computed, ComputedRef } from "vue";
+import { RouterLink } from "vue-router";
 import Cover from "../AlbumCover.vue";
 import { useSearch } from "./SearchStore";
-import { RouterLink } from "vue-router";
 
 const searchStore = useSearch();
 const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {

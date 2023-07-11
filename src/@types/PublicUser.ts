@@ -1,6 +1,6 @@
 import { Image } from "./Image";
-import { Followers } from "./User";
 import { ExternalUrls } from "./Misc";
+import { Followers } from "./User";
 
 export interface PublicUser {
   display_name: string;

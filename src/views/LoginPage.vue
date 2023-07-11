@@ -25,10 +25,10 @@
 </template>
 
 <script lang="ts" setup>
-import { api } from "../api";
-import { useAuth } from "./auth/AuthStore";
 import { ref } from "vue";
+import { api } from "../api";
 import router from "../router";
+import { useAuth } from "./auth/AuthStore";
 
 const authStore = useAuth();
 const challenge = ref<string | undefined>(undefined);

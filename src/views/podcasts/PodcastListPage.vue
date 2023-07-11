@@ -1,5 +1,7 @@
 <template>
-  <div v-if="!podcastsStore.list && !podcastsStore.myPodcasts.length" class="loader"><Loader /></div>
+  <div v-if="!podcastsStore.list && !podcastsStore.myPodcasts.length" class="loader">
+    <Loader />
+  </div>
   <div v-else class="podcasts">
     <PageFit>
       <div class="title"><div class="name">Podcasts</div></div>
@@ -29,10 +31,10 @@
 </template>
 
 <script lang="ts" setup>
-import { usePodcasts } from "./PodcastsStore";
-import PodcastCard from "../../components/podcast/PodcastCard.vue";
 import Loader from "../../components/LoadingDots.vue";
 import PageFit from "../../components/PageFit.vue";
+import PodcastCard from "../../components/podcast/PodcastCard.vue";
+import { usePodcasts } from "./PodcastsStore";
 
 const podcastsStore = usePodcasts();
 podcastsStore.clean().finally(() => {

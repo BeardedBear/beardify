@@ -6,9 +6,9 @@
 </template>
 
 <script lang="ts" setup>
-import { usePlayer } from "./PlayerStore";
 import PlayerEpisode from "./PlayerEpisode.vue";
 import PlayerSong from "./PlayerSong.vue";
+import { usePlayer } from "./PlayerStore";
 
 const playerStore = usePlayer();
 </script>

@@ -13,7 +13,9 @@
         </div>
       </div>
     </div>
-    <button class="button button--small" @click="playerStore.openQueue()"><i class="icon-queue"></i></button>
+    <button class="button button--small" @click="playerStore.openQueue()">
+      <i class="icon-queue"></i>
+    </button>
   </div>
 </template>
 

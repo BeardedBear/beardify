@@ -2,8 +2,12 @@
   <div ref="page" class="page">
     <slot />
     <div class="nav">
-      <button class="button button--small" @click="scrollToTop()"><i class="icon-arrow-up"></i></button>
-      <button class="button button--small" @click="scrollToBottom()"><i class="icon-arrow-down"></i></button>
+      <button class="button button--small" @click="scrollToTop()">
+        <i class="icon-arrow-up"></i>
+      </button>
+      <button class="button button--small" @click="scrollToBottom()">
+        <i class="icon-arrow-down"></i>
+      </button>
     </div>
   </div>
 </template>

@@ -3,11 +3,11 @@ import { Artist } from "./Artist";
 import { CurrentlyPlaying, CurrentlyPlayingContext } from "./CurrentlyPlaying";
 import { Device } from "./Device";
 import { Image } from "./Image";
-import { Followers } from "./User";
 import { ExternalUrls } from "./Misc";
 import { PlaylistTracksRef, SimplifiedPlaylist } from "./Playlist";
 import { PublicUser } from "./PublicUser";
 import { Track, TrackSimplified } from "./Track";
+import { Followers } from "./User";
 
 export const defaultImage: Image = {
   height: 0,

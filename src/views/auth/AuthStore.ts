@@ -59,7 +59,12 @@ export const useAuth = defineStore("auth", {
         .then((res) => {
           this.accessToken = res.data.access_token;
           this.getMe();
-          this.storage = { codeChallenge: "", codeVerifier: "", refreshToken: res.data.refresh_token, referer: "" };
+          this.storage = {
+            codeChallenge: "",
+            codeVerifier: "",
+            refreshToken: res.data.refresh_token,
+            referer: "",
+          };
           return true;
         })
         .catch((err) => {

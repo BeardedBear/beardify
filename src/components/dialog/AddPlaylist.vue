@@ -12,8 +12,8 @@ import { ref } from "vue";
 import { NotificationType } from "../../@types/Notification";
 import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
-import Dialog from "./DialogWrap.vue";
 import { useDialog } from "./DialogStore";
+import Dialog from "./DialogWrap.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -22,7 +22,10 @@ const playlistName = ref("");
 function create(): void {
   sidebarStore.addPlaylist(playlistName.value).then(() => {
     dialogStore.close();
-    notification({ msg: `Playlist ${playlistName.value} create`, type: NotificationType.Success });
+    notification({
+      msg: `Playlist ${playlistName.value} create`,
+      type: NotificationType.Success,
+    });
   });
 }
 </script>

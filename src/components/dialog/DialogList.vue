@@ -10,13 +10,13 @@
 
 <script lang="ts" setup>
 import AddAlbum from "./AddAlbum.vue";
-import AddSong from "./AddSong.vue";
-import AddPlaylist from "./AddPlaylist.vue";
-import EditPlaylist from "./EditPlaylist.vue";
 import AddCollection from "./AddCollection.vue";
-import WidevineWarning from "./WidevineWarning.vue";
-import SearchDialog from "./SearchDialog.vue";
+import AddPlaylist from "./AddPlaylist.vue";
+import AddSong from "./AddSong.vue";
 import { useDialog } from "./DialogStore";
+import EditPlaylist from "./EditPlaylist.vue";
+import SearchDialog from "./SearchDialog.vue";
+import WidevineWarning from "./WidevineWarning.vue";
 
 const dialogStore = useDialog();
 </script>

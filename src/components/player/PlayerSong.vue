@@ -9,13 +9,13 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
+import Loader from "../LoadingDots.vue";
 import Controls from "./PlayerControls.vue";
+import What from "./PlayerMetas.vue";
 import { usePlayer } from "./PlayerStore";
 import SeekBar from "./SeekBar.vue";
-import What from "./PlayerMetas.vue";
-import Loader from "../LoadingDots.vue";
 import Device from "./device/DeviceIndex.vue";
-import { computed } from "vue";
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);

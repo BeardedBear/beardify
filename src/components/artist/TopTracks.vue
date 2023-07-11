@@ -5,7 +5,9 @@
       v-for="(trackItem, index) in artistStore.topTracks.tracks"
       :key="index"
       class="item"
-      :class="{ active: playerStore.playerState?.track_window.current_track.uri === trackItem.uri }"
+      :class="{
+        active: playerStore.playerState?.track_window.current_track.uri === trackItem.uri,
+      }"
       @click="playSongs(index, artistStore.topTracks.tracks)"
     >
       <div class="cover-wrap">

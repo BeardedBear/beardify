@@ -1,0 +1,23 @@
+{
+  "extends": [
+    "stylelint-config-standard-scss",
+    "stylelint-config-html/html",
+    "stylelint-config-html/vue"
+  ],
+  "plugins": [
+    "stylelint-scss",
+    "stylelint-order"
+  ],
+  "ignoreFiles": [
+    "./public/"
+  ],
+  "rules": {
+    "at-rule-no-unknown": null,
+    "order/order": [
+      "custom-properties",
+      "declarations"
+    ],
+    "order/properties-alphabetical-order": true,
+    "declaration-colon-newline-after": null
+  }
+}

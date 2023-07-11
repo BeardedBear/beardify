@@ -1,4 +1,6 @@
-<template><div class="loader" :class="{ small: size === 'small' }"></div></template>
+<template>
+  <div class="loader" :class="{ small: size === 'small' }"></div>
+</template>
 
 <script lang="ts" setup>
 defineProps<{

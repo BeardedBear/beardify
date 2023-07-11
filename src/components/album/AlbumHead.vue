@@ -35,11 +35,11 @@
 </template>
 
 <script lang="ts" setup>
-import { timecodeWithUnits, date } from "../../helpers/date";
-import { Track, TrackSimplified } from "../../@types/Track";
-import ArtistList from "../artist/ArtistList.vue";
-import ShareContent from "../ShareContent.vue";
 import { Album } from "../../@types/Album";
+import { Track, TrackSimplified } from "../../@types/Track";
+import { date, timecodeWithUnits } from "../../helpers/date";
+import ShareContent from "../ShareContent.vue";
+import ArtistList from "../artist/ArtistList.vue";
 
 const props = defineProps<{ album: Album }>();
 

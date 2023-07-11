@@ -1,5 +1,7 @@
 <template>
-  <div v-if="!homeStore.recommendedAlbums.length" class="loader"><Loader /></div>
+  <div v-if="!homeStore.recommendedAlbums.length" class="loader">
+    <Loader />
+  </div>
   <div v-else class="home">
     <div class="home__content">
       <PageFit>
@@ -14,12 +16,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useAuth } from "../auth/AuthStore";
-import { useHome } from "./HomeStore";
 import { watch } from "vue";
+import AlbumGallery from "../../components/AlbumGallery.vue";
 import Loader from "../../components/LoadingDots.vue";
 import PageFit from "../../components/PageFit.vue";
-import AlbumGallery from "../../components/AlbumGallery.vue";
+import { useAuth } from "../auth/AuthStore";
+import { useHome } from "./HomeStore";
 
 const homeStore = useHome();
 const authStore = useAuth();

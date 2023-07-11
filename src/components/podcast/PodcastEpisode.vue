@@ -1,23 +1,31 @@
 <template>
   <div class="episode-wrap">
-    <div v-if="episode.resume_point.fully_played" class="played"><i class="icon icon-check"></i></div>
+    <div v-if="episode.resume_point.fully_played" class="played">
+      <i class="icon icon-check"></i>
+    </div>
     <div class="episode">
       <img class="cover" :src="episode.images[1].url" />
       <div class="content">
         <div class="name">{{ episode.name }}</div>
-        <div v-if="episode.description" class="description">{{ `${episode.description.slice(0, 200)}...` }}</div>
+        <div v-if="episode.description" class="description">
+          {{ `${episode.description.slice(0, 200)}...` }}
+        </div>
       </div>
     </div>
     <div v-if="!episode.resume_point.fully_played && episode.resume_point.resume_position_ms > 0" class="progress">
       <div
         v-if="playerStore.currentFromSDK?.id === episode.id && playerStore.currentlyPlaying.is_playing"
         class="bar"
-        :style="{ width: `${(playerStore.currentlyPlaying.progress_ms / episode.duration_ms) * 100}%` }"
+        :style="{
+          width: `${(playerStore.currentlyPlaying.progress_ms / episode.duration_ms) * 100}%`,
+        }"
       ></div>
       <div
         v-else
         class="bar"
-        :style="{ width: `${(episode.resume_point.resume_position_ms / episode.duration_ms) * 100}%` }"
+        :style="{
+          width: `${(episode.resume_point.resume_position_ms / episode.duration_ms) * 100}%`,
+        }"
       ></div>
     </div>
     <div class="infos">
@@ -48,7 +56,7 @@
 
 <script lang="ts" setup>
 import { Episode } from "../../@types/Podcast";
-import { timecodeWithUnits, date } from "../../helpers/date";
+import { date, timecodeWithUnits } from "../../helpers/date";
 import { playSong } from "../../helpers/play";
 import Loading from "../LoadingDots.vue";
 import { usePlayer } from "../player/PlayerStore";

@@ -12,7 +12,9 @@
           <button class="icon" @click="sidebarStore.refreshPlaylists()">
             <i class="icon-refresh"></i>
           </button>
-          <button class="icon" @click="() => (collectionSearchOpened = true)"><i class="icon-search"></i></button>
+          <button class="icon" @click="() => (collectionSearchOpened = true)">
+            <i class="icon-search"></i>
+          </button>
           <button class="icon add" @click="dialogStore.open({ type: 'createCollection' })">
             <i class="icon-plus"></i>
           </button>
@@ -39,9 +41,19 @@
           :class="{ active: $route.params.id === playlist.id }"
         >
           <PlaylistIcon :playlist="playlist" />
-          <div class="name">{{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}</div>
+          <div class="name">
+            {{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}
+          </div>
           <VisibilityIcon :playlist="playlist" />
-          <button class="edit" @click.prevent="dialogStore.open({ type: 'editPlaylist', playlistId: playlist.id })">
+          <button
+            class="edit"
+            @click.prevent="
+              dialogStore.open({
+                type: 'editPlaylist',
+                playlistId: playlist.id,
+              })
+            "
+          >
             <i class="icon-more-vertical"></i>
           </button>
         </router-link>
@@ -54,7 +66,9 @@
           <button class="icon" @click="sidebarStore.refreshPlaylists()">
             <i class="icon-refresh"></i>
           </button>
-          <button class="icon" @click="() => (playlistSearchOpened = true)"><i class="icon-search"></i></button>
+          <button class="icon" @click="() => (playlistSearchOpened = true)">
+            <i class="icon-search"></i>
+          </button>
           <button class="icon add" @click="dialogStore.open({ type: 'createPlaylist' })">
             <i class="icon-plus"></i>
           </button>
@@ -83,7 +97,15 @@
           <PlaylistIcon :playlist="playlist" />
           <div class="name">{{ playlist.name }}</div>
           <VisibilityIcon :playlist="playlist" />
-          <button class="edit" @click.prevent="dialogStore.open({ type: 'editPlaylist', playlistId: playlist.id })">
+          <button
+            class="edit"
+            @click.prevent="
+              dialogStore.open({
+                type: 'editPlaylist',
+                playlistId: playlist.id,
+              })
+            "
+          >
             <i class="icon-more-vertical"></i>
           </button>
         </router-link>

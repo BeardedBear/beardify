@@ -16,10 +16,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect, watch } from "vue";
+import { useIntervalFn, useMouseInElement } from "@vueuse/core";
+import { ref, watch, watchEffect } from "vue";
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
-import { useIntervalFn, useMouseInElement } from "@vueuse/core";
 
 const progressWrap = ref<HTMLDivElement>();
 const { elementX, elementWidth } = useMouseInElement(progressWrap);

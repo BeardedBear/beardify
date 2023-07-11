@@ -1,7 +1,9 @@
 <template>
   <div
     class="single"
-    :class="{ active: playerStore.playerState?.track_window.current_track.uri === single.uri }"
+    :class="{
+      active: playerStore.playerState?.track_window.current_track.uri === single.uri,
+    }"
     @click="playSingle(single.uri)"
   >
     <div class="what">

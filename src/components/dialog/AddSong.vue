@@ -1,6 +1,8 @@
 <template>
   <Dialog with-title :title="`Add to a playlist`" pre-content>
-    <template v-if="dialogStore.track" #pre-content><PreContentTrack :track="dialogStore.track" /></template>
+    <template v-if="dialogStore.track" #pre-content>
+      <PreContentTrack :track="dialogStore.track" />
+    </template>
     <div class="content">
       <div
         v-for="(playlist, index) in sidebarStore.playlists.filter(
@@ -38,7 +40,10 @@ const authStore = useAuth();
 
 async function add(songUri: string, playlistId: string): Promise<void> {
   if (await trackAllreadyExist(`playlists/${playlistId}/tracks?limit=50`, songUri)) {
-    notification({ msg: "This track allready exists in this playlist", type: NotificationType.Error });
+    notification({
+      msg: "This track allready exists in this playlist",
+      type: NotificationType.Error,
+    });
   } else {
     instance()
       .post(`playlists/${playlistId}/tracks?uris=${songUri}`)

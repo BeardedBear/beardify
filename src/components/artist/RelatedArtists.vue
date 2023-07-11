@@ -18,9 +18,9 @@
 </template>
 
 <script lang="ts" setup>
-import Cover from "../AlbumCover.vue";
-import { useArtist } from "../../views/artist/ArtistStore";
 import { RouterLink } from "vue-router";
+import { useArtist } from "../../views/artist/ArtistStore";
+import Cover from "../AlbumCover.vue";
 
 const artistStore = useArtist();
 </script>

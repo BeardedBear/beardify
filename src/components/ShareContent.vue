@@ -21,7 +21,9 @@ const props = defineProps<{
   beardifyUrl?: string;
 }>();
 const clipboardSpotify = useClipboard({ source: props.spotifyUrl });
-const clipboardBeardify = useClipboard({ source: window.location.origin + props.beardifyUrl });
+const clipboardBeardify = useClipboard({
+  source: window.location.origin + props.beardifyUrl,
+});
 </script>
 
 <style lang="scss" scoped>

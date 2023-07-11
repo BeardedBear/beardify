@@ -51,10 +51,10 @@
 <script lang="ts" setup>
 import { useUserStore } from "./UserStore";
 
-import LoadingDots from "../../components/LoadingDots.vue";
-import Cover from "../../components/AlbumCover.vue";
-import ShareContent from "../../components/ShareContent.vue";
 import { RouterLink } from "vue-router";
+import Cover from "../../components/AlbumCover.vue";
+import LoadingDots from "../../components/LoadingDots.vue";
+import ShareContent from "../../components/ShareContent.vue";
 
 const userStore = useUserStore();
 const props = defineProps<{

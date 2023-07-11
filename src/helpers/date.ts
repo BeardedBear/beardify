@@ -1,8 +1,8 @@
 // https://date-fns.org/v2.27.0/docs/format
 
 import format from "date-fns/format";
-import { enUS } from "date-fns/locale";
 import formatDuration from "date-fns/formatDuration";
+import { enUS } from "date-fns/locale";
 
 const options = { locale: enUS };
 

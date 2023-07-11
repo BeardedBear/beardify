@@ -6,8 +6,8 @@
 </template>
 
 <script lang="ts" setup>
-import { Image } from "../../@types/Image";
 import { RouterLink } from "vue-router";
+import { Image } from "../../@types/Image";
 
 defineProps<{
   covers: Image[];

@@ -2,11 +2,15 @@
   <div v-if="dialogStore.show" class="dialog">
     <div class="bg" :class="{ 'is-closing': dialogStore.isClosing }" @click="dialogStore.close()"></div>
     <div class="wrapper" :class="{ 'is-closing': dialogStore.isClosing, big }">
-      <div v-if="preContent" class="pre-content"><slot name="pre-content" /></div>
+      <div v-if="preContent" class="pre-content">
+        <slot name="pre-content" />
+      </div>
       <div class="dialog-content">
         <div v-if="withTitle" class="head">
           <div>{{ title }}</div>
-          <button class="close" @click="dialogStore.close()"><i class="icon-x" /></button>
+          <button class="close" @click="dialogStore.close()">
+            <i class="icon-x" />
+          </button>
         </div>
         <div class="content" :class="{ big }"><slot /></div>
       </div>

@@ -7,8 +7,8 @@
       </p>
 
       <p>
-        To do this, enter the following address <code>brave://settings/?search=widevine</code>then activate
-        <b>Widevine</b>.
+        To do this, enter the following address
+        <code>brave://settings/?search=widevine</code>then activate <b>Widevine</b>.
       </p>
     </div>
   </Dialog>

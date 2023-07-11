@@ -11,7 +11,12 @@
       <button class="button button--full" @click="authStore.refresh()">Refresh token</button>
       <button
         class="button button--full"
-        @click="notification({ msg: 'DeviceNotInitialized', type: NotificationType.Error })"
+        @click="
+          notification({
+            msg: 'DeviceNotInitialized',
+            type: NotificationType.Error,
+          })
+        "
       >
         Notif
       </button>
@@ -31,14 +36,14 @@
 </template>
 
 <script lang="ts" setup>
-import Colors from "./ColorsTheme.vue";
+import { onClickOutside } from "@vueuse/core";
+import { ref } from "vue";
+import { RouterLink } from "vue-router";
+import { NotificationType } from "../../@types/Notification";
 import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";
-import { onClickOutside } from "@vueuse/core";
+import Colors from "./ColorsTheme.vue";
 import { useConfig } from "./ConfigStore";
-import { NotificationType } from "../../@types/Notification";
-import { RouterLink } from "vue-router";
-import { ref } from "vue";
 
 const env = process.env.NODE_ENV;
 const authStore = useAuth();

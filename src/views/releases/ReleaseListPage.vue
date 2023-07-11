@@ -7,12 +7,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useReleases } from "./ReleasesStore";
+import { ref, watch } from "vue";
 import Loader from "../../components/LoadingDots.vue";
 import ReleaseList from "../../components/releases/ReleaseList.vue";
 import ReleaseSide from "../../components/releases/ReleaseSide.vue";
-import { ref, watch } from "vue";
 import { useAuth } from "../auth/AuthStore";
+import { useReleases } from "./ReleasesStore";
 
 const releasesStore = useReleases();
 const authStore = useAuth();

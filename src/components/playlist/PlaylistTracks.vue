@@ -81,7 +81,9 @@ const currentTrack = computed(() => usePlayer().playerState?.track_window.curren
 
 function deleteSong(songId: string): void {
   instance()
-    .delete(`playlists/${playlist.id}/tracks`, { data: { tracks: [{ uri: songId }] } })
+    .delete(`playlists/${playlist.id}/tracks`, {
+      data: { tracks: [{ uri: songId }] },
+    })
     .then(() => removeSong(songId))
     .then(() => notification({ msg: "Track deleted", type: NotificationType.Success }));
 }

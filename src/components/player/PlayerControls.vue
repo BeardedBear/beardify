@@ -31,15 +31,18 @@
         <i class="icon-skip-forward" />
       </button>
     </div>
-    <div class="time">{{ timecode(currentTime) || "00:00" }} / {{ timecode(duration) || "00:00" }}</div>
+    <div class="time">
+      {{ timecode(currentTime) || "00:00" }} /
+      {{ timecode(duration) || "00:00" }}
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useIntervalFn } from "@vueuse/core";
+import { computed, ref, watch } from "vue";
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
-import { ref, watch, computed } from "vue";
-import { useIntervalFn } from "@vueuse/core";
 
 const playerStore = usePlayer();
 const currentTime = ref<number>(0);

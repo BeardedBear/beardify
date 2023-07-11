@@ -34,7 +34,10 @@ export const useReleases = defineStore("releases", {
 
       if (!data.data.length) {
         axios
-          .post("https://2fpx4328.directus.app/items/releases_check", { user: useAuth().me?.id, checks: [] })
+          .post("https://2fpx4328.directus.app/items/releases_check", {
+            user: useAuth().me?.id,
+            checks: [],
+          })
           .then(() => (this.checks = []));
       } else {
         this.checks = data.data[0].checks;

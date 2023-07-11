@@ -25,7 +25,9 @@
             <div class="buttons">
               <button
                 class="button"
-                :class="{ 'button--primary': values.public && !values.collaborative }"
+                :class="{
+                  'button--primary': values.public && !values.collaborative,
+                }"
                 @click="
                   () => {
                     values.collaborative = false;
@@ -37,7 +39,9 @@
               </button>
               <button
                 class="button"
-                :class="{ 'button--primary': !values.public && !values.collaborative }"
+                :class="{
+                  'button--primary': !values.public && !values.collaborative,
+                }"
                 @click="
                   () => {
                     values.collaborative = false;
@@ -49,7 +53,9 @@
               </button>
               <button
                 class="button"
-                :class="{ 'button--primary': values.collaborative && !values.public }"
+                :class="{
+                  'button--primary': values.collaborative && !values.public,
+                }"
                 @click="
                   () => {
                     values.collaborative = true;
@@ -87,12 +93,17 @@ import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";
 import Loading from "../LoadingDots.vue";
 import { useSidebar } from "../sidebar/SidebarStore";
-import Dialog from "./DialogWrap.vue";
 import { useDialog } from "./DialogStore";
+import Dialog from "./DialogWrap.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
-const values: UpdatePlaylistValues = reactive({ name: "", collaborative: false, description: "", public: false });
+const values: UpdatePlaylistValues = reactive({
+  name: "",
+  collaborative: false,
+  description: "",
+  public: false,
+});
 const isCollection = ref<boolean>(false);
 const isEditable = ref<boolean>(false);
 

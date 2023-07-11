@@ -15,10 +15,10 @@
 </template>
 
 <script lang="ts" setup>
-import { usePodcasts } from "./PodcastsStore";
 import Loader from "../../components/LoadingDots.vue";
-import PodcastEpisode from "../../components/podcast/PodcastEpisode.vue";
 import PageFit from "../../components/PageFit.vue";
+import PodcastEpisode from "../../components/podcast/PodcastEpisode.vue";
+import { usePodcasts } from "./PodcastsStore";
 
 const props = defineProps<{ id: string }>();
 const podcastsStore = usePodcasts();

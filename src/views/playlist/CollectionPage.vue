@@ -29,15 +29,15 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue";
-import Album from "../../components/album/AlbumIndex.vue";
-import { usePlaylist } from "./PlaylistStore";
-import Loader from "../../components/LoadingDots.vue";
-import PageScroller from "../../components/PageScroller.vue";
-import PageFit from "../../components/PageFit.vue";
-import Header from "../../components/playlist/PlaylistHeader.vue";
-import { SlickList, SlickItem } from "vue-slicksort";
+import { SlickItem, SlickList } from "vue-slicksort";
 import { AlbumSimplified } from "../../@types/Album";
+import Loader from "../../components/LoadingDots.vue";
+import PageFit from "../../components/PageFit.vue";
+import PageScroller from "../../components/PageScroller.vue";
+import Album from "../../components/album/AlbumIndex.vue";
+import Header from "../../components/playlist/PlaylistHeader.vue";
 import { useAuth } from "../auth/AuthStore";
+import { usePlaylist } from "./PlaylistStore";
 
 const props = defineProps<{ id: string }>();
 const playlistStore = usePlaylist();

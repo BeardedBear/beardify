@@ -10,7 +10,9 @@
         class="img"
         @click="router.push(`/album/${album.id}`)"
       />
-      <button class="play" type="button" @click="playAlbum(album.uri)"><i class="icon-play" /></button>
+      <button class="play" type="button" @click="playAlbum(album.uri)">
+        <i class="icon-play" />
+      </button>
       <button
         v-if="canSave"
         class="button-action add"
@@ -25,7 +27,9 @@
     </div>
     <div v-if="!withoutMetas">
       <div class="name">{{ album.name }}</div>
-      <div v-if="withArtists"><ArtistList :artist-list="album.artists" feat /></div>
+      <div v-if="withArtists">
+        <ArtistList :artist-list="album.artists" feat />
+      </div>
       <div v-if="album.release_date && !withoutReleaseDate" class="date">
         {{ album.release_date.split("-").shift() }}
       </div>
@@ -78,7 +82,9 @@ function deleteAlbum(albumId: string): void {
       e.data.items.map((t) => t.uri).forEach((t) => tracks.push({ uri: t }));
 
       instance()
-        .delete(`playlists/${currentRouteId}/tracks`, { data: { tracks: tracks } })
+        .delete(`playlists/${currentRouteId}/tracks`, {
+          data: { tracks: tracks },
+        })
         .then(() => playlistStore.removeTracks(tracks))
         .catch((error) =>
           notification({
@@ -88,7 +94,10 @@ function deleteAlbum(albumId: string): void {
         );
     })
     .catch((error) =>
-      notification({ msg: error.response.data?.error?.message ?? "Album delete failed", type: NotificationType.Error }),
+      notification({
+        msg: error.response.data?.error?.message ?? "Album delete failed",
+        type: NotificationType.Error,
+      }),
     );
 }
 </script>

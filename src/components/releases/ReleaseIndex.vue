@@ -29,10 +29,10 @@
 </template>
 
 <script lang="ts" setup>
+import { useReleases } from "../../views/releases/ReleasesStore";
 import { useDialog } from "../dialog/DialogStore";
 import { usePlayer } from "../player/PlayerStore";
 import { useSearch } from "../search/SearchStore";
-import { useReleases } from "../../views/releases/ReleasesStore";
 
 import { Release } from "../../@types/Releases";
 

@@ -11,11 +11,11 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { useSearch } from "./SearchStore";
-import SearchInput from "./SearchInput.vue";
-import SearchArtists from "./SearchArtists.vue";
 import SearchAlbums from "./SearchAlbums.vue";
+import SearchArtists from "./SearchArtists.vue";
+import SearchInput from "./SearchInput.vue";
 import SearchSongs from "./SearchSongs.vue";
+import { useSearch } from "./SearchStore";
 
 const searchStore = useSearch();
 const result = ref<HTMLDivElement | null>(null);

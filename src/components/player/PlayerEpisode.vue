@@ -14,9 +14,9 @@
 <script lang="ts" setup>
 import Loader from "../LoadingDots.vue";
 import Controls from "./PlayerControls.vue";
+import What from "./PlayerMetas.vue";
 import { usePlayer } from "./PlayerStore";
 import SeekBar from "./SeekBar.vue";
-import What from "./PlayerMetas.vue";
 import Device from "./device/DeviceIndex.vue";
 
 const playerStore = usePlayer();

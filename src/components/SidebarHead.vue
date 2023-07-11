@@ -2,7 +2,9 @@
   <div class="topbar">
     <router-link to="/"><img class="logo" src="/img/logo.svg" /></router-link>
     <div class="navigation">
-      <button class="navigation__item" @click="router.go(-1)"><i class="icon-arrow-left" /></button>
+      <button class="navigation__item" @click="router.go(-1)">
+        <i class="icon-arrow-left" />
+      </button>
       <button class="navigation__item" @click="router.go(1)">
         <i class="icon-arrow-right" />
       </button>
@@ -23,13 +25,13 @@
 </template>
 
 <script lang="ts" setup>
-import Cover from "./AlbumCover.vue";
+import { RouterLink } from "vue-router";
 import router from "../router";
-import Config from "./config/ConfigIndex.vue";
 import { useAuth } from "../views/auth/AuthStore";
+import Cover from "./AlbumCover.vue";
+import Config from "./config/ConfigIndex.vue";
 import { useConfig } from "./config/ConfigStore";
 import { useDialog } from "./dialog/DialogStore";
-import { RouterLink } from "vue-router";
 
 const authStore = useAuth();
 const configStore = useConfig();

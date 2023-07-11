@@ -12,8 +12,8 @@ import { ref } from "vue";
 import { NotificationType } from "../../@types/Notification";
 import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
-import Dialog from "./DialogWrap.vue";
 import { useDialog } from "./DialogStore";
+import Dialog from "./DialogWrap.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -22,7 +22,10 @@ const collectionName = ref("");
 function create(): void {
   sidebarStore.addCollection(collectionName.value).then(() => {
     dialogStore.close();
-    notification({ msg: `Collection ${collectionName.value} created`, type: NotificationType.Success });
+    notification({
+      msg: `Collection ${collectionName.value} created`,
+      type: NotificationType.Success,
+    });
   });
 }
 </script>

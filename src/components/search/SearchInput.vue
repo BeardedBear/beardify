@@ -8,7 +8,9 @@
       placeholder="Recherche..."
       @input="searchStore.updateQuery(query)"
     />
-    <button v-if="query" class="reset" @click="clearQuery()"><i class="icon-x" /></button>
+    <button v-if="query" class="reset" @click="clearQuery()">
+      <i class="icon-x" />
+    </button>
   </div>
 </template>
 

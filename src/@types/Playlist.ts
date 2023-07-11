@@ -1,9 +1,9 @@
 import { Image } from "./Image";
-import { Followers } from "./User";
 import { ExternalUrls } from "./Misc";
 import { Paging } from "./Paging";
 import { PublicUser, SimplifiedPublicUser } from "./PublicUser";
 import { Track } from "./Track";
+import { Followers } from "./User";
 
 export interface SimplifiedPlaylist {
   collaborative: boolean;

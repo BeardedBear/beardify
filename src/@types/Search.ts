@@ -1,7 +1,7 @@
 import { Album } from "./Album";
 import { Artist } from "./Artist";
-import { TrackSimplified } from "./Track";
 import { Paging } from "./Paging";
+import { TrackSimplified } from "./Track";
 
 export interface Search {
   query: string;

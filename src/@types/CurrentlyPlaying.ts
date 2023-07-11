@@ -1,7 +1,7 @@
 import { AlbumType, ReleaseDatePrecision } from "./Album";
 import { Artist } from "./Artist";
-import { Image } from "./Image";
 import { Device } from "./Device";
+import { Image } from "./Image";
 
 export interface CurrentlyPlayingItem {
   album: CurrentlyPlayingAlbum;
