@@ -5,9 +5,7 @@
       v-for="(trackItem, index) in artistStore.topTracks.tracks"
       :key="index"
       class="item"
-      :class="{
-        active: playerStore.playerState?.track_window.current_track.uri === trackItem.uri,
-      }"
+      :class="{ active: isCurrentTrack(trackItem, playerStore.playerState?.track_window.current_track) }"
       @click="playSongs(index, artistStore.topTracks.tracks)"
     >
       <div class="cover-wrap">
@@ -17,15 +15,14 @@
         </div>
       </div>
       <div class="name">{{ trackItem.name }}</div>
-      <div class="duration">
-        {{ timecode(trackItem.duration_ms) }}
-      </div>
+      <div class="duration">{{ timecode(trackItem.duration_ms) }}</div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { timecode } from "../../helpers/date";
+import { isCurrentTrack } from "../../helpers/helper";
 import { playSongs } from "../../helpers/play";
 import { useArtist } from "../../views/artist/ArtistStore";
 import Cover from "../AlbumCover.vue";

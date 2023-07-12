@@ -3,8 +3,7 @@
     <div
       class="track"
       :class="{
-        active:
-          currentTrack?.artists[0].name === track.track.artists[0].name && currentTrack?.name === track.track.name,
+        active: isCurrentTrack(track.track, currentTrack),
         deletable: playlist.owner.id === me?.id || playlist.collaborative,
       }"
       @click="
@@ -60,6 +59,7 @@ import { NotificationType } from "../../@types/Notification";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { instance } from "../../api";
 import { date, timecode } from "../../helpers/date";
+import { isCurrentTrack } from "../../helpers/helper";
 import { notification } from "../../helpers/notifications";
 import { playSongs } from "../../helpers/play";
 import { isAlbum, isCompilation, isEP, isSingle } from "../../helpers/useCleanAlbums";

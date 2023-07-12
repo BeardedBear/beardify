@@ -13,7 +13,7 @@
             :key="index"
             class="track"
             :class="{
-              active: playerStore.playerState?.track_window.current_track.uri === track.uri,
+              active: isCurrentTrack(track, currentTrack),
               unavailable: !track.available_markets.length,
             }"
             @click="playSongs(index, albumStore.album.tracks.items)"
@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import Loader from "../../components/LoadingDots.vue";
 import Foot from "../../components/album/AlbumFoot.vue";
 import Head from "../../components/album/AlbumHead.vue";
@@ -50,6 +50,7 @@ import ArtistList from "../../components/artist/ArtistList.vue";
 import { useDialog } from "../../components/dialog/DialogStore";
 import { usePlayer } from "../../components/player/PlayerStore";
 import { timecode } from "../../helpers/date";
+import { isCurrentTrack } from "../../helpers/helper";
 import { playSongs } from "../../helpers/play";
 import { useAlbum } from "./AlbumStore";
 
@@ -58,6 +59,8 @@ const albumpage = ref();
 const albumStore = useAlbum();
 const playerStore = usePlayer();
 const dialogStore = useDialog();
+
+const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
 
 albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 </script>

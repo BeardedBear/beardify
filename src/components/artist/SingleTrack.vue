@@ -1,9 +1,7 @@
 <template>
   <div
     class="single"
-    :class="{
-      active: playerStore.playerState?.track_window.current_track.uri === single.uri,
-    }"
+    :class="{ active: isCurrentTrack(single, playerStore.playerState?.track_window.current_track) }"
     @click="playSingle(single.uri)"
   >
     <div class="what">
@@ -21,6 +19,7 @@
 import { AlbumSimplified } from "../../@types/Album";
 import { instance } from "../../api";
 import { date } from "../../helpers/date";
+import { isCurrentTrack } from "../../helpers/helper";
 import Cover from "../AlbumCover.vue";
 import { usePlayer } from "../player/PlayerStore";
 import ArtistList from "./ArtistList.vue";
