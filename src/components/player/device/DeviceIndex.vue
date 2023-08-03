@@ -1,8 +1,7 @@
 <template>
   <div v-if="playerStore.devices.activeDevice.id" class="wrap">
     <div class="device">
-      <!-- Disabled until Spotify's API reactive the feature of change volume -->
-      <!-- <Volume /> -->
+      <DeviceVolume />
       <DevicesList />
     </div>
   </div>
@@ -13,6 +12,7 @@
 import Loader from "../../LoadingDots.vue";
 import { usePlayer } from "../PlayerStore";
 import DevicesList from "./DeviceList.vue";
+import DeviceVolume from "./DeviceVolume.vue";
 
 const playerStore = usePlayer();
 </script>
