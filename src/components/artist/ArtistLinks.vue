@@ -13,7 +13,7 @@
 
 <script lang="ts" setup>
 import { normalize } from "normalize-diacritics";
-import { onMounted, ref } from "vue";
+import { onMounted, onUpdated, ref } from "vue";
 import { useFrame } from "../frame/FrameStore";
 
 const props = defineProps<{
@@ -33,7 +33,7 @@ function openFrame(url: string): void {
   frameStore.open(url);
 }
 
-onMounted(async () => {
+async function updateLinks(): Promise<void> {
   artistNameNormalized.value = (await normalize(props.artistName))
     .replace(/[\u0300-\u036f]/g, "")
     .replaceAll("&", "and");
@@ -46,7 +46,10 @@ onMounted(async () => {
     rym: `https://rateyourmusic.com/search?searchtype=a&searchterm=${artistNameNormalized.value}`,
     youtube: `https://www.youtube.com/results?search_query=${artistNameNormalized.value}`,
   };
-});
+}
+
+onMounted(async () => updateLinks());
+onUpdated(async () => updateLinks());
 </script>
 
 <style lang="scss" scoped>
