@@ -54,7 +54,7 @@ useIntervalFn(() => {
 }, 1000);
 
 watch(
-  () => playerStore.playerState?.position,
+  () => playerStore.playerState,
   () => playerStore.playerState && (currentTime.value = playerStore.playerState?.position),
 );
 </script>

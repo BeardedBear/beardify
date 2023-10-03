@@ -16,7 +16,6 @@ export default window.onSpotifyWebPlaybackSDKReady = (): Spotify.Player => {
 
   player.addListener("player_state_changed", (state) => {
     usePlayer().syncPlayerState(state);
-    if (document.hasFocus()) usePlayer().syncPlayerState(state);
   });
 
   return player;
