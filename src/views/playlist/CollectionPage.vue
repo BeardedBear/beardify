@@ -13,7 +13,7 @@
             @sort-end="syncNewPositions"
           >
             <SlickItem
-              v-for="(item, i) in albumList"
+              v-for="(item, i) in albumListFiltered"
               :key="item.id"
               :index="i"
               :disabled="playlistStore.playlist.owner.id !== authStore.me?.id"
@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { SlickItem, SlickList } from "vue-slicksort";
 import { AlbumSimplified } from "../../@types/Album";
 import Loader from "../../components/LoadingDots.vue";
@@ -43,6 +43,15 @@ const props = defineProps<{ id: string }>();
 const playlistStore = usePlaylist();
 const albumList = ref<AlbumSimplified[]>([]);
 const authStore = useAuth();
+
+const albumListFiltered = computed<AlbumSimplified[]>(() => {
+  if (playlistStore.filter === "") return albumList.value;
+  return albumList.value.filter((album) => {
+    const matchedArtistName = album.artists[0].name.toLowerCase().includes(playlistStore.filter.toLowerCase());
+    const matchedAlbumName = album.name.toLowerCase().includes(playlistStore.filter.toLowerCase());
+    return matchedArtistName || matchedAlbumName;
+  });
+});
 
 function syncNewPositions(event: { oldIndex: number; newIndex: number }): void {
   playlistStore.updateCollectionPosition(event.oldIndex, event.newIndex);
@@ -85,8 +94,19 @@ playlistStore.clean().finally(() => {
   padding-left: $padd;
   padding-right: $padd;
   position: absolute;
+  transition:
+    padding-right ease 0.2s,
+    padding-left ease 0.2s;
 
-  @include xl {
+  @media (width <= 1200px) {
+    $padd: 2rem;
+
+    grid-template-columns: repeat(4, 1fr);
+    padding-left: $padd;
+    padding-right: $padd;
+  }
+
+  @include l {
     $padd: 2rem;
 
     grid-template-columns: repeat(4, 1fr);

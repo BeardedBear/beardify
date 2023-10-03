@@ -24,8 +24,15 @@
       </div>
     </div>
 
-    <div class="playlist-header__right">
+    <div class="right">
       <Actions />
+      <input
+        v-if="$route.name === 'Collection'"
+        v-model="playlistStore.filter"
+        type="search"
+        class="search"
+        placeholder="Filter album/artist"
+      />
       <ShareContent :spotify-url="playlistStore.playlist.external_urls.spotify" :beardify-url="$route.fullPath" />
     </div>
   </div>
@@ -58,6 +65,18 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 @import "../../assets/scss/colors";
 @import "../../assets/scss/responsive";
 
+.search {
+  background: var(--bg-color);
+  border: none;
+  border-radius: 0.3rem;
+  color: var(--font);
+  font-size: 0.9rem;
+  font-weight: bold;
+  outline: none;
+  padding: 0.6rem 1rem;
+  width: 10rem;
+}
+
 .description {
   font-size: 0.9rem;
   font-style: italic;
@@ -89,6 +108,15 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   display: flex;
   justify-content: space-between;
   padding: 2rem $padd 1rem;
+  transition:
+    padding-right ease 0.2s,
+    padding-left ease 0.2s;
+
+  @media (width <= 1200px) {
+    $padd: 2rem;
+
+    padding: 2rem $padd 1rem;
+  }
 
   &.not-fit {
     padding: 0 0 2rem;
@@ -114,12 +142,13 @@ function sumDuration(tracks: PlaylistTrack[]): number {
     align-items: center;
     display: flex;
   }
+}
 
-  &__right {
-    display: flex;
-    font-size: 1.1rem;
-    gap: 0.5rem;
-  }
+.right {
+  align-items: center;
+  display: flex;
+  font-size: 1.1rem;
+  gap: 0.5rem;
 }
 
 .cover {

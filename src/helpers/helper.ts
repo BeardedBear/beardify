@@ -9,7 +9,7 @@ export function transformUriToid(uri: string | undefined): string {
 export function isCurrentTrack(
   track: Spotify.Track | AlbumSimplified | Track | TrackSimplified | undefined,
   currentTrack: Spotify.Track | AlbumSimplified | Track | TrackSimplified | undefined,
-) {
+): boolean {
   if (!track || !currentTrack) return false;
   return currentTrack?.artists[0].name === track.artists[0].name && currentTrack?.name === track.name;
 }

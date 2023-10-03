@@ -4,7 +4,9 @@ $xl: 2000px;
 $fourk: 2560px;
 
 @mixin mobile {
-  @media (max-width: $mobile-width) {
+  // @media
+
+  @media (width <= $mobile-width) {
     @content;
   }
 }

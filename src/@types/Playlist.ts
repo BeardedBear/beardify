@@ -53,4 +53,5 @@ export interface PlaylistPage {
   playlist: Playlist;
   tracks: PlaylistTrack[];
   followed: boolean | undefined;
+  filter: string;
 }

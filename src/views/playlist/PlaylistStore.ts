@@ -12,6 +12,7 @@ export const usePlaylist = defineStore("playlist", {
     playlist: defaultPlaylist,
     tracks: [],
     followed: false,
+    filter: "",
   }),
 
   actions: {
