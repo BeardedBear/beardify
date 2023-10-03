@@ -64,6 +64,11 @@ watch(authStore, () => {
   &__content {
     overflow-y: auto;
     padding: 1rem 5rem;
+    transition: padding ease 0.2s;
+
+    @media (width <= 1200px) {
+      padding: 1rem 3rem;
+    }
   }
 }
 

@@ -33,6 +33,18 @@ defineProps<{
   gap: 2rem;
   grid-template-columns: repeat(6, 1fr);
 
+  @media (width <= 1200px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (width <= 960px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (width <= 664px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   @include l {
     grid-template-columns: repeat(6, 1fr);
   }
