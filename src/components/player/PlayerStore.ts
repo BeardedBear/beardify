@@ -23,6 +23,12 @@ export const usePlayer = defineStore("player", {
     queueOpened: false,
   }),
 
+  getters: {
+    isExternalDevice(): boolean {
+      return this.devices.activeDevice.id !== this.thisDeviceId;
+    },
+  },
+
   actions: {
     play(): void {
       instance().put("me/player/play", {

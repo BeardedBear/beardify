@@ -119,11 +119,11 @@ export const themeDark: ThemeColor[] = [
   },
   {
     var: "--bg-color-light",
-    color: "#21242e",
+    color: "#272b36",
   },
   {
     var: "--bg-color-lighter",
-    color: "#272a35",
+    color: "#323643",
   },
   {
     var: "--font-color",

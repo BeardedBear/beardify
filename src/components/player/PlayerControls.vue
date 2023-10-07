@@ -76,7 +76,9 @@ watch(
 .controls {
   align-items: center;
   display: flex;
+  flex: 1;
   gap: 1.2rem;
+  justify-content: center;
 
   &__btn {
     background-color: transparent;

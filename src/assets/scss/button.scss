@@ -4,7 +4,7 @@
   background-color: var(--bg-color-light);
   border: 0;
   border-radius: 0.3rem;
-  color: var(--font-color);
+  color: var(--font-color-dark);
   cursor: pointer;
   display: inline-block;
   font-weight: 700;
@@ -12,9 +12,11 @@
   padding: 0.3rem 1.1rem;
   text-align: center;
   text-decoration: none;
+  white-space: pre;
 
   &:hover {
     background-color: var(--bg-color-lighter);
+    color: var(--font-color-light);
   }
 
   &:active {
@@ -22,6 +24,7 @@
   }
 
   &--full {
+    text-align: left;
     width: 100%;
   }
 
