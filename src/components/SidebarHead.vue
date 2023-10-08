@@ -2,10 +2,10 @@
   <div class="topbar">
     <router-link to="/"><img class="logo" src="/img/logo.svg" /></router-link>
     <div class="navigation">
-      <button class="navigation__item" @click="router.go(-1)">
+      <button class="button" @click="router.go(-1)">
         <i class="icon-arrow-left" />
       </button>
-      <button class="navigation__item" @click="router.go(1)">
+      <button class="button" @click="router.go(1)">
         <i class="icon-arrow-right" />
       </button>
     </div>
@@ -56,23 +56,7 @@ const dialogStore = useDialog();
   margin-left: 1rem;
   margin-right: 1rem;
 
-  &__item {
-    background-color: var(--bg-color-light);
-    border: 0;
-    color: currentcolor;
-    cursor: pointer;
-    font-size: 1.2rem;
-    line-height: 1;
-    padding: 0.5rem 1rem;
-
-    &:hover {
-      background-color: var(--bg-color-lighter);
-    }
-
-    &:active {
-      background-color: var(--bg-color-lighter);
-    }
-
+  button {
     &:first-of-type {
       border-radius: $radius 0 0 $radius;
     }
