@@ -14,15 +14,18 @@ import { usePlayer } from "./PlayerStore";
 const playerStore = usePlayer();
 const interval = ref<number | undefined>(undefined);
 
-onMounted(() => playerStore.getExternalPlayerState());
+function watchExternalPlayerState(): void {
+  const appFocused = document.visibilityState === "visible";
+  playerStore.isExternalDevice
+    ? (interval.value = window.setInterval(() => appFocused && playerStore.getExternalPlayerState(), 2000))
+    : window.clearInterval(interval.value);
+}
+
+onMounted(() => watchExternalPlayerState());
 
 watch(
   () => playerStore.isExternalDevice,
-  (external) => {
-    external
-      ? (interval.value = window.setInterval(() => playerStore.getExternalPlayerState(), 2000))
-      : window.clearInterval(interval.value);
-  },
+  () => watchExternalPlayerState(),
 );
 </script>
 
