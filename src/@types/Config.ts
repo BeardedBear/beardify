@@ -126,8 +126,16 @@ export const themeDark: ThemeColor[] = [
     color: "#323643",
   },
   {
+    var: "--font-color-dark",
+    color: "#929ea8",
+  },
+  {
     var: "--font-color",
-    color: "#d5dbe0",
+    color: "#b0bac2",
+  },
+  {
+    var: "--font-color-light",
+    color: "#e3e8ec",
   },
 ];
 export const themeLight: ThemeColor[] = [
@@ -152,7 +160,15 @@ export const themeLight: ThemeColor[] = [
     color: "#d5d5d5",
   },
   {
+    var: "--font-color-dark",
+    color: "#2a2e31",
+  },
+  {
     var: "--font-color",
     color: "#1b1e20",
+  },
+  {
+    var: "--font-color-light",
+    color: "#0f1113",
   },
 ];

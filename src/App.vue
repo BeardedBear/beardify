@@ -67,6 +67,14 @@ document.addEventListener("visibilitychange", () => {
   box-sizing: border-box;
 }
 
+input {
+  &::placeholder {
+    color: var(--font-color);
+    font-style: italic;
+    opacity: 0.3;
+  }
+}
+
 html {
   font-size: 16px;
 

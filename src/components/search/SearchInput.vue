@@ -57,11 +57,6 @@ $radius: 0.3rem;
   outline: 0;
   padding: 0.8rem 1.2rem;
   width: 100%;
-
-  &::placeholder {
-    color: color.change(rgb(74 75 103), $alpha: 0.4);
-    font-style: italic;
-  }
 }
 
 .reset {
