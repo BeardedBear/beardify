@@ -6,20 +6,22 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import PlayerEpisode from "./PlayerEpisode.vue";
 import PlayerSong from "./PlayerSong.vue";
 import { usePlayer } from "./PlayerStore";
 
 const playerStore = usePlayer();
+const interval = ref<number | undefined>(undefined);
 
 onMounted(() => playerStore.getExternalPlayerState());
 
 watch(
   () => playerStore.isExternalDevice,
-  () => {
-    // playerStore.getExternalPlayerState())
-    setInterval(() => playerStore.isExternalDevice && playerStore.getExternalPlayerState(), 5000);
+  (external) => {
+    external
+      ? (interval.value = window.setInterval(() => playerStore.getExternalPlayerState(), 2000))
+      : window.clearInterval(interval.value);
   },
 );
 </script>
