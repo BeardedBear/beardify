@@ -27,6 +27,9 @@ const playerStore = usePlayer();
 }
 
 .device {
+  align-items: center;
+  display: flex;
+  gap: 10px;
   text-align: right;
 }
 </style>

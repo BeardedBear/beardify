@@ -1,11 +1,13 @@
 <template>
-  <div class="meta">
-    <What />
-    <Controls />
-    <Device />
-  </div>
-  <!-- <Loader v-else /> -->
-  <SeekBar />
+  <template v-if="usePlayer().playerState.track_window.current_track.id">
+    <div class="meta">
+      <What />
+      <Controls />
+      <Device />
+    </div>
+    <SeekBar />
+  </template>
+  <Loader v-else />
 </template>
 
 <script lang="ts" setup>
@@ -13,6 +15,8 @@ import Controls from "./PlayerControls.vue";
 import What from "./PlayerMetas.vue";
 import SeekBar from "./SeekBar.vue";
 import Device from "./device/DeviceIndex.vue";
+import { usePlayer } from "./PlayerStore";
+import Loader from "../LoadingDots.vue";
 </script>
 
 <style lang="scss" scoped>

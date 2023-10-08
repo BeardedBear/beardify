@@ -30,10 +30,9 @@ watchEffect(() => {
   display: inline-block;
   font-size: 0.9rem;
   font-weight: bold;
-  height: 1.3rem;
-  margin-bottom: 0.1rem;
+  height: 1.7rem;
   position: relative;
-  width: 6.3rem;
+  width: 6rem;
 
   &::before {
     background-color: var(--bg-color);

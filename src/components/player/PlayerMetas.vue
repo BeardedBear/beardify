@@ -1,7 +1,9 @@
 <template>
+  <!-- <pre>{{ currentTrack }}</pre> -->
+  <!-- {{ currentTrack.album.images }} -->
   <div v-if="currentTrack" class="what">
     <div class="cover-wrap">
-      <img :src="currentTrack.album.images[1].url" class="cover" />
+      <img v-if="currentTrack.album.images.length" :src="currentTrack.album.images[1].url || ''" class="cover" />
       <div class="hover" @click="dialogStore.open({ type: 'addSong', track: currentTrack })">
         <i class="add icon-plus"></i>
       </div>

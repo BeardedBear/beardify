@@ -1,8 +1,9 @@
 import { defineStore } from "pinia";
+import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
 import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
 import { DevicesResponse } from "../../@types/Device";
 import { NotificationType } from "../../@types/Notification";
-import { Player } from "../../@types/Player";
+import { Player, defaultPlaybackState } from "../../@types/Player";
 import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
 import spotify from "../../spotify";
@@ -18,7 +19,7 @@ export const usePlayer = defineStore("player", {
     currentlyPlaying: defaultCurrentlyPlaying,
     currentFromSDK: null,
     currentPositionFromSDK: 0,
-    playerState: null,
+    playerState: defaultPlaybackState,
     queue: [],
     queueOpened: false,
   }),
@@ -63,7 +64,34 @@ export const usePlayer = defineStore("player", {
         });
     },
 
+    getExternalPlayerState() {
+      this.playerState = defaultPlaybackState;
+      instance()
+        .get<CurrentlyPlaying>("me/player")
+        .then(({ data }) => {
+          if (!data.item) return;
+
+          const { item } = data;
+          const current = this.playerState.track_window.current_track;
+          const playerState = this.playerState;
+          const activeDevice = this.devices.activeDevice;
+
+          current.album = data.item.album;
+          current.artists = item.artists;
+          current.duration_ms = item.duration_ms;
+          current.id = item.id;
+          current.name = item.name;
+          current.uri = item.uri;
+          playerState.position = data.progress_ms;
+          playerState.paused = !data.is_playing;
+          playerState.shuffle = data.shuffle_state;
+          playerState.duration = item.duration_ms;
+          activeDevice.volume_percent = data.device.volume_percent;
+        });
+    },
+
     setDevice(deviceId: string | null) {
+      this.playerState = defaultPlaybackState;
       instance()
         .put("me/player", { device_ids: [deviceId] })
         .then(() => {

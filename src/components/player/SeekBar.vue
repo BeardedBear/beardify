@@ -48,8 +48,8 @@ useIntervalFn(() => {
 }, freq);
 
 watch(
-  () => playerStore.playerState,
-  () => playerStore.playerState && (currentTime.value = playerStore.playerState?.position),
+  () => playerStore.playerState.position,
+  () => (currentTime.value = playerStore.playerState.position),
 );
 </script>
 

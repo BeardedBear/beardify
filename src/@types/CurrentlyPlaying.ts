@@ -8,7 +8,7 @@ export interface CurrentlyPlayingItem {
   artists: Artist[];
   available_markets: string[];
   disc_number: number;
-  duration_ms: number | null | undefined;
+  duration_ms: number;
   explicit: boolean;
   href: string;
   id: string;

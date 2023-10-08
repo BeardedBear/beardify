@@ -1,29 +1,26 @@
 <template>
-  <div class="wrap">
-    <QueuedTracks />
-    <!-- {{ playerStore.isExternalDevice ? "External Device" : "Devices" }} -->
-    <div>
+  <QueuedTracks />
+  <div class="devices">
+    <button
+      type="button"
+      class="button button--small button--primary active-device"
+      @click="playerStore.setDevice(playerStore.devices.activeDevice.id)"
+    >
+      {{ playerStore.devices.activeDevice.name }}
+    </button>
+    <button type="button" class="button button--small" @click="playerStore.getDeviceList()">
+      <i class="icon-refresh"></i>
+    </button>
+    <div class="available-device-list">
       <button
+        v-for="(device, _key) in deviceListFiltered"
+        :key="_key"
         type="button"
-        class="button button--small button--primary active-device"
-        @click="playerStore.setDevice(playerStore.devices.activeDevice.id)"
+        class="button button--small button--full"
+        @click="playerStore.setDevice(device.id)"
       >
-        {{ playerStore.devices.activeDevice.name }}
+        {{ device.name }}
       </button>
-      <button type="button" class="button button--small" @click="playerStore.getDeviceList()">
-        <i class="icon-refresh"></i>
-      </button>
-      <div class="available-device-list">
-        <button
-          v-for="(device, _key) in deviceListFiltered"
-          :key="_key"
-          type="button"
-          class="button button--small button--full"
-          @click="playerStore.setDevice(device.id)"
-        >
-          {{ device.name }}
-        </button>
-      </div>
     </div>
   </div>
 </template>
@@ -78,7 +75,7 @@ $gap-list: 10px;
   }
 }
 
-.wrap {
+.devices {
   display: flex;
   gap: 10px;
   position: relative;

@@ -10,7 +10,7 @@ export interface Player {
   currentlyPlaying: CurrentlyPlaying;
   currentFromSDK: Spotify.Track | null;
   currentPositionFromSDK: number;
-  playerState: Spotify.PlaybackState | null;
+  playerState: Spotify.PlaybackState;
   queue: Spotify.Track[];
   queueOpened: boolean;
 }

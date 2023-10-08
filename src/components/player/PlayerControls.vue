@@ -2,17 +2,17 @@
   <div class="controls">
     <div class="btns">
       <button
-        v-if="playerStore.currentlyPlaying.currently_playing_type !== 'episode'"
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         class="controls__btn"
-        :class="{ active: playerStore.currentlyPlaying.shuffle_state }"
+        :class="{ active: playerStore.currentlyPlaying?.shuffle_state }"
         @click="playerStore.toggleShuffle()"
       >
         <i class="icon-shuffle" />
       </button>
       <button
-        v-if="playerStore.currentlyPlaying.currently_playing_type !== 'episode'"
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         class="controls__btn"
-        :class="{ active: playerStore.currentlyPlaying.repeat_state !== 'off' }"
+        :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
         @click="playerStore.toggleRepeat()"
       >
         <i class="icon-repeat" />
@@ -24,7 +24,7 @@
         <i class="icon-pause" />
       </button>
       <button
-        v-if="playerStore.currentlyPlaying.currently_playing_type !== 'episode'"
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         class="controls__btn"
         @click="playerStore.next()"
       >
@@ -54,8 +54,8 @@ useIntervalFn(() => {
 }, 1000);
 
 watch(
-  () => playerStore.playerState,
-  () => playerStore.playerState && (currentTime.value = playerStore.playerState?.position),
+  () => playerStore.playerState.position,
+  () => (currentTime.value = playerStore.playerState.position),
 );
 </script>
 
