@@ -28,6 +28,7 @@
       <Actions />
       <input
         v-if="$route.name === 'Collection'"
+        ref="searchElement"
         v-model="playlistStore.filter"
         type="search"
         class="search"
@@ -39,6 +40,7 @@
 </template>
 
 <script lang="ts" setup>
+import { onMounted, ref } from "vue";
 import { PlaylistTrack } from "../../@types/Playlist";
 import Cover from "../../components/AlbumCover.vue";
 import ShareContent from "../../components/ShareContent.vue";
@@ -55,6 +57,12 @@ defineProps<{
 }>();
 
 const playlistStore = usePlaylist();
+const searchElement = ref<HTMLInputElement | null>(null);
+
+onMounted(() => {
+  if (searchElement.value) searchElement.value.focus();
+});
+
 function sumDuration(tracks: PlaylistTrack[]): number {
   return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
 }
