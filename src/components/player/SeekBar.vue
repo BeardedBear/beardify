@@ -47,6 +47,12 @@ useIntervalFn(() => {
   if (!playerStore.playerState.paused) currentTime.value = currentTime.value + freq;
 }, freq);
 
+// TODO: optimize this, ERK
+watch(
+  () => playerStore.playerState,
+  () => (currentTime.value = playerStore.playerState.position),
+);
+
 watch(
   () => playerStore.playerState.position,
   () => (currentTime.value = playerStore.playerState.position),

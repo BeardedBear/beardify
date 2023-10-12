@@ -1,9 +1,7 @@
 <template>
   <div class="album" :class="{ 'exact-search': exactSearch }">
-    <div v-if="album.uri === playerStore.playerState?.track_window.current_track.album.uri" class="current">
-      <i class="icon-volume-2" />
-    </div>
-    <div class="cover">
+    <div v-if="isPlaying" class="current"><i class="icon-volume-2" /></div>
+    <div class="cover" :class="{ 'is-playing': isPlaying }">
       <Cover
         :size="coverSize ? coverSize : 'medium'"
         :images="album.images"
@@ -52,8 +50,9 @@ import Cover from "../AlbumCover.vue";
 import ArtistList from "../artist/ArtistList.vue";
 import { useDialog } from "../dialog/DialogStore";
 import { usePlayer } from "../player/PlayerStore";
+import { computed } from "vue";
 
-defineProps<{
+const props = defineProps<{
   album: AlbumSimplified | Album;
   withArtists?: boolean;
   withoutMetas?: boolean;
@@ -68,9 +67,13 @@ const currentRouteId = useRoute().params.id;
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
 const playerStore = usePlayer();
+const isPlaying = computed<boolean>(
+  () => props.album.uri === playerStore.playerState?.track_window.current_track.album.uri,
+);
 
 function playAlbum(albumUri: string): void {
-  instance().put("me/player/play", { context_uri: albumUri });
+  usePlayer().playerState.position = 0;
+  instance().put("me/player/play", { context_uri: albumUri, position_ms: 0 });
 }
 
 function deleteAlbum(albumId: string): void {
@@ -231,6 +234,7 @@ function deleteAlbum(albumId: string): void {
   position: absolute;
   right: 0;
   top: 0;
+  transition: all ease 0.2s;
   width: $size;
   z-index: 1;
 
@@ -245,8 +249,16 @@ function deleteAlbum(albumId: string): void {
 }
 
 .cover {
+  border-radius: 0.4rem;
   margin-bottom: 0.8rem;
   position: relative;
+  transition: box-shadow ease 0.2s;
+
+  &.is-playing {
+    box-shadow:
+      0 0 0 0.3rem var(--bg-color),
+      0 0 0 0.5rem var(--primary-color);
+  }
 }
 
 .name {

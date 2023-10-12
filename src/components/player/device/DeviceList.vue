@@ -5,6 +5,7 @@
       type="button"
       class="button button--small button--primary active-device"
       @click="playerStore.setDevice(playerStore.devices.activeDevice.id)"
+      @mouseenter="playerStore.getDeviceList()"
     >
       {{ playerStore.devices.activeDevice.name }}
     </button>
