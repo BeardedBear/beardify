@@ -81,7 +81,7 @@ onUpdated(async () => updateLinks());
     gap: 0;
 
     .item {
-      color: var(--font-color);
+      color: var(--font-color-light);
       font-size: 1rem;
       padding: 0.3rem;
     }

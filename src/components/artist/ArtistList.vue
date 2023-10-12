@@ -46,7 +46,7 @@ function goArtist(artistUri: string): void {
 @keyframes pop-options {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(1rem);
+    transform: translateX(-50%) translateY(-1rem);
   }
 
   to {
@@ -56,16 +56,28 @@ function goArtist(artistUri: string): void {
 }
 
 .options {
+  $height: 0.5rem;
+
   animation: pop-options 0.2s ease 0.75s both;
-  background-color: var(--bg-color-lighter);
+  background-color: var(--bg-color-light);
   border-radius: 5px;
-  bottom: 100%;
+  bottom: calc(100% + $height);
+  box-shadow: 0 0.5rem 0.5rem rgb(0 0 0 / 20%);
   display: none;
   left: 50%;
-  padding: 0.5rem;
+  padding: 0.2rem;
   position: absolute;
   transform: translateX(-50%);
-  z-index: 1;
+  z-index: 99;
+
+  &::after {
+    content: "";
+    height: $height;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 100%;
+  }
 }
 
 .artist {
