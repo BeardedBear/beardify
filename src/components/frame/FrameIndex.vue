@@ -3,6 +3,13 @@
     <div class="bg" :class="{ 'is-closing': frameStore.isClosing }" @click="frameStore.close()"></div>
     <div class="iframe-wrap">
       <LoadingDots class="load" />
+      <div class="head">
+        <div>{{ frameStore.siteName }}</div>
+        <div class="right">
+          <a :href="frameStore.url" target="_blank" class="button button--small">Open in a new tab</a>
+          <button class="button button--small" @click="frameStore.close()">Close</button>
+        </div>
+      </div>
       <iframe border="0" :src="frameStore.url" :class="{ 'is-closing': frameStore.isClosing }"></iframe>
     </div>
   </div>
@@ -48,6 +55,18 @@ const frameStore = useFrame();
   }
 }
 
+.head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+
+  .right {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
 .frame {
   align-items: center;
   display: grid;
@@ -67,6 +86,7 @@ const frameStore = useFrame();
 
 .iframe-wrap {
   background-color: var(--bg-color);
+  border-radius: 15px;
   z-index: 1000;
 }
 

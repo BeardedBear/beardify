@@ -6,12 +6,14 @@ export const useFrame = defineStore("frame", {
     show: false,
     isClosing: false,
     url: "",
+    siteName: "",
   }),
 
   actions: {
-    open(url: string) {
+    open(url: string, siteName?: string) {
       this.show = true;
       this.url = url;
+      if (siteName) this.siteName = siteName;
     },
 
     close() {

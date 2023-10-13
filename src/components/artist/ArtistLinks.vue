@@ -1,8 +1,8 @@
 <template>
   <div class="links" :class="{ floating }">
-    <a class="item" @click.stop.prevent="openFrame(link.wikipedia)"><i class="icon-wikipedia" /></a>
-    <a class="item" @click.stop.prevent="openFrame(link.sputnik)"><i class="icon-sputnik" /></a>
-    <a class="item" @click.stop.prevent="openFrame(link.google)"><i class="icon-google" /></a>
+    <a class="item" @click.stop.prevent="frameStore.open(link.wikipedia, 'Wikipedia')"><i class="icon-wikipedia" /></a>
+    <a class="item" @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')"><i class="icon-sputnik" /></a>
+    <a class="item" @click.stop.prevent="frameStore.open(link.google, 'Google')"><i class="icon-google" /></a>
     <span class="separator">|</span>
     <a class="item" @click.stop.prevent="openLink(link.lastfm)"><i class="icon-lastfm" /></a>
     <a class="item" @click.stop.prevent="openLink(link.discogs)"><i class="icon-discogs" /></a>
@@ -27,10 +27,6 @@ const artistNameNormalized = ref<string>("");
 
 function openLink(url: string): void {
   window.open(url, "_blank");
-}
-
-function openFrame(url: string): void {
-  frameStore.open(url);
 }
 
 async function updateLinks(): Promise<void> {
