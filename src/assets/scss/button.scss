@@ -28,6 +28,10 @@
     width: 100%;
   }
 
+  &--with-border {
+    border: 1px solid var(--bg-color-lighter);
+  }
+
   &--primary {
     background-color: var(--primary-color);
     color: white;

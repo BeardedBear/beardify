@@ -53,14 +53,14 @@ onClickOutside(popup, () => playerStore.closeQueue());
   box-shadow: 0 0 10px 0 rgb(0 0 0 / 20%);
   height: 300px;
   overflow: auto;
+  position: relative;
   width: 250px;
 }
 
 .content {
   bottom: calc(100% + 10px);
-  left: 50%;
   position: absolute;
-  transform: translateX(-50%);
+  right: 0;
   z-index: 20;
 }
 

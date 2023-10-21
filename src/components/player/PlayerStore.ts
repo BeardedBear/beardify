@@ -48,6 +48,7 @@ export const usePlayer = defineStore("player", {
     },
 
     async getDeviceList() {
+      this.devices.list = [];
       instance()
         .get<DevicesResponse>("me/player/devices")
         .then(({ data }) => {
