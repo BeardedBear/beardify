@@ -63,7 +63,7 @@ $gap-list: 10px;
   padding: 10px;
   position: absolute;
   right: 0;
-  z-index: 9;
+  z-index: 9999;
 
   &:hover {
     display: flex;
