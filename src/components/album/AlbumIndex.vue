@@ -1,25 +1,25 @@
 <template>
-  <div class="album" :class="{ 'exact-search': exactSearch }">
-    <div v-if="isPlaying" class="current"><i class="icon-volume-2" /></div>
-    <div class="cover" :class="{ 'is-playing': isPlaying }">
+  <div :class="{ 'exact-search': exactSearch }" class="album">
+    <div class="current" v-if="isPlaying"><i class="icon-volume-2" /></div>
+    <div :class="{ 'is-playing': isPlaying }" class="cover">
       <Cover
-        :size="coverSize ? coverSize : 'medium'"
         :images="album.images"
-        class="img"
+        :size="coverSize ? coverSize : 'medium'"
         @click="router.push(`/album/${album.id}`)"
+        class="img"
       />
-      <button class="play" type="button" @click="playAlbum(album.uri)">
+      <button @click="playAlbum(album.uri)" class="play" type="button">
         <i class="icon-play" />
       </button>
       <button
-        v-if="canSave"
+        @click="dialogStore.open({ type: 'addalbum', albumId: album.id })"
         class="button-action add"
         type="button"
-        @click="dialogStore.open({ type: 'addalbum', albumId: album.id })"
+        v-if="canSave"
       >
         <i class="icon-plus" />
       </button>
-      <button v-if="canDelete" class="button-action delete" type="button" @click="deleteAlbum(album.id)">
+      <button @click="deleteAlbum(album.id)" class="button-action delete" type="button" v-if="canDelete">
         <i class="icon-trash-2" />
       </button>
     </div>
@@ -28,7 +28,7 @@
       <div v-if="withArtists">
         <ArtistList :artist-list="album.artists" feat />
       </div>
-      <div v-if="album.release_date && !withoutReleaseDate" class="date">
+      <div class="date" v-if="album.release_date && !withoutReleaseDate">
         {{ album.release_date.split("-").shift() }}
       </div>
     </div>
@@ -36,7 +36,9 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
 import { useRoute } from "vue-router";
+
 import { Album, AlbumSimplified } from "../../@types/Album";
 import { ImageSize } from "../../@types/Image";
 import { NotificationType } from "../../@types/Notification";
@@ -50,17 +52,16 @@ import Cover from "../AlbumCover.vue";
 import ArtistList from "../artist/ArtistList.vue";
 import { useDialog } from "../dialog/DialogStore";
 import { usePlayer } from "../player/PlayerStore";
-import { computed } from "vue";
 
 const props = defineProps<{
-  album: AlbumSimplified | Album;
-  withArtists?: boolean;
-  withoutMetas?: boolean;
+  album: Album | AlbumSimplified;
   canDelete?: boolean;
   canSave?: boolean;
-  withoutReleaseDate?: boolean;
   coverSize?: ImageSize | undefined;
   exactSearch?: boolean;
+  withArtists?: boolean;
+  withoutMetas?: boolean;
+  withoutReleaseDate?: boolean;
 }>();
 
 const currentRouteId = useRoute().params.id;

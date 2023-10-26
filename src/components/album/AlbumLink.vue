@@ -1,17 +1,17 @@
 <template>
   <i
-    v-if="!noIcon"
     :class="{
       'icon-single': isSingle(album),
       'icon-compilation': isCompilation(album),
     }"
+    v-if="!noIcon"
   />
-  <span class="artist" @click.prevent.stop="goAlbum(`/album/${album.id}`)">{{ album.name }}</span>
+  <span @click.prevent.stop="goAlbum(`/album/${album.id}`)" class="artist">{{ album.name }}</span>
 </template>
 
 <script lang="ts" setup>
 import { AlbumSimplified } from "../../@types/Album";
-import { isSingle, isCompilation } from "../../helpers/useCleanAlbums";
+import { isCompilation, isSingle } from "../../helpers/useCleanAlbums";
 import router from "../../router";
 
 defineProps<{

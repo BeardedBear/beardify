@@ -50,20 +50,20 @@ export function useCheckReissueAlbum(albumName: string): boolean {
   return new RegExp(`(${matches.join("|")})`).test(cleanedName);
 }
 
-export function isAlbum(album: AlbumSimplified | Album | CurrentlyPlayingAlbum): boolean {
+export function isAlbum(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
   return album.album_type === "album" || album.album_type === "ALBUM";
 }
 
-export function isEP(album: AlbumSimplified | Album | CurrentlyPlayingAlbum): boolean {
+export function isEP(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
   const minimumNumberOfTracks = 3;
   return album.total_tracks >= minimumNumberOfTracks && album.album_type === "single";
 }
 
-export function isSingle(album: AlbumSimplified | Album | CurrentlyPlayingAlbum): boolean {
+export function isSingle(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
   const minimumNumberOfTracks = 3;
   return album.total_tracks < minimumNumberOfTracks && album.album_type === "single";
 }
 
-export function isCompilation(album: AlbumSimplified | Album | CurrentlyPlayingAlbum): boolean {
+export function isCompilation(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
   return album.album_type === "compilation";
 }

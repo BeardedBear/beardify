@@ -1,6 +1,6 @@
 export interface Frame {
-  show: boolean;
-  url: string;
   isClosing: boolean;
+  show: boolean;
   siteName?: string;
+  url: string;
 }

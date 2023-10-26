@@ -1,16 +1,10 @@
 import { defineStore } from "pinia";
+
 import { Paging } from "../../@types/Paging";
 import { Episode, Podcast, PodcastItem, PodcastSaved, PodcastsPage } from "../../@types/Podcast";
 import { instance } from "../../api";
 
 export const usePodcasts = defineStore("podcasts", {
-  state: (): PodcastsPage => ({
-    podcast: null,
-    list: null,
-    myPodcasts: [],
-    episodes: [],
-  }),
-
   actions: {
     async clean() {
       this.podcast = null;
@@ -26,6 +20,12 @@ export const usePodcasts = defineStore("podcasts", {
           this.myPodcasts = this.myPodcasts.concat(e.data.items);
           if (e.data.next) this.getMyPodcasts(e.data.next);
         });
+    },
+
+    getPodcast(podcastId: string) {
+      instance()
+        .get<Podcast>(`/shows/${podcastId}`)
+        .then(({ data }) => (this.podcast = data));
     },
 
     getPodcastEpisodes(url: string) {
@@ -47,11 +47,12 @@ export const usePodcasts = defineStore("podcasts", {
         .get<PodcastItem>(`/shows?ids=${podcasts.join()}`)
         .then(({ data }) => (this.list = data));
     },
-
-    getPodcast(podcastId: string) {
-      instance()
-        .get<Podcast>(`/shows/${podcastId}`)
-        .then(({ data }) => (this.podcast = data));
-    },
   },
+
+  state: (): PodcastsPage => ({
+    episodes: [],
+    list: null,
+    myPodcasts: [],
+    podcast: null,
+  }),
 });

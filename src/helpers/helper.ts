@@ -1,5 +1,6 @@
-import { AlbumSimplified } from "../@types/Album";
 import type { Track, TrackSimplified } from "../@types/Track";
+
+import { AlbumSimplified } from "../@types/Album";
 
 export function transformUriToid(uri: string | undefined): string {
   if (!uri) return "";
@@ -7,8 +8,8 @@ export function transformUriToid(uri: string | undefined): string {
 }
 
 export function isCurrentTrack(
-  track: Spotify.Track | AlbumSimplified | Track | TrackSimplified | undefined,
-  currentTrack: Spotify.Track | AlbumSimplified | Track | TrackSimplified | undefined,
+  track: AlbumSimplified | Spotify.Track | Track | TrackSimplified | undefined,
+  currentTrack: AlbumSimplified | Spotify.Track | Track | TrackSimplified | undefined,
 ): boolean {
   if (!track || !currentTrack) return false;
   return currentTrack?.artists[0].name === track.artists[0].name && currentTrack?.name === track.name;

@@ -2,29 +2,29 @@
   <QueuedTracks />
   <div class="devices">
     <button
-      type="button"
-      class="button button--small button--primary active-device"
       @click="playerStore.setDevice(playerStore.devices.activeDevice.id)"
       @mouseenter="playerStore.getDeviceList()"
+      class="button button--small button--primary active-device"
+      type="button"
     >
       {{ playerStore.devices.activeDevice.name }}
     </button>
     <div class="available-device-list">
-      <LoadingDots v-if="!playerStore.devices.list.length" size="small" />
+      <LoadingDots size="small" v-if="!playerStore.devices.list.length" />
       <button
-        v-for="(device, _key) in deviceListFiltered"
-        v-else
         :key="_key"
-        type="button"
-        class="button button--small button--full"
         @click="playerStore.setDevice(device.id)"
+        class="button button--small button--full"
+        type="button"
+        v-else
+        v-for="(device, _key) in deviceListFiltered"
       >
         {{ device.name }}
       </button>
       <button
-        type="button"
-        class="button button--small button--full button--with-border refresh"
         @click="playerStore.getDeviceList()"
+        class="button button--small button--full button--with-border refresh"
+        type="button"
       >
         <i class="icon-refresh"></i> Refresh
       </button>
@@ -34,9 +34,10 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
+
+import LoadingDots from "../../LoadingDots.vue";
 import { usePlayer } from "../PlayerStore";
 import QueuedTracks from "./QueuedTracks.vue";
-import LoadingDots from "../../LoadingDots.vue";
 
 const playerStore = usePlayer();
 const deviceListFiltered = computed(() =>

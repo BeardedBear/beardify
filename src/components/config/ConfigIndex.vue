@@ -1,22 +1,22 @@
 <template>
-  <div v-if="configStore.show" ref="domConfig" class="config" :class="{ bye: configStore.bye }">
+  <div :class="{ bye: configStore.bye }" class="config" ref="domConfig" v-if="configStore.show">
     <div class="user">
       <div>{{ authStore.me?.display_name }}</div>
       <div class="user__mail">{{ authStore.me?.email }}</div>
     </div>
 
-    <div v-if="env !== 'production'" class="section">
+    <div class="section" v-if="env !== 'production'">
       <div class="section__title">Debug</div>
       <router-link class="button button--full" to="/login">Login</router-link>
-      <button class="button button--full" @click="authStore.refresh()">Refresh token</button>
+      <button @click="authStore.refresh()" class="button button--full">Refresh token</button>
       <button
-        class="button button--full"
         @click="
           notification({
             msg: 'DeviceNotInitialized',
             type: NotificationType.Error,
           })
         "
+        class="button button--full"
       >
         Notif
       </button>
@@ -24,8 +24,8 @@
 
     <div class="section">
       <div class="section__title">Account</div>
-      <router-link class="button button--full" :to="`/user/${authStore.me?.id}`">My profile</router-link>
-      <button class="button button--full" @click="authStore.logout()">Logout</button>
+      <router-link :to="`/user/${authStore.me?.id}`" class="button button--full">My profile</router-link>
+      <button @click="authStore.logout()" class="button button--full">Logout</button>
     </div>
 
     <div class="section">
@@ -39,6 +39,7 @@
 import { onClickOutside } from "@vueuse/core";
 import { ref } from "vue";
 import { RouterLink } from "vue-router";
+
 import { NotificationType } from "../../@types/Notification";
 import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";

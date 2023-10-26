@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+
 import { Artist } from "../../@types/Artist";
 import { HomePage } from "../../@types/Home";
 import { Paging } from "../../@types/Paging";
@@ -9,10 +10,6 @@ import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { isAlbum } from "../../helpers/useCleanAlbums";
 
 export const useHome = defineStore("home", {
-  state: (): HomePage => ({
-    recommendedAlbums: [],
-  }),
-
   actions: {
     async clean() {
       this.recommendedAlbums = [];
@@ -39,4 +36,8 @@ export const useHome = defineStore("home", {
       } else if (!this.recommendedAlbums.length) this.getRecommendedAlbums();
     },
   },
+
+  state: (): HomePage => ({
+    recommendedAlbums: [],
+  }),
 });

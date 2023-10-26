@@ -1,6 +1,6 @@
 <template>
-  <i v-if="playlist.public && !playlist.collaborative" class="visibility-icon icon-public" title="Public" />
-  <i v-if="playlist.collaborative" class="visibility-icon icon-collaborative" title="Collaborative" />
+  <i class="visibility-icon icon-public" title="Public" v-if="playlist.public && !playlist.collaborative" />
+  <i class="visibility-icon icon-collaborative" title="Collaborative" v-if="playlist.collaborative" />
 </template>
 
 <script lang="ts" setup>

@@ -1,7 +1,7 @@
 <template>
-  <div ref="domHeader" class="header">
-    <img v-if="artistStore.artist.images.length" class="img" :src="artistStore.artist.images[0].url" alt="" />
-    <img v-else class="img" src="/img/default.png" />
+  <div class="header" ref="domHeader">
+    <img :src="artistStore.artist.images[0].url" alt="" class="img" v-if="artistStore.artist.images.length" />
+    <img class="img" src="/img/default.png" v-else />
     <div class="inner">
       <div>
         <div class="title">
@@ -11,7 +11,7 @@
       <Options />
     </div>
     <div class="genres">
-      <span v-for="(genre, index) in artistStore.artist.genres.splice(0, 8)" :key="index" class="genre">
+      <span :key="index" class="genre" v-for="(genre, index) in artistStore.artist.genres.splice(0, 8)">
         {{ genre }}
       </span>
     </div>
@@ -20,6 +20,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
+
 import { useArtist } from "../../views/artist/ArtistStore";
 import Options from "./ArtistOptions.vue";
 

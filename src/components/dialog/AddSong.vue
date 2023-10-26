@@ -1,16 +1,16 @@
 <template>
-  <Dialog with-title :title="`Add to a playlist`" pre-content>
-    <template v-if="dialogStore.track" #pre-content>
+  <Dialog :title="`Add to a playlist`" pre-content with-title>
+    <template #pre-content v-if="dialogStore.track">
       <PreContentTrack :track="dialogStore.track" />
     </template>
     <div class="content">
       <div
+        :key="index"
+        @click="add(dialogStore.track?.uri ? dialogStore.track?.uri : '', playlist.id)"
+        class="collection"
         v-for="(playlist, index) in sidebarStore.playlists.filter(
           (playlist) => playlist.collaborative || playlist.owner.id === authStore.me?.id,
         )"
-        :key="index"
-        class="collection"
-        @click="add(dialogStore.track?.uri ? dialogStore.track?.uri : '', playlist.id)"
       >
         <div class="playlist">
           <div><PlaylistIcon :playlist="playlist" /> {{ playlist.name }}</div>

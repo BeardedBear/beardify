@@ -1,16 +1,16 @@
 <template>
-  <div v-if="frameStore.show" class="frame">
-    <div class="bg" :class="{ 'is-closing': frameStore.isClosing }" @click="frameStore.close()"></div>
+  <div class="frame" v-if="frameStore.show">
+    <div :class="{ 'is-closing': frameStore.isClosing }" @click="frameStore.close()" class="bg"></div>
     <div class="iframe-wrap">
       <LoadingDots class="load" />
       <div class="head">
         <div>{{ frameStore.siteName }}</div>
         <div class="right">
-          <a :href="frameStore.url" target="_blank" class="button button--small">Open in a new tab</a>
-          <button class="button button--small" @click="frameStore.close()">Close</button>
+          <a :href="frameStore.url" class="button button--small" target="_blank">Open in a new tab</a>
+          <button @click="frameStore.close()" class="button button--small">Close</button>
         </div>
       </div>
-      <iframe border="0" :src="frameStore.url" :class="{ 'is-closing': frameStore.isClosing }"></iframe>
+      <iframe :class="{ 'is-closing': frameStore.isClosing }" :src="frameStore.url" border="0"></iframe>
     </div>
   </div>
 </template>

@@ -1,18 +1,18 @@
 <template>
-  <div v-if="dialogStore.show" class="dialog">
-    <div class="bg" :class="{ 'is-closing': dialogStore.isClosing }" @click="dialogStore.close()"></div>
-    <div class="wrapper" :class="{ 'is-closing': dialogStore.isClosing, big }">
-      <div v-if="preContent" class="pre-content">
+  <div class="dialog" v-if="dialogStore.show">
+    <div :class="{ 'is-closing': dialogStore.isClosing }" @click="dialogStore.close()" class="bg"></div>
+    <div :class="{ 'is-closing': dialogStore.isClosing, big }" class="wrapper">
+      <div class="pre-content" v-if="preContent">
         <slot name="pre-content" />
       </div>
       <div class="dialog-content">
-        <div v-if="withTitle" class="head">
+        <div class="head" v-if="withTitle">
           <div>{{ title }}</div>
-          <button class="close" @click="dialogStore.close()">
+          <button @click="dialogStore.close()" class="close">
             <i class="icon-x" />
           </button>
         </div>
-        <div class="content" :class="{ big }"><slot /></div>
+        <div :class="{ big }" class="content"><slot /></div>
       </div>
     </div>
   </div>
@@ -22,10 +22,10 @@
 import { useDialog } from "./DialogStore";
 
 defineProps<{
-  withTitle: boolean;
-  title?: string;
   big?: boolean;
   preContent?: boolean;
+  title?: string;
+  withTitle: boolean;
 }>();
 
 const dialogStore = useDialog();

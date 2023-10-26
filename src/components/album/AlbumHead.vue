@@ -16,19 +16,19 @@
       <div class="options">
         <div>
           <a
-            class="button button--nude"
             @click="openLink(`https://www.google.com/search?q=${album.artists[0].name}+${album.name}`)"
+            class="button button--nude"
           >
             <i class="icon-google" />
           </a>
           <a
-            class="button button--nude"
             @click="openLink(`https://www.discogs.com/fr/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
+            class="button button--nude"
           >
             <i class="icon-discogs" />
           </a>
         </div>
-        <ShareContent :spotify-url="props.album.external_urls.spotify" :beardify-url="$route.fullPath" />
+        <ShareContent :beardify-url="$route.fullPath" :spotify-url="props.album.external_urls.spotify" />
       </div>
     </div>
   </div>
@@ -38,13 +38,13 @@
 import { Album } from "../../@types/Album";
 import { Track, TrackSimplified } from "../../@types/Track";
 import { date, timecodeWithUnits } from "../../helpers/date";
-import ShareContent from "../ShareContent.vue";
 import ArtistList from "../artist/ArtistList.vue";
+import ShareContent from "../ShareContent.vue";
 
 const props = defineProps<{ album: Album }>();
 
-function sumDuration(tracks: TrackSimplified[] | Track[]): number {
-  return tracks.map((t: TrackSimplified | Track) => t.duration_ms).reduce((acc, value) => acc + value, 0);
+function sumDuration(tracks: Track[] | TrackSimplified[]): number {
+  return tracks.map((t: Track | TrackSimplified) => t.duration_ms).reduce((acc, value) => acc + value, 0);
 }
 
 function openLink(url: string): void {

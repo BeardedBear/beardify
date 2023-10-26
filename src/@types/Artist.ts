@@ -4,15 +4,15 @@ import { ExternalUrls } from "./Misc";
 import { Track } from "./Track";
 
 export interface ArtistPage {
-  artist: Artist;
-  topTracks: ArtistTopTracks;
   albums: AlbumSimplified[];
   albumsLive: AlbumSimplified[];
+  artist: Artist;
   eps: AlbumSimplified[];
-  singles: AlbumSimplified[];
-  relatedArtists: RelatedArtists;
   followStatus: boolean | undefined;
   headerHeight: number;
+  relatedArtists: RelatedArtists;
+  singles: AlbumSimplified[];
+  topTracks: ArtistTopTracks;
 }
 
 export interface ArtistTopTracks {

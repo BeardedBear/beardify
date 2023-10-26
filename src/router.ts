@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, LocationQueryValue, RouteLocation, RouteRecordRaw } from "vue-router";
+
 import AlbumPage from "./views/album/AlbumPage.vue";
 import ArtistPage from "./views/artist/ArtistPage.vue";
 import AuthPage from "./views/auth/AuthPage.vue";
@@ -12,13 +13,13 @@ import ReleaseListPage from "./views/releases/ReleaseListPage.vue";
 import UserPage from "./views/user/UserPage.vue";
 
 export enum RouteName {
+  About = "/about/",
+  Album = "/album/",
+  Artist = "/artist/",
+  Auth = "/auth/",
+  Collection = "/collection/",
   Home = "/",
   Login = "/login/",
-  About = "/about/",
-  Auth = "/auth/",
-  Artist = "/artist/",
-  Collection = "/collection/",
-  Album = "/album/",
   Playlist = "/playlist/",
   Podcasts = "/podcasts/",
   Releases = "/releases/",
@@ -27,14 +28,14 @@ export enum RouteName {
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: RouteName.Home,
-    name: "Home",
     component: HomePage,
+    name: "Home",
+    path: RouteName.Home,
   },
   {
-    path: RouteName.Login,
-    name: "Login",
     component: LoginPage,
+    name: "Login",
+    path: RouteName.Login,
   },
   {
     component: ArtistPage,
@@ -69,35 +70,35 @@ const routes: Array<RouteRecordRaw> = [
     }),
   },
   {
-    path: RouteName.Auth,
-    name: "Auth",
     component: AuthPage,
+    name: "Auth",
+    path: RouteName.Auth,
     props: (route: RouteLocation): Record<string, LocationQueryValue | LocationQueryValue[]> => ({
       query: route.query.code,
     }),
   },
   {
-    path: RouteName.Podcasts,
-    name: "PodcastList",
     component: PodcastListPage,
+    name: "PodcastList",
+    path: RouteName.Podcasts,
   },
   {
-    path: `${RouteName.Podcasts}:id`,
-    name: "Podcast",
     component: PodcastPage,
+    name: "Podcast",
+    path: `${RouteName.Podcasts}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({
       id: route.params.id,
     }),
   },
   {
-    path: RouteName.Releases,
-    name: "Releases",
     component: ReleaseListPage,
+    name: "Releases",
+    path: RouteName.Releases,
   },
   {
-    path: `${RouteName.User}:id`,
-    name: "User",
     component: UserPage,
+    name: "User",
+    path: `${RouteName.User}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({
       id: route.params.id,
     }),

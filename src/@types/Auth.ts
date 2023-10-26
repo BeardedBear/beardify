@@ -3,15 +3,15 @@ import { User } from "./User";
 export interface Auth {
   accessToken: string;
   code: string;
-  me: User | null;
-  storage: StorageAuth | null;
+  me: null | User;
+  storage: null | StorageAuth;
 }
 
 export interface StorageAuth {
   codeChallenge: string;
   codeVerifier: string;
-  refreshToken: string;
   referer: string;
+  refreshToken: string;
 }
 
 export interface AuthAPIResponse {

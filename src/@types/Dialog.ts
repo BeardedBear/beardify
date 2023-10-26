@@ -1,27 +1,27 @@
 import { Track, TrackSimplified } from "./Track";
 
 export interface UpdatePlaylistValues {
-  name: string;
-  public: boolean;
   collaborative: boolean;
   description: string;
+  name: string;
+  public: boolean;
 }
 
 export interface Dialog {
-  show: boolean;
-  type: DialogType;
-  isClosing: boolean;
   albumId?: string;
-  track?: Track | TrackSimplified | Spotify.Track;
+  isClosing: boolean;
   playlistId?: string;
+  show: boolean;
+  track?: Spotify.Track | Track | TrackSimplified;
+  type: DialogType;
 }
 
 export type DialogType =
-  | null
-  | "createCollection"
-  | "createPlaylist"
   | "addalbum"
   | "addSong"
+  | "createCollection"
+  | "createPlaylist"
   | "editPlaylist"
   | "search"
-  | "widevine";
+  | "widevine"
+  | null;

@@ -4,7 +4,7 @@
     <DialogList />
     <div id="app__content">
       <Sidebar />
-      <router-view v-slot="{ Component }" :key="useRoute().fullPath"><component :is="Component" /></router-view>
+      <router-view :key="useRoute().fullPath" v-slot="{ Component }"><component :is="Component" /></router-view>
     </div>
     <Player key="player" />
     <Notification />
@@ -14,6 +14,7 @@
 
 <script lang="ts" setup>
 import { RouterView, useRoute } from "vue-router";
+
 import DialogList from "./components/dialog/DialogList.vue";
 import { useDialog } from "./components/dialog/DialogStore";
 import Frame from "./components/frame/FrameIndex.vue";
@@ -33,8 +34,8 @@ const dialog = useDialog();
 if (!navigator.userAgent.includes("Macintosh")) {
   const config = [
     {
-      initDataTypes: ["cenc"],
       audioCapabilities: [{ contentType: 'audio/mp4;codecs="mp4a.40.2"' }],
+      initDataTypes: ["cenc"],
     },
   ];
   navigator.requestMediaKeySystemAccess("com.widevine.alpha", config).catch(() => {

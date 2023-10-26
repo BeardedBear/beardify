@@ -1,11 +1,11 @@
 <template>
-  <div v-if="!userStore.user" class="loader"><LoadingDots /></div>
-  <div v-else class="user-page">
+  <div class="loader" v-if="!userStore.user"><LoadingDots /></div>
+  <div class="user-page" v-else>
     <div class="head">
-      <img class="avatar-bg" :src="userStore.user.images[0].url" alt="" />
+      <img :src="userStore.user.images[0].url" alt="" class="avatar-bg" />
       <div class="inner">
         <div class="metas">
-          <img class="avatar" :src="userStore.user.images[0].url" alt="" />
+          <img :src="userStore.user.images[0].url" alt="" class="avatar" />
           <div>
             <div class="name">{{ userStore.user?.display_name }}</div>
             <div class="followers">{{ userStore.user?.followers.total }} followers</div>
@@ -20,10 +20,10 @@
         <div class="heading sticky title">Collections</div>
         <div class="gallery">
           <router-link
-            v-for="collection in userStore.collections"
             :key="collection.id"
             :to="`/collection/${collection.id}`"
             class="playlist"
+            v-for="collection in userStore.collections"
           >
             <Cover :images="collection.images" :size="'large'" class="playlist-cover" />
             <div>{{ collection.name.replaceAll("#Collection ", "") }}</div>
@@ -34,10 +34,10 @@
         <div class="heading sticky title">Playlists</div>
         <div class="gallery">
           <router-link
-            v-for="playlist in userStore.playlists"
             :key="playlist.id"
             :to="`/playlist/${playlist.id}`"
             class="playlist"
+            v-for="playlist in userStore.playlists"
           >
             <Cover :images="playlist.images" :size="'large'" class="playlist-cover" />
             <div>{{ playlist.name }}</div>
@@ -49,12 +49,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from "./UserStore";
-
 import { RouterLink } from "vue-router";
+
 import Cover from "../../components/AlbumCover.vue";
 import LoadingDots from "../../components/LoadingDots.vue";
 import ShareContent from "../../components/ShareContent.vue";
+import { useUserStore } from "./UserStore";
 
 const userStore = useUserStore();
 const props = defineProps<{

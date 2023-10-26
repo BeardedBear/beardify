@@ -50,8 +50,8 @@ export interface Playlist {
 }
 
 export interface PlaylistPage {
+  filter: string;
+  followed: boolean | undefined;
   playlist: Playlist;
   tracks: PlaylistTrack[];
-  followed: boolean | undefined;
-  filter: string;
 }

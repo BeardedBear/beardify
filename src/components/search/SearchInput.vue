@@ -1,14 +1,14 @@
 <template>
   <div class="search">
     <input
-      ref="input"
-      v-model="query"
-      class="input"
-      type="text"
-      placeholder="Recherche..."
       @input="searchStore.updateQuery(query)"
+      class="input"
+      placeholder="Recherche..."
+      ref="input"
+      type="text"
+      v-model="query"
     />
-    <button v-if="query" class="reset" @click="clearQuery()">
+    <button @click="clearQuery()" class="reset" v-if="query">
       <i class="icon-x" />
     </button>
   </div>
@@ -16,6 +16,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
+
 import { useSearch } from "./SearchStore";
 
 const searchStore = useSearch();

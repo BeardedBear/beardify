@@ -1,6 +1,6 @@
 <template>
   <div :class="{ 'wrap-current': index === undefined }">
-    <div class="track" :class="{ current: index === undefined }">
+    <div :class="{ current: index === undefined }" class="track">
       <img :src="coverUrl" class="cover" />
       <div>
         <div>
@@ -17,9 +17,9 @@
 import ArtistList from "../../artist/ArtistList.vue";
 
 defineProps<{
-  track: Spotify.Track;
   coverUrl: string;
   index?: number;
+  track: Spotify.Track;
 }>();
 </script>
 

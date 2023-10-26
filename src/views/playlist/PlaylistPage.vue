@@ -1,21 +1,22 @@
 <template>
-  <div v-if="playlistStore.playlist.name === ''" class="loader"><Loader /></div>
+  <div class="loader" v-if="playlistStore.playlist.name === ''"><Loader /></div>
   <PageScroller v-else>
     <div class="playlist">
       <Header not-fit />
       <template v-if="playlistStore.playlist.owner.display_name === 'Spotify'">
-        <AlbumGallery title="Albums" :icon-name="'album'" :album-list="albums" class="block" />
-        <AlbumGallery title="EP's" :icon-name="'ep'" :album-list="eps" class="block" />
+        <AlbumGallery :album-list="albums" :icon-name="'album'" class="block" title="Albums" />
+        <AlbumGallery :album-list="eps" :icon-name="'ep'" class="block" title="EP's" />
         <div class="heading sticky"><i class="icon-single"></i>Singles</div>
         <Tracks :track-list="singles" />
       </template>
-      <Tracks v-else :track-list="playlistStore.tracks" />
+      <Tracks :track-list="playlistStore.tracks" v-else />
     </div>
   </PageScroller>
 </template>
 
 <script lang="ts" setup>
 import { computed } from "vue";
+
 import AlbumGallery from "../../components/AlbumGallery.vue";
 import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";

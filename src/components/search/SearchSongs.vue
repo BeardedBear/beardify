@@ -2,15 +2,15 @@
   <div>
     <template v-if="searchStore.albums.length">
       <div
-        v-for="(track, index) in searchStore.tracks"
         :key="index"
-        class="track"
         @click="
           () => {
             playSong(track.uri);
             searchStore.reset();
           }
         "
+        class="track"
+        v-for="(track, index) in searchStore.tracks"
       >
         <i class="track__icon icon-music" />
         <div>

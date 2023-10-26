@@ -2,9 +2,6 @@
   <div class="colors">
     <div class="schemes">
       <button
-        v-for="(c, index) in textColors"
-        :key="index"
-        class="schemes__item"
         :class="{
           current: configStore.schemeLabel === `${c.name}`,
           crimson: c.name === 'crimson',
@@ -12,23 +9,26 @@
           apple: c.name === 'apple',
           default: c.name === 'default',
         }"
+        :key="index"
         @click="c.fn()"
+        class="schemes__item"
+        v-for="(c, index) in textColors"
       />
     </div>
 
     <div>
       <div class="radio">
         <button
-          class="radio__item"
           :class="{ current: configStore.themeLabel === 'light' }"
           @click="configStore.switchTheme('light')"
+          class="radio__item"
         >
           <i class="icon-sun" />
         </button>
         <button
-          class="radio__item"
           :class="{ current: configStore.themeLabel === 'dark' }"
           @click="configStore.switchTheme('dark')"
+          class="radio__item"
         >
           <i class="icon-moon" />
         </button>
@@ -43,26 +43,26 @@ import { useConfig } from "./ConfigStore";
 const configStore = useConfig();
 
 interface TextColors {
-  name: string;
   fn: () => void;
+  name: string;
 }
 
 const textColors: TextColors[] = [
   {
-    name: "default",
     fn: (): void => configStore.switchScheme("default"),
+    name: "default",
   },
   {
-    name: "blue",
     fn: (): void => configStore.switchScheme("blue"),
+    name: "blue",
   },
   {
-    name: "crimson",
     fn: (): void => configStore.switchScheme("crimson"),
+    name: "crimson",
   },
   {
-    name: "apple",
     fn: (): void => configStore.switchScheme("apple"),
+    name: "apple",
   },
 ];
 </script>

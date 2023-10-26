@@ -2,31 +2,31 @@
   <div class="controls">
     <div class="btns">
       <button
-        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
-        class="controls__btn"
         :class="{ active: playerStore.currentlyPlaying?.shuffle_state }"
         @click="playerStore.toggleShuffle()"
+        class="controls__btn"
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-shuffle" />
       </button>
       <button
-        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
-        class="controls__btn"
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
         @click="playerStore.toggleRepeat()"
+        class="controls__btn"
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-repeat" />
       </button>
-      <button v-if="playerStore.playerState?.paused" class="controls__btn play" @click="playerStore.play()">
+      <button @click="playerStore.play()" class="controls__btn play" v-if="playerStore.playerState?.paused">
         <i class="icon-play" />
       </button>
-      <button v-else class="controls__btn play" @click="playerStore.pause()">
+      <button @click="playerStore.pause()" class="controls__btn play" v-else>
         <i class="icon-pause" />
       </button>
       <button
-        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
-        class="controls__btn"
         @click="playerStore.next()"
+        class="controls__btn"
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-skip-forward" />
       </button>
@@ -41,6 +41,7 @@
 <script lang="ts" setup>
 import { useIntervalFn } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
+
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
 

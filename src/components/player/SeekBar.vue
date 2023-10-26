@@ -1,13 +1,13 @@
 <template>
   <div :style="{ padding: '0 1.2rem' }">
-    <div ref="progressWrap" class="progress-wrap">
+    <div class="progress-wrap" ref="progressWrap">
       <div class="progress">
         <div
-          v-if="playerStore.playerState"
-          class="bar"
           :style="`width:${(currentTime / playerStore.playerState.duration) * 100}%`"
+          class="bar"
+          v-if="playerStore.playerState"
         />
-        <div class="seek" :style="`width:${perc}%`">
+        <div :style="`width:${perc}%`" class="seek">
           <div class="time">{{ time }}</div>
         </div>
       </div>
@@ -18,11 +18,12 @@
 <script lang="ts" setup>
 import { useIntervalFn, useMouseInElement } from "@vueuse/core";
 import { ref, watch, watchEffect } from "vue";
+
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
 
 const progressWrap = ref<HTMLDivElement>();
-const { elementX, elementWidth } = useMouseInElement(progressWrap);
+const { elementWidth, elementX } = useMouseInElement(progressWrap);
 const perc = ref<number>(0);
 const time = ref<string>("");
 const playerStore = usePlayer();

@@ -1,30 +1,29 @@
 <template>
-  <Dialog with-title :title="`Edit a ${isCollection ? 'collection' : 'playlist'}`">
-    <div v-if="values.name === ''" class="loading"><Loading /></div>
-    <div v-else class="wrap">
+  <Dialog :title="`Edit a ${isCollection ? 'collection' : 'playlist'}`" with-title>
+    <div class="loading" v-if="values.name === ''"><Loading /></div>
+    <div class="wrap" v-else>
       <div>
         <div class="section">
           <label for="name">Nom</label>
-          <input v-if="isEditable" id="name" v-model="values.name" class="input" type="text" />
+          <input class="input" id="name" type="text" v-if="isEditable" v-model="values.name" />
           <div v-else>{{ values.name }}</div>
         </div>
         <div class="section">
           <label for="description">Description</label>
           <textarea
-            v-if="isEditable"
-            id="description"
-            v-model="values.description"
-            placeholder="Add description"
             class="textarea"
+            id="description"
+            placeholder="Add description"
+            v-if="isEditable"
+            v-model="values.description"
           ></textarea>
           <div v-else>{{ values.description }}</div>
         </div>
-        <div v-if="isEditable" class="option-list section">
+        <div class="option-list section" v-if="isEditable">
           <div class="option">
             <label for="public">Visibility</label>
             <div class="buttons">
               <button
-                class="button"
                 :class="{
                   'button--primary': values.public && !values.collaborative,
                 }"
@@ -34,11 +33,11 @@
                     values.public = true;
                   }
                 "
+                class="button"
               >
                 Public
               </button>
               <button
-                class="button"
                 :class="{
                   'button--primary': !values.public && !values.collaborative,
                 }"
@@ -48,11 +47,11 @@
                     values.public = false;
                   }
                 "
+                class="button"
               >
                 Private
               </button>
               <button
-                class="button"
                 :class="{
                   'button--primary': values.collaborative && !values.public,
                 }"
@@ -62,6 +61,7 @@
                     values.public = false;
                   }
                 "
+                class="button"
               >
                 Collaborative
               </button>
@@ -70,11 +70,11 @@
         </div>
       </div>
       <div class="actions">
-        <button class="button button" @click="remove()">Delete {{ isCollection ? "collection" : "playlist" }}</button>
+        <button @click="remove()" class="button button">Delete {{ isCollection ? "collection" : "playlist" }}</button>
         <button
-          v-if="isEditable"
-          class="button button--primary"
           @click="dialogStore.updatePlaylist(values, dialogStore.playlistId, isCollection)"
+          class="button button--primary"
+          v-if="isEditable"
         >
           Confirm
         </button>
@@ -85,6 +85,7 @@
 
 <script lang="ts" setup>
 import { reactive, ref, watchEffect } from "vue";
+
 import { UpdatePlaylistValues } from "../../@types/Dialog";
 import { NotificationType } from "../../@types/Notification";
 import { Playlist } from "../../@types/Playlist";
@@ -99,9 +100,9 @@ import Dialog from "./DialogWrap.vue";
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const values: UpdatePlaylistValues = reactive({
-  name: "",
   collaborative: false,
   description: "",
+  name: "",
   public: false,
 });
 const isCollection = ref<boolean>(false);

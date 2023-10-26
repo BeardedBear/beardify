@@ -21,7 +21,7 @@ export interface CurrentlyPlayingItem {
   uri: string;
 }
 
-export type CurrentlyPlayingType = "track" | "episode" | "ad" | "unknown";
+export type CurrentlyPlayingType = "ad" | "episode" | "track" | "unknown";
 export interface CurrentlyPlaying {
   context: CurrentlyPlayingContext;
   currently_playing_type: CurrentlyPlayingType;
@@ -29,12 +29,12 @@ export interface CurrentlyPlaying {
   is_playing: boolean;
   item: CurrentlyPlayingItem | null;
   progress_ms: number;
-  repeat_state: "off" | "track" | "context";
+  repeat_state: "context" | "off" | "track";
   shuffle_state: boolean;
   timestamp: number;
 }
 
-export type ContextType = "artist" | "playlist" | "album" | "show";
+export type ContextType = "album" | "artist" | "playlist" | "show";
 export interface CurrentlyPlayingContext {
   href: string;
   type: ContextType;

@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div v-if="!noTitle" class="heading sticky">
+    <div class="heading sticky" v-if="!noTitle">
       <i :class="`icon-${iconName}`"></i>
       {{ title }}
     </div>
     <div class="albums">
-      <div v-for="(album, index) in albumList" :key="index">
+      <div :key="index" v-for="(album, index) in albumList">
         <Album :album="album" can-save with-artists />
       </div>
     </div>
@@ -18,9 +18,9 @@ import Album from "./album/AlbumIndex.vue";
 
 defineProps<{
   albumList: AlbumSimplified[];
-  title?: string;
   iconName?: string;
   noTitle?: boolean;
+  title?: string;
 }>();
 </script>
 

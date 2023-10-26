@@ -1,16 +1,16 @@
 <template>
   <div class="options">
     <ArtistLinks :artist-name="artistStore.artist.name" />
-    <ShareContent :spotify-url="artistStore.artist.external_urls.spotify" :beardify-url="$route.fullPath" />
+    <ShareContent :beardify-url="$route.fullPath" :spotify-url="artistStore.artist.external_urls.spotify" />
     <div
-      v-if="artistStore.followStatus"
-      class="follow button button--primary"
       :title="artistStore.artist.followers.total + ' followers'"
       @click="switchFollow(artistStore.artist.id)"
+      class="follow button button--primary"
+      v-if="artistStore.followStatus"
     >
       Followed
     </div>
-    <div v-else class="follow button" @click="switchFollow(artistStore.artist.id)">Follow</div>
+    <div @click="switchFollow(artistStore.artist.id)" class="follow button" v-else>Follow</div>
   </div>
 </template>
 

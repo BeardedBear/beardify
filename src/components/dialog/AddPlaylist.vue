@@ -1,14 +1,15 @@
 <template>
-  <Dialog with-title title="Create a playlist">
+  <Dialog title="Create a playlist" with-title>
     <div class="wrap">
-      <input v-model="playlistName" class="input" type="text" placeholder="Playlist's name" />
-      <button class="button button--primary" @click="create()">Create</button>
+      <input class="input" placeholder="Playlist's name" type="text" v-model="playlistName" />
+      <button @click="create()" class="button button--primary">Create</button>
     </div>
   </Dialog>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
+
 import { NotificationType } from "../../@types/Notification";
 import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";

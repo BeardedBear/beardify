@@ -1,23 +1,12 @@
 import { defineStore } from "pinia";
+
 import { Search, SearchFromAPI } from "../../@types/Search";
 import { instance } from "../../api";
 import { isSingle } from "../../helpers/useCleanAlbums";
 import { useDialog } from "../dialog/DialogStore";
 
 export const useSearch = defineStore("search", {
-  state: (): Search => ({
-    query: "",
-    artists: [],
-    albums: [],
-    tracks: [],
-  }),
-
   actions: {
-    updateQuery(query: string) {
-      this.query = query;
-      this.query.length && this.search();
-    },
-
     clear() {
       this.query = "";
       this.artists = [];
@@ -39,5 +28,17 @@ export const useSearch = defineStore("search", {
           this.tracks = e.data.tracks.items.slice(0, 6);
         });
     },
+
+    updateQuery(query: string) {
+      this.query = query;
+      this.query.length && this.search();
+    },
   },
+
+  state: (): Search => ({
+    albums: [],
+    artists: [],
+    query: "",
+    tracks: [],
+  }),
 });

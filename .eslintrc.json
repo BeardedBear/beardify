@@ -9,12 +9,13 @@
     "plugin:vue/vue3-recommended",
     "eslint:recommended",
     "@vue/typescript/recommended",
-    "@vue/prettier",
-    "@vue/eslint-config-prettier"
+    "@vue/eslint-config-prettier",
+    "plugin:perfectionist/recommended-alphabetical"
   ],
   "parserOptions": {
     "ecmaVersion": 2021
   },
+  "plugins": ["perfectionist"],
   "rules": {
     "no-console": "warn",
     "no-debugger": "warn",
@@ -28,6 +29,7 @@
     "@typescript-eslint/no-unused-vars": "warn",
     "vue/script-setup-uses-vars": "warn",
     "vue/no-undef-components": "error",
-    "vue/no-unused-properties": "warn"
+    "vue/no-unused-properties": "warn",
+    "vue/attributes-order": "off"
   }
 }

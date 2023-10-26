@@ -1,19 +1,20 @@
 <template>
-  <div class="links" :class="{ floating }">
-    <a class="item" @click.stop.prevent="frameStore.open(link.wikipedia, 'Wikipedia')"><i class="icon-wikipedia" /></a>
-    <a class="item" @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')"><i class="icon-sputnik" /></a>
-    <a class="item" @click.stop.prevent="frameStore.open(link.google, 'Google')"><i class="icon-google" /></a>
+  <div :class="{ floating }" class="links">
+    <a @click.stop.prevent="frameStore.open(link.wikipedia, 'Wikipedia')" class="item"><i class="icon-wikipedia" /></a>
+    <a @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')" class="item"><i class="icon-sputnik" /></a>
+    <a @click.stop.prevent="frameStore.open(link.google, 'Google')" class="item"><i class="icon-google" /></a>
     <span class="separator">|</span>
-    <a class="item" @click.stop.prevent="openLink(link.lastfm)"><i class="icon-lastfm" /></a>
-    <a class="item" @click.stop.prevent="openLink(link.discogs)"><i class="icon-discogs" /></a>
-    <a class="item" @click.stop.prevent="openLink(link.rym)"><i class="icon-rym" /></a>
-    <a class="item" @click.stop.prevent="openLink(link.youtube)"><i class="icon-youtube" /></a>
+    <a @click.stop.prevent="openLink(link.lastfm)" class="item"><i class="icon-lastfm" /></a>
+    <a @click.stop.prevent="openLink(link.discogs)" class="item"><i class="icon-discogs" /></a>
+    <a @click.stop.prevent="openLink(link.rym)" class="item"><i class="icon-rym" /></a>
+    <a @click.stop.prevent="openLink(link.youtube)" class="item"><i class="icon-youtube" /></a>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { normalize } from "normalize-diacritics";
 import { onMounted, onUpdated, ref } from "vue";
+
 import { useFrame } from "../frame/FrameStore";
 
 const props = defineProps<{
@@ -34,12 +35,12 @@ async function updateLinks(): Promise<void> {
     .replace(/[\u0300-\u036f]/g, "")
     .replaceAll("&", "and");
   link.value = {
-    wikipedia: `https://en.wikipedia.org/wiki/${artistNameNormalized.value}`,
-    sputnik: `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${artistNameNormalized.value}&amp;x=0&amp;y=0`,
+    discogs: `https://www.discogs.com/artist/${artistNameNormalized.value}`,
     google: `https://www.google.com/search?q=${artistNameNormalized.value}&igu=1`,
     lastfm: `https://www.last.fm/music/${artistNameNormalized.value}`,
-    discogs: `https://www.discogs.com/artist/${artistNameNormalized.value}`,
     rym: `https://rateyourmusic.com/search?searchtype=a&searchterm=${artistNameNormalized.value}`,
+    sputnik: `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${artistNameNormalized.value}&amp;x=0&amp;y=0`,
+    wikipedia: `https://en.wikipedia.org/wiki/${artistNameNormalized.value}`,
     youtube: `https://www.youtube.com/results?search_query=${artistNameNormalized.value}`,
   };
 }

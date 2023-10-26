@@ -1,44 +1,44 @@
 <template>
-  <div v-if="!sidebarStore.playlists.length && !sidebarStore.collections.length" class="sidebar loading">
+  <div class="sidebar loading" v-if="!sidebarStore.playlists.length && !sidebarStore.collections.length">
     <Loader />
   </div>
-  <div v-else class="sidebar" :class="{ 'search-opened': collectionSearchOpened || playlistSearchOpened }">
+  <div :class="{ 'search-opened': collectionSearchOpened || playlistSearchOpened }" class="sidebar" v-else>
     <Topbar />
     <Menu />
     <div class="sidebar__item">
-      <div v-if="!collectionSearchOpened" class="heading title">
+      <div class="heading title" v-if="!collectionSearchOpened">
         <div class="title-name">Collections</div>
         <div class="options">
-          <button class="icon" @click="sidebarStore.refreshPlaylists()">
+          <button @click="sidebarStore.refreshPlaylists()" class="icon">
             <i class="icon-refresh"></i>
           </button>
-          <button class="icon" @click="() => (collectionSearchOpened = true)">
+          <button @click="() => (collectionSearchOpened = true)" class="icon">
             <i class="icon-search"></i>
           </button>
-          <button class="icon add" @click="dialogStore.open({ type: 'createCollection' })">
+          <button @click="dialogStore.open({ type: 'createCollection' })" class="icon add">
             <i class="icon-plus"></i>
           </button>
         </div>
       </div>
-      <div v-else class="heading title">
+      <div class="heading title" v-else>
         <input
-          ref="collectionSearchInput"
-          v-model="collectionSearchQuery"
           class="search"
-          type="text"
           placeholder="Search collection"
+          ref="collectionSearchInput"
+          type="text"
+          v-model="collectionSearchQuery"
         />
       </div>
-      <div v-if="!sidebarStore.collections.length" class="empty">
+      <div class="empty" v-if="!sidebarStore.collections.length">
         Oh well, you don't have a collection ! To create one, you just have to create one with + button or rename a
         classic playlist but start with "#Collection". Magical, isn't it?
       </div>
-      <div v-for="(playlist, index) in sidebarStore.collections" v-else :key="index">
+      <div :key="index" v-else v-for="(playlist, index) in sidebarStore.collections">
         <router-link
-          v-if="playlist.id && playlist.name.toLocaleLowerCase().includes(collectionSearchQuery.toLocaleLowerCase())"
-          class="playlist-item"
-          :to="`/collection/${playlist.id}`"
           :class="{ active: $route.params.id === playlist.id }"
+          :to="`/collection/${playlist.id}`"
+          class="playlist-item"
+          v-if="playlist.id && playlist.name.toLocaleLowerCase().includes(collectionSearchQuery.toLocaleLowerCase())"
         >
           <PlaylistIcon :playlist="playlist" />
           <div class="name">
@@ -46,13 +46,13 @@
           </div>
           <VisibilityIcon :playlist="playlist" />
           <button
-            class="edit"
             @click.prevent="
               dialogStore.open({
                 type: 'editPlaylist',
                 playlistId: playlist.id,
               })
             "
+            class="edit"
           >
             <i class="icon-more-vertical"></i>
           </button>
@@ -60,51 +60,51 @@
       </div>
     </div>
     <div class="sidebar__item">
-      <div v-if="!playlistSearchOpened" class="heading title">
+      <div class="heading title" v-if="!playlistSearchOpened">
         <div class="title-name">Playlists</div>
         <div class="options">
-          <button class="icon" @click="sidebarStore.refreshPlaylists()">
+          <button @click="sidebarStore.refreshPlaylists()" class="icon">
             <i class="icon-refresh"></i>
           </button>
-          <button class="icon" @click="() => (playlistSearchOpened = true)">
+          <button @click="() => (playlistSearchOpened = true)" class="icon">
             <i class="icon-search"></i>
           </button>
-          <button class="icon add" @click="dialogStore.open({ type: 'createPlaylist' })">
+          <button @click="dialogStore.open({ type: 'createPlaylist' })" class="icon add">
             <i class="icon-plus"></i>
           </button>
         </div>
       </div>
-      <div v-else class="heading title">
+      <div class="heading title" v-else>
         <input
-          ref="playlistSearchInput"
-          v-model="playlistSearchQuery"
           class="search"
-          type="text"
           placeholder="Search playlist"
+          ref="playlistSearchInput"
+          type="text"
+          v-model="playlistSearchQuery"
         />
       </div>
-      <div v-for="(playlist, index) in sidebarStore.playlists" :key="index">
+      <div :key="index" v-for="(playlist, index) in sidebarStore.playlists">
         <router-link
+          :class="{ active: $route.params.id === playlist.id }"
+          :to="`/playlist/${playlist.id}`"
+          class="playlist-item"
           v-if="
             playlist.id &&
             playlist.name !== '' &&
             playlist.name.toLocaleLowerCase().includes(playlistSearchQuery.toLocaleLowerCase())
           "
-          class="playlist-item"
-          :to="`/playlist/${playlist.id}`"
-          :class="{ active: $route.params.id === playlist.id }"
         >
           <PlaylistIcon :playlist="playlist" />
           <div class="name">{{ playlist.name }}</div>
           <VisibilityIcon :playlist="playlist" />
           <button
-            class="edit"
             @click.prevent="
               dialogStore.open({
                 type: 'editPlaylist',
                 playlistId: playlist.id,
               })
             "
+            class="edit"
           >
             <i class="icon-more-vertical"></i>
           </button>
@@ -118,6 +118,7 @@
 import { onClickOutside } from "@vueuse/core";
 import { ref, Ref, watch } from "vue";
 import { RouterLink } from "vue-router";
+
 import { useAuth } from "../../views/auth/AuthStore";
 import { useDialog } from "../dialog/DialogStore";
 import Loader from "../LoadingDots.vue";

@@ -11,9 +11,9 @@ export interface Track {
   explicit: boolean;
   href: string;
   id: string;
-  items: TrackSimplified[];
   is_local: boolean;
   is_playable: boolean;
+  items: TrackSimplified[];
   name: string;
   popularity: number;
   preview_url: string;

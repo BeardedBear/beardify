@@ -5,9 +5,9 @@ interface Window {
 
 declare namespace Spotify {
   interface Album {
-    uri: string;
-    name: string;
     images: Image[];
+    name: string;
+    uri: string;
   }
 
   interface Artist {
@@ -22,14 +22,14 @@ declare namespace Spotify {
   type ErrorTypes = "account_error" | "authentication_error" | "initialization_error" | "playback_error";
 
   interface Image {
-    height?: number | null;
+    height?: null | number;
     url: string;
-    width?: number | null;
+    width?: null | number;
   }
 
   interface PlaybackContext {
     metadata: unknown;
-    uri: string | null;
+    uri: null | string;
   }
 
   interface PlaybackDisallows {
@@ -68,21 +68,21 @@ declare namespace Spotify {
      * 2: FULL_REPEAT
      */
     repeat_mode: 0 | 1 | 2;
+    restrictions: PlaybackRestrictions;
     shuffle: boolean;
     timestamp: number;
-    restrictions: PlaybackRestrictions;
     track_window: PlaybackTrackWindow;
   }
 
   interface PlaybackTrackWindow {
     current_track: Track;
-    previous_tracks: Track[];
     next_tracks: Track[];
+    previous_tracks: Track[];
   }
 
   interface PlayerInit {
-    name: string;
     getOAuthToken(cb: (token: string) => void): void;
+    name: string;
     volume?: number;
   }
 
@@ -90,30 +90,30 @@ declare namespace Spotify {
   type PlaybackInstanceListener = (inst: WebPlaybackInstance) => void;
   type PlaybackStateListener = (s: PlaybackState) => void;
 
-  type AddListenerFn = ((event: "ready" | "not_ready", cb: PlaybackInstanceListener) => void) &
+  type AddListenerFn = ((event: "not_ready" | "ready", cb: PlaybackInstanceListener) => void) &
     ((event: "player_state_changed", cb: PlaybackStateListener) => void) &
     ((event: ErrorTypes, cb: ErrorListener) => void);
 
   class Player {
     readonly _options: PlayerInit & { id: string };
-    constructor(options: PlayerInit);
+    addListener: AddListenerFn;
 
+    on: AddListenerFn;
+    constructor(options: PlayerInit);
     connect(): Promise<boolean>;
     disconnect(): void;
-    getCurrentState(): Promise<PlaybackState | null>;
+    getCurrentState(): Promise<null | PlaybackState>;
+
     getVolume(): Promise<number>;
     nextTrack(): Promise<void>;
 
-    addListener: AddListenerFn;
-    on: AddListenerFn;
+    pause(): Promise<void>;
 
+    previousTrack(): Promise<void>;
     removeListener(
-      event: "ready" | "not_ready" | "player_state_changed" | ErrorTypes,
+      event: "not_ready" | "player_state_changed" | "ready" | ErrorTypes,
       cb?: ErrorListener | PlaybackInstanceListener | PlaybackStateListener,
     ): void;
-
-    pause(): Promise<void>;
-    previousTrack(): Promise<void>;
     resume(): Promise<void>;
     seek(pos_ms: number): Promise<void>;
     setName(name: string): Promise<void>;
@@ -125,12 +125,12 @@ declare namespace Spotify {
     album: Album;
     artists: Artist[];
     duration_ms: number;
-    id: string | null;
+    id: null | string;
     is_playable: boolean;
-    type: "track" | "episode" | "ad";
+    is_playable: boolean;
     media_type: "audio" | "video";
     name: string;
-    is_playable: boolean;
+    type: "ad" | "episode" | "track";
     uid: string;
     uri: string;
   }

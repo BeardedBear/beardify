@@ -4,4 +4,4 @@ export interface Image {
   width: number;
 }
 
-export type ImageSize = "small" | "medium" | "large";
+export type ImageSize = "large" | "medium" | "small";

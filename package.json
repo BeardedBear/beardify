@@ -7,7 +7,7 @@
     "serve": "vite",
     "lint": "vue-tsc --noEmit && eslint src/**/*.{vue,ts} && prettier --c ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss}",
     "build": "yarn lint && vite build",
-    "fix": "prettier --write ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss} --fix",
+    "fix": "prettier --write ./src/**/*.{ts,vue,json} && eslint src/**/*.{vue,ts} --fix && stylelint ./src/**/*.{vue,scss} --fix",
     "preview": "yarn build && yarn vite preview",
     "lint:commit": "vue-tsc --noEmit",
     "pre-commit": "yarn lint:commit"
@@ -35,6 +35,7 @@
     "@vue/eslint-config-typescript": "^12.0.0",
     "@vueuse/core": "^10.5.0",
     "eslint": "^8.51.0",
+    "eslint-plugin-perfectionist": "^2.2.0",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-vue": "^9.17.0",
     "normalize.css": "^8.0.1",

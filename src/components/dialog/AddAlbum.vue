@@ -1,13 +1,13 @@
 <template>
-  <Dialog with-title title="Add an album to a collection">
+  <Dialog title="Add an album to a collection" with-title>
     <div class="content">
       <div
+        :key="index"
+        @click="add(dialogStore.albumId ? dialogStore.albumId : '', playlist.id)"
+        class="collection"
         v-for="(playlist, index) in sidebarStore.collections.filter(
           (playlist) => playlist.collaborative || playlist.owner.id === authStore.me?.id,
         )"
-        :key="index"
-        class="collection"
-        @click="add(dialogStore.albumId ? dialogStore.albumId : '', playlist.id)"
       >
         <div class="album">
           <div>

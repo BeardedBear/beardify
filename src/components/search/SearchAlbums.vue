@@ -2,14 +2,14 @@
   <div class="album-list">
     <template v-if="searchStore.albums.length">
       <Album
-        v-for="(album, index) in searchStore.albums"
-        :key="index"
-        class="album"
         :album="album"
+        :exact-search="exactAlbumSearched ? album.name.toLowerCase().includes(exactAlbumSearched) : false"
+        :key="index"
+        @click="searchStore.reset()"
+        class="album"
+        v-for="(album, index) in searchStore.albums"
         with-artists
         without-release-date
-        :exact-search="exactAlbumSearched ? album.name.toLowerCase().includes(exactAlbumSearched) : false"
-        @click="searchStore.reset()"
       />
     </template>
     <template v-else>No album found</template>
@@ -18,6 +18,7 @@
 
 <script lang="ts" setup>
 import { computed, ComputedRef } from "vue";
+
 import Album from "../album/AlbumIndex.vue";
 import { useSearch } from "./SearchStore";
 

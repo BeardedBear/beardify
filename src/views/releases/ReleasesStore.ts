@@ -1,28 +1,16 @@
 import axios from "axios";
 import { defineStore } from "pinia";
+
 import { MenuItem, Release, ReleasesCheck, ReleasesPage } from "../../@types/Releases";
 import { useCheckLiveAlbum, useCheckReissueAlbum } from "../../helpers/useCleanAlbums";
 import { useMergeReleaseSlugs } from "../../helpers/useMergeReleaseSlugs";
 import { useAuth } from "../auth/AuthStore";
 
 export const useReleases = defineStore("releases", {
-  state: (): ReleasesPage => ({
-    menu: [],
-    releases: [],
-    monthList: [],
-    activeSlug: null,
-    checks: null,
-    uid: null,
-  }),
-
   actions: {
     async clean() {
       this.menu = [];
       this.releases = [];
-    },
-
-    setActiveSlug(slug: string | null) {
-      this.activeSlug = this.activeSlug === slug ? null : slug;
     },
 
     async createReleasesCheckEntry() {
@@ -35,24 +23,14 @@ export const useReleases = defineStore("releases", {
       if (!data.data.length) {
         axios
           .post("https://2fpx4328.directus.app/items/releases_check", {
-            user: useAuth().me?.id,
             checks: [],
+            user: useAuth().me?.id,
           })
           .then(() => (this.checks = []));
       } else {
         this.checks = data.data[0].checks;
         this.uid = data.data[0].id;
       }
-    },
-
-    toggleRelease(releaseId: string) {
-      const addChecks = this.checks && this.checks?.concat({ createdAt: Date.now(), id: releaseId });
-      const delChecks = this.checks && this.checks?.filter((r) => r.id !== releaseId);
-      const allreadyExist = this.checks?.some((r) => r.id === releaseId);
-      const checks = !allreadyExist ? addChecks : delChecks;
-
-      axios.patch(`https://2fpx4328.directus.app/items/releases_check/${this.uid}`, { checks });
-      this.checks = checks;
     },
 
     async getReleases() {
@@ -100,5 +78,28 @@ export const useReleases = defineStore("releases", {
       });
       this.releases = removedReissues.sort((a, b) => b.releaseDateRaw - a.releaseDateRaw);
     },
+
+    setActiveSlug(slug: null | string) {
+      this.activeSlug = this.activeSlug === slug ? null : slug;
+    },
+
+    toggleRelease(releaseId: string) {
+      const addChecks = this.checks && this.checks?.concat({ createdAt: Date.now(), id: releaseId });
+      const delChecks = this.checks && this.checks?.filter((r) => r.id !== releaseId);
+      const allreadyExist = this.checks?.some((r) => r.id === releaseId);
+      const checks = !allreadyExist ? addChecks : delChecks;
+
+      axios.patch(`https://2fpx4328.directus.app/items/releases_check/${this.uid}`, { checks });
+      this.checks = checks;
+    },
   },
+
+  state: (): ReleasesPage => ({
+    activeSlug: null,
+    checks: null,
+    menu: [],
+    monthList: [],
+    releases: [],
+    uid: null,
+  }),
 });

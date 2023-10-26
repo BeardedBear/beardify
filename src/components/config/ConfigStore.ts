@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+
 import {
   Config,
   schemeApple,
@@ -13,20 +14,17 @@ import {
 } from "../../@types/Config";
 
 export const useConfig = defineStore("config", {
-  state: (): Config => ({
-    bye: false,
-    show: false,
-    theme: themeDark,
-    themeLabel: "dark",
-    scheme: schemeDefault,
-    schemeLabel: "default",
-  }),
-
   actions: {
-    switchTheme(themeLabel: ThemeLabel) {
-      this.themeLabel = themeLabel;
-      this.theme = themeLabel === "light" ? themeLight : themeDark;
-      this.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
+    close() {
+      this.bye = true;
+      setTimeout(() => {
+        this.show = false;
+        this.bye = false;
+      }, 200);
+    },
+
+    open() {
+      this.show = true;
     },
 
     switchScheme(schemeLabel: SchemeLabel) {
@@ -47,19 +45,22 @@ export const useConfig = defineStore("config", {
       this.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
     },
 
-    open() {
-      this.show = true;
-    },
-
-    close() {
-      this.bye = true;
-      setTimeout(() => {
-        this.show = false;
-        this.bye = false;
-      }, 200);
+    switchTheme(themeLabel: ThemeLabel) {
+      this.themeLabel = themeLabel;
+      this.theme = themeLabel === "light" ? themeLight : themeDark;
+      this.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
     },
   },
+
   persist: {
     key: "beardify-config",
   },
+  state: (): Config => ({
+    bye: false,
+    scheme: schemeDefault,
+    schemeLabel: "default",
+    show: false,
+    theme: themeDark,
+    themeLabel: "dark",
+  }),
 });

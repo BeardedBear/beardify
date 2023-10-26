@@ -1,14 +1,14 @@
 <template>
   <div v-if="artistStore.relatedArtists.artists.length">
-    <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">Similar artists</div>
+    <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">Similar artists</div>
     <div class="list">
       <router-link
-        v-for="(artist, index) in artistStore.relatedArtists.artists"
         :key="index"
-        class="item"
         :to="`/artist/${artist.id}`"
+        class="item"
+        v-for="(artist, index) in artistStore.relatedArtists.artists"
       >
-        <Cover size="small" :images="artist.images" class="image" />
+        <Cover :images="artist.images" class="image" size="small" />
         <div class="name">
           {{ artist.name }}
         </div>
@@ -19,6 +19,7 @@
 
 <script lang="ts" setup>
 import { RouterLink } from "vue-router";
+
 import { useArtist } from "../../views/artist/ArtistStore";
 import Cover from "../AlbumCover.vue";
 

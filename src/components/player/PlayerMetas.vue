@@ -1,10 +1,10 @@
 <template>
   <!-- <pre>{{ currentTrack }}</pre> -->
   <!-- {{ currentTrack.album.images }} -->
-  <div v-if="currentTrack" class="what">
+  <div class="what" v-if="currentTrack">
     <div class="cover-wrap">
-      <img v-if="currentTrack.album.images.length" :src="currentTrack.album.images[1].url || ''" class="cover" />
-      <div class="hover" @click="dialogStore.open({ type: 'addSong', track: currentTrack })">
+      <img :src="currentTrack.album.images[1].url || ''" class="cover" v-if="currentTrack.album.images.length" />
+      <div @click="dialogStore.open({ type: 'addSong', track: currentTrack })" class="hover">
         <i class="add icon-plus"></i>
       </div>
     </div>
@@ -25,6 +25,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
+
 import { transformUriToid } from "../../helpers/helper";
 import ArtistList from "../artist/ArtistList.vue";
 import { useDialog } from "../dialog/DialogStore";

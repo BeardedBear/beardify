@@ -1,12 +1,12 @@
 <template>
-  <div v-if="!podcastsStore.podcast" class="loader"><Loader /></div>
-  <div v-else class="podcast">
+  <div class="loader" v-if="!podcastsStore.podcast"><Loader /></div>
+  <div class="podcast" v-else>
     <PageFit>
       <div class="title">
         <div class="name">{{ podcastsStore.podcast?.name }}</div>
       </div>
       <div>
-        <div v-for="(episode, index) in podcastsStore.episodes" :key="index">
+        <div :key="index" v-for="(episode, index) in podcastsStore.episodes">
           <PodcastEpisode :episode="episode" />
         </div>
       </div>

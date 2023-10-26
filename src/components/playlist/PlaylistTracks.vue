@@ -1,7 +1,6 @@
 <template>
-  <template v-for="(track, index) in trackList" :key="track">
+  <template :key="track" v-for="(track, index) in trackList">
     <div
-      class="track"
       :class="{
         active: isCurrentTrack(track.track, currentTrack),
         deletable: playlist.owner.id === me?.id || playlist.collaborative,
@@ -12,12 +11,13 @@
           trackList.map((e) => e.track),
         )
       "
+      class="track"
     >
       <div class="track-icon">
         <i class="track-icon-item music icon-note" />
         <i
-          class="track-icon-item save icon-plus"
           @click.prevent.stop="open({ type: 'addSong', track: track.track })"
+          class="track-icon-item save icon-plus"
         ></i>
       </div>
       <div>
@@ -25,27 +25,27 @@
         <ArtistList :artist-list="track.track.artists" feat />
       </div>
       <div class="album">
-        <div v-if="isAlbum(track.track.album)" class="adder">
+        <div class="adder" v-if="isAlbum(track.track.album)">
           <i class="adder-icon icon-album" />
           <i
-            class="adder-button icon-plus"
             @click.prevent.stop="open({ type: 'addalbum', albumId: track.track.album.id })"
+            class="adder-button icon-plus"
           />
         </div>
         <i
-          v-else
           :class="{
             'icon-ep': isEP(track.track.album),
             'icon-single': isSingle(track.track.album),
             'icon-compilation': isCompilation(track.track.album),
           }"
+          v-else
         />
         <AlbumLink :album="track.track.album" no-icon />
       </div>
       <div class="date">{{ date(track.added_at) }}</div>
       <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
       <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
-        <button class="button button--nude delete" @click.prevent.stop="deleteSong(track.track.uri)">
+        <button @click.prevent.stop="deleteSong(track.track.uri)" class="button button--nude delete">
           <i class="icon-trash-2"></i>
         </button>
       </div>
@@ -55,6 +55,7 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
+
 import { NotificationType } from "../../@types/Notification";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { instance } from "../../api";

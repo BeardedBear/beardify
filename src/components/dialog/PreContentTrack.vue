@@ -10,8 +10,8 @@
     <div class="options">
       <button @click="addTrackToQueue(track.uri)">Add</button>
       <a
-        class="link"
         @click="openLink(`https://www.youtube.com/results?search_query=${track?.artists[0].name}+${track?.name}`)"
+        class="link"
       >
         <i class="icon-youtube" />
       </a>
@@ -22,13 +22,13 @@
 
 <script lang="ts" setup>
 import { Track, TrackSimplified } from "../../@types/Track";
-import ShareContent from "../ShareContent.vue";
 import { usePlayer } from "../player/PlayerStore";
+import ShareContent from "../ShareContent.vue";
 
 const { addTrackToQueue } = usePlayer();
 
 defineProps<{
-  track: Track | TrackSimplified | Spotify.Track;
+  track: Spotify.Track | Track | TrackSimplified;
 }>();
 
 function openLink(url: string): void {

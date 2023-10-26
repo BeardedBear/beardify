@@ -4,14 +4,14 @@ import { Paging } from "./Paging";
 import { TrackSimplified } from "./Track";
 
 export interface Search {
-  query: string;
-  artists: Artist[];
   albums: Album[];
+  artists: Artist[];
+  query: string;
   tracks: TrackSimplified[];
 }
 
 export interface SearchFromAPI {
-  artists: Paging<Artist>;
   albums: Paging<Album>;
+  artists: Paging<Artist>;
   tracks: Paging<TrackSimplified>;
 }

@@ -2,23 +2,23 @@
   <div>
     <div v-if="!isPlaylistOwner(playlistStore.playlist.owner)">
       <button
-        v-if="!playlistStore.followed"
+        @click="playlistStore.followPlaylist(playlistStore.playlist.id)"
         class="button button--nude"
         title="Follow the playlist"
-        @click="playlistStore.followPlaylist(playlistStore.playlist.id)"
+        v-if="!playlistStore.followed"
       >
         <i class="icon-follow"></i>
       </button>
       <button
-        v-else
+        @click="sidebarStore.removePlaylist(playlistStore.playlist.id)"
         class="button button--nude followed"
         title="Unfollow the playlist"
-        @click="sidebarStore.removePlaylist(playlistStore.playlist.id)"
+        v-else
       >
         <i class="icon-followed"></i>
       </button>
     </div>
-    <button v-else class="button button--nude" @click="edit(playlistStore.playlist.id)">
+    <button @click="edit(playlistStore.playlist.id)" class="button button--nude" v-else>
       <i class="icon-more-vertical"></i>
     </button>
   </div>
@@ -35,7 +35,7 @@ const playlistStore = usePlaylist();
 const sidebarStore = useSidebar();
 
 function edit(playlistId: string): void {
-  dialogStore.open({ type: "editPlaylist", playlistId });
+  dialogStore.open({ playlistId, type: "editPlaylist" });
 }
 </script>
 

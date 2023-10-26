@@ -1,15 +1,15 @@
 <template>
-  <div v-if="!homeStore.recommendedAlbums.length" class="loader">
+  <div class="loader" v-if="!homeStore.recommendedAlbums.length">
     <Loader />
   </div>
-  <div v-else class="home">
+  <div class="home" v-else>
     <div class="home__content">
       <PageFit>
         <div class="title">
           <div class="name">Recommended albums</div>
-          <button class="button" @click="getData()"><i class="icon-refresh"></i> Refresh</button>
+          <button @click="getData()" class="button"><i class="icon-refresh"></i> Refresh</button>
         </div>
-        <AlbumGallery no-title :album-list="homeStore.recommendedAlbums" />
+        <AlbumGallery :album-list="homeStore.recommendedAlbums" no-title />
       </PageFit>
     </div>
   </div>
@@ -17,6 +17,7 @@
 
 <script lang="ts" setup>
 import { watch } from "vue";
+
 import AlbumGallery from "../../components/AlbumGallery.vue";
 import Loader from "../../components/LoadingDots.vue";
 import PageFit from "../../components/PageFit.vue";

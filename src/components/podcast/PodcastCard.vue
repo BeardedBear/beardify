@@ -1,12 +1,13 @@
 <template>
   <router-link :to="`/podcasts/${id}`" class="podcast">
-    <img class="cover" :src="covers[1].url" />
-    <div v-if="name" class="name">{{ name }}</div>
+    <img :src="covers[1].url" class="cover" />
+    <div class="name" v-if="name">{{ name }}</div>
   </router-link>
 </template>
 
 <script lang="ts" setup>
 import { RouterLink } from "vue-router";
+
 import { Image } from "../../@types/Image";
 
 defineProps<{

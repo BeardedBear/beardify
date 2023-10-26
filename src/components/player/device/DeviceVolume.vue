@@ -1,7 +1,7 @@
 <template>
-  <div ref="refVolume" class="volume" @click="playerStore.setVolume(volume)">
-    <div class="cursor" :style="{ width: playerStore.devices.activeDevice.volume_percent + '%' }" />
-    <div class="hover" :style="{ width: volume + '%' }">
+  <div @click="playerStore.setVolume(volume)" class="volume" ref="refVolume">
+    <div :style="{ width: playerStore.devices.activeDevice.volume_percent + '%' }" class="cursor" />
+    <div :style="{ width: volume + '%' }" class="hover">
       <div class="perc">{{ volume + "%" }}</div>
     </div>
   </div>
@@ -9,6 +9,7 @@
 
 <script lang="ts" setup>
 import { ref, watchEffect } from "vue";
+
 import { usePlayer } from "../PlayerStore";
 
 const refVolume = ref<HTMLDivElement | null>(null);

@@ -7,9 +7,9 @@ export interface AlbumPage {
   album: Album;
 }
 
-export type AlbumType = "album" | "single" | "compilation" | "ALBUM" | "SINGLE";
+export type AlbumType = "album" | "ALBUM" | "compilation" | "single" | "SINGLE";
 
-export type ReleaseDatePrecision = "year" | "month" | "day";
+export type ReleaseDatePrecision = "day" | "month" | "year";
 
 export interface Copyrights {
   text: string;
@@ -35,7 +35,7 @@ export interface Album {
   type: string;
   uri: string;
 }
-export type AlbumGroup = "album" | "single" | "compilation" | "appears_on";
+export type AlbumGroup = "album" | "appears_on" | "compilation" | "single";
 export interface AlbumSimplified {
   album_group: AlbumGroup;
   album_type: AlbumType;

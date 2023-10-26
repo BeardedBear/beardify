@@ -1,19 +1,19 @@
 <template>
   <div class="wrap">
-    <div v-if="playerStore.queueOpened" ref="popup" class="content">
+    <div class="content" ref="popup" v-if="playerStore.queueOpened">
       <div class="head"><div class="heading">Queue</div></div>
       <div class="body">
         <div class="queue-list">
           <div class="section-title">Now</div>
-          <TrackHistory v-if="currentTrack" :track="currentTrack" :cover-url="currentTrack.album.images[1].url" />
+          <TrackHistory :cover-url="currentTrack.album.images[1].url" :track="currentTrack" v-if="currentTrack" />
           <div class="section-title">Next</div>
-          <div v-for="(track, key) in playerStore.queue" :key="key">
-            <TrackHistory :track="track" :index="key" :cover-url="track.album.images[2].url" />
+          <div :key="key" v-for="(track, key) in playerStore.queue">
+            <TrackHistory :cover-url="track.album.images[2].url" :index="key" :track="track" />
           </div>
         </div>
       </div>
     </div>
-    <button class="button button--small" @click="playerStore.openQueue()">
+    <button @click="playerStore.openQueue()" class="button button--small">
       <i class="icon-queue"></i>
     </button>
   </div>
@@ -22,8 +22,9 @@
 <script lang="ts" setup>
 import { onClickOutside } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
-import { usePlayer } from "../PlayerStore";
+
 import TrackHistory from "../history/TrackHistory.vue";
+import { usePlayer } from "../PlayerStore";
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);

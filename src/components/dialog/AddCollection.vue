@@ -1,14 +1,15 @@
 <template>
-  <Dialog with-title title="Create a collection">
+  <Dialog title="Create a collection" with-title>
     <div class="wrap">
-      <input v-model="collectionName" class="input" type="text" placeholder="Collection's name" />
-      <button class="button button--primary" @click="create()">Create</button>
+      <input class="input" placeholder="Collection's name" type="text" v-model="collectionName" />
+      <button @click="create()" class="button button--primary">Create</button>
     </div>
   </Dialog>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
+
 import { NotificationType } from "../../@types/Notification";
 import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";

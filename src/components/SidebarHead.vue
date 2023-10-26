@@ -2,20 +2,20 @@
   <div class="topbar">
     <router-link to="/"><img class="logo" src="/img/logo.svg" /></router-link>
     <div class="navigation">
-      <button class="button" @click="router.go(-1)">
+      <button @click="router.go(-1)" class="button">
         <i class="icon-arrow-left" />
       </button>
-      <button class="button" @click="router.go(1)">
+      <button @click="router.go(1)" class="button">
         <i class="icon-arrow-right" />
       </button>
     </div>
-    <button class="button" @click="dialogStore.open({ type: 'search' })">
+    <button @click="dialogStore.open({ type: 'search' })" class="button">
       <i class="icon-search" />
     </button>
     <div>
       <div v-if="authStore.me !== null">
-        <div class="avatar" @click="configStore.open()">
-          <Cover size="large" :images="authStore.me?.images" class="avatar-image" />
+        <div @click="configStore.open()" class="avatar">
+          <Cover :images="authStore.me?.images" class="avatar-image" size="large" />
           <i class="icon icon-chevron-down"></i>
         </div>
         <Config />
@@ -26,6 +26,7 @@
 
 <script lang="ts" setup>
 import { RouterLink } from "vue-router";
+
 import router from "../router";
 import { useAuth } from "../views/auth/AuthStore";
 import Cover from "./AlbumCover.vue";

@@ -1,50 +1,38 @@
 import { defineStore } from "pinia";
+
 import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
 import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
 import { DevicesResponse } from "../../@types/Device";
 import { NotificationType } from "../../@types/Notification";
-import { Player, defaultPlaybackState } from "../../@types/Player";
+import { defaultPlaybackState, Player } from "../../@types/Player";
 import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
 import spotify from "../../spotify";
 import { useNotification } from "../notification/NotificationStore";
 
 export const usePlayer = defineStore("player", {
-  state: (): Player => ({
-    devices: {
-      activeDevice: defaultDevice,
-      list: [],
-    },
-    thisDeviceId: "",
-    currentlyPlaying: defaultCurrentlyPlaying,
-    currentFromSDK: null,
-    currentPositionFromSDK: 0,
-    playerState: defaultPlaybackState,
-    queue: [],
-    queueOpened: false,
-  }),
-
-  getters: {
-    isExternalDevice(): boolean {
-      return this.devices.activeDevice.id !== this.thisDeviceId;
-    },
-  },
-
   actions: {
-    play(): void {
-      instance().put("me/player/play", {
-        device_id: this.devices.activeDevice,
-      });
+    // Queue
+    addTrackToQueue(trackUri: string) {
+      instance()
+        .post(`me/player/queue?uri=${trackUri}`)
+        .then(() => {
+          this.getQueue();
+          notification({
+            msg: "Song added to queue",
+            type: NotificationType.Success,
+          });
+        })
+        .catch(() => {
+          notification({
+            msg: "Error adding song to queue",
+            type: NotificationType.Error,
+          });
+        });
     },
 
-    pause(): void {
-      instance().put("me/player/pause", {
-        device_id: this.devices.activeDevice,
-      });
-    },
-
-    next(): void {
-      instance().post("me/player/next");
+    closeQueue() {
+      this.queueOpened = false;
     },
 
     async getDeviceList() {
@@ -91,7 +79,49 @@ export const usePlayer = defineStore("player", {
         });
     },
 
-    setDevice(deviceId: string | null) {
+    getQueue() {
+      instance()
+        .get<{ queue: Spotify.Track[] }>("me/player/queue")
+        .then(({ data }) => {
+          this.queue = data.queue;
+        })
+        .catch(() => {
+          useNotification().addNotification({
+            msg: "Error getting queue",
+            type: NotificationType.Error,
+          });
+          this.queue = [];
+        });
+    },
+
+    next(): void {
+      instance().post("me/player/next");
+    },
+
+    openQueue() {
+      this.getQueue();
+      this.queueOpened = true;
+    },
+
+    pause(): void {
+      instance().put("me/player/pause", {
+        device_id: this.devices.activeDevice,
+      });
+    },
+
+    play(): void {
+      instance().put("me/player/play", {
+        device_id: this.devices.activeDevice,
+      });
+    },
+
+    seek(progress: number) {
+      instance()
+        .put(`me/player/seek?position_ms=${Math.round(progress)}`)
+        .then(() => (this.currentlyPlaying.progress_ms = progress));
+    },
+
+    setDevice(deviceId: null | string) {
       this.playerState = defaultPlaybackState;
       instance()
         .put("me/player", { device_ids: [deviceId] })
@@ -116,16 +146,9 @@ export const usePlayer = defineStore("player", {
       this.playerState = state;
     },
 
-    toggleShuffle() {
-      if (this.currentlyPlaying.shuffle_state) {
-        instance()
-          .put("me/player/shuffle?state=false")
-          .then(() => (this.currentlyPlaying.shuffle_state = false));
-      } else {
-        instance()
-          .put("me/player/shuffle?state=true")
-          .then(() => (this.currentlyPlaying.shuffle_state = true));
-      }
+    thisDevice(deviceId: string) {
+      this.thisDeviceId = deviceId;
+      this.getDeviceList();
     },
 
     toggleRepeat() {
@@ -140,63 +163,41 @@ export const usePlayer = defineStore("player", {
       }
     },
 
-    seek(progress: number) {
-      instance()
-        .put(`me/player/seek?position_ms=${Math.round(progress)}`)
-        .then(() => (this.currentlyPlaying.progress_ms = progress));
-    },
-
-    thisDevice(deviceId: string) {
-      this.thisDeviceId = deviceId;
-      this.getDeviceList();
+    toggleShuffle() {
+      if (this.currentlyPlaying.shuffle_state) {
+        instance()
+          .put("me/player/shuffle?state=false")
+          .then(() => (this.currentlyPlaying.shuffle_state = false));
+      } else {
+        instance()
+          .put("me/player/shuffle?state=true")
+          .then(() => (this.currentlyPlaying.shuffle_state = true));
+      }
     },
 
     updateFromSDK(args: Spotify.Track, position: number) {
       this.currentFromSDK = args;
       this.currentPositionFromSDK = position;
     },
+  },
 
-    // Queue
-    addTrackToQueue(trackUri: string) {
-      instance()
-        .post(`me/player/queue?uri=${trackUri}`)
-        .then(() => {
-          this.getQueue();
-          notification({
-            type: NotificationType.Success,
-            msg: "Song added to queue",
-          });
-        })
-        .catch(() => {
-          notification({
-            type: NotificationType.Error,
-            msg: "Error adding song to queue",
-          });
-        });
-    },
-
-    getQueue() {
-      instance()
-        .get<{ queue: Spotify.Track[] }>("me/player/queue")
-        .then(({ data }) => {
-          this.queue = data.queue;
-        })
-        .catch(() => {
-          useNotification().addNotification({
-            type: NotificationType.Error,
-            msg: "Error getting queue",
-          });
-          this.queue = [];
-        });
-    },
-
-    openQueue() {
-      this.getQueue();
-      this.queueOpened = true;
-    },
-
-    closeQueue() {
-      this.queueOpened = false;
+  getters: {
+    isExternalDevice(): boolean {
+      return this.devices.activeDevice.id !== this.thisDeviceId;
     },
   },
+
+  state: (): Player => ({
+    currentFromSDK: null,
+    currentlyPlaying: defaultCurrentlyPlaying,
+    currentPositionFromSDK: 0,
+    devices: {
+      activeDevice: defaultDevice,
+      list: [],
+    },
+    playerState: defaultPlaybackState,
+    queue: [],
+    queueOpened: false,
+    thisDeviceId: "",
+  }),
 });

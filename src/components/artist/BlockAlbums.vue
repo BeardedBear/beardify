@@ -1,11 +1,11 @@
 <template>
-  <div v-if="artistStore.albums.length" class="content__block">
-    <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">
+  <div class="content__block" v-if="artistStore.albums.length">
+    <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
       <i class="icon-album"></i>
       Albums
     </div>
     <div class="albums">
-      <div v-for="(album, index) in artistStore.albums" :key="index">
+      <div :key="index" v-for="(album, index) in artistStore.albums">
         <Album :album="album" can-save />
       </div>
     </div>

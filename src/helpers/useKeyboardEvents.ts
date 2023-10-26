@@ -1,10 +1,11 @@
 import { useMagicKeys } from "@vueuse/core";
 import { watch } from "vue";
+
 import { usePlayer } from "../components/player/PlayerStore";
 
 export function useKeyboardEvents(): void {
   const playerStore = usePlayer();
-  const { shift_up, shift_down } = useMagicKeys();
+  const { shift_down, shift_up } = useMagicKeys();
   const delta = 2;
 
   watch(shift_up, (v) => {
@@ -28,7 +29,6 @@ export function useKeyboardEvents(): void {
   });
 
   useMagicKeys({
-    passive: false,
     onEventFired(keyboardEvent) {
       if (keyboardEvent.key === " " && keyboardEvent.target === document.body) {
         keyboardEvent.preventDefault();
@@ -39,5 +39,6 @@ export function useKeyboardEvents(): void {
         }
       }
     },
+    passive: false,
   });
 }

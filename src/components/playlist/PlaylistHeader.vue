@@ -1,16 +1,16 @@
 <template>
-  <div class="playlist-header" :class="{ 'not-fit': notFit }">
+  <div :class="{ 'not-fit': notFit }" class="playlist-header">
     <div class="playlist-header__left">
-      <Cover v-if="!noCover" size="large" :images="playlistStore.playlist.images" class="cover" />
+      <Cover :images="playlistStore.playlist.images" class="cover" size="large" v-if="!noCover" />
       <div>
         <div class="title">
           {{ playlistStore.playlist.name.replace("#Collection ", "") }}
         </div>
         <div class="metas">
           <router-link
-            v-if="playlistStore.playlist.owner.display_name !== 'Spotify'"
             :to="`/user/${playlistStore.playlist.owner.id}`"
             class="owner"
+            v-if="playlistStore.playlist.owner.display_name !== 'Spotify'"
           >
             {{ playlistStore.playlist.owner.display_name }}
           </router-link>
@@ -18,7 +18,7 @@
           <span> — {{ playlistStore.playlist.tracks.total }} items</span>
           <span v-if="!noDuration"> — {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }} </span>
         </div>
-        <div v-if="playlistStore.playlist.description !== 'No description'" class="description">
+        <div class="description" v-if="playlistStore.playlist.description !== 'No description'">
           {{ playlistStore.playlist.description }}
         </div>
       </div>
@@ -27,28 +27,28 @@
     <div class="right">
       <Actions />
       <input
-        v-if="$route.name === 'Collection'"
-        ref="searchElement"
-        v-model="playlistStore.filter"
-        type="search"
         class="search"
         placeholder="Filter album/artist"
+        ref="searchElement"
+        type="search"
+        v-if="$route.name === 'Collection'"
+        v-model="playlistStore.filter"
       />
-      <ShareContent :spotify-url="playlistStore.playlist.external_urls.spotify" :beardify-url="$route.fullPath" />
+      <ShareContent :beardify-url="$route.fullPath" :spotify-url="playlistStore.playlist.external_urls.spotify" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
+import { RouterLink } from "vue-router";
+
 import { PlaylistTrack } from "../../@types/Playlist";
 import Cover from "../../components/AlbumCover.vue";
-import ShareContent from "../../components/ShareContent.vue";
 import Actions from "../../components/playlist/PlaylistActions.vue";
+import ShareContent from "../../components/ShareContent.vue";
 import { timecodeWithUnits } from "../../helpers/date";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";
-
-import { RouterLink } from "vue-router";
 
 defineProps<{
   noCover?: boolean;

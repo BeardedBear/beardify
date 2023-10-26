@@ -2,16 +2,16 @@
   <div class="artist-list">
     <template v-if="searchStore.artists.length">
       <router-link
-        v-for="(artist, index) in searchStore.artists"
-        :key="index"
-        :to="`/artist/${artist.id}`"
-        class="artist"
         :class="{
           'exact-search': exactArtistSearched === artist.name.toLowerCase(),
         }"
+        :key="index"
+        :to="`/artist/${artist.id}`"
         @click="searchStore.reset()"
+        class="artist"
+        v-for="(artist, index) in searchStore.artists"
       >
-        <Cover size="small" :images="artist.images" class="avatar" />
+        <Cover :images="artist.images" class="avatar" size="small" />
         <div>{{ artist.name }}</div>
       </router-link>
     </template>
@@ -22,6 +22,7 @@
 <script lang="ts" setup>
 import { computed, ComputedRef } from "vue";
 import { RouterLink } from "vue-router";
+
 import Cover from "../AlbumCover.vue";
 import { useSearch } from "./SearchStore";
 

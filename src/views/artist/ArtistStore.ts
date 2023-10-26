@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+
 import { AlbumSimplified } from "../../@types/Album";
 import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "../../@types/Artist";
 import { defaultArtist } from "../../@types/Defaults";
@@ -8,18 +9,6 @@ import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
 import { isEP, useCheckLiveAlbum } from "../../helpers/useCleanAlbums";
 
 export const useArtist = defineStore("artist", {
-  state: (): ArtistPage => ({
-    artist: defaultArtist,
-    topTracks: { tracks: [] },
-    albums: [],
-    albumsLive: [],
-    eps: [],
-    singles: [],
-    relatedArtists: { artists: [] },
-    followStatus: false,
-    headerHeight: 0,
-  }),
-
   actions: {
     async clean() {
       this.artist = defaultArtist;
@@ -30,18 +19,6 @@ export const useArtist = defineStore("artist", {
       this.singles = [];
       this.relatedArtists = { artists: [] };
       this.followStatus = false;
-    },
-
-    getArtist(artistId: string) {
-      instance()
-        .get<Artist>(`artists/${artistId}`)
-        .then((e) => (this.artist = e.data));
-    },
-
-    getTopTracks(artistId: string) {
-      instance()
-        .get<ArtistTopTracks>(`artists/${artistId}/top-tracks?market=FR`)
-        .then((e) => (this.topTracks = e.data));
     },
 
     getAlbums(url: string) {
@@ -58,6 +35,24 @@ export const useArtist = defineStore("artist", {
         });
     },
 
+    getArtist(artistId: string) {
+      instance()
+        .get<Artist>(`artists/${artistId}`)
+        .then((e) => (this.artist = e.data));
+    },
+
+    getFollowStatus(artistId: string) {
+      instance()
+        .get<boolean[]>(`me/following/contains?type=artist&ids=${artistId}`)
+        .then((e) => (this.followStatus = e.data.pop()));
+    },
+
+    getRelatedArtists(artistId: string) {
+      instance()
+        .get<RelatedArtists>(`artists/${artistId}/related-artists`)
+        .then((e) => (this.relatedArtists.artists = e.data.artists.slice(0, 15)));
+    },
+
     getSingles(artistId: string) {
       instance()
         .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=single&limit=50`)
@@ -69,16 +64,10 @@ export const useArtist = defineStore("artist", {
         });
     },
 
-    getRelatedArtists(artistId: string) {
+    getTopTracks(artistId: string) {
       instance()
-        .get<RelatedArtists>(`artists/${artistId}/related-artists`)
-        .then((e) => (this.relatedArtists.artists = e.data.artists.slice(0, 15)));
-    },
-
-    getFollowStatus(artistId: string) {
-      instance()
-        .get<boolean[]>(`me/following/contains?type=artist&ids=${artistId}`)
-        .then((e) => (this.followStatus = e.data.pop()));
+        .get<ArtistTopTracks>(`artists/${artistId}/top-tracks?market=FR`)
+        .then((e) => (this.topTracks = e.data));
     },
 
     switchFollow(artistId: string) {
@@ -95,4 +84,16 @@ export const useArtist = defineStore("artist", {
       this.headerHeight = height - 5;
     },
   },
+
+  state: (): ArtistPage => ({
+    albums: [],
+    albumsLive: [],
+    artist: defaultArtist,
+    eps: [],
+    followStatus: false,
+    headerHeight: 0,
+    relatedArtists: { artists: [] },
+    singles: [],
+    topTracks: { tracks: [] },
+  }),
 });

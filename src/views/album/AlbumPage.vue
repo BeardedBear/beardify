@@ -1,24 +1,24 @@
 <template>
-  <div v-if="albumStore.album.name === ''" class="loader"><Loader /></div>
-  <div v-else ref="albumpage" class="album-page">
+  <div class="loader" v-if="albumStore.album.name === ''"><Loader /></div>
+  <div class="album-page" ref="albumpage" v-else>
     <div class="fit">
       <Head :album="albumStore.album" />
       <div class="content">
         <div class="content__cover">
-          <Album :album="albumStore.album" without-metas can-save :cover-size="'large'" />
+          <Album :album="albumStore.album" :cover-size="'large'" can-save without-metas />
         </div>
         <div class="content__tracks">
           <div
-            v-for="(track, index) in albumStore.album.tracks.items"
-            :key="index"
-            class="track"
             :class="{
               active: isCurrentTrack(track, currentTrack),
               unavailable: !track.available_markets.length,
             }"
+            :key="index"
             @click="playSongs(index, albumStore.album.tracks.items)"
+            class="track"
+            v-for="(track, index) in albumStore.album.tracks.items"
           >
-            <button class="add" @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })">
+            <button @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })" class="add">
               <i class="icon-plus"></i>
             </button>
             <span class="track__number">{{ track.track_number }}.</span>
@@ -42,12 +42,13 @@
 
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import Loader from "../../components/LoadingDots.vue";
+
 import Foot from "../../components/album/AlbumFoot.vue";
 import Head from "../../components/album/AlbumHead.vue";
 import Album from "../../components/album/AlbumIndex.vue";
 import ArtistList from "../../components/artist/ArtistList.vue";
 import { useDialog } from "../../components/dialog/DialogStore";
+import Loader from "../../components/LoadingDots.vue";
 import { usePlayer } from "../../components/player/PlayerStore";
 import { timecode } from "../../helpers/date";
 import { isCurrentTrack } from "../../helpers/helper";

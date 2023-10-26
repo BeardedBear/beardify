@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+
 import { Dialog, DialogType, UpdatePlaylistValues } from "../../@types/Dialog";
 import { Track, TrackSimplified } from "../../@types/Track";
 import { instance } from "../../api";
@@ -7,18 +8,20 @@ import { usePlaylist } from "../../views/playlist/PlaylistStore";
 import { useSidebar } from "../sidebar/SidebarStore";
 
 export const useDialog = defineStore("dialog", {
-  state: (): Dialog => ({
-    show: false,
-    type: null,
-    isClosing: false,
-  }),
-
   actions: {
+    close() {
+      this.isClosing = true;
+      setTimeout(() => {
+        this.show = false;
+        this.isClosing = false;
+      }, 200);
+    },
+
     open(data: {
-      type: DialogType;
       albumId?: string;
       playlistId?: string;
-      track?: Track | TrackSimplified | Spotify.Track;
+      track?: Spotify.Track | Track | TrackSimplified;
+      type: DialogType;
     }) {
       this.show = true;
       this.type = data.type;
@@ -27,22 +30,12 @@ export const useDialog = defineStore("dialog", {
       if (data.playlistId) this.playlistId = data.playlistId;
     },
 
-    updatePlaylistCurrentPage(value: UpdatePlaylistValues, playlistId: string | undefined) {
-      const playlistStore = usePlaylist();
-      if (router.currentRoute.value.params.id === playlistId) {
-        playlistStore.playlist.description = value.description;
-        playlistStore.playlist.name = value.name;
-        playlistStore.playlist.public = value.public;
-        playlistStore.playlist.collaborative = value.collaborative;
-      }
-    },
-
     async updatePlaylist(value: UpdatePlaylistValues, playlistId: string | undefined, isCollection: boolean) {
       const data = {
-        name: isCollection ? `#Collection ${value.name}` : value.name,
-        public: value.public,
         collaborative: value.collaborative,
         description: value.description === "" ? "No description" : value.description,
+        name: isCollection ? `#Collection ${value.name}` : value.name,
+        public: value.public,
       };
 
       instance()
@@ -66,12 +59,20 @@ export const useDialog = defineStore("dialog", {
         });
     },
 
-    close() {
-      this.isClosing = true;
-      setTimeout(() => {
-        this.show = false;
-        this.isClosing = false;
-      }, 200);
+    updatePlaylistCurrentPage(value: UpdatePlaylistValues, playlistId: string | undefined) {
+      const playlistStore = usePlaylist();
+      if (router.currentRoute.value.params.id === playlistId) {
+        playlistStore.playlist.description = value.description;
+        playlistStore.playlist.name = value.name;
+        playlistStore.playlist.public = value.public;
+        playlistStore.playlist.collaborative = value.collaborative;
+      }
     },
   },
+
+  state: (): Dialog => ({
+    isClosing: false,
+    show: false,
+    type: null,
+  }),
 });

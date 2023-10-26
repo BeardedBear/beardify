@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+
 import { Paging } from "../../@types/Paging";
 import { SimplifiedPlaylist } from "../../@types/Playlist";
 import { Sidebar } from "../../@types/Sidebar";
@@ -13,21 +14,16 @@ function isACollection(playlistName: SimplifiedPlaylist): boolean {
 }
 
 export const useSidebar = defineStore("sidebar", {
-  state: (): Sidebar => ({
-    collections: [],
-    playlists: [],
-  }),
-
   actions: {
-    async getPlaylists(url: string) {
-      if (url && router.currentRoute.value.name !== "Login") {
-        const { data } = await instance().get<Paging<SimplifiedPlaylist>>(url);
-
-        this.playlists = this.playlists.concat(data.items).filter((p) => !isACollection(p));
-        this.collections = this.collections.concat(data.items).filter((p) => isACollection(p));
-
-        if (data.next) this.getPlaylists(data.next);
-      }
+    async addCollection(name: string) {
+      const authStore = useAuth();
+      instance()
+        .post(`users/${authStore.me?.id}/playlists`, {
+          name: `#Collection ${name}`,
+        })
+        .then(({ data }) => {
+          this.collections = [data, ...this.collections];
+        });
     },
 
     async addPlaylist(name: string) {
@@ -39,15 +35,21 @@ export const useSidebar = defineStore("sidebar", {
         });
     },
 
-    async addCollection(name: string) {
-      const authStore = useAuth();
-      instance()
-        .post(`users/${authStore.me?.id}/playlists`, {
-          name: `#Collection ${name}`,
-        })
-        .then(({ data }) => {
-          this.collections = [data, ...this.collections];
-        });
+    async getPlaylists(url: string) {
+      if (url && router.currentRoute.value.name !== "Login") {
+        const { data } = await instance().get<Paging<SimplifiedPlaylist>>(url);
+
+        this.playlists = this.playlists.concat(data.items).filter((p) => !isACollection(p));
+        this.collections = this.collections.concat(data.items).filter((p) => isACollection(p));
+
+        if (data.next) this.getPlaylists(data.next);
+      }
+    },
+
+    refreshPlaylists() {
+      this.playlists = [];
+      this.collections = [];
+      this.getPlaylists("me/playlists?limit=50");
     },
 
     async removePlaylist(playlistId: string) {
@@ -63,11 +65,10 @@ export const useSidebar = defineStore("sidebar", {
           }
         });
     },
-
-    refreshPlaylists() {
-      this.playlists = [];
-      this.collections = [];
-      this.getPlaylists("me/playlists?limit=50");
-    },
   },
+
+  state: (): Sidebar => ({
+    collections: [],
+    playlists: [],
+  }),
 });

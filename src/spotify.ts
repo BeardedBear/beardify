@@ -3,8 +3,8 @@ import { useAuth } from "./views/auth/AuthStore";
 
 export default window.onSpotifyWebPlaybackSDKReady = (): Spotify.Player => {
   const player = new Spotify.Player({
-    name: "Beardify",
     getOAuthToken: (cb): void => cb(useAuth().accessToken),
+    name: "Beardify",
     volume: 1,
   });
 

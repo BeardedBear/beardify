@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a class="link" @click="openLink(`https://www.google.com/search?q=${album.label}+label`)">{{ album.label }}</a>
+    <a @click="openLink(`https://www.google.com/search?q=${album.label}+label`)" class="link">{{ album.label }}</a>
     <div class="mentions">{{ album.copyrights[0].text }}</div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <template>
   <div class="meta">
-    <What v-if="playerStore.currentFromSDK" :cover-url="playerStore.currentFromSDK?.album.images[1].url" />
+    <What :cover-url="playerStore.currentFromSDK?.album.images[1].url" v-if="playerStore.currentFromSDK" />
     <Loader v-else />
     <Controls
       :duration="playerStore.currentFromSDK && playerStore.currentFromSDK.duration_ms"
@@ -13,11 +13,11 @@
 
 <script lang="ts" setup>
 import Loader from "../LoadingDots.vue";
+import Device from "./device/DeviceIndex.vue";
 import Controls from "./PlayerControls.vue";
 import What from "./PlayerMetas.vue";
 import { usePlayer } from "./PlayerStore";
 import SeekBar from "./SeekBar.vue";
-import Device from "./device/DeviceIndex.vue";
 
 const playerStore = usePlayer();
 </script>

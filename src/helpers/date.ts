@@ -6,7 +6,7 @@ import { enUS } from "date-fns/locale";
 
 const options = { locale: enUS };
 
-export function timecode(date: number | null | undefined): string {
+export function timecode(date: null | number | undefined): string {
   if (date) {
     const hours = new Date(date).getHours() - 1;
     if (hours > 0) {
@@ -25,6 +25,6 @@ export function timecodeWithUnits(date: number): string {
   return formatDuration({ hours, minutes, seconds }, options);
 }
 
-export function date(date: string | number): string {
+export function date(date: number | string): string {
   return format(new Date(date), "d MMM y", options);
 }

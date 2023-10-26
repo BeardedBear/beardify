@@ -21,15 +21,15 @@ export interface ReleasesCheck {
 }
 
 export interface Check {
-  id: string;
   createdAt: number;
+  id: string;
 }
 
 export interface ReleasesPage {
-  menu: MenuItem[];
-  releases: Release[];
-  monthList: string[];
-  activeSlug: string | null;
+  activeSlug: null | string;
   checks: Check[] | null;
-  uid: number | null;
+  menu: MenuItem[];
+  monthList: string[];
+  releases: Release[];
+  uid: null | number;
 }

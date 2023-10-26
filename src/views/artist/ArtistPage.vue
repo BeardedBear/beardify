@@ -1,6 +1,6 @@
 <template>
-  <div v-if="artistStore.artist.name === ''" class="loader"><Loader /></div>
-  <div v-else class="artist-page">
+  <div class="loader" v-if="artistStore.artist.name === ''"><Loader /></div>
+  <div class="artist-page" v-else>
     <ArtistHeader ref="domHead" />
     <div class="content">
       <div class="list">
@@ -29,7 +29,7 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import Loader from "../../components/LoadingDots.vue";
+
 import ArtistHeader from "../../components/artist/ArtistHeader.vue";
 import BlockAlbums from "../../components/artist/BlockAlbums.vue";
 import BlockAlbumsLive from "../../components/artist/BlockAlbumsLive.vue";
@@ -37,6 +37,7 @@ import BlockEps from "../../components/artist/BlockEps.vue";
 import BlockSingles from "../../components/artist/BlockSingles.vue";
 import RelatedArtists from "../../components/artist/RelatedArtists.vue";
 import TopTracks from "../../components/artist/TopTracks.vue";
+import Loader from "../../components/LoadingDots.vue";
 import { useArtist } from "./ArtistStore";
 
 const props = defineProps<{ id: string }>();

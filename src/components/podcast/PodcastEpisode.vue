@@ -1,31 +1,31 @@
 <template>
   <div class="episode-wrap">
-    <div v-if="episode.resume_point.fully_played" class="played">
+    <div class="played" v-if="episode.resume_point.fully_played">
       <i class="icon icon-check"></i>
     </div>
     <div class="episode">
-      <img class="cover" :src="episode.images[1].url" />
+      <img :src="episode.images[1].url" class="cover" />
       <div class="content">
         <div class="name">{{ episode.name }}</div>
-        <div v-if="episode.description" class="description">
+        <div class="description" v-if="episode.description">
           {{ `${episode.description.slice(0, 200)}...` }}
         </div>
       </div>
     </div>
-    <div v-if="!episode.resume_point.fully_played && episode.resume_point.resume_position_ms > 0" class="progress">
+    <div class="progress" v-if="!episode.resume_point.fully_played && episode.resume_point.resume_position_ms > 0">
       <div
-        v-if="playerStore.currentFromSDK?.id === episode.id && playerStore.currentlyPlaying.is_playing"
-        class="bar"
         :style="{
           width: `${(playerStore.currentlyPlaying.progress_ms / episode.duration_ms) * 100}%`,
         }"
+        class="bar"
+        v-if="playerStore.currentFromSDK?.id === episode.id && playerStore.currentlyPlaying.is_playing"
       ></div>
       <div
-        v-else
-        class="bar"
         :style="{
           width: `${(episode.resume_point.resume_position_ms / episode.duration_ms) * 100}%`,
         }"
+        class="bar"
+        v-else
       ></div>
     </div>
     <div class="infos">
@@ -36,18 +36,18 @@
       </div>
       <div class="actions">
         <Loading
-          v-if="playerStore.currentFromSDK?.id === episode.id && playerStore.currentlyPlaying.is_playing"
           :size="'small'"
+          v-if="playerStore.currentFromSDK?.id === episode.id && playerStore.currentlyPlaying.is_playing"
         />
         <div v-else>
           <button
-            v-if="!episode.resume_point.fully_played && episode.resume_point.resume_position_ms > 0"
-            class="button button--small button--primary"
             @click="playSong(episode.uri)"
+            class="button button--small button--primary"
+            v-if="!episode.resume_point.fully_played && episode.resume_point.resume_position_ms > 0"
           >
             Resume
           </button>
-          <button v-else class="button button--small" @click="playSong(episode.uri, 0)">Play episode</button>
+          <button @click="playSong(episode.uri, 0)" class="button button--small" v-else>Play episode</button>
         </div>
       </div>
     </div>

@@ -1,16 +1,16 @@
 <template>
   <div v-if="artistStore.topTracks.tracks?.length">
-    <div class="heading sticky-heading" :style="{ top: artistStore.headerHeight + 'px' }">Top tracks</div>
+    <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">Top tracks</div>
     <div
-      v-for="(trackItem, index) in artistStore.topTracks.tracks"
-      :key="index"
-      class="item"
       :class="{ active: isCurrentTrack(trackItem, playerStore.playerState?.track_window.current_track) }"
+      :key="index"
       @click="playSongs(index, artistStore.topTracks.tracks)"
+      class="item"
+      v-for="(trackItem, index) in artistStore.topTracks.tracks"
     >
       <div class="cover-wrap">
-        <Cover size="small" :images="trackItem.album.images" class="cover" />
-        <div class="hover" @click.prevent.stop="dialogStore.open({ type: 'addSong', track: trackItem })">
+        <Cover :images="trackItem.album.images" class="cover" size="small" />
+        <div @click.prevent.stop="dialogStore.open({ type: 'addSong', track: trackItem })" class="hover">
           <i class="add icon-plus"></i>
         </div>
       </div>

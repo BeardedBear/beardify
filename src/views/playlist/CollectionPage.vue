@@ -1,24 +1,24 @@
 <template>
-  <div v-if="playlistStore.playlist.name === ''" class="loader"><Loader /></div>
+  <div class="loader" v-if="playlistStore.playlist.name === ''"><Loader /></div>
   <PageScroller v-else>
     <PageFit>
       <div class="collection">
         <Header no-cover no-duration />
         <div class="content">
           <SlickList
-            v-model:list="albumList"
-            axis="xy"
-            class="album-list"
             :press-delay="200"
             @sort-end="syncNewPositions"
+            axis="xy"
+            class="album-list"
+            v-model:list="albumList"
           >
             <SlickItem
-              v-for="(item, i) in albumListFiltered"
-              :key="item.id"
-              :index="i"
               :disabled="playlistStore.playlist.owner.id !== authStore.me?.id"
+              :index="i"
+              :key="item.id"
+              v-for="(item, i) in albumListFiltered"
             >
-              <Album :album="item" with-artists can-delete can-save />
+              <Album :album="item" can-delete can-save with-artists />
             </SlickItem>
           </SlickList>
         </div>
@@ -30,11 +30,12 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 import { SlickItem, SlickList } from "vue-slicksort";
+
 import { AlbumSimplified } from "../../@types/Album";
+import Album from "../../components/album/AlbumIndex.vue";
 import Loader from "../../components/LoadingDots.vue";
 import PageFit from "../../components/PageFit.vue";
 import PageScroller from "../../components/PageScroller.vue";
-import Album from "../../components/album/AlbumIndex.vue";
 import Header from "../../components/playlist/PlaylistHeader.vue";
 import { useAuth } from "../auth/AuthStore";
 import { usePlaylist } from "./PlaylistStore";
@@ -53,7 +54,7 @@ const albumListFiltered = computed<AlbumSimplified[]>(() => {
   });
 });
 
-function syncNewPositions(event: { oldIndex: number; newIndex: number }): void {
+function syncNewPositions(event: { newIndex: number; oldIndex: number }): void {
   playlistStore.updateCollectionPosition(event.oldIndex, event.newIndex);
 }
 

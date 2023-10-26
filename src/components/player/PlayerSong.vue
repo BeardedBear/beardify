@@ -11,12 +11,12 @@
 </template>
 
 <script lang="ts" setup>
+import Loader from "../LoadingDots.vue";
+import Device from "./device/DeviceIndex.vue";
 import Controls from "./PlayerControls.vue";
 import What from "./PlayerMetas.vue";
-import SeekBar from "./SeekBar.vue";
-import Device from "./device/DeviceIndex.vue";
 import { usePlayer } from "./PlayerStore";
-import Loader from "../LoadingDots.vue";
+import SeekBar from "./SeekBar.vue";
 </script>
 
 <style lang="scss" scoped>

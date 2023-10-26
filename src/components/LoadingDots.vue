@@ -1,10 +1,10 @@
 <template>
-  <div class="loader" :class="{ small: size === 'small' }"></div>
+  <div :class="{ small: size === 'small' }" class="loader"></div>
 </template>
 
 <script lang="ts" setup>
 defineProps<{
-  size?: "small" | "normal";
+  size?: "normal" | "small";
 }>();
 </script>
 

@@ -1,25 +1,25 @@
 export type DeviceType =
+  | "audio_dongle"
+  | "automobile"
+  | "avr"
+  | "cast_audio"
+  | "cast_video"
   | "computer"
-  | "tablet"
+  | "game_console"
   | "smartphone"
   | "speaker"
-  | "tv"
-  | "avr"
   | "stb"
-  | "audio_dongle"
-  | "game_console"
-  | "cast_video"
-  | "cast_audio"
-  | "automobile";
+  | "tablet"
+  | "tv";
 
 export interface Device {
-  id: string | null;
+  id: null | string;
   is_active: boolean;
   is_private_session: boolean;
   is_restricted: boolean;
   name: string;
   type: DeviceType;
-  volume_percent: number | null;
+  volume_percent: null | number;
 }
 
 export interface DevicesResponse {

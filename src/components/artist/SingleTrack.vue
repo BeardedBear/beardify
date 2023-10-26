@@ -1,8 +1,8 @@
 <template>
   <div
-    class="single"
     :class="{ active: isCurrentTrack(single, playerStore.playerState?.track_window.current_track) }"
     @click="playSingle(single.uri)"
+    class="single"
   >
     <div class="what">
       <Cover :images="single.images" :size="'small'" class="cover" />

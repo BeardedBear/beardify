@@ -2,69 +2,69 @@ import { CurrentlyPlaying } from "./CurrentlyPlaying";
 import { Device } from "./Device";
 
 export interface Player {
+  currentFromSDK: null | Spotify.Track;
+  currentlyPlaying: CurrentlyPlaying;
+  currentPositionFromSDK: number;
   devices: {
     activeDevice: Device;
     list: Device[];
   };
-  thisDeviceId: string;
-  currentlyPlaying: CurrentlyPlaying;
-  currentFromSDK: Spotify.Track | null;
-  currentPositionFromSDK: number;
   playerState: Spotify.PlaybackState;
   queue: Spotify.Track[];
   queueOpened: boolean;
+  thisDeviceId: string;
 }
 
 export type PlayerError =
-  | "NO_PREV_TRACK"
-  | "NO_NEXT_TRACK"
-  | "NO_SPECIFIC_TRACK"
   | "ALREADY_PAUSED"
+  | "ALREADY_PLAYING"
+  | "CONTEXT_DISALLOW"
+  | "DEVICE_NOT_CONTROLLABLE"
+  | "ENDLESS_CONTEXT"
+  | "NO_ACTIVE_DEVICE"
+  | "NO_NEXT_TRACK"
+  | "NO_PREV_TRACK"
+  | "NO_SPECIFIC_TRACK"
   | "NOT_PAUSED"
+  | "NOT_PLAYING_CONTEXT"
   | "NOT_PLAYING_LOCALLY"
   | "NOT_PLAYING_TRACK"
-  | "NOT_PLAYING_CONTEXT"
-  | "ENDLESS_CONTEXT"
-  | "CONTEXT_DISALLOW"
-  | "ALREADY_PLAYING"
+  | "PREMIUM_REQUIRED"
   | "RATE_LIMITED"
   | "REMOTE_CONTROL_DISALLOW"
-  | "DEVICE_NOT_CONTROLLABLE"
-  | "VOLUME_CONTROL_DISALLOW"
-  | "NO_ACTIVE_DEVICE"
-  | "PREMIUM_REQUIRED"
-  | "UNKNOWN";
+  | "UNKNOWN"
+  | "VOLUME_CONTROL_DISALLOW";
 
 const defaultAlbum: Spotify.Album = {
-  uri: "",
-  name: "",
   images: [],
+  name: "",
+  uri: "",
 };
 
 const defaultArtist: Spotify.Artist[] = [
   {
-    uri: "",
     name: "",
+    uri: "",
   },
 ];
 
 const defaultTrack: Spotify.Track = {
-  uri: "",
-  uid: "",
-  id: null,
-  type: "track",
-  media_type: "audio",
-  name: "",
-  is_playable: true,
   album: defaultAlbum,
   artists: defaultArtist,
   duration_ms: 0,
+  id: null,
+  is_playable: true,
+  media_type: "audio",
+  name: "",
+  type: "track",
+  uid: "",
+  uri: "",
 };
 
 const defaultTrackWindow: Spotify.PlaybackTrackWindow = {
   current_track: defaultTrack,
-  previous_tracks: [],
   next_tracks: [],
+  previous_tracks: [],
 };
 
 const defaultPlaybackDisallows = {
@@ -92,17 +92,17 @@ export const defaultPlaybackState: Spotify.PlaybackState = {
     metadata: "",
     uri: null,
   },
+  disallows: defaultPlaybackDisallows,
+  duration: 0,
   loading: false,
+  paused: true,
   playback_features: { hifi_status: "NONE" },
   playback_id: "",
   playback_quality: "VERY_HIGH",
-  timestamp: 0,
-  disallows: defaultPlaybackDisallows,
-  duration: 0,
   position: 0,
-  paused: true,
   repeat_mode: 0,
-  shuffle: false,
   restrictions: defaultPlaybackRestrictions,
+  shuffle: false,
+  timestamp: 0,
   track_window: defaultTrackWindow,
 };

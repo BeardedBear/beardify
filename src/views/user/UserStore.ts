@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+
 import { Paging } from "../../@types/Paging";
 import { SimplifiedPlaylist } from "../../@types/Playlist";
 import { User, UserStore } from "../../@types/User";
@@ -9,12 +10,6 @@ function isACollection(playlistName: SimplifiedPlaylist): boolean {
 }
 
 export const useUserStore = defineStore("user", {
-  state: (): UserStore => ({
-    user: null,
-    collections: [],
-    playlists: [],
-  }),
-
   actions: {
     async clean() {
       this.user = null;
@@ -39,4 +34,10 @@ export const useUserStore = defineStore("user", {
       if (data.next) this.getUserPlaylists(data.next);
     },
   },
+
+  state: (): UserStore => ({
+    collections: [],
+    playlists: [],
+    user: null,
+  }),
 });

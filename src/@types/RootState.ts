@@ -11,15 +11,15 @@ import { Search } from "./Search";
 import { Sidebar } from "./Sidebar";
 
 export interface RootState {
-  auth: Auth;
-  player: Player;
-  artist: ArtistPage;
   album: AlbumPage;
-  search: Search;
-  sidebar: Sidebar;
-  playlist: PlaylistPage;
-  dialog: Dialog;
+  artist: ArtistPage;
+  auth: Auth;
   config: Config;
+  dialog: Dialog;
   home: HomePage;
   notification: NotificationStore;
+  player: Player;
+  playlist: PlaylistPage;
+  search: Search;
+  sidebar: Sidebar;
 }

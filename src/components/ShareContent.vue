@@ -1,13 +1,13 @@
 <template>
   <div class="sharing">
     <div class="title"><i class="share-icon icon-share"></i></div>
-    <span v-if="clipboardSpotify.copied.value" class="copied">Spotify URL copied</span>
-    <span v-if="clipboardBeardify.copied.value" class="copied">Beardify URL copied</span>
+    <span class="copied" v-if="clipboardSpotify.copied.value">Spotify URL copied</span>
+    <span class="copied" v-if="clipboardBeardify.copied.value">Beardify URL copied</span>
     <div class="content">
-      <button class="copy" @click="clipboardSpotify.copy()">
+      <button @click="clipboardSpotify.copy()" class="copy">
         <i class="icon-spotify"></i>
       </button>
-      <button v-if="beardifyUrl" class="copy" @click="clipboardBeardify.copy()">
+      <button @click="clipboardBeardify.copy()" class="copy" v-if="beardifyUrl">
         <i class="icon-beardify"></i>
       </button>
     </div>
@@ -17,8 +17,8 @@
 <script lang="ts" setup>
 import { useClipboard } from "@vueuse/core";
 const props = defineProps<{
-  spotifyUrl: string;
   beardifyUrl?: string;
+  spotifyUrl: string;
 }>();
 const clipboardSpotify = useClipboard({ source: props.spotifyUrl });
 const clipboardBeardify = useClipboard({

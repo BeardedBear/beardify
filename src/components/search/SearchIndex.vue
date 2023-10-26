@@ -1,7 +1,7 @@
 <template>
   <div class="search">
     <SearchInput />
-    <div ref="result" class="results">
+    <div class="results" ref="result">
       <SearchArtists />
       <SearchAlbums />
       <SearchSongs />
@@ -11,6 +11,7 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
+
 import SearchAlbums from "./SearchAlbums.vue";
 import SearchArtists from "./SearchArtists.vue";
 import SearchInput from "./SearchInput.vue";

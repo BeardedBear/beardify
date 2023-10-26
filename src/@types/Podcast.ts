@@ -4,10 +4,10 @@ import { Image } from "./Image";
 import { ExternalUrls } from "./Misc";
 
 export interface PodcastsPage {
-  podcast: Podcast | null;
-  list: PodcastItem | null;
-  myPodcasts: PodcastSaved[];
   episodes: Episode[];
+  list: null | PodcastItem;
+  myPodcasts: PodcastSaved[];
+  podcast: null | Podcast;
 }
 
 export interface Episode {
