@@ -12,5 +12,6 @@
   ],
   "printWidth": 120,
   "semi": true,
-  "arrowParens": "always"
+  "arrowParens": "always",
+  "htmlWhitespaceSensitivity": "ignore"
 }

@@ -15,8 +15,8 @@
             {{ playlistStore.playlist.owner.display_name }}
           </router-link>
           <span v-else>{{ playlistStore.playlist.owner.display_name }}</span>
-          <span> — {{ playlistStore.playlist.tracks.total }} items</span>
-          <span v-if="!noDuration"> — {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }} </span>
+          <span>— {{ playlistStore.playlist.tracks.total }} items</span>
+          <span v-if="!noDuration">— {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
         </div>
         <div class="description" v-if="playlistStore.playlist.description !== 'No description'">
           {{ playlistStore.playlist.description }}

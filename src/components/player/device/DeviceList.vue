@@ -26,7 +26,8 @@
         class="button button--small button--full button--with-border refresh"
         type="button"
       >
-        <i class="icon-refresh"></i> Refresh
+        <i class="icon-refresh"></i>
+        Refresh
       </button>
     </div>
   </div>

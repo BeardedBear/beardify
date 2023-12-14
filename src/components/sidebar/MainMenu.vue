@@ -1,10 +1,12 @@
 <template>
   <div class="menu">
     <router-link :class="{ 'active-route': $route.path.includes('/podcasts') }" :to="`/podcasts`" class="link">
-      <i class="icon icon-podcast"></i>Podcasts
+      <i class="icon icon-podcast"></i>
+      Podcasts
     </router-link>
     <router-link :class="{ 'active-route': $route.path.includes('/releases') }" :to="`/releases`" class="link">
-      <i class="icon icon-album"></i>Releases
+      <i class="icon icon-album"></i>
+      Releases
     </router-link>
   </div>
 </template>

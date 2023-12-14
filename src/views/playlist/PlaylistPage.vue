@@ -6,7 +6,10 @@
       <template v-if="playlistStore.playlist.owner.display_name === 'Spotify'">
         <AlbumGallery :album-list="albums" :icon-name="'album'" class="block" title="Albums" />
         <AlbumGallery :album-list="eps" :icon-name="'ep'" class="block" title="EP's" />
-        <div class="heading sticky"><i class="icon-single"></i>Singles</div>
+        <div class="heading sticky">
+          <i class="icon-single"></i>
+          Singles
+        </div>
         <Tracks :track-list="singles" />
       </template>
       <Tracks :track-list="playlistStore.tracks" v-else />

@@ -13,7 +13,10 @@
         )"
       >
         <div class="playlist">
-          <div><PlaylistIcon :playlist="playlist" /> {{ playlist.name }}</div>
+          <div>
+            <PlaylistIcon :playlist="playlist" />
+            {{ playlist.name }}
+          </div>
           <VisibilityIcon :playlist="playlist" />
         </div>
       </div>

@@ -7,7 +7,10 @@
       <PageFit>
         <div class="title">
           <div class="name">Recommended albums</div>
-          <button @click="getData()" class="button"><i class="icon-refresh"></i> Refresh</button>
+          <button @click="getData()" class="button">
+            <i class="icon-refresh"></i>
+            Refresh
+          </button>
         </div>
         <AlbumGallery :album-list="homeStore.recommendedAlbums" no-title />
       </PageFit>

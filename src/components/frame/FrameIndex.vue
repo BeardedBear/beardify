@@ -68,10 +68,9 @@ const frameStore = useFrame();
 }
 
 .frame {
-  align-items: center;
   display: grid;
   height: 100%;
-  justify-items: center;
+  place-items: center center;
   position: fixed;
   width: 100%;
   z-index: 999;

@@ -10,7 +10,7 @@
     </div>
     <div>
       <div>
-        <span class="trackname"> {{ currentTrack.name }} — </span>
+        <span class="trackname">{{ currentTrack.name }} —</span>
         <ArtistList :artist-list="currentTrack.artists" :feat="true" />
       </div>
       <div class="album">

@@ -5,7 +5,8 @@
       <span class="options"><ArtistLinks :artist-name="artist.name" floating /></span>
     </span>
     <span class="separator" v-if="artistList && artistList.length - 1 !== index">
-      / <span v-if="!feat">&nbsp;</span>
+      /
+      <span v-if="!feat">&nbsp;</span>
     </span>
   </span>
 </template>
