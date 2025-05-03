@@ -6,11 +6,11 @@
   "scripts": {
     "serve": "vite",
     "lint": "vue-tsc --noEmit && eslint src/**/*.{vue,ts} && prettier --c ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss}",
-    "build": "yarn lint && vite build",
+    "build": "npm run lint && vite build",
     "fix": "prettier --write ./src/**/*.{ts,vue,json} && eslint src/**/*.{vue,ts} --fix && stylelint ./src/**/*.{vue,scss} --fix",
-    "preview": "yarn build && yarn vite preview",
+    "preview": "npm run build && vite preview",
     "lint:commit": "vue-tsc --noEmit",
-    "pre-commit": "yarn lint:commit"
+    "pre-commit": "npm run lint:commit"
   },
   "dependencies": {
     "axios": "^1.9.0",
