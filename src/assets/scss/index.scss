@@ -1,0 +1,8 @@
+// Ce fichier sert de point d'entrée pour tous les styles SCSS
+// Il utilise @forward au lieu de @import pour être compatible avec Dart Sass 3.0.0
+
+@forward "colors";
+@forward "responsive";
+@forward "mixins";
+@forward "button";
+@forward "heading";

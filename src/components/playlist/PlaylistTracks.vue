@@ -92,8 +92,8 @@ function deleteSong(songId: string): void {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
-@import "../../assets/scss/responsive";
+@use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/responsive" as responsive;
 
 .track-name {
   font-weight: bold;

@@ -108,7 +108,7 @@ function deleteAlbum(albumId: string): void {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 .play {
   $offset: 1rem;

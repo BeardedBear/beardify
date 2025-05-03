@@ -1,12 +1,5 @@
 import { Track, TrackSimplified } from "./Track";
 
-export interface UpdatePlaylistValues {
-  collaborative: boolean;
-  description: string;
-  name: string;
-  public: boolean;
-}
-
 export interface Dialog {
   albumId?: string;
   isClosing: boolean;
@@ -25,3 +18,10 @@ export type DialogType =
   | "search"
   | "widevine"
   | null;
+
+export interface UpdatePlaylistValues {
+  collaborative: boolean;
+  description: string;
+  name: string;
+  public: boolean;
+}

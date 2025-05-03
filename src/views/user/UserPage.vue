@@ -69,8 +69,8 @@ userStore.clean().finally(() => {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
-@import "../../assets/scss/responsive";
+@use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/responsive" as responsive;
 
 .head {
   overflow: hidden;
@@ -131,11 +131,11 @@ userStore.clean().finally(() => {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
 
-    @include l {
+    @include responsive.l {
       grid-template-columns: repeat(8, 1fr);
     }
 
-    @include hdpi {
+    @include responsive.hdpi {
       grid-template-columns: repeat(9, 1fr);
     }
   }

@@ -1,4 +1,4 @@
-@import "./colors";
+@use "./colors" as colors;
 
 .button {
   background-color: var(--bg-color-light);

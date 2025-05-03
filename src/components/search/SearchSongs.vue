@@ -35,7 +35,7 @@ const searchStore = useSearch();
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 .track {
   align-items: center;

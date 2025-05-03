@@ -20,7 +20,7 @@ import SeekBar from "./SeekBar.vue";
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 .meta {
   align-items: center;

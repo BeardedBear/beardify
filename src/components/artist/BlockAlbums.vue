@@ -20,19 +20,19 @@ const artistStore = useArtist();
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/scss/colors";
-@import "../../assets/scss/responsive";
+@use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/responsive" as responsive;
 
 .albums {
   display: grid;
   gap: 1.2rem;
   grid-template-columns: repeat(4, 1fr);
 
-  @include l {
+  @include responsive.l {
     grid-template-columns: repeat(5, 1fr);
   }
 
-  @include hdpi {
+  @include responsive.hdpi {
     grid-template-columns: repeat(8, 1fr);
   }
 }

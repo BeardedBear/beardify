@@ -3,11 +3,11 @@ export enum NotificationType {
   Success,
   Error,
 }
-export interface NotificationStore {
-  notifications: Notification[];
-}
-
 export interface Notification {
   msg: string;
   type: NotificationType;
+}
+
+export interface NotificationStore {
+  notifications: Notification[];
 }

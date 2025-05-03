@@ -3,18 +3,6 @@ import { Image } from "./Image";
 import { ExternalUrls } from "./Misc";
 import { Track } from "./Track";
 
-export interface AlbumPage {
-  album: Album;
-}
-
-export type AlbumType = "album" | "ALBUM" | "compilation" | "single" | "SINGLE";
-
-export type ReleaseDatePrecision = "day" | "month" | "year";
-
-export interface Copyrights {
-  text: string;
-  type: string;
-}
 export interface Album {
   album_type: AlbumType;
   artists: Artist[];
@@ -35,7 +23,13 @@ export interface Album {
   type: string;
   uri: string;
 }
+
 export type AlbumGroup = "album" | "appears_on" | "compilation" | "single";
+
+export interface AlbumPage {
+  album: Album;
+}
+
 export interface AlbumSimplified {
   album_group: AlbumGroup;
   album_type: AlbumType;
@@ -52,3 +46,9 @@ export interface AlbumSimplified {
   type: string;
   uri: string;
 }
+export type AlbumType = "album" | "ALBUM" | "compilation" | "single" | "SINGLE";
+export interface Copyrights {
+  text: string;
+  type: string;
+}
+export type ReleaseDatePrecision = "day" | "month" | "year";

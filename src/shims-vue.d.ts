@@ -4,4 +4,4 @@ declare module "*.vue" {
   export default component;
 }
 
-declare module "pkce";
+declare module "pkce-challenge";

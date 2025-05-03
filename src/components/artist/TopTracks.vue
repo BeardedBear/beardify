@@ -36,7 +36,7 @@ const dialogStore = useDialog();
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 .cover-wrap {
   position: relative;

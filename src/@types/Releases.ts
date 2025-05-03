@@ -1,3 +1,13 @@
+export interface Check {
+  createdAt: number;
+  id: string;
+}
+
+export interface MenuItem {
+  name: string;
+  slugs: string[];
+}
+
 export interface Release {
   album: string;
   artist: string;
@@ -9,20 +19,10 @@ export interface Release {
   slug: string[];
 }
 
-export interface MenuItem {
-  name: string;
-  slugs: string[];
-}
-
 export interface ReleasesCheck {
   checks: Check[];
   id: number;
   user: string;
-}
-
-export interface Check {
-  createdAt: number;
-  id: string;
 }
 
 export interface ReleasesPage {

@@ -17,7 +17,7 @@ import { RouterLink } from "vue-router";
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 .menu {
   display: flex;

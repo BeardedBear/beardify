@@ -59,7 +59,7 @@ async function add(songUri: string, playlistId: string): Promise<void> {
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 .content {
   padding: 0.5rem;

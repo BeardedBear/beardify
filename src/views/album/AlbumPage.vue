@@ -68,8 +68,8 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
-@import "../../assets/scss/responsive";
+@use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/responsive" as responsive;
 
 .fit {
   display: flex;
@@ -80,7 +80,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   max-width: 57rem;
   width: 100%;
 
-  @include hdpi {
+  @include responsive.hdpi {
     max-width: 100rem;
   }
 }
@@ -155,7 +155,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
     font-size: 1rem;
   }
 
-  @include l {
+  @include responsive.l {
     flex-direction: column;
   }
 }

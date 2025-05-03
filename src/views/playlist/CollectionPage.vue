@@ -70,8 +70,8 @@ playlistStore.clean().finally(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/scss/colors";
-@import "../../assets/scss/responsive";
+@use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/responsive" as responsive;
 
 .collection {
   display: grid;
@@ -107,7 +107,7 @@ playlistStore.clean().finally(() => {
     padding-right: $padd;
   }
 
-  @include l {
+  @include responsive.l {
     $padd: 2rem;
 
     grid-template-columns: repeat(4, 1fr);
@@ -115,7 +115,7 @@ playlistStore.clean().finally(() => {
     padding-right: $padd;
   }
 
-  @include l {
+  @include responsive.l {
     $padd: 2rem;
 
     grid-template-columns: repeat(8, 1fr);
@@ -123,7 +123,7 @@ playlistStore.clean().finally(() => {
     padding-right: $padd;
   }
 
-  @include hdpi {
+  @include responsive.hdpi {
     grid-template-columns: repeat(12, 1fr);
   }
 }

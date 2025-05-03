@@ -70,8 +70,8 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
-@import "../../assets/scss/responsive";
+@use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/responsive" as responsive;
 
 .search {
   background: var(--bg-color);
@@ -130,13 +130,13 @@ function sumDuration(tracks: PlaylistTrack[]): number {
     padding: 0 0 2rem;
   }
 
-  @include hdpi {
+  @include responsive.hdpi {
     $padd: 50rem;
 
     padding: 2rem $padd 1rem;
   }
 
-  @include xl {
+  @include responsive.xl {
     $padd: 2rem;
 
     padding: 2rem $padd 1rem;

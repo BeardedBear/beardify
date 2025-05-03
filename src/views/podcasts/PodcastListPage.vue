@@ -43,8 +43,8 @@ podcastsStore.clean().finally(() => {
 });
 </script>
 <style lang="scss" scoped>
-@import "../../assets/scss/colors";
-@import "../../assets/scss/responsive";
+@use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/responsive" as responsive;
 
 .loader {
   display: grid;

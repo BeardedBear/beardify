@@ -1,10 +1,14 @@
 // https://date-fns.org/v2.27.0/docs/format
 
-import format from "date-fns/format";
-import formatDuration from "date-fns/formatDuration";
+import { format } from "date-fns/format";
+import { formatDuration } from "date-fns/formatDuration";
 import { enUS } from "date-fns/locale";
 
 const options = { locale: enUS };
+
+export function date(date: number | string): string {
+  return format(new Date(date), "d MMM y", options);
+}
 
 export function timecode(date: null | number | undefined): string {
   if (date) {
@@ -23,8 +27,4 @@ export function timecodeWithUnits(date: number): string {
   const seconds = new Date(date).getSeconds();
 
   return formatDuration({ hours, minutes, seconds }, options);
-}
-
-export function date(date: number | string): string {
-  return format(new Date(date), "d MMM y", options);
 }

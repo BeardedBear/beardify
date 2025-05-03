@@ -44,7 +44,7 @@ watch(authStore, () => {
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/scss/responsive";
+@use "../../assets/scss/responsive" as responsive;
 
 .title {
   align-items: center;

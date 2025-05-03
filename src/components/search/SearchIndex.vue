@@ -28,7 +28,7 @@ document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 .search {
   flex: 1;

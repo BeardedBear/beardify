@@ -27,7 +27,7 @@ function switchFollow(artistId: string): void {
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 .options {
   align-items: center;

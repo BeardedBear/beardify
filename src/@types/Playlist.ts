@@ -5,33 +5,6 @@ import { PublicUser, SimplifiedPublicUser } from "./PublicUser";
 import { Track } from "./Track";
 import { Followers } from "./User";
 
-export interface SimplifiedPlaylist {
-  collaborative: boolean;
-  description: string;
-  external_urls: ExternalUrls;
-  href: string;
-  id: string;
-  images: Image[];
-  name: string;
-  owner: SimplifiedPublicUser;
-  public: boolean;
-  snapshot_id: string;
-  tracks: PlaylistTracksRef;
-  type: string;
-  uri: string;
-}
-
-export interface PlaylistTracksRef {
-  href: string;
-  total: number;
-}
-
-export interface PlaylistTrack {
-  added_at: number;
-  added_by: PublicUser;
-  is_local: boolean;
-  track: Track;
-}
 export interface Playlist {
   collaborative: boolean;
   description: string;
@@ -54,4 +27,31 @@ export interface PlaylistPage {
   followed: boolean | undefined;
   playlist: Playlist;
   tracks: PlaylistTrack[];
+}
+
+export interface PlaylistTrack {
+  added_at: number;
+  added_by: PublicUser;
+  is_local: boolean;
+  track: Track;
+}
+export interface PlaylistTracksRef {
+  href: string;
+  total: number;
+}
+
+export interface SimplifiedPlaylist {
+  collaborative: boolean;
+  description: string;
+  external_urls: ExternalUrls;
+  href: string;
+  id: string;
+  images: Image[];
+  name: string;
+  owner: SimplifiedPublicUser;
+  public: boolean;
+  snapshot_id: string;
+  tracks: PlaylistTracksRef;
+  type: string;
+  uri: string;
 }

@@ -51,7 +51,7 @@ challenge.value = useAuth().storage?.codeChallenge;
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/scss/colors";
+@use "../assets/scss/colors" as colors;
 
 @keyframes pop-login {
   from {

@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import formUrlEncoded from "form-urlencoded";
 import { defineStore } from "pinia";
-import { create } from "pkce";
+import pkceChallenge from "pkce-challenge";
 
 import { Auth, AuthAPIResponse } from "../../@types/Auth";
 import { api, instance } from "../../api";
@@ -44,14 +44,11 @@ export const useAuth = defineStore("auth", {
     },
 
     async generateStorage(referer?: string): Promise<void> {
-      const code: {
-        codeChallenge: string;
-        codeVerifier: string;
-      } = create();
+      const code = pkceChallenge();
 
       this.storage = {
-        codeChallenge: code.codeChallenge,
-        codeVerifier: code.codeVerifier,
+        codeChallenge: code.code_challenge,
+        codeVerifier: code.code_verifier,
         referer: referer ? referer : "",
         refreshToken: "",
       };
