@@ -8,9 +8,7 @@
     "lint": "vue-tsc --noEmit && eslint src/**/*.{vue,ts} && prettier --c ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss}",
     "build": "npm run lint && vite build",
     "fix": "prettier --write ./src/**/*.{ts,vue,json} && eslint src/**/*.{vue,ts} --fix && stylelint ./src/**/*.{vue,scss} --fix",
-    "preview": "npm run build && vite preview",
-    "lint:commit": "vue-tsc --noEmit",
-    "pre-commit": "npm run lint:commit"
+    "preview": "npm run build && vite preview"
   },
   "dependencies": {
     "crypto-js": "^4.2.0",
@@ -26,6 +24,7 @@
     "vue-slicksort": "^2.0.5"
   },
   "devDependencies": {
+    "@eslint/js": "^9.26.0",
     "@rushstack/eslint-patch": "^1.11.0",
     "@types/node": "^22.15.3",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
@@ -39,6 +38,7 @@
     "eslint-plugin-perfectionist": "^4.12.3",
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-vue": "^10.1.0",
+    "globals": "^16.0.0",
     "normalize.css": "^8.0.1",
     "postcss": "^8.4.32",
     "postcss-html": "^1.8.0",

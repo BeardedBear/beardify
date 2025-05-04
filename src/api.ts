@@ -42,7 +42,7 @@ export function instance(): ApiInstance {
       return { data };
     },
     patch: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
-      const opts: Options = { ...(options || {}) };
+      const opts: Options = { ...options };
       if (body) {
         opts.json = body;
       }
@@ -55,7 +55,7 @@ export function instance(): ApiInstance {
       }
     },
     post: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
-      const opts: Options = { ...(options || {}) };
+      const opts: Options = { ...options };
       if (body) {
         opts.json = body;
       }
@@ -68,7 +68,7 @@ export function instance(): ApiInstance {
       }
     },
     put: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
-      const opts: Options = { ...(options || {}) };
+      const opts: Options = { ...options };
       if (body) {
         opts.json = body;
       }
