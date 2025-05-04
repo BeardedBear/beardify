@@ -61,9 +61,8 @@ export const useAuth = defineStore("auth", {
     getMe() {
       if (!this.me) {
         instance()
-          .get("me")
-          .json<User>()
-          .then((data): User => (this.me = data));
+          .get<User>("me")
+          .then(({ data }): User => (this.me = data));
       }
     },
 

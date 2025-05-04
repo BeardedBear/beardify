@@ -1,12 +1,7 @@
-import ky from "ky";
+import ky, { Options } from "ky";
 
-import { ExtendedOptions, kyDelete, kyGet, kyPatch, kyPost, kyPut } from "./helpers/ky-adapter";
+import { SpotifyOptions } from "./@types/Api";
 import { useAuth } from "./views/auth/AuthStore";
-
-// Interface pour étendre la promesse avec une méthode json()
-interface JsonPromise<T> extends Promise<T> {
-  json<J>(): Promise<J>;
-}
 
 export const api = {
   clientId: "29a0936f4c6c46399f33f6f60a0855e8",
@@ -17,42 +12,74 @@ export const api = {
   url: "https://api.spotify.com/v1/",
 };
 
-// Instance compatible avec l'API axios et ky
-export function instance(): {
-  delete: <T = unknown>(url: string, options?: ExtendedOptions) => JsonPromise<{ data: T }>;
-  get: <T = unknown>(url: string, options?: ExtendedOptions) => JsonPromise<{ data: T }>;
-  patch: <T = unknown>(url: string, body?: unknown, options?: ExtendedOptions) => JsonPromise<{ data: T }>;
-  post: <T = unknown>(url: string, body?: unknown, options?: ExtendedOptions) => JsonPromise<{ data: T }>;
-  put: <T = unknown>(url: string, body?: unknown, options?: ExtendedOptions) => JsonPromise<{ data: T }>;
+// Type pour les méthodes d'instance API
+type ApiInstance = {
+  delete: <T = unknown>(url: string, options?: SpotifyOptions) => Promise<{ data: T }>;
+  get: <T = unknown>(url: string, options?: SpotifyOptions) => Promise<{ data: T }>;
+  patch: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => Promise<{ data: T }>;
+  post: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => Promise<{ data: T }>;
+  put: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => Promise<{ data: T }>;
   raw: typeof ky;
-} {
+};
+
+// Instance native de ky pour les appels API
+export function instance(): ApiInstance {
   const kyInstance = createKyInstance();
 
-  // Fonction utilitaire pour ajouter une méthode json() à une promesse
-  function addJsonMethod<T>(promise: Promise<T>): JsonPromise<T> {
-    // Ajoute la méthode json() à la promesse
-    (promise as { json?: <J>() => Promise<J> }).json = function <J>(): Promise<J> {
-      return promise.then((response) => {
-        if (response && typeof response === "object" && "data" in response) {
-          return (response as { data: unknown }).data as J;
-        }
-        return response as unknown as J;
-      });
-    };
-    return promise as JsonPromise<T>;
-  }
-
   return {
-    delete: <T = unknown>(url: string, options?: ExtendedOptions): JsonPromise<{ data: T }> =>
-      addJsonMethod(kyDelete<T>(kyInstance, url, options)),
-    get: <T = unknown>(url: string, options?: ExtendedOptions): JsonPromise<{ data: T }> =>
-      addJsonMethod(kyGet<T>(kyInstance, url, options)),
-    patch: <T = unknown>(url: string, body?: unknown, options?: ExtendedOptions): JsonPromise<{ data: T }> =>
-      addJsonMethod(kyPatch<T>(kyInstance, url, body, options)),
-    post: <T = unknown>(url: string, body?: unknown, options?: ExtendedOptions): JsonPromise<{ data: T }> =>
-      addJsonMethod(kyPost<T>(kyInstance, url, body, options)),
-    put: <T = unknown>(url: string, body?: unknown, options?: ExtendedOptions): JsonPromise<{ data: T }> =>
-      addJsonMethod(kyPut<T>(kyInstance, url, body, options)),
+    delete: async <T = unknown>(url: string, options?: SpotifyOptions): Promise<{ data: T }> => {
+      const response = await kyInstance.delete(url, options);
+      try {
+        const data = await response.json<T>();
+        return { data };
+      } catch {
+        return { data: {} as T };
+      }
+    },
+    get: async <T = unknown>(url: string, options?: SpotifyOptions): Promise<{ data: T }> => {
+      const response = await kyInstance.get(url, options);
+      const data = await response.json<T>();
+      return { data };
+    },
+    patch: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
+      const opts: Options = { ...(options || {}) };
+      if (body) {
+        opts.json = body;
+      }
+      const response = await kyInstance.patch(url, opts);
+      try {
+        const data = await response.json<T>();
+        return { data };
+      } catch {
+        return { data: {} as T };
+      }
+    },
+    post: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
+      const opts: Options = { ...(options || {}) };
+      if (body) {
+        opts.json = body;
+      }
+      const response = await kyInstance.post(url, opts);
+      try {
+        const data = await response.json<T>();
+        return { data };
+      } catch {
+        return { data: {} as T };
+      }
+    },
+    put: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
+      const opts: Options = { ...(options || {}) };
+      if (body) {
+        opts.json = body;
+      }
+      const response = await kyInstance.put(url, opts);
+      try {
+        const data = await response.json<T>();
+        return { data };
+      } catch {
+        return { data: {} as T };
+      }
+    },
     // Accès direct à l'instance ky
     raw: kyInstance,
   };
