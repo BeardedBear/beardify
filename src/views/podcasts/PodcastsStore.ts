@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
 
-import { Paging } from "../../@types/Paging";
-import { Episode, Podcast, PodcastItem, PodcastSaved, PodcastsPage } from "../../@types/Podcast";
+import type { Paging } from "../../@types/Paging";
+import type { Episode, Podcast, PodcastItem, PodcastSaved, PodcastsPage } from "../../@types/Podcast";
+
 import { instance } from "../../api";
 
 export const usePodcasts = defineStore("podcasts", {

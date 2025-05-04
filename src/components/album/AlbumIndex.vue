@@ -83,7 +83,7 @@ function deleteAlbum(albumId: string): void {
     .then((e) => {
       const tracks: TrackToRemove[] = [];
 
-      e.data.items.map((t) => t.uri).forEach((t) => tracks.push({ uri: t }));
+      e.data.items.map((t: TrackSimplified) => t.uri).forEach((t: string) => tracks.push({ uri: t }));
 
       instance()
         .delete(`playlists/${currentRouteId}/tracks`, {
@@ -92,14 +92,14 @@ function deleteAlbum(albumId: string): void {
         .then(() => playlistStore.removeTracks(tracks))
         .catch((error) =>
           notification({
-            msg: error.response.data?.error?.message ?? "Album delete failed",
+            msg: error.response?.data?.error?.message ?? "Album delete failed",
             type: NotificationType.Error,
           }),
         );
     })
     .catch((error) =>
       notification({
-        msg: error.response.data?.error?.message ?? "Album delete failed",
+        msg: error.response?.data?.error?.message ?? "Album delete failed",
         type: NotificationType.Error,
       }),
     );

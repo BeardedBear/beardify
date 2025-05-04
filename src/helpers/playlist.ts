@@ -24,6 +24,6 @@ export async function trackAllreadyExist(url: string, trackId: string): Promise<
     .get<Paging<PlaylistTrack>>(url)
     .then(({ data }) => {
       tempTracks = tempTracks.concat(data.items);
-      return data.next ? albumAllreadyExist(data.next, trackId) : tempTracks.some((e) => e.track.uri === trackId);
+      return data.next ? trackAllreadyExist(data.next, trackId) : tempTracks.some((e) => e.track.uri === trackId);
     });
 }

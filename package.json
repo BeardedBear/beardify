@@ -17,6 +17,7 @@
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "form-urlencoded": "^6.1.5",
+    "ky": "^1.8.1",
     "normalize-diacritics": "^4.0.3",
     "pinia": "^3.0.2",
     "pinia-plugin-persistedstate": "^4.2.0",

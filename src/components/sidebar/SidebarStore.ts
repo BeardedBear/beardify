@@ -18,20 +18,20 @@ export const useSidebar = defineStore("sidebar", {
     async addCollection(name: string) {
       const authStore = useAuth();
       instance()
-        .post(`users/${authStore.me?.id}/playlists`, {
+        .post<SimplifiedPlaylist>(`users/${authStore.me?.id}/playlists`, {
           name: `#Collection ${name}`,
         })
         .then(({ data }) => {
-          this.collections = [data, ...this.collections];
+          this.collections = [data as SimplifiedPlaylist, ...this.collections];
         });
     },
 
     async addPlaylist(name: string) {
       const authStore = useAuth();
       instance()
-        .post(`users/${authStore.me?.id}/playlists`, { name })
+        .post<SimplifiedPlaylist>(`users/${authStore.me?.id}/playlists`, { name })
         .then(({ data }) => {
-          this.playlists = [data, ...this.playlists];
+          this.playlists = [data as SimplifiedPlaylist, ...this.playlists];
         });
     },
 
