@@ -164,7 +164,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 .empty {
   font-style: italic;

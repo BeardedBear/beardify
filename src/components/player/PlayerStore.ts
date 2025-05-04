@@ -5,6 +5,7 @@ import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
 import { DevicesResponse } from "../../@types/Device";
 import { NotificationType } from "../../@types/Notification";
 import { defaultPlaybackState, Player } from "../../@types/Player";
+import { Track } from "../../@types/Track";
 import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
 import spotify from "../../spotify";
@@ -40,7 +41,7 @@ export const usePlayer = defineStore("player", {
       instance()
         .get<DevicesResponse>("me/player/devices")
         .then(({ data }) => {
-          const activeDevice = data.devices.find((d) => d.is_active);
+          const activeDevice = data.devices.find((device) => device.is_active);
           this.devices.list = data.devices;
           if (!data.devices.length) spotify().connect();
           if (!this.playerState?.paused && activeDevice) {
@@ -80,10 +81,34 @@ export const usePlayer = defineStore("player", {
     },
 
     getQueue() {
+      interface QueueResponse {
+        queue: Track[];
+      }
+
       instance()
-        .get<{ queue: Spotify.Track[] }>("me/player/queue")
+        .get<QueueResponse>("me/player/queue")
         .then(({ data }) => {
-          this.queue = data.queue;
+          // Convertir les objets Track en Spotify.Track
+          const spotifyTracks = data.queue.map((track) => ({
+            album: {
+              images: track.album.images,
+              name: track.album.name,
+              uri: track.album.uri,
+            },
+            artists: track.artists.map((artist) => ({
+              name: artist.name,
+              uri: artist.uri,
+            })),
+            duration_ms: track.duration_ms,
+            id: track.id,
+            is_playable: track.is_playable || true,
+            media_type: "audio" as const, // Type explicite avec as const
+            name: track.name,
+            type: "track" as const, // Forcer la valeur à "track" qui est l'une des valeurs autorisées
+            uid: track.id, // Utiliser l'ID comme UID
+            uri: track.uri,
+          }));
+          this.queue = spotifyTracks;
         })
         .catch(() => {
           useNotification().addNotification({
@@ -130,7 +155,7 @@ export const usePlayer = defineStore("player", {
             .get<DevicesResponse>("me/player/devices")
             .then(({ data }) => {
               this.devices.list = data.devices;
-              const activeDevice = data.devices.find((d) => d.id === deviceId);
+              const activeDevice = data.devices.find((device) => device.id === deviceId);
               if (activeDevice) this.devices.activeDevice = activeDevice;
             });
         });

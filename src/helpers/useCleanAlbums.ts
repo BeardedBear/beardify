@@ -1,6 +1,24 @@
 import { Album, AlbumSimplified } from "../@types/Album";
 import { CurrentlyPlayingAlbum } from "../@types/CurrentlyPlaying";
 
+export function isAlbum(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
+  return album.album_type === "album" || album.album_type === "ALBUM";
+}
+
+export function isCompilation(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
+  return album.album_type === "compilation";
+}
+
+export function isEP(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
+  const minimumNumberOfTracks = 3;
+  return album.total_tracks >= minimumNumberOfTracks && album.album_type === "single";
+}
+
+export function isSingle(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
+  const minimumNumberOfTracks = 3;
+  return album.total_tracks < minimumNumberOfTracks && album.album_type === "single";
+}
+
 export function useCheckLiveAlbum(albumName: string): boolean {
   const cleanedName = albumName.toLowerCase().trim();
   const matches = [
@@ -48,22 +66,4 @@ export function useCheckReissueAlbum(albumName: string): boolean {
   const cleanedName = albumName.toLowerCase().trim();
   const matches = ["\\(reissue"];
   return new RegExp(`(${matches.join("|")})`).test(cleanedName);
-}
-
-export function isAlbum(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
-  return album.album_type === "album" || album.album_type === "ALBUM";
-}
-
-export function isEP(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
-  const minimumNumberOfTracks = 3;
-  return album.total_tracks >= minimumNumberOfTracks && album.album_type === "single";
-}
-
-export function isSingle(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
-  const minimumNumberOfTracks = 3;
-  return album.total_tracks < minimumNumberOfTracks && album.album_type === "single";
-}
-
-export function isCompilation(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
-  return album.album_type === "compilation";
 }

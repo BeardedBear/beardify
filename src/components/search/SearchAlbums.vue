@@ -31,7 +31,7 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 .album {
   border-radius: 1rem;

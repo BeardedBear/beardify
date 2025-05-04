@@ -25,8 +25,8 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/scss/colors";
-@import "../assets/scss/responsive";
+@use "../assets/scss/colors" as colors;
+@use "../assets/scss/responsive" as responsive;
 
 .albums {
   display: grid;
@@ -45,15 +45,15 @@ defineProps<{
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @include l {
+  @include responsive.l {
     grid-template-columns: repeat(6, 1fr);
   }
 
-  @include xl {
+  @include responsive.xl {
     grid-template-columns: repeat(8, 1fr);
   }
 
-  @include hdpi {
+  @include responsive.hdpi {
     grid-template-columns: repeat(12, 1fr);
   }
 }

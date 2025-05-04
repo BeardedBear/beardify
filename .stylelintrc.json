@@ -17,7 +17,6 @@
       "custom-properties",
       "declarations"
     ],
-    "order/properties-alphabetical-order": true,
-    "declaration-colon-newline-after": null
+    "order/properties-alphabetical-order": true
   }
 }

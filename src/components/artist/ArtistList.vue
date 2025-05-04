@@ -38,7 +38,7 @@ function goArtist(artistUri: string): void {
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 .separator {
   opacity: 0.2;

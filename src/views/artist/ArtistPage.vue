@@ -64,8 +64,8 @@ artistStore.clean().finally(() => {
 </style>
 
 <style lang="scss" scoped>
-@import "../../assets/scss/colors";
-@import "../../assets/scss/responsive";
+@use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/responsive" as responsive;
 
 .list {
   flex: 1;
@@ -79,7 +79,7 @@ artistStore.clean().finally(() => {
   max-width: 120rem;
   padding: 2rem 2.5rem;
 
-  @include xl {
+  @include responsive.xl {
     grid-template-columns: 1fr;
   }
 
@@ -91,7 +91,7 @@ artistStore.clean().finally(() => {
 .top {
   flex: 0 0 22rem;
 
-  @include xl {
+  @include responsive.xl {
     order: -1;
   }
 }
@@ -99,7 +99,7 @@ artistStore.clean().finally(() => {
 .top-item {
   margin-bottom: 2.5rem;
 
-  @include xl {
+  @include responsive.xl {
     margin-bottom: 0;
   }
 }
@@ -111,7 +111,7 @@ artistStore.clean().finally(() => {
 }
 
 .related-artists {
-  @include xl {
+  @include responsive.xl {
     display: none;
   }
 }

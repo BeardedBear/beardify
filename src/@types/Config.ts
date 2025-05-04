@@ -7,13 +7,13 @@ export interface Config {
   themeLabel: ThemeLabel;
 }
 
-export type ThemeLabel = "dark" | "light";
 export type SchemeLabel = "apple" | "blue" | "crimson" | "default" | "orange";
-
 export interface ThemeColor {
   color: string;
   var: string;
 }
+
+export type ThemeLabel = "dark" | "light";
 
 export const schemeDefault: ThemeColor[] = [
   {

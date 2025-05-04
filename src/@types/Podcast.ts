@@ -3,13 +3,6 @@ import { ContextType } from "./CurrentlyPlaying";
 import { Image } from "./Image";
 import { ExternalUrls } from "./Misc";
 
-export interface PodcastsPage {
-  episodes: Episode[];
-  list: null | PodcastItem;
-  myPodcasts: PodcastSaved[];
-  podcast: null | Podcast;
-}
-
 export interface Episode {
   audio_preview_url: string;
   description: string;
@@ -34,13 +27,6 @@ export interface Episode {
   type: string;
   uri: string;
 }
-export interface PodcastSaved {
-  added_at: string;
-  show: Podcast;
-}
-export interface PodcastItem {
-  shows: Podcast[];
-}
 
 export interface Podcast {
   available_markets: string[];
@@ -60,4 +46,18 @@ export interface Podcast {
   total_episodes: number;
   type: ContextType;
   uri: string;
+}
+export interface PodcastItem {
+  shows: Podcast[];
+}
+export interface PodcastSaved {
+  added_at: string;
+  show: Podcast;
+}
+
+export interface PodcastsPage {
+  episodes: Episode[];
+  list: null | PodcastItem;
+  myPodcasts: PodcastSaved[];
+  podcast: null | Podcast;
 }

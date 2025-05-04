@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-import { AlbumPage } from "../../@types/Album";
+import { Album, AlbumPage } from "../../@types/Album";
 import { defaultAlbum } from "../../@types/Defaults";
 import { instance } from "../../api";
 
@@ -12,7 +12,7 @@ export const useAlbum = defineStore("album", {
 
     getAlbum(albumId: string) {
       instance()
-        .get(`albums/${albumId}`)
+        .get<Album>(`albums/${albumId}`)
         .then((e) => (this.album = e.data));
     },
   },

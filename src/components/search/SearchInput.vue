@@ -39,7 +39,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 $radius: 0.3rem;
 

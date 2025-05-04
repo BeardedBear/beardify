@@ -1,4 +1,4 @@
-import axios from "axios";
+import ky from "ky";
 import { defineStore } from "pinia";
 
 import { MenuItem, Release, ReleasesCheck, ReleasesPage } from "../../@types/Releases";
@@ -16,17 +16,17 @@ export const useReleases = defineStore("releases", {
     async createReleasesCheckEntry() {
       const authStore = useAuth();
       const userId = authStore.me?.id;
-      const { data } = await axios.get<{ data: ReleasesCheck[] }>(
-        `https://2fpx4328.directus.app/items/releases_check?filter[user][_eq]=${userId}`,
-      );
+      const data = await ky
+        .get(`https://2fpx4328.directus.app/items/releases_check?filter[user][_eq]=${userId}`)
+        .json<{ data: ReleasesCheck[] }>();
 
       if (!data.data.length) {
-        axios
-          .post("https://2fpx4328.directus.app/items/releases_check", {
+        ky.post("https://2fpx4328.directus.app/items/releases_check", {
+          json: {
             checks: [],
             user: useAuth().me?.id,
-          })
-          .then(() => (this.checks = []));
+          },
+        }).then(() => (this.checks = []));
       } else {
         this.checks = data.data[0].checks;
         this.uid = data.data[0].id;
@@ -34,9 +34,9 @@ export const useReleases = defineStore("releases", {
     },
 
     async getReleases() {
-      const { data } = await axios.get<Release[]>(
-        `https://2fpx4328.directus.app/assets/7e053788-71a4-46b3-b349-44b300a1b0a2?t=${new Date().getTime()}`,
-      );
+      const data = await ky
+        .get(`https://2fpx4328.directus.app/assets/7e053788-71a4-46b3-b349-44b300a1b0a2?t=${new Date().getTime()}`)
+        .json<Release[]>();
 
       function getSlugsByCategory(category: string): string[] {
         const array: string[] = [];
@@ -89,7 +89,10 @@ export const useReleases = defineStore("releases", {
       const allreadyExist = this.checks?.some((r) => r.id === releaseId);
       const checks = !allreadyExist ? addChecks : delChecks;
 
-      axios.patch(`https://2fpx4328.directus.app/items/releases_check/${this.uid}`, { checks });
+      ky.patch(`https://2fpx4328.directus.app/items/releases_check/${this.uid}`, {
+        json: { checks },
+      });
+
       this.checks = checks;
     },
   },

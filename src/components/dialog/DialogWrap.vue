@@ -32,7 +32,7 @@ const dialogStore = useDialog();
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 $radius: 0.4rem;
 

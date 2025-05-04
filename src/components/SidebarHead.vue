@@ -40,7 +40,7 @@ const dialogStore = useDialog();
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/scss/colors";
+@use "../assets/scss/colors" as colors;
 
 .topbar {
   align-items: center;

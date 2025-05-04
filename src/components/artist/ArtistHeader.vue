@@ -33,7 +33,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 .img {
   filter: blur(15px);

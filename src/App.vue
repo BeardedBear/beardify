@@ -55,12 +55,12 @@ document.addEventListener("visibilitychange", () => {
 </script>
 
 <style lang="scss">
+@use "./assets/scss/button" as button;
+@use "./assets/scss/colors" as colors;
+@use "./assets/scss/responsive" as responsive;
+@use "./assets/scss/heading" as heading;
+@use "./assets/scss/mixins" as mixins;
 @import "../node_modules/normalize.css/normalize.css";
-@import "./assets/scss/button";
-@import "./assets/scss/colors";
-@import "./assets/scss/responsive";
-@import "./assets/scss/heading";
-@import "./assets/scss/mixins";
 
 *,
 *::before,
@@ -131,7 +131,7 @@ body {
     grid-template-columns: 19rem 1fr;
     overflow: hidden;
 
-    @include hdpi {
+    @include responsive.hdpi {
       grid-template-columns: 25rem 1fr;
     }
   }

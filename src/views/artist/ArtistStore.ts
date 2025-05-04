@@ -25,9 +25,11 @@ export const useArtist = defineStore("artist", {
       instance()
         .get<Paging<AlbumSimplified>>(url)
         .then((e) => {
-          const cleanFromOtherMarkets = e.data.items.filter((album) => album.available_markets.includes("FR"));
-          const lives = cleanFromOtherMarkets.filter((album) => useCheckLiveAlbum(album.name));
-          const albums = cleanFromOtherMarkets.filter((album) => !useCheckLiveAlbum(album.name));
+          const cleanFromOtherMarkets = e.data.items.filter((album: AlbumSimplified) =>
+            album.available_markets.includes("FR"),
+          );
+          const lives = cleanFromOtherMarkets.filter((album: AlbumSimplified) => useCheckLiveAlbum(album.name));
+          const albums = cleanFromOtherMarkets.filter((album: AlbumSimplified) => !useCheckLiveAlbum(album.name));
 
           this.albums = removeDuplicatesAlbums(this.albums.concat(albums));
           this.albumsLive = removeDuplicatesAlbums(this.albumsLive.concat(lives));
@@ -57,8 +59,8 @@ export const useArtist = defineStore("artist", {
       instance()
         .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=single&limit=50`)
         .then((e) => {
-          const onlySingles = e.data.items.filter((e) => !isEP(e));
-          const onlyEps = e.data.items.filter((e) => isEP(e));
+          const onlySingles = e.data.items.filter((item: AlbumSimplified) => !isEP(item));
+          const onlyEps = e.data.items.filter((item: AlbumSimplified) => isEP(item));
           this.singles = removeDuplicatesAlbums(onlySingles);
           this.eps = removeDuplicatesAlbums(onlyEps);
         });

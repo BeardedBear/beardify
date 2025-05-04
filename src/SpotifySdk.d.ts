@@ -4,6 +4,10 @@ interface Window {
 }
 
 declare namespace Spotify {
+  type AddListenerFn = ((event: "not_ready" | "ready", cb: PlaybackInstanceListener) => void) &
+    ((event: "player_state_changed", cb: PlaybackStateListener) => void) &
+    ((event: ErrorTypes, cb: ErrorListener) => void);
+
   interface Album {
     images: Image[];
     name: string;
@@ -18,6 +22,8 @@ declare namespace Spotify {
   interface Error {
     message: string;
   }
+
+  type ErrorListener = (err: Error) => void;
 
   type ErrorTypes = "account_error" | "authentication_error" | "initialization_error" | "playback_error";
 
@@ -41,6 +47,8 @@ declare namespace Spotify {
     skipping_next: boolean;
     skipping_prev: boolean;
   }
+
+  type PlaybackInstanceListener = (inst: WebPlaybackInstance) => void;
 
   interface PlaybackRestrictions {
     disallow_pausing_reasons: string[];
@@ -73,7 +81,7 @@ declare namespace Spotify {
     timestamp: number;
     track_window: PlaybackTrackWindow;
   }
-
+  type PlaybackStateListener = (s: PlaybackState) => void;
   interface PlaybackTrackWindow {
     current_track: Track;
     next_tracks: Track[];
@@ -86,16 +94,26 @@ declare namespace Spotify {
     volume?: number;
   }
 
-  type ErrorListener = (err: Error) => void;
-  type PlaybackInstanceListener = (inst: WebPlaybackInstance) => void;
-  type PlaybackStateListener = (s: PlaybackState) => void;
+  interface Track {
+    album: Album;
+    artists: Artist[];
+    duration_ms: number;
+    id: null | string;
+    is_playable: boolean;
+    is_playable: boolean;
+    media_type: "audio" | "video";
+    name: string;
+    type: "ad" | "episode" | "track";
+    uid: string;
+    uri: string;
+  }
 
-  type AddListenerFn = ((event: "not_ready" | "ready", cb: PlaybackInstanceListener) => void) &
-    ((event: "player_state_changed", cb: PlaybackStateListener) => void) &
-    ((event: ErrorTypes, cb: ErrorListener) => void);
+  interface WebPlaybackInstance {
+    device_id: string;
+  }
 
   class Player {
-    readonly _options: PlayerInit & { id: string };
+    readonly _options: { id: string } & PlayerInit;
     addListener: AddListenerFn;
 
     on: AddListenerFn;
@@ -119,23 +137,5 @@ declare namespace Spotify {
     setName(name: string): Promise<void>;
     setVolume(volume: number): Promise<void>;
     togglePlay(): Promise<void>;
-  }
-
-  interface Track {
-    album: Album;
-    artists: Artist[];
-    duration_ms: number;
-    id: null | string;
-    is_playable: boolean;
-    is_playable: boolean;
-    media_type: "audio" | "video";
-    name: string;
-    type: "ad" | "episode" | "track";
-    uid: string;
-    uri: string;
-  }
-
-  interface WebPlaybackInstance {
-    device_id: string;
   }
 }

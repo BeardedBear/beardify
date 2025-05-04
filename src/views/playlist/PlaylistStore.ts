@@ -35,7 +35,7 @@ export const usePlaylist = defineStore("playlist", {
       instance()
         .get<Paging<PlaylistTrack>>(url)
         .then((e) => {
-          this.tracks = this.tracks.concat(e.data.items.filter((e) => e.track));
+          this.tracks = this.tracks.concat(e.data.items.filter((item: PlaylistTrack) => item.track));
           if (e.data.next) this.getTracks(e.data.next);
         });
     },

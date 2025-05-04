@@ -1,17 +1,3 @@
-export type DeviceType =
-  | "audio_dongle"
-  | "automobile"
-  | "avr"
-  | "cast_audio"
-  | "cast_video"
-  | "computer"
-  | "game_console"
-  | "smartphone"
-  | "speaker"
-  | "stb"
-  | "tablet"
-  | "tv";
-
 export interface Device {
   id: null | string;
   is_active: boolean;
@@ -25,3 +11,17 @@ export interface Device {
 export interface DevicesResponse {
   devices: Device[];
 }
+
+export type DeviceType =
+  | "audio_dongle"
+  | "automobile"
+  | "avr"
+  | "cast_audio"
+  | "cast_video"
+  | "computer"
+  | "game_console"
+  | "smartphone"
+  | "speaker"
+  | "stb"
+  | "tablet"
+  | "tv";

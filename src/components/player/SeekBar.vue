@@ -62,7 +62,7 @@ watch(
 
 <style lang="scss" scoped>
 @use "sass:color";
-@import "../../assets/scss/colors";
+@use "../../assets/scss/colors" as colors;
 
 @keyframes pop-seek {
   from {

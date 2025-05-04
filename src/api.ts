@@ -1,5 +1,6 @@
-import axios, { AxiosInstance } from "axios";
+import ky, { Options } from "ky";
 
+import { SpotifyOptions } from "./@types/Api";
 import { useAuth } from "./views/auth/AuthStore";
 
 export const api = {
@@ -11,15 +12,89 @@ export const api = {
   url: "https://api.spotify.com/v1/",
 };
 
-export function instance(): AxiosInstance {
+// Type pour les méthodes d'instance API
+type ApiInstance = {
+  delete: <T = unknown>(url: string, options?: SpotifyOptions) => Promise<{ data: T }>;
+  get: <T = unknown>(url: string, options?: SpotifyOptions) => Promise<{ data: T }>;
+  patch: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => Promise<{ data: T }>;
+  post: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => Promise<{ data: T }>;
+  put: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => Promise<{ data: T }>;
+  raw: typeof ky;
+};
+
+// Instance native de ky pour les appels API
+export function instance(): ApiInstance {
+  const kyInstance = createKyInstance();
+
+  return {
+    delete: async <T = unknown>(url: string, options?: SpotifyOptions): Promise<{ data: T }> => {
+      const response = await kyInstance.delete(url, options);
+      try {
+        const data = await response.json<T>();
+        return { data };
+      } catch {
+        return { data: {} as T };
+      }
+    },
+    get: async <T = unknown>(url: string, options?: SpotifyOptions): Promise<{ data: T }> => {
+      const response = await kyInstance.get(url, options);
+      const data = await response.json<T>();
+      return { data };
+    },
+    patch: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
+      const opts: Options = { ...options };
+      if (body) {
+        opts.json = body;
+      }
+      const response = await kyInstance.patch(url, opts);
+      try {
+        const data = await response.json<T>();
+        return { data };
+      } catch {
+        return { data: {} as T };
+      }
+    },
+    post: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
+      const opts: Options = { ...options };
+      if (body) {
+        opts.json = body;
+      }
+      const response = await kyInstance.post(url, opts);
+      try {
+        const data = await response.json<T>();
+        return { data };
+      } catch {
+        return { data: {} as T };
+      }
+    },
+    put: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
+      const opts: Options = { ...options };
+      if (body) {
+        opts.json = body;
+      }
+      const response = await kyInstance.put(url, opts);
+      try {
+        const data = await response.json<T>();
+        return { data };
+      } catch {
+        return { data: {} as T };
+      }
+    },
+    // Accès direct à l'instance ky
+    raw: kyInstance,
+  };
+}
+
+// Instance ky de base
+function createKyInstance(): typeof ky {
   const authStore = useAuth();
 
-  return axios.create({
-    baseURL: api.url,
+  return ky.create({
     headers: {
       Authorization: `Bearer ${authStore.accessToken}`,
       "Content-Type": "application/json",
     },
+    prefixUrl: api.url,
     timeout: 5000,
   });
 }
