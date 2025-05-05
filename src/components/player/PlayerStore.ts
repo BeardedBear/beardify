@@ -8,7 +8,7 @@ import { defaultPlaybackState, Player } from "../../@types/Player";
 import { Track } from "../../@types/Track";
 import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
-import spotify from "../../spotify";
+import { createSpotifyPlayer } from "../../spotify";
 import { useNotification } from "../notification/NotificationStore";
 
 export const usePlayer = defineStore("player", {
@@ -43,7 +43,7 @@ export const usePlayer = defineStore("player", {
         .then(({ data }) => {
           const activeDevice = data.devices.find((device) => device.is_active);
           this.devices.list = data.devices;
-          if (!data.devices.length) spotify().connect();
+          if (!data.devices.length) createSpotifyPlayer().connect();
           if (!this.playerState?.paused && activeDevice) {
             this.devices.activeDevice = activeDevice;
           } else if (activeDevice?.is_active) {

@@ -12,7 +12,7 @@ export const api = {
   url: "https://api.spotify.com/v1/",
 };
 
-// Type pour les méthodes d'instance API
+// Type for API instance methods
 type ApiInstance = {
   delete: <T = unknown>(url: string, options?: SpotifyOptions) => Promise<{ data: T }>;
   get: <T = unknown>(url: string, options?: SpotifyOptions) => Promise<{ data: T }>;
@@ -22,7 +22,7 @@ type ApiInstance = {
   raw: typeof ky;
 };
 
-// Instance native de ky pour les appels API
+// Native ky instance for API calls
 export function instance(): ApiInstance {
   const kyInstance = createKyInstance();
 
@@ -38,8 +38,12 @@ export function instance(): ApiInstance {
     },
     get: async <T = unknown>(url: string, options?: SpotifyOptions): Promise<{ data: T }> => {
       const response = await kyInstance.get(url, options);
-      const data = await response.json<T>();
-      return { data };
+      try {
+        const data = await response.json<T>();
+        return { data };
+      } catch {
+        return { data: {} as T };
+      }
     },
     patch: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
       const opts: Options = { ...options };
@@ -80,12 +84,12 @@ export function instance(): ApiInstance {
         return { data: {} as T };
       }
     },
-    // Accès direct à l'instance ky
+    // Direct access to the ky instance
     raw: kyInstance,
   };
 }
 
-// Instance ky de base
+// Base ky instance
 function createKyInstance(): typeof ky {
   const authStore = useAuth();
 

@@ -31,9 +31,6 @@ export default [
   // Configuration pour les fichiers TypeScript
   {
     files: ["**/*.ts", "**/*.tsx"],
-    plugins: {
-      "@typescript-eslint": tseslint,
-    },
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -41,14 +38,17 @@ export default [
         sourceType: "module",
       },
     },
+    plugins: {
+      "@typescript-eslint": tseslint,
+    },
     rules: {
-      "@typescript-eslint/interface-name-prefix": "off",
       "@typescript-eslint/explicit-function-return-type": "warn",
       "@typescript-eslint/explicit-module-boundary-types": "off",
-      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/interface-name-prefix": "off",
       "@typescript-eslint/no-explicit-any": "warn",
-      "no-unused-vars": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-unused-vars": "warn",
+      "no-unused-vars": "off",
     },
   },
 
@@ -84,6 +84,7 @@ export default [
   // Règles globales
   {
     rules: {
+      "linebreak-style": ["error", "unix"], // Force l'utilisation de LF (unix) au lieu de CRLF (windows)
       "no-console": "warn",
       "no-debugger": "warn",
     },

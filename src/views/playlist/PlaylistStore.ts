@@ -6,6 +6,7 @@ import { Playlist, PlaylistPage, PlaylistTrack } from "../../@types/Playlist";
 import { TrackToRemove } from "../../@types/Track";
 import { instance } from "../../api";
 import { useSidebar } from "../../components/sidebar/SidebarStore";
+import { cleanUrl } from "../../helpers/urls";
 import { useAuth } from "../auth/AuthStore";
 
 export const usePlaylist = defineStore("playlist", {
@@ -25,15 +26,17 @@ export const usePlaylist = defineStore("playlist", {
     },
 
     async getPlaylist(url: string) {
-      this.playlist = (await instance().get<Playlist>(url)).data;
+      const cleanedUrl = cleanUrl(url);
+      this.playlist = (await instance().get<Playlist>(cleanedUrl)).data;
       this.followed = (
         await instance().get<boolean[]>(`playlists/${this.playlist.id}/followers/contains?ids=${useAuth().me?.id}`)
       ).data.shift();
     },
 
     getTracks(url: string) {
+      const cleanedUrl = cleanUrl(url);
       instance()
-        .get<Paging<PlaylistTrack>>(url)
+        .get<Paging<PlaylistTrack>>(cleanedUrl)
         .then((e) => {
           this.tracks = this.tracks.concat(e.data.items.filter((item: PlaylistTrack) => item.track));
           if (e.data.next) this.getTracks(e.data.next);
