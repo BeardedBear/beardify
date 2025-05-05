@@ -39,7 +39,27 @@ export const usePlaylist = defineStore("playlist", {
         .get<Paging<PlaylistTrack>>(cleanedUrl)
         .then((e) => {
           this.tracks = this.tracks.concat(e.data.items.filter((item: PlaylistTrack) => item.track));
-          if (e.data.next) this.getTracks(e.data.next);
+          // Only continue if there's a next page
+          if (e.data.next) {
+            // Make sure to clean the next URL to avoid duplication
+            this.getTracks(e.data.next);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching playlist tracks:", error);
+          // If there's a URL error, it might be due to duplicate prefixes
+          if (
+            error.message &&
+            error.message.includes("404") &&
+            url.includes("https://api.spotify.com/v1/https://api.spotify.com/v1/")
+          ) {
+            // Try to fix the malformed URL by removing the duplicate prefix
+            const fixedUrl = url.replace(
+              "https://api.spotify.com/v1/https://api.spotify.com/v1/",
+              "https://api.spotify.com/v1/",
+            );
+            this.getTracks(fixedUrl);
+          }
         });
     },
 

@@ -83,10 +83,19 @@ const currentTrack = computed(() => usePlayer().playerState?.track_window.curren
 function deleteSong(songId: string): void {
   instance()
     .delete(`playlists/${playlist.id}/tracks`, {
-      data: { tracks: [{ uri: songId }] },
+      data: {
+        tracks: [{ uri: songId }],
+        snapshot_id: playlist.snapshot_id,
+      },
     })
     .then(() => removeSong(songId))
-    .then(() => notification({ msg: "Track deleted", type: NotificationType.Success }));
+    .then(() => notification({ msg: "Track deleted", type: NotificationType.Success }))
+    .catch((error) =>
+      notification({
+        msg: error.response?.data?.error?.message ?? "Failed to delete track",
+        type: NotificationType.Error,
+      }),
+    );
 }
 </script>
 

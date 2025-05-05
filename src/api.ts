@@ -28,7 +28,12 @@ export function instance(): ApiInstance {
 
   return {
     delete: async <T = unknown>(url: string, options?: SpotifyOptions): Promise<{ data: T }> => {
-      const response = await kyInstance.delete(url, options);
+      const opts: Options = { ...options };
+      if (options?.data) {
+        // Extract the data property from options and set it as json
+        opts.json = options.data;
+      }
+      const response = await kyInstance.delete(url, opts);
       try {
         const data = await response.json<T>();
         return { data };
