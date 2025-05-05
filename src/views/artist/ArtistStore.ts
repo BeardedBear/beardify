@@ -6,6 +6,7 @@ import { defaultArtist } from "../../@types/Defaults";
 import { Paging } from "../../@types/Paging";
 import { instance } from "../../api";
 import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
+import { cleanUrl } from "../../helpers/urls";
 import { isEP, useCheckLiveAlbum } from "../../helpers/useCleanAlbums";
 
 export const useArtist = defineStore("artist", {
@@ -22,8 +23,9 @@ export const useArtist = defineStore("artist", {
     },
 
     getAlbums(url: string) {
+      const cleanedUrl = cleanUrl(url);
       instance()
-        .get<Paging<AlbumSimplified>>(url)
+        .get<Paging<AlbumSimplified>>(cleanedUrl)
         .then((e) => {
           const cleanFromOtherMarkets = e.data.items.filter((album: AlbumSimplified) =>
             album.available_markets.includes("FR"),

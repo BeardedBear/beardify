@@ -1,10 +1,13 @@
 import { defineStore } from "pinia";
 
+import { NotificationType } from "../../@types/Notification";
 import { Paging } from "../../@types/Paging";
 import { SimplifiedPlaylist } from "../../@types/Playlist";
 import { Sidebar } from "../../@types/Sidebar";
 import { instance } from "../../api";
+import { notification } from "../../helpers/notifications";
 import { isPlaylistOwner } from "../../helpers/playlist";
+import { cleanUrl } from "../../helpers/urls";
 import router from "../../router";
 import { useAuth } from "../../views/auth/AuthStore";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";
@@ -35,14 +38,58 @@ export const useSidebar = defineStore("sidebar", {
         });
     },
 
-    async getPlaylists(url: string) {
-      if (url && router.currentRoute.value.name !== "Login") {
-        const { data } = await instance().get<Paging<SimplifiedPlaylist>>(url);
+    async getPlaylists(initialUrl: string) {
+      if (!initialUrl || router.currentRoute.value.name === "Login") {
+        return;
+      }
 
-        this.playlists = this.playlists.concat(data.items).filter((p) => !isACollection(p));
-        this.collections = this.collections.concat(data.items).filter((p) => isACollection(p));
+      let url = initialUrl;
+      let allPlaylistIds = new Set<string>();
+      let allCollectionIds = new Set<string>();
+      let tempPlaylists: SimplifiedPlaylist[] = [];
+      let tempCollections: SimplifiedPlaylist[] = [];
 
-        if (data.next) this.getPlaylists(data.next);
+      // Collecter toutes les playlists existantes dans les ensembles pour vérifier les doublons
+      this.playlists.forEach((p) => allPlaylistIds.add(p.id));
+      this.collections.forEach((c) => allCollectionIds.add(c.id));
+
+      try {
+        // Boucler jusqu'à ce qu'il n'y ait plus de pages suivantes
+        while (url) {
+          const cleanedUrl = cleanUrl(url);
+          const { data } = await instance().get<Paging<SimplifiedPlaylist>>(cleanedUrl);
+
+          // Traiter chaque playlist
+          data.items.forEach((item) => {
+            if (isACollection(item)) {
+              // Ajouter uniquement si pas déjà présent
+              if (!allCollectionIds.has(item.id)) {
+                allCollectionIds.add(item.id);
+                tempCollections.push(item);
+              }
+            } else {
+              // Ajouter uniquement si pas déjà présent
+              if (!allPlaylistIds.has(item.id)) {
+                allPlaylistIds.add(item.id);
+                tempPlaylists.push(item);
+              }
+            }
+          });
+
+          // Passer à la page suivante ou terminer
+          url = data.next || "";
+        }
+
+        // Mettre à jour les listes une fois que toutes les pages sont chargées
+        this.playlists = [...this.playlists, ...tempPlaylists];
+        this.collections = [...this.collections, ...tempCollections];
+      } catch (error) {
+        notification({
+          msg: "Error while fetching playlists",
+          type: NotificationType.Error,
+        });
+        // eslint-disable-next-line no-console
+        console.error("Failed to fetch playlists:", error);
       }
     },
 
