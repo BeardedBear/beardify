@@ -6,7 +6,6 @@ import { SimplifiedPlaylist } from "../../@types/Playlist";
 import { Sidebar } from "../../@types/Sidebar";
 import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
-import { isPlaylistOwner } from "../../helpers/playlist";
 import { cleanUrl } from "../../helpers/urls";
 import router from "../../router";
 import { useAuth } from "../../views/auth/AuthStore";
@@ -49,26 +48,26 @@ export const useSidebar = defineStore("sidebar", {
       let tempPlaylists: SimplifiedPlaylist[] = [];
       let tempCollections: SimplifiedPlaylist[] = [];
 
-      // Collecter toutes les playlists existantes dans les ensembles pour vérifier les doublons
+      // Collect all existing playlists in sets to check for duplicates
       this.playlists.forEach((p) => allPlaylistIds.add(p.id));
       this.collections.forEach((c) => allCollectionIds.add(c.id));
 
       try {
-        // Boucler jusqu'à ce qu'il n'y ait plus de pages suivantes
+        // Loop until there are no more next pages
         while (url) {
           const cleanedUrl = cleanUrl(url);
           const { data } = await instance().get<Paging<SimplifiedPlaylist>>(cleanedUrl);
 
-          // Traiter chaque playlist
+          // Process each playlist
           data.items.forEach((item) => {
             if (isACollection(item)) {
-              // Ajouter uniquement si pas déjà présent
+              // Add only if not already present
               if (!allCollectionIds.has(item.id)) {
                 allCollectionIds.add(item.id);
                 tempCollections.push(item);
               }
             } else {
-              // Ajouter uniquement si pas déjà présent
+              // Add only if not already present
               if (!allPlaylistIds.has(item.id)) {
                 allPlaylistIds.add(item.id);
                 tempPlaylists.push(item);
@@ -76,11 +75,11 @@ export const useSidebar = defineStore("sidebar", {
             }
           });
 
-          // Passer à la page suivante ou terminer
+          // Move to next page or finish
           url = data.next || "";
         }
 
-        // Mettre à jour les listes une fois que toutes les pages sont chargées
+        // Update lists once all pages are loaded
         this.playlists = [...this.playlists, ...tempPlaylists];
         this.collections = [...this.collections, ...tempCollections];
       } catch (error) {
@@ -99,18 +98,63 @@ export const useSidebar = defineStore("sidebar", {
       this.getPlaylists("me/playlists?limit=50");
     },
 
-    async removePlaylist(playlistId: string) {
+    async removePlaylist(playlistId: string): Promise<void> {
       const playlistStore = usePlaylist();
-      instance()
-        .delete(`https://api.spotify.com/v1/playlists/${playlistId}/followers`)
-        .then(() => {
-          this.playlists = this.playlists.filter((playlist) => playlist.id !== playlistId);
-          this.collections = this.collections.filter((collection) => collection.id !== playlistId);
-          playlistStore.followed = false;
-          if (isPlaylistOwner(playlistStore.playlist.owner)) {
-            router.push("/");
-          }
+      const authStore = useAuth();
+
+      // Check if the user is the owner of the playlist
+      if (playlistStore.playlist.owner.id === authStore.me?.id) {
+        // If owner, delete the playlist (functionality not supported by Spotify API)
+        // So we use the "unfollow" approach even for our own playlists
+        return new Promise<void>((resolve, reject) => {
+          instance()
+            .delete(`playlists/${playlistId}/followers`)
+            .then(() => {
+              this.playlists = this.playlists.filter((playlist) => playlist.id !== playlistId);
+              this.collections = this.collections.filter((collection) => collection.id !== playlistId);
+              playlistStore.followed = false;
+              router.push("/");
+              notification({
+                msg: "Playlist successfully deleted",
+                type: NotificationType.Success,
+              });
+              resolve();
+            })
+            .catch((error) => {
+              // eslint-disable-next-line no-console
+              console.error("Error while deleting playlist:", error);
+              notification({
+                msg: "Unable to delete playlist",
+                type: NotificationType.Error,
+              });
+              reject(error);
+            });
         });
+      } else {
+        // If not owner, unfollow the playlist
+        return new Promise<void>((resolve, reject) => {
+          instance()
+            .delete(`playlists/${playlistId}/followers`)
+            .then(() => {
+              this.playlists = this.playlists.filter((playlist) => playlist.id !== playlistId);
+              this.collections = this.collections.filter((collection) => collection.id !== playlistId);
+              playlistStore.followed = false;
+              if (router.currentRoute.value.params.id === playlistId) {
+                router.push("/");
+              }
+              resolve();
+            })
+            .catch((error) => {
+              // eslint-disable-next-line no-console
+              console.error("Error while unfollowing playlist:", error);
+              notification({
+                msg: "Unable to unfollow playlist",
+                type: NotificationType.Error,
+              });
+              reject(error);
+            });
+        });
+      }
     },
   },
 

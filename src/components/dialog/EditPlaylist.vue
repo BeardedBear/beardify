@@ -4,7 +4,7 @@
     <div class="wrap" v-else>
       <div>
         <div class="section">
-          <label for="name">Nom</label>
+          <label for="name">Name</label>
           <input class="input" id="name" type="text" v-if="isEditable" v-model="values.name" />
           <div v-else>{{ values.name }}</div>
         </div>
@@ -125,10 +125,18 @@ watchEffect(() => {
 
 function remove(): void {
   if (dialogStore.playlistId) {
-    sidebarStore.removePlaylist(dialogStore.playlistId).then(() => {
-      dialogStore.close();
-      notification({ msg: `Playlist deleted`, type: NotificationType.Success });
-    });
+    // First close the dialog to avoid rendering issues
+    const playlistIdToDelete = dialogStore.playlistId;
+    dialogStore.close();
+
+    // Wait for the closing animation to complete before deleting
+    setTimeout(() => {
+      sidebarStore.removePlaylist(playlistIdToDelete).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error("Error while deleting playlist:", error);
+        notification({ msg: `Unable to delete playlist`, type: NotificationType.Error });
+      });
+    }, 300); // Slightly longer than the closing animation (200ms)
   }
 }
 </script>
