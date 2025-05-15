@@ -11,20 +11,22 @@ import { notification } from "../../helpers/notifications";
 import { createSpotifyPlayer } from "../../spotify";
 import { useNotification } from "../notification/NotificationStore";
 
+// Heartbeat interval in milliseconds (4 minutes)
+const HEARTBEAT_INTERVAL = 4 * 60 * 1000;
+
 export const usePlayer = defineStore("player", {
   actions: {
-    // Queue
-    addTrackToQueue(trackUri: string) {
+    addTrackToQueue(trackUri: string): void {
       instance()
         .post(`me/player/queue?uri=${trackUri}`)
-        .then(() => {
+        .then((): void => {
           this.getQueue();
           notification({
             msg: "Song added to queue",
             type: NotificationType.Success,
           });
         })
-        .catch(() => {
+        .catch((): void => {
           notification({
             msg: "Error adding song to queue",
             type: NotificationType.Error,
@@ -32,16 +34,16 @@ export const usePlayer = defineStore("player", {
         });
     },
 
-    closeQueue() {
+    closeQueue(): void {
       this.queueOpened = false;
     },
 
-    async getDeviceList() {
+    async getDeviceList(): Promise<void> {
       this.devices.list = [];
       instance()
         .get<DevicesResponse>("me/player/devices")
-        .then(({ data }) => {
-          const activeDevice = data.devices.find((device) => device.is_active);
+        .then(({ data }): void => {
+          const activeDevice = data.devices.find((device): boolean => device.is_active);
           this.devices.list = data.devices;
           if (!data.devices.length) createSpotifyPlayer().connect();
           if (!this.playerState?.paused && activeDevice) {
@@ -51,14 +53,17 @@ export const usePlayer = defineStore("player", {
           } else {
             this.setDevice(this.thisDeviceId);
           }
+
+          // Start the heartbeat after refreshing the device list
+          this.startDeviceHeartbeat();
         });
     },
 
-    getExternalPlayerState() {
+    getExternalPlayerState(): void {
       this.playerState = defaultPlaybackState;
       instance()
         .get<CurrentlyPlaying>("me/player")
-        .then(({ data }) => {
+        .then(({ data }): void => {
           if (!data.item) return;
 
           const { item } = data;
@@ -80,37 +85,40 @@ export const usePlayer = defineStore("player", {
         });
     },
 
-    getQueue() {
+    getQueue(): void {
       interface QueueResponse {
         queue: Track[];
       }
 
       instance()
         .get<QueueResponse>("me/player/queue")
-        .then(({ data }) => {
-          // Convertir les objets Track en Spotify.Track
-          const spotifyTracks = data.queue.map((track) => ({
-            album: {
-              images: track.album.images,
-              name: track.album.name,
-              uri: track.album.uri,
-            },
-            artists: track.artists.map((artist) => ({
-              name: artist.name,
-              uri: artist.uri,
-            })),
-            duration_ms: track.duration_ms,
-            id: track.id,
-            is_playable: track.is_playable || true,
-            media_type: "audio" as const, // Type explicite avec as const
-            name: track.name,
-            type: "track" as const, // Forcer la valeur à "track" qui est l'une des valeurs autorisées
-            uid: track.id, // Utiliser l'ID comme UID
-            uri: track.uri,
-          }));
+        .then(({ data }): void => {
+          const spotifyTracks = data.queue.map(
+            (track): Spotify.Track => ({
+              album: {
+                images: track.album.images,
+                name: track.album.name,
+                uri: track.album.uri,
+              },
+              artists: track.artists.map(
+                (artist): Spotify.Artist => ({
+                  name: artist.name,
+                  uri: artist.uri,
+                }),
+              ),
+              duration_ms: track.duration_ms,
+              id: track.id,
+              is_playable: track.is_playable || true,
+              media_type: "audio" as const,
+              name: track.name,
+              type: "track" as const,
+              uid: track.id,
+              uri: track.uri,
+            }),
+          );
           this.queue = spotifyTracks;
         })
-        .catch(() => {
+        .catch((): void => {
           useNotification().addNotification({
             msg: "Error getting queue",
             type: NotificationType.Error,
@@ -123,7 +131,7 @@ export const usePlayer = defineStore("player", {
       instance().post("me/player/next");
     },
 
-    openQueue() {
+    openQueue(): void {
       this.getQueue();
       this.queueOpened = true;
     },
@@ -140,67 +148,105 @@ export const usePlayer = defineStore("player", {
       });
     },
 
-    seek(progress: number) {
+    seek(progress: number): void {
       instance()
         .put(`me/player/seek?position_ms=${Math.round(progress)}`)
         .then(() => (this.currentlyPlaying.progress_ms = progress));
     },
 
-    setDevice(deviceId: null | string) {
+    setDevice(deviceId: null | string): void {
       this.playerState = defaultPlaybackState;
       instance()
         .put("me/player", { device_ids: [deviceId] })
-        .then(() => {
+        .then((): void => {
           instance()
             .get<DevicesResponse>("me/player/devices")
-            .then(({ data }) => {
+            .then(({ data }): void => {
               this.devices.list = data.devices;
-              const activeDevice = data.devices.find((device) => device.id === deviceId);
-              if (activeDevice) this.devices.activeDevice = activeDevice;
+              const activeDevice = data.devices.find((device): boolean => device.id === deviceId);
+              if (activeDevice) {
+                this.devices.activeDevice = activeDevice;
+
+                // Start the heartbeat after setting a new active device
+                this.startDeviceHeartbeat();
+              }
             });
         });
     },
 
-    setVolume(volume: number) {
+    setVolume(volume: number): void {
       instance()
         .put(`me/player/volume?volume_percent=${Math.round(volume)}`)
-        .then(() => (this.devices.activeDevice.volume_percent = volume));
+        .then((): number => (this.devices.activeDevice.volume_percent = volume));
     },
 
-    syncPlayerState(state: Spotify.PlaybackState) {
+    startDeviceHeartbeat(): void {
+      this.stopDeviceHeartbeat();
+
+      this.heartbeatInterval = window.setInterval((): void => {
+        // If we have an active device, send a signal to keep it active
+        if (this.devices.activeDevice?.id) {
+          instance()
+            .get<DevicesResponse>("me/player/devices")
+            .then(({ data }): void => {
+              // Check if our device is still in the list
+              const currentDevice = data.devices.find((device): boolean => device.id === this.devices.activeDevice.id);
+
+              // If the device is no longer active, try to reactivate it
+              if (currentDevice && !currentDevice.is_active) {
+                this.setDevice(currentDevice.id);
+              }
+              // If the device has disappeared completely, try to activate the first available one
+              else if (!currentDevice && data.devices.length > 0) {
+                this.setDevice(data.devices[0].id);
+              }
+            });
+        }
+      }, HEARTBEAT_INTERVAL);
+    },
+
+    // Stop the heartbeat
+    stopDeviceHeartbeat(): void {
+      if (this.heartbeatInterval) {
+        window.clearInterval(this.heartbeatInterval);
+        this.heartbeatInterval = null;
+      }
+    },
+
+    syncPlayerState(state: Spotify.PlaybackState): void {
       this.playerState = state;
     },
 
-    thisDevice(deviceId: string) {
+    thisDevice(deviceId: string): void {
       this.thisDeviceId = deviceId;
       this.getDeviceList();
     },
 
-    toggleRepeat() {
+    toggleRepeat(): void {
       if (this.currentlyPlaying.repeat_state === "off") {
         instance()
           .put("me/player/repeat?state=context")
-          .then(() => (this.currentlyPlaying.repeat_state = "context"));
+          .then((): string => (this.currentlyPlaying.repeat_state = "context"));
       } else {
         instance()
           .put("me/player/repeat?state=off")
-          .then(() => (this.currentlyPlaying.repeat_state = "off"));
+          .then((): string => (this.currentlyPlaying.repeat_state = "off"));
       }
     },
 
-    toggleShuffle() {
+    toggleShuffle(): void {
       if (this.currentlyPlaying.shuffle_state) {
         instance()
           .put("me/player/shuffle?state=false")
-          .then(() => (this.currentlyPlaying.shuffle_state = false));
+          .then((): boolean => (this.currentlyPlaying.shuffle_state = false));
       } else {
         instance()
           .put("me/player/shuffle?state=true")
-          .then(() => (this.currentlyPlaying.shuffle_state = true));
+          .then((): boolean => (this.currentlyPlaying.shuffle_state = true));
       }
     },
 
-    updateFromSDK(args: Spotify.Track, position: number) {
+    updateFromSDK(args: Spotify.Track, position: number): void {
       this.currentFromSDK = args;
       this.currentPositionFromSDK = position;
     },
@@ -220,6 +266,7 @@ export const usePlayer = defineStore("player", {
       activeDevice: defaultDevice,
       list: [],
     },
+    heartbeatInterval: null,
     playerState: defaultPlaybackState,
     queue: [],
     queueOpened: false,
