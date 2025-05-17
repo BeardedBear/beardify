@@ -1,8 +1,11 @@
 import ky, { Options } from "ky";
 
-import { SpotifyOptions } from "./@types/Api";
+import { ApiResponse, SpotifyOptions } from "./@types/Api";
 import { useAuth } from "./views/auth/AuthStore";
 
+/**
+ * Spotify API configuration object
+ */
 export const api = {
   clientId: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
   redirectUri:
@@ -14,89 +17,86 @@ export const api = {
   url: "https://api.spotify.com/v1/",
 };
 
-// Type for API instance methods
-type ApiInstance = {
-  delete: <T = unknown>(url: string, options?: SpotifyOptions) => Promise<{ data: T }>;
-  get: <T = unknown>(url: string, options?: SpotifyOptions) => Promise<{ data: T }>;
-  patch: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => Promise<{ data: T }>;
-  post: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => Promise<{ data: T }>;
-  put: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => Promise<{ data: T }>;
+/**
+ * Interface for API instance methods
+ */
+interface ApiInstance {
+  delete: <T = unknown>(url: string, options?: SpotifyOptions) => ApiResponse<{ data: T }>;
+  get: <T = unknown>(url: string, options?: SpotifyOptions) => ApiResponse<{ data: T }>;
+  patch: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => ApiResponse<{ data: T }>;
+  post: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => ApiResponse<{ data: T }>;
+  put: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => ApiResponse<{ data: T }>;
   raw: typeof ky;
-};
+}
 
-// Native ky instance for API calls
+/**
+ * Type definition for HTTP methods in alphabetical order
+ */
+type HttpMethod = "delete" | "get" | "patch" | "post" | "put";
+
+/**
+ * Interface for request options with method type
+ */
+interface RequestOptions {
+  body?: unknown;
+  method: HttpMethod;
+  options?: SpotifyOptions;
+  url: string;
+}
+
+/**
+ * Creates and returns an API instance with methods for HTTP requests
+ * @returns ApiInstance - Object with methods for different HTTP requests
+ */
 export function instance(): ApiInstance {
   const kyInstance = createKyInstance();
 
+  /**
+   * Common function to handle HTTP requests with proper error handling
+   * @template T - The expected response data type
+   * @param requestOptions - Options for the request
+   * @returns Promise resolving to the response data
+   */
+  const handleRequest = async <T = unknown>(requestOptions: RequestOptions): ApiResponse<{ data: T }> => {
+    const { body, method, options, url } = requestOptions;
+    const opts: Options = { ...options };
+
+    // Handle request body or data from options
+    if ((method !== "get" && body) || (method === "delete" && options?.data)) {
+      opts.json = method === "delete" ? options?.data : body;
+    }
+
+    // Make the request using the appropriate method
+    const response = await kyInstance[method](url, opts);
+    const data = await response.json<T>().catch(() => ({}) as T);
+    return { data };
+  };
+
   return {
-    delete: async <T = unknown>(url: string, options?: SpotifyOptions): Promise<{ data: T }> => {
-      const opts: Options = { ...options };
-      if (options?.data) {
-        // Extract the data property from options and set it as json
-        opts.json = options.data;
-      }
-      const response = await kyInstance.delete(url, opts);
-      try {
-        const data = await response.json<T>();
-        return { data };
-      } catch {
-        return { data: {} as T };
-      }
-    },
-    get: async <T = unknown>(url: string, options?: SpotifyOptions): Promise<{ data: T }> => {
-      const response = await kyInstance.get(url, options);
-      try {
-        const data = await response.json<T>();
-        return { data };
-      } catch {
-        return { data: {} as T };
-      }
-    },
-    patch: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
-      const opts: Options = { ...options };
-      if (body) {
-        opts.json = body;
-      }
-      const response = await kyInstance.patch(url, opts);
-      try {
-        const data = await response.json<T>();
-        return { data };
-      } catch {
-        return { data: {} as T };
-      }
-    },
-    post: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
-      const opts: Options = { ...options };
-      if (body) {
-        opts.json = body;
-      }
-      const response = await kyInstance.post(url, opts);
-      try {
-        const data = await response.json<T>();
-        return { data };
-      } catch {
-        return { data: {} as T };
-      }
-    },
-    put: async <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> => {
-      const opts: Options = { ...options };
-      if (body) {
-        opts.json = body;
-      }
-      const response = await kyInstance.put(url, opts);
-      try {
-        const data = await response.json<T>();
-        return { data };
-      } catch {
-        return { data: {} as T };
-      }
-    },
-    // Direct access to the ky instance
+    delete: <T = unknown>(url: string, options?: SpotifyOptions): ApiResponse<{ data: T }> =>
+      handleRequest<T>({ method: "delete", options, url }),
+
+    get: <T = unknown>(url: string, options?: SpotifyOptions): ApiResponse<{ data: T }> =>
+      handleRequest<T>({ method: "get", options, url }),
+
+    patch: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): ApiResponse<{ data: T }> =>
+      handleRequest<T>({ body, method: "patch", options, url }),
+
+    post: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): ApiResponse<{ data: T }> =>
+      handleRequest<T>({ body, method: "post", options, url }),
+
+    put: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): ApiResponse<{ data: T }> =>
+      handleRequest<T>({ body, method: "put", options, url }),
+
+    // Direct access to the underlying ky instance
     raw: kyInstance,
   };
 }
 
-// Base ky instance
+/**
+ * Creates a base ky instance with authentication and common configuration
+ * @returns Configured ky instance
+ */
 function createKyInstance(): typeof ky {
   const authStore = useAuth();
 
@@ -106,6 +106,11 @@ function createKyInstance(): typeof ky {
       "Content-Type": "application/json",
     },
     prefixUrl: api.url,
+    retry: {
+      limit: 2,
+      methods: ["get"],
+      statusCodes: [408, 413, 429, 500, 502, 503, 504],
+    },
     timeout: 5000,
   });
 }
