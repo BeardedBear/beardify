@@ -4,9 +4,11 @@ import { SpotifyOptions } from "./@types/Api";
 import { useAuth } from "./views/auth/AuthStore";
 
 export const api = {
-  clientId: "29a0936f4c6c46399f33f6f60a0855e8",
+  clientId: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
   redirectUri:
-    process.env.NODE_ENV !== "production" ? "http://localhost:3000/auth" : "http://beardify.netlify.app/auth",
+    import.meta.env.MODE !== "production"
+      ? import.meta.env.VITE_REDIRECT_URI_DEV
+      : import.meta.env.VITE_REDIRECT_URI_PROD,
   scopes:
     "user-read-private,user-modify-playback-state,user-read-playback-state,user-read-currently-playing,playlist-read-private,playlist-read-collaborative,playlist-modify-private,playlist-modify-public,user-follow-modify,user-follow-read,streaming,user-read-email,user-top-read,user-library-read,user-read-playback-position,user-read-recently-played",
   url: "https://api.spotify.com/v1/",
