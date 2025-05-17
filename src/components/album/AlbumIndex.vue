@@ -8,7 +8,7 @@
         @click="router.push(`/album/${album.id}`)"
         class="img"
       />
-      <button @click="playAlbum(album.uri)" class="play" type="button">
+      <button @click="handlePlayAlbum(album.uri)" class="play" type="button">
         <i class="icon-play" />
       </button>
       <button
@@ -46,6 +46,7 @@ import { Paging } from "../../@types/Paging";
 import { TrackSimplified, TrackToRemove } from "../../@types/Track";
 import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
+import { playAlbum } from "../../helpers/playAlbum"; // Import the playAlbum helper
 import router from "../../router";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";
 import Cover from "../AlbumCover.vue";
@@ -72,9 +73,12 @@ const isPlaying = computed<boolean>(
   () => props.album.uri === playerStore.playerState?.track_window.current_track.album.uri,
 );
 
-function playAlbum(albumUri: string): void {
-  usePlayer().playerState.position = 0;
-  instance().put("me/player/play", { context_uri: albumUri, position_ms: 0 });
+/**
+ * Wrapper function to call the imported playAlbum helper function
+ * This fixes the issue where albums were being added to the playlist twice
+ */
+async function handlePlayAlbum(albumUri: string): Promise<void> {
+  await playAlbum(albumUri);
 }
 
 function deleteAlbum(albumId: string): void {
@@ -96,8 +100,6 @@ function deleteAlbum(albumId: string): void {
           tracks.push({ uri: track.uri });
         }
       });
-
-      console.log("tracks", tracks);
 
       // Check if we found valid track URIs
       if (tracks.length === 0) {
