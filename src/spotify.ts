@@ -6,10 +6,21 @@ import { useAuth } from "./views/auth/AuthStore";
 // Global error handler for uncaught SDK errors
 const handleSDKError = (error: Error): void => {
   // Intercept specific errors related to Cloud Playback
+  if (
+    error.message &&
+    (error.message.includes("PlayLoad event failed with status 404") || error.message.includes("item_before_load"))
+  ) {
+    // Don't notify the user for these specific error types
+    // These are expected during normal operation of the Spotify SDK
+    // Common during track transitions or connection state changes
+    // Silent handling with no logging or notification
+    return;
+  }
+
+  // Handle other PlayLoad errors separately
   if (error.message && error.message.includes("PlayLoad event failed")) {
-    // Don't notify the user for this specific error type unless it's really necessary
-    // The error is often temporary and will resolve itself
-    // Silent logging, no notification
+    // These might be temporary, so let's not alert the user unless they persist
+    // Silent handling for now, might add retry logic later
     return;
   }
 
@@ -145,7 +156,9 @@ const createPlayer = (): Spotify.Player => {
       if (
         event.reason &&
         event.reason.message &&
-        (event.reason.message.includes("Spotify") || event.reason.message.includes("PlayLoad"))
+        (event.reason.message.includes("Spotify") ||
+          event.reason.message.includes("PlayLoad") ||
+          event.reason.message.includes("item_before_load"))
       ) {
         event.preventDefault(); // Prevent propagation of the unhandled error
         handleSDKError(event.reason);

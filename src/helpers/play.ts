@@ -1,131 +1,15 @@
 import { NotificationType } from "../@types/Notification";
 import { Track, TrackSimplified } from "../@types/Track";
-import { instance } from "../api";
 import { usePlayer } from "../components/player/PlayerStore";
 import { notification } from "./notifications";
 
-// Define a type for API errors
-interface ApiError {
-  response?: {
-    status: number;
-  };
-}
-
-export async function playSong(trackUri: string, position?: number): Promise<void> {
-  const deviceId = await ensureActiveDevice();
-
-  if (!deviceId) {
-    notification({
-      msg: "No active device found. Please select a device.",
-      type: NotificationType.Warning,
-    });
-    return;
-  }
-
-  // The device_id must be passed as a URL query parameter, not in the body
-  const payload = position ? { position_ms: position, uris: [trackUri] } : { uris: [trackUri] };
-
-  try {
-    await instance().put(`me/player/play?device_id=${deviceId}`, payload);
-  } catch (error: unknown) {
-    if (isApiError(error) && error.response?.status === 404) {
-      // Device might not be ready yet, try once more with a delay
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const newDeviceId = await ensureActiveDevice();
-        if (newDeviceId) {
-          await instance().put(`me/player/play?device_id=${newDeviceId}`, payload);
-        } else {
-          throw new Error("No device available");
-        }
-      } catch {
-        // If still failing after retry, notify user
-        const playerStore = usePlayer();
-        playerStore.getDeviceList();
-        notification({
-          msg: "Device not found. Refreshing device list...",
-          type: NotificationType.Warning,
-        });
-      }
-    } else if (isApiError(error) && error.response?.status === 403) {
-      notification({
-        msg: "You don't have permission to play on this device.",
-        type: NotificationType.Error,
-      });
-    } else {
-      notification({
-        msg: "Unable to start playback. Please check your device.",
-        type: NotificationType.Error,
-      });
-    }
-  }
-}
-
-export async function playSongs(sliceIndex: number, tracks: Track[] | TrackSimplified[]): Promise<void> {
-  const deviceId = await ensureActiveDevice();
-
-  if (!deviceId) {
-    notification({
-      msg: "No active device found. Please select a device.",
-      type: NotificationType.Warning,
-    });
-    return;
-  }
-
-  const flatTracks = tracks.map((track: Track | TrackSimplified) => track.uri);
-  const uris = flatTracks.slice(sliceIndex);
-
-  if (uris.length === 0) {
-    notification({
-      msg: "No tracks found to play.",
-      type: NotificationType.Warning,
-    });
-    return;
-  }
-
-  const payload = { uris };
-
-  try {
-    await instance().put(`me/player/play?device_id=${deviceId}`, payload);
-  } catch (error: unknown) {
-    if (isApiError(error) && error.response?.status === 404) {
-      // Device might not be ready yet, try once more with a delay
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const newDeviceId = await ensureActiveDevice();
-        if (newDeviceId) {
-          await instance().put(`me/player/play?device_id=${newDeviceId}`, payload);
-        } else {
-          throw new Error("No device available");
-        }
-      } catch {
-        // If still failing after retry, notify user
-        const playerStore = usePlayer();
-        playerStore.getDeviceList();
-        notification({
-          msg: "Device not found. Refreshing device list...",
-          type: NotificationType.Warning,
-        });
-      }
-    } else if (isApiError(error) && error.response?.status === 403) {
-      notification({
-        msg: "You don't have permission to play on this device.",
-        type: NotificationType.Error,
-      });
-    } else {
-      notification({
-        msg: "Unable to start playback. Please check your device.",
-        type: NotificationType.Error,
-      });
-    }
-  }
-}
+// API error types moved to apiErrorHandling.ts helper
 
 /**
  * Ensures a device is active and ready before attempting playback
  * @returns Promise resolving to a valid device ID or null if unavailable
  */
-async function ensureActiveDevice(): Promise<null | string> {
+export async function ensureActiveDevice(): Promise<null | string> {
   const playerStore = usePlayer();
   let deviceId = playerStore.devices.activeDevice?.id;
 
@@ -171,14 +55,52 @@ async function ensureActiveDevice(): Promise<null | string> {
   return null;
 }
 
-// Type guard for API errors
-function isApiError(error: unknown): error is ApiError {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "response" in error &&
-    typeof (error as ApiError).response === "object" &&
-    (error as ApiError).response !== null &&
-    "status" in (error as ApiError).response!
-  );
+export async function playSong(trackUri: string, position?: number): Promise<void> {
+  const deviceId = await ensureActiveDevice();
+
+  if (!deviceId) {
+    notification({
+      msg: "No active device found. Please select a device.",
+      type: NotificationType.Warning,
+    });
+    return;
+  }
+
+  // The device_id must be passed as a URL query parameter, not in the body
+  const payload = position ? { position_ms: position, uris: [trackUri] } : { uris: [trackUri] };
+
+  // Import here to avoid circular dependency
+  const { executePlaybackApiCall } = await import("./apiErrorHandling");
+  await executePlaybackApiCall(deviceId, payload);
 }
+
+export async function playSongs(sliceIndex: number, tracks: Track[] | TrackSimplified[]): Promise<void> {
+  const deviceId = await ensureActiveDevice();
+
+  if (!deviceId) {
+    notification({
+      msg: "No active device found. Please select a device.",
+      type: NotificationType.Warning,
+    });
+    return;
+  }
+
+  const flatTracks = tracks.map((track: Track | TrackSimplified) => track.uri);
+  const uris = flatTracks.slice(sliceIndex);
+
+  if (uris.length === 0) {
+    notification({
+      msg: "No tracks found to play.",
+      type: NotificationType.Warning,
+    });
+    return;
+  }
+
+  const payload = { uris };
+
+  // Import here to avoid circular dependency
+  const { executePlaybackApiCall } = await import("./apiErrorHandling");
+  await executePlaybackApiCall(deviceId, payload);
+}
+
+// API error handling moved to apiErrorHandling.ts helper

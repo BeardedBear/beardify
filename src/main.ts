@@ -29,13 +29,21 @@ const handleSpotifySDKErrors = (): void => {
       event.reason.message &&
       (event.reason.message.includes("PlayLoad") ||
         event.reason.message.includes("Spotify") ||
-        event.reason.message.includes("404"))
+        event.reason.message.includes("404") ||
+        event.reason.message.includes("item_before_load"))
     ) {
       // Common Spotify SDK errors during playback
       event.preventDefault(); // Prevent error display in console
 
-      // If the error persists, refreshing the token might help
-      if (event.reason.message.includes("PlayLoad event failed") && event.reason.message.includes("404")) {
+      // Completely suppress PlayLoad 404 errors (very common and harmless)
+      if (event.reason.message.includes("PlayLoad event failed with status 404")) {
+        // Silent handling - these errors are expected and harmless with the Spotify SDK
+        // They typically occur during item transitions or when connection state changes
+        return;
+      }
+
+      // For other PlayLoad errors that might need token refresh
+      if (event.reason.message.includes("PlayLoad event failed")) {
         const authStore = useAuth();
         // Check if the token hasn't been refreshed recently
         const lastRefresh = sessionStorage.getItem("spotify_token_last_refresh");
