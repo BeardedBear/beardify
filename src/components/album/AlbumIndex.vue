@@ -300,7 +300,7 @@ function deleteAlbum(albumId: string): void {
   font-weight: bold;
   line-break: auto;
   margin: 0.3rem 0 0;
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .date {
