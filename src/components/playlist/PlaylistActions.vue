@@ -7,7 +7,7 @@
         title="Follow the playlist"
         v-if="!playlistStore.followed"
       >
-        <i class="icon-follow"></i>
+        <i class="icon-follow" />
       </button>
       <button
         @click="sidebarStore.removePlaylist(playlistStore.playlist.id)"
@@ -15,11 +15,11 @@
         title="Unfollow the playlist"
         v-else
       >
-        <i class="icon-followed"></i>
+        <i class="icon-followed" />
       </button>
     </div>
     <button @click="edit(playlistStore.playlist.id)" class="button button--nude" v-else>
-      <i class="icon-more-vertical"></i>
+      <i class="icon-more-vertical" />
     </button>
   </div>
 </template>

@@ -2,7 +2,7 @@
   <div v-if="artistStore.relatedArtists.artists.length">
     <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">Similar artists</div>
     <div class="list">
-      <router-link
+      <RouterLink
         :key="index"
         :to="`/artist/${artist.id}`"
         class="item"
@@ -12,7 +12,7 @@
         <div class="name">
           {{ artist.name }}
         </div>
-      </router-link>
+      </RouterLink>
     </div>
   </div>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <div class="episode-wrap">
     <div class="played" v-if="episode.resume_point.fully_played">
-      <i class="icon icon-check"></i>
+      <i class="icon icon-check" />
     </div>
     <div class="episode">
       <img :src="episode.images[1].url" class="cover" />

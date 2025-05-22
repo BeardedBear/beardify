@@ -7,7 +7,7 @@
         <AlbumGallery :album-list="albums" :icon-name="'album'" class="block" title="Albums" />
         <AlbumGallery :album-list="eps" :icon-name="'ep'" class="block" title="EP's" />
         <div class="heading sticky">
-          <i class="icon-single"></i>
+          <i class="icon-single" />
           Singles
         </div>
         <Tracks :track-list="singles" />

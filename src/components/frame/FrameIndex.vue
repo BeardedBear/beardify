@@ -1,6 +1,6 @@
 <template>
   <div class="frame" v-if="frameStore.show">
-    <div :class="{ 'is-closing': frameStore.isClosing }" @click="frameStore.close()" class="bg"></div>
+    <div :class="{ 'is-closing': frameStore.isClosing }" @click="frameStore.close()" class="bg" />
     <div class="iframe-wrap">
       <LoadingDots class="load" />
       <div class="head">
@@ -10,7 +10,7 @@
           <button @click="frameStore.close()" class="button button--small">Close</button>
         </div>
       </div>
-      <iframe :class="{ 'is-closing': frameStore.isClosing }" :src="frameStore.url" border="0"></iframe>
+      <iframe :class="{ 'is-closing': frameStore.isClosing }" :src="frameStore.url" border="0" />
     </div>
   </div>
 </template>

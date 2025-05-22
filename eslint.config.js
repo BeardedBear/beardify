@@ -6,14 +6,12 @@ import eslintPluginPrettier from "eslint-plugin-prettier";
 import globals from "globals";
 
 export default [
-  // Définir les fichiers à ignorer
   {
     ignores: ["node_modules/**", "dist/**", "public/**"],
   },
-  // Configuration de base ESLint
+
   eslint.configs.recommended,
 
-  // Configuration globale
   {
     languageOptions: {
       globals: {
@@ -28,7 +26,6 @@ export default [
     },
   },
 
-  // Configuration pour les fichiers TypeScript
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
@@ -52,16 +49,30 @@ export default [
     },
   },
 
-  // Configuration pour les fichiers Vue - Ignorons les erreurs d'analyse pour l'instant
   {
     files: ["**/*.vue"],
-    ignores: ["**/*.vue"],
+    languageOptions: {
+      parser: await import("vue-eslint-parser"),
+      parserOptions: {
+        ecmaVersion: "latest",
+        extraFileExtensions: [".vue"],
+        parser: tsParser,
+        sourceType: "module",
+      },
+    },
+    plugins: {
+      "@typescript-eslint": tseslint,
+      vue: (await import("eslint-plugin-vue")).default,
+    },
     rules: {
-      // Désactiver temporairement l'analyse des fichiers Vue
+      "vue/component-name-in-template-casing": ["error", "PascalCase"],
+      "vue/html-closing-bracket-newline": ["error", { multiline: "never", singleline: "never" }],
+      "vue/html-self-closing": ["error", { html: { void: "always" } }],
+      "vue/max-attributes-per-line": ["error", { singleline: 3 }],
+      "vue/multi-word-component-names": "off",
     },
   },
 
-  // Configurer Prettier
   {
     plugins: {
       prettier: eslintPluginPrettier,
@@ -71,7 +82,6 @@ export default [
     },
   },
 
-  // Configurer Perfectionist
   {
     plugins: {
       perfectionist,
@@ -81,10 +91,9 @@ export default [
     },
   },
 
-  // Règles globales
   {
     rules: {
-      "linebreak-style": ["error", "unix"], // Force l'utilisation de LF (unix) au lieu de CRLF (windows)
+      "linebreak-style": ["error", "unix"],
       "no-console": "warn",
       "no-debugger": "warn",
     },

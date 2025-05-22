@@ -1,7 +1,7 @@
 <template>
   <div class="content__block" v-if="artistStore.albumsLive.length">
     <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
-      <i class="icon-album"></i>
+      <i class="icon-album" />
       Live albums
     </div>
     <div class="albums">

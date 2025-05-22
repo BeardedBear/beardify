@@ -5,7 +5,8 @@
       <div>
         <div class="section">
           <label for="name">Name</label>
-          <input class="input" id="name" type="text" v-if="isEditable" v-model="values.name" />
+          <input class="input" id="name" type="text"
+v-if="isEditable" v-model="values.name" />
           <div v-else>{{ values.name }}</div>
         </div>
         <div class="section">

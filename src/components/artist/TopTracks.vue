@@ -11,7 +11,7 @@
       <div class="cover-wrap">
         <Cover :images="trackItem.album.images" class="cover" size="small" />
         <div @click.prevent.stop="dialogStore.open({ type: 'addSong', track: trackItem })" class="hover">
-          <i class="add icon-plus"></i>
+          <i class="add icon-plus" />
         </div>
       </div>
       <div class="name">{{ trackItem.name }}</div>

@@ -5,7 +5,7 @@
     <div class="cover-wrap">
       <img :src="currentTrack.album.images[1].url || ''" class="cover" v-if="currentTrack.album.images.length" />
       <div @click="dialogStore.open({ type: 'addSong', track: currentTrack })" class="hover">
-        <i class="add icon-plus"></i>
+        <i class="add icon-plus" />
       </div>
     </div>
     <div>
@@ -14,9 +14,9 @@
         <ArtistList :artist-list="currentTrack.artists" :feat="true" />
       </div>
       <div class="album">
-        <router-link :to="`/album/${transformUriToid(currentTrack.album.uri)}`" class="link">
+        <RouterLink :to="`/album/${transformUriToid(currentTrack.album.uri)}`" class="link">
           {{ currentTrack.album.name }}
-        </router-link>
+        </RouterLink>
       </div>
     </div>
   </div>
