@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="heading sticky" v-if="!noTitle">
-      <i :class="`icon-${iconName}`" />
+      <i :class="`icon-${iconName}`"></i>
       {{ title }}
     </div>
     <div class="albums">

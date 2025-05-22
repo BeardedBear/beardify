@@ -1,6 +1,6 @@
 <template>
   <div class="topbar">
-    <RouterLink to="/"><img class="logo" src="/img/logo.svg" /></RouterLink>
+    <router-link to="/"><img class="logo" src="/img/logo.svg" /></router-link>
     <div class="navigation">
       <button @click="router.go(-1)" class="button">
         <i class="icon-arrow-left" />
@@ -16,7 +16,7 @@
       <div v-if="authStore.me !== null">
         <div @click="configStore.open()" class="avatar">
           <Cover :images="authStore.me?.images" class="avatar-image" size="large" />
-          <i class="icon icon-chevron-down" />
+          <i class="icon icon-chevron-down"></i>
         </div>
         <Config />
       </div>

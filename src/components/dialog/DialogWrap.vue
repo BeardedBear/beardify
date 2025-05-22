@@ -1,6 +1,6 @@
 <template>
   <div class="dialog" v-if="dialogStore.show">
-    <div :class="{ 'is-closing': dialogStore.isClosing }" @click="dialogStore.close()" class="bg" />
+    <div :class="{ 'is-closing': dialogStore.isClosing }" @click="dialogStore.close()" class="bg"></div>
     <div :class="{ 'is-closing': dialogStore.isClosing, big }" class="wrapper">
       <div class="pre-content" v-if="preContent">
         <slot name="pre-content" />

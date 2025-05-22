@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ small: size === 'small' }" class="loader" />
+  <div :class="{ small: size === 'small' }" class="loader"></div>
 </template>
 
 <script lang="ts" setup>

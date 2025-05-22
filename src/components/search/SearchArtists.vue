@@ -1,7 +1,7 @@
 <template>
   <div class="artist-list">
     <template v-if="searchStore.artists.length">
-      <RouterLink
+      <router-link
         :class="{
           'exact-search': exactArtistSearched === artist.name.toLowerCase(),
         }"
@@ -13,7 +13,7 @@
       >
         <Cover :images="artist.images" class="avatar" size="small" />
         <div>{{ artist.name }}</div>
-      </RouterLink>
+      </router-link>
     </template>
     <template v-else>No artist found</template>
   </div>

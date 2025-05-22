@@ -10,13 +10,13 @@
         <div class="title-name">Collections</div>
         <div class="options">
           <button @click="sidebarStore.refreshPlaylists()" class="icon">
-            <i class="icon-refresh" />
+            <i class="icon-refresh"></i>
           </button>
           <button @click="() => (collectionSearchOpened = true)" class="icon">
-            <i class="icon-search" />
+            <i class="icon-search"></i>
           </button>
           <button @click="dialogStore.open({ type: 'createCollection' })" class="icon add">
-            <i class="icon-plus" />
+            <i class="icon-plus"></i>
           </button>
         </div>
       </div>
@@ -26,14 +26,15 @@
           placeholder="Search collection"
           ref="collectionSearchInput"
           type="text"
-          v-model="collectionSearchQuery"/>
+          v-model="collectionSearchQuery"
+        />
       </div>
       <div class="empty" v-if="!sidebarStore.collections.length">
         Oh well, you don't have a collection ! To create one, you just have to create one with + button or rename a
         classic playlist but start with "#Collection". Magical, isn't it?
       </div>
       <div :key="index" v-else v-for="(playlist, index) in sidebarStore.collections">
-        <RouterLink
+        <router-link
           :class="{ active: $route.params.id === playlist.id }"
           :to="`/collection/${playlist.id}`"
           class="playlist-item"
@@ -53,9 +54,9 @@
             "
             class="edit"
           >
-            <i class="icon-more-vertical" />
+            <i class="icon-more-vertical"></i>
           </button>
-        </RouterLink>
+        </router-link>
       </div>
     </div>
     <div class="sidebar__item">
@@ -63,13 +64,13 @@
         <div class="title-name">Playlists</div>
         <div class="options">
           <button @click="sidebarStore.refreshPlaylists()" class="icon">
-            <i class="icon-refresh" />
+            <i class="icon-refresh"></i>
           </button>
           <button @click="() => (playlistSearchOpened = true)" class="icon">
-            <i class="icon-search" />
+            <i class="icon-search"></i>
           </button>
           <button @click="dialogStore.open({ type: 'createPlaylist' })" class="icon add">
-            <i class="icon-plus" />
+            <i class="icon-plus"></i>
           </button>
         </div>
       </div>
@@ -79,10 +80,11 @@
           placeholder="Search playlist"
           ref="playlistSearchInput"
           type="text"
-          v-model="playlistSearchQuery"/>
+          v-model="playlistSearchQuery"
+        />
       </div>
       <div :key="index" v-for="(playlist, index) in sidebarStore.playlists">
-        <RouterLink
+        <router-link
           :class="{ active: $route.params.id === playlist.id }"
           :to="`/playlist/${playlist.id}`"
           class="playlist-item"
@@ -104,9 +106,9 @@
             "
             class="edit"
           >
-            <i class="icon-more-vertical" />
+            <i class="icon-more-vertical"></i>
           </button>
-        </RouterLink>
+        </router-link>
       </div>
     </div>
   </div>

@@ -28,7 +28,7 @@
           :href="`https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${challenge}`"
           class="button button--primary"
         >
-          <i class="icon icon-spotify" />
+          <i class="icon icon-spotify"></i>
           Connect with Spotify (Premium)
         </a>
       </div>

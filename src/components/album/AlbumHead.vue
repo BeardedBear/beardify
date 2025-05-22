@@ -17,12 +17,14 @@
         <div>
           <a
             @click="openLink(`https://www.google.com/search?q=${album.artists[0].name}+${album.name}`)"
-            class="button button--nude">
+            class="button button--nude"
+          >
             <i class="icon-google" />
           </a>
           <a
             @click="openLink(`https://www.discogs.com/fr/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
-            class="button button--nude">
+            class="button button--nude"
+          >
             <i class="icon-discogs" />
           </a>
         </div>
@@ -41,12 +43,12 @@ import ShareContent from "../ShareContent.vue";
 
 const props = defineProps<{ album: Album }>();
 
-function openLink(url: string): void {
-  window.open(url, "_blank");
-}
-
 function sumDuration(tracks: Track[] | TrackSimplified[]): number {
   return tracks.map((t: Track | TrackSimplified) => t.duration_ms).reduce((acc, value) => acc + value, 0);
+}
+
+function openLink(url: string): void {
+  window.open(url, "_blank");
 }
 </script>
 
