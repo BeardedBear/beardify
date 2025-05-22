@@ -1,13 +1,13 @@
 <template>
   <div class="menu">
-    <router-link :class="{ 'active-route': $route.path.includes('/podcasts') }" :to="`/podcasts`" class="link">
-      <i class="icon icon-podcast"></i>
+    <RouterLink :class="{ 'active-route': $route.path.includes('/podcasts') }" :to="`/podcasts`" class="link">
+      <i class="icon icon-podcast" />
       Podcasts
-    </router-link>
-    <router-link :class="{ 'active-route': $route.path.includes('/releases') }" :to="`/releases`" class="link">
-      <i class="icon icon-album"></i>
+    </RouterLink>
+    <RouterLink :class="{ 'active-route': $route.path.includes('/releases') }" :to="`/releases`" class="link">
+      <i class="icon icon-album" />
       Releases
-    </router-link>
+    </RouterLink>
   </div>
 </template>
 

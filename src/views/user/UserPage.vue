@@ -19,7 +19,7 @@
       <div v-if="userStore.collections.length">
         <div class="heading sticky title">Collections</div>
         <div class="gallery">
-          <router-link
+          <RouterLink
             :key="collection.id"
             :to="`/collection/${collection.id}`"
             class="playlist"
@@ -27,13 +27,13 @@
           >
             <Cover :images="collection.images" :size="'large'" class="playlist-cover" />
             <div>{{ collection.name.replaceAll("#Collection ", "") }}</div>
-          </router-link>
+          </RouterLink>
         </div>
       </div>
       <div v-if="userStore.playlists.length">
         <div class="heading sticky title">Playlists</div>
         <div class="gallery">
-          <router-link
+          <RouterLink
             :key="playlist.id"
             :to="`/playlist/${playlist.id}`"
             class="playlist"
@@ -41,7 +41,7 @@
           >
             <Cover :images="playlist.images" :size="'large'" class="playlist-cover" />
             <div>{{ playlist.name }}</div>
-          </router-link>
+          </RouterLink>
         </div>
       </div>
     </div>

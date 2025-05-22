@@ -19,7 +19,7 @@
             v-for="(track, index) in albumStore.album.tracks.items"
           >
             <button @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })" class="add">
-              <i class="icon-plus"></i>
+              <i class="icon-plus" />
             </button>
             <span class="track__number">{{ track.track_number }}.</span>
             <div>

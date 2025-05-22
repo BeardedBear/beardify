@@ -3,10 +3,10 @@
     <slot />
     <div class="nav">
       <button @click="scrollToTop()" class="button button--small">
-        <i class="icon-arrow-up"></i>
+        <i class="icon-arrow-up" />
       </button>
       <button @click="scrollToBottom()" class="button button--small">
-        <i class="icon-arrow-down"></i>
+        <i class="icon-arrow-down" />
       </button>
     </div>
   </div>

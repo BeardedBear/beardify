@@ -1,14 +1,14 @@
 <template>
   <div class="sharing">
-    <div class="title"><i class="share-icon icon-share"></i></div>
+    <div class="title"><i class="share-icon icon-share" /></div>
     <span class="copied" v-if="clipboardSpotify.copied.value">Spotify URL copied</span>
     <span class="copied" v-if="clipboardBeardify.copied.value">Beardify URL copied</span>
     <div class="content">
       <button @click="clipboardSpotify.copy()" class="copy">
-        <i class="icon-spotify"></i>
+        <i class="icon-spotify" />
       </button>
       <button @click="clipboardBeardify.copy()" class="copy" v-if="beardifyUrl">
-        <i class="icon-beardify"></i>
+        <i class="icon-beardify" />
       </button>
     </div>
   </div>

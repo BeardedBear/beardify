@@ -1,7 +1,7 @@
 <template>
   <div class="content__block" v-if="artistStore.eps.length">
     <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
-      <i class="icon-ep"></i>
+      <i class="icon-ep" />
       EP's
     </div>
     <div class="eps">

@@ -8,7 +8,7 @@
         <div class="title">
           <div class="name">Recommended albums</div>
           <button @click="getData()" class="button">
-            <i class="icon-refresh"></i>
+            <i class="icon-refresh" />
             Refresh
           </button>
         </div>

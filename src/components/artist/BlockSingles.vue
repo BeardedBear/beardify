@@ -1,7 +1,7 @@
 <template>
   <div class="content__block" v-if="artistStore.singles.length">
     <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
-      <i class="icon-single"></i>
+      <i class="icon-single" />
       Singles
     </div>
     <div class="singles">
