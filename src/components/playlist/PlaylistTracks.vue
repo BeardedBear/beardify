@@ -46,7 +46,7 @@
       <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
       <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
         <button @click.prevent.stop="deleteSong(track.track.uri)" class="button button--nude delete">
-          <i class="icon-trash-2" />
+          <i class="icon-trash-2"></i>
         </button>
       </div>
     </div>
@@ -84,8 +84,8 @@ function deleteSong(songId: string): void {
   instance()
     .delete(`playlists/${playlist.id}/tracks`, {
       data: {
-        snapshot_id: playlist.snapshot_id,
         tracks: [{ uri: songId }],
+        snapshot_id: playlist.snapshot_id,
       },
     })
     .then(() => removeSong(songId))

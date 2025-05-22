@@ -73,6 +73,14 @@ const isPlaying = computed<boolean>(
   () => props.album.uri === playerStore.playerState?.track_window.current_track.album.uri,
 );
 
+/**
+ * Wrapper function to call the imported playAlbum helper function
+ * This fixes the issue where albums were being added to the playlist twice
+ */
+async function handlePlayAlbum(albumUri: string): Promise<void> {
+  await playAlbum(albumUri);
+}
+
 function deleteAlbum(albumId: string): void {
   instance()
     .get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`)
@@ -105,8 +113,8 @@ function deleteAlbum(albumId: string): void {
       instance()
         .delete(`playlists/${currentRouteId}/tracks`, {
           data: {
-            snapshot_id: playlistStore.playlist.snapshot_id,
             tracks: tracks,
+            snapshot_id: playlistStore.playlist.snapshot_id,
           },
         })
         .then(() => {
@@ -129,14 +137,6 @@ function deleteAlbum(albumId: string): void {
         type: NotificationType.Error,
       }),
     );
-}
-
-/**
- * Wrapper function to call the imported playAlbum helper function
- * This fixes the issue where albums were being added to the playlist twice
- */
-async function handlePlayAlbum(albumUri: string): Promise<void> {
-  await playAlbum(albumUri);
 }
 </script>
 

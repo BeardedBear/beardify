@@ -7,12 +7,13 @@
           {{ playlistStore.playlist.name.replace("#Collection ", "") }}
         </div>
         <div class="metas">
-          <RouterLink
+          <router-link
             :to="`/user/${playlistStore.playlist.owner.id}`"
             class="owner"
-            v-if="playlistStore.playlist.owner.display_name !== 'Spotify'">
+            v-if="playlistStore.playlist.owner.display_name !== 'Spotify'"
+          >
             {{ playlistStore.playlist.owner.display_name }}
-          </RouterLink>
+          </router-link>
           <span v-else>{{ playlistStore.playlist.owner.display_name }}</span>
           <span>— {{ playlistStore.playlist.tracks.total }} items</span>
           <span v-if="!noDuration">— {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>

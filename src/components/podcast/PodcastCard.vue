@@ -1,8 +1,8 @@
 <template>
-  <RouterLink :to="`/podcasts/${id}`" class="podcast">
+  <router-link :to="`/podcasts/${id}`" class="podcast">
     <img :src="covers[1].url" class="cover" />
     <div class="name" v-if="name">{{ name }}</div>
-  </RouterLink>
+  </router-link>
 </template>
 
 <script lang="ts" setup>

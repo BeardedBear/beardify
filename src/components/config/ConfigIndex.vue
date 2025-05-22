@@ -7,7 +7,7 @@
 
     <div class="section" v-if="env !== 'production'">
       <div class="section__title">Debug</div>
-      <RouterLink class="button button--full" to="/login">Login</RouterLink>
+      <router-link class="button button--full" to="/login">Login</router-link>
       <button @click="authStore.refresh()" class="button button--full">Refresh token</button>
       <button
         @click="
@@ -24,7 +24,7 @@
 
     <div class="section">
       <div class="section__title">Account</div>
-      <RouterLink :to="`/user/${authStore.me?.id}`" class="button button--full">My profile</RouterLink>
+      <router-link :to="`/user/${authStore.me?.id}`" class="button button--full">My profile</router-link>
       <button @click="authStore.logout()" class="button button--full">Logout</button>
     </div>
 

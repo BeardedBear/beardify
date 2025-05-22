@@ -1,8 +1,8 @@
 <template>
   <div class="release-wrap">
     <button @click="releasesStore.toggleRelease(release.id)" class="check">
-      <i class="icon-check" v-if="releasesStore.checks?.find((r) => r.id === release.id)" />
-      <i class="icon-circle" v-else />
+      <i class="icon-check" v-if="releasesStore.checks?.find((r) => r.id === release.id)"></i>
+      <i class="icon-circle" v-else></i>
     </button>
     <div
       :class="{
