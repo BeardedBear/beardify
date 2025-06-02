@@ -73,14 +73,14 @@ const handleSpotifySDKErrors = (): void => {
 
 const app = createApp(App);
 const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+
+app.use(pinia);
+app.use(router);
 
 function syncLS(key: string, value: string): void {
   if (!localStorage.getItem(key)) localStorage.setItem(key, value);
 }
-
-app.use(pinia);
-pinia.use(piniaPluginPersistedstate);
-app.use(router);
 
 // Initialize the Spotify SDK error handler
 handleSpotifySDKErrors();

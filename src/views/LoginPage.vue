@@ -46,8 +46,12 @@ import { useAuth } from "./auth/AuthStore";
 const authStore = useAuth();
 const challenge = ref<string | undefined>(undefined);
 
-authStore.generateStorage(router.currentRoute.value.query.ref?.toString());
-challenge.value = useAuth().storage?.codeChallenge;
+(async () => {
+  if (!authStore.storage) {
+    await authStore.generateStorage(router.currentRoute.value.query.ref?.toString());
+  }
+  challenge.value = authStore.storage?.codeChallenge;
+})();
 </script>
 
 <style lang="scss" scoped>

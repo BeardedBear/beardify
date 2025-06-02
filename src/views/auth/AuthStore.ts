@@ -14,15 +14,16 @@ import router, { RouteName } from "../../router";
 export const useAuth = defineStore("auth", {
   actions: {
     async authentification(query: string) {
-      if (this.storage)
+      if (this.storage) {
+        const payload = {
+          client_id: api.clientId,
+          code: query,
+          code_verifier: this.storage.codeVerifier,
+          grant_type: "authorization_code",
+          redirect_uri: api.redirectUri,
+        };
         ky.post("https://accounts.spotify.com/api/token", {
-          body: formUrlEncoded({
-            client_id: api.clientId,
-            code: query,
-            code_verifier: this.storage.codeVerifier,
-            grant_type: "authorization_code",
-            redirect_uri: api.redirectUri,
-          }),
+          body: formUrlEncoded(payload),
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
@@ -45,11 +46,11 @@ export const useAuth = defineStore("auth", {
             router.push(RouteName.Home);
             throw new Error(String(err));
           });
+      }
     },
 
     async generateStorage(referer?: string): Promise<void> {
-      const code = pkceChallenge();
-
+      const code = await pkceChallenge();
       this.storage = {
         codeChallenge: code.code_challenge,
         codeVerifier: code.code_verifier,

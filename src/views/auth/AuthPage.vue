@@ -1,3 +1,7 @@
+<template>
+  <div>Authenticating...</div>
+</template>
+
 <script lang="ts" setup>
 import { useAuth } from "./AuthStore";
 
