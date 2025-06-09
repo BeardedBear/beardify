@@ -12,9 +12,9 @@
 </template>
 
 <script lang="ts" setup>
-import { normalize } from "normalize-diacritics";
 import { onMounted, onUpdated, ref } from "vue";
 
+import { normalizeDiacritics } from "../../helpers/normalizeDiacritics";
 import { useFrame } from "../frame/FrameStore";
 
 const props = defineProps<{
@@ -30,10 +30,8 @@ function openLink(url: string): void {
   window.open(url, "_blank");
 }
 
-async function updateLinks(): Promise<void> {
-  artistNameNormalized.value = (await normalize(props.artistName))
-    .replace(/[\u0300-\u036f]/g, "")
-    .replaceAll("&", "and");
+function updateLinks(): void {
+  artistNameNormalized.value = normalizeDiacritics(props.artistName).replaceAll("&", "and");
   link.value = {
     discogs: `https://www.discogs.com/artist/${artistNameNormalized.value}`,
     google: `https://www.google.com/search?q=${artistNameNormalized.value}&igu=1`,
@@ -45,8 +43,8 @@ async function updateLinks(): Promise<void> {
   };
 }
 
-onMounted(async () => updateLinks());
-onUpdated(async () => updateLinks());
+onMounted(() => updateLinks());
+onUpdated(() => updateLinks());
 </script>
 
 <style lang="scss" scoped>
