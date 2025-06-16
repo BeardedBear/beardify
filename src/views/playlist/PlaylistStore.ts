@@ -46,6 +46,7 @@ export const usePlaylist = defineStore("playlist", {
           }
         })
         .catch((error) => {
+          // eslint-disable-next-line no-console
           console.error("Error fetching playlist tracks:", error);
           // If there's a URL error, it might be due to duplicate prefixes
           if (
