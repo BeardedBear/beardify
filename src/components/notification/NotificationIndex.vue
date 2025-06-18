@@ -37,6 +37,7 @@ const notificationStore = useNotification();
   $offset: 4rem;
 
   bottom: $offset + 4rem;
+  color: #fff;
   isolation: isolate;
   position: absolute;
   right: $offset + 1rem;
@@ -47,6 +48,7 @@ const notificationStore = useNotification();
   animation: pop-notif 4s ease-in-out both;
   background: rgb(73 145 52);
   border-radius: 0.3rem;
+  color: #fff;
   font-size: 0.9rem;
   font-weight: bold;
   margin-top: 0.8rem;
