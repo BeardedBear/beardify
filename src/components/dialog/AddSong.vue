@@ -27,7 +27,6 @@ import { NotificationType } from "../../@types/Notification";
 import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
 import { trackAllreadyExist } from "../../helpers/playlist";
-import { useAuth } from "../../views/auth/AuthStore";
 import PlaylistIcon from "../sidebar/PlaylistIcon.vue";
 import { useSidebar } from "../sidebar/SidebarStore";
 import VisibilityIcon from "../sidebar/VisibilityIcon.vue";
@@ -37,7 +36,6 @@ import PreContentTrack from "./PreContentTrack.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
-const authStore = useAuth();
 
 async function add(songUri: string, playlistId: string): Promise<void> {
   if (await trackAllreadyExist(`playlists/${playlistId}/tracks?limit=50`, songUri)) {
