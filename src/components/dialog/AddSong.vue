@@ -8,9 +8,7 @@
         :key="index"
         @click="add(dialogStore.track?.uri ? dialogStore.track?.uri : '', playlist.id)"
         class="collection"
-        v-for="(playlist, index) in sidebarStore.playlists.filter(
-          (playlist) => playlist.collaborative || playlist.owner.id === authStore.me?.id,
-        )"
+        v-for="(playlist, index) in sidebarStore.playlists.filter((playlist) => playlist.owner.id !== 'spotify')"
       >
         <div class="playlist">
           <div>
