@@ -10,7 +10,7 @@
     </div>
     <div>
       <div>
-        <span class="trackname">{{ currentTrack.name }} —</span>
+        <span class="trackname">{{ currentTrack.name }} —&nbsp;</span>
         <ArtistList :artist-list="currentTrack.artists" :feat="true" />
       </div>
       <div class="album">
@@ -109,6 +109,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 .what {
   align-items: center;
   display: flex;
+  flex: 1;
   gap: 1rem;
 
   img {
