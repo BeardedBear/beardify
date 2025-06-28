@@ -9,7 +9,7 @@
         @click="add(dialogStore.track?.uri ? dialogStore.track?.uri : '', playlist.id)"
         class="collection"
         v-for="(playlist, index) in sidebarStore.playlists.filter(
-          (playlist) => playlist.collaborative || playlist.owner.id === authStore.me?.id,
+          (playlist) => playlist.owner.display_name !== 'Spotify',
         )"
       >
         <div class="playlist">
