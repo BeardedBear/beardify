@@ -3,7 +3,9 @@
   <PageScroller v-else>
     <div class="playlist">
       <Header not-fit />
-      <template v-if="playlistStore.playlist.owner.display_name === 'Spotify'">
+      <template
+        v-if="playlistStore.playlist.owner.id === 'spotify' && !playlistStore.playlist.images[0]?.url.includes('blend')"
+      >
         <AlbumGallery :album-list="albums" :icon-name="'album'" class="block" title="Albums" />
         <AlbumGallery :album-list="eps" :icon-name="'ep'" class="block" title="EP's" />
         <div class="heading sticky">
