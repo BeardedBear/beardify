@@ -5,6 +5,7 @@ import { createApp } from "vue";
 import { NotificationType } from "./@types/Notification";
 import App from "./App.vue";
 import { useConfig } from "./components/config/ConfigStore";
+import { clearAuthData } from "./helpers/authUtils";
 import { notification } from "./helpers/notifications";
 import router, { RouteName } from "./router";
 import { useAuth } from "./views/auth/AuthStore";
@@ -97,6 +98,7 @@ useAuth()
     }
   })
   .catch(() => {
+    clearAuthData();
     app.mount("#app");
     router.push(`${RouteName.Login}?ref=${window.location.pathname}`);
   });

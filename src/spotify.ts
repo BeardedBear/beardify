@@ -1,5 +1,6 @@
 import { NotificationType } from "./@types/Notification";
 import { usePlayer } from "./components/player/PlayerStore";
+import { clearAuthData } from "./helpers/authUtils";
 import { notification } from "./helpers/notifications";
 import { useAuth } from "./views/auth/AuthStore";
 
@@ -48,6 +49,7 @@ const createPlayer = (): Spotify.Player => {
 
           // Redirect to login in case of critical authentication failure
           setTimeout(() => {
+            clearAuthData();
             window.location.href = "/login";
           }, 3000);
         }

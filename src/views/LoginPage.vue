@@ -40,6 +40,7 @@
 import { ref } from "vue";
 
 import { api } from "../api";
+import { clearAuthData } from "../helpers/authUtils";
 import router from "../router";
 import { useAuth } from "./auth/AuthStore";
 
@@ -47,6 +48,8 @@ const authStore = useAuth();
 const challenge = ref<string | undefined>(undefined);
 
 (async () => {
+  clearAuthData();
+
   if (!authStore.storage) {
     await authStore.generateStorage(router.currentRoute.value.query.ref?.toString());
   }
