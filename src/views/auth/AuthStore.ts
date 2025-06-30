@@ -9,6 +9,7 @@ import type { User } from "../../@types/User";
 import { api, instance } from "../../api";
 import { useConfig } from "../../components/config/ConfigStore";
 import { usePlayer } from "../../components/player/PlayerStore";
+import { clearAuthData } from "../../helpers/authUtils";
 import router, { RouteName } from "../../router";
 
 export const useAuth = defineStore("auth", {
@@ -70,8 +71,10 @@ export const useAuth = defineStore("auth", {
     logout() {
       useConfig().close();
       usePlayer().pause();
+      clearAuthData();
+      this.$reset();
+
       router.push(RouteName.Login);
-      localStorage.removeItem("Beardify");
     },
 
     async refresh() {

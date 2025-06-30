@@ -1,6 +1,7 @@
 import ky, { Options } from "ky";
 
 import { ApiResponse, SpotifyOptions } from "./@types/Api";
+import { clearAuthData } from "./helpers/authUtils";
 import { useAuth } from "./views/auth/AuthStore";
 
 /**
@@ -104,6 +105,17 @@ function createKyInstance(): typeof ky {
     headers: {
       Authorization: `Bearer ${authStore.accessToken}`,
       "Content-Type": "application/json",
+    },
+    hooks: {
+      afterResponse: [
+        (_input, _options, response): void => {
+          // Gérer les erreurs 401 (Unauthorized) en nettoyant les données d'auth et redirigeant
+          if (response.status === 401) {
+            clearAuthData();
+            window.location.href = "/login";
+          }
+        },
+      ],
     },
     prefixUrl: api.url,
     retry: {
