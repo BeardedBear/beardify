@@ -12,16 +12,18 @@
           <i class="icon-single"></i>
           Singles
         </div>
-        <Tracks :track-list="singles" />
+        <Tracks :track-list="singles" :contributors-data="contributorsData" />
       </template>
-      <Tracks :track-list="playlistStore.tracks" v-else />
+      <Tracks :track-list="playlistStore.tracks" :contributors-data="contributorsData" v-else />
     </div>
   </PageScroller>
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
+import { PublicUser } from "../../@types/PublicUser";
+import { instance } from "../../api";
 import AlbumGallery from "../../components/AlbumGallery.vue";
 import Loader from "../../components/LoadingDots.vue";
 import PageScroller from "../../components/PageScroller.vue";
@@ -39,6 +41,40 @@ const albums = computed(() =>
 );
 const eps = computed(() => playlistStore.tracks.filter((track) => isEP(track.track.album)).map((e) => e.track.album));
 const singles = computed(() => playlistStore.tracks.filter((track) => isSingle(track.track.album)));
+
+const uniqueContributorIds = computed(() => {
+  const contributorIds = playlistStore.tracks.map((track) => track.added_by.id);
+  return [...new Set(contributorIds)];
+});
+
+const contributorsData = ref<Record<string, PublicUser>>({});
+
+const fetchContributorsData = async () => {
+  const api = instance();
+  const newContributorsData: Record<string, PublicUser> = {};
+
+  for (const userId of uniqueContributorIds.value) {
+    try {
+      const response = await api.get<PublicUser>(`users/${userId}`);
+      newContributorsData[userId] = response.data;
+    } catch (error) {
+      console.error(`Error fetching data for user ${userId}:`, error);
+    }
+  }
+
+  contributorsData.value = newContributorsData;
+};
+
+// Surveiller les changements dans uniqueContributorIds pour récupérer les nouvelles données
+watch(
+  uniqueContributorIds,
+  () => {
+    if (uniqueContributorIds.value.length > 0) {
+      fetchContributorsData();
+    }
+  },
+  { immediate: true },
+);
 
 playlistStore.clean().finally(() => {
   playlistStore.getPlaylist(`playlists/${props.id}`);

@@ -42,6 +42,13 @@
         />
         <AlbumLink :album="track.track.album" no-icon />
       </div>
+      <div class="contributor">
+        <img
+          :title="getContributorDisplayName(track.added_by.id)"
+          :src="getContributorAvatar(track.added_by.id)"
+          alt=""
+        />
+      </div>
       <div class="date">{{ date(track.added_at) }}</div>
       <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
       <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
@@ -58,6 +65,7 @@ import { computed } from "vue";
 
 import { NotificationType } from "../../@types/Notification";
 import { PlaylistTrack } from "../../@types/Playlist";
+import { PublicUser } from "../../@types/PublicUser";
 import { instance } from "../../api";
 import { date, timecode } from "../../helpers/date";
 import { isCurrentTrack } from "../../helpers/helper";
@@ -71,14 +79,23 @@ import ArtistList from "../artist/ArtistList.vue";
 import { useDialog } from "../dialog/DialogStore";
 import { usePlayer } from "../player/PlayerStore";
 
-defineProps<{
+const props = defineProps<{
   trackList: PlaylistTrack[];
+  contributorsData?: Record<string, PublicUser>;
 }>();
 
 const { open } = useDialog();
 const { playlist, removeSong } = usePlaylist();
 const { me } = useAuth();
 const currentTrack = computed(() => usePlayer().playerState?.track_window.current_track);
+
+const getContributorAvatar = (userId: string): string => {
+  return props.contributorsData?.[userId]?.images[1]?.url || userId;
+};
+
+const getContributorDisplayName = (userId: string): string => {
+  return props.contributorsData?.[userId]?.display_name || userId;
+};
 
 function deleteSong(songId: string): void {
   instance()
@@ -114,12 +131,12 @@ function deleteSong(songId: string): void {
   cursor: pointer;
   display: grid;
   gap: 0.8rem;
-  grid-template-columns: 2.2rem 1fr 0.9fr 0.3fr 2.8rem;
+  grid-template-columns: 2.2rem 1fr 0.9fr auto 0.3fr 2.8rem;
   margin-bottom: 0.4rem;
   padding: 0.4rem 0.8rem;
 
   &.deletable {
-    grid-template-columns: 2.2rem 1fr 0.9fr 0.3fr 2.8rem auto;
+    grid-template-columns: 2.2rem 1fr 0.9fr auto 0.3fr 2.8rem auto;
   }
 
   &-icon {
@@ -161,6 +178,17 @@ function deleteSong(songId: string): void {
     font-style: italic;
     opacity: 0.5;
     text-decoration: none;
+  }
+
+  .contributor {
+    $size: 1.5rem;
+
+    img {
+      border-radius: 50%;
+      display: block;
+      height: $size;
+      width: $size;
+    }
   }
 
   .date {
