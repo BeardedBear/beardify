@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="search-title">Albums</h3>
+    <SearchTitle title="Albums" />
     <div class="album-list">
       <template v-if="searchStore.albums.length">
         <Album
@@ -24,6 +24,7 @@ import { computed, ComputedRef } from "vue";
 
 import Album from "../album/AlbumIndex.vue";
 import { useSearch } from "./SearchStore";
+import SearchTitle from "./SearchTitle.vue";
 
 const searchStore = useSearch();
 const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
@@ -64,13 +65,5 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
   align-content: start;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-}
-
-.search-title {
-  color: var(--primary-color);
-  font-size: 0.9rem;
-  font-weight: bold;
-  margin: 0 0 1rem;
-  text-transform: uppercase;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="search-title">Songs</h3>
+    <SearchTitle title="Songs" />
     <template v-if="searchStore.albums.length">
       <div
         :key="index"
@@ -30,6 +30,7 @@
 import { playSong } from "../../helpers/play";
 import ArtistList from "../artist/ArtistList.vue";
 import { useSearch } from "./SearchStore";
+import SearchTitle from "./SearchTitle.vue";
 
 const searchStore = useSearch();
 </script>
@@ -37,14 +38,6 @@ const searchStore = useSearch();
 <style lang="scss" scoped>
 @use "sass:color";
 @use "../../assets/scss/colors" as colors;
-
-.search-title {
-  color: var(--primary-color);
-  font-size: 0.9rem;
-  font-weight: bold;
-  margin: 0 0 1rem;
-  text-transform: uppercase;
-}
 
 .track {
   align-items: center;

@@ -1,6 +1,6 @@
 <template>
   <div class="artist-list">
-    <h3 class="search-title">Artists</h3>
+    <SearchTitle title="Artists" />
     <template v-if="searchStore.artists.length">
       <router-link
         :class="{
@@ -26,6 +26,7 @@ import { RouterLink } from "vue-router";
 
 import Cover from "../AlbumCover.vue";
 import { useSearch } from "./SearchStore";
+import SearchTitle from "./SearchTitle.vue";
 
 const searchStore = useSearch();
 const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
@@ -83,14 +84,6 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
         width: $size;
       }
     }
-  }
-
-  .search-title {
-    color: var(--primary-color);
-    font-size: 0.9rem;
-    font-weight: bold;
-    margin: 0 0 1rem;
-    text-transform: uppercase;
   }
 }
 </style>
