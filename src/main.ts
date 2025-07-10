@@ -86,19 +86,36 @@ function syncLS(key: string, value: string): void {
 // Initialize the Spotify SDK error handler
 handleSpotifySDKErrors();
 
-useAuth()
-  .refresh()
-  .then((done) => {
-    if (done) {
+const authStore = useAuth();
+
+// Check if we have a refresh token before attempting refresh
+if (authStore.storage?.refreshToken) {
+  authStore
+    .refresh()
+    .then((done) => {
+      if (done) {
+        app.mount("#app");
+        useConfig().switchScheme(useConfig().schemeLabel);
+        useConfig().switchTheme(useConfig().themeLabel);
+        syncLS("beardify-config", JSON.stringify(useConfig().$state));
+        syncLS("beardify-auth", JSON.stringify(useAuth().$state));
+      }
+    })
+    .catch((error) => {
+      // Check error type to decide whether to clear localStorage
+      const errorMessage = error?.message || String(error);
+
+      // If it's a 400/401 error, the refresh token is probably invalid
+      if (errorMessage.includes("400") || errorMessage.includes("401") || errorMessage.includes("invalid_grant")) {
+        clearAuthData();
+      }
+
+      // In all cases, mount the app and redirect to login
       app.mount("#app");
-      useConfig().switchScheme(useConfig().schemeLabel);
-      useConfig().switchTheme(useConfig().themeLabel);
-      syncLS("beardify-config", JSON.stringify(useConfig().$state));
-      syncLS("beardify-auth", JSON.stringify(useAuth().$state));
-    }
-  })
-  .catch(() => {
-    clearAuthData();
-    app.mount("#app");
-    router.push(`${RouteName.Login}?ref=${window.location.pathname}`);
-  });
+      router.push(`${RouteName.Login}?ref=${window.location.pathname}`);
+    });
+} else {
+  // No refresh token, go directly to login without clearing localStorage
+  app.mount("#app");
+  router.push(`${RouteName.Login}?ref=${window.location.pathname}`);
+}
