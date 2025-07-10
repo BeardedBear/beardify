@@ -10,6 +10,11 @@
           <div :key="key" v-for="(track, key) in playerStore.queue">
             <TrackHistory :cover-url="track.album.images[2].url" :index="key" :track="track" />
           </div>
+          <div class="empty-queue" v-if="playerStore.queue.length === 0">
+            <div class="empty-message">
+              {{ isPlayingPodcast ? "Queue not available for podcast episodes" : "No tracks in queue" }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -28,11 +33,19 @@ import { usePlayer } from "../PlayerStore";
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
+const isPlayingPodcast = computed(() => {
+  const track = currentTrack.value;
+  return track?.type === "episode" || track?.uri?.includes("spotify:episode:");
+});
 const popup = ref<HTMLElement | null>();
 
 watch(currentTrack, (track) => {
   if (track) {
-    playerStore.getQueue();
+    // Only get queue if not playing a podcast episode
+    const isPlayingPodcast = track.type === "episode" || track.uri?.includes("spotify:episode:");
+    if (!isPlayingPodcast) {
+      playerStore.getQueue();
+    }
   }
 });
 
@@ -92,5 +105,17 @@ onClickOutside(popup, () => playerStore.closeQueue());
 .queue-list {
   font-size: 0.9rem;
   white-space: nowrap;
+}
+
+.empty-queue {
+  padding: 20px 10px;
+  text-align: center;
+}
+
+.empty-message {
+  color: var(--font-color);
+  font-size: 0.9rem;
+  font-style: italic;
+  opacity: 0.6;
 }
 </style>

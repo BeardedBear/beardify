@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "serve": "vite",
+    "dev": "vite",
     "lint": "vue-tsc --noEmit && eslint src/**/*.{vue,ts} && prettier --c ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss}",
     "build": "npm run lint && vite build",
     "fix": "prettier --write ./src/**/*.{ts,vue,json} && eslint src/**/*.{vue,ts} --fix && stylelint ./src/**/*.{vue,scss} --fix",

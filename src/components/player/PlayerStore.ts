@@ -119,10 +119,19 @@ export const usePlayer = defineStore("player", {
           this.queue = spotifyTracks;
         })
         .catch((): void => {
-          useNotification().addNotification({
-            msg: "Error getting queue",
-            type: NotificationType.Error,
-          });
+          // Check if currently playing content is a podcast episode
+          const currentTrack = this.playerState?.track_window?.current_track;
+          const isPlayingPodcast = currentTrack?.type === "episode" || currentTrack?.uri?.includes("spotify:episode:");
+
+          // Only show error notification if it's not a podcast-related queue error
+          if (!isPlayingPodcast) {
+            useNotification().addNotification({
+              msg: "Error getting queue",
+              type: NotificationType.Error,
+            });
+          }
+
+          // Always clear the queue on error
           this.queue = [];
         });
     },
@@ -132,7 +141,18 @@ export const usePlayer = defineStore("player", {
     },
 
     openQueue(): void {
-      this.getQueue();
+      // Check if currently playing content is a podcast episode
+      const currentTrack = this.playerState?.track_window?.current_track;
+      const isPlayingPodcast = currentTrack?.type === "episode" || currentTrack?.uri?.includes("spotify:episode:");
+
+      // Only get queue if not playing a podcast episode
+      if (!isPlayingPodcast) {
+        this.getQueue();
+      } else {
+        // Clear queue for podcast episodes as they don't have a queue
+        this.queue = [];
+      }
+
       this.queueOpened = true;
     },
 
