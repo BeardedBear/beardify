@@ -86,19 +86,31 @@ function syncLS(key: string, value: string): void {
 // Initialize the Spotify SDK error handler
 handleSpotifySDKErrors();
 
-useAuth()
-  .refresh()
-  .then((done) => {
-    if (done) {
+// Check if we're on the auth callback page
+const isAuthCallback = window.location.pathname === RouteName.Auth;
+
+if (isAuthCallback) {
+  // If we're on the auth page, just mount the app without trying to refresh
+  app.mount("#app");
+  useConfig().switchScheme(useConfig().schemeLabel);
+  useConfig().switchTheme(useConfig().themeLabel);
+  syncLS("beardify-config", JSON.stringify(useConfig().$state));
+} else {
+  // Normal flow: try to refresh token first
+  useAuth()
+    .refresh()
+    .then((done) => {
+      if (done) {
+        app.mount("#app");
+        useConfig().switchScheme(useConfig().schemeLabel);
+        useConfig().switchTheme(useConfig().themeLabel);
+        syncLS("beardify-config", JSON.stringify(useConfig().$state));
+        syncLS("beardify-auth", JSON.stringify(useAuth().$state));
+      }
+    })
+    .catch(() => {
+      clearAuthData();
       app.mount("#app");
-      useConfig().switchScheme(useConfig().schemeLabel);
-      useConfig().switchTheme(useConfig().themeLabel);
-      syncLS("beardify-config", JSON.stringify(useConfig().$state));
-      syncLS("beardify-auth", JSON.stringify(useAuth().$state));
-    }
-  })
-  .catch(() => {
-    clearAuthData();
-    app.mount("#app");
-    router.push(`${RouteName.Login}?ref=${window.location.pathname}`);
-  });
+      router.push(`${RouteName.Login}?ref=${window.location.pathname}`);
+    });
+}

@@ -4,7 +4,7 @@
       <i class="icon icon-podcast"></i>
       Podcasts
     </router-link>
-    <router-link :class="{ 'active-route': $route.path.includes('/releases') }" :to="`/releases`" class="link">
+    <router-link :class="{ 'active-route': $route.path.includes('/releases') }" :to="`/releases`" class="link disabled">
       <i class="icon icon-album"></i>
       Releases
     </router-link>
@@ -35,6 +35,12 @@ import { RouterLink } from "vue-router";
   font-weight: bold;
   padding: 0.4rem 0.8rem;
   text-decoration: none;
+
+  &.disabled {
+    color: var(--font-color-light);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 
   &:hover {
     background-color: var(--bg-color-light);

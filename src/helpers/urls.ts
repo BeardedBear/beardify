@@ -7,7 +7,10 @@
 export function cleanUrl(url: string): string {
   // If the URL is a complete URL with the Spotify API prefix, extract the relative path
   if (url.startsWith("https://api.spotify.com/v1/")) {
-    return url.substring("https://api.spotify.com/v1/".length);
+    const cleanedUrl = url.substring("https://api.spotify.com/v1/".length);
+    // Remove leading slash if present to ensure compatibility with ky prefixUrl
+    return cleanedUrl.startsWith("/") ? cleanedUrl.substring(1) : cleanedUrl;
   }
-  return url; // Otherwise, return the URL as is
+  // Remove leading slash if present to ensure compatibility with ky prefixUrl
+  return url.startsWith("/") ? url.substring(1) : url;
 }

@@ -41,13 +41,27 @@ import { ref } from "vue";
 
 import { api } from "../api";
 import { clearAuthData } from "../helpers/authUtils";
-import router from "../router";
+import router, { RouteName } from "../router";
 import { useAuth } from "./auth/AuthStore";
 
 const authStore = useAuth();
 const challenge = ref<string | undefined>(undefined);
 
 (async () => {
+  // If user already has a valid token, redirect to home
+  if (authStore.accessToken && authStore.storage?.refreshToken) {
+    try {
+      // Try to refresh to check if token is still valid
+      await authStore.refresh();
+      // If successful, redirect to home
+      router.push(RouteName.Home);
+      return;
+    } catch {
+      // If refresh fails, continue with normal login flow
+      clearAuthData();
+    }
+  }
+
   clearAuthData();
 
   if (!authStore.storage) {
