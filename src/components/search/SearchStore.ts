@@ -13,6 +13,7 @@ export const useSearch = defineStore("search", {
       this.artists = [];
       this.albums = [];
       this.tracks = [];
+      this.podcasts = [];
     },
 
     reset() {
@@ -22,11 +23,12 @@ export const useSearch = defineStore("search", {
 
     search() {
       instance()
-        .get<SearchFromAPI>(`search?q=${this.query}&type=artist%2Calbum%2Ctrack`)
+        .get<SearchFromAPI>(`search?q=${this.query}&type=artist%2Calbum%2Ctrack%2Cshow`)
         .then((e) => {
           this.artists = e.data.artists.items.slice(0, 7);
           this.albums = e.data.albums.items.filter((album: Album) => !isSingle(album)).slice(0, 6);
           this.tracks = e.data.tracks.items.slice(0, 6);
+          this.podcasts = e.data.shows?.items.slice(0, 6) || [];
         });
     },
 
@@ -39,6 +41,7 @@ export const useSearch = defineStore("search", {
   state: (): Search => ({
     albums: [],
     artists: [],
+    podcasts: [],
     query: "",
     tracks: [],
   }),
