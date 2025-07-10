@@ -14,7 +14,7 @@ export const api = {
       ? import.meta.env.VITE_REDIRECT_URI_DEV
       : import.meta.env.VITE_REDIRECT_URI_PROD,
   scopes:
-    "user-read-private,user-modify-playback-state,user-read-playback-state,user-read-currently-playing,playlist-read-private,playlist-read-collaborative,playlist-modify-private,playlist-modify-public,user-follow-modify,user-follow-read,streaming,user-read-email,user-top-read,user-library-read,user-read-playback-position,user-read-recently-played",
+    "user-read-private,user-modify-playback-state,user-read-playback-state,user-read-currently-playing,playlist-read-private,playlist-read-collaborative,playlist-modify-private,playlist-modify-public,user-follow-modify,user-follow-read,streaming,user-read-email,user-top-read,user-library-read,user-library-modify,user-read-playback-position,user-read-recently-played",
   url: "https://api.spotify.com/v1/",
 };
 

@@ -5,7 +5,6 @@
   <div class="podcasts" v-else>
     <PageFit>
       <div class="title"><div class="name">Podcasts</div></div>
-      <div class="heading sticky-heading">My podcasts</div>
       <div v-if="!podcastsStore.myPodcasts.length"><Loader /></div>
       <div class="podcast-list" v-else>
         <PodcastCard
@@ -15,17 +14,6 @@
           v-for="(podcast, index) in podcastsStore.myPodcasts"
         />
       </div>
-      <!-- <div class="heading sticky-heading">Podcasts musique</div>
-      <div v-if="!podcastsStore.list"><Loader /></div>
-      <div v-else class="podcast-list">
-        <PodcastCard
-          v-for="(podcast, index) in podcastsStore.list?.shows"
-          :id="podcast.id"
-          :key="index"
-          :covers="podcast?.images"
-          :name="podcast?.name"
-        />
-      </div> -->
     </PageFit>
   </div>
 </template>

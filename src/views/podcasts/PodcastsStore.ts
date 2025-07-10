@@ -3,7 +3,9 @@ import { defineStore } from "pinia";
 import type { Paging } from "../../@types/Paging";
 import type { Episode, Podcast, PodcastItem, PodcastSaved, PodcastsPage } from "../../@types/Podcast";
 
+import { NotificationType } from "../../@types/Notification";
 import { instance } from "../../api";
+import { notification } from "../../helpers/notifications";
 import { cleanUrl } from "../../helpers/urls";
 
 export const usePodcasts = defineStore("podcasts", {
@@ -13,6 +15,39 @@ export const usePodcasts = defineStore("podcasts", {
       this.list = null;
       this.myPodcasts = [];
       this.episodes = [];
+      this.isFollowing = false;
+    },
+
+    async followPodcast(podcastId: string) {
+      try {
+        await instance().put(`me/shows?ids=${podcastId}`);
+        this.isFollowing = true;
+        // Refresh my podcasts list to include the newly followed podcast
+        this.myPodcasts = [];
+        this.getMyPodcasts("me/shows?limit=50");
+        notification({
+          msg: "Podcast added to your follows",
+          type: NotificationType.Success,
+        });
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error following podcast:", error);
+        notification({
+          msg: "Error adding podcast",
+          type: NotificationType.Error,
+        });
+      }
+    },
+
+    async getFollowStatus(podcastId: string) {
+      try {
+        const response = await instance().get<boolean[]>(`me/shows/contains?ids=${podcastId}`);
+        this.isFollowing = response.data[0] || false;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error fetching podcast follow status:", error);
+        this.isFollowing = false;
+      }
     },
 
     getMyPodcasts(url: string) {
@@ -70,7 +105,7 @@ export const usePodcasts = defineStore("podcasts", {
     getPodcasts() {
       const podcasts = [
         "5JxGy243aIXNWg6HSeV627", // La Pifotheque
-        "31ZkKfw71Dp6uGhxmB7joR", // Le Bruit
+        // Le Bruit
       ];
 
       instance()
@@ -81,10 +116,31 @@ export const usePodcasts = defineStore("podcasts", {
           console.error("Error fetching podcast list:", error);
         });
     },
+
+    async unfollowPodcast(podcastId: string) {
+      try {
+        await instance().delete(`me/shows?ids=${podcastId}`);
+        this.isFollowing = false;
+        // Remove from my podcasts list
+        this.myPodcasts = this.myPodcasts.filter((podcast) => podcast.show.id !== podcastId);
+        notification({
+          msg: "Podcast removed from your follows",
+          type: NotificationType.Success,
+        });
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error unfollowing podcast:", error);
+        notification({
+          msg: "Error removing podcast",
+          type: NotificationType.Error,
+        });
+      }
+    },
   },
 
   state: (): PodcastsPage => ({
     episodes: [],
+    isFollowing: false,
     list: null,
     myPodcasts: [],
     podcast: null,
