@@ -143,6 +143,7 @@ defineProps<{
   width: $size;
 
   .icon {
+    color: #fff;
     position: absolute;
     right: 0.4rem;
     top: 0.4rem;
@@ -151,7 +152,7 @@ defineProps<{
 
 .cover {
   border-radius: 0.5rem;
-  height: 6rem;
+  height: 5rem;
 }
 
 .description {

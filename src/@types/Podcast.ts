@@ -57,6 +57,7 @@ export interface PodcastSaved {
 
 export interface PodcastsPage {
   episodes: Episode[];
+  isFollowing: boolean;
   list: null | PodcastItem;
   myPodcasts: PodcastSaved[];
   podcast: null | Podcast;

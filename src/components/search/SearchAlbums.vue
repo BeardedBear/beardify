@@ -1,18 +1,21 @@
 <template>
-  <div class="album-list">
-    <template v-if="searchStore.albums.length">
-      <Album
-        :album="album"
-        :exact-search="exactAlbumSearched ? album.name.toLowerCase().includes(exactAlbumSearched) : false"
-        :key="index"
-        @click="searchStore.reset()"
-        class="album"
-        v-for="(album, index) in searchStore.albums"
-        with-artists
-        without-release-date
-      />
-    </template>
-    <template v-else>No album found</template>
+  <div>
+    <SearchTitle title="Albums" />
+    <div class="album-list">
+      <template v-if="searchStore.albums.length">
+        <Album
+          :album="album"
+          :exact-search="exactAlbumSearched ? album.name.toLowerCase().includes(exactAlbumSearched) : false"
+          :key="index"
+          @click="searchStore.reset()"
+          class="album"
+          v-for="(album, index) in searchStore.albums"
+          with-artists
+          without-release-date
+        />
+      </template>
+      <template v-else>No album found</template>
+    </div>
   </div>
 </template>
 
@@ -21,6 +24,7 @@ import { computed, ComputedRef } from "vue";
 
 import Album from "../album/AlbumIndex.vue";
 import { useSearch } from "./SearchStore";
+import SearchTitle from "./SearchTitle.vue";
 
 const searchStore = useSearch();
 const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
@@ -30,12 +34,15 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-@use "sass:color";
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/search-item" as search;
 
 .album {
   border-radius: 1rem;
   padding: 0.8rem;
+  transition: 0.2s;
+
+  @include search.search-item-hover;
 
   &.exact-search {
     background: var(--bg-color-lighter);

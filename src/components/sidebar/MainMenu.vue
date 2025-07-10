@@ -37,8 +37,8 @@ import { RouterLink } from "vue-router";
   text-decoration: none;
 
   &.disabled {
-    color: var(--font-color-light);
     cursor: not-allowed;
+    opacity: 0.5;
     pointer-events: none;
   }
 

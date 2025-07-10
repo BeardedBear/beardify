@@ -4,6 +4,7 @@
     <PageFit>
       <div class="title">
         <div class="name">{{ podcastsStore.podcast?.name }}</div>
+        <PodcastFollowButton :podcast-id="props.id" v-if="podcastsStore.podcast" />
       </div>
       <div>
         <div :key="index" v-for="(episode, index) in podcastsStore.episodes">
@@ -18,6 +19,7 @@
 import Loader from "../../components/LoadingDots.vue";
 import PageFit from "../../components/PageFit.vue";
 import PodcastEpisode from "../../components/podcast/PodcastEpisode.vue";
+import PodcastFollowButton from "../../components/podcast/PodcastFollowButton.vue";
 import { usePodcasts } from "./PodcastsStore";
 
 const props = defineProps<{ id: string }>();
@@ -26,6 +28,7 @@ const podcastsStore = usePodcasts();
 podcastsStore.clean().finally(() => {
   podcastsStore.getPodcast(props.id);
   podcastsStore.getPodcastEpisodes(`shows/${props.id}/episodes?limit=50`);
+  podcastsStore.getFollowStatus(props.id);
 });
 </script>
 
