@@ -23,7 +23,7 @@ export interface Episode {
   resume_point: {
     fully_played: boolean;
     resume_position_ms: number;
-  };
+  } | null;
   type: string;
   uri: string;
 }

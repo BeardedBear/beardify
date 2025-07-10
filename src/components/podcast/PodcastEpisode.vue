@@ -1,10 +1,10 @@
 <template>
   <div class="episode-wrap">
-    <div class="played" v-if="episode.resume_point.fully_played">
+    <div class="played" v-if="episode.resume_point?.fully_played">
       <i class="icon icon-check"></i>
     </div>
     <div class="episode">
-      <img :src="episode.images[1].url" class="cover" />
+      <img :src="episode.images?.[1]?.url || episode.images?.[0]?.url" class="cover" />
       <div class="content">
         <div class="name">{{ episode.name }}</div>
         <div class="description" v-if="episode.description">
@@ -12,7 +12,10 @@
         </div>
       </div>
     </div>
-    <div class="progress" v-if="!episode.resume_point.fully_played && episode.resume_point.resume_position_ms > 0">
+    <div
+      class="progress"
+      v-if="!episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0"
+    >
       <div
         :style="{
           width: `${(playerStore.currentlyPlaying.progress_ms / episode.duration_ms) * 100}%`,
@@ -22,7 +25,7 @@
       ></div>
       <div
         :style="{
-          width: `${(episode.resume_point.resume_position_ms / episode.duration_ms) * 100}%`,
+          width: `${((episode.resume_point?.resume_position_ms || 0) / episode.duration_ms) * 100}%`,
         }"
         class="bar"
         v-else
@@ -43,7 +46,7 @@
           <button
             @click="playSong(episode.uri)"
             class="button button--small button--primary"
-            v-if="!episode.resume_point.fully_played && episode.resume_point.resume_position_ms > 0"
+            v-if="!episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0"
           >
             Resume
           </button>

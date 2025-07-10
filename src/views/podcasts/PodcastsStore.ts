@@ -4,6 +4,7 @@ import type { Paging } from "../../@types/Paging";
 import type { Episode, Podcast, PodcastItem, PodcastSaved, PodcastsPage } from "../../@types/Podcast";
 
 import { instance } from "../../api";
+import { cleanUrl } from "../../helpers/urls";
 
 export const usePodcasts = defineStore("podcasts", {
   actions: {
@@ -15,26 +16,54 @@ export const usePodcasts = defineStore("podcasts", {
     },
 
     getMyPodcasts(url: string) {
+      const cleanedUrl = cleanUrl(url);
       instance()
-        .get<Paging<PodcastSaved>>(url)
+        .get<Paging<PodcastSaved>>(cleanedUrl)
         .then((e) => {
-          this.myPodcasts = this.myPodcasts.concat(e.data.items);
-          if (e.data.next) this.getMyPodcasts(e.data.next);
+          // Filter out null podcasts from the API response
+          // Note: Spotify API can return null items despite the type definition
+          const validPodcasts = (e.data.items as (null | PodcastSaved)[]).filter(
+            (podcast): podcast is PodcastSaved => podcast !== null,
+          );
+          this.myPodcasts = this.myPodcasts.concat(validPodcasts);
+          if (e.data.next) {
+            this.getMyPodcasts(e.data.next);
+          }
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error("Error fetching podcasts:", error);
         });
     },
 
     getPodcast(podcastId: string) {
       instance()
-        .get<Podcast>(`/shows/${podcastId}`)
-        .then(({ data }) => (this.podcast = data));
+        .get<Podcast>(`shows/${podcastId}`)
+        .then(({ data }) => (this.podcast = data))
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error("Error fetching podcast:", error);
+        });
     },
 
     getPodcastEpisodes(url: string) {
+      const cleanedUrl = cleanUrl(url);
       instance()
-        .get<Paging<Episode>>(url)
+        .get<Paging<Episode>>(cleanedUrl)
         .then((e) => {
-          this.episodes = this.episodes.concat(e.data.items);
-          if (e.data.next) this.getPodcastEpisodes(e.data.next);
+          // Filter out null episodes from the API response
+          // Note: Spotify API can return null items despite the type definition
+          const validEpisodes = (e.data.items as (Episode | null)[]).filter(
+            (episode): episode is Episode => episode !== null,
+          );
+          this.episodes = this.episodes.concat(validEpisodes);
+          if (e.data.next) {
+            this.getPodcastEpisodes(e.data.next);
+          }
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error("Error fetching podcast episodes:", error);
         });
     },
 
@@ -45,8 +74,12 @@ export const usePodcasts = defineStore("podcasts", {
       ];
 
       instance()
-        .get<PodcastItem>(`/shows?ids=${podcasts.join()}`)
-        .then(({ data }) => (this.list = data));
+        .get<PodcastItem>(`shows?ids=${podcasts.join()}`)
+        .then(({ data }) => (this.list = data))
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error("Error fetching podcast list:", error);
+        });
     },
   },
 
