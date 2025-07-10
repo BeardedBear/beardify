@@ -1,5 +1,6 @@
 <template>
   <div class="artist-list">
+    <h3 class="search-title">Artists</h3>
     <template v-if="searchStore.artists.length">
       <router-link
         :class="{
@@ -82,6 +83,14 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
         width: $size;
       }
     }
+  }
+
+  .search-title {
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 0 0 1rem;
+    text-transform: uppercase;
   }
 }
 </style>

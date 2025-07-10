@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h3 class="search-title">Songs</h3>
     <template v-if="searchStore.albums.length">
       <div
         :key="index"
@@ -37,6 +38,14 @@ const searchStore = useSearch();
 @use "sass:color";
 @use "../../assets/scss/colors" as colors;
 
+.search-title {
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin: 0 0 1rem;
+  text-transform: uppercase;
+}
+
 .track {
   align-items: center;
   border-radius: 0.3rem;
@@ -51,7 +60,7 @@ const searchStore = useSearch();
   }
 
   &-name {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: bold;
   }
 

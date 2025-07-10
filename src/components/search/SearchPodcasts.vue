@@ -1,5 +1,6 @@
 <template>
   <div class="podcast-list">
+    <h3 class="search-title">Podcasts</h3>
     <template v-if="searchStore.podcasts.length">
       <router-link
         :key="index"
@@ -71,5 +72,13 @@ const searchStore = useSearch();
   color: var(--text-color-light);
   font-size: 0.8rem;
   opacity: 0.7;
+}
+
+.search-title {
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin: 0 0 1rem;
+  text-transform: uppercase;
 }
 </style>

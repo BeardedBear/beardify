@@ -1,18 +1,21 @@
 <template>
-  <div class="album-list">
-    <template v-if="searchStore.albums.length">
-      <Album
-        :album="album"
-        :exact-search="exactAlbumSearched ? album.name.toLowerCase().includes(exactAlbumSearched) : false"
-        :key="index"
-        @click="searchStore.reset()"
-        class="album"
-        v-for="(album, index) in searchStore.albums"
-        with-artists
-        without-release-date
-      />
-    </template>
-    <template v-else>No album found</template>
+  <div>
+    <h3 class="search-title">Albums</h3>
+    <div class="album-list">
+      <template v-if="searchStore.albums.length">
+        <Album
+          :album="album"
+          :exact-search="exactAlbumSearched ? album.name.toLowerCase().includes(exactAlbumSearched) : false"
+          :key="index"
+          @click="searchStore.reset()"
+          class="album"
+          v-for="(album, index) in searchStore.albums"
+          with-artists
+          without-release-date
+        />
+      </template>
+      <template v-else>No album found</template>
+    </div>
   </div>
 </template>
 
@@ -61,5 +64,13 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
   align-content: start;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+}
+
+.search-title {
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin: 0 0 1rem;
+  text-transform: uppercase;
 }
 </style>
