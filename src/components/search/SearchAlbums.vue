@@ -34,12 +34,15 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-@use "sass:color";
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/search-item" as search;
 
 .album {
   border-radius: 1rem;
   padding: 0.8rem;
+  transition: 0.2s;
+
+  @include search.search-item-hover;
 
   &.exact-search {
     background: var(--bg-color-lighter);

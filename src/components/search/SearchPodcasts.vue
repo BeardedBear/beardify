@@ -30,26 +30,12 @@ const searchStore = useSearch();
 </script>
 
 <style lang="scss" scoped>
-@use "sass:color";
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/search-item" as search;
 
 .podcast-list {
   .podcast {
-    align-items: center;
-    background-color: var(--bg-color);
-    border-radius: 0.5rem;
-    color: currentcolor;
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
-    padding: 0.8rem;
-    text-decoration: none;
-    transition: 0.2s;
-
-    &:hover {
-      background-color: var(--bg-color-light);
-      transform: scale(1.02);
-    }
+    @include search.search-item-base;
   }
 }
 

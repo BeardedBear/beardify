@@ -36,8 +36,8 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-@use "sass:color";
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/search-item" as search;
 
 .artist-list {
   .avatar {
@@ -61,10 +61,9 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
     padding: 0.5rem;
     position: relative;
     text-decoration: none;
+    transition: 0.2s;
 
-    &:hover {
-      background-color: var(--bg-color-light);
-    }
+    @include search.search-item-hover;
 
     &.exact-search {
       background: var(--bg-color-lighter);

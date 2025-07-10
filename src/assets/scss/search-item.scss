@@ -1,0 +1,24 @@
+// Styles communs pour les éléments de recherche avec hover
+@mixin search-item-hover {
+  &:hover {
+    background-color: var(--bg-color-light);
+    transform: scale(1.03);
+  }
+}
+
+// Styles de base pour les éléments de recherche
+@mixin search-item-base {
+  align-items: center;
+  background-color: var(--bg-color);
+  border-radius: 0.5rem;
+  color: currentcolor;
+  cursor: pointer;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  padding: 0.8rem;
+  text-decoration: none;
+  transition: 0.2s;
+
+  @include search-item-hover;
+}
