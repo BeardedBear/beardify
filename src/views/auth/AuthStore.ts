@@ -31,17 +31,24 @@ export const useAuth = defineStore("auth", {
         })
           .json<AuthAPIResponse>()
           .then((data) => {
-            if (this.storage) router.push(this.storage.referer);
             this.accessToken = data.access_token;
             this.code = query;
-            this.getMe();
-            if (this.storage)
+
+            if (this.storage) {
+              const referer = this.storage.referer;
               this.storage = {
                 codeChallenge: "",
                 codeVerifier: "",
-                referer: this.storage.referer,
+                referer: referer,
                 refreshToken: data.refresh_token,
               };
+
+              // Get user info then redirect
+              this.getMe();
+
+              // Redirect to the original page or home
+              router.push(referer || RouteName.Home);
+            }
           })
           .catch((err) => {
             router.push(RouteName.Home);
