@@ -19,7 +19,7 @@ Beardify is a custom Spotify web client built with Vue 3 + TypeScript that enhan
 
 ```bash
 # Development
-npm run serve          # Start dev server (port 3000)
+npm run dev           # Start dev server (port 3000)
 npm run lint          # Run all linting (TypeScript + ESLint + Prettier + Stylelint)
 npm run fix           # Auto-fix all linting issues
 npm run build         # Build for production (includes linting)
@@ -31,6 +31,7 @@ npm run preview       # Preview production build
 ## Architecture
 
 ### Directory Structure
+
 - `src/components/` - Feature-organized Vue components (album/, artist/, player/, etc.)
 - `src/views/` - Route-level components, each with corresponding Pinia store
 - `src/helpers/` - Utility functions
@@ -38,12 +39,15 @@ npm run preview       # Preview production build
 - `src/assets/scss/` - Global SCSS with theming system
 
 ### State Management (Pinia)
+
 Each feature has its own store: `AuthStore`, `PlayerStore`, `PlaylistStore`, `SearchStore`, `ConfigStore`. All stores use `pinia-plugin-persistedstate` for persistence.
 
 ### Styling System
+
 Uses CSS custom properties with consistent naming:
+
 - `--bg-color-*` (darker, dark, default, light, lighter)
-- `--font-color-*` (dark, default, light)  
+- `--font-color-*` (dark, default, light)
 - `--primary-color-*` (darker, dark, default, light, lighter)
 
 ## Code Conventions
@@ -56,6 +60,7 @@ Uses CSS custom properties with consistent naming:
 - Unix line endings (LF)
 
 ### ESLint Configuration
+
 - **Explicit function return types**: Warning enforced
 - **No explicit any**: Warning (prefer proper typing)
 - **No unused variables**: Warning
@@ -65,6 +70,7 @@ Uses CSS custom properties with consistent naming:
 - **Vue files**: Currently ignored for parsing (TypeScript handled separately)
 
 ### Prettier Configuration
+
 - **Print width**: 120 characters
 - **Semicolons**: Required
 - **Arrow parens**: Always use parentheses
@@ -73,6 +79,7 @@ Uses CSS custom properties with consistent naming:
 - **Tab width**: 2 spaces (JSON/YAML files)
 
 ### Stylelint Configuration
+
 - **Extends**: `stylelint-config-standard-scss` + Vue/HTML support
 - **Property ordering**: Alphabetical order enforced
 - **Declaration order**: Custom properties first, then declarations
@@ -82,17 +89,20 @@ Uses CSS custom properties with consistent naming:
 ## Spotify Integration
 
 ### Authentication
+
 - OAuth 2.0 with PKCE flow
 - Token refresh every 30 minutes
 - Persistent session with localStorage
 
 ### Player Features
+
 - Spotify Web Playback SDK integration
 - Active device polling every 5 minutes
 - Widevine DRM support detection for Brave browser
 - Premium-only features (Spotify API limitation)
 
 ### Collections System
+
 The core feature: playlists with "#Collection" in the name are treated as album collections, providing functionality not available in the official Spotify client.
 
 ## Important Notes

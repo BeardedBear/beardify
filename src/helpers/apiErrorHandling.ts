@@ -5,13 +5,62 @@ import { NotificationType } from "../@types/Notification";
 import { instance } from "../api";
 import { usePlayer } from "../components/player/PlayerStore";
 import { notification } from "./notifications";
-import { ensureActiveDevice } from "./play";
 
 // Define a type for API errors
 export interface ApiError {
   response?: {
     status: number;
   };
+}
+
+/**
+ * Ensures a device is active and ready before attempting playback
+ * @returns Promise resolving to a valid device ID or null if unavailable
+ */
+export async function ensureActiveDevice(): Promise<null | string> {
+  const playerStore = usePlayer();
+  let deviceId = playerStore.devices.activeDevice?.id;
+
+  // If we have an active device, use it
+  if (deviceId) {
+    return deviceId;
+  }
+
+  // Otherwise refresh the device list and try to find/activate one
+  try {
+    // First get the latest device list
+    await playerStore.getDeviceList();
+    deviceId = playerStore.devices.activeDevice?.id;
+
+    // If we found an active device after refresh, use it
+    if (deviceId) {
+      return deviceId;
+    }
+
+    // If we have this device available, try to activate it
+    if (playerStore.thisDeviceId) {
+      playerStore.setDevice(playerStore.thisDeviceId);
+      // Wait a moment for the device to activate
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return playerStore.thisDeviceId;
+    }
+
+    // If we have any device in the list, try to activate the first one
+    if (playerStore.devices.list.length > 0) {
+      const firstDeviceId = playerStore.devices.list[0].id;
+      playerStore.setDevice(firstDeviceId);
+      // Wait a moment for the device to activate
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return firstDeviceId;
+    }
+  } catch {
+    // Silent error handling
+    // This is an internal function, so we don't need to notify the user here
+    return null;
+  }
+
+  // No device found or could be activated
+  return null;
 }
 
 /**

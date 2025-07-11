@@ -1,8 +1,7 @@
 import { NotificationType } from "../@types/Notification";
 import { usePlayer } from "../components/player/PlayerStore";
-import { executePlaybackApiCall } from "../helpers/apiErrorHandling";
+import { ensureActiveDevice, executePlaybackApiCall } from "../helpers/apiErrorHandling";
 import { notification } from "../helpers/notifications";
-import { ensureActiveDevice } from "../helpers/play";
 
 /**
  * Play an album given its URI
