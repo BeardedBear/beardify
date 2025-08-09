@@ -46,19 +46,22 @@ async function add(albumId: string, playlistId: string): Promise<void> {
       type: NotificationType.Error,
     });
   } else {
-    instance()
-      .get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`)
-      .then((e) => {
-        instance()
-          .post(`playlists/${playlistId}/tracks?uris=${e.data.items[0].uri}`)
-          .then(() => {
-            dialogStore.close();
-            notification({
-              msg: "Album added",
-              type: NotificationType.Success,
-            });
-          });
+    try {
+      const albumTracksResponse = await instance().get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`);
+      if (!albumTracksResponse.data.items.length) {
+        notification({ msg: "Album has no tracks", type: NotificationType.Error });
+        return;
+      }
+      await instance().post(`playlists/${playlistId}/tracks?uris=${albumTracksResponse.data.items[0].uri}`);
+      dialogStore.close();
+      notification({
+        msg: "Album added",
+        type: NotificationType.Success,
       });
+    } catch (error: unknown) {
+      notification({ msg: "Failed to add album", type: NotificationType.Error });
+      console.error("Add album error:", error);
+    }
   }
 }
 </script>
