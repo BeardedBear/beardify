@@ -8,7 +8,7 @@
         :key="index"
         @click="add(dialogStore.track?.uri ? dialogStore.track?.uri : '', playlist.id)"
         class="collection"
-        v-for="(playlist, index) in sidebarStore.playlists.filter((playlist) => playlist.owner.id !== 'spotify')"
+        v-for="(playlist, index) in filteredPlaylists"
       >
         <div class="playlist">
           <div>
@@ -23,6 +23,7 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
 import { NotificationType } from "../../@types/Notification";
 import { instance } from "../../api";
 import { notification } from "../../helpers/notifications";
@@ -37,6 +38,9 @@ import PreContentTrack from "./PreContentTrack.vue";
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 
+// Playlists user can modify: owned or collaborative (exclude Spotify-owned)
+const filteredPlaylists = computed(() => sidebarStore.playlists.filter((playlist) => playlist.owner.id !== "spotify"));
+
 async function add(songUri: string, playlistId: string): Promise<void> {
   if (await trackAllreadyExist(`playlists/${playlistId}/tracks?limit=50`, songUri)) {
     notification({
@@ -44,12 +48,19 @@ async function add(songUri: string, playlistId: string): Promise<void> {
       type: NotificationType.Error,
     });
   } else {
-    instance()
-      .post(`playlists/${playlistId}/tracks?uris=${songUri}`)
-      .then(() => {
-        dialogStore.close();
-        notification({ msg: "Track added", type: NotificationType.Success });
+    try {
+      await instance().post(`playlists/${playlistId}/tracks?uris=${songUri}`);
+      dialogStore.close();
+      notification({ msg: "Track added", type: NotificationType.Success });
+    } catch (error: unknown) {
+      notification({
+        msg: (error as { message?: string })?.message?.includes("403")
+          ? "Can't add to this playlist (no permission)."
+          : "Failed to add track.",
+        type: NotificationType.Error,
       });
+      console.error("Add track error:", error);
+    }
   }
 }
 </script>
