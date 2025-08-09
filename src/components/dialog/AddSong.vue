@@ -44,7 +44,7 @@ const filteredPlaylists = computed(() => sidebarStore.playlists.filter((playlist
 async function add(songUri: string, playlistId: string): Promise<void> {
   if (await trackAllreadyExist(`playlists/${playlistId}/tracks?limit=50`, songUri)) {
     notification({
-      msg: "This track allready exists in this playlist",
+      msg: "This track already exists in this playlist",
       type: NotificationType.Error,
     });
   } else {
