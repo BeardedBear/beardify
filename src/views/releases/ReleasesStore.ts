@@ -21,12 +21,17 @@ export const useReleases = defineStore("releases", {
         .json<{ data: ReleasesCheck[] }>();
 
       if (!data.data.length) {
-        ky.post("https://2fpx4328.directus.app/items/releases_check", {
-          json: {
-            checks: [],
-            user: useAuth().me?.id,
-          },
-        }).then(() => (this.checks = []));
+        try {
+          await ky.post("https://2fpx4328.directus.app/items/releases_check", {
+            json: {
+              checks: [],
+              user: useAuth().me?.id,
+            },
+          });
+          this.checks = [];
+        } catch {
+          // silent fail; optional feature
+        }
       } else {
         this.checks = data.data[0].checks;
         this.uid = data.data[0].id;

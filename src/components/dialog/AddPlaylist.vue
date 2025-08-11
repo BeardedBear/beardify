@@ -20,14 +20,14 @@ const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const playlistName = ref("");
 
-function create(): void {
-  sidebarStore.addPlaylist(playlistName.value).then(() => {
+async function create(): Promise<void> {
+  try {
+    await sidebarStore.addPlaylist(playlistName.value);
     dialogStore.close();
-    notification({
-      msg: `Playlist ${playlistName.value} create`,
-      type: NotificationType.Success,
-    });
-  });
+    notification({ msg: `Playlist ${playlistName.value} create`, type: NotificationType.Success });
+  } catch {
+    // notification handled in store
+  }
 }
 </script>
 

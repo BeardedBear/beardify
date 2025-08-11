@@ -32,25 +32,47 @@ const dialog = useDialog();
 
 // Check Widevine support for Brave Browser
 if (!navigator.userAgent.includes("Macintosh")) {
-  const config = [
-    {
-      audioCapabilities: [{ contentType: 'audio/mp4;codecs="mp4a.40.2"' }],
-      initDataTypes: ["cenc"],
-    },
-  ];
-  navigator.requestMediaKeySystemAccess("com.widevine.alpha", config).catch(() => {
-    dialog.open({ type: "widevine" });
-  });
+  (async () => {
+    const config = [
+      {
+        audioCapabilities: [{ contentType: 'audio/mp4;codecs="mp4a.40.2"' }],
+        initDataTypes: ["cenc"],
+      },
+    ];
+    try {
+      await navigator.requestMediaKeySystemAccess("com.widevine.alpha", config);
+    } catch {
+      dialog.open({ type: "widevine" });
+    }
+  })();
 }
 
 // Keep token active
-setInterval(() => authStore.refresh(), 1_800_000); // 30 minutes
+setInterval(async () => {
+  try {
+    await authStore.refresh();
+  } catch {
+    // silent keep-alive failure
+  }
+}, 1_800_000); // 30 minutes
 
 // Keep device active every 5 minutes
-setInterval(() => usePlayer().getDeviceList(), 300_000);
+setInterval(async () => {
+  try {
+    await usePlayer().getDeviceList();
+  } catch {
+    // silent
+  }
+}, 300_000);
 
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) usePlayer().getDeviceList();
+document.addEventListener("visibilitychange", async () => {
+  if (!document.hidden) {
+    try {
+      await usePlayer().getDeviceList();
+    } catch {
+      // silent
+    }
+  }
 });
 </script>
 

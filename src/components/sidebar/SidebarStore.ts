@@ -18,23 +18,26 @@ function isACollection(playlistName: SimplifiedPlaylist): boolean {
 export const useSidebar = defineStore("sidebar", {
   actions: {
     async addCollection(name: string) {
-      const authStore = useAuth();
-      instance()
-        .post<SimplifiedPlaylist>(`users/${authStore.me?.id}/playlists`, {
+      try {
+        const authStore = useAuth();
+        const { data } = await instance().post<SimplifiedPlaylist>(`users/${authStore.me?.id}/playlists`, {
           name: `#Collection ${name}`,
-        })
-        .then(({ data }) => {
-          this.collections = [data as SimplifiedPlaylist, ...this.collections];
         });
+        this.collections = [data satisfies SimplifiedPlaylist, ...this.collections];
+      } catch {
+        notification({ msg: "Unable to add collection", type: NotificationType.Error });
+      }
     },
 
     async addPlaylist(name: string) {
-      const authStore = useAuth();
-      instance()
-        .post<SimplifiedPlaylist>(`users/${authStore.me?.id}/playlists`, { name })
-        .then(({ data }) => {
-          this.playlists = [data as SimplifiedPlaylist, ...this.playlists];
-        });
+      try {
+        const authStore = useAuth();
+        const { data } = await instance().post<SimplifiedPlaylist>(`users/${authStore.me?.id}/playlists`, { name });
+        // data already typed as SimplifiedPlaylist from generic
+        this.playlists = [data, ...this.playlists];
+      } catch {
+        notification({ msg: "Unable to add playlist", type: NotificationType.Error });
+      }
     },
 
     async getPlaylists(initialUrl: string) {
@@ -103,57 +106,35 @@ export const useSidebar = defineStore("sidebar", {
       const authStore = useAuth();
 
       // Check if the user is the owner of the playlist
-      if (playlistStore.playlist.owner.id === authStore.me?.id) {
-        // If owner, delete the playlist (functionality not supported by Spotify API)
-        // So we use the "unfollow" approach even for our own playlists
-        return new Promise<void>((resolve, reject) => {
-          instance()
-            .delete(`playlists/${playlistId}/followers`)
-            .then(() => {
-              this.playlists = this.playlists.filter((playlist) => playlist.id !== playlistId);
-              this.collections = this.collections.filter((collection) => collection.id !== playlistId);
-              playlistStore.followed = false;
-              router.push("/");
-              notification({
-                msg: "Playlist successfully deleted",
-                type: NotificationType.Success,
-              });
-              resolve();
-            })
-            .catch((error) => {
-              // eslint-disable-next-line no-console
-              console.error("Error while deleting playlist:", error);
-              notification({
-                msg: "Unable to delete playlist",
-                type: NotificationType.Error,
-              });
-              reject(error);
-            });
+      try {
+        await instance().delete(`playlists/${playlistId}/followers`);
+        this.playlists = this.playlists.filter((playlist) => playlist.id !== playlistId);
+        this.collections = this.collections.filter((collection) => collection.id !== playlistId);
+        playlistStore.followed = false;
+        if (
+          router.currentRoute.value.params.id === playlistId ||
+          playlistStore.playlist.owner.id === authStore.me?.id
+        ) {
+          router.push("/");
+        }
+        notification({
+          msg:
+            playlistStore.playlist.owner.id === authStore.me?.id
+              ? "Playlist successfully deleted"
+              : "Unfollowed playlist",
+          type: NotificationType.Success,
         });
-      } else {
-        // If not owner, unfollow the playlist
-        return new Promise<void>((resolve, reject) => {
-          instance()
-            .delete(`playlists/${playlistId}/followers`)
-            .then(() => {
-              this.playlists = this.playlists.filter((playlist) => playlist.id !== playlistId);
-              this.collections = this.collections.filter((collection) => collection.id !== playlistId);
-              playlistStore.followed = false;
-              if (router.currentRoute.value.params.id === playlistId) {
-                router.push("/");
-              }
-              resolve();
-            })
-            .catch((error) => {
-              // eslint-disable-next-line no-console
-              console.error("Error while unfollowing playlist:", error);
-              notification({
-                msg: "Unable to unfollow playlist",
-                type: NotificationType.Error,
-              });
-              reject(error);
-            });
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error while deleting/unfollowing playlist:", error);
+        notification({
+          msg:
+            playlistStore.playlist.owner.id === authStore.me?.id
+              ? "Unable to delete playlist"
+              : "Unable to unfollow playlist",
+          type: NotificationType.Error,
         });
+        throw error;
       }
     },
   },

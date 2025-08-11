@@ -97,22 +97,22 @@ const getContributorDisplayName = (userId: string): string => {
   return props.contributorsData?.[userId]?.display_name || userId;
 };
 
-function deleteSong(songId: string): void {
-  instance()
-    .delete(`playlists/${playlist.id}/tracks`, {
+async function deleteSong(songId: string): Promise<void> {
+  try {
+    await instance().delete(`playlists/${playlist.id}/tracks`, {
       data: {
         tracks: [{ uri: songId }],
         snapshot_id: playlist.snapshot_id,
       },
-    })
-    .then(() => removeSong(songId))
-    .then(() => notification({ msg: "Track deleted", type: NotificationType.Success }))
-    .catch((error) =>
-      notification({
-        msg: error.response?.data?.error?.message ?? "Failed to delete track",
-        type: NotificationType.Error,
-      }),
-    );
+    });
+    removeSong(songId);
+    notification({ msg: "Track deleted", type: NotificationType.Success });
+  } catch (error: any) {
+    notification({
+      msg: error.response?.data?.error?.message ?? "Failed to delete track",
+      type: NotificationType.Error,
+    });
+  }
 }
 </script>
 

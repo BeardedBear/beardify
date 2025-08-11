@@ -25,15 +25,18 @@ export const useSearch = defineStore("search", {
       useDialog().close();
     },
 
-    search() {
-      instance()
-        .get<SearchFromAPI>(`search?q=${this.query}&type=artist%2Calbum%2Ctrack%2Cshow`)
-        .then((e) => {
-          this.artists = e.data.artists.items.slice(0, 7);
-          this.albums = e.data.albums.items.filter((album: Album) => !isSingle(album)).slice(0, 6);
-          this.tracks = e.data.tracks.items.slice(0, 6);
-          this.podcasts = e.data.shows?.items.slice(0, 5) || [];
-        });
+    async search() {
+      try {
+        const searchResults = await instance().get<SearchFromAPI>(
+          `search?q=${this.query}&type=artist%2Calbum%2Ctrack%2Cshow`,
+        );
+        this.artists = searchResults.data.artists.items.slice(0, 7);
+        this.albums = searchResults.data.albums.items.filter((album: Album) => !isSingle(album)).slice(0, 6);
+        this.tracks = searchResults.data.tracks.items.slice(0, 6);
+        this.podcasts = searchResults.data.shows?.items.slice(0, 5) || [];
+      } catch {
+        // silent
+      }
     },
 
     updateQuery(query: string) {

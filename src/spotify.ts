@@ -123,31 +123,32 @@ const createPlayer = (): Spotify.Player => {
     let connectAttempt = 0;
     const maxAttempts = 5;
 
-    const attemptConnect = (): void => {
+    const attemptConnect = async (): Promise<void> => {
       connectAttempt++;
-
-      player
-        .connect()
-        .then((success) => {
-          if (success) {
-            connectAttempt = 0; // Reset counter in case of success
-          } else if (connectAttempt < maxAttempts) {
-            const delay = Math.min(1000 * Math.pow(2, connectAttempt), 30000); // Exponential backoff limited to 30s
-
-            notification({
-              msg: `Reconnection attempt to Spotify (${connectAttempt}/${maxAttempts})...`,
-              type: NotificationType.Warning,
-            });
-
-            setTimeout(attemptConnect, delay);
-          } else {
-            notification({
-              msg: "Unable to connect to Spotify player after several attempts",
-              type: NotificationType.Error,
-            });
-          }
-        })
-        .catch(handleSDKError);
+      try {
+        const success = await player.connect();
+        if (success) {
+          connectAttempt = 0; // Reset counter in case of success
+        } else if (connectAttempt < maxAttempts) {
+          const delay = Math.min(1000 * Math.pow(2, connectAttempt), 30000); // Exponential backoff limited to 30s
+          notification({
+            msg: `Reconnection attempt to Spotify (${connectAttempt}/${maxAttempts})...`,
+            type: NotificationType.Warning,
+          });
+          setTimeout(attemptConnect, delay);
+        } else {
+          notification({
+            msg: "Unable to connect to Spotify player after several attempts",
+            type: NotificationType.Error,
+          });
+        }
+      } catch (e) {
+        if (e instanceof Error) {
+          handleSDKError(e);
+        } else {
+          handleSDKError(new Error("Unknown Spotify connection error"));
+        }
+      }
     };
 
     // Start the first connection attempt
@@ -175,8 +176,31 @@ const createPlayer = (): Spotify.Player => {
       type: NotificationType.Error,
     });
 
-    // Return a dummy object with proper type
-    return null as unknown as Spotify.Player;
+    // Return a minimal stub that satisfies the Spotify.Player interface to avoid runtime crashes
+    const stub = {
+      _options: {
+        // No-op implementation; parameter omitted to avoid unused var lint warning
+        getOAuthToken: (): void => {},
+        id: "stub",
+        name: "Beardify (stub)",
+      },
+      addListener: (): undefined => undefined,
+      connect: async (): Promise<boolean> => false,
+      disconnect: (): void => undefined,
+      getCurrentState: async (): Promise<null | Spotify.PlaybackState> => null,
+      getVolume: async (): Promise<number> => 0,
+      nextTrack: async (): Promise<void> => undefined,
+      on: (): undefined => undefined,
+      pause: async (): Promise<void> => undefined,
+      previousTrack: async (): Promise<void> => undefined,
+      removeListener: (): void => undefined,
+      resume: async (): Promise<void> => undefined,
+      seek: async (): Promise<void> => undefined,
+      setName: async (): Promise<void> => undefined,
+      setVolume: async (): Promise<void> => undefined,
+      togglePlay: async (): Promise<void> => undefined,
+    } satisfies Spotify.Player;
+    return stub;
   }
 };
 

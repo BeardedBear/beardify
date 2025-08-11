@@ -54,18 +54,16 @@ const handleSpotifySDKErrors = (): void => {
           // 5 minutes
           sessionStorage.setItem("spotify_token_last_refresh", now.toString());
 
-          authStore
-            .refresh()
-            .then(() => {
-              // No notification needed in case of success
-            })
-            .catch(() => {
-              // In case of failure, inform the user only if necessary
+          (async (): Promise<void> => {
+            try {
+              await authStore.refresh();
+            } catch {
               notification({
                 msg: "Connection problem with Spotify. Try reconnecting.",
                 type: NotificationType.Warning,
               });
-            });
+            }
+          })();
         }
       }
     }
@@ -97,9 +95,9 @@ if (isAuthCallback) {
   syncLS("beardify-config", JSON.stringify(useConfig().$state));
 } else {
   // Normal flow: try to refresh token first
-  useAuth()
-    .refresh()
-    .then((done) => {
+  (async (): Promise<void> => {
+    try {
+      const done = await useAuth().refresh();
       if (done) {
         app.mount("#app");
         useConfig().switchScheme(useConfig().schemeLabel);
@@ -107,10 +105,10 @@ if (isAuthCallback) {
         syncLS("beardify-config", JSON.stringify(useConfig().$state));
         syncLS("beardify-auth", JSON.stringify(useAuth().$state));
       }
-    })
-    .catch(() => {
+    } catch {
       clearAuthData();
       app.mount("#app");
       router.push(`${RouteName.Login}?ref=${window.location.pathname}`);
-    });
+    }
+  })();
 }

@@ -38,25 +38,23 @@ export const useDialog = defineStore("dialog", {
         public: value.public,
       };
 
-      instance()
-        .put(`playlists/${playlistId}`, data)
-        .then(() => {
-          const sidebarStore = useSidebar();
-          const updatedPlaylist = isCollection
-            ? sidebarStore.collections.find((collection) => collection.id === playlistId)
-            : sidebarStore.playlists.find((playlist) => playlist.id === playlistId);
-
-          this.updatePlaylistCurrentPage(data, playlistId);
-
-          if (updatedPlaylist) {
-            updatedPlaylist.description = data.description;
-            updatedPlaylist.name = data.name;
-            updatedPlaylist.public = data.public;
-            updatedPlaylist.collaborative = data.collaborative;
-          }
-
-          this.close();
-        });
+      try {
+        await instance().put(`playlists/${playlistId}`, data);
+        const sidebarStore = useSidebar();
+        const updatedPlaylist = isCollection
+          ? sidebarStore.collections.find((collection) => collection.id === playlistId)
+          : sidebarStore.playlists.find((playlist) => playlist.id === playlistId);
+        this.updatePlaylistCurrentPage(data, playlistId);
+        if (updatedPlaylist) {
+          updatedPlaylist.description = data.description;
+          updatedPlaylist.name = data.name;
+          updatedPlaylist.public = data.public;
+          updatedPlaylist.collaborative = data.collaborative;
+        }
+        this.close();
+      } catch {
+        // silent fail
+      }
     },
 
     updatePlaylistCurrentPage(value: UpdatePlaylistValues, playlistId: string | undefined) {
