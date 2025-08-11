@@ -16,22 +16,20 @@ const HEARTBEAT_INTERVAL = 4 * 60 * 1000;
 
 export const usePlayer = defineStore("player", {
   actions: {
-    addTrackToQueue(trackUri: string): void {
-      instance()
-        .post(`me/player/queue?uri=${trackUri}`)
-        .then((): void => {
-          this.getQueue();
-          notification({
-            msg: "Song added to queue",
-            type: NotificationType.Success,
-          });
-        })
-        .catch((): void => {
-          notification({
-            msg: "Error adding song to queue",
-            type: NotificationType.Error,
-          });
+    async addTrackToQueue(trackUri: string): Promise<void> {
+      try {
+        await instance().post(`me/player/queue?uri=${trackUri}`);
+        await this.getQueue();
+        notification({
+          msg: "Song added to queue",
+          type: NotificationType.Success,
         });
+      } catch {
+        notification({
+          msg: "Error adding song to queue",
+          type: NotificationType.Error,
+        });
+      }
     },
 
     closeQueue(): void {
@@ -40,61 +38,50 @@ export const usePlayer = defineStore("player", {
 
     async getDeviceList(): Promise<void> {
       this.devices.list = [];
-      instance()
-        .get<DevicesResponse>("me/player/devices")
-        .then(({ data }): void => {
-          const activeDevice = data.devices.find((device): boolean => device.is_active);
-          this.devices.list = data.devices;
-          if (!data.devices.length) createSpotifyPlayer().connect();
-          if (!this.playerState?.paused && activeDevice) {
-            this.devices.activeDevice = activeDevice;
-          } else if (activeDevice?.is_active) {
-            this.devices.activeDevice = activeDevice;
-          } else {
-            this.setDevice(this.thisDeviceId);
-          }
-
-          // Start the heartbeat after refreshing the device list
-          this.startDeviceHeartbeat();
-        });
+      const { data } = await instance().get<DevicesResponse>("me/player/devices");
+      const activeDevice = data.devices.find((device): boolean => device.is_active);
+      this.devices.list = data.devices;
+      if (!data.devices.length) createSpotifyPlayer().connect();
+      if (!this.playerState?.paused && activeDevice) {
+        this.devices.activeDevice = activeDevice;
+      } else if (activeDevice?.is_active) {
+        this.devices.activeDevice = activeDevice;
+      } else {
+        this.setDevice(this.thisDeviceId);
+      }
+      this.startDeviceHeartbeat();
     },
 
-    getExternalPlayerState(): void {
+    async getExternalPlayerState(): Promise<void> {
       this.playerState = defaultPlaybackState;
-      instance()
-        .get<CurrentlyPlaying>("me/player")
-        .then(({ data }): void => {
-          if (!data.item) return;
-
-          const { item } = data;
-          const current = this.playerState.track_window.current_track;
-          const playerState = this.playerState;
-          const activeDevice = this.devices.activeDevice;
-
-          current.album = data.item.album;
-          current.artists = item.artists;
-          current.duration_ms = item.duration_ms;
-          current.id = item.id;
-          current.name = item.name;
-          current.uri = item.uri;
-          playerState.position = data.progress_ms;
-          playerState.paused = !data.is_playing;
-          playerState.shuffle = data.shuffle_state;
-          playerState.duration = item.duration_ms;
-          activeDevice.volume_percent = data.device.volume_percent;
-        });
+      const { data } = await instance().get<CurrentlyPlaying>("me/player");
+      if (!data.item) return;
+      const { item } = data;
+      const current = this.playerState.track_window.current_track;
+      const playerState = this.playerState;
+      const activeDevice = this.devices.activeDevice;
+      current.album = data.item.album;
+      current.artists = item.artists;
+      current.duration_ms = item.duration_ms;
+      current.id = item.id;
+      current.name = item.name;
+      current.uri = item.uri;
+      playerState.position = data.progress_ms;
+      playerState.paused = !data.is_playing;
+      playerState.shuffle = data.shuffle_state;
+      playerState.duration = item.duration_ms;
+      activeDevice.volume_percent = data.device.volume_percent;
     },
 
-    getQueue(): void {
+    async getQueue(): Promise<void> {
       interface QueueResponse {
         queue: Track[];
       }
-
-      instance()
-        .get<QueueResponse>("me/player/queue")
-        .then(({ data }): void => {
-          const spotifyTracks = data.queue.map(
-            (track): Spotify.Track => ({
+      try {
+        const { data } = await instance().get<QueueResponse>("me/player/queue");
+        const spotifyTracks = data.queue.map(
+          (track): Spotify.Track =>
+            ({
               album: {
                 images: track.album.images,
                 name: track.album.name,
@@ -109,31 +96,25 @@ export const usePlayer = defineStore("player", {
               duration_ms: track.duration_ms,
               id: track.id,
               is_playable: track.is_playable || true,
-              media_type: "audio" as const,
+              media_type: "audio",
               name: track.name,
-              type: "track" as const,
+              type: "track",
               uid: track.id,
               uri: track.uri,
-            }),
-          );
-          this.queue = spotifyTracks;
-        })
-        .catch((): void => {
-          // Check if currently playing content is a podcast episode
-          const currentTrack = this.playerState?.track_window?.current_track;
-          const isPlayingPodcast = currentTrack?.type === "episode" || currentTrack?.uri?.includes("spotify:episode:");
-
-          // Only show error notification if it's not a podcast-related queue error
-          if (!isPlayingPodcast) {
-            useNotification().addNotification({
-              msg: "Error getting queue",
-              type: NotificationType.Error,
-            });
-          }
-
-          // Always clear the queue on error
-          this.queue = [];
-        });
+            }) satisfies Spotify.Track,
+        );
+        this.queue = spotifyTracks;
+      } catch {
+        const currentTrack = this.playerState?.track_window?.current_track;
+        const isPlayingPodcast = currentTrack?.type === "episode" || currentTrack?.uri?.includes("spotify:episode:");
+        if (!isPlayingPodcast) {
+          useNotification().addNotification({
+            msg: "Error getting queue",
+            type: NotificationType.Error,
+          });
+        }
+        this.queue = [];
+      }
     },
 
     next(): void {
@@ -168,36 +149,26 @@ export const usePlayer = defineStore("player", {
       });
     },
 
-    seek(progress: number): void {
-      instance()
-        .put(`me/player/seek?position_ms=${Math.round(progress)}`)
-        .then(() => (this.currentlyPlaying.progress_ms = progress));
+    async seek(progress: number): Promise<void> {
+      await instance().put(`me/player/seek?position_ms=${Math.round(progress)}`);
+      this.currentlyPlaying.progress_ms = progress;
     },
 
-    setDevice(deviceId: null | string): void {
+    async setDevice(deviceId: null | string): Promise<void> {
       this.playerState = defaultPlaybackState;
-      instance()
-        .put("me/player", { device_ids: [deviceId] })
-        .then((): void => {
-          instance()
-            .get<DevicesResponse>("me/player/devices")
-            .then(({ data }): void => {
-              this.devices.list = data.devices;
-              const activeDevice = data.devices.find((device): boolean => device.id === deviceId);
-              if (activeDevice) {
-                this.devices.activeDevice = activeDevice;
-
-                // Start the heartbeat after setting a new active device
-                this.startDeviceHeartbeat();
-              }
-            });
-        });
+      await instance().put("me/player", { device_ids: [deviceId] });
+      const { data } = await instance().get<DevicesResponse>("me/player/devices");
+      this.devices.list = data.devices;
+      const activeDevice = data.devices.find((device): boolean => device.id === deviceId);
+      if (activeDevice) {
+        this.devices.activeDevice = activeDevice;
+        this.startDeviceHeartbeat();
+      }
     },
 
-    setVolume(volume: number): void {
-      instance()
-        .put(`me/player/volume?volume_percent=${Math.round(volume)}`)
-        .then((): number => (this.devices.activeDevice.volume_percent = volume));
+    async setVolume(volume: number): Promise<void> {
+      await instance().put(`me/player/volume?volume_percent=${Math.round(volume)}`);
+      this.devices.activeDevice.volume_percent = volume;
     },
 
     startDeviceHeartbeat(): void {
@@ -206,21 +177,19 @@ export const usePlayer = defineStore("player", {
       this.heartbeatInterval = window.setInterval((): void => {
         // If we have an active device, send a signal to keep it active
         if (this.devices.activeDevice?.id) {
-          instance()
-            .get<DevicesResponse>("me/player/devices")
-            .then(({ data }): void => {
-              // Check if our device is still in the list
+          (async (): Promise<void> => {
+            try {
+              const { data } = await instance().get<DevicesResponse>("me/player/devices");
               const currentDevice = data.devices.find((device): boolean => device.id === this.devices.activeDevice.id);
-
-              // If the device is no longer active, try to reactivate it
               if (currentDevice && !currentDevice.is_active) {
                 this.setDevice(currentDevice.id);
-              }
-              // If the device has disappeared completely, try to activate the first available one
-              else if (!currentDevice && data.devices.length > 0) {
+              } else if (!currentDevice && data.devices.length > 0) {
                 this.setDevice(data.devices[0].id);
               }
-            });
+            } catch {
+              // silent heartbeat error
+            }
+          })();
         }
       }, HEARTBEAT_INTERVAL);
     },
@@ -244,25 +213,45 @@ export const usePlayer = defineStore("player", {
 
     toggleRepeat(): void {
       if (this.currentlyPlaying.repeat_state === "off") {
-        instance()
-          .put("me/player/repeat?state=context")
-          .then((): string => (this.currentlyPlaying.repeat_state = "context"));
+        (async (): Promise<void> => {
+          try {
+            await instance().put("me/player/repeat?state=context");
+            this.currentlyPlaying.repeat_state = "context";
+          } catch {
+            // silent
+          }
+        })();
       } else {
-        instance()
-          .put("me/player/repeat?state=off")
-          .then((): string => (this.currentlyPlaying.repeat_state = "off"));
+        (async (): Promise<void> => {
+          try {
+            await instance().put("me/player/repeat?state=off");
+            this.currentlyPlaying.repeat_state = "off";
+          } catch {
+            // silent
+          }
+        })();
       }
     },
 
     toggleShuffle(): void {
       if (this.currentlyPlaying.shuffle_state) {
-        instance()
-          .put("me/player/shuffle?state=false")
-          .then((): boolean => (this.currentlyPlaying.shuffle_state = false));
+        (async (): Promise<void> => {
+          try {
+            await instance().put("me/player/shuffle?state=false");
+            this.currentlyPlaying.shuffle_state = false;
+          } catch {
+            // silent
+          }
+        })();
       } else {
-        instance()
-          .put("me/player/shuffle?state=true")
-          .then((): boolean => (this.currentlyPlaying.shuffle_state = true));
+        (async (): Promise<void> => {
+          try {
+            await instance().put("me/player/shuffle?state=true");
+            this.currentlyPlaying.shuffle_state = true;
+          } catch {
+            // silent
+          }
+        })();
       }
     },
 

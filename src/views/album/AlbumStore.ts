@@ -10,10 +10,13 @@ export const useAlbum = defineStore("album", {
       this.album = defaultAlbum;
     },
 
-    getAlbum(albumId: string) {
-      instance()
-        .get<Album>(`albums/${albumId}`)
-        .then((e) => (this.album = e.data));
+    async getAlbum(albumId: string) {
+      try {
+        const e = await instance().get<Album>(`albums/${albumId}`);
+        this.album = e.data;
+      } catch {
+        // silent fail
+      }
     },
   },
 

@@ -23,37 +23,38 @@ export const useAuth = defineStore("auth", {
           grant_type: "authorization_code",
           redirect_uri: api.redirectUri,
         };
-        ky.post("https://accounts.spotify.com/api/token", {
-          body: formUrlEncoded(payload),
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        })
-          .json<AuthAPIResponse>()
-          .then((data) => {
-            this.accessToken = data.access_token;
-            this.code = query;
+        try {
+          const data = await ky
+            .post("https://accounts.spotify.com/api/token", {
+              body: formUrlEncoded(payload),
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+            })
+            .json<AuthAPIResponse>();
 
-            if (this.storage) {
-              const referer = this.storage.referer;
-              this.storage = {
-                codeChallenge: "",
-                codeVerifier: "",
-                referer: referer,
-                refreshToken: data.refresh_token,
-              };
+          this.accessToken = data.access_token;
+          this.code = query;
 
-              // Get user info then redirect
-              this.getMe();
+          if (this.storage) {
+            const referer = this.storage.referer;
+            this.storage = {
+              codeChallenge: "",
+              codeVerifier: "",
+              referer: referer,
+              refreshToken: data.refresh_token,
+            };
 
-              // Redirect to the original page or home
-              router.push(referer || RouteName.Home);
-            }
-          })
-          .catch((err) => {
-            router.push(RouteName.Home);
-            throw new Error(String(err));
-          });
+            // Get user info then redirect
+            await this.getMe();
+
+            // Redirect to the original page or home
+            router.push(referer || RouteName.Home);
+          }
+        } catch {
+          router.push(RouteName.Home);
+          throw new Error("Authentication failed");
+        }
       }
     },
 
@@ -67,11 +68,14 @@ export const useAuth = defineStore("auth", {
       };
     },
 
-    getMe() {
+    async getMe() {
       if (!this.me) {
-        instance()
-          .get<User>("me")
-          .then(({ data }): User => (this.me = data));
+        try {
+          const { data } = await instance().get<User>("me");
+          this.me = data;
+        } catch {
+          // silent fail; user info not critical here
+        }
       }
     },
 
@@ -85,32 +89,32 @@ export const useAuth = defineStore("auth", {
     },
 
     async refresh() {
-      return ky
-        .post("https://accounts.spotify.com/api/token", {
-          body: formUrlEncoded({
-            client_id: api.clientId,
-            grant_type: "refresh_token",
-            refresh_token: this.storage?.refreshToken,
-          }),
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        })
-        .json<AuthAPIResponse>()
-        .then((data) => {
-          this.accessToken = data.access_token;
-          this.getMe();
-          this.storage = {
-            codeChallenge: "",
-            codeVerifier: "",
-            referer: "",
-            refreshToken: data.refresh_token,
-          };
-          return true;
-        })
-        .catch((err) => {
-          throw new Error(String(err));
-        });
+      try {
+        const data = await ky
+          .post("https://accounts.spotify.com/api/token", {
+            body: formUrlEncoded({
+              client_id: api.clientId,
+              grant_type: "refresh_token",
+              refresh_token: this.storage?.refreshToken,
+            }),
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          })
+          .json<AuthAPIResponse>();
+
+        this.accessToken = data.access_token;
+        await this.getMe();
+        this.storage = {
+          codeChallenge: "",
+          codeVerifier: "",
+          referer: "",
+          refreshToken: data.refresh_token,
+        };
+        return true;
+      } catch {
+        throw new Error("Token refresh failed");
+      }
     },
   },
 

@@ -33,14 +33,15 @@ export const useHome = defineStore("home", {
         const id5 = data.items[getRandomInt(0, 10)]?.id;
         const artistsSeed = `${id1},${id2},${id3},${id4},${id5}`;
 
-        instance()
-          .get<Top>(`recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`)
-          .then((f) => {
-            const cleanedList = removeDuplicatesAlbums(
-              f.data.tracks.map((g: Track) => g.album).filter((h: AlbumSimplified) => isAlbum(h)),
-            );
-            this.recommendedAlbums = cleanedList;
-          });
+        try {
+          const f = await instance().get<Top>(`recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`);
+          const cleanedList = removeDuplicatesAlbums(
+            f.data.tracks.map((g: Track) => g.album).filter((h: AlbumSimplified) => isAlbum(h)),
+          );
+          this.recommendedAlbums = cleanedList;
+        } catch {
+          // silent fail
+        }
       } else if (!this.recommendedAlbums.length) this.getRecommendedAlbums();
     },
   },

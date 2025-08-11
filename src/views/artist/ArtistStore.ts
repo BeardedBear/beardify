@@ -22,56 +22,71 @@ export const useArtist = defineStore("artist", {
       this.followStatus = false;
     },
 
-    getAlbums(url: string) {
-      const cleanedUrl = cleanUrl(url);
-      instance()
-        .get<Paging<AlbumSimplified>>(cleanedUrl)
-        .then((e) => {
-          const cleanFromOtherMarkets = e.data.items.filter((album: AlbumSimplified) =>
-            album.available_markets.includes("FR"),
-          );
-          const lives = cleanFromOtherMarkets.filter((album: AlbumSimplified) => useCheckLiveAlbum(album.name));
-          const albums = cleanFromOtherMarkets.filter((album: AlbumSimplified) => !useCheckLiveAlbum(album.name));
+    async getAlbums(url: string) {
+      try {
+        const cleanedUrl = cleanUrl(url);
+        const e = await instance().get<Paging<AlbumSimplified>>(cleanedUrl);
+        const cleanFromOtherMarkets = e.data.items.filter((album: AlbumSimplified) =>
+          album.available_markets.includes("FR"),
+        );
+        const lives = cleanFromOtherMarkets.filter((album: AlbumSimplified) => useCheckLiveAlbum(album.name));
+        const albums = cleanFromOtherMarkets.filter((album: AlbumSimplified) => !useCheckLiveAlbum(album.name));
 
-          this.albums = removeDuplicatesAlbums(this.albums.concat(albums));
-          this.albumsLive = removeDuplicatesAlbums(this.albumsLive.concat(lives));
-          if (e.data.next) this.getAlbums(e.data.next);
-        });
+        this.albums = removeDuplicatesAlbums(this.albums.concat(albums));
+        this.albumsLive = removeDuplicatesAlbums(this.albumsLive.concat(lives));
+        if (e.data.next) await this.getAlbums(e.data.next);
+      } catch {
+        // silent fail
+      }
+    },
+    async getArtist(artistId: string) {
+      try {
+        const e = await instance().get<Artist>(`artists/${artistId}`);
+        this.artist = e.data;
+      } catch {
+        // silent fail
+      }
     },
 
-    getArtist(artistId: string) {
-      instance()
-        .get<Artist>(`artists/${artistId}`)
-        .then((e) => (this.artist = e.data));
+    async getFollowStatus(artistId: string) {
+      try {
+        const e = await instance().get<boolean[]>(`me/following/contains?type=artist&ids=${artistId}`);
+        this.followStatus = e.data.pop();
+      } catch {
+        // silent fail
+      }
     },
 
-    getFollowStatus(artistId: string) {
-      instance()
-        .get<boolean[]>(`me/following/contains?type=artist&ids=${artistId}`)
-        .then((e) => (this.followStatus = e.data.pop()));
+    async getRelatedArtists(artistId: string) {
+      try {
+        const e = await instance().get<RelatedArtists>(`artists/${artistId}/related-artists`);
+        this.relatedArtists.artists = e.data.artists.slice(0, 15);
+      } catch {
+        // silent fail
+      }
     },
 
-    getRelatedArtists(artistId: string) {
-      instance()
-        .get<RelatedArtists>(`artists/${artistId}/related-artists`)
-        .then((e) => (this.relatedArtists.artists = e.data.artists.slice(0, 15)));
+    async getSingles(artistId: string) {
+      try {
+        const e = await instance().get<Paging<AlbumSimplified>>(
+          `artists/${artistId}/albums?market=FR&include_groups=single&limit=50`,
+        );
+        const onlySingles = e.data.items.filter((item: AlbumSimplified) => !isEP(item));
+        const onlyEps = e.data.items.filter((item: AlbumSimplified) => isEP(item));
+        this.singles = removeDuplicatesAlbums(onlySingles);
+        this.eps = removeDuplicatesAlbums(onlyEps);
+      } catch {
+        // silent fail
+      }
     },
 
-    getSingles(artistId: string) {
-      instance()
-        .get<Paging<AlbumSimplified>>(`artists/${artistId}/albums?market=FR&include_groups=single&limit=50`)
-        .then((e) => {
-          const onlySingles = e.data.items.filter((item: AlbumSimplified) => !isEP(item));
-          const onlyEps = e.data.items.filter((item: AlbumSimplified) => isEP(item));
-          this.singles = removeDuplicatesAlbums(onlySingles);
-          this.eps = removeDuplicatesAlbums(onlyEps);
-        });
-    },
-
-    getTopTracks(artistId: string) {
-      instance()
-        .get<ArtistTopTracks>(`artists/${artistId}/top-tracks?market=FR`)
-        .then((e) => (this.topTracks = e.data));
+    async getTopTracks(artistId: string) {
+      try {
+        const e = await instance().get<ArtistTopTracks>(`artists/${artistId}/top-tracks?market=FR`);
+        this.topTracks = e.data;
+      } catch {
+        // silent fail
+      }
     },
 
     switchFollow(artistId: string) {

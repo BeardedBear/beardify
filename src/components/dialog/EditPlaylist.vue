@@ -108,18 +108,19 @@ const values: UpdatePlaylistValues = reactive({
 const isCollection = ref<boolean>(false);
 const isEditable = ref<boolean>(false);
 
-watchEffect(() => {
+watchEffect(async () => {
   if (dialogStore.show && dialogStore.type === "editPlaylist") {
-    instance()
-      .get<Playlist>(`playlists/${dialogStore.playlistId}`)
-      .then(({ data }) => {
-        isEditable.value = data.owner.id === useAuth().me?.id;
-        isCollection.value = data.name.toLowerCase().startsWith("#collection");
-        values.name = data.name.replaceAll("#Collection ", "");
-        values.description = data.description === "" || data.description === "No description" ? "" : data.description;
-        values.public = data.public;
-        values.collaborative = data.collaborative;
-      });
+    try {
+      const { data } = await instance().get<Playlist>(`playlists/${dialogStore.playlistId}`);
+      isEditable.value = data.owner.id === useAuth().me?.id;
+      isCollection.value = data.name.toLowerCase().startsWith("#collection");
+      values.name = data.name.replaceAll("#Collection ", "");
+      values.description = data.description === "" || data.description === "No description" ? "" : data.description;
+      values.public = data.public;
+      values.collaborative = data.collaborative;
+    } catch {
+      notification({ msg: "Unable to load playlist details", type: NotificationType.Error });
+    }
   }
 });
 
@@ -130,12 +131,14 @@ function remove(): void {
     dialogStore.close();
 
     // Wait for the closing animation to complete before deleting
-    setTimeout(() => {
-      sidebarStore.removePlaylist(playlistIdToDelete).catch((error) => {
+    setTimeout(async () => {
+      try {
+        await sidebarStore.removePlaylist(playlistIdToDelete);
+      } catch (error) {
         // eslint-disable-next-line no-console
         console.error("Error while deleting playlist:", error);
-        notification({ msg: `Unable to delete playlist`, type: NotificationType.Error });
-      });
+        notification({ msg: "Unable to delete playlist", type: NotificationType.Error });
+      }
     }, 300); // Slightly longer than the closing animation (200ms)
   }
 }

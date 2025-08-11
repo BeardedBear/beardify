@@ -81,62 +81,39 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   await playAlbum(albumUri);
 }
 
-function deleteAlbum(albumId: string): void {
-  instance()
-    .get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`)
-    .then((e) => {
-      // Check if we have tracks to delete
-      if (!e.data.items || e.data.items.length === 0) {
-        notification({
-          msg: "No tracks found in this album",
-          type: NotificationType.Warning,
-        });
-        return;
-      }
-
-      const tracks: TrackToRemove[] = [];
-      e.data.items.forEach((track: TrackSimplified) => {
-        if (track.uri) {
-          tracks.push({ uri: track.uri });
-        }
+async function deleteAlbum(albumId: string): Promise<void> {
+  try {
+    const e = await instance().get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`);
+    if (!e.data.items || e.data.items.length === 0) {
+      notification({ msg: "No tracks found in this album", type: NotificationType.Warning });
+      return;
+    }
+    const tracks: TrackToRemove[] = [];
+    e.data.items.forEach((track: TrackSimplified) => {
+      if (track.uri) tracks.push({ uri: track.uri });
+    });
+    if (tracks.length === 0) {
+      notification({ msg: "No valid track URIs found", type: NotificationType.Error });
+      return;
+    }
+    try {
+      await instance().delete(`playlists/${currentRouteId}/tracks`, {
+        data: { tracks: tracks, snapshot_id: playlistStore.playlist.snapshot_id },
       });
-
-      // Check if we found valid track URIs
-      if (tracks.length === 0) {
-        notification({
-          msg: "No valid track URIs found",
-          type: NotificationType.Error,
-        });
-        return;
-      }
-
-      instance()
-        .delete(`playlists/${currentRouteId}/tracks`, {
-          data: {
-            tracks: tracks,
-            snapshot_id: playlistStore.playlist.snapshot_id,
-          },
-        })
-        .then(() => {
-          playlistStore.removeTracks(tracks);
-          notification({
-            msg: "Album successfully removed from playlist",
-            type: NotificationType.Success,
-          });
-        })
-        .catch((error) =>
-          notification({
-            msg: error.response?.data?.error?.message ?? "Album delete failed",
-            type: NotificationType.Error,
-          }),
-        );
-    })
-    .catch((error) =>
+      playlistStore.removeTracks(tracks);
+      notification({ msg: "Album successfully removed from playlist", type: NotificationType.Success });
+    } catch (error: any) {
       notification({
         msg: error.response?.data?.error?.message ?? "Album delete failed",
         type: NotificationType.Error,
-      }),
-    );
+      });
+    }
+  } catch (error: any) {
+    notification({
+      msg: error.response?.data?.error?.message ?? "Album delete failed",
+      type: NotificationType.Error,
+    });
+  }
 }
 </script>
 

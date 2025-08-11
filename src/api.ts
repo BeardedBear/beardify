@@ -69,7 +69,13 @@ export function instance(): ApiInstance {
 
     // Make the request using the appropriate method
     const response = await kyInstance[method](url, opts);
-    const data = await response.json<T>().catch(() => ({}) as T);
+    let data: T;
+    try {
+      data = await response.json<T>();
+    } catch {
+      // fallback empty object – satisfies generic shape without unsafe assertion
+      data = {} as T; // retain minimal assertion since satisfies can't help with generic unknown
+    }
     return { data };
   };
 

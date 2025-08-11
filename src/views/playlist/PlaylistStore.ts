@@ -16,13 +16,14 @@ export const usePlaylist = defineStore("playlist", {
       this.tracks = [];
     },
 
-    followPlaylist(playlistId: string) {
-      instance()
-        .put(`playlists/${playlistId}/followers`)
-        .then(() => {
-          this.followed = true;
-          useSidebar().refreshPlaylists();
-        });
+    async followPlaylist(playlistId: string) {
+      try {
+        await instance().put(`playlists/${playlistId}/followers`);
+        this.followed = true;
+        useSidebar().refreshPlaylists();
+      } catch {
+        // silent fail (could add notification later)
+      }
     },
 
     async getPlaylist(url: string) {
@@ -33,35 +34,26 @@ export const usePlaylist = defineStore("playlist", {
       ).data.shift();
     },
 
-    getTracks(url: string) {
-      const cleanedUrl = cleanUrl(url);
-      instance()
-        .get<Paging<PlaylistTrack>>(cleanedUrl)
-        .then((e) => {
-          this.tracks = this.tracks.concat(e.data.items.filter((item: PlaylistTrack) => item.track));
-          // Only continue if there's a next page
-          if (e.data.next) {
-            // Make sure to clean the next URL to avoid duplication
-            this.getTracks(e.data.next);
-          }
-        })
-        .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error("Error fetching playlist tracks:", error);
-          // If there's a URL error, it might be due to duplicate prefixes
-          if (
-            error.message &&
-            error.message.includes("404") &&
-            url.includes("https://api.spotify.com/v1/https://api.spotify.com/v1/")
-          ) {
-            // Try to fix the malformed URL by removing the duplicate prefix
+    async getTracks(url: string) {
+      try {
+        const cleanedUrl = cleanUrl(url);
+        const e = await instance().get<Paging<PlaylistTrack>>(cleanedUrl);
+        this.tracks = this.tracks.concat(e.data.items.filter((item: PlaylistTrack) => item.track));
+        if (e.data.next) await this.getTracks(e.data.next);
+      } catch (error: unknown) {
+        // eslint-disable-next-line no-console
+        console.error("Error fetching playlist tracks:", error);
+        if (typeof error === "object" && error && "message" in error) {
+          const msg = (error as { message?: string }).message; // retain minimal structural narrowing
+          if (msg && msg.includes("404") && url.includes("https://api.spotify.com/v1/https://api.spotify.com/v1/")) {
             const fixedUrl = url.replace(
               "https://api.spotify.com/v1/https://api.spotify.com/v1/",
               "https://api.spotify.com/v1/",
             );
-            this.getTracks(fixedUrl);
+            await this.getTracks(fixedUrl);
           }
-        });
+        }
+      }
     },
 
     removeSong(songUri: string) {

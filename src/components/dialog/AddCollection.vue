@@ -20,14 +20,14 @@ const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const collectionName = ref("");
 
-function create(): void {
-  sidebarStore.addCollection(collectionName.value).then(() => {
+async function create(): Promise<void> {
+  try {
+    await sidebarStore.addCollection(collectionName.value);
     dialogStore.close();
-    notification({
-      msg: `Collection ${collectionName.value} created`,
-      type: NotificationType.Success,
-    });
-  });
+    notification({ msg: `Collection ${collectionName.value} created`, type: NotificationType.Success });
+  } catch {
+    // handled upstream
+  }
 }
 </script>
 

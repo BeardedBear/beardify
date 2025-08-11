@@ -23,15 +23,11 @@ export async function albumAllreadyExist(
   // Clean the URL first to avoid duplicate prefixes
   const cleanedUrl = cleanUrl(url);
 
-  return instance()
-    .get<Paging<PlaylistTrack>>(cleanedUrl)
-    .then(({ data }) => {
-      tempAlbums = tempAlbums.concat(data.items);
-      // Also clean the next URL if it exists and pass false to indicate non-first call
-      return data.next
-        ? albumAllreadyExist(cleanUrl(data.next), albumId, false)
-        : tempAlbums.some((e) => e.track.album.id === albumId);
-    });
+  const { data } = await instance().get<Paging<PlaylistTrack>>(cleanedUrl);
+  tempAlbums = tempAlbums.concat(data.items);
+  return data.next
+    ? albumAllreadyExist(cleanUrl(data.next), albumId, false)
+    : tempAlbums.some((e) => e.track.album.id === albumId);
 }
 
 let tempTracks: PlaylistTrack[] = [];
@@ -48,13 +44,9 @@ export async function trackAllreadyExist(
   // Clean the URL first to avoid duplicate prefixes
   const cleanedUrl = cleanUrl(url);
 
-  return instance()
-    .get<Paging<PlaylistTrack>>(cleanedUrl)
-    .then(({ data }) => {
-      tempTracks = tempTracks.concat(data.items);
-      // Also clean the next URL if it exists
-      return data.next
-        ? trackAllreadyExist(cleanUrl(data.next), trackId, false)
-        : tempTracks.some((e) => e.track.uri === trackId);
-    });
+  const { data } = await instance().get<Paging<PlaylistTrack>>(cleanedUrl);
+  tempTracks = tempTracks.concat(data.items);
+  return data.next
+    ? trackAllreadyExist(cleanUrl(data.next), trackId, false)
+    : tempTracks.some((e) => e.track.uri === trackId);
 }
