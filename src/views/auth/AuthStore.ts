@@ -15,46 +15,50 @@ import router, { RouteName } from "../../router";
 export const useAuth = defineStore("auth", {
   actions: {
     async authentification(query: string) {
-      if (this.storage) {
-        const payload = {
-          client_id: api.clientId,
-          code: query,
-          code_verifier: this.storage.codeVerifier,
-          grant_type: "authorization_code",
-          redirect_uri: api.redirectUri,
+      if (!this.storage) {
+        console.error("Authentication failed: no storage found");
+        router.push(RouteName.Login);
+        return;
+      }
+
+      const payload = {
+        client_id: api.clientId,
+        code: query,
+        code_verifier: this.storage.codeVerifier,
+        grant_type: "authorization_code",
+        redirect_uri: api.redirectUri,
+      };
+
+      try {
+        const data = await ky
+          .post("https://accounts.spotify.com/api/token", {
+            body: formUrlEncoded(payload),
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          })
+          .json<AuthAPIResponse>();
+
+        this.accessToken = data.access_token;
+        this.code = query;
+
+        const referer = this.storage.referer;
+        this.storage = {
+          codeChallenge: "",
+          codeVerifier: "",
+          referer: referer,
+          refreshToken: data.refresh_token,
         };
-        try {
-          const data = await ky
-            .post("https://accounts.spotify.com/api/token", {
-              body: formUrlEncoded(payload),
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-              },
-            })
-            .json<AuthAPIResponse>();
 
-          this.accessToken = data.access_token;
-          this.code = query;
+        // Get user info before redirecting
+        await this.getMe();
 
-          if (this.storage) {
-            const referer = this.storage.referer;
-            this.storage = {
-              codeChallenge: "",
-              codeVerifier: "",
-              referer: referer,
-              refreshToken: data.refresh_token,
-            };
-
-            // Get user info then redirect
-            await this.getMe();
-
-            // Redirect to the original page or home
-            router.push(referer || RouteName.Home);
-          }
-        } catch {
-          router.push(RouteName.Home);
-          throw new Error("Authentication failed");
-        }
+        // Redirect to the original page or home
+        router.push(referer || RouteName.Home);
+      } catch (error) {
+        console.error("Authentication failed:", error);
+        router.push(RouteName.Login);
+        throw new Error("Authentication failed");
       }
     },
 
