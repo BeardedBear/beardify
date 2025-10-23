@@ -106,6 +106,7 @@ export function instance(): ApiInstance {
  */
 function createKyInstance(): typeof ky {
   const authStore = useAuth();
+  let isRefreshing = false;
 
   return ky.create({
     headers: {
@@ -114,11 +115,22 @@ function createKyInstance(): typeof ky {
     },
     hooks: {
       afterResponse: [
-        (_input, _options, response): void => {
-          // Gérer les erreurs 401 (Unauthorized) en nettoyant les données d'auth et redirigeant
-          if (response.status === 401) {
-            clearAuthData();
-            window.location.href = "/login";
+        async (_input, _options, response): Promise<void> => {
+          // Gérer les erreurs 401 (Unauthorized) en tentant de rafraîchir le token
+          if (response.status === 401 && !isRefreshing) {
+            isRefreshing = true;
+            try {
+              // Tenter de rafraîchir le token
+              await authStore.refresh();
+              isRefreshing = false;
+              // Le token a été rafraîchi, on recharge la page pour que les requêtes utilisent le nouveau token
+              window.location.reload();
+            } catch {
+              // Le refresh a échoué, rediriger vers login
+              isRefreshing = false;
+              clearAuthData();
+              window.location.href = "/login";
+            }
           }
         },
       ],
