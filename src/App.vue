@@ -65,9 +65,14 @@ setInterval(async () => {
   }
 }, 300_000);
 
+// Refresh token when the page becomes visible again after being hidden
+// This handles cases where the user closes the laptop, switches tabs for a long time, etc.
 document.addEventListener("visibilitychange", async () => {
   if (!document.hidden) {
     try {
+      // Refresh token to ensure it's still valid
+      await authStore.refresh();
+      // Also refresh device list
       await usePlayer().getDeviceList();
     } catch {
       // silent

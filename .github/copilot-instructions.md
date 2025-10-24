@@ -1,42 +1,37 @@
 # Copilot Instructions for Beardify
 
-## Project Overview
-Beardify is a Vue 3 + TypeScript Spotify web client that enhances the official experience. The core innovation is **"Collections"** - album playlists created by adding "#Collection" to playlist names, enabling functionality not available in the official Spotify client.
+Beardify is a Vue 3 + TypeScript Spotify web client. The core innovation is **"Collections"** - album playlists created by adding "#Collection" to playlist names, enabling functionality not available in the official Spotify client.
 
 ## Essential Commands
 ```bash
-npm run dev          # Start dev server (auto-detects port, usually 3000)
-npm run lint         # Critical: Run ALL linting (TypeScript + ESLint + Prettier + Stylelint)
+npm run dev          # Start dev server (port 3000, auto-increments if busy)
+npm run lint         # Run ALL linting: TypeScript + ESLint + Prettier + Stylelint
 npm run fix          # Auto-fix all linting issues
 npm run build        # Production build (includes linting validation)
-npm run preview      # Preview production build
 ```
 **Always run `npm run lint` before commits - no test framework exists, linting is primary QA.**
 
-## Core Technologies
+## Tech Stack
+Vue 3 (Composition API + `<script setup>`) • TypeScript (strict) • Vite • Pinia (with persistence) • SCSS • Spotify Web API + Web Playback SDK
 
-- **Vue 3** with Composition API and `<script setup>` syntax
-- **TypeScript** (strict mode)
-- **Vite** for build/dev server
-- **Pinia** for state management with persistence
-- **SCSS** with CSS custom properties for theming
-- **Spotify Web API + Web Playback SDK**
-
-## Architecture Patterns
+## Architecture
 
 ### Directory Structure
-- `src/components/` - Feature-organized Vue components (album/, artist/, player/, etc.)
-- `src/views/` - Route-level components, each with corresponding Pinia store
-- `src/helpers/` - Utility functions
-- `src/@types/` - TypeScript type definitions
-- `src/assets/scss/` - Global SCSS with theming system
+```
+src/
+├── components/        # Feature-organized (album/, artist/, player/, etc.)
+│   └── */Store.ts    # Component-level Pinia stores
+├── views/            # Route-level components with corresponding Store.ts
+├── helpers/          # Utility functions (play.ts, playlist.ts, notifications.ts)
+├── @types/           # TypeScript types organized by feature
+└── assets/scss/      # Global SCSS with theming system
+```
 
 ### State Management (Pinia)
-- **Feature-based stores**: Each major section has its own store (`AuthStore`, `PodcastsStore`, `PlaylistStore`, `PlayerStore`, `SearchStore`, `ConfigStore`)
-- **Persistent state**: All stores use `pinia-plugin-persistedstate` for automatic localStorage persistence
-- **Store pattern**: `defineStore("name", { actions: {...}, state: () => ({...}) })`
-
-Example store action pattern:
+- **View-based stores**: `src/views/auth/AuthStore.ts`, `src/views/playlist/PlaylistStore.ts`
+- **Component-based stores**: `src/components/player/PlayerStore.ts`, `src/components/config/ConfigStore.ts`
+- **All stores use `pinia-plugin-persistedstate`** for automatic localStorage persistence
+- **Store action pattern**:
 ```typescript
 async followPodcast(podcastId: string) {
   try {
@@ -50,116 +45,92 @@ async followPodcast(podcastId: string) {
 }
 ```
 
-### Component Structure
-- **Feature organization**: `src/components/album/`, `src/components/artist/`, etc.
-- **Route-level components**: `src/views/` with corresponding Pinia stores
-- **Composition API**: Always use `<script setup>` syntax with TypeScript
-- **Props pattern**: `defineProps<{ propName: Type }>()` with explicit typing
-
 ### API Layer (`src/api.ts`)
-- **Centralized instance**: Use `instance()` for all Spotify API calls
-- **Automatic auth**: Token refresh and error handling built-in
-- **Method pattern**: `instance().get<ResponseType>(url)` with explicit response typing
-- **Scopes**: All required Spotify permissions already configured
+- **Use `instance()` for all Spotify API calls** - never use `ky` directly
+- **Automatic token refresh** and error handling built-in
+- **Method pattern**: `instance().get<ResponseType>(url)` with explicit typing
+- **All Spotify scopes already configured** in `api.scopes`
 
-## Critical Conventions
+Example:
+```typescript
+const { data } = await instance().get<Playlist>(`playlists/${id}`);
+await instance().put(`playlists/${id}/followers`); // No body for follow actions
+```
 
-### Code Conventions
-- Use Vue 3 Composition API with `<script setup>` syntax
-- TypeScript strict mode with explicit return types
-- Scoped styles for all Vue components
-- BEM methodology for CSS class naming
-- Alphabetical import sorting (enforced by ESLint perfectionist plugin)
-- Unix line endings (LF)
+### Collections Feature Logic (CRITICAL)
+The "#Collection" naming convention is **core business logic**:
+```typescript
+// Check if playlist is a collection
+function isACollection(playlist: SimplifiedPlaylist): boolean {
+  return playlist.name.toLowerCase().includes("#collection");
+}
 
-### ESLint Configuration
-- **Explicit function return types**: Warning enforced
-- **No explicit any**: Warning (prefer proper typing)
-- **No unused variables**: Warning
-- **Unix line endings**: Error (LF required)
-- **Console/debugger**: Warnings allowed
-- **Perfectionist plugin**: Alphabetical ordering for imports/exports
-- **Vue files**: Currently ignored for parsing (TypeScript handled separately)
+// Transform playlist to collection or vice versa
+const newName = isCollection ? `#Collection ${name}` : name;
 
-### Prettier Configuration
-- **Print width**: 120 characters
-- **Semicolons**: Required
-- **Arrow parens**: Always use parentheses
-- **End of line**: LF (Unix)
-- **HTML whitespace**: Ignore for Vue templates
-- **Tab width**: 2 spaces (JSON/YAML files)
+// Display name (strip the marker)
+const displayName = playlist.name.replace("#Collection ", "");
+```
+**Examples**: `src/components/sidebar/SidebarStore.ts:15`, `src/components/dialog/DialogStore.ts:37`
 
-### Stylelint Configuration
-- **Extends**: `stylelint-config-standard-scss` + Vue/HTML support
-- **Property ordering**: Alphabetical order enforced
-- **Declaration order**: Custom properties first, then declarations
-- **SCSS support**: Full SCSS syntax support with `stylelint-scss` plugin
-- **Ignores**: `/public/` directory excluded
+## Code Conventions
 
 ### TypeScript
-- **Strict mode**: Explicit return types required (ESLint enforced)
-- **Type definitions**: All types in `src/@types/` organized by feature
-- **No `any`**: ESLint warning enforced, prefer proper typing
+- **Explicit return types required** (ESLint warning enforced)
+- **No `any`** (warning enforced, prefer proper typing)
+- **Types in `src/@types/`** organized by feature (Album.ts, Playlist.ts, etc.)
 
-### Styling System
-- **CSS Custom Properties**: Use existing design tokens
+### Vue Components
+- **Always use `<script setup>` syntax**
+- **Scoped styles required** for all components
+- **Props pattern**: `defineProps<{ propName: Type }>()`
+- **Alphabetical import sorting** (enforced by ESLint perfectionist plugin)
+
+### Styling
+- **CSS Custom Properties** (existing design tokens):
   - `--bg-color-*` (darker, dark, default, light, lighter)
   - `--font-color-*` (dark, default, light)
   - `--primary-color-*` (darker, dark, default, light, lighter)
-- **Scoped styles**: Required for all Vue components
-- **BEM methodology**: For CSS class naming
+- **BEM methodology** for CSS class naming
+- **Stylelint**: Alphabetical property ordering enforced
 
-### Collections Feature Logic
-The "#Collection" convention is core business logic:
-```typescript
-// Check if playlist is a collection
-const isCollection = playlist.name.includes("#Collection");
-// Transform playlist to collection or vice versa
-const newName = isCollection ? name.replace("#Collection", "") : `${name} #Collection`;
-```
+### Formatting
+- **Print width**: 120 characters
+- **Semicolons required**
+- **Unix line endings (LF)** - error level
+- **Arrow parens**: Always use parentheses
 
-## Spotify Integration Specifics
+## Spotify Integration
 
-### Authentication Flow
-- **OAuth 2.0 PKCE**: Implemented in `AuthStore` with token refresh
-- **Token refresh**: Every 30 minutes
-- **Persistent session**: With localStorage
-- **Premium required**: Web API limitations, handle gracefully
+### Authentication (OAuth 2.0 PKCE)
+- **Token refresh**: Every 30 minutes (handled in `AuthStore`)
+- **Persistent session**: With localStorage via Pinia plugin
 - **Environment variables**: `VITE_SPOTIFY_CLIENT_ID`, `VITE_REDIRECT_URI_DEV/PROD`
-
-### Player Features
-- Spotify Web Playbook SDK integration
-- Active device polling every 5 minutes
-- Widevine DRM support detection for Brave browser
-- Premium-only features (Spotify API limitation)
+- **Premium users only**: Web API limitation, handle gracefully
 
 ### Web Playback SDK
-- **Device detection**: Active device polling every 5 minutes
+- **Error suppression**: Non-critical SDK errors intentionally suppressed in `main.ts:15-45`
+- **PlayLoad 404 errors**: Expected during playback transitions, completely silent
+- **Device polling**: Every 5 minutes for active device detection
 - **Widevine DRM**: Special handling for Brave browser compatibility
-- **Error suppression**: Non-critical SDK errors intentionally suppressed (see `main.ts:19`)
+
+### API Request Patterns
+- **Follow/Unfollow**: Use query params (`me/shows?ids=${id}`) **not request body**
+- **PUT for following**: `instance().put(url)` without body
+- **DELETE for unfollowing**: Query params in URL
 
 ## Development Gotchas
 
-### API Request Patterns
-- **Follow/Unfollow**: Use query params (`me/shows?ids=${id}`) not request body
-- **PUT requests**: For following, use `instance().put(url)` without body
-- **DELETE requests**: For unfollowing, use query params in URL
+1. **No test framework exists** - linting is primary QA
+2. **User feedback required**: Always use `notification()` helper for user-facing actions
+3. **Console warnings allowed**: `console.error` for errors, `console.log` for debugging
+4. **URL cleaning**: Use `cleanUrl()` helper from `src/helpers/urls.ts` for Spotify API URLs
+5. **Premium-only features**: Gracefully degrade for non-premium limitations
+6. **Modern browsers required**: ES modules, CSS custom properties, Widevine DRM
 
-### Build System (Vite)
-- **Port detection**: Dev server auto-increments if 3000 is busy
-- **ES Modules**: Modern browser target, no legacy support needed
-- **Source maps**: Enabled for CSS in development
-
-### Error Handling
-- **User notifications**: Always provide user feedback via `notification()` helper
-- **Console logging**: Allowed for debugging, use `console.error` for errors
-- **Graceful degradation**: Handle Spotify API limitations (premium-only features)
-
-## Important Notes
-
-- **Premium users only**: Spotify Web API restrictions
-- **No test framework**: Linting serves as primary quality assurance
-- **Modern browsers required**: ES modules, CSS custom properties, Widevine DRM
-- **Error suppression**: Non-critical Spotify SDK errors are intentionally suppressed (see `main.ts:19`)
-
-When working on this codebase, prioritize the Collections feature logic and ensure all Spotify API interactions follow the established patterns for authentication and error handling.
+## Key Files to Reference
+- `src/api.ts` - API instance and configuration
+- `src/views/auth/AuthStore.ts` - OAuth flow and token management
+- `src/components/sidebar/SidebarStore.ts` - Collections feature implementation
+- `src/helpers/notifications.ts` - User notification pattern
+- `eslint.config.js` - Linting rules and conventions
