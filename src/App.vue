@@ -13,6 +13,7 @@
 </template>
 
 <script lang="ts" setup>
+import { onBeforeUnmount } from "vue";
 import { RouterView, useRoute } from "vue-router";
 
 import DialogList from "./components/dialog/DialogList.vue";
@@ -47,8 +48,8 @@ if (!navigator.userAgent.includes("Macintosh")) {
   })();
 }
 
-// Keep token active
-setInterval(async () => {
+// Keep token active - store interval ID for cleanup
+const tokenRefreshInterval = setInterval(async () => {
   try {
     await authStore.refresh();
   } catch {
@@ -56,8 +57,8 @@ setInterval(async () => {
   }
 }, 1_800_000); // 30 minutes
 
-// Keep device active every 5 minutes
-setInterval(async () => {
+// Keep device active every 5 minutes - store interval ID for cleanup
+const deviceRefreshInterval = setInterval(async () => {
   try {
     await usePlayer().getDeviceList();
   } catch {
@@ -67,7 +68,7 @@ setInterval(async () => {
 
 // Refresh token when the page becomes visible again after being hidden
 // This handles cases where the user closes the laptop, switches tabs for a long time, etc.
-document.addEventListener("visibilitychange", async () => {
+const handleVisibilityChange = async (): Promise<void> => {
   if (!document.hidden) {
     try {
       // Refresh token to ensure it's still valid
@@ -78,6 +79,15 @@ document.addEventListener("visibilitychange", async () => {
       // silent
     }
   }
+};
+
+document.addEventListener("visibilitychange", handleVisibilityChange);
+
+// Cleanup intervals and event listeners when app is unmounted
+onBeforeUnmount(() => {
+  clearInterval(tokenRefreshInterval);
+  clearInterval(deviceRefreshInterval);
+  document.removeEventListener("visibilitychange", handleVisibilityChange);
 });
 </script>
 

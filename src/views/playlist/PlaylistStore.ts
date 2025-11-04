@@ -61,7 +61,9 @@ export const usePlaylist = defineStore("playlist", {
     },
 
     removeTracks(tracks: TrackToRemove[]) {
-      this.tracks = this.tracks.filter((e) => !tracks.map((e) => e.uri).includes(e.track.uri));
+      // Use Set for O(1) lookup instead of array.includes() which is O(n)
+      const urisToRemove = new Set(tracks.map((track) => track.uri));
+      this.tracks = this.tracks.filter((track) => !urisToRemove.has(track.track.uri));
     },
 
     updateCollectionPosition(oldIndex: number, newIndex: number) {

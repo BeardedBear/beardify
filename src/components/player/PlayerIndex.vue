@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import PlayerEpisode from "./PlayerEpisode.vue";
 import PlayerSong from "./PlayerSong.vue";
@@ -17,9 +17,15 @@ const interval = ref<number | undefined>(undefined);
 
 function watchExternalPlayerState(): void {
   const appFocused = document.visibilityState === "visible";
-  playerStore.isExternalDevice
-    ? (interval.value = window.setInterval(() => appFocused && playerStore.getExternalPlayerState(), 2000))
-    : window.clearInterval(interval.value);
+  // Clear existing interval before setting a new one
+  if (interval.value !== undefined) {
+    window.clearInterval(interval.value);
+    interval.value = undefined;
+  }
+  // Only set interval if external device is active
+  if (playerStore.isExternalDevice) {
+    interval.value = window.setInterval(() => appFocused && playerStore.getExternalPlayerState(), 2000);
+  }
 }
 
 onMounted(() => watchExternalPlayerState());
@@ -28,6 +34,14 @@ watch(
   () => playerStore.isExternalDevice,
   () => watchExternalPlayerState(),
 );
+
+// Cleanup interval when component is unmounted
+onBeforeUnmount(() => {
+  if (interval.value !== undefined) {
+    window.clearInterval(interval.value);
+    interval.value = undefined;
+  }
+});
 </script>
 
 <style lang="scss" scoped>

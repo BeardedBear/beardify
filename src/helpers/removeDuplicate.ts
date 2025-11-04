@@ -1,11 +1,16 @@
 import { AlbumSimplified } from "../@types/Album";
 
 export function removeDuplicatesAlbums(array: AlbumSimplified[]): AlbumSimplified[] {
-  return array.reduce(
-    (acc: AlbumSimplified[], value) =>
-      acc.some((album) => album.name.trim().toLowerCase() === value.name.trim().toLowerCase())
-        ? acc
-        : acc.concat(value),
-    [],
-  );
+  const seen = new Set<string>();
+  const result: AlbumSimplified[] = [];
+
+  for (const album of array) {
+    const normalizedName = album.name.trim().toLowerCase();
+    if (!seen.has(normalizedName)) {
+      seen.add(normalizedName);
+      result.push(album);
+    }
+  }
+
+  return result;
 }
