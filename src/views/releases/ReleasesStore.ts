@@ -43,28 +43,38 @@ export const useReleases = defineStore("releases", {
         .get(`https://2fpx4328.directus.app/assets/7e053788-71a4-46b3-b349-44b300a1b0a2?t=${new Date().getTime()}`)
         .json<Release[]>();
 
-      function getSlugsByCategory(category: string): string[] {
-        const array: string[] = [];
-        const mergedSlugs = data
-          .filter((release) => release.category === category)
-          .map((e) => array.concat(e.slug))
-          .flat();
-        return Array.from(new Set(mergedSlugs));
+      // Build category menu using Map for O(1) lookups
+      const categoryMap = new Map<string, Set<string>>();
+      for (const release of data) {
+        if (!categoryMap.has(release.category)) {
+          categoryMap.set(release.category, new Set());
+        }
+        // slug is an array, so add each slug to the set
+        for (const slug of release.slug) {
+          categoryMap.get(release.category)!.add(slug);
+        }
       }
 
-      Array.from(new Set(data.map((release) => release.category))).forEach((category): void => {
-        const teee: MenuItem = {
-          name: category,
-          slugs: getSlugsByCategory(category),
-        };
-        if (!this.menu.find((e) => e.name == teee.name)) this.menu.push(teee);
-      });
+      // Build menu from category map
+      const existingMenuNames = new Set(this.menu.map((item) => item.name));
+      for (const [category, slugsSet] of categoryMap) {
+        if (!existingMenuNames.has(category)) {
+          const menuItem: MenuItem = {
+            name: category,
+            slugs: Array.from(slugsSet),
+          };
+          this.menu.push(menuItem);
+        }
+      }
 
       const dataWithMergedSlugs = useMergeReleaseSlugs(data);
-      const removedLives = dataWithMergedSlugs.filter((release) => !useCheckLiveAlbum(release.album));
-      const removedReissues = removedLives.filter((release) => !useCheckReissueAlbum(release.album));
+      // Combine filters to reduce iterations
+      const filteredReleases = dataWithMergedSlugs.filter(
+        (release) => !useCheckLiveAlbum(release.album) && !useCheckReissueAlbum(release.album),
+      );
 
-      const months = [
+      // Cache month names and create lookup map for better performance
+      const monthNames = [
         "January",
         "February",
         "March",
@@ -78,10 +88,14 @@ export const useReleases = defineStore("releases", {
         "November",
         "December",
       ];
+      const monthIndexMap = new Map(monthNames.map((month, index) => [month, index]));
+
       this.monthList = Array.from(new Set(dataWithMergedSlugs.map((release) => release.releaseDate))).sort((a, b) => {
-        return months.indexOf(String(b.split(" ").shift())) - months.indexOf(String(a.split(" ").shift()));
+        const monthA = monthIndexMap.get(String(a.split(" ").shift())) ?? -1;
+        const monthB = monthIndexMap.get(String(b.split(" ").shift())) ?? -1;
+        return monthB - monthA;
       });
-      this.releases = removedReissues.sort((a, b) => b.releaseDateRaw - a.releaseDateRaw);
+      this.releases = filteredReleases.sort((a, b) => b.releaseDateRaw - a.releaseDateRaw);
     },
 
     setActiveSlug(slug: null | string) {

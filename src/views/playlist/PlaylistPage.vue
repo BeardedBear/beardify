@@ -34,13 +34,36 @@ import { usePlaylist } from "./PlaylistStore";
 
 const props = defineProps<{ id: string }>();
 const playlistStore = usePlaylist();
-const albums = computed(() =>
-  playlistStore.tracks
-    .filter((track) => isAlbum(track.track.album) && !useCheckLiveAlbum(track.track.album.name))
-    .map((e) => e.track.album),
-);
-const eps = computed(() => playlistStore.tracks.filter((track) => isEP(track.track.album)).map((e) => e.track.album));
-const singles = computed(() => playlistStore.tracks.filter((track) => isSingle(track.track.album)));
+// Optimize computed properties by combining filter and map operations
+const albums = computed(() => {
+  const result = [];
+  for (const track of playlistStore.tracks) {
+    if (isAlbum(track.track.album) && !useCheckLiveAlbum(track.track.album.name)) {
+      result.push(track.track.album);
+    }
+  }
+  return result;
+});
+
+const eps = computed(() => {
+  const result = [];
+  for (const track of playlistStore.tracks) {
+    if (isEP(track.track.album)) {
+      result.push(track.track.album);
+    }
+  }
+  return result;
+});
+
+const singles = computed(() => {
+  const result = [];
+  for (const track of playlistStore.tracks) {
+    if (isSingle(track.track.album)) {
+      result.push(track);
+    }
+  }
+  return result;
+});
 
 const uniqueContributorIds = computed(() => {
   const contributorIds = playlistStore.tracks.map((track) => track.added_by.id);

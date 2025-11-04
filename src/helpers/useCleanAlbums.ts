@@ -19,9 +19,9 @@ export function isSingle(album: Album | AlbumSimplified | CurrentlyPlayingAlbum)
   return album.total_tracks < minimumNumberOfTracks && album.album_type === "single";
 }
 
-export function useCheckLiveAlbum(albumName: string): boolean {
-  const cleanedName = albumName.toLowerCase().trim();
-  const matches = [
+// Cache compiled regex for live album detection
+const liveAlbumRegex = new RegExp(
+  `(${[
     "live in",
     "live on",
     "live at",
@@ -58,12 +58,18 @@ export function useCheckLiveAlbum(albumName: string): boolean {
     "live & unplugged",
     "live and unplugged",
     "bbc",
-  ];
-  return new RegExp(`(${matches.join("|")})`).test(cleanedName) || cleanedName.split(" ").pop() === "live)";
+  ].join("|")})`,
+);
+
+export function useCheckLiveAlbum(albumName: string): boolean {
+  const cleanedName = albumName.toLowerCase().trim();
+  return liveAlbumRegex.test(cleanedName) || cleanedName.split(" ").pop() === "live)";
 }
+
+// Cache compiled regex for reissue album detection
+const reissueAlbumRegex = /(\(reissue)/;
 
 export function useCheckReissueAlbum(albumName: string): boolean {
   const cleanedName = albumName.toLowerCase().trim();
-  const matches = ["\\(reissue"];
-  return new RegExp(`(${matches.join("|")})`).test(cleanedName);
+  return reissueAlbumRegex.test(cleanedName);
 }
