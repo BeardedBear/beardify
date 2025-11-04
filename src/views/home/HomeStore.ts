@@ -35,10 +35,14 @@ export const useHome = defineStore("home", {
 
         try {
           const f = await instance().get<Top>(`recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`);
-          const cleanedList = removeDuplicatesAlbums(
-            f.data.tracks.map((g: Track) => g.album).filter((h: AlbumSimplified) => isAlbum(h)),
-          );
-          this.recommendedAlbums = cleanedList;
+          // Combine map and filter for better performance
+          const albums: AlbumSimplified[] = [];
+          for (const track of f.data.tracks) {
+            if (isAlbum(track.album)) {
+              albums.push(track.album);
+            }
+          }
+          this.recommendedAlbums = removeDuplicatesAlbums(albums);
         } catch {
           // silent fail
         }
