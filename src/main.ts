@@ -99,6 +99,8 @@ if (isAuthCallback) {
     try {
       const done = await useAuth().refresh();
       if (done) {
+        // Start auto-refresh after successful token refresh
+        useAuth().startAutoRefresh();
         app.mount("#app");
         useConfig().switchScheme(useConfig().schemeLabel);
         useConfig().switchTheme(useConfig().themeLabel);

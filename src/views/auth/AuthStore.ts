@@ -12,6 +12,9 @@ import { usePlayer } from "../../components/player/PlayerStore";
 import { clearAuthData } from "../../helpers/authUtils";
 import router, { RouteName } from "../../router";
 
+// Store the refresh interval ID outside of the store state to prevent persistence issues
+let refreshIntervalId: null | number = null;
+
 export const useAuth = defineStore("auth", {
   actions: {
     async authentification(query: string) {
@@ -53,6 +56,9 @@ export const useAuth = defineStore("auth", {
         // Get user info before redirecting
         await this.getMe();
 
+        // Start auto-refresh timer
+        this.startAutoRefresh();
+
         // Redirect to the original page or home
         router.push(referer || RouteName.Home);
       } catch (error) {
@@ -87,6 +93,7 @@ export const useAuth = defineStore("auth", {
       useConfig().close();
       usePlayer().pause();
       clearAuthData();
+      this.stopAutoRefresh();
       this.$reset();
 
       router.push(RouteName.Login);
@@ -118,6 +125,33 @@ export const useAuth = defineStore("auth", {
         return true;
       } catch {
         throw new Error("Token refresh failed");
+      }
+    },
+
+    startAutoRefresh() {
+      // Clear any existing interval
+      this.stopAutoRefresh();
+
+      // Refresh token every 30 minutes (1800000ms)
+      refreshIntervalId = window.setInterval(
+        async () => {
+          try {
+            await this.refresh();
+            console.log("Token auto-refreshed successfully");
+          } catch (error) {
+            console.error("Auto-refresh failed:", error);
+            // Don't logout immediately on auto-refresh failure
+            // The API layer will handle auth errors on the next request
+          }
+        },
+        30 * 60 * 1000,
+      ); // 30 minutes
+    },
+
+    stopAutoRefresh() {
+      if (refreshIntervalId !== null) {
+        clearInterval(refreshIntervalId);
+        refreshIntervalId = null;
       }
     },
   },
