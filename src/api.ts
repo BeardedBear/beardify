@@ -107,6 +107,8 @@ export function instance(): ApiInstance {
 function createKyInstance(): typeof ky {
   const authStore = useAuth();
   let isRefreshing = false;
+  let refreshAttempts = 0;
+  const MAX_REFRESH_ATTEMPTS = 1;
 
   return ky.create({
     headers: {
@@ -117,8 +119,9 @@ function createKyInstance(): typeof ky {
       afterResponse: [
         async (_input, _options, response): Promise<void> => {
           // Gérer les erreurs 401 (Unauthorized) en tentant de rafraîchir le token
-          if (response.status === 401 && !isRefreshing) {
+          if (response.status === 401 && !isRefreshing && refreshAttempts < MAX_REFRESH_ATTEMPTS) {
             isRefreshing = true;
+            refreshAttempts++;
             try {
               // Tenter de rafraîchir le token
               await authStore.refresh();
@@ -126,10 +129,18 @@ function createKyInstance(): typeof ky {
               // Le token a été rafraîchi, on recharge la page pour que les requêtes utilisent le nouveau token
               window.location.reload();
             } catch {
-              // Le refresh a échoué, rediriger vers login
+              // Le refresh a échoué après plusieurs tentatives
               isRefreshing = false;
+              refreshAttempts = 0;
               clearAuthData();
-              window.location.href = "/login";
+
+              // Save the current path before redirecting
+              const currentPath = window.location.pathname;
+              if (currentPath !== "/login/") {
+                window.location.href = `/login/?ref=${encodeURIComponent(currentPath)}`;
+              } else {
+                window.location.href = "/login/";
+              }
             }
           }
         },
