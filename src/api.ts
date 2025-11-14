@@ -108,7 +108,7 @@ function createKyInstance(): typeof ky {
   const authStore = useAuth();
   let isRefreshing = false;
   let refreshAttempts = 0;
-  const MAX_REFRESH_ATTEMPTS = 1;
+  const MAX_REFRESH_ATTEMPTS = 3; // Increased to 3 attempts to keep session alive
 
   return ky.create({
     headers: {
@@ -126,21 +126,27 @@ function createKyInstance(): typeof ky {
               // Tenter de rafraîchir le token
               await authStore.refresh();
               isRefreshing = false;
+              // Reset attempts counter on success
+              refreshAttempts = 0;
               // Le token a été rafraîchi, on recharge la page pour que les requêtes utilisent le nouveau token
               window.location.reload();
             } catch {
-              // Le refresh a échoué après plusieurs tentatives
               isRefreshing = false;
-              refreshAttempts = 0;
-              clearAuthData();
+              // Only redirect to login after all attempts are exhausted
+              if (refreshAttempts >= MAX_REFRESH_ATTEMPTS) {
+                // Le refresh a échoué après plusieurs tentatives
+                refreshAttempts = 0;
+                clearAuthData();
 
-              // Save the current path before redirecting
-              const currentPath = window.location.pathname;
-              if (currentPath !== "/login/") {
-                window.location.href = `/login/?ref=${encodeURIComponent(currentPath)}`;
-              } else {
-                window.location.href = "/login/";
+                // Save the current path before redirecting
+                const currentPath = window.location.pathname;
+                if (currentPath !== "/login/") {
+                  window.location.href = `/login/?ref=${encodeURIComponent(currentPath)}`;
+                } else {
+                  window.location.href = "/login/";
+                }
               }
+              // If not all attempts used, just let the request fail and user can retry
             }
           }
         },
