@@ -49,13 +49,14 @@ if (!navigator.userAgent.includes("Macintosh")) {
 }
 
 // Keep token active - store interval ID for cleanup
+// Refresh every 20 minutes for safety margin (tokens expire after 1 hour)
 const tokenRefreshInterval = setInterval(async () => {
   try {
     await authStore.refresh();
   } catch {
     // silent keep-alive failure
   }
-}, 1_800_000); // 30 minutes
+}, 1_200_000); // 20 minutes
 
 // Keep device active every 5 minutes - store interval ID for cleanup
 const deviceRefreshInterval = setInterval(async () => {
@@ -70,13 +71,35 @@ const deviceRefreshInterval = setInterval(async () => {
 // This handles cases where the user closes the laptop, switches tabs for a long time, etc.
 const handleVisibilityChange = async (): Promise<void> => {
   if (!document.hidden) {
-    try {
-      // Refresh token to ensure it's still valid
-      await authStore.refresh();
-      // Also refresh device list
-      await usePlayer().getDeviceList();
-    } catch {
-      // silent
+    // Check if we need to refresh the token based on time elapsed
+    const lastRefresh = localStorage.getItem("spotify_token_last_refresh");
+    const now = Date.now();
+    const REFRESH_THRESHOLD = 15 * 60 * 1000; // 15 minutes (safety margin before 20min interval)
+
+    if (!lastRefresh || now - parseInt(lastRefresh) > REFRESH_THRESHOLD) {
+      // Token needs refresh
+      let retries = 3; // Multiple attempts to keep the session alive
+      while (retries > 0) {
+        try {
+          await authStore.refresh();
+          await usePlayer().getDeviceList();
+          break; // Success, exit retry loop
+        } catch {
+          retries--;
+          if (retries > 0) {
+            // Wait a bit before retrying (exponential backoff)
+            await new Promise((resolve) => setTimeout(resolve, 2000 * (4 - retries)));
+          }
+          // If all retries fail, the API error handler will eventually redirect to login
+        }
+      }
+    } else {
+      // Token is still fresh, just refresh device list
+      try {
+        await usePlayer().getDeviceList();
+      } catch {
+        // silent
+      }
     }
   }
 };
@@ -103,6 +126,8 @@ onBeforeUnmount(() => {
 *::before,
 *::after {
   box-sizing: border-box;
+  /* stylelint-disable-next-line property-no-unknown */
+  corner-shape: squircle;
 }
 
 input {

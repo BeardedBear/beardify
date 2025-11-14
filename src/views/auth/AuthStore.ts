@@ -122,6 +122,10 @@ export const useAuth = defineStore("auth", {
           referer: "",
           refreshToken: data.refresh_token,
         };
+
+        // Store timestamp of last successful refresh
+        localStorage.setItem("spotify_token_last_refresh", Date.now().toString());
+
         return true;
       } catch {
         throw new Error("Token refresh failed");
@@ -132,7 +136,8 @@ export const useAuth = defineStore("auth", {
       // Clear any existing interval
       this.stopAutoRefresh();
 
-      // Refresh token every 30 minutes (1800000ms)
+      // Refresh token every 20 minutes (1200000ms) for safety margin
+      // Spotify access tokens expire after 1 hour, so 20 min refresh keeps us safe
       refreshIntervalId = window.setInterval(
         async () => {
           try {
@@ -144,8 +149,8 @@ export const useAuth = defineStore("auth", {
             // The API layer will handle auth errors on the next request
           }
         },
-        30 * 60 * 1000,
-      ); // 30 minutes
+        20 * 60 * 1000,
+      ); // 20 minutes
     },
 
     stopAutoRefresh() {
