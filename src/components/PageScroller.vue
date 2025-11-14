@@ -13,9 +13,28 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
+import { useRoute } from "vue-router";
 
 const page = ref<HTMLElement | null>(null);
+const route = useRoute();
+
+// Save scroll position to sessionStorage when leaving
+onUnmounted(() => {
+  if (page.value) {
+    sessionStorage.setItem(`scroll-${route.path}`, String(page.value.scrollTop));
+  }
+});
+
+// Restore scroll position when mounted
+onMounted(() => {
+  if (page.value) {
+    const savedPosition = sessionStorage.getItem(`scroll-${route.path}`);
+    if (savedPosition) {
+      page.value.scrollTop = parseInt(savedPosition);
+    }
+  }
+});
 
 function scrollToBottom(): void {
   if (page.value) page.value.scrollTop = page.value.scrollHeight;

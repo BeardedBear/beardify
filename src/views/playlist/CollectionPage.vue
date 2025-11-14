@@ -75,12 +75,11 @@ playlistStore.clean().finally(() => {
 
 .collection {
   display: grid;
-  grid-template-rows: auto 1fr;
-  height: 100%;
+  grid-template-rows: auto auto;
 }
 
 .content {
-  position: relative;
+  display: contents;
 }
 
 .album-list {
@@ -89,12 +88,9 @@ playlistStore.clean().finally(() => {
   display: grid;
   gap: 2rem;
   grid-template-columns: repeat(4, 1fr);
-  inset: 0;
-  overflow: auto;
   padding: 2rem 5rem;
   padding-left: $padd;
   padding-right: $padd;
-  position: absolute;
   transition:
     padding-right ease 0.2s,
     padding-left ease 0.2s;
