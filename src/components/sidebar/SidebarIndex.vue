@@ -5,7 +5,7 @@
   <div :class="{ 'search-opened': collectionSearchOpened || playlistSearchOpened }" class="sidebar" v-else>
     <Topbar />
     <Menu />
-    <div class="sidebar__item">
+    <div class="sidebar-item">
       <div class="heading title" v-if="!collectionSearchOpened">
         <div class="title-name">Collections</div>
         <div class="options">
@@ -59,7 +59,7 @@
         </router-link>
       </div>
     </div>
-    <div class="sidebar__item">
+    <div class="sidebar-item">
       <div class="heading title" v-if="!playlistSearchOpened">
         <div class="title-name">Playlists</div>
         <div class="options">
@@ -251,21 +251,21 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
     grid-template-rows: auto auto 1fr 1fr;
   }
 
-  &__item {
-    overflow-y: auto;
-    position: relative;
-
-    &:hover {
-      .options {
-        opacity: 1;
-        visibility: visible;
-      }
-    }
-  }
-
   &.loading {
     display: grid;
     place-content: center;
+  }
+}
+
+.sidebar-item {
+  overflow-y: auto;
+  position: relative;
+
+  &:hover {
+    .options {
+      opacity: 1;
+      visibility: visible;
+    }
   }
 }
 

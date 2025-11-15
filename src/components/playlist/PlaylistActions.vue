@@ -3,7 +3,7 @@
     <div v-if="!isPlaylistOwner(playlistStore.playlist.owner)">
       <button
         @click="playlistStore.followPlaylist(playlistStore.playlist.id)"
-        class="button button--nude"
+        class="button button-nude"
         title="Follow the playlist"
         v-if="!playlistStore.followed"
       >
@@ -11,14 +11,14 @@
       </button>
       <button
         @click="sidebarStore.removePlaylist(playlistStore.playlist.id)"
-        class="button button--nude followed"
+        class="button button-nude followed"
         title="Unfollow the playlist"
         v-else
       >
         <i class="icon-followed"></i>
       </button>
     </div>
-    <button @click="edit(playlistStore.playlist.id)" class="button button--nude" v-else>
+    <button @click="edit(playlistStore.playlist.id)" class="button button-nude" v-else>
       <i class="icon-more-vertical"></i>
     </button>
   </div>

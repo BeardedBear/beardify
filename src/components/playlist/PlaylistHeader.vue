@@ -1,6 +1,6 @@
 <template>
   <div :class="{ 'not-fit': notFit }" class="playlist-header">
-    <div class="playlist-header__left">
+    <div class="playlist-header-left">
       <Cover :images="playlistStore.playlist.images" class="cover" size="large" v-if="!noCover" />
       <div>
         <div class="title">
@@ -145,11 +145,11 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   img {
     margin-right: 2rem;
   }
+}
 
-  &__left {
-    align-items: center;
-    display: flex;
-  }
+.playlist-header-left {
+  align-items: center;
+  display: flex;
 }
 
 .right {

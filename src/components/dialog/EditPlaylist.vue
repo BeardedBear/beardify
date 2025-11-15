@@ -25,7 +25,7 @@
             <div class="buttons">
               <button
                 :class="{
-                  'button--primary': values.public && !values.collaborative,
+                  'button-primary': values.public && !values.collaborative,
                 }"
                 @click="
                   () => {
@@ -39,7 +39,7 @@
               </button>
               <button
                 :class="{
-                  'button--primary': !values.public && !values.collaborative,
+                  'button-primary': !values.public && !values.collaborative,
                 }"
                 @click="
                   () => {
@@ -53,7 +53,7 @@
               </button>
               <button
                 :class="{
-                  'button--primary': values.collaborative && !values.public,
+                  'button-primary': values.collaborative && !values.public,
                 }"
                 @click="
                   () => {
@@ -73,7 +73,7 @@
         <button @click="remove()" class="button button">Delete {{ isCollection ? "collection" : "playlist" }}</button>
         <button
           @click="dialogStore.updatePlaylist(values, dialogStore.playlistId, isCollection)"
-          class="button button--primary"
+          class="button button-primary"
           v-if="isEditable"
         >
           Confirm

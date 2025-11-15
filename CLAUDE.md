@@ -55,7 +55,7 @@ Uses CSS custom properties with consistent naming:
 - Use Vue 3 Composition API with `<script setup>` syntax
 - TypeScript strict mode with explicit return types
 - Scoped styles for all Vue components
-- BEM methodology for CSS class naming
+- Simple kebab-case naming for CSS classes (e.g., `player-button`, `track-icon`, `section-title`)
 - Alphabetical import sorting (enforced by ESLint perfectionist plugin)
 - Unix line endings (LF)
 

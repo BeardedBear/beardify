@@ -13,7 +13,7 @@
         class="track"
         v-for="(track, index) in searchStore.tracks"
       >
-        <i class="track__icon icon-music" />
+        <i class="track-icon icon-music" />
         <div>
           <div class="track-name">{{ track.name }}</div>
           <div>
@@ -49,15 +49,15 @@ const searchStore = useSearch();
   transition: 0.2s;
 
   @include search.search-item-hover;
+}
 
-  &__icon {
-    font-size: 1.5rem;
-    opacity: 0.1;
-  }
+.track-icon {
+  font-size: 1.5rem;
+  opacity: 0.1;
+}
 
-  &-name {
-    font-size: 0.9rem;
-    font-weight: bold;
-  }
+.track-name {
+  font-size: 0.9rem;
+  font-weight: bold;
 }
 </style>

@@ -11,7 +11,7 @@
         }"
         :key="index"
         @click="c.fn()"
-        class="schemes__item"
+        class="scheme-item"
         v-for="(c, index) in textColors"
       />
     </div>
@@ -21,14 +21,14 @@
         <button
           :class="{ current: configStore.themeLabel === 'light' }"
           @click="configStore.switchTheme('light')"
-          class="radio__item"
+          class="radio-item"
         >
           <i class="icon-sun" />
         </button>
         <button
           :class="{ current: configStore.themeLabel === 'dark' }"
           @click="configStore.switchTheme('dark')"
-          class="radio__item"
+          class="radio-item"
         >
           <i class="icon-moon" />
         </button>
@@ -71,90 +71,90 @@ const textColors: TextColors[] = [
 .schemes {
   display: flex;
   justify-content: space-evenly;
+}
 
-  &__item {
-    $s: 1rem;
+.scheme-item {
+  $s: 1rem;
 
-    border: 0;
-    cursor: pointer;
-    flex: 1;
-    height: $s;
-    padding: 0;
-    position: relative;
+  border: 0;
+  cursor: pointer;
+  flex: 1;
+  height: $s;
+  padding: 0;
+  position: relative;
+  transition: all ease 0.2s;
+
+  &:first-of-type {
+    border-radius: $s 0 0 $s;
+  }
+
+  &:last-of-type {
+    border-radius: 0 $s $s 0;
+  }
+
+  &::after {
+    $o: 0.3rem;
+
+    background-color: white;
+    border-radius: $s;
+    content: "";
+    inset: $o $o * 2 $o $o * 2;
+    position: absolute;
+    transform: scaleX(0);
     transition: all ease 0.2s;
+    will-change: transform;
+  }
 
-    &:first-of-type {
-      border-radius: $s 0 0 $s;
-    }
-
-    &:last-of-type {
-      border-radius: 0 $s $s 0;
-    }
-
+  &.current {
     &::after {
-      $o: 0.3rem;
-
-      background-color: white;
-      border-radius: $s;
-      content: "";
-      inset: $o $o * 2 $o $o * 2;
-      position: absolute;
-      transform: scaleX(0);
-      transition: all ease 0.2s;
-      will-change: transform;
+      transform: scaleX(1);
     }
+  }
 
-    &.current {
-      &::after {
-        transform: scaleX(1);
-      }
-    }
+  &.blue {
+    background-color: #15acde;
+  }
 
-    &.blue {
-      background-color: #15acde;
-    }
+  &.default {
+    background-color: #9064ff;
+  }
 
-    &.default {
-      background-color: #9064ff;
-    }
+  &.crimson {
+    background-color: #de1c3e;
+  }
 
-    &.crimson {
-      background-color: #de1c3e;
-    }
-
-    &.apple {
-      background-color: #28aa1b;
-    }
+  &.apple {
+    background-color: #28aa1b;
   }
 }
 
 .radio {
   display: flex;
   justify-content: space-between;
+}
 
-  &__item {
-    $radius: 0.4rem;
+.radio-item {
+  $radius: 0.4rem;
 
-    background-color: var(--bg-color);
-    border: 0;
-    color: currentcolor;
-    cursor: pointer;
-    margin-top: 0.8rem;
-    padding: 0.5rem 0;
-    width: 100%;
+  background-color: var(--bg-color);
+  border: 0;
+  color: currentcolor;
+  cursor: pointer;
+  margin-top: 0.8rem;
+  padding: 0.5rem 0;
+  width: 100%;
 
-    &:first-of-type {
-      border-radius: $radius 0 0 $radius;
-    }
+  &:first-of-type {
+    border-radius: $radius 0 0 $radius;
+  }
 
-    &:last-of-type {
-      border-radius: 0 $radius $radius 0;
-    }
+  &:last-of-type {
+    border-radius: 0 $radius $radius 0;
+  }
 
-    &.current {
-      background-color: var(--primary-color);
-      color: white;
-    }
+  &.current {
+    background-color: var(--primary-color);
+    color: white;
   }
 }
 </style>

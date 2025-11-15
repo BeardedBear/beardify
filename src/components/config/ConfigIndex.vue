@@ -2,13 +2,13 @@
   <div :class="{ bye: configStore.bye }" class="config" ref="domConfig" v-if="configStore.show">
     <div class="user">
       <div>{{ authStore.me?.display_name }}</div>
-      <div class="user__mail">{{ authStore.me?.email }}</div>
+      <div class="user-mail">{{ authStore.me?.email }}</div>
     </div>
 
     <div class="section" v-if="env !== 'production'">
-      <div class="section__title">Debug</div>
-      <router-link class="button button--full" to="/login">Login</router-link>
-      <button @click="authStore.refresh()" class="button button--full">Refresh token</button>
+      <div class="section-title">Debug</div>
+      <router-link class="button button-full" to="/login">Login</router-link>
+      <button @click="authStore.refresh()" class="button button-full">Refresh token</button>
       <button
         @click="
           notification({
@@ -16,20 +16,20 @@
             type: NotificationType.Error,
           })
         "
-        class="button button--full"
+        class="button button-full"
       >
         Notif
       </button>
     </div>
 
     <div class="section">
-      <div class="section__title">Account</div>
-      <router-link :to="`/user/${authStore.me?.id}`" class="button button--full">My profile</router-link>
-      <button @click="authStore.logout()" class="button button--full">Logout</button>
+      <div class="section-title">Account</div>
+      <router-link :to="`/user/${authStore.me?.id}`" class="button button-full">My profile</router-link>
+      <button @click="authStore.logout()" class="button button-full">Logout</button>
     </div>
 
     <div class="section">
-      <div class="section__title">Colors</div>
+      <div class="section-title">Colors</div>
       <Colors />
     </div>
   </div>
@@ -65,26 +65,26 @@ onClickOutside(domConfig, (): void => configStore.close());
   gap: 0.8rem;
   margin-top: 1rem;
   padding: 0.8rem;
+}
 
-  &__title {
-    font-size: 0.8rem;
-    font-weight: 700;
-    opacity: 0.5;
-    text-transform: uppercase;
-  }
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  opacity: 0.5;
+  text-transform: uppercase;
 }
 
 .user {
   font-weight: bold;
   margin-bottom: 1.2rem;
+}
 
-  &__mail {
-    font-size: 0.9rem;
-    font-style: italic;
-    font-weight: 400;
-    margin-top: 0.1rem;
-    opacity: 0.5;
-  }
+.user-mail {
+  font-size: 0.9rem;
+  font-style: italic;
+  font-weight: 400;
+  margin-top: 0.1rem;
+  opacity: 0.5;
 }
 
 @keyframes pop-config {
