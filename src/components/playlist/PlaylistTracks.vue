@@ -52,7 +52,7 @@
       <div class="date">{{ date(track.added_at) }}</div>
       <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
       <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
-        <button @click.prevent.stop="deleteSong(track.track.uri)" class="button button--nude delete">
+        <button @click.prevent.stop="deleteSong(track.track.uri)" class="button button-nude delete">
           <i class="icon-trash-2"></i>
         </button>
       </div>

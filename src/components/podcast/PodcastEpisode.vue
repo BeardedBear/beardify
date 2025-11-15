@@ -45,12 +45,12 @@
         <div v-else>
           <button
             @click="playSong(episode.uri)"
-            class="button button--small button--primary"
+            class="button button-small button-primary"
             v-if="!episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0"
           >
             Resume
           </button>
-          <button @click="playSong(episode.uri, 0)" class="button button--small" v-else>Play episode</button>
+          <button @click="playSong(episode.uri, 0)" class="button button-small" v-else>Play episode</button>
         </div>
       </div>
     </div>

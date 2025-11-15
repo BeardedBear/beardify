@@ -2,7 +2,7 @@
   <Dialog title="Create a collection" with-title>
     <div class="wrap">
       <input class="input" placeholder="Collection's name" type="text" v-model="collectionName" />
-      <button @click="create()" class="button button--primary">Create</button>
+      <button @click="create()" class="button button-primary">Create</button>
     </div>
   </Dialog>
 </template>

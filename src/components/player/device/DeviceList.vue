@@ -4,7 +4,7 @@
     <button
       @click="playerStore.setDevice(playerStore.devices.activeDevice.id)"
       @mouseenter="playerStore.getDeviceList()"
-      class="button button--small button--primary active-device"
+      class="button button-small button-primary active-device"
       type="button"
     >
       {{ playerStore.devices.activeDevice.name }}
@@ -14,7 +14,7 @@
       <button
         :key="_key"
         @click="playerStore.setDevice(device.id)"
-        class="button button--small button--full"
+        class="button button-small button-full"
         type="button"
         v-else
         v-for="(device, _key) in deviceListFiltered"
@@ -23,7 +23,7 @@
       </button>
       <button
         @click="playerStore.getDeviceList()"
-        class="button button--small button--full button--with-border refresh"
+        class="button button-small button-full button-with-border refresh"
         type="button"
       >
         <i class="icon-refresh"></i>

@@ -17,13 +17,13 @@
         <div>
           <a
             @click="openLink(`https://www.google.com/search?q=${album.artists[0].name}+${album.name}`)"
-            class="button button--nude"
+            class="button button-nude"
           >
             <i class="icon-google" />
           </a>
           <a
             @click="openLink(`https://www.discogs.com/fr/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
-            class="button button--nude"
+            class="button button-nude"
           >
             <i class="icon-discogs" />
           </a>

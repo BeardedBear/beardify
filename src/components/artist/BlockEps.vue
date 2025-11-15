@@ -1,5 +1,5 @@
 <template>
-  <div class="content__block" v-if="artistStore.eps.length">
+  <div class="content-block" v-if="artistStore.eps.length">
     <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
       <i class="icon-ep"></i>
       EP's

@@ -2,7 +2,7 @@
   <button
     @click="toggleFollow"
     :class="{
-      'button--primary': !podcastsStore.isFollowing,
+      'button-primary': !podcastsStore.isFollowing,
       followed: podcastsStore.isFollowing,
     }"
     class="button follow-button"

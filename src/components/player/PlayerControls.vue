@@ -4,7 +4,7 @@
       <button
         :class="{ active: playerStore.currentlyPlaying?.shuffle_state }"
         @click="playerStore.toggleShuffle()"
-        class="controls__btn"
+        class="control-button"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-shuffle" />
@@ -12,20 +12,20 @@
       <button
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
         @click="playerStore.toggleRepeat()"
-        class="controls__btn"
+        class="control-button"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-repeat" />
       </button>
-      <button @click="playerStore.play()" class="controls__btn play" v-if="playerStore.playerState?.paused">
+      <button @click="playerStore.play()" class="control-button play" v-if="playerStore.playerState?.paused">
         <i class="icon-play" />
       </button>
-      <button @click="playerStore.pause()" class="controls__btn play" v-else>
+      <button @click="playerStore.pause()" class="control-button play" v-else>
         <i class="icon-pause" />
       </button>
       <button
         @click="playerStore.next()"
-        class="controls__btn"
+        class="control-button"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-skip-forward" />
@@ -80,20 +80,33 @@ watch(
   flex: 1;
   gap: 1.2rem;
   justify-content: center;
+}
 
-  &__btn {
-    background-color: transparent;
-    border: none;
-    border-radius: 0.4rem;
-    color: currentcolor;
-    cursor: pointer;
-    font-size: 1.3rem;
-    opacity: 0.5;
-    padding: 0.4rem 0.5rem;
+.control-button {
+  background-color: transparent;
+  border: none;
+  border-radius: 0.4rem;
+  color: currentcolor;
+  cursor: pointer;
+  font-size: 1.3rem;
+  opacity: 0.5;
+  padding: 0.4rem 0.5rem;
 
-    &.active {
-      opacity: 1;
-    }
+  &.active {
+    opacity: 1;
+  }
+
+  &:hover {
+    background-color: var(--bg-color-light);
+  }
+
+  &:active {
+    background-color: var(--bg-color-lighter);
+  }
+
+  &.play {
+    font-size: 2rem;
+    opacity: 1;
 
     &:hover {
       background-color: var(--bg-color-light);
@@ -101,19 +114,6 @@ watch(
 
     &:active {
       background-color: var(--bg-color-lighter);
-    }
-
-    &.play {
-      font-size: 2rem;
-      opacity: 1;
-
-      &:hover {
-        background-color: var(--bg-color-light);
-      }
-
-      &:active {
-        background-color: var(--bg-color-lighter);
-      }
     }
   }
 }

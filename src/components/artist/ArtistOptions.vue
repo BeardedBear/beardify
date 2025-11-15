@@ -5,7 +5,7 @@
     <div
       :title="artistStore.artist.followers.total + ' followers'"
       @click="switchFollow(artistStore.artist.id)"
-      class="follow button button--primary"
+      class="follow button button-primary"
       v-if="artistStore.followStatus"
     >
       Followed
