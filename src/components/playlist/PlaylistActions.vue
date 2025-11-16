@@ -1,30 +1,34 @@
 <template>
   <div>
     <div v-if="!isPlaylistOwner(playlistStore.playlist.owner)">
-      <button
-        @click="playlistStore.followPlaylist(playlistStore.playlist.id)"
-        class="button button-nude"
+      <ButtonIndex
+        icon-only
+        variant="nude"
         title="Follow the playlist"
+        @click="playlistStore.followPlaylist(playlistStore.playlist.id)"
         v-if="!playlistStore.followed"
       >
         <i class="icon-follow"></i>
-      </button>
-      <button
-        @click="sidebarStore.removePlaylist(playlistStore.playlist.id)"
-        class="button button-nude followed"
+      </ButtonIndex>
+      <ButtonIndex
+        icon-only
+        variant="nude"
+        class="followed"
         title="Unfollow the playlist"
+        @click="sidebarStore.removePlaylist(playlistStore.playlist.id)"
         v-else
       >
         <i class="icon-followed"></i>
-      </button>
+      </ButtonIndex>
     </div>
-    <button @click="edit(playlistStore.playlist.id)" class="button button-nude" v-else>
+    <ButtonIndex icon-only variant="nude" @click="edit(playlistStore.playlist.id)" v-else>
       <i class="icon-more-vertical"></i>
-    </button>
+    </ButtonIndex>
   </div>
 </template>
 
 <script lang="ts" setup>
+import ButtonIndex from "../../components/ButtonIndex.vue";
 import { useDialog } from "../../components/dialog/DialogStore";
 import { isPlaylistOwner } from "../../helpers/playlist";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";

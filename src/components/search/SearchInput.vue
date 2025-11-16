@@ -8,15 +8,16 @@
       type="text"
       v-model="query"
     />
-    <button @click="clearQuery()" class="reset" v-if="query">
+    <ButtonIndex no-default-class class="reset" @click="clearQuery()" v-if="query">
       <i class="icon-x" />
-    </button>
+    </ButtonIndex>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 
+import ButtonIndex from "../ButtonIndex.vue";
 import { useSearch } from "./SearchStore";
 
 const searchStore = useSearch();

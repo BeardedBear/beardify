@@ -18,9 +18,9 @@
         </div>
       </div>
     </div>
-    <button @click="playerStore.openQueue()" class="button button-small">
+    <ButtonIndex icon-only size="small" @click="playerStore.openQueue()">
       <i class="icon-queue"></i>
-    </button>
+    </ButtonIndex>
   </div>
 </template>
 
@@ -28,6 +28,7 @@
 import { onClickOutside } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
+import ButtonIndex from "../../ButtonIndex.vue";
 import TrackHistory from "../history/TrackHistory.vue";
 import { usePlayer } from "../PlayerStore";
 

@@ -43,14 +43,29 @@
           v-if="playerStore.currentFromSDK?.id === episode.id && playerStore.currentlyPlaying.is_playing"
         />
         <div v-else>
-          <button
-            @click="playSong(episode.uri)"
-            class="button button-small button-primary"
-            v-if="!episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0"
+          <ButtonIndex
+            :variant="
+              !episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0
+                ? 'primary'
+                : 'default'
+            "
+            :size="
+              !episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0
+                ? 'default'
+                : 'small'
+            "
+            @click="
+              !episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0
+                ? playSong(episode.uri)
+                : playSong(episode.uri, 0)
+            "
           >
-            Resume
-          </button>
-          <button @click="playSong(episode.uri, 0)" class="button button-small" v-else>Play episode</button>
+            {{
+              !episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0
+                ? "Resume"
+                : "Play episode"
+            }}
+          </ButtonIndex>
         </div>
       </div>
     </div>
@@ -59,6 +74,7 @@
 
 <script lang="ts" setup>
 import { Episode } from "../../@types/Podcast";
+import ButtonIndex from "../ButtonIndex.vue";
 import { date, timecodeWithUnits } from "../../helpers/date";
 import { playSong } from "../../helpers/play";
 import Loading from "../LoadingDots.vue";

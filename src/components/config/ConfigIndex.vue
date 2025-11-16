@@ -7,25 +7,25 @@
 
     <div class="section" v-if="env !== 'production'">
       <div class="section-title">Debug</div>
-      <router-link class="button button-full" to="/login">Login</router-link>
-      <button @click="authStore.refresh()" class="button button-full">Refresh token</button>
-      <button
+      <ButtonIndex to="/login" variant="full">Login</ButtonIndex>
+      <ButtonIndex variant="full" @click="authStore.refresh()">Refresh token</ButtonIndex>
+      <ButtonIndex
+        variant="full"
         @click="
           notification({
             msg: 'DeviceNotInitialized',
             type: NotificationType.Error,
           })
         "
-        class="button button-full"
       >
         Notif
-      </button>
+      </ButtonIndex>
     </div>
 
     <div class="section">
       <div class="section-title">Account</div>
-      <router-link :to="`/user/${authStore.me?.id}`" class="button button-full">My profile</router-link>
-      <button @click="authStore.logout()" class="button button-full">Logout</button>
+      <ButtonIndex :to="`/user/${authStore.me?.id}`" variant="full">My profile</ButtonIndex>
+      <ButtonIndex variant="full" @click="authStore.logout()">Logout</ButtonIndex>
     </div>
 
     <div class="section">
@@ -38,9 +38,9 @@
 <script lang="ts" setup>
 import { onClickOutside } from "@vueuse/core";
 import { ref } from "vue";
-import { RouterLink } from "vue-router";
 
 import { NotificationType } from "../../@types/Notification";
+import ButtonIndex from "../ButtonIndex.vue";
 import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";
 import Colors from "./ColorsTheme.vue";

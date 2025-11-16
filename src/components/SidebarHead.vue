@@ -2,16 +2,16 @@
   <div class="topbar">
     <router-link to="/"><img class="logo" src="/img/logo.svg" /></router-link>
     <div class="navigation">
-      <button @click="router.go(-1)" class="button">
+      <ButtonIndex icon-only @click="router.go(-1)" variant="full">
         <i class="icon-arrow-left" />
-      </button>
-      <button @click="router.go(1)" class="button">
+      </ButtonIndex>
+      <ButtonIndex icon-only @click="router.go(1)" variant="full">
         <i class="icon-arrow-right" />
-      </button>
+      </ButtonIndex>
     </div>
-    <button @click="dialogStore.open({ type: 'search' })" class="button">
+    <ButtonIndex icon-only @click="dialogStore.open({ type: 'search' })">
       <i class="icon-search" />
-    </button>
+    </ButtonIndex>
     <div>
       <div v-if="authStore.me !== null">
         <div @click="configStore.open()" class="avatar">
@@ -30,6 +30,7 @@ import { RouterLink } from "vue-router";
 import router from "../router";
 import { useAuth } from "../views/auth/AuthStore";
 import Cover from "./AlbumCover.vue";
+import ButtonIndex from "./ButtonIndex.vue";
 import Config from "./config/ConfigIndex.vue";
 import { useConfig } from "./config/ConfigStore";
 import { useDialog } from "./dialog/DialogStore";
@@ -52,10 +53,12 @@ const dialogStore = useDialog();
 }
 
 .navigation {
-  $radius: 0.3rem;
+  $radius: 1rem;
 
+  display: flex;
   margin-left: 1rem;
   margin-right: 1rem;
+  width: 100%;
 
   button {
     &:first-of-type {

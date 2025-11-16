@@ -8,9 +8,9 @@
       <div class="dialog-content">
         <div class="head" v-if="withTitle">
           <div>{{ title }}</div>
-          <button @click="dialogStore.close()" class="close">
+          <ButtonIndex no-default-class class="close" @click="dialogStore.close()">
             <i class="icon-x" />
-          </button>
+          </ButtonIndex>
         </div>
         <div :class="{ big }" class="content"><slot /></div>
       </div>
@@ -19,6 +19,7 @@
 </template>
 
 <script lang="ts" setup>
+import ButtonIndex from "../ButtonIndex.vue";
 import { useDialog } from "./DialogStore";
 
 defineProps<{

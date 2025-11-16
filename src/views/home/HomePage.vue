@@ -7,10 +7,10 @@
       <PageFit>
         <div class="title">
           <div class="name">Recommended albums</div>
-          <button @click="getData()" class="button">
+          <ButtonIndex @click="getData()">
             <i class="icon-refresh"></i>
             Refresh
-          </button>
+          </ButtonIndex>
         </div>
         <AlbumGallery :album-list="homeStore.recommendedAlbums" no-title />
       </PageFit>
@@ -22,6 +22,7 @@
 import { watch } from "vue";
 
 import AlbumGallery from "../../components/AlbumGallery.vue";
+import ButtonIndex from "../../components/ButtonIndex.vue";
 import Loader from "../../components/LoadingDots.vue";
 import PageFit from "../../components/PageFit.vue";
 import { useAuth } from "../auth/AuthStore";

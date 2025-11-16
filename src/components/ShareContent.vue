@@ -4,18 +4,21 @@
     <span class="copied" v-if="clipboardSpotify.copied.value">Spotify URL copied</span>
     <span class="copied" v-if="clipboardBeardify.copied.value">Beardify URL copied</span>
     <div class="content">
-      <button @click="clipboardSpotify.copy()" class="copy">
+      <ButtonIndex no-default-class class="copy" @click="clipboardSpotify.copy()">
         <i class="icon-spotify"></i>
-      </button>
-      <button @click="clipboardBeardify.copy()" class="copy" v-if="beardifyUrl">
+      </ButtonIndex>
+      <ButtonIndex no-default-class class="copy" @click="clipboardBeardify.copy()" v-if="beardifyUrl">
         <i class="icon-beardify"></i>
-      </button>
+      </ButtonIndex>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useClipboard } from "@vueuse/core";
+
+import ButtonIndex from "./ButtonIndex.vue";
+
 const props = defineProps<{
   beardifyUrl?: string;
   spotifyUrl: string;

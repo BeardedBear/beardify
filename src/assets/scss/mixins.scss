@@ -1,3 +1,8 @@
+@mixin squircle {
+  /* stylelint-disable-next-line property-no-unknown */
+  corner-shape: squircle;
+}
+
 @keyframes pop-content {
   from {
     opacity: 0;

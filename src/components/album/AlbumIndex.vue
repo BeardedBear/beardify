@@ -8,20 +8,27 @@
         @click="router.push(`/album/${album.id}`)"
         class="img"
       />
-      <button @click="handlePlayAlbum(album.uri)" class="play" type="button">
+      <ButtonIndex no-default-class class="play" type="button" @click="handlePlayAlbum(album.uri)">
         <i class="icon-play" />
-      </button>
-      <button
-        @click="dialogStore.open({ type: 'addalbum', albumId: album.id })"
+      </ButtonIndex>
+      <ButtonIndex
+        no-default-class
         class="button-action add"
         type="button"
+        @click="dialogStore.open({ type: 'addalbum', albumId: album.id })"
         v-if="canSave"
       >
         <i class="icon-plus" />
-      </button>
-      <button @click="deleteAlbum(album.id)" class="button-action delete" type="button" v-if="canDelete">
+      </ButtonIndex>
+      <ButtonIndex
+        no-default-class
+        class="button-action delete"
+        type="button"
+        @click="deleteAlbum(album.id)"
+        v-if="canDelete"
+      >
         <i class="icon-trash-2" />
-      </button>
+      </ButtonIndex>
     </div>
     <div v-if="!withoutMetas">
       <div class="name">{{ album.name }}</div>
@@ -45,6 +52,7 @@ import { NotificationType } from "../../@types/Notification";
 import { Paging } from "../../@types/Paging";
 import { TrackSimplified, TrackToRemove } from "../../@types/Track";
 import { instance } from "../../api";
+import ButtonIndex from "../ButtonIndex.vue";
 import { notification } from "../../helpers/notifications";
 import { playAlbum } from "../../helpers/playAlbum"; // Import the playAlbum helper
 import router from "../../router";

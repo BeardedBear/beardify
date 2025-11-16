@@ -1,7 +1,8 @@
 <template>
   <div class="colors">
     <div class="schemes">
-      <button
+      <ButtonIndex
+        no-default-class
         :class="{
           current: configStore.schemeLabel === `${c.name}`,
           crimson: c.name === 'crimson',
@@ -9,35 +10,38 @@
           apple: c.name === 'apple',
           default: c.name === 'default',
         }"
+        class="scheme-item"
         :key="index"
         @click="c.fn()"
-        class="scheme-item"
         v-for="(c, index) in textColors"
       />
     </div>
 
     <div>
       <div class="radio">
-        <button
+        <ButtonIndex
+          no-default-class
           :class="{ current: configStore.themeLabel === 'light' }"
-          @click="configStore.switchTheme('light')"
           class="radio-item"
+          @click="configStore.switchTheme('light')"
         >
           <i class="icon-sun" />
-        </button>
-        <button
+        </ButtonIndex>
+        <ButtonIndex
+          no-default-class
           :class="{ current: configStore.themeLabel === 'dark' }"
-          @click="configStore.switchTheme('dark')"
           class="radio-item"
+          @click="configStore.switchTheme('dark')"
         >
           <i class="icon-moon" />
-        </button>
+        </ButtonIndex>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import ButtonIndex from "../ButtonIndex.vue";
 import { useConfig } from "./ConfigStore";
 
 const configStore = useConfig();

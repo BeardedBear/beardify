@@ -8,13 +8,14 @@
       </div>
     </div>
     <div class="options">
-      <button @click="addTrackToQueue(track.uri)">Add</button>
-      <a
-        @click="openLink(`https://www.youtube.com/results?search_query=${track?.artists[0].name}+${track?.name}`)"
+      <ButtonIndex @click="addTrackToQueue(track.uri)">Add</ButtonIndex>
+      <ButtonIndex
+        no-default-class
         class="link"
+        @click="openLink(`https://www.youtube.com/results?search_query=${track?.artists[0].name}+${track?.name}`)"
       >
         <i class="icon-youtube" />
-      </a>
+      </ButtonIndex>
       <ShareContent :spotify-url="`https://open.spotify.com/track/${track.id}`" />
     </div>
   </div>
@@ -22,6 +23,7 @@
 
 <script lang="ts" setup>
 import { Track, TrackSimplified } from "../../@types/Track";
+import ButtonIndex from "../ButtonIndex.vue";
 import { usePlayer } from "../player/PlayerStore";
 import ShareContent from "../ShareContent.vue";
 

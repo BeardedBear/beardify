@@ -1,35 +1,43 @@
 <template>
   <div class="controls">
     <div class="btns">
-      <button
+      <ButtonIndex
+        no-default-class
         :class="{ active: playerStore.currentlyPlaying?.shuffle_state }"
-        @click="playerStore.toggleShuffle()"
         class="control-button"
+        @click="playerStore.toggleShuffle()"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-shuffle" />
-      </button>
-      <button
+      </ButtonIndex>
+      <ButtonIndex
+        no-default-class
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
-        @click="playerStore.toggleRepeat()"
         class="control-button"
+        @click="playerStore.toggleRepeat()"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-repeat" />
-      </button>
-      <button @click="playerStore.play()" class="control-button play" v-if="playerStore.playerState?.paused">
+      </ButtonIndex>
+      <ButtonIndex
+        no-default-class
+        class="control-button play"
+        @click="playerStore.play()"
+        v-if="playerStore.playerState?.paused"
+      >
         <i class="icon-play" />
-      </button>
-      <button @click="playerStore.pause()" class="control-button play" v-else>
+      </ButtonIndex>
+      <ButtonIndex no-default-class class="control-button play" @click="playerStore.pause()" v-else>
         <i class="icon-pause" />
-      </button>
-      <button
-        @click="playerStore.next()"
+      </ButtonIndex>
+      <ButtonIndex
+        no-default-class
         class="control-button"
+        @click="playerStore.next()"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-skip-forward" />
-      </button>
+      </ButtonIndex>
     </div>
     <div class="time">
       {{ timecode(currentTime) || "00:00" }} /
@@ -42,6 +50,7 @@
 import { useIntervalFn } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
+import ButtonIndex from "../ButtonIndex.vue";
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
 

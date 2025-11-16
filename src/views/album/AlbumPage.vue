@@ -18,9 +18,13 @@
             class="track"
             v-for="(track, index) in albumStore.album.tracks.items"
           >
-            <button @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })" class="add">
+            <ButtonIndex
+              no-default-class
+              class="add"
+              @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })"
+            >
               <i class="icon-plus"></i>
-            </button>
+            </ButtonIndex>
             <span class="track-number">{{ track.track_number }}.</span>
             <div>
               <div>{{ track.name }}</div>
@@ -47,6 +51,7 @@ import Foot from "../../components/album/AlbumFoot.vue";
 import Head from "../../components/album/AlbumHead.vue";
 import Album from "../../components/album/AlbumIndex.vue";
 import ArtistList from "../../components/artist/ArtistList.vue";
+import ButtonIndex from "../../components/ButtonIndex.vue";
 import { useDialog } from "../../components/dialog/DialogStore";
 import Loader from "../../components/LoadingDots.vue";
 import { usePlayer } from "../../components/player/PlayerStore";

@@ -115,7 +115,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss">
-@use "./assets/scss/button" as button;
 @use "./assets/scss/colors" as colors;
 @use "./assets/scss/responsive" as responsive;
 @use "./assets/scss/heading" as heading;
@@ -126,8 +125,6 @@ onBeforeUnmount(() => {
 *::before,
 *::after {
   box-sizing: border-box;
-  /* stylelint-disable-next-line property-no-unknown */
-  corner-shape: squircle;
 }
 
 input {

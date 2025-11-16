@@ -1,19 +1,34 @@
 <template>
   <div :class="{ floating }" class="links">
-    <a @click.stop.prevent="frameStore.open(link.wikipedia, 'Wikipedia')" class="item"><i class="icon-wikipedia" /></a>
-    <a @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')" class="item"><i class="icon-sputnik" /></a>
-    <a @click.stop.prevent="frameStore.open(link.google, 'Google')" class="item"><i class="icon-google" /></a>
+    <ButtonIndex no-default-class class="item" @click.stop.prevent="frameStore.open(link.wikipedia, 'Wikipedia')">
+      <i class="icon-wikipedia" />
+    </ButtonIndex>
+    <ButtonIndex no-default-class class="item" @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')">
+      <i class="icon-sputnik" />
+    </ButtonIndex>
+    <ButtonIndex no-default-class class="item" @click.stop.prevent="frameStore.open(link.google, 'Google')">
+      <i class="icon-google" />
+    </ButtonIndex>
     <span class="separator">|</span>
-    <a @click.stop.prevent="openLink(link.lastfm)" class="item"><i class="icon-lastfm" /></a>
-    <a @click.stop.prevent="openLink(link.discogs)" class="item"><i class="icon-discogs" /></a>
-    <a @click.stop.prevent="openLink(link.rym)" class="item"><i class="icon-rym" /></a>
-    <a @click.stop.prevent="openLink(link.youtube)" class="item"><i class="icon-youtube" /></a>
+    <ButtonIndex no-default-class class="item" @click.stop.prevent="openLink(link.lastfm)">
+      <i class="icon-lastfm" />
+    </ButtonIndex>
+    <ButtonIndex no-default-class class="item" @click.stop.prevent="openLink(link.discogs)">
+      <i class="icon-discogs" />
+    </ButtonIndex>
+    <ButtonIndex no-default-class class="item" @click.stop.prevent="openLink(link.rym)">
+      <i class="icon-rym" />
+    </ButtonIndex>
+    <ButtonIndex no-default-class class="item" @click.stop.prevent="openLink(link.youtube)">
+      <i class="icon-youtube" />
+    </ButtonIndex>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, onUpdated, ref } from "vue";
 
+import ButtonIndex from "../ButtonIndex.vue";
 import { normalizeDiacritics } from "../../helpers/normalizeDiacritics";
 import { useFrame } from "../frame/FrameStore";
 

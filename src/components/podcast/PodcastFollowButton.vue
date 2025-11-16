@@ -1,12 +1,10 @@
 <template>
-  <button
-    @click="toggleFollow"
-    :class="{
-      'button-primary': !podcastsStore.isFollowing,
-      followed: podcastsStore.isFollowing,
-    }"
-    class="button follow-button"
+  <ButtonIndex
+    :variant="!podcastsStore.isFollowing ? 'primary' : 'default'"
+    :class="{ followed: podcastsStore.isFollowing }"
+    class="follow-button"
     :disabled="loading"
+    @click="toggleFollow"
   >
     <i
       :class="{
@@ -16,12 +14,13 @@
     ></i>
     <span v-if="!podcastsStore.isFollowing">Follow podcast</span>
     <span v-else>Unfollow</span>
-  </button>
+  </ButtonIndex>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
 
+import ButtonIndex from "../ButtonIndex.vue";
 import { usePodcasts } from "../../views/podcasts/PodcastsStore";
 
 const props = defineProps<{

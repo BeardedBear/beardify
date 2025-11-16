@@ -52,9 +52,9 @@
       <div class="date">{{ date(track.added_at) }}</div>
       <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
       <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
-        <button @click.prevent.stop="deleteSong(track.track.uri)" class="button button-nude delete">
+        <ButtonIndex icon-only variant="nude" class="delete" @click.prevent.stop="deleteSong(track.track.uri)">
           <i class="icon-trash-2"></i>
-        </button>
+        </ButtonIndex>
       </div>
     </div>
   </template>
@@ -67,6 +67,7 @@ import { NotificationType } from "../../@types/Notification";
 import { PlaylistTrack } from "../../@types/Playlist";
 import { PublicUser } from "../../@types/PublicUser";
 import { instance } from "../../api";
+import ButtonIndex from "../ButtonIndex.vue";
 import { date, timecode } from "../../helpers/date";
 import { isCurrentTrack } from "../../helpers/helper";
 import { notification } from "../../helpers/notifications";
