@@ -160,9 +160,10 @@ const classes = computed(() => {
     color: var(--font-color);
     cursor: pointer;
     opacity: 0.5;
-    padding: 0.2rem;
+    padding: 0.5rem 0.6rem;
 
     &:hover:not(:disabled) {
+      background-color: transparent;
       opacity: 1;
     }
   }

@@ -17,9 +17,9 @@
 
 <script lang="ts" setup>
 import { useArtist } from "../../views/artist/ArtistStore";
-import ArtistLinks from "./ArtistLinks.vue";
 import ButtonIndex from "../ButtonIndex.vue";
 import ShareContent from "../ShareContent.vue";
+import ArtistLinks from "./ArtistLinks.vue";
 
 const artistStore = useArtist();
 

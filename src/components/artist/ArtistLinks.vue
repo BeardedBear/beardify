@@ -1,40 +1,25 @@
 <template>
   <div :class="{ floating }" class="links">
-    <ButtonIndex
-      no-default-class
-      class="item"
-      @click.stop.prevent="frameStore.open(link.wikipedia, 'Wikipedia')"
-      variant="nude"
-    >
+    <ButtonIndex @click.stop.prevent="frameStore.open(link.wikipedia, 'Wikipedia')" variant="nude">
       <i class="icon-wikipedia" />
     </ButtonIndex>
-    <ButtonIndex
-      no-default-class
-      class="item"
-      @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')"
-      variant="nude"
-    >
+    <ButtonIndex @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')" variant="nude">
       <i class="icon-sputnik" />
     </ButtonIndex>
-    <ButtonIndex
-      no-default-class
-      class="item"
-      @click.stop.prevent="frameStore.open(link.google, 'Google')"
-      variant="nude"
-    >
+    <ButtonIndex @click.stop.prevent="frameStore.open(link.google, 'Google')" variant="nude">
       <i class="icon-google" />
     </ButtonIndex>
     <span class="separator">|</span>
-    <ButtonIndex no-default-class class="item" @click.stop.prevent="openLink(link.lastfm)" variant="nude">
+    <ButtonIndex icon-only @click.stop.prevent="openLink(link.lastfm)" variant="nude">
       <i class="icon-lastfm" />
     </ButtonIndex>
-    <ButtonIndex no-default-class class="item" @click.stop.prevent="openLink(link.discogs)" variant="nude">
+    <ButtonIndex icon-only @click.stop.prevent="openLink(link.discogs)" variant="nude">
       <i class="icon-discogs" />
     </ButtonIndex>
-    <ButtonIndex no-default-class class="item" @click.stop.prevent="openLink(link.rym)" variant="nude">
+    <ButtonIndex icon-only @click.stop.prevent="openLink(link.rym)" variant="nude">
       <i class="icon-rym" />
     </ButtonIndex>
-    <ButtonIndex no-default-class class="item" @click.stop.prevent="openLink(link.youtube)" variant="nude">
+    <ButtonIndex icon-only @click.stop.prevent="openLink(link.youtube)" variant="nude">
       <i class="icon-youtube" />
     </ButtonIndex>
   </div>
@@ -78,38 +63,15 @@ onUpdated(() => updateLinks());
 </script>
 
 <style lang="scss" scoped>
-// .item {
-//   align-items: center;
-//   color: currentcolor;
-//   cursor: pointer;
-//   display: flex;
-//   font-size: 1rem;
-//   opacity: 0.3;
-//   text-decoration: none;
-
-//   &:hover {
-//     opacity: 1;
-//   }
-// }
-
 .links {
   align-items: center;
   display: flex;
-  gap: 0.7rem;
+
+  // gap: 0.5rem;
   position: relative;
 
   .separator {
     color: rgb(125 125 125 / 50%);
-  }
-
-  &.floating {
-    gap: 0;
-
-    .item {
-      color: var(--font-color-light);
-      font-size: 1rem;
-      padding: 0.3rem;
-    }
   }
 }
 </style>

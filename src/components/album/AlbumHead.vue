@@ -14,7 +14,7 @@
     </div>
     <div>
       <div class="options">
-        <div>
+        <div class="links">
           <ButtonIndex
             icon-only
             variant="nude"
@@ -82,5 +82,12 @@ function openLink(url: string): void {
   align-items: center;
   display: flex;
   gap: 1rem;
+}
+
+.links {
+  align-items: center;
+  display: flex;
+
+  // gap: 0.5rem;
 }
 </style>
