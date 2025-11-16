@@ -119,8 +119,8 @@ const classes = computed(() => {
   font-weight: 700;
   gap: 8px;
   justify-content: center;
-  line-height: 1.5;
-  padding: 0.4rem 1rem;
+  line-height: 1;
+  padding: 0.6rem 1rem;
   text-align: center;
   text-decoration: none;
   white-space: pre;
@@ -156,13 +156,14 @@ const classes = computed(() => {
 
   &-nude {
     background-color: transparent;
+    border: 0;
+    color: var(--font-color);
+    cursor: pointer;
+    opacity: 0.5;
+    padding: 0.2rem;
 
     &:hover:not(:disabled) {
-      background-color: var(--bg-color);
-    }
-
-    &:active:not(:disabled) {
-      background-color: var(--bg-color-light);
+      opacity: 1;
     }
   }
 
@@ -177,8 +178,6 @@ const classes = computed(() => {
   }
 
   &-icon-only {
-    padding: 0.5rem 0.8rem;
-
     &.button-small {
       padding: 0.5rem 0.6rem;
     }
