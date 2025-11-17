@@ -4,18 +4,21 @@
     <span class="copied" v-if="clipboardSpotify.copied.value">Spotify URL copied</span>
     <span class="copied" v-if="clipboardBeardify.copied.value">Beardify URL copied</span>
     <div class="content">
-      <button @click="clipboardSpotify.copy()" class="copy">
+      <ButtonIndex no-default-class class="copy" @click="clipboardSpotify.copy()">
         <i class="icon-spotify"></i>
-      </button>
-      <button @click="clipboardBeardify.copy()" class="copy" v-if="beardifyUrl">
+      </ButtonIndex>
+      <ButtonIndex no-default-class class="copy" @click="clipboardBeardify.copy()" v-if="beardifyUrl">
         <i class="icon-beardify"></i>
-      </button>
+      </ButtonIndex>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useClipboard } from "@vueuse/core";
+
+import ButtonIndex from "./ButtonIndex.vue";
+
 const props = defineProps<{
   beardifyUrl?: string;
   spotifyUrl: string;
@@ -27,7 +30,9 @@ const clipboardBeardify = useClipboard({
 </script>
 
 <style lang="scss" scoped>
-$radius: 0.3rem;
+@use "../assets/scss/mixins" as mixins;
+
+$radius: 1rem;
 
 .sharing {
   background-color: var(--bg-color);
@@ -36,13 +41,17 @@ $radius: 0.3rem;
   display: flex;
   height: 2.25rem;
   position: relative;
+
+  @include mixins.squircle;
 }
 
 .title {
   align-items: center;
   background-color: var(--bg-color-light);
-  border-radius: $radius - 0.1rem 0 0 $radius - 0.1rem;
+  border-radius: $radius 0 0 $radius;
   display: flex;
+
+  @include mixins.squircle;
 }
 
 .share-icon {

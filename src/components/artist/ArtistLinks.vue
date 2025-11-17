@@ -1,13 +1,27 @@
 <template>
   <div :class="{ floating }" class="links">
-    <a @click.stop.prevent="frameStore.open(link.wikipedia, 'Wikipedia')" class="item"><i class="icon-wikipedia" /></a>
-    <a @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')" class="item"><i class="icon-sputnik" /></a>
-    <a @click.stop.prevent="frameStore.open(link.google, 'Google')" class="item"><i class="icon-google" /></a>
+    <ButtonIndex @click.stop.prevent="frameStore.open(link.wikipedia, 'Wikipedia')" variant="nude">
+      <i class="icon-wikipedia" />
+    </ButtonIndex>
+    <ButtonIndex @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')" variant="nude">
+      <i class="icon-sputnik" />
+    </ButtonIndex>
+    <ButtonIndex @click.stop.prevent="frameStore.open(link.google, 'Google')" variant="nude">
+      <i class="icon-google" />
+    </ButtonIndex>
     <span class="separator">|</span>
-    <a @click.stop.prevent="openLink(link.lastfm)" class="item"><i class="icon-lastfm" /></a>
-    <a @click.stop.prevent="openLink(link.discogs)" class="item"><i class="icon-discogs" /></a>
-    <a @click.stop.prevent="openLink(link.rym)" class="item"><i class="icon-rym" /></a>
-    <a @click.stop.prevent="openLink(link.youtube)" class="item"><i class="icon-youtube" /></a>
+    <ButtonIndex icon-only @click.stop.prevent="openLink(link.lastfm)" variant="nude">
+      <i class="icon-lastfm" />
+    </ButtonIndex>
+    <ButtonIndex icon-only @click.stop.prevent="openLink(link.discogs)" variant="nude">
+      <i class="icon-discogs" />
+    </ButtonIndex>
+    <ButtonIndex icon-only @click.stop.prevent="openLink(link.rym)" variant="nude">
+      <i class="icon-rym" />
+    </ButtonIndex>
+    <ButtonIndex icon-only @click.stop.prevent="openLink(link.youtube)" variant="nude">
+      <i class="icon-youtube" />
+    </ButtonIndex>
   </div>
 </template>
 
@@ -15,6 +29,7 @@
 import { onMounted, onUpdated, ref } from "vue";
 
 import { normalizeDiacritics } from "../../helpers/normalizeDiacritics";
+import ButtonIndex from "../ButtonIndex.vue";
 import { useFrame } from "../frame/FrameStore";
 
 const props = defineProps<{
@@ -48,38 +63,15 @@ onUpdated(() => updateLinks());
 </script>
 
 <style lang="scss" scoped>
-.item {
-  align-items: center;
-  color: currentcolor;
-  cursor: pointer;
-  display: flex;
-  font-size: 1rem;
-  opacity: 0.3;
-  text-decoration: none;
-
-  &:hover {
-    opacity: 1;
-  }
-}
-
 .links {
   align-items: center;
   display: flex;
-  gap: 0.7rem;
+
+  // gap: 0.5rem;
   position: relative;
 
   .separator {
     color: rgb(125 125 125 / 50%);
-  }
-
-  &.floating {
-    gap: 0;
-
-    .item {
-      color: var(--font-color-light);
-      font-size: 1rem;
-      padding: 0.3rem;
-    }
   }
 }
 </style>

@@ -8,20 +8,27 @@
         @click="router.push(`/album/${album.id}`)"
         class="img"
       />
-      <button @click="handlePlayAlbum(album.uri)" class="play" type="button">
+      <ButtonIndex no-default-class class="play" type="button" @click="handlePlayAlbum(album.uri)">
         <i class="icon-play" />
-      </button>
-      <button
-        @click="dialogStore.open({ type: 'addalbum', albumId: album.id })"
+      </ButtonIndex>
+      <ButtonIndex
+        no-default-class
         class="button-action add"
         type="button"
+        @click="dialogStore.open({ type: 'addalbum', albumId: album.id })"
         v-if="canSave"
       >
         <i class="icon-plus" />
-      </button>
-      <button @click="deleteAlbum(album.id)" class="button-action delete" type="button" v-if="canDelete">
+      </ButtonIndex>
+      <ButtonIndex
+        no-default-class
+        class="button-action delete"
+        type="button"
+        @click="deleteAlbum(album.id)"
+        v-if="canDelete"
+      >
         <i class="icon-trash-2" />
-      </button>
+      </ButtonIndex>
     </div>
     <div v-if="!withoutMetas">
       <div class="name">{{ album.name }}</div>
@@ -51,6 +58,7 @@ import router from "../../router";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";
 import Cover from "../AlbumCover.vue";
 import ArtistList from "../artist/ArtistList.vue";
+import ButtonIndex from "../ButtonIndex.vue";
 import { useDialog } from "../dialog/DialogStore";
 import { usePlayer } from "../player/PlayerStore";
 
@@ -120,10 +128,13 @@ async function deleteAlbum(albumId: string): Promise<void> {
 <style lang="scss" scoped>
 @use "sass:color";
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/mixins" as mixins;
 
 .play {
   $offset: 1rem;
   $size: 2.5rem;
+
+  @include mixins.squircle;
 
   animation: pop-play-button 0.2s ease both;
   background: var(--primary-color);
@@ -219,6 +230,8 @@ async function deleteAlbum(albumId: string): Promise<void> {
   position: absolute;
   transition: transform ease 0.1s;
   will-change: transform;
+
+  @include mixins.squircle;
 
   &:hover {
     background-color: color.change(black, $alpha: 0.5);

@@ -2,7 +2,7 @@
   <Dialog title="Create a playlist" with-title>
     <div class="wrap">
       <input class="input" placeholder="Playlist's name" type="text" v-model="playlistName" />
-      <button @click="create()" class="button button--primary">Create</button>
+      <ButtonIndex variant="primary" @click="create()">Create</ButtonIndex>
     </div>
   </Dialog>
 </template>
@@ -11,6 +11,7 @@
 import { ref } from "vue";
 
 import { NotificationType } from "../../@types/Notification";
+import ButtonIndex from "../ButtonIndex.vue";
 import { notification } from "../../helpers/notifications";
 import { useSidebar } from "../sidebar/SidebarStore";
 import { useDialog } from "./DialogStore";

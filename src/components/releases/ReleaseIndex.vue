@@ -1,9 +1,9 @@
 <template>
   <div class="release-wrap">
-    <button @click="releasesStore.toggleRelease(release.id)" class="check">
+    <ButtonIndex no-default-class class="check" @click="releasesStore.toggleRelease(release.id)">
       <i class="icon-check" v-if="releasesStore.checks?.find((r) => r.id === release.id)"></i>
       <i class="icon-circle" v-else></i>
-    </button>
+    </ButtonIndex>
     <div
       :class="{
         'is-playing': playerStore.currentlyPlaying.item?.artists[0].name.toLowerCase() === release.artist.toLowerCase(),
@@ -30,6 +30,7 @@
 
 <script lang="ts" setup>
 import { Release } from "../../@types/Releases";
+import ButtonIndex from "../ButtonIndex.vue";
 import { useReleases } from "../../views/releases/ReleasesStore";
 import { useDialog } from "../dialog/DialogStore";
 import { usePlayer } from "../player/PlayerStore";

@@ -2,20 +2,22 @@
   <div class="options">
     <ArtistLinks :artist-name="artistStore.artist.name" />
     <ShareContent :beardify-url="$route.fullPath" :spotify-url="artistStore.artist.external_urls.spotify" />
-    <div
+    <ButtonIndex
       :title="artistStore.artist.followers.total + ' followers'"
       @click="switchFollow(artistStore.artist.id)"
-      class="follow button button--primary"
+      class="follow"
+      variant="primary"
       v-if="artistStore.followStatus"
     >
       Followed
-    </div>
-    <div @click="switchFollow(artistStore.artist.id)" class="follow button" v-else>Follow</div>
+    </ButtonIndex>
+    <ButtonIndex @click="switchFollow(artistStore.artist.id)" class="follow" v-else>Follow</ButtonIndex>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useArtist } from "../../views/artist/ArtistStore";
+import ButtonIndex from "../ButtonIndex.vue";
 import ShareContent from "../ShareContent.vue";
 import ArtistLinks from "./ArtistLinks.vue";
 
@@ -27,8 +29,6 @@ function switchFollow(artistId: string): void {
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-
 .options {
   align-items: center;
   display: flex;
@@ -36,7 +36,6 @@ function switchFollow(artistId: string): void {
 }
 
 .follow {
-  text-align: center;
   width: 6rem;
 }
 </style>

@@ -23,61 +23,52 @@
           <div class="option">
             <label for="public">Visibility</label>
             <div class="buttons">
-              <button
-                :class="{
-                  'button--primary': values.public && !values.collaborative,
-                }"
+              <ButtonIndex
+                :variant="values.public && !values.collaborative ? 'primary' : 'default'"
                 @click="
                   () => {
                     values.collaborative = false;
                     values.public = true;
                   }
                 "
-                class="button"
               >
                 Public
-              </button>
-              <button
-                :class="{
-                  'button--primary': !values.public && !values.collaborative,
-                }"
+              </ButtonIndex>
+              <ButtonIndex
+                :variant="!values.public && !values.collaborative ? 'primary' : 'default'"
                 @click="
                   () => {
                     values.collaborative = false;
                     values.public = false;
                   }
                 "
-                class="button"
               >
                 Private
-              </button>
-              <button
-                :class="{
-                  'button--primary': values.collaborative && !values.public,
-                }"
+              </ButtonIndex>
+              <ButtonIndex
+                :variant="values.collaborative && !values.public ? 'primary' : 'default'"
                 @click="
                   () => {
                     values.collaborative = true;
                     values.public = false;
                   }
                 "
-                class="button"
               >
                 Collaborative
-              </button>
+              </ButtonIndex>
             </div>
           </div>
         </div>
       </div>
       <div class="actions">
-        <button @click="remove()" class="button button">Delete {{ isCollection ? "collection" : "playlist" }}</button>
-        <button
+        <ButtonIndex @click="remove()">Delete {{ isCollection ? "collection" : "playlist" }}</ButtonIndex>
+        <ButtonIndex
+          variant="primary"
           @click="dialogStore.updatePlaylist(values, dialogStore.playlistId, isCollection)"
-          class="button button--primary"
           v-if="isEditable"
         >
           Confirm
-        </button>
+        </ButtonIndex>
       </div>
     </div>
   </Dialog>
@@ -90,6 +81,7 @@ import { UpdatePlaylistValues } from "../../@types/Dialog";
 import { NotificationType } from "../../@types/Notification";
 import { Playlist } from "../../@types/Playlist";
 import { instance } from "../../api";
+import ButtonIndex from "../ButtonIndex.vue";
 import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";
 import Loading from "../LoadingDots.vue";

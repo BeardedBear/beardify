@@ -1,12 +1,20 @@
 <template>
   <div>
-    <a @click="openLink(`https://www.google.com/search?q=${album.label}+label`)" class="link">{{ album.label }}</a>
+    <ButtonIndex
+      no-default-class
+      variant="nude"
+      class="link"
+      @click="openLink(`https://www.google.com/search?q=${album.label}+label`)"
+    >
+      {{ album.label }}
+    </ButtonIndex>
     <div class="mentions">{{ album.copyrights[0].text }}</div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Album } from "../../@types/Album";
+import ButtonIndex from "../ButtonIndex.vue";
 
 defineProps<{ album: Album }>();
 

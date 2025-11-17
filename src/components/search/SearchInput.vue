@@ -8,15 +8,16 @@
       type="text"
       v-model="query"
     />
-    <button @click="clearQuery()" class="reset" v-if="query">
+    <ButtonIndex no-default-class class="reset" @click="clearQuery()" v-if="query">
       <i class="icon-x" />
-    </button>
+    </ButtonIndex>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 
+import ButtonIndex from "../ButtonIndex.vue";
 import { useSearch } from "./SearchStore";
 
 const searchStore = useSearch();
@@ -40,8 +41,9 @@ onMounted(() => {
 <style lang="scss" scoped>
 @use "sass:color";
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/mixins" as mixins;
 
-$radius: 0.3rem;
+$radius: 1rem;
 
 .search {
   padding: 1rem;
@@ -58,6 +60,8 @@ $radius: 0.3rem;
   outline: 0;
   padding: 0.8rem 1.2rem;
   width: 100%;
+
+  @include mixins.squircle;
 }
 
 .reset {

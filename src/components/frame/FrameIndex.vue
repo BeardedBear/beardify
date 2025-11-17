@@ -6,8 +6,8 @@
       <div class="head">
         <div>{{ frameStore.siteName }}</div>
         <div class="right">
-          <a :href="frameStore.url" class="button button--small" target="_blank">Open in a new tab</a>
-          <button @click="frameStore.close()" class="button button--small">Close</button>
+          <ButtonIndex :href="frameStore.url" size="small" target="_blank">Open in a new tab</ButtonIndex>
+          <ButtonIndex size="small" @click="frameStore.close()">Close</ButtonIndex>
         </div>
       </div>
       <iframe :class="{ 'is-closing': frameStore.isClosing }" :src="frameStore.url" border="0"></iframe>
@@ -16,6 +16,7 @@
 </template>
 
 <script lang="ts" setup>
+import ButtonIndex from "../ButtonIndex.vue";
 import LoadingDots from "../LoadingDots.vue";
 import { useFrame } from "./FrameStore";
 

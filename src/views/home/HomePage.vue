@@ -3,14 +3,14 @@
     <Loader />
   </div>
   <div class="home" v-else>
-    <div class="home__content">
+    <div class="home-content">
       <PageFit>
         <div class="title">
           <div class="name">Recommended albums</div>
-          <button @click="getData()" class="button">
+          <ButtonIndex @click="getData()">
             <i class="icon-refresh"></i>
             Refresh
-          </button>
+          </ButtonIndex>
         </div>
         <AlbumGallery :album-list="homeStore.recommendedAlbums" no-title />
       </PageFit>
@@ -22,6 +22,7 @@
 import { watch } from "vue";
 
 import AlbumGallery from "../../components/AlbumGallery.vue";
+import ButtonIndex from "../../components/ButtonIndex.vue";
 import Loader from "../../components/LoadingDots.vue";
 import PageFit from "../../components/PageFit.vue";
 import { useAuth } from "../auth/AuthStore";
@@ -64,15 +65,15 @@ watch(authStore, () => {
   display: grid;
   line-break: anywhere;
   overflow: hidden;
+}
 
-  &__content {
-    overflow-y: auto;
-    padding: 1rem 5rem;
-    transition: padding ease 0.2s;
+.home-content {
+  overflow-y: auto;
+  padding: 1rem 5rem;
+  transition: padding ease 0.2s;
 
-    @media (width <= 1200px) {
-      padding: 1rem 3rem;
-    }
+  @media (width <= 1200px) {
+    padding: 1rem 3rem;
   }
 }
 

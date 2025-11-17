@@ -2,12 +2,12 @@
   <div class="page" ref="page">
     <slot />
     <div class="nav">
-      <button @click="scrollToTop()" class="button button--small">
+      <ButtonIndex icon-only size="small" @click="scrollToTop()">
         <i class="icon-arrow-up"></i>
-      </button>
-      <button @click="scrollToBottom()" class="button button--small">
+      </ButtonIndex>
+      <ButtonIndex icon-only size="small" @click="scrollToBottom()">
         <i class="icon-arrow-down"></i>
-      </button>
+      </ButtonIndex>
     </div>
   </div>
 </template>
@@ -15,6 +15,8 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref } from "vue";
 import { useRoute } from "vue-router";
+
+import ButtonIndex from "./ButtonIndex.vue";
 
 const page = ref<HTMLElement | null>(null);
 const route = useRoute();

@@ -5,19 +5,19 @@
   <div :class="{ 'search-opened': collectionSearchOpened || playlistSearchOpened }" class="sidebar" v-else>
     <Topbar />
     <Menu />
-    <div class="sidebar__item">
+    <div class="sidebar-item">
       <div class="heading title" v-if="!collectionSearchOpened">
         <div class="title-name">Collections</div>
         <div class="options">
-          <button @click="sidebarStore.refreshPlaylists()" class="icon">
+          <ButtonIndex no-default-class class="icon" @click="sidebarStore.refreshPlaylists()">
             <i class="icon-refresh"></i>
-          </button>
-          <button @click="() => (collectionSearchOpened = true)" class="icon">
+          </ButtonIndex>
+          <ButtonIndex no-default-class class="icon" @click="() => (collectionSearchOpened = true)">
             <i class="icon-search"></i>
-          </button>
-          <button @click="dialogStore.open({ type: 'createCollection' })" class="icon add">
+          </ButtonIndex>
+          <ButtonIndex no-default-class class="icon add" @click="dialogStore.open({ type: 'createCollection' })">
             <i class="icon-plus"></i>
-          </button>
+          </ButtonIndex>
         </div>
       </div>
       <div class="heading title" v-else>
@@ -45,33 +45,34 @@
             {{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}
           </div>
           <VisibilityIcon :playlist="playlist" />
-          <button
+          <ButtonIndex
+            no-default-class
+            class="edit"
             @click.prevent="
               dialogStore.open({
                 type: 'editPlaylist',
                 playlistId: playlist.id,
               })
             "
-            class="edit"
           >
             <i class="icon-more-vertical"></i>
-          </button>
+          </ButtonIndex>
         </router-link>
       </div>
     </div>
-    <div class="sidebar__item">
+    <div class="sidebar-item">
       <div class="heading title" v-if="!playlistSearchOpened">
         <div class="title-name">Playlists</div>
         <div class="options">
-          <button @click="sidebarStore.refreshPlaylists()" class="icon">
+          <ButtonIndex no-default-class class="icon" @click="sidebarStore.refreshPlaylists()">
             <i class="icon-refresh"></i>
-          </button>
-          <button @click="() => (playlistSearchOpened = true)" class="icon">
+          </ButtonIndex>
+          <ButtonIndex no-default-class class="icon" @click="() => (playlistSearchOpened = true)">
             <i class="icon-search"></i>
-          </button>
-          <button @click="dialogStore.open({ type: 'createPlaylist' })" class="icon add">
+          </ButtonIndex>
+          <ButtonIndex no-default-class class="icon add" @click="dialogStore.open({ type: 'createPlaylist' })">
             <i class="icon-plus"></i>
-          </button>
+          </ButtonIndex>
         </div>
       </div>
       <div class="heading title" v-else>
@@ -97,17 +98,18 @@
           <PlaylistIcon :playlist="playlist" />
           <div class="name">{{ playlist.name }}</div>
           <VisibilityIcon :playlist="playlist" />
-          <button
+          <ButtonIndex
+            no-default-class
+            class="edit"
             @click.prevent="
               dialogStore.open({
                 type: 'editPlaylist',
                 playlistId: playlist.id,
               })
             "
-            class="edit"
           >
             <i class="icon-more-vertical"></i>
-          </button>
+          </ButtonIndex>
         </router-link>
       </div>
     </div>
@@ -120,6 +122,7 @@ import { ref, Ref, watch } from "vue";
 import { RouterLink } from "vue-router";
 
 import { useAuth } from "../../views/auth/AuthStore";
+import ButtonIndex from "../ButtonIndex.vue";
 import { useDialog } from "../dialog/DialogStore";
 import Loader from "../LoadingDots.vue";
 import Topbar from "../SidebarHead.vue";
@@ -251,21 +254,21 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
     grid-template-rows: auto auto 1fr 1fr;
   }
 
-  &__item {
-    overflow-y: auto;
-    position: relative;
-
-    &:hover {
-      .options {
-        opacity: 1;
-        visibility: visible;
-      }
-    }
-  }
-
   &.loading {
     display: grid;
     place-content: center;
+  }
+}
+
+.sidebar-item {
+  overflow-y: auto;
+  position: relative;
+
+  &:hover {
+    .options {
+      opacity: 1;
+      visibility: visible;
+    }
   }
 }
 

@@ -2,7 +2,7 @@
   <template v-if="useRoute().name === 'Login'"><router-view></router-view></template>
   <template v-else>
     <DialogList />
-    <div id="app__content">
+    <div id="app-content">
       <Sidebar />
       <router-view :key="useRoute().fullPath" v-slot="{ Component }"><component :is="Component" /></router-view>
     </div>
@@ -115,7 +115,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss">
-@use "./assets/scss/button" as button;
 @use "./assets/scss/colors" as colors;
 @use "./assets/scss/responsive" as responsive;
 @use "./assets/scss/heading" as heading;
@@ -126,8 +125,6 @@ onBeforeUnmount(() => {
 *::before,
 *::after {
   box-sizing: border-box;
-  /* stylelint-disable-next-line property-no-unknown */
-  corner-shape: squircle;
 }
 
 input {
@@ -187,15 +184,15 @@ body {
   line-height: 1.4;
   min-height: 100vh;
   overflow: hidden;
+}
 
-  &__content {
-    display: grid;
-    grid-template-columns: 19rem 1fr;
-    overflow: hidden;
+#app-content {
+  display: grid;
+  grid-template-columns: 19rem 1fr;
+  overflow: hidden;
 
-    @include responsive.hdpi {
-      grid-template-columns: 25rem 1fr;
-    }
+  @include responsive.hdpi {
+    grid-template-columns: 25rem 1fr;
   }
 }
 

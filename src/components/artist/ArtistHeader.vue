@@ -34,6 +34,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/mixins" as mixins;
 
 .img {
   filter: blur(15px);
@@ -50,13 +51,15 @@ onMounted(() => {
   opacity: 0.4;
 
   .genre {
-    background-color: var(--bg-color-lighter);
+    background-color: var(--bg-color-darker);
     border-radius: 2rem;
     color: currentcolor;
     display: inline-block;
     font-size: 0.8rem;
     margin-right: 0.3rem;
     padding: 0 0.5rem 0.1rem;
+
+    @include mixins.squircle;
   }
 }
 

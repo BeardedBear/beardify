@@ -1,35 +1,43 @@
 <template>
   <div class="controls">
     <div class="btns">
-      <button
+      <ButtonIndex
+        no-default-class
         :class="{ active: playerStore.currentlyPlaying?.shuffle_state }"
+        class="control-button"
         @click="playerStore.toggleShuffle()"
-        class="controls__btn"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-shuffle" />
-      </button>
-      <button
+      </ButtonIndex>
+      <ButtonIndex
+        no-default-class
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
+        class="control-button"
         @click="playerStore.toggleRepeat()"
-        class="controls__btn"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-repeat" />
-      </button>
-      <button @click="playerStore.play()" class="controls__btn play" v-if="playerStore.playerState?.paused">
+      </ButtonIndex>
+      <ButtonIndex
+        no-default-class
+        class="control-button play"
+        @click="playerStore.play()"
+        v-if="playerStore.playerState?.paused"
+      >
         <i class="icon-play" />
-      </button>
-      <button @click="playerStore.pause()" class="controls__btn play" v-else>
+      </ButtonIndex>
+      <ButtonIndex no-default-class class="control-button play" @click="playerStore.pause()" v-else>
         <i class="icon-pause" />
-      </button>
-      <button
+      </ButtonIndex>
+      <ButtonIndex
+        no-default-class
+        class="control-button"
         @click="playerStore.next()"
-        class="controls__btn"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-skip-forward" />
-      </button>
+      </ButtonIndex>
     </div>
     <div class="time">
       {{ timecode(currentTime) || "00:00" }} /
@@ -43,6 +51,7 @@ import { useIntervalFn } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
 import { timecode } from "../../helpers/date";
+import ButtonIndex from "../ButtonIndex.vue";
 import { usePlayer } from "./PlayerStore";
 
 const playerStore = usePlayer();
@@ -62,6 +71,7 @@ watch(
 
 <style lang="scss" scoped>
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/mixins" as mixins;
 
 .btns {
   align-items: center;
@@ -80,20 +90,35 @@ watch(
   flex: 1;
   gap: 1.2rem;
   justify-content: center;
+}
 
-  &__btn {
-    background-color: transparent;
-    border: none;
-    border-radius: 0.4rem;
-    color: currentcolor;
-    cursor: pointer;
-    font-size: 1.3rem;
-    opacity: 0.5;
-    padding: 0.4rem 0.5rem;
+.control-button {
+  background-color: transparent;
+  border: none;
+  border-radius: 1rem;
+  color: currentcolor;
+  cursor: pointer;
+  font-size: 1.3rem;
+  opacity: 0.5;
+  padding: 0.4rem 0.5rem;
 
-    &.active {
-      opacity: 1;
-    }
+  @include mixins.squircle;
+
+  &.active {
+    opacity: 1;
+  }
+
+  &:hover {
+    background-color: var(--bg-color-light);
+  }
+
+  &:active {
+    background-color: var(--bg-color-lighter);
+  }
+
+  &.play {
+    font-size: 2rem;
+    opacity: 1;
 
     &:hover {
       background-color: var(--bg-color-light);
@@ -101,19 +126,6 @@ watch(
 
     &:active {
       background-color: var(--bg-color-lighter);
-    }
-
-    &.play {
-      font-size: 2rem;
-      opacity: 1;
-
-      &:hover {
-        background-color: var(--bg-color-light);
-      }
-
-      &:active {
-        background-color: var(--bg-color-lighter);
-      }
     }
   }
 }

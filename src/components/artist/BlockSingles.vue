@@ -1,5 +1,5 @@
 <template>
-  <div class="content__block" v-if="artistStore.singles.length">
+  <div class="content-block" v-if="artistStore.singles.length">
     <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
       <i class="icon-single"></i>
       Singles

@@ -82,10 +82,10 @@ artistStore.clean().finally(() => {
   @include responsive.xl {
     grid-template-columns: 1fr;
   }
+}
 
-  &__block {
-    margin-bottom: 3rem;
-  }
+.content-block {
+  margin-bottom: 3rem;
 }
 
 .top {

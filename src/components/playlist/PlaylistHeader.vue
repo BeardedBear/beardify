@@ -1,6 +1,6 @@
 <template>
   <div :class="{ 'not-fit': notFit }" class="playlist-header">
-    <div class="playlist-header__left">
+    <div class="playlist-header-left">
       <Cover :images="playlistStore.playlist.images" class="cover" size="large" v-if="!noCover" />
       <div>
         <div class="title">
@@ -72,17 +72,20 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 @use "sass:color";
 @use "../../assets/scss/colors" as colors;
 @use "../../assets/scss/responsive" as responsive;
+@use "../../assets/scss/mixins" as mixins;
 
 .search {
   background: var(--bg-color);
   border: none;
-  border-radius: 0.3rem;
+  border-radius: 1rem;
   color: var(--font);
   font-size: 0.9rem;
   font-weight: bold;
   outline: none;
   padding: 0.6rem 1rem;
   width: 10rem;
+
+  @include mixins.squircle;
 }
 
 .description {
@@ -145,11 +148,11 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   img {
     margin-right: 2rem;
   }
+}
 
-  &__left {
-    align-items: center;
-    display: flex;
-  }
+.playlist-header-left {
+  align-items: center;
+  display: flex;
 }
 
 .right {

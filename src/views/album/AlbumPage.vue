@@ -4,10 +4,10 @@
     <div class="fit">
       <Head :album="albumStore.album" />
       <div class="content">
-        <div class="content__cover">
+        <div class="content-cover">
           <Album :album="albumStore.album" :cover-size="'large'" can-save without-metas />
         </div>
-        <div class="content__tracks">
+        <div class="content-tracks">
           <div
             :class="{
               active: isCurrentTrack(track, currentTrack),
@@ -18,10 +18,14 @@
             class="track"
             v-for="(track, index) in albumStore.album.tracks.items"
           >
-            <button @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })" class="add">
+            <ButtonIndex
+              no-default-class
+              class="add"
+              @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })"
+            >
               <i class="icon-plus"></i>
-            </button>
-            <span class="track__number">{{ track.track_number }}.</span>
+            </ButtonIndex>
+            <span class="track-number">{{ track.track_number }}.</span>
             <div>
               <div>{{ track.name }}</div>
               <div v-if="albumStore.album.artists.length">
@@ -47,6 +51,7 @@ import Foot from "../../components/album/AlbumFoot.vue";
 import Head from "../../components/album/AlbumHead.vue";
 import Album from "../../components/album/AlbumIndex.vue";
 import ArtistList from "../../components/artist/ArtistList.vue";
+import ButtonIndex from "../../components/ButtonIndex.vue";
 import { useDialog } from "../../components/dialog/DialogStore";
 import Loader from "../../components/LoadingDots.vue";
 import { usePlayer } from "../../components/player/PlayerStore";
@@ -133,11 +138,11 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   &:active {
     background-color: var(--bg-color);
   }
+}
 
-  &__number {
-    font-style: italic;
-    opacity: 0.5;
-  }
+.track-number {
+  font-style: italic;
+  opacity: 0.5;
 }
 
 .content {
@@ -146,18 +151,18 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   gap: 3rem;
   justify-content: center;
 
-  &__cover {
-    width: 18rem;
-  }
-
-  &__tracks {
-    flex: 1;
-    font-size: 1rem;
-  }
-
   @include responsive.l {
     flex-direction: column;
   }
+}
+
+.content-cover {
+  width: 18rem;
+}
+
+.content-tracks {
+  flex: 1;
+  font-size: 1rem;
 }
 
 .album-page {
