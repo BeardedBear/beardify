@@ -1,23 +1,34 @@
 <template>
   <div class="menu">
-    <router-link :class="{ 'active-route': $route.path.includes('/podcasts') }" :to="`/podcasts`" class="link">
+    <ButtonIndex
+      :class="{ 'active-route': $route.path.includes('/podcasts') }"
+      :to="`/podcasts`"
+      class="link"
+      no-default-class
+    >
       <i class="icon icon-podcast"></i>
       Podcasts
-    </router-link>
-    <router-link :class="{ 'active-route': $route.path.includes('/releases') }" :to="`/releases`" class="link disabled">
+    </ButtonIndex>
+    <ButtonIndex
+      :class="{ 'active-route': $route.path.includes('/releases') }"
+      :to="`/releases`"
+      class="link disabled"
+      no-default-class
+    >
       <i class="icon icon-album"></i>
       Releases
-    </router-link>
+    </ButtonIndex>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { RouterLink } from "vue-router";
+import ButtonIndex from "../ButtonIndex.vue";
 </script>
 
 <style lang="scss" scoped>
 @use "sass:color";
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/mixins" as mixins;
 
 .menu {
   display: flex;
@@ -27,7 +38,7 @@ import { RouterLink } from "vue-router";
 
 .link {
   background-color: var(--bg-color);
-  border-radius: 0.4rem;
+  border-radius: 1rem;
   color: var(--font-color);
   display: block;
   flex: 1;
@@ -35,6 +46,8 @@ import { RouterLink } from "vue-router";
   font-weight: bold;
   padding: 0.4rem 0.8rem;
   text-decoration: none;
+
+  @include mixins.squircle;
 
   &.disabled {
     cursor: not-allowed;
