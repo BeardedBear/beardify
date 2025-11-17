@@ -34,36 +34,29 @@ import { usePlaylist } from "./PlaylistStore";
 
 const props = defineProps<{ id: string }>();
 const playlistStore = usePlaylist();
-// Optimize computed properties by combining filter and map operations
-const albums = computed(() => {
-  const result = [];
+
+// Optimized: single iteration through tracks array instead of three separate iterations
+const categorizedTracks = computed(() => {
+  const albums = [];
+  const eps = [];
+  const singles = [];
+
   for (const track of playlistStore.tracks) {
     if (isAlbum(track.track.album) && !useCheckLiveAlbum(track.track.album.name)) {
-      result.push(track.track.album);
+      albums.push(track.track.album);
+    } else if (isEP(track.track.album)) {
+      eps.push(track.track.album);
+    } else if (isSingle(track.track.album)) {
+      singles.push(track);
     }
   }
-  return result;
+
+  return { albums, eps, singles };
 });
 
-const eps = computed(() => {
-  const result = [];
-  for (const track of playlistStore.tracks) {
-    if (isEP(track.track.album)) {
-      result.push(track.track.album);
-    }
-  }
-  return result;
-});
-
-const singles = computed(() => {
-  const result = [];
-  for (const track of playlistStore.tracks) {
-    if (isSingle(track.track.album)) {
-      result.push(track);
-    }
-  }
-  return result;
-});
+const albums = computed(() => categorizedTracks.value.albums);
+const eps = computed(() => categorizedTracks.value.eps);
+const singles = computed(() => categorizedTracks.value.singles);
 
 const uniqueContributorIds = computed(() => {
   const contributorIds = playlistStore.tracks.map((track) => track.added_by.id);
@@ -72,18 +65,28 @@ const uniqueContributorIds = computed(() => {
 
 const contributorsData = ref<Record<string, PublicUser>>({});
 
-const fetchContributorsData = async () => {
+const fetchContributorsData = async (): Promise<void> => {
   const api = instance();
   const newContributorsData: Record<string, PublicUser> = {};
 
-  for (const userId of uniqueContributorIds.value) {
+  // Optimized: parallelize API calls using Promise.allSettled to avoid N+1 problem
+  const promises = uniqueContributorIds.value.map(async (userId) => {
     try {
       const response = await api.get<PublicUser>(`users/${userId}`);
-      newContributorsData[userId] = response.data;
+      return { userId, data: response.data };
     } catch (error) {
       console.error(`Error fetching data for user ${userId}:`, error);
+      return { userId, data: null };
     }
-  }
+  });
+
+  const results = await Promise.allSettled(promises);
+
+  results.forEach((result) => {
+    if (result.status === "fulfilled" && result.value.data) {
+      newContributorsData[result.value.userId] = result.value.data;
+    }
+  });
 
   contributorsData.value = newContributorsData;
 };

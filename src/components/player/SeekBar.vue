@@ -17,7 +17,7 @@
 
 <script lang="ts" setup>
 import { useIntervalFn, useMouseInElement } from "@vueuse/core";
-import { ref, watch, watchEffect } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 
 import { timecode } from "../../helpers/date";
 import { usePlayer } from "./PlayerStore";
@@ -29,17 +29,25 @@ const time = ref<string>("");
 const playerStore = usePlayer();
 const currentTime = ref<number>(0);
 
-watchEffect(() => {
-  progressWrap.value?.addEventListener("mousemove", () => {
-    perc.value = (elementX.value / elementWidth.value) * 100;
-    const durationPerc = playerStore.playerState?.duration && (playerStore.playerState?.duration / 100) * perc.value;
-    if (durationPerc) time.value = timecode(durationPerc);
-  });
+const handleMouseMove = (): void => {
+  perc.value = (elementX.value / elementWidth.value) * 100;
+  const durationPerc = playerStore.playerState?.duration && (playerStore.playerState?.duration / 100) * perc.value;
+  if (durationPerc) time.value = timecode(durationPerc);
+};
 
-  progressWrap.value?.addEventListener("click", () => {
-    const durationPerc = playerStore.playerState?.duration && (playerStore.playerState?.duration / 100) * perc.value;
-    if (durationPerc) playerStore.seek(durationPerc);
-  });
+const handleClick = (): void => {
+  const durationPerc = playerStore.playerState?.duration && (playerStore.playerState?.duration / 100) * perc.value;
+  if (durationPerc) playerStore.seek(durationPerc);
+};
+
+onMounted(() => {
+  progressWrap.value?.addEventListener("mousemove", handleMouseMove);
+  progressWrap.value?.addEventListener("click", handleClick);
+});
+
+onUnmounted(() => {
+  progressWrap.value?.removeEventListener("mousemove", handleMouseMove);
+  progressWrap.value?.removeEventListener("click", handleClick);
 });
 
 const freq = 200;
@@ -48,15 +56,10 @@ useIntervalFn(() => {
   if (!playerStore.playerState.paused) currentTime.value = currentTime.value + freq;
 }, freq);
 
-// TODO: optimize this, ERK
-watch(
-  () => playerStore.playerState,
-  () => (currentTime.value = playerStore.playerState.position),
-);
-
+// Optimized: single watch on position instead of duplicate watchers
 watch(
   () => playerStore.playerState.position,
-  () => (currentTime.value = playerStore.playerState.position),
+  (newPosition) => (currentTime.value = newPosition),
 );
 </script>
 

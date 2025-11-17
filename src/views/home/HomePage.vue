@@ -39,9 +39,13 @@ function getData(): void {
 
 getData();
 
-watch(authStore, () => {
-  if (!homeStore.recommendedAlbums.length) getData();
-});
+// Optimized: watch specific property instead of entire store
+watch(
+  () => authStore.me,
+  () => {
+    if (!homeStore.recommendedAlbums.length) getData();
+  },
+);
 </script>
 
 <style lang="scss" scoped>
