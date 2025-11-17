@@ -33,16 +33,16 @@
         Oh well, you don't have a collection ! To create one, you just have to create one with + button or rename a
         classic playlist but start with "#Collection". Magical, isn't it?
       </div>
-      <div :key="index" v-else v-for="(playlist, index) in sidebarStore.collections">
+      <div :key="index" v-else v-for="(playlist, index) in filteredCollections">
         <router-link
           :class="{ active: $route.params.id === playlist.id }"
           :to="`/collection/${playlist.id}`"
           class="playlist-item"
-          v-if="playlist.id && playlist.name.toLocaleLowerCase().includes(collectionSearchQuery.toLocaleLowerCase())"
+          v-if="playlist.id"
         >
           <PlaylistIcon :playlist="playlist" />
           <div class="name">
-            {{ playlist.name.replace("#Collection ", "").replace("#collection ", "") }}
+            {{ playlist.displayName }}
           </div>
           <VisibilityIcon :playlist="playlist" />
           <ButtonIndex
@@ -84,16 +84,12 @@
           v-model="playlistSearchQuery"
         />
       </div>
-      <div :key="index" v-for="(playlist, index) in sidebarStore.playlists">
+      <div :key="index" v-for="(playlist, index) in filteredPlaylists">
         <router-link
           :class="{ active: $route.params.id === playlist.id }"
           :to="`/playlist/${playlist.id}`"
           class="playlist-item"
-          v-if="
-            playlist.id &&
-            playlist.name !== '' &&
-            playlist.name.toLocaleLowerCase().includes(playlistSearchQuery.toLocaleLowerCase())
-          "
+          v-if="playlist.id && playlist.name !== ''"
         >
           <PlaylistIcon :playlist="playlist" />
           <div class="name">{{ playlist.name }}</div>
@@ -118,7 +114,7 @@
 
 <script lang="ts" setup>
 import { onClickOutside } from "@vueuse/core";
-import { ref, Ref, watch } from "vue";
+import { computed, ref, Ref, watch } from "vue";
 import { RouterLink } from "vue-router";
 
 import { useAuth } from "../../views/auth/AuthStore";
@@ -148,6 +144,19 @@ onClickOutside(collectionSearchInput, () => {
 
 watch(collectionSearchInput, () => collectionSearchInput.value && collectionSearchInput.value.focus());
 
+// Optimized: pre-computed filtered collections with memoized toLowerCase and displayName
+const filteredCollections = computed(() => {
+  const searchQuery = collectionSearchQuery.value.toLowerCase();
+
+  return sidebarStore.collections
+    .map((playlist) => ({
+      ...playlist,
+      lowerName: playlist.name.toLowerCase(),
+      displayName: playlist.name.replace("#Collection ", "").replace("#collection ", ""),
+    }))
+    .filter((playlist) => playlist.lowerName.includes(searchQuery));
+});
+
 // Playlist search
 const playlistSearchOpened = ref<boolean>(false);
 const playlistSearchQuery = ref<string>("");
@@ -160,6 +169,13 @@ onClickOutside(playlistSearchInput, () => {
 });
 
 watch(playlistSearchInput, () => playlistSearchInput.value && playlistSearchInput.value.focus());
+
+// Optimized: pre-computed filtered playlists with memoized toLowerCase
+const filteredPlaylists = computed(() => {
+  const searchQuery = playlistSearchQuery.value.toLowerCase();
+
+  return sidebarStore.playlists.filter((playlist) => playlist.name.toLowerCase().includes(searchQuery));
+});
 
 if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlists.length)
   sidebarStore.getPlaylists("me/playlists?limit=50");
