@@ -40,9 +40,9 @@ import { onClickOutside } from "@vueuse/core";
 import { ref } from "vue";
 
 import { NotificationType } from "../../@types/Notification";
-import ButtonIndex from "../ButtonIndex.vue";
 import { notification } from "../../helpers/notifications";
 import { useAuth } from "../../views/auth/AuthStore";
+import ButtonIndex from "../ButtonIndex.vue";
 import Colors from "./ColorsTheme.vue";
 import { useConfig } from "./ConfigStore";
 
@@ -56,15 +56,18 @@ onClickOutside(domConfig, (): void => configStore.close());
 
 <style lang="scss" scoped>
 @use "sass:color";
+@use "../../assets/scss/mixins" as mixins;
 
 .section {
   background: var(--bg-color);
-  border-radius: 0.4rem;
+  border-radius: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
   margin-top: 1rem;
   padding: 0.8rem;
+
+  @include mixins.squircle;
 }
 
 .section-title {
@@ -114,7 +117,7 @@ onClickOutside(domConfig, (): void => configStore.close());
 .config {
   animation: pop-config ease 0.2s both;
   background-color: var(--bg-color-darker);
-  border-radius: 1rem;
+  border-radius: 2.5rem;
   box-shadow: 0 0.5rem 0.5rem rgb(0 0 0 / 15%);
   padding: 1.2rem;
   position: absolute;
@@ -122,6 +125,8 @@ onClickOutside(domConfig, (): void => configStore.close());
   top: calc(100% - 0.3rem);
   width: 15rem;
   z-index: 999;
+
+  @include mixins.squircle;
 
   &.bye {
     animation: bye-config ease 0.2s both;

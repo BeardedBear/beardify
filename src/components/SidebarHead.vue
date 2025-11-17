@@ -42,6 +42,7 @@ const dialogStore = useDialog();
 
 <style lang="scss" scoped>
 @use "../assets/scss/colors" as colors;
+@use "../assets/scss/mixins" as mixins;
 
 .topbar {
   align-items: center;
@@ -89,6 +90,8 @@ const dialogStore = useDialog();
     display: block;
     height: $size;
     width: $size;
+
+    @include mixins.squircle;
   }
 
   .icon {

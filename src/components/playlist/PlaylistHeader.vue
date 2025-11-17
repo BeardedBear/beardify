@@ -72,17 +72,20 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 @use "sass:color";
 @use "../../assets/scss/colors" as colors;
 @use "../../assets/scss/responsive" as responsive;
+@use "../../assets/scss/mixins" as mixins;
 
 .search {
   background: var(--bg-color);
   border: none;
-  border-radius: 0.3rem;
+  border-radius: 1rem;
   color: var(--font);
   font-size: 0.9rem;
   font-weight: bold;
   outline: none;
   padding: 0.6rem 1rem;
   width: 10rem;
+
+  @include mixins.squircle;
 }
 
 .description {

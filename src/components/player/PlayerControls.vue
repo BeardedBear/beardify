@@ -50,8 +50,8 @@
 import { useIntervalFn } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
-import ButtonIndex from "../ButtonIndex.vue";
 import { timecode } from "../../helpers/date";
+import ButtonIndex from "../ButtonIndex.vue";
 import { usePlayer } from "./PlayerStore";
 
 const playerStore = usePlayer();
@@ -71,6 +71,7 @@ watch(
 
 <style lang="scss" scoped>
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/mixins" as mixins;
 
 .btns {
   align-items: center;
@@ -94,12 +95,14 @@ watch(
 .control-button {
   background-color: transparent;
   border: none;
-  border-radius: 0.4rem;
+  border-radius: 1rem;
   color: currentcolor;
   cursor: pointer;
   font-size: 1.3rem;
   opacity: 0.5;
   padding: 0.4rem 0.5rem;
+
+  @include mixins.squircle;
 
   &.active {
     opacity: 1;

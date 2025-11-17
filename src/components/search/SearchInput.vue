@@ -41,8 +41,9 @@ onMounted(() => {
 <style lang="scss" scoped>
 @use "sass:color";
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/mixins" as mixins;
 
-$radius: 0.3rem;
+$radius: 1rem;
 
 .search {
   padding: 1rem;
@@ -59,6 +60,8 @@ $radius: 0.3rem;
   outline: 0;
   padding: 0.8rem 1.2rem;
   width: 100%;
+
+  @include mixins.squircle;
 }
 
 .reset {

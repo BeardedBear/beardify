@@ -10,6 +10,7 @@
     <div class="options">
       <ButtonIndex @click="addTrackToQueue(track.uri)">Add</ButtonIndex>
       <ButtonIndex
+        variant="nude"
         no-default-class
         class="link"
         @click="openLink(`https://www.youtube.com/results?search_query=${track?.artists[0].name}+${track?.name}`)"

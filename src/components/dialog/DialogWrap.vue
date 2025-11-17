@@ -34,13 +34,14 @@ const dialogStore = useDialog();
 
 <style lang="scss" scoped>
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/mixins" as mixins;
 
-$radius: 0.4rem;
+$radius: 2rem;
 
 .close {
   background-color: var(--bg-color-light);
   border: 0;
-  border-radius: 0.4rem;
+  border-radius: 1rem;
   color: currentcolor;
   cursor: pointer;
   font-size: 1rem;
@@ -49,6 +50,8 @@ $radius: 0.4rem;
   right: 0.9rem;
   top: 50%;
   transform: translateY(-50%);
+
+  @include mixins.squircle;
 
   &:hover {
     background-color: var(--bg-color);
@@ -103,6 +106,8 @@ $radius: 0.4rem;
   font-weight: 700;
   padding: 1rem 1.5rem;
   position: relative;
+
+  @include mixins.squircle;
 }
 
 @keyframes pop-dialog-content {
@@ -154,6 +159,8 @@ $radius: 0.4rem;
   display: grid;
   grid-template-rows: auto 1fr;
   position: relative;
+
+  @include mixins.squircle;
 }
 
 .content {

@@ -30,7 +30,9 @@ const clipboardBeardify = useClipboard({
 </script>
 
 <style lang="scss" scoped>
-$radius: 0.3rem;
+@use "../assets/scss/mixins" as mixins;
+
+$radius: 1rem;
 
 .sharing {
   background-color: var(--bg-color);
@@ -39,13 +41,17 @@ $radius: 0.3rem;
   display: flex;
   height: 2.25rem;
   position: relative;
+
+  @include mixins.squircle;
 }
 
 .title {
   align-items: center;
   background-color: var(--bg-color-light);
-  border-radius: $radius - 0.1rem 0 0 $radius - 0.1rem;
+  border-radius: $radius 0 0 $radius;
   display: flex;
+
+  @include mixins.squircle;
 }
 
 .share-icon {

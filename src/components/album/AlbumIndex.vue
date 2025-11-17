@@ -52,13 +52,13 @@ import { NotificationType } from "../../@types/Notification";
 import { Paging } from "../../@types/Paging";
 import { TrackSimplified, TrackToRemove } from "../../@types/Track";
 import { instance } from "../../api";
-import ButtonIndex from "../ButtonIndex.vue";
 import { notification } from "../../helpers/notifications";
 import { playAlbum } from "../../helpers/playAlbum"; // Import the playAlbum helper
 import router from "../../router";
 import { usePlaylist } from "../../views/playlist/PlaylistStore";
 import Cover from "../AlbumCover.vue";
 import ArtistList from "../artist/ArtistList.vue";
+import ButtonIndex from "../ButtonIndex.vue";
 import { useDialog } from "../dialog/DialogStore";
 import { usePlayer } from "../player/PlayerStore";
 
@@ -128,10 +128,13 @@ async function deleteAlbum(albumId: string): Promise<void> {
 <style lang="scss" scoped>
 @use "sass:color";
 @use "../../assets/scss/colors" as colors;
+@use "../../assets/scss/mixins" as mixins;
 
 .play {
   $offset: 1rem;
   $size: 2.5rem;
+
+  @include mixins.squircle;
 
   animation: pop-play-button 0.2s ease both;
   background: var(--primary-color);
@@ -227,6 +230,8 @@ async function deleteAlbum(albumId: string): Promise<void> {
   position: absolute;
   transition: transform ease 0.1s;
   will-change: transform;
+
+  @include mixins.squircle;
 
   &:hover {
     background-color: color.change(black, $alpha: 0.5);

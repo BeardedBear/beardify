@@ -2,6 +2,7 @@
   <div>
     <ButtonIndex
       no-default-class
+      variant="nude"
       class="link"
       @click="openLink(`https://www.google.com/search?q=${album.label}+label`)"
     >
