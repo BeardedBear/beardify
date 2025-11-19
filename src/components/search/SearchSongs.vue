@@ -27,17 +27,17 @@
 </template>
 
 <script lang="ts" setup>
-import { playSong } from "../../helpers/play";
-import ArtistList from "../artist/ArtistList.vue";
-import { useSearch } from "./SearchStore";
-import SearchTitle from "./SearchTitle.vue";
+import { playSong } from "@/helpers/play";
+import ArtistList from "@/components/artist/ArtistList.vue";
+import { useSearch } from "@/components/search/SearchStore";
+import SearchTitle from "@/components/search/SearchTitle.vue";
 
 const searchStore = useSearch();
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/search-item" as search;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/search-item" as search;
 
 .track {
   align-items: center;

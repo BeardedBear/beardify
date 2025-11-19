@@ -1,5 +1,5 @@
-import { Notification } from "../@types/Notification";
-import { useNotification } from "../components/notification/NotificationStore";
+import { Notification } from "@/@types/Notification";
+import { useNotification } from "@/components/notification/NotificationStore";
 
 export async function notification(notif: Notification): Promise<void> {
   const notificationStore = useNotification();

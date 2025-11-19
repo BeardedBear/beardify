@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import ArtistList from "../../artist/ArtistList.vue";
+import ArtistList from "@/components/artist/ArtistList.vue";
 
 defineProps<{
   coverUrl: string;

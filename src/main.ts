@@ -2,13 +2,13 @@ import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import { createApp } from "vue";
 
-import { NotificationType } from "./@types/Notification";
-import App from "./App.vue";
-import { useConfig } from "./components/config/ConfigStore";
-import { clearAuthData } from "./helpers/authUtils";
-import { notification } from "./helpers/notifications";
-import router, { RouteName } from "./router";
-import { useAuth } from "./views/auth/AuthStore";
+import { NotificationType } from "@/@types/Notification";
+import App from "@/App.vue";
+import { useConfig } from "@/components/config/ConfigStore";
+import { clearAuthData } from "@/helpers/authUtils";
+import { notification } from "@/helpers/notifications";
+import router, { RouteName } from "@/router";
+import { useAuth } from "@/views/auth/AuthStore";
 
 // Global handler for Spotify SDK errors
 const handleSpotifySDKErrors = (): void => {

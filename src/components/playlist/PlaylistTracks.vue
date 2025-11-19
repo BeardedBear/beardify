@@ -63,22 +63,22 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import { NotificationType } from "../../@types/Notification";
-import { PlaylistTrack } from "../../@types/Playlist";
-import { PublicUser } from "../../@types/PublicUser";
-import { instance } from "../../api";
-import ButtonIndex from "../ButtonIndex.vue";
-import { date, timecode } from "../../helpers/date";
-import { isCurrentTrack } from "../../helpers/helper";
-import { notification } from "../../helpers/notifications";
-import { playSongs } from "../../helpers/play";
-import { isAlbum, isCompilation, isEP, isSingle } from "../../helpers/useCleanAlbums";
-import { useAuth } from "../../views/auth/AuthStore";
-import { usePlaylist } from "../../views/playlist/PlaylistStore";
-import AlbumLink from "../album/AlbumLink.vue";
-import ArtistList from "../artist/ArtistList.vue";
-import { useDialog } from "../dialog/DialogStore";
-import { usePlayer } from "../player/PlayerStore";
+import { NotificationType } from "@/@types/Notification";
+import { PlaylistTrack } from "@/@types/Playlist";
+import { PublicUser } from "@/@types/PublicUser";
+import { instance } from "@/api";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { date, timecode } from "@/helpers/date";
+import { isCurrentTrack } from "@/helpers/helper";
+import { notification } from "@/helpers/notifications";
+import { playSongs } from "@/helpers/play";
+import { isAlbum, isCompilation, isEP, isSingle } from "@/helpers/useCleanAlbums";
+import { useAuth } from "@/views/auth/AuthStore";
+import { usePlaylist } from "@/views/playlist/PlaylistStore";
+import AlbumLink from "@/components/album/AlbumLink.vue";
+import ArtistList from "@/components/artist/ArtistList.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
+import { usePlayer } from "@/components/player/PlayerStore";
 
 const props = defineProps<{
   trackList: PlaylistTrack[];
@@ -119,8 +119,8 @@ async function deleteSong(songId: string): Promise<void> {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/responsive" as responsive;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .track-name {
   font-weight: bold;

@@ -1,12 +1,12 @@
 import { defineStore } from "pinia";
 
-import type { Paging } from "../../@types/Paging";
-import type { Episode, Podcast, PodcastItem, PodcastSaved, PodcastsPage } from "../../@types/Podcast";
+import type { Paging } from "@/@types/Paging";
+import type { Episode, Podcast, PodcastItem, PodcastSaved, PodcastsPage } from "@/@types/Podcast";
 
-import { NotificationType } from "../../@types/Notification";
-import { instance } from "../../api";
-import { notification } from "../../helpers/notifications";
-import { cleanUrl } from "../../helpers/urls";
+import { NotificationType } from "@/@types/Notification";
+import { instance } from "@/api";
+import { notification } from "@/helpers/notifications";
+import { cleanUrl } from "@/helpers/urls";
 
 export const usePodcasts = defineStore("podcasts", {
   actions: {

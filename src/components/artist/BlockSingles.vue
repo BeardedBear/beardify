@@ -18,8 +18,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useArtist } from "../../views/artist/ArtistStore";
-import SingleTrack from "./SingleTrack.vue";
+import { useArtist } from "@/views/artist/ArtistStore";
+import SingleTrack from "@/components/artist/SingleTrack.vue";
 
 const artistStore = useArtist();
 </script>

@@ -11,16 +11,16 @@
 </template>
 
 <script lang="ts" setup>
-import Loader from "../LoadingDots.vue";
-import Device from "./device/DeviceIndex.vue";
-import Controls from "./PlayerControls.vue";
-import What from "./PlayerMetas.vue";
-import { usePlayer } from "./PlayerStore";
-import SeekBar from "./SeekBar.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
+import Device from "@/components/player/device/DeviceIndex.vue";
+import Controls from "@/components/player/PlayerControls.vue";
+import What from "@/components/player/PlayerMetas.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
+import SeekBar from "@/components/player/SeekBar.vue";
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
+@use "@/assets/scss/colors" as colors;
 
 .meta {
   align-items: center;

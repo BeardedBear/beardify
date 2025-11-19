@@ -28,9 +28,9 @@
 import { onClickOutside } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
-import ButtonIndex from "../../ButtonIndex.vue";
-import TrackHistory from "../history/TrackHistory.vue";
-import { usePlayer } from "../PlayerStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import TrackHistory from "@/components/player/history/TrackHistory.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);

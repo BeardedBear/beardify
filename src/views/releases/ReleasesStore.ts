@@ -1,10 +1,10 @@
 import ky from "ky";
 import { defineStore } from "pinia";
 
-import { MenuItem, Release, ReleasesCheck, ReleasesPage } from "../../@types/Releases";
-import { useCheckLiveAlbum, useCheckReissueAlbum } from "../../helpers/useCleanAlbums";
-import { useMergeReleaseSlugs } from "../../helpers/useMergeReleaseSlugs";
-import { useAuth } from "../auth/AuthStore";
+import { MenuItem, Release, ReleasesCheck, ReleasesPage } from "@/@types/Releases";
+import { useCheckLiveAlbum, useCheckReissueAlbum } from "@/helpers/useCleanAlbums";
+import { useMergeReleaseSlugs } from "@/helpers/useMergeReleaseSlugs";
+import { useAuth } from "@/views/auth/AuthStore";
 
 export const useReleases = defineStore("releases", {
   actions: {

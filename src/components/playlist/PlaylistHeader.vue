@@ -43,12 +43,12 @@
 import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 
-import { PlaylistTrack } from "../../@types/Playlist";
-import Cover from "../../components/AlbumCover.vue";
-import Actions from "../../components/playlist/PlaylistActions.vue";
-import ShareContent from "../../components/ShareContent.vue";
-import { timecodeWithUnits } from "../../helpers/date";
-import { usePlaylist } from "../../views/playlist/PlaylistStore";
+import { PlaylistTrack } from "@/@types/Playlist";
+import Cover from "@/components/ui/AlbumCover.vue";
+import Actions from "@/components/playlist/PlaylistActions.vue";
+import ShareContent from "@/components/ui/ShareContent.vue";
+import { timecodeWithUnits } from "@/helpers/date";
+import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 defineProps<{
   noCover?: boolean;
@@ -70,9 +70,9 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/responsive" as responsive;
-@use "../../assets/scss/mixins" as mixins;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as mixins;
 
 .search {
   background: var(--bg-color);

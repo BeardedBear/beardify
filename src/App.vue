@@ -16,15 +16,15 @@
 import { onBeforeUnmount } from "vue";
 import { RouterView, useRoute } from "vue-router";
 
-import DialogList from "./components/dialog/DialogList.vue";
-import { useDialog } from "./components/dialog/DialogStore";
-import Frame from "./components/frame/FrameIndex.vue";
-import Notification from "./components/notification/NotificationIndex.vue";
-import Player from "./components/player/PlayerIndex.vue";
-import { usePlayer } from "./components/player/PlayerStore";
-import Sidebar from "./components/sidebar/SidebarIndex.vue";
-import { useKeyboardEvents } from "./helpers/useKeyboardEvents";
-import { useAuth } from "./views/auth/AuthStore";
+import DialogList from "@/components/dialog/DialogList.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
+import Frame from "@/components/frame/FrameIndex.vue";
+import Notification from "@/components/notification/NotificationIndex.vue";
+import Player from "@/components/player/PlayerIndex.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
+import Sidebar from "@/components/sidebar/SidebarIndex.vue";
+import { useKeyboardEvents } from "@/helpers/useKeyboardEvents";
+import { useAuth } from "@/views/auth/AuthStore";
 
 useKeyboardEvents();
 
@@ -115,10 +115,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss">
-@use "./assets/scss/colors" as colors;
-@use "./assets/scss/responsive" as responsive;
-@use "./assets/scss/heading" as heading;
-@use "./assets/scss/mixins" as mixins;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/heading" as heading;
+@use "@/assets/scss/mixins" as mixins;
 @import "../node_modules/normalize.css/normalize.css";
 
 *,

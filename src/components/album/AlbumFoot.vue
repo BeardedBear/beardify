@@ -13,8 +13,8 @@
 </template>
 
 <script lang="ts" setup>
-import { Album } from "../../@types/Album";
-import ButtonIndex from "../ButtonIndex.vue";
+import { Album } from "@/@types/Album";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 defineProps<{ album: Album }>();
 
@@ -24,8 +24,8 @@ function openLink(url: string): void {
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/responsive" as responsive;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .mentions {
   opacity: 0.3;

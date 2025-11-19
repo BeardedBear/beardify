@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useReleases } from "../../views/releases/ReleasesStore";
+import { useReleases } from "@/views/releases/ReleasesStore";
 
 const releasesStore = useReleases();
 </script>

@@ -41,8 +41,8 @@
 </template>
 
 <script lang="ts" setup>
-import ButtonIndex from "../ButtonIndex.vue";
-import { useConfig } from "./ConfigStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { useConfig } from "@/components/config/ConfigStore";
 
 const configStore = useConfig();
 
@@ -72,7 +72,7 @@ const textColors: TextColors[] = [
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as mixins;
 
 .schemes {
   display: flex;

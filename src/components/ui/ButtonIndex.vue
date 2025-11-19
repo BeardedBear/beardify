@@ -102,7 +102,7 @@ const classes = computed(() => {
 </template>
 
 <style scoped lang="scss">
-@use "../assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as mixins;
 
 .button {
   @include mixins.squircle;

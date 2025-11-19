@@ -1,5 +1,5 @@
-import { Album, AlbumSimplified } from "../@types/Album";
-import { CurrentlyPlayingAlbum } from "../@types/CurrentlyPlaying";
+import { Album, AlbumSimplified } from "@/@types/Album";
+import { CurrentlyPlayingAlbum } from "@/@types/CurrentlyPlaying";
 
 export function isAlbum(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
   return album.album_type === "album" || album.album_type === "ALBUM";

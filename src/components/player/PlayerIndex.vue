@@ -8,9 +8,9 @@
 <script lang="ts" setup>
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
-import PlayerEpisode from "./PlayerEpisode.vue";
-import PlayerSong from "./PlayerSong.vue";
-import { usePlayer } from "./PlayerStore";
+import PlayerEpisode from "@/components/player/PlayerEpisode.vue";
+import PlayerSong from "@/components/player/PlayerSong.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
 
 const playerStore = usePlayer();
 const interval = ref<number | undefined>(undefined);
@@ -45,7 +45,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
+@use "@/assets/scss/colors" as colors;
 
 .player {
   background: var(--bg-color);

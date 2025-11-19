@@ -31,14 +31,14 @@
 import { computed, ref, watch } from "vue";
 import { SlickItem, SlickList } from "vue-slicksort";
 
-import { AlbumSimplified } from "../../@types/Album";
-import Album from "../../components/album/AlbumIndex.vue";
-import Loader from "../../components/LoadingDots.vue";
-import PageFit from "../../components/PageFit.vue";
-import PageScroller from "../../components/PageScroller.vue";
-import Header from "../../components/playlist/PlaylistHeader.vue";
-import { useAuth } from "../auth/AuthStore";
-import { usePlaylist } from "./PlaylistStore";
+import { AlbumSimplified } from "@/@types/Album";
+import Album from "@/components/album/AlbumIndex.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
+import PageFit from "@/components/ui/PageFit.vue";
+import PageScroller from "@/components/ui/PageScroller.vue";
+import Header from "@/components/playlist/PlaylistHeader.vue";
+import { useAuth } from "@/views/auth/AuthStore";
+import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 const props = defineProps<{ id: string }>();
 const playlistStore = usePlaylist();
@@ -70,8 +70,8 @@ playlistStore.clean().finally(() => {
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/responsive" as responsive;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .collection {
   display: grid;

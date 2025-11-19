@@ -13,12 +13,12 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 
-import SearchAlbums from "./SearchAlbums.vue";
-import SearchArtists from "./SearchArtists.vue";
-import SearchInput from "./SearchInput.vue";
-import SearchPodcasts from "./SearchPodcasts.vue";
-import SearchSongs from "./SearchSongs.vue";
-import { useSearch } from "./SearchStore";
+import SearchAlbums from "@/components/search/SearchAlbums.vue";
+import SearchArtists from "@/components/search/SearchArtists.vue";
+import SearchInput from "@/components/search/SearchInput.vue";
+import SearchPodcasts from "@/components/search/SearchPodcasts.vue";
+import SearchSongs from "@/components/search/SearchSongs.vue";
+import { useSearch } from "@/components/search/SearchStore";
 
 const searchStore = useSearch();
 const result = ref<HTMLDivElement | null>(null);
@@ -30,7 +30,7 @@ document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/colors" as colors;
+@use "@/assets/scss/colors" as colors;
 
 .search {
   flex: 1;

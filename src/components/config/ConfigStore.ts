@@ -11,7 +11,7 @@ import {
   themeDark,
   ThemeLabel,
   themeLight,
-} from "../../@types/Config";
+} from "@/@types/Config";
 
 export const useConfig = defineStore("config", {
   actions: {

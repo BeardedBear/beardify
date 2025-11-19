@@ -3,7 +3,7 @@
 </template>
 
 <style lang="scss" scoped>
-@use "../assets/scss/responsive" as responsive;
+@use "@/assets/scss/responsive" as responsive;
 
 .fit {
   margin: 0 auto;

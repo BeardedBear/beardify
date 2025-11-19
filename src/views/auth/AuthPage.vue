@@ -5,7 +5,7 @@
 <script lang="ts" setup>
 import { onMounted } from "vue";
 
-import { useAuth } from "./AuthStore";
+import { useAuth } from "@/views/auth/AuthStore";
 
 const props = defineProps<{ query: string }>();
 

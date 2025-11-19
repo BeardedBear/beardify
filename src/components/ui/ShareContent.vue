@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 import { useClipboard } from "@vueuse/core";
 
-import ButtonIndex from "./ButtonIndex.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 const props = defineProps<{
   beardifyUrl?: string;
@@ -30,7 +30,7 @@ const clipboardBeardify = useClipboard({
 </script>
 
 <style lang="scss" scoped>
-@use "../assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as mixins;
 
 $radius: 1rem;
 

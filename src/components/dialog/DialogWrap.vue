@@ -19,8 +19,8 @@
 </template>
 
 <script lang="ts" setup>
-import ButtonIndex from "../ButtonIndex.vue";
-import { useDialog } from "./DialogStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
 
 defineProps<{
   big?: boolean;
@@ -33,8 +33,8 @@ const dialogStore = useDialog();
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/mixins" as mixins;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as mixins;
 
 $radius: 2rem;
 

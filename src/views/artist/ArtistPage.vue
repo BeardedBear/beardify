@@ -30,15 +30,15 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 
-import ArtistHeader from "../../components/artist/ArtistHeader.vue";
-import BlockAlbums from "../../components/artist/BlockAlbums.vue";
-import BlockAlbumsLive from "../../components/artist/BlockAlbumsLive.vue";
-import BlockEps from "../../components/artist/BlockEps.vue";
-import BlockSingles from "../../components/artist/BlockSingles.vue";
-import RelatedArtists from "../../components/artist/RelatedArtists.vue";
-import TopTracks from "../../components/artist/TopTracks.vue";
-import Loader from "../../components/LoadingDots.vue";
-import { useArtist } from "./ArtistStore";
+import ArtistHeader from "@/components/artist/ArtistHeader.vue";
+import BlockAlbums from "@/components/artist/BlockAlbums.vue";
+import BlockAlbumsLive from "@/components/artist/BlockAlbumsLive.vue";
+import BlockEps from "@/components/artist/BlockEps.vue";
+import BlockSingles from "@/components/artist/BlockSingles.vue";
+import RelatedArtists from "@/components/artist/RelatedArtists.vue";
+import TopTracks from "@/components/artist/TopTracks.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
+import { useArtist } from "@/views/artist/ArtistStore";
 
 const props = defineProps<{ id: string }>();
 const artistStore = useArtist();
@@ -64,8 +64,8 @@ artistStore.clean().finally(() => {
 </style>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/responsive" as responsive;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .list {
   flex: 1;

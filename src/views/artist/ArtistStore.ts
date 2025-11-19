@@ -1,13 +1,13 @@
 import { defineStore } from "pinia";
 
-import { AlbumSimplified } from "../../@types/Album";
-import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "../../@types/Artist";
-import { defaultArtist } from "../../@types/Defaults";
-import { Paging } from "../../@types/Paging";
-import { instance } from "../../api";
-import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
-import { cleanUrl } from "../../helpers/urls";
-import { isEP, useCheckLiveAlbum } from "../../helpers/useCleanAlbums";
+import { AlbumSimplified } from "@/@types/Album";
+import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "@/@types/Artist";
+import { defaultArtist } from "@/@types/Defaults";
+import { Paging } from "@/@types/Paging";
+import { instance } from "@/api";
+import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
+import { cleanUrl } from "@/helpers/urls";
+import { isEP, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
 
 export const useArtist = defineStore("artist", {
   actions: {

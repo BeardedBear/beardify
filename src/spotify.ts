@@ -1,8 +1,8 @@
-import { NotificationType } from "./@types/Notification";
-import { usePlayer } from "./components/player/PlayerStore";
-import { clearAuthData } from "./helpers/authUtils";
-import { notification } from "./helpers/notifications";
-import { useAuth } from "./views/auth/AuthStore";
+import { NotificationType } from "@/@types/Notification";
+import { usePlayer } from "@/components/player/PlayerStore";
+import { clearAuthData } from "@/helpers/authUtils";
+import { notification } from "@/helpers/notifications";
+import { useAuth } from "@/views/auth/AuthStore";
 
 // Global error handler for uncaught SDK errors
 const handleSDKError = (error: Error): void => {

@@ -1,4 +1,4 @@
-import { AlbumSimplified } from "../@types/Album";
+import { AlbumSimplified } from "@/@types/Album";
 
 export function removeDuplicatesAlbums(array: AlbumSimplified[]): AlbumSimplified[] {
   const seen = new Set<string>();

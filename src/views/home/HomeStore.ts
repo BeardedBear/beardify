@@ -1,15 +1,15 @@
 import { defineStore } from "pinia";
 
-import type { AlbumSimplified } from "../../@types/Album";
-import type { Artist } from "../../@types/Artist";
-import type { HomePage } from "../../@types/Home";
-import type { Paging } from "../../@types/Paging";
-import type { Track } from "../../@types/Track";
+import type { AlbumSimplified } from "@/@types/Album";
+import type { Artist } from "@/@types/Artist";
+import type { HomePage } from "@/@types/Home";
+import type { Paging } from "@/@types/Paging";
+import type { Track } from "@/@types/Track";
 
-import { instance } from "../../api";
-import { getRandomInt } from "../../helpers/random";
-import { removeDuplicatesAlbums } from "../../helpers/removeDuplicate";
-import { isAlbum } from "../../helpers/useCleanAlbums";
+import { instance } from "@/api";
+import { getRandomInt } from "@/helpers/random";
+import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
+import { isAlbum } from "@/helpers/useCleanAlbums";
 
 export const useHome = defineStore("home", {
   actions: {

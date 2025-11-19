@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-import { Frame } from "../../@types/Frame";
+import { Frame } from "@/@types/Frame";
 
 export const useFrame = defineStore("frame", {
   actions: {

@@ -10,9 +10,9 @@
 </template>
 
 <script lang="ts" setup>
-import { AlbumSimplified } from "../../@types/Album";
-import { isCompilation, isSingle } from "../../helpers/useCleanAlbums";
-import router from "../../router";
+import { AlbumSimplified } from "@/@types/Album";
+import { isCompilation, isSingle } from "@/helpers/useCleanAlbums";
+import router from "@/router";
 
 defineProps<{
   album: AlbumSimplified;
@@ -25,7 +25,7 @@ function goAlbum(albumId: string): void {
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
+@use "@/assets/scss/colors" as colors;
 
 .separator {
   opacity: 0.2;

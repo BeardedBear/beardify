@@ -1,4 +1,4 @@
-import { Release } from "../@types/Releases";
+import { Release } from "@/@types/Releases";
 
 export function useMergeReleaseSlugs(array: Release[]): Release[] {
   return array.reduce((acc: Release[], value) => {

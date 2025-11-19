@@ -1,11 +1,11 @@
 import { defineStore } from "pinia";
 
-import { Dialog, DialogType, UpdatePlaylistValues } from "../../@types/Dialog";
-import { Track, TrackSimplified } from "../../@types/Track";
-import { instance } from "../../api";
-import router from "../../router";
-import { usePlaylist } from "../../views/playlist/PlaylistStore";
-import { useSidebar } from "../sidebar/SidebarStore";
+import { Dialog, DialogType, UpdatePlaylistValues } from "@/@types/Dialog";
+import { Track, TrackSimplified } from "@/@types/Track";
+import { instance } from "@/api";
+import { useSidebar } from "@/components/sidebar/SidebarStore";
+import router from "@/router";
+import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 export const useDialog = defineStore("dialog", {
   actions: {

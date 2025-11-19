@@ -28,11 +28,11 @@
 </template>
 
 <script lang="ts" setup>
-import ButtonIndex from "../../components/ButtonIndex.vue";
-import { useDialog } from "../../components/dialog/DialogStore";
-import { isPlaylistOwner } from "../../helpers/playlist";
-import { usePlaylist } from "../../views/playlist/PlaylistStore";
-import { useSidebar } from "../sidebar/SidebarStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
+import { isPlaylistOwner } from "@/helpers/playlist";
+import { usePlaylist } from "@/views/playlist/PlaylistStore";
+import { useSidebar } from "@/components/sidebar/SidebarStore";
 
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();

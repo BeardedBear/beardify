@@ -19,8 +19,8 @@
 import { useIntervalFn, useMouseInElement } from "@vueuse/core";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 
-import { timecode } from "../../helpers/date";
-import { usePlayer } from "./PlayerStore";
+import { timecode } from "@/helpers/date";
+import { usePlayer } from "@/components/player/PlayerStore";
 
 const progressWrap = ref<HTMLDivElement>();
 const { elementWidth, elementX } = useMouseInElement(progressWrap);
@@ -65,7 +65,7 @@ watch(
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/colors" as colors;
+@use "@/assets/scss/colors" as colors;
 
 @keyframes pop-seek {
   from {

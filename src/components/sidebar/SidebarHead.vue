@@ -27,13 +27,13 @@
 <script lang="ts" setup>
 import { RouterLink } from "vue-router";
 
-import router from "../router";
-import { useAuth } from "../views/auth/AuthStore";
-import Cover from "./AlbumCover.vue";
-import ButtonIndex from "./ButtonIndex.vue";
-import Config from "./config/ConfigIndex.vue";
-import { useConfig } from "./config/ConfigStore";
-import { useDialog } from "./dialog/DialogStore";
+import router from "@/router";
+import { useAuth } from "@/views/auth/AuthStore";
+import Cover from "@/components/ui/AlbumCover.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import Config from "@/components/config/ConfigIndex.vue";
+import { useConfig } from "@/components/config/ConfigStore";
+import { useDialog } from "@/components/dialog/DialogStore";
 
 const authStore = useAuth();
 const configStore = useConfig();
@@ -41,8 +41,8 @@ const dialogStore = useDialog();
 </script>
 
 <style lang="scss" scoped>
-@use "../assets/scss/colors" as colors;
-@use "../assets/scss/mixins" as mixins;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as mixins;
 
 .topbar {
   align-items: center;

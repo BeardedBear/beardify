@@ -23,15 +23,15 @@
 <script lang="ts" setup>
 import { RouterLink } from "vue-router";
 
-import { useSearch } from "./SearchStore";
-import SearchTitle from "./SearchTitle.vue";
+import { useSearch } from "@/components/search/SearchStore";
+import SearchTitle from "@/components/search/SearchTitle.vue";
 
 const searchStore = useSearch();
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/search-item" as search;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/search-item" as search;
 
 .podcast-list {
   .podcast {

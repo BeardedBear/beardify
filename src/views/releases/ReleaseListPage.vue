@@ -9,11 +9,11 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue";
 
-import Loader from "../../components/LoadingDots.vue";
-import ReleaseList from "../../components/releases/ReleaseList.vue";
-import ReleaseSide from "../../components/releases/ReleaseSide.vue";
-import { useAuth } from "../auth/AuthStore";
-import { useReleases } from "./ReleasesStore";
+import Loader from "@/components/ui/LoadingDots.vue";
+import ReleaseList from "@/components/releases/ReleaseList.vue";
+import ReleaseSide from "@/components/releases/ReleaseSide.vue";
+import { useAuth } from "@/views/auth/AuthStore";
+import { useReleases } from "@/views/releases/ReleasesStore";
 
 const releasesStore = useReleases();
 const authStore = useAuth();

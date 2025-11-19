@@ -1,7 +1,7 @@
 import { useMagicKeys } from "@vueuse/core";
 import { watch } from "vue";
 
-import { usePlayer } from "../components/player/PlayerStore";
+import { usePlayer } from "@/components/player/PlayerStore";
 
 export function useKeyboardEvents(): void {
   const playerStore = usePlayer();

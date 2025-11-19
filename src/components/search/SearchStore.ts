@@ -1,11 +1,11 @@
 import { useDebounceFn } from "@vueuse/core";
 import { defineStore } from "pinia";
 
-import { Album } from "../../@types/Album";
-import { Search, SearchFromAPI } from "../../@types/Search";
-import { instance } from "../../api";
-import { isSingle } from "../../helpers/useCleanAlbums";
-import { useDialog } from "../dialog/DialogStore";
+import { Album } from "@/@types/Album";
+import { Search, SearchFromAPI } from "@/@types/Search";
+import { instance } from "@/api";
+import { useDialog } from "@/components/dialog/DialogStore";
+import { isSingle } from "@/helpers/useCleanAlbums";
 
 // Créer la fonction debounce en dehors du store
 let debouncedSearchFn: null | ReturnType<typeof useDebounceFn> = null;

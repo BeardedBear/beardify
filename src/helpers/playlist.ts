@@ -1,9 +1,9 @@
-import { Paging } from "../@types/Paging";
-import { PlaylistTrack } from "../@types/Playlist";
-import { PublicUser } from "../@types/PublicUser";
-import { instance } from "../api";
-import { cleanUrl } from "../helpers/urls";
-import { useAuth } from "../views/auth/AuthStore";
+import { Paging } from "@/@types/Paging";
+import { PlaylistTrack } from "@/@types/Playlist";
+import { PublicUser } from "@/@types/PublicUser";
+import { instance } from "@/api";
+import { cleanUrl } from "@/helpers/urls";
+import { useAuth } from "@/views/auth/AuthStore";
 
 export function isPlaylistOwner(owner: PublicUser): boolean {
   return owner.id === useAuth().me?.id;

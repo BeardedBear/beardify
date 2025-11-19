@@ -37,12 +37,12 @@
 </template>
 
 <script lang="ts" setup>
-import { Album } from "../../@types/Album";
-import { Track, TrackSimplified } from "../../@types/Track";
-import { date, timecodeWithUnits } from "../../helpers/date";
-import ArtistList from "../artist/ArtistList.vue";
-import ButtonIndex from "../ButtonIndex.vue";
-import ShareContent from "../ShareContent.vue";
+import { Album } from "@/@types/Album";
+import { Track, TrackSimplified } from "@/@types/Track";
+import { date, timecodeWithUnits } from "@/helpers/date";
+import ArtistList from "@/components/artist/ArtistList.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import ShareContent from "@/components/ui/ShareContent.vue";
 
 const props = defineProps<{ album: Album }>();
 
@@ -56,8 +56,8 @@ function openLink(url: string): void {
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/responsive" as responsive;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .album-header {
   display: flex;

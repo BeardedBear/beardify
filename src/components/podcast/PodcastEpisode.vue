@@ -73,12 +73,12 @@
 </template>
 
 <script lang="ts" setup>
-import { Episode } from "../../@types/Podcast";
-import ButtonIndex from "../ButtonIndex.vue";
-import { date, timecodeWithUnits } from "../../helpers/date";
-import { playSong } from "../../helpers/play";
-import Loading from "../LoadingDots.vue";
-import { usePlayer } from "../player/PlayerStore";
+import { Episode } from "@/@types/Podcast";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { date, timecodeWithUnits } from "@/helpers/date";
+import { playSong } from "@/helpers/play";
+import Loading from "@/components/ui/LoadingDots.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
 
 const playerStore = usePlayer();
 

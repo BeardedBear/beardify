@@ -10,12 +10,12 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 
-import { NotificationType } from "../../@types/Notification";
-import ButtonIndex from "../ButtonIndex.vue";
-import { notification } from "../../helpers/notifications";
-import { useSidebar } from "../sidebar/SidebarStore";
-import { useDialog } from "./DialogStore";
-import Dialog from "./DialogWrap.vue";
+import { NotificationType } from "@/@types/Notification";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { notification } from "@/helpers/notifications";
+import { useSidebar } from "@/components/sidebar/SidebarStore";
+import { useDialog } from "@/components/dialog/DialogStore";
+import Dialog from "@/components/dialog/DialogWrap.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();

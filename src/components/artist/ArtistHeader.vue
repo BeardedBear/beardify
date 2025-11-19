@@ -21,8 +21,8 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 
-import { useArtist } from "../../views/artist/ArtistStore";
-import Options from "./ArtistOptions.vue";
+import { useArtist } from "@/views/artist/ArtistStore";
+import Options from "@/components/artist/ArtistOptions.vue";
 
 const domHeader = ref<HTMLDivElement | null>(null);
 const artistStore = useArtist();
@@ -33,8 +33,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/mixins" as mixins;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as mixins;
 
 .img {
   filter: blur(15px);

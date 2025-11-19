@@ -77,17 +77,17 @@
 <script lang="ts" setup>
 import { reactive, ref, watchEffect } from "vue";
 
-import { UpdatePlaylistValues } from "../../@types/Dialog";
-import { NotificationType } from "../../@types/Notification";
-import { Playlist } from "../../@types/Playlist";
-import { instance } from "../../api";
-import ButtonIndex from "../ButtonIndex.vue";
-import { notification } from "../../helpers/notifications";
-import { useAuth } from "../../views/auth/AuthStore";
-import Loading from "../LoadingDots.vue";
-import { useSidebar } from "../sidebar/SidebarStore";
-import { useDialog } from "./DialogStore";
-import Dialog from "./DialogWrap.vue";
+import { UpdatePlaylistValues } from "@/@types/Dialog";
+import { NotificationType } from "@/@types/Notification";
+import { Playlist } from "@/@types/Playlist";
+import { instance } from "@/api";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { notification } from "@/helpers/notifications";
+import { useAuth } from "@/views/auth/AuthStore";
+import Loading from "@/components/ui/LoadingDots.vue";
+import { useSidebar } from "@/components/sidebar/SidebarStore";
+import { useDialog } from "@/components/dialog/DialogStore";
+import Dialog from "@/components/dialog/DialogWrap.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();

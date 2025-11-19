@@ -13,8 +13,8 @@
 </template>
 
 <script lang="ts" setup>
-import { AlbumSimplified } from "../@types/Album";
-import Album from "./album/AlbumIndex.vue";
+import { AlbumSimplified } from "@/@types/Album";
+import Album from "@/components/album/AlbumIndex.vue";
 
 defineProps<{
   albumList: AlbumSimplified[];
@@ -25,8 +25,8 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
-@use "../assets/scss/colors" as colors;
-@use "../assets/scss/responsive" as responsive;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .albums {
   display: grid;

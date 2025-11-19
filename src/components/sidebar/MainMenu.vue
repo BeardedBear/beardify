@@ -22,13 +22,13 @@
 </template>
 
 <script lang="ts" setup>
-import ButtonIndex from "../ButtonIndex.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 </script>
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/mixins" as mixins;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as mixins;
 
 .menu {
   display: flex;

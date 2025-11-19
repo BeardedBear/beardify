@@ -17,8 +17,8 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 
-import ButtonIndex from "../ButtonIndex.vue";
-import { useSearch } from "./SearchStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { useSearch } from "@/components/search/SearchStore";
 
 const searchStore = useSearch();
 const query = ref<string>("");
@@ -40,8 +40,8 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/mixins" as mixins;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as mixins;
 
 $radius: 1rem;
 
