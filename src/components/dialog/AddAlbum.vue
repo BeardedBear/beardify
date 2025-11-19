@@ -22,18 +22,18 @@
 </template>
 
 <script lang="ts" setup>
-import { NotificationType } from "../../@types/Notification";
-import { Paging } from "../../@types/Paging";
-import { TrackSimplified } from "../../@types/Track";
-import { instance } from "../../api";
-import { notification } from "../../helpers/notifications";
-import { albumAllreadyExist } from "../../helpers/playlist";
-import { useAuth } from "../../views/auth/AuthStore";
-import PlaylistIcon from "../sidebar/PlaylistIcon.vue";
-import { useSidebar } from "../sidebar/SidebarStore";
-import VisibilityIcon from "../sidebar/VisibilityIcon.vue";
-import { useDialog } from "./DialogStore";
-import Dialog from "./DialogWrap.vue";
+import { NotificationType } from "@/@types/Notification";
+import { Paging } from "@/@types/Paging";
+import { TrackSimplified } from "@/@types/Track";
+import { instance } from "@/api";
+import { notification } from "@/helpers/notifications";
+import { albumAllreadyExist } from "@/helpers/playlist";
+import { useAuth } from "@/views/auth/AuthStore";
+import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
+import { useSidebar } from "@/components/sidebar/SidebarStore";
+import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
+import Dialog from "@/components/dialog/DialogWrap.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -67,7 +67,7 @@ async function add(albumId: string, playlistId: string): Promise<void> {
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
+@use "@/assets/scss/colors" as colors;
 
 .content {
   padding: 0.5rem;

@@ -13,15 +13,15 @@
 </template>
 
 <script lang="ts" setup>
-import { useArtist } from "../../views/artist/ArtistStore";
-import Album from "../album/AlbumIndex.vue";
+import { useArtist } from "@/views/artist/ArtistStore";
+import Album from "@/components/album/AlbumIndex.vue";
 
 const artistStore = useArtist();
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/responsive" as responsive;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .eps {
   display: grid;

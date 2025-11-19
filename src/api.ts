@@ -1,8 +1,8 @@
 import ky, { Options } from "ky";
 
-import { ApiResponse, SpotifyOptions } from "./@types/Api";
-import { clearAuthData } from "./helpers/authUtils";
-import { useAuth } from "./views/auth/AuthStore";
+import { ApiResponse, SpotifyOptions } from "@/@types/Api";
+import { clearAuthData } from "@/helpers/authUtils";
+import { useAuth } from "@/views/auth/AuthStore";
 
 /**
  * Spotify API configuration object

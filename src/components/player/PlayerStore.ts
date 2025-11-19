@@ -1,15 +1,15 @@
 import { defineStore } from "pinia";
 
-import { CurrentlyPlaying } from "../../@types/CurrentlyPlaying";
-import { defaultCurrentlyPlaying, defaultDevice } from "../../@types/Defaults";
-import { DevicesResponse } from "../../@types/Device";
-import { NotificationType } from "../../@types/Notification";
-import { defaultPlaybackState, Player } from "../../@types/Player";
-import { Track } from "../../@types/Track";
-import { instance } from "../../api";
-import { notification } from "../../helpers/notifications";
-import { createSpotifyPlayer } from "../../spotify";
-import { useNotification } from "../notification/NotificationStore";
+import { CurrentlyPlaying } from "@/@types/CurrentlyPlaying";
+import { defaultCurrentlyPlaying, defaultDevice } from "@/@types/Defaults";
+import { DevicesResponse } from "@/@types/Device";
+import { NotificationType } from "@/@types/Notification";
+import { defaultPlaybackState, Player } from "@/@types/Player";
+import { Track } from "@/@types/Track";
+import { instance } from "@/api";
+import { useNotification } from "@/components/notification/NotificationStore";
+import { notification } from "@/helpers/notifications";
+import { createSpotifyPlayer } from "@/spotify";
 
 // Heartbeat interval in milliseconds (4 minutes)
 const HEARTBEAT_INTERVAL = 4 * 60 * 1000;

@@ -9,14 +9,14 @@
 </template>
 
 <script lang="ts" setup>
-import AddAlbum from "./AddAlbum.vue";
-import AddCollection from "./AddCollection.vue";
-import AddPlaylist from "./AddPlaylist.vue";
-import AddSong from "./AddSong.vue";
-import { useDialog } from "./DialogStore";
-import EditPlaylist from "./EditPlaylist.vue";
-import SearchDialog from "./SearchDialog.vue";
-import WidevineWarning from "./WidevineWarning.vue";
+import AddAlbum from "@/components/dialog/AddAlbum.vue";
+import AddCollection from "@/components/dialog/AddCollection.vue";
+import AddPlaylist from "@/components/dialog/AddPlaylist.vue";
+import AddSong from "@/components/dialog/AddSong.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
+import EditPlaylist from "@/components/dialog/EditPlaylist.vue";
+import SearchDialog from "@/components/dialog/SearchDialog.vue";
+import WidevineWarning from "@/components/dialog/WidevineWarning.vue";
 
 const dialogStore = useDialog();
 </script>

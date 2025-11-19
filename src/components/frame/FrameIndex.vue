@@ -16,9 +16,9 @@
 </template>
 
 <script lang="ts" setup>
-import ButtonIndex from "../ButtonIndex.vue";
-import LoadingDots from "../LoadingDots.vue";
-import { useFrame } from "./FrameStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import LoadingDots from "@/components/ui/LoadingDots.vue";
+import { useFrame } from "@/components/frame/FrameStore";
 
 const frameStore = useFrame();
 </script>

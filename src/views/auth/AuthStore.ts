@@ -3,14 +3,14 @@ import ky from "ky";
 import { defineStore } from "pinia";
 import pkceChallenge from "pkce-challenge";
 
-import type { Auth, AuthAPIResponse } from "../../@types/Auth";
-import type { User } from "../../@types/User";
+import type { Auth, AuthAPIResponse } from "@/@types/Auth";
+import type { User } from "@/@types/User";
 
-import { api, instance } from "../../api";
-import { useConfig } from "../../components/config/ConfigStore";
-import { usePlayer } from "../../components/player/PlayerStore";
-import { clearAuthData } from "../../helpers/authUtils";
-import router, { RouteName } from "../../router";
+import { api, instance } from "@/api";
+import { useConfig } from "@/components/config/ConfigStore";
+import { usePlayer } from "@/components/player/PlayerStore";
+import { clearAuthData } from "@/helpers/authUtils";
+import router, { RouteName } from "@/router";
 
 // Store the refresh interval ID outside of the store state to prevent persistence issues
 let refreshIntervalId: null | number = null;

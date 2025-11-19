@@ -21,13 +21,13 @@
 </template>
 
 <script lang="ts" setup>
-import { timecode } from "../../helpers/date";
-import { isCurrentTrack } from "../../helpers/helper";
-import { playSongs } from "../../helpers/play";
-import { useArtist } from "../../views/artist/ArtistStore";
-import Cover from "../AlbumCover.vue";
-import { useDialog } from "../dialog/DialogStore";
-import { usePlayer } from "../player/PlayerStore";
+import { timecode } from "@/helpers/date";
+import { isCurrentTrack } from "@/helpers/helper";
+import { playSongs } from "@/helpers/play";
+import { useArtist } from "@/views/artist/ArtistStore";
+import Cover from "@/components/ui/AlbumCover.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
+import { usePlayer } from "@/components/player/PlayerStore";
 
 const artistStore = useArtist();
 const playerStore = usePlayer();
@@ -36,7 +36,7 @@ const dialogStore = useDialog();
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/colors" as colors;
+@use "@/assets/scss/colors" as colors;
 
 .cover-wrap {
   position: relative;

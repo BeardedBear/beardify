@@ -1,6 +1,6 @@
-import type { Track, TrackSimplified } from "../@types/Track";
+import type { Track, TrackSimplified } from "@/@types/Track";
 
-import { AlbumSimplified } from "../@types/Album";
+import { AlbumSimplified } from "@/@types/Album";
 
 export function isCurrentTrack(
   track: AlbumSimplified | Spotify.Track | Track | TrackSimplified | undefined,

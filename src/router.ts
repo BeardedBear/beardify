@@ -1,16 +1,16 @@
 import { createRouter, createWebHistory, LocationQueryValue, RouteLocation, RouteRecordRaw } from "vue-router";
 
-import AlbumPage from "./views/album/AlbumPage.vue";
-import ArtistPage from "./views/artist/ArtistPage.vue";
-import AuthPage from "./views/auth/AuthPage.vue";
-import HomePage from "./views/home/HomePage.vue";
-import LoginPage from "./views/LoginPage.vue";
-import CollectionPage from "./views/playlist/CollectionPage.vue";
-import PlaylistPage from "./views/playlist/PlaylistPage.vue";
-import PodcastListPage from "./views/podcasts/PodcastListPage.vue";
-import PodcastPage from "./views/podcasts/PodcastPage.vue";
-import ReleaseListPage from "./views/releases/ReleaseListPage.vue";
-import UserPage from "./views/user/UserPage.vue";
+import AlbumPage from "@/views/album/AlbumPage.vue";
+import ArtistPage from "@/views/artist/ArtistPage.vue";
+import AuthPage from "@/views/auth/AuthPage.vue";
+import HomePage from "@/views/home/HomePage.vue";
+import LoginPage from "@/views/LoginPage.vue";
+import CollectionPage from "@/views/playlist/CollectionPage.vue";
+import PlaylistPage from "@/views/playlist/PlaylistPage.vue";
+import PodcastListPage from "@/views/podcasts/PodcastListPage.vue";
+import PodcastPage from "@/views/podcasts/PodcastPage.vue";
+import ReleaseListPage from "@/views/releases/ReleaseListPage.vue";
+import UserPage from "@/views/user/UserPage.vue";
 
 export enum RouteName {
   About = "/about/",

@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import Dialog from "./DialogWrap.vue";
+import Dialog from "@/components/dialog/DialogWrap.vue";
 </script>
 
 <style lang="scss" scoped>

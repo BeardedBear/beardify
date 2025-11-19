@@ -19,10 +19,10 @@
 </template>
 
 <script lang="ts" setup>
-import Loader from "../../components/LoadingDots.vue";
-import PageFit from "../../components/PageFit.vue";
-import PodcastCard from "../../components/podcast/PodcastCard.vue";
-import { usePodcasts } from "./PodcastsStore";
+import Loader from "@/components/ui/LoadingDots.vue";
+import PageFit from "@/components/ui/PageFit.vue";
+import PodcastCard from "@/components/podcast/PodcastCard.vue";
+import { usePodcasts } from "@/views/podcasts/PodcastsStore";
 
 const podcastsStore = usePodcasts();
 podcastsStore.clean().finally(() => {
@@ -31,8 +31,8 @@ podcastsStore.clean().finally(() => {
 });
 </script>
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/responsive" as responsive;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .loader {
   display: grid;

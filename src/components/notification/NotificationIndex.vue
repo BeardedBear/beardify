@@ -12,8 +12,8 @@
 </template>
 
 <script lang="ts" setup>
-import { NotificationType } from "../../@types/Notification";
-import { useNotification } from "./NotificationStore";
+import { NotificationType } from "@/@types/Notification";
+import { useNotification } from "@/components/notification/NotificationStore";
 
 const notificationStore = useNotification();
 </script>

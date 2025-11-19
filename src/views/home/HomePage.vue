@@ -21,12 +21,12 @@
 <script lang="ts" setup>
 import { watch } from "vue";
 
-import AlbumGallery from "../../components/AlbumGallery.vue";
-import ButtonIndex from "../../components/ButtonIndex.vue";
-import Loader from "../../components/LoadingDots.vue";
-import PageFit from "../../components/PageFit.vue";
-import { useAuth } from "../auth/AuthStore";
-import { useHome } from "./HomeStore";
+import AlbumGallery from "@/components/album/AlbumGallery.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
+import PageFit from "@/components/ui/PageFit.vue";
+import { useAuth } from "@/views/auth/AuthStore";
+import { useHome } from "@/views/home/HomeStore";
 
 const homeStore = useHome();
 const authStore = useAuth();
@@ -49,7 +49,7 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/responsive" as responsive;
+@use "@/assets/scss/responsive" as responsive;
 
 .title {
   align-items: center;

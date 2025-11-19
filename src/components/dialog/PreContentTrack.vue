@@ -23,10 +23,10 @@
 </template>
 
 <script lang="ts" setup>
-import { Track, TrackSimplified } from "../../@types/Track";
-import ButtonIndex from "../ButtonIndex.vue";
-import { usePlayer } from "../player/PlayerStore";
-import ShareContent from "../ShareContent.vue";
+import { Track, TrackSimplified } from "@/@types/Track";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
+import ShareContent from "@/components/ui/ShareContent.vue";
 
 const { addTrackToQueue } = usePlayer();
 
@@ -40,7 +40,7 @@ function openLink(url: string): void {
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
+@use "@/assets/scss/colors" as colors;
 
 .track {
   align-items: center;

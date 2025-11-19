@@ -35,10 +35,10 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import ButtonIndex from "../../ButtonIndex.vue";
-import LoadingDots from "../../LoadingDots.vue";
-import { usePlayer } from "../PlayerStore";
-import QueuedTracks from "./QueuedTracks.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import LoadingDots from "@/components/ui/LoadingDots.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
+import QueuedTracks from "@/components/player/device/QueuedTracks.vue";
 
 const playerStore = usePlayer();
 const deviceListFiltered = computed(() =>

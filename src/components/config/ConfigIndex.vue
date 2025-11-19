@@ -39,12 +39,12 @@
 import { onClickOutside } from "@vueuse/core";
 import { ref } from "vue";
 
-import { NotificationType } from "../../@types/Notification";
-import { notification } from "../../helpers/notifications";
-import { useAuth } from "../../views/auth/AuthStore";
-import ButtonIndex from "../ButtonIndex.vue";
-import Colors from "./ColorsTheme.vue";
-import { useConfig } from "./ConfigStore";
+import { NotificationType } from "@/@types/Notification";
+import { notification } from "@/helpers/notifications";
+import { useAuth } from "@/views/auth/AuthStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import Colors from "@/components/config/ColorsTheme.vue";
+import { useConfig } from "@/components/config/ConfigStore";
 
 const env = process.env.NODE_ENV;
 const authStore = useAuth();
@@ -56,7 +56,7 @@ onClickOutside(domConfig, (): void => configStore.close());
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as mixins;
 
 .section {
   background: var(--bg-color);

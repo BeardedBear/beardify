@@ -26,10 +26,10 @@
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 
-import { transformUriToid } from "../../helpers/helper";
-import ArtistList from "../artist/ArtistList.vue";
-import { useDialog } from "../dialog/DialogStore";
-import { usePlayer } from "./PlayerStore";
+import { transformUriToid } from "@/helpers/helper";
+import ArtistList from "@/components/artist/ArtistList.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
+import { usePlayer } from "@/components/player/PlayerStore";
 
 const playerStore = usePlayer();
 const dialogStore = useDialog();

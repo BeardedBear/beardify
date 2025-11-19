@@ -1,13 +1,13 @@
 import { defineStore } from "pinia";
 
-import { defaultPlaylist } from "../../@types/Defaults";
-import { Paging } from "../../@types/Paging";
-import { Playlist, PlaylistPage, PlaylistTrack } from "../../@types/Playlist";
-import { TrackToRemove } from "../../@types/Track";
-import { instance } from "../../api";
-import { useSidebar } from "../../components/sidebar/SidebarStore";
-import { cleanUrl } from "../../helpers/urls";
-import { useAuth } from "../auth/AuthStore";
+import { defaultPlaylist } from "@/@types/Defaults";
+import { Paging } from "@/@types/Paging";
+import { Playlist, PlaylistPage, PlaylistTrack } from "@/@types/Playlist";
+import { TrackToRemove } from "@/@types/Track";
+import { instance } from "@/api";
+import { useSidebar } from "@/components/sidebar/SidebarStore";
+import { cleanUrl } from "@/helpers/urls";
+import { useAuth } from "@/views/auth/AuthStore";
 
 export const usePlaylist = defineStore("playlist", {
   actions: {

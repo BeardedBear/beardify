@@ -47,18 +47,18 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 
-import Foot from "../../components/album/AlbumFoot.vue";
-import Head from "../../components/album/AlbumHead.vue";
-import Album from "../../components/album/AlbumIndex.vue";
-import ArtistList from "../../components/artist/ArtistList.vue";
-import ButtonIndex from "../../components/ButtonIndex.vue";
-import { useDialog } from "../../components/dialog/DialogStore";
-import Loader from "../../components/LoadingDots.vue";
-import { usePlayer } from "../../components/player/PlayerStore";
-import { timecode } from "../../helpers/date";
-import { isCurrentTrack } from "../../helpers/helper";
-import { playSongs } from "../../helpers/play";
-import { useAlbum } from "./AlbumStore";
+import Foot from "@/components/album/AlbumFoot.vue";
+import Head from "@/components/album/AlbumHead.vue";
+import Album from "@/components/album/AlbumIndex.vue";
+import ArtistList from "@/components/artist/ArtistList.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
+import Loader from "@/components/ui/LoadingDots.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
+import { timecode } from "@/helpers/date";
+import { isCurrentTrack } from "@/helpers/helper";
+import { playSongs } from "@/helpers/play";
+import { useAlbum } from "@/views/album/AlbumStore";
 
 const props = defineProps({ id: { default: "", type: String } });
 const albumpage = ref();
@@ -73,8 +73,8 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/responsive" as responsive;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .fit {
   display: flex;

@@ -23,8 +23,8 @@
 </template>
 
 <script lang="ts" setup>
-import { SimplifiedPlaylist } from "../../@types/Playlist";
-import { useAuth } from "../../views/auth/AuthStore";
+import { SimplifiedPlaylist } from "@/@types/Playlist";
+import { useAuth } from "@/views/auth/AuthStore";
 
 defineProps<{
   playlist: SimplifiedPlaylist;

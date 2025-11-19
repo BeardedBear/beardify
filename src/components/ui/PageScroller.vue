@@ -16,7 +16,7 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
-import ButtonIndex from "./ButtonIndex.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 const page = ref<HTMLElement | null>(null);
 const route = useRoute();

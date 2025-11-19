@@ -22,15 +22,15 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 
-import { PublicUser } from "../../@types/PublicUser";
-import { instance } from "../../api";
-import AlbumGallery from "../../components/AlbumGallery.vue";
-import Loader from "../../components/LoadingDots.vue";
-import PageScroller from "../../components/PageScroller.vue";
-import Header from "../../components/playlist/PlaylistHeader.vue";
-import Tracks from "../../components/playlist/PlaylistTracks.vue";
-import { isAlbum, isEP, isSingle, useCheckLiveAlbum } from "../../helpers/useCleanAlbums";
-import { usePlaylist } from "./PlaylistStore";
+import { PublicUser } from "@/@types/PublicUser";
+import { instance } from "@/api";
+import AlbumGallery from "@/components/album/AlbumGallery.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
+import PageScroller from "@/components/ui/PageScroller.vue";
+import Header from "@/components/playlist/PlaylistHeader.vue";
+import Tracks from "@/components/playlist/PlaylistTracks.vue";
+import { isAlbum, isEP, isSingle, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
+import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 const props = defineProps<{ id: string }>();
 const playlistStore = usePlaylist();
@@ -110,8 +110,8 @@ playlistStore.clean().finally(() => {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/responsive" as responsive;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .block {
   margin-bottom: 2rem;

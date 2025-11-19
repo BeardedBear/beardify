@@ -1,10 +1,10 @@
 /**
  * Helper functions for handling API errors in Beardify
  */
-import { NotificationType } from "../@types/Notification";
-import { instance } from "../api";
-import { usePlayer } from "../components/player/PlayerStore";
-import { notification } from "./notifications";
+import { NotificationType } from "@/@types/Notification";
+import { instance } from "@/api";
+import { usePlayer } from "@/components/player/PlayerStore";
+import { notification } from "@/helpers/notifications";
 
 // Define a type for API errors
 export interface ApiError {

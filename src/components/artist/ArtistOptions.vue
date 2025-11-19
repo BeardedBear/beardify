@@ -16,10 +16,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useArtist } from "../../views/artist/ArtistStore";
-import ButtonIndex from "../ButtonIndex.vue";
-import ShareContent from "../ShareContent.vue";
-import ArtistLinks from "./ArtistLinks.vue";
+import { useArtist } from "@/views/artist/ArtistStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import ShareContent from "@/components/ui/ShareContent.vue";
+import ArtistLinks from "@/components/artist/ArtistLinks.vue";
 
 const artistStore = useArtist();
 

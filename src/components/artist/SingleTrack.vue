@@ -16,13 +16,13 @@
 </template>
 
 <script lang="ts" setup>
-import { AlbumSimplified } from "../../@types/Album";
-import { instance } from "../../api";
-import { date } from "../../helpers/date";
-import { isCurrentTrack } from "../../helpers/helper";
-import Cover from "../AlbumCover.vue";
-import { usePlayer } from "../player/PlayerStore";
-import ArtistList from "./ArtistList.vue";
+import { AlbumSimplified } from "@/@types/Album";
+import { instance } from "@/api";
+import { date } from "@/helpers/date";
+import { isCurrentTrack } from "@/helpers/helper";
+import Cover from "@/components/ui/AlbumCover.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
+import ArtistList from "@/components/artist/ArtistList.vue";
 
 defineProps<{
   single: AlbumSimplified;

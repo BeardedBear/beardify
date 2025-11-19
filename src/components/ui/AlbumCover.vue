@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Image, ImageSize } from "../@types/Image";
+import { Image, ImageSize } from "@/@types/Image";
 
 defineProps<{
   images: Image[];

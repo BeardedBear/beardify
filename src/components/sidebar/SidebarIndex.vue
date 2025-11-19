@@ -117,15 +117,15 @@ import { onClickOutside } from "@vueuse/core";
 import { computed, ref, Ref, watch } from "vue";
 import { RouterLink } from "vue-router";
 
-import { useAuth } from "../../views/auth/AuthStore";
-import ButtonIndex from "../ButtonIndex.vue";
-import { useDialog } from "../dialog/DialogStore";
-import Loader from "../LoadingDots.vue";
-import Topbar from "../SidebarHead.vue";
-import Menu from "./MainMenu.vue";
-import PlaylistIcon from "./PlaylistIcon.vue";
-import { useSidebar } from "./SidebarStore";
-import VisibilityIcon from "./VisibilityIcon.vue";
+import { useAuth } from "@/views/auth/AuthStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
+import Loader from "@/components/ui/LoadingDots.vue";
+import Topbar from "@/components/sidebar/SidebarHead.vue";
+import Menu from "@/components/sidebar/MainMenu.vue";
+import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
+import { useSidebar } from "@/components/sidebar/SidebarStore";
+import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -183,7 +183,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/colors" as colors;
+@use "@/assets/scss/colors" as colors;
 
 .empty {
   font-style: italic;

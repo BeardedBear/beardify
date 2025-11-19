@@ -1,7 +1,7 @@
-import { NotificationType } from "../@types/Notification";
-import { Track, TrackSimplified } from "../@types/Track";
-import { ensureActiveDevice, executePlaybackApiCall } from "./apiErrorHandling";
-import { notification } from "./notifications";
+import { NotificationType } from "@/@types/Notification";
+import { Track, TrackSimplified } from "@/@types/Track";
+import { ensureActiveDevice, executePlaybackApiCall } from "@/helpers/apiErrorHandling";
+import { notification } from "@/helpers/notifications";
 
 // API error types moved to apiErrorHandling.ts helper
 

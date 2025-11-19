@@ -51,10 +51,10 @@
 <script lang="ts" setup>
 import { RouterLink } from "vue-router";
 
-import Cover from "../../components/AlbumCover.vue";
-import LoadingDots from "../../components/LoadingDots.vue";
-import ShareContent from "../../components/ShareContent.vue";
-import { useUserStore } from "./UserStore";
+import Cover from "@/components/ui/AlbumCover.vue";
+import LoadingDots from "@/components/ui/LoadingDots.vue";
+import ShareContent from "@/components/ui/ShareContent.vue";
+import { useUserStore } from "@/views/user/UserStore";
 
 const userStore = useUserStore();
 const props = defineProps<{
@@ -69,8 +69,8 @@ userStore.clean().finally(() => {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/responsive" as responsive;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .head {
   overflow: hidden;

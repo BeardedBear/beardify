@@ -15,8 +15,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useReleases } from "../../views/releases/ReleasesStore";
-import Release from "./ReleaseIndex.vue";
+import { useReleases } from "@/views/releases/ReleasesStore";
+import Release from "@/components/releases/ReleaseIndex.vue";
 
 const releasesStore = useReleases();
 </script>

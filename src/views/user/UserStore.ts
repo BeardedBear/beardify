@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
 
-import { Paging } from "../../@types/Paging";
-import { SimplifiedPlaylist } from "../../@types/Playlist";
-import { User, UserStore } from "../../@types/User";
-import { instance } from "../../api";
+import { Paging } from "@/@types/Paging";
+import { SimplifiedPlaylist } from "@/@types/Playlist";
+import { User, UserStore } from "@/@types/User";
+import { instance } from "@/api";
 
 function isACollection(playlistName: SimplifiedPlaylist): boolean {
   return playlistName.name.toLowerCase().includes("#collection");

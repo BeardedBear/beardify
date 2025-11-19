@@ -39,10 +39,10 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 
-import { api } from "../api";
-import { clearAuthData } from "../helpers/authUtils";
-import router, { RouteName } from "../router";
-import { useAuth } from "./auth/AuthStore";
+import { api } from "@/api";
+import { clearAuthData } from "@/helpers/authUtils";
+import router, { RouteName } from "@/router";
+import { useAuth } from "@/views/auth/AuthStore";
 
 const authStore = useAuth();
 const challenge = ref<string | undefined>(undefined);
@@ -72,7 +72,7 @@ const challenge = ref<string | undefined>(undefined);
 </script>
 
 <style lang="scss" scoped>
-@use "../assets/scss/colors" as colors;
+@use "@/assets/scss/colors" as colors;
 
 @keyframes pop-login {
   from {

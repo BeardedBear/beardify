@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 
-import { Album, AlbumPage } from "../../@types/Album";
-import { defaultAlbum } from "../../@types/Defaults";
-import { instance } from "../../api";
+import { Album, AlbumPage } from "@/@types/Album";
+import { defaultAlbum } from "@/@types/Defaults";
+import { instance } from "@/api";
 
 export const useAlbum = defineStore("album", {
   actions: {

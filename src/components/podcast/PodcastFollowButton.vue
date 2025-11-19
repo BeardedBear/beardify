@@ -20,8 +20,8 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 
-import ButtonIndex from "../ButtonIndex.vue";
-import { usePodcasts } from "../../views/podcasts/PodcastsStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { usePodcasts } from "@/views/podcasts/PodcastsStore";
 
 const props = defineProps<{
   podcastId: string;

@@ -20,15 +20,15 @@
 <script lang="ts" setup>
 import { RouterLink } from "vue-router";
 
-import { useArtist } from "../../views/artist/ArtistStore";
-import Cover from "../AlbumCover.vue";
+import { useArtist } from "@/views/artist/ArtistStore";
+import Cover from "@/components/ui/AlbumCover.vue";
 
 const artistStore = useArtist();
 </script>
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "../../assets/scss/colors" as colors;
+@use "@/assets/scss/colors" as colors;
 
 .image {
   $size: 3rem;

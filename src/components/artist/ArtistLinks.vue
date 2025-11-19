@@ -28,9 +28,9 @@
 <script lang="ts" setup>
 import { onMounted, onUpdated, ref } from "vue";
 
-import { normalizeDiacritics } from "../../helpers/normalizeDiacritics";
-import ButtonIndex from "../ButtonIndex.vue";
-import { useFrame } from "../frame/FrameStore";
+import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { useFrame } from "@/components/frame/FrameStore";
 
 const props = defineProps<{
   artistName: string;

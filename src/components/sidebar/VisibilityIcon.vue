@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts" setup>
-import { SimplifiedPlaylist } from "../../@types/Playlist";
+import { SimplifiedPlaylist } from "@/@types/Playlist";
 
 defineProps<{
   playlist: SimplifiedPlaylist;

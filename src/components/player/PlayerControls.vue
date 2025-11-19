@@ -50,9 +50,9 @@
 import { useIntervalFn } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
-import { timecode } from "../../helpers/date";
-import ButtonIndex from "../ButtonIndex.vue";
-import { usePlayer } from "./PlayerStore";
+import { timecode } from "@/helpers/date";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
 
 const playerStore = usePlayer();
 const currentTime = ref<number>(0);
@@ -70,8 +70,8 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/mixins" as mixins;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as mixins;
 
 .btns {
   align-items: center;

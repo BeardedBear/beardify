@@ -22,9 +22,9 @@
 <script lang="ts" setup>
 import { computed, ComputedRef } from "vue";
 
-import Album from "../album/AlbumIndex.vue";
-import { useSearch } from "./SearchStore";
-import SearchTitle from "./SearchTitle.vue";
+import Album from "@/components/album/AlbumIndex.vue";
+import { useSearch } from "@/components/search/SearchStore";
+import SearchTitle from "@/components/search/SearchTitle.vue";
 
 const searchStore = useSearch();
 const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
@@ -34,8 +34,8 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
-@use "../../assets/scss/search-item" as search;
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/search-item" as search;
 
 .album {
   border-radius: 1rem;

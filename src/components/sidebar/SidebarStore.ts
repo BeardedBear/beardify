@@ -1,15 +1,15 @@
 import { defineStore } from "pinia";
 
-import { NotificationType } from "../../@types/Notification";
-import { Paging } from "../../@types/Paging";
-import { SimplifiedPlaylist } from "../../@types/Playlist";
-import { Sidebar } from "../../@types/Sidebar";
-import { instance } from "../../api";
-import { notification } from "../../helpers/notifications";
-import { cleanUrl } from "../../helpers/urls";
-import router from "../../router";
-import { useAuth } from "../../views/auth/AuthStore";
-import { usePlaylist } from "../../views/playlist/PlaylistStore";
+import { NotificationType } from "@/@types/Notification";
+import { Paging } from "@/@types/Paging";
+import { SimplifiedPlaylist } from "@/@types/Playlist";
+import { Sidebar } from "@/@types/Sidebar";
+import { instance } from "@/api";
+import { notification } from "@/helpers/notifications";
+import { cleanUrl } from "@/helpers/urls";
+import router from "@/router";
+import { useAuth } from "@/views/auth/AuthStore";
+import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 function isACollection(playlistName: SimplifiedPlaylist): boolean {
   return playlistName.name.toLowerCase().includes("#collection");

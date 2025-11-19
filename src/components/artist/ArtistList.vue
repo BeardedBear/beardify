@@ -12,10 +12,10 @@
 </template>
 
 <script lang="ts" setup>
-import { Artist, ArtistSimplified } from "../../@types/Artist";
-import router from "../../router";
-import { useDialog } from "../dialog/DialogStore";
-import ArtistLinks from "./ArtistLinks.vue";
+import { Artist, ArtistSimplified } from "@/@types/Artist";
+import router from "@/router";
+import { useDialog } from "@/components/dialog/DialogStore";
+import ArtistLinks from "@/components/artist/ArtistLinks.vue";
 
 const dialogStore = useDialog();
 
@@ -38,7 +38,7 @@ function goArtist(artistUri: string): void {
 </script>
 
 <style lang="scss" scoped>
-@use "../../assets/scss/colors" as colors;
+@use "@/assets/scss/colors" as colors;
 
 .separator {
   opacity: 0.2;
