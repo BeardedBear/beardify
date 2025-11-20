@@ -1,3 +1,4 @@
+import { MotionPlugin } from "@vueuse/motion";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import { createApp } from "vue";
@@ -76,6 +77,7 @@ pinia.use(piniaPluginPersistedstate);
 
 app.use(pinia);
 app.use(router);
+app.use(MotionPlugin);
 
 function syncLS(key: string, value: string): void {
   if (!localStorage.getItem(key)) localStorage.setItem(key, value);

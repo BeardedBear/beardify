@@ -1,16 +1,33 @@
 <template>
   <div class="dialog" v-if="dialogStore.show">
-    <div :class="{ 'is-closing': dialogStore.isClosing }" @click="dialogStore.close()" class="bg"></div>
-    <div :class="{ 'is-closing': dialogStore.isClosing, big }" class="wrapper">
+    <div
+      v-show="!dialogStore.isMinimized"
+      :class="{ 'is-closing': dialogStore.isClosing }"
+      @click="dialogStore.close()"
+      class="bg"
+    ></div>
+    <div
+      ref="wrapperRef"
+      v-motion
+      :initial="{ scale: 0.8, opacity: 0, y: 30 }"
+      :enter="{ scale: 1, opacity: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 20 } }"
+      :class="{ 'is-closing': dialogStore.isClosing, big, minimized: dialogStore.isMinimized }"
+      class="wrapper"
+    >
       <div class="pre-content" v-if="preContent">
         <slot name="pre-content" />
       </div>
       <div class="dialog-content">
         <div class="head" v-if="withTitle">
           <div>{{ title }}</div>
-          <ButtonIndex no-default-class class="close" @click="dialogStore.close()">
-            <i class="icon-x" />
-          </ButtonIndex>
+          <div class="head-buttons">
+            <ButtonIndex no-default-class class="minimize" @click="handleMinimize">
+              <i class="icon-minus" />
+            </ButtonIndex>
+            <ButtonIndex no-default-class class="close" @click="dialogStore.close()">
+              <i class="icon-x" />
+            </ButtonIndex>
+          </div>
         </div>
         <div :class="{ big }" class="content"><slot /></div>
       </div>
@@ -19,6 +36,9 @@
 </template>
 
 <script lang="ts" setup>
+import { useMotion } from "@vueuse/motion";
+import { ref, watch } from "vue";
+
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 
@@ -30,6 +50,55 @@ defineProps<{
 }>();
 
 const dialogStore = useDialog();
+const wrapperRef = ref<HTMLElement | null>(null);
+
+const handleMinimize = (): void => {
+  if (!wrapperRef.value) return;
+
+  const motion = useMotion(wrapperRef.value, {
+    initial: {
+      scale: 1,
+      opacity: 1,
+      x: 0,
+      y: 0,
+    },
+  });
+
+  motion.apply({
+    scale: 0.1,
+    opacity: 0,
+    x: -window.innerWidth / 2 + 150,
+    y: window.innerHeight / 2 - 100,
+    transition: {
+      duration: 400,
+      ease: [0.4, 0, 0.2, 1],
+    },
+  });
+
+  setTimeout(() => {
+    dialogStore.minimize();
+  }, 400);
+};
+
+watch(
+  () => dialogStore.isMinimized,
+  (isMinimized) => {
+    if (!isMinimized && wrapperRef.value) {
+      const motion = useMotion(wrapperRef.value, {});
+      motion.apply({
+        scale: 1,
+        opacity: 1,
+        x: 0,
+        y: 0,
+        transition: {
+          type: "spring",
+          stiffness: 200,
+          damping: 20,
+        },
+      });
+    }
+  },
+);
 </script>
 
 <style lang="scss" scoped>
@@ -38,7 +107,17 @@ const dialogStore = useDialog();
 
 $radius: 2rem;
 
-.close {
+.head-buttons {
+  display: flex;
+  gap: 0.5rem;
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.close,
+.minimize {
   background-color: var(--bg-color-light);
   border: 0;
   border-radius: 1rem;
@@ -46,10 +125,6 @@ $radius: 2rem;
   cursor: pointer;
   font-size: 1rem;
   padding: 0.4rem 0.5rem;
-  position: absolute;
-  right: 0.9rem;
-  top: 50%;
-  transform: translateY(-50%);
 
   @include mixins.squircle;
 
@@ -83,6 +158,7 @@ $radius: 2rem;
   background-color: #0d0d0d;
   filter: opacity(0.95);
   inset: 0;
+  pointer-events: all;
   position: fixed;
 
   &.is-closing {
@@ -94,6 +170,7 @@ $radius: 2rem;
   display: grid;
   inset: 0;
   place-content: center;
+  pointer-events: none;
   position: fixed;
   transition: 200ms;
   z-index: 99;
@@ -144,11 +221,17 @@ $radius: 2rem;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  pointer-events: all;
   position: relative;
   will-change: transform;
 
   &.is-closing {
     animation: bye-dialog-content 0.2s ease both;
+  }
+
+  &.minimized {
+    pointer-events: none;
+    visibility: hidden;
   }
 }
 
