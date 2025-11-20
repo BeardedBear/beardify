@@ -3,6 +3,7 @@ import { Track, TrackSimplified } from "./Track";
 export interface Dialog {
   albumId?: string;
   isClosing: boolean;
+  isMinimized: boolean;
   playlistId?: string;
   show: boolean;
   track?: Spotify.Track | Track | TrackSimplified;

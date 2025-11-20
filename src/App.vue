@@ -9,6 +9,7 @@
     <Player key="player" />
     <Notification />
     <Frame />
+    <MinimizedWindows />
   </template>
 </template>
 
@@ -19,6 +20,7 @@ import { RouterView, useRoute } from "vue-router";
 import DialogList from "@/components/dialog/DialogList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Frame from "@/components/frame/FrameIndex.vue";
+import MinimizedWindows from "@/components/minimized/MinimizedWindows.vue";
 import Notification from "@/components/notification/NotificationIndex.vue";
 import Player from "@/components/player/PlayerIndex.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
