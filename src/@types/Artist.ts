@@ -25,6 +25,7 @@ export interface ArtistPage {
   albums: AlbumSimplified[];
   albumsLive: AlbumSimplified[];
   artist: Artist;
+  discogsId: null | string;
   eps: AlbumSimplified[];
   followStatus: boolean | undefined;
   headerHeight: number;

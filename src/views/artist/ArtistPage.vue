@@ -2,6 +2,7 @@
   <div class="loader" v-if="artistStore.artist.name === ''"><Loader /></div>
   <div class="artist-page" v-else>
     <ArtistHeader ref="domHead" />
+    {{ artistStore.discogsId }}
     <div class="content">
       <div class="list">
         <div
