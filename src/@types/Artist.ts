@@ -25,6 +25,7 @@ export interface ArtistPage {
   albums: AlbumSimplified[];
   albumsLive: AlbumSimplified[];
   artist: Artist;
+  discogsArtist: DiscogsArtist | null;
   discogsId: null | string;
   eps: AlbumSimplified[];
   followStatus: boolean | undefined;
@@ -46,6 +47,37 @@ export interface ArtistSimplified {
 export interface ArtistTopTracks {
   tracks: Track[];
 }
+export interface DiscogsArtist {
+  data_quality: string;
+  id: number;
+  images: DiscogsImage[];
+  members: DiscogsMember[];
+  name: string;
+  profile: string;
+  releases_url: string;
+  resource_url: string;
+  uri: string;
+  urls: string[];
+}
+
+// Discogs API types
+export interface DiscogsImage {
+  height: number;
+  resource_url: string;
+  type: "primary" | "secondary";
+  uri: string;
+  uri150: string;
+  width: number;
+}
+
+export interface DiscogsMember {
+  active: boolean;
+  id: number;
+  name: string;
+  resource_url: string;
+  thumbnail_url: string;
+}
+
 export interface RelatedArtists {
   artists: Artist[];
 }

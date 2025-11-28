@@ -3,17 +3,18 @@
     <img :src="artistStore.artist.images[0].url" alt="" class="img" v-if="artistStore.artist.images.length" />
     <img class="img" src="/img/default.png" v-else />
     <div class="inner">
-      <div>
-        <div class="title">
-          <div class="name">{{ artistStore.artist.name }}</div>
-        </div>
+      <div class="title">
+        <div class="name">{{ artistStore.artist.name }}</div>
       </div>
       <Options />
     </div>
-    <div class="genres">
+    <!-- <div class="genres">
       <span :key="index" class="genre" v-for="(genre, index) in artistStore.artist.genres.splice(0, 8)">
         {{ genre }}
       </span>
+    </div> -->
+    <div class="profile" v-if="artistStore.discogsArtist?.profile">
+      {{ artistStore.discogsArtist.profile }}
     </div>
   </div>
 </template>
@@ -21,8 +22,8 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 
-import { useArtist } from "@/views/artist/ArtistStore";
 import Options from "@/components/artist/ArtistOptions.vue";
+import { useArtist } from "@/views/artist/ArtistStore";
 
 const domHeader = ref<HTMLDivElement | null>(null);
 const artistStore = useArtist();
@@ -46,22 +47,22 @@ onMounted(() => {
   width: 100%;
 }
 
-.genres {
-  margin-bottom: 0.3rem;
-  opacity: 0.4;
+// .genres {
+//   margin-bottom: 0.3rem;
+//   opacity: 0.4;
 
-  .genre {
-    background-color: var(--bg-color-darker);
-    border-radius: 2rem;
-    color: currentcolor;
-    display: inline-block;
-    font-size: 0.8rem;
-    margin-right: 0.3rem;
-    padding: 0 0.5rem 0.1rem;
+//   .genre {
+//     background-color: var(--bg-color-darker);
+//     border-radius: 2rem;
+//     color: currentcolor;
+//     display: inline-block;
+//     font-size: 0.8rem;
+//     margin-right: 0.3rem;
+//     padding: 0 0.5rem 0.1rem;
 
-    @include mixins.squircle;
-  }
-}
+//     @include mixins.squircle;
+//   }
+// }
 
 .title {
   align-items: center;
@@ -95,5 +96,14 @@ onMounted(() => {
   margin-bottom: 0.4rem;
   position: relative;
   z-index: 1;
+}
+
+.profile {
+  color: var(--font-color-light);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-top: 0.5rem;
+  max-width: 60rem;
+  opacity: 0.5;
 }
 </style>

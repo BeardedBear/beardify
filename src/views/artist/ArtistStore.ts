@@ -5,6 +5,7 @@ import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "@/@types/Ar
 import { defaultArtist } from "@/@types/Defaults";
 import { Paging } from "@/@types/Paging";
 import { instance } from "@/api";
+import { getDiscogsArtist } from "@/helpers/discogs";
 import { getDiscogsIdByArtistName } from "@/helpers/musicbrainz";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { cleanUrl } from "@/helpers/urls";
@@ -14,6 +15,7 @@ export const useArtist = defineStore("artist", {
   actions: {
     async clean() {
       this.artist = defaultArtist;
+      this.discogsArtist = null;
       this.discogsId = null;
       this.topTracks = { tracks: [] };
       this.albums = [];
@@ -53,10 +55,24 @@ export const useArtist = defineStore("artist", {
       }
     },
 
+    async getDiscogsArtist(discogsId: string) {
+      try {
+        const artist = await getDiscogsArtist(discogsId);
+        this.discogsArtist = artist;
+      } catch {
+        this.discogsArtist = null;
+      }
+    },
+
     async getDiscogsId(artistName: string) {
       try {
         const discogsId = await getDiscogsIdByArtistName(artistName);
         this.discogsId = discogsId;
+
+        // Fetch artist data from Discogs if ID was found
+        if (discogsId) {
+          this.getDiscogsArtist(discogsId);
+        }
       } catch {
         this.discogsId = null;
       }
@@ -122,6 +138,7 @@ export const useArtist = defineStore("artist", {
     albums: [],
     albumsLive: [],
     artist: defaultArtist,
+    discogsArtist: null,
     discogsId: null,
     eps: [],
     followStatus: false,
