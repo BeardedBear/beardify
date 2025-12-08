@@ -11,6 +11,7 @@
       <Options />
     </div>
     <ArtistProfile />
+    <ArtistTabs v-model="artistStore.activeTab" :tabs="tabs" />
   </div>
 </template>
 
@@ -19,10 +20,16 @@ import { onMounted, ref } from "vue";
 
 import Options from "@/components/artist/ArtistOptions.vue";
 import ArtistProfile from "@/components/artist/ArtistProfile.vue";
+import ArtistTabs, { Tab } from "@/components/artist/ArtistTabs.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const domHeader = ref<HTMLDivElement | null>(null);
 const artistStore = useArtist();
+
+const tabs: Tab[] = [
+  { icon: "icon-disc", id: "discography", label: "Discography" },
+  { icon: "icon-info", id: "info", label: "Info" },
+];
 
 onMounted(() => {
   if (domHeader.value) artistStore.updateHeaderHeight(domHeader.value?.getBoundingClientRect().height);
@@ -50,6 +57,15 @@ onMounted(() => {
     transform: translateY(-33%);
     width: 100%;
   }
+
+  &::after {
+    background-image: linear-gradient(to top, var(--primary-color) 0%, transparent 100%);
+    content: "";
+    inset: 0;
+    opacity: 0.2;
+    position: absolute;
+    z-index: 1;
+  }
 }
 
 .title {
@@ -69,7 +85,7 @@ onMounted(() => {
 
 .header {
   background-color: var(--bg-color-darker);
-  padding: 1.2rem 2.5rem 0.7rem;
+  padding: 1.2rem 2.5rem 0;
   position: sticky;
   top: 0;
   transition:

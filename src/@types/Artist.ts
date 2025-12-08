@@ -22,6 +22,7 @@ export interface Artist {
 }
 
 export interface ArtistPage {
+  activeTab: string;
   albums: AlbumSimplified[];
   albumsLive: AlbumSimplified[];
   artist: Artist;

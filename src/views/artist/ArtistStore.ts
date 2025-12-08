@@ -15,6 +15,7 @@ import { getWikidataArtistByName, getWikidataIdBySpotifyId } from "@/helpers/wik
 export const useArtist = defineStore("artist", {
   actions: {
     async clean() {
+      this.activeTab = "discography";
       this.artist = defaultArtist;
       this.discogsArtist = null;
       this.discogsId = null;
@@ -157,6 +158,7 @@ export const useArtist = defineStore("artist", {
   },
 
   state: (): ArtistPage => ({
+    activeTab: "discography",
     albums: [],
     albumsLive: [],
     artist: defaultArtist,

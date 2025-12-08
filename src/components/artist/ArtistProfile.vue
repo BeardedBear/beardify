@@ -153,7 +153,6 @@ $transition-duration: 0.2s;
   align-items: center;
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.5rem;
   max-width: 60rem;
   min-height: 0;
   position: relative;

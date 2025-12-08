@@ -1,8 +1,8 @@
 <template>
   <div class="loader" v-if="artistStore.artist.name === ''"><Loader /></div>
   <div class="artist-page" v-else>
-    <ArtistHeader ref="domHead" />
-    <div class="content">
+    <ArtistHeader />
+    <div class="content" v-if="artistStore.activeTab === 'discography'">
       <div class="list">
         <div
           v-if="
@@ -24,13 +24,15 @@
         <RelatedArtists class="top-item related-artists" />
       </div>
     </div>
+    <div class="content content--info" v-else-if="artistStore.activeTab === 'info'">
+      <ArtistInfo />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
+import ArtistInfo from "@/components/artist/ArtistInfo.vue";
 import BlockAlbums from "@/components/artist/BlockAlbums.vue";
 import BlockAlbumsLive from "@/components/artist/BlockAlbumsLive.vue";
 import BlockEps from "@/components/artist/BlockEps.vue";
@@ -42,7 +44,6 @@ import { useArtist } from "@/views/artist/ArtistStore";
 
 const props = defineProps<{ id: string }>();
 const artistStore = useArtist();
-const domHead = ref<HTMLDivElement | null>(null);
 
 artistStore.clean().finally(() => {
   artistStore.getArtist(props.id);
@@ -80,6 +81,10 @@ artistStore.clean().finally(() => {
   padding: 2rem 2.5rem;
 
   @include responsive.xl {
+    grid-template-columns: 1fr;
+  }
+
+  &--info {
     grid-template-columns: 1fr;
   }
 }
