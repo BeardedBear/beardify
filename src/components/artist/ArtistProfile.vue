@@ -9,18 +9,53 @@ import { useArtist } from "@/views/artist/ArtistStore";
 
 const artistStore = useArtist();
 
+const DISCOGS_BASE_URL = "https://www.discogs.com";
+const LINK_ATTRS = 'target="_blank" rel="noopener noreferrer" class="discogs-link"';
+
+/**
+ * Discogs entity types configuration
+ * Maps entity type letter to URL path and display text
+ */
+const DISCOGS_ENTITIES: Record<string, { path: string; text: string; searchType: string }> = {
+  a: { path: "artist", searchType: "artist", text: "artist" },
+  l: { path: "label", searchType: "label", text: "label" },
+  m: { path: "master", searchType: "master", text: "release" },
+  r: { path: "release", searchType: "release", text: "release" },
+};
+
+/**
+ * Text formatting tags configuration
+ */
+const TEXT_FORMATS: Array<{ pattern: RegExp; replacement: string }> = [
+  { pattern: /\[i\](.*?)\[\/i\]/gi, replacement: "<em>$1</em>" },
+  { pattern: /\[b\](.*?)\[\/b\]/gi, replacement: "<strong>$1</strong>" },
+  { pattern: /\[u\](.*?)\[\/u\]/gi, replacement: "<u>$1</u>" },
+];
+
+/**
+ * Create a Discogs link by ID
+ */
+function createDiscogsLinkById(type: string, id: string): string {
+  const entity = DISCOGS_ENTITIES[type.toLowerCase()];
+  if (!entity) return `[${type}${id}]`;
+  return `<a href="${DISCOGS_BASE_URL}/${entity.path}/${id}" ${LINK_ATTRS}>${entity.text}</a>`;
+}
+
+/**
+ * Create a Discogs search link by name
+ */
+function createDiscogsSearchLink(type: string, name: string): string {
+  const entity = DISCOGS_ENTITIES[type.toLowerCase()];
+  if (!entity) return `[${type}=${name}]`;
+  return `<a href="${DISCOGS_BASE_URL}/search/?q=${encodeURIComponent(name)}&type=${entity.searchType}" ${LINK_ATTRS}>${name}</a>`;
+}
+
 /**
  * Parse Discogs markup and convert to HTML
  * Supported tags:
- * - [i]text[/i] -> <em>text</em> (italic)
- * - [b]text[/b] -> <strong>text</strong> (bold)
- * - [u]text[/u] -> <u>text</u> (underline)
- * - [a123456] -> link to Discogs artist
- * - [l123456] -> link to Discogs label
- * - [r123456] -> link to Discogs release
- * - [m123456] -> link to Discogs master release
- * - [url=...]text[/url] -> <a href="...">text</a>
- * - [url]...[/url] -> <a href="...">...</a>
+ * - [i], [b], [u] -> text formatting
+ * - [a], [l], [r], [m] -> Discogs entity links (by ID or name)
+ * - [url] -> external links
  */
 function parseDiscogsMarkup(text: string): string {
   let result = text;
@@ -28,50 +63,16 @@ function parseDiscogsMarkup(text: string): string {
   // Escape HTML to prevent XSS
   result = result.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-  // [i]text[/i] -> <em>text</em>
-  result = result.replace(/\[i\](.*?)\[\/i\]/gi, "<em>$1</em>");
+  // Apply text formatting
+  for (const { pattern, replacement } of TEXT_FORMATS) {
+    result = result.replace(pattern, replacement);
+  }
 
-  // [b]text[/b] -> <strong>text</strong>
-  result = result.replace(/\[b\](.*?)\[\/b\]/gi, "<strong>$1</strong>");
+  // [x123456] or [x=123456] -> link to Discogs entity by ID
+  result = result.replace(/\[([almr])=?(\d+)\]/gi, (_, type, id) => createDiscogsLinkById(type, id));
 
-  // [u]text[/u] -> <u>text</u>
-  result = result.replace(/\[u\](.*?)\[\/u\]/gi, "<u>$1</u>");
-
-  // [a123456] or [a=123456] -> link to Discogs artist (by ID)
-  result = result.replace(
-    /\[a=?(\d+)\]/gi,
-    '<a href="https://www.discogs.com/artist/$1" target="_blank" rel="noopener noreferrer" class="discogs-link">artist</a>',
-  );
-
-  // [a=Artist Name] -> link to Discogs artist search (by name)
-  result = result.replace(
-    /\[a=([^\]]+)\]/gi,
-    '<a href="https://www.discogs.com/search/?q=$1&type=artist" target="_blank" rel="noopener noreferrer" class="discogs-link">$1</a>',
-  );
-
-  // [l123456] or [l=123456] -> link to Discogs label (by ID)
-  result = result.replace(
-    /\[l=?(\d+)\]/gi,
-    '<a href="https://www.discogs.com/label/$1" target="_blank" rel="noopener noreferrer" class="discogs-link">label</a>',
-  );
-
-  // [l=Label Name] -> link to Discogs label search (by name)
-  result = result.replace(
-    /\[l=([^\]]+)\]/gi,
-    '<a href="https://www.discogs.com/search/?q=$1&type=label" target="_blank" rel="noopener noreferrer" class="discogs-link">$1</a>',
-  );
-
-  // [r123456] or [r=123456] -> link to Discogs release (by ID)
-  result = result.replace(
-    /\[r=?(\d+)\]/gi,
-    '<a href="https://www.discogs.com/release/$1" target="_blank" rel="noopener noreferrer" class="discogs-link">release</a>',
-  );
-
-  // [m123456] or [m=123456] -> link to Discogs master release (by ID)
-  result = result.replace(
-    /\[m=?(\d+)\]/gi,
-    '<a href="https://www.discogs.com/master/$1" target="_blank" rel="noopener noreferrer" class="discogs-link">release</a>',
-  );
+  // [x=Name] -> link to Discogs search by name (non-numeric)
+  result = result.replace(/\[([al])=([^\]]+)\]/gi, (_, type, name) => createDiscogsSearchLink(type, name));
 
   // [url=http://...]text[/url] -> <a href="...">text</a>
   result = result.replace(
