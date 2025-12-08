@@ -99,14 +99,44 @@ function getWikidataSocialLinks(): SocialLink[] {
   }
 
   if (identifiers.officialWebsite) {
-    links.push({
-      icon: "icon-link",
-      name: "Website",
-      url: identifiers.officialWebsite,
-    });
+    const websiteUrl = extractUrl(identifiers.officialWebsite);
+    if (websiteUrl) {
+      links.push({
+        icon: "icon-link",
+        name: "Website",
+        url: websiteUrl,
+      });
+    }
   }
 
   return links;
+}
+
+/**
+ * Extract and clean a URL from a string that might contain extra text
+ * Example: "Bandcamp - https://artist.bandcamp.com" -> "https://artist.bandcamp.com"
+ * Also fixes malformed URLs like "http://.www.example.com" -> "https://www.example.com"
+ */
+function extractUrl(text: string): string | null {
+  // First try to extract a URL from the text
+  const urlMatch = text.match(/https?:\/\/[^\s]+/i);
+  if (urlMatch) {
+    let url = urlMatch[0];
+    // Fix malformed URLs with dots after protocol (e.g., "http://.www." -> "https://www.")
+    url = url.replace(/^https?:\/\/\.+/, "https://");
+    // Remove trailing punctuation that might have been captured
+    url = url.replace(/[.,;:!?)]+$/, "");
+    return url;
+  }
+
+  // If no protocol, try to find a domain pattern and add https://
+  const domainMatch = text.match(/(?:www\.)?([a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+)(?:\/[^\s]*)?/i);
+  if (domainMatch) {
+    const domain = domainMatch[0].replace(/^\.+/, ""); // Remove leading dots
+    return `https://${domain}`;
+  }
+
+  return null;
 }
 
 /**
@@ -118,7 +148,10 @@ function getDiscogsSocialLinks(): SocialLink[] {
 
   if (!urls) return links;
 
-  for (const url of urls) {
+  for (const rawUrl of urls) {
+    // Extract clean URL from the string (handles "Bandcamp - https://..." format)
+    const url = extractUrl(rawUrl) || rawUrl;
+
     // Skip Discogs' own URLs
     if (url.includes("discogs.com")) continue;
 
