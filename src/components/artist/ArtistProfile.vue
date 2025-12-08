@@ -1,9 +1,11 @@
 <template>
-  <div class="profile-wrapper" v-if="artistStore.discogsArtist?.profile">
-    <span class="profile-text" v-html="firstSentence" />
-    <div class="more-button" v-if="hasMoreContent">
-      <i class="icon-more-horizontal" />
-      <div class="full-profile" v-html="formattedProfile" />
+  <div class="profile-container" :class="{ visible: artistStore.discogsArtist?.profile }">
+    <div class="profile-wrapper" v-if="artistStore.discogsArtist?.profile">
+      <span class="profile-text" v-html="firstSentence" />
+      <div class="more-button" v-if="hasMoreContent">
+        <i class="icon-more-horizontal" />
+        <div class="full-profile" v-html="formattedProfile" />
+      </div>
     </div>
   </div>
 </template>
@@ -93,12 +95,20 @@ function parseDiscogsMarkup(text: string): string {
 }
 
 /**
- * Extract the first sentence from text
+ * Extract the first sentence from text, but limit to max characters
  */
-function getFirstSentence(text: string): string {
+function getFirstSentence(text: string, maxLength = 120): string {
   // Match first sentence ending with . ! or ? followed by space or end of string
   const match = text.match(/^[^.!?]*[.!?]/);
-  return match ? match[0] : text;
+  const firstSentence = match ? match[0] : text;
+
+  // If first sentence is within limit, return it
+  if (firstSentence.length <= maxLength) {
+    return firstSentence;
+  }
+
+  // Otherwise truncate at maxLength and add ellipsis
+  return text.slice(0, maxLength).trim() + "…";
 }
 
 const formattedProfile = computed(() => {
@@ -120,12 +130,32 @@ const hasMoreContent = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+$transition-duration: 0.2s;
+
+.profile-container {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition:
+    grid-template-rows $transition-duration ease,
+    opacity $transition-duration ease,
+    transform $transition-duration ease;
+
+  &.visible {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .profile-wrapper {
   align-items: center;
   display: flex;
   gap: 0.5rem;
   margin-top: 0.5rem;
   max-width: 60rem;
+  min-height: 0;
   position: relative;
 }
 
@@ -175,9 +205,10 @@ const hasMoreContent = computed(() => {
   pointer-events: none;
   position: absolute;
   top: calc(100%);
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(-5px);
   transition:
-    opacity 0.2s,
+    opacity 0.2s ease,
+    transform 0.2s ease,
     visibility 0.2s;
   visibility: hidden;
   z-index: 100;
@@ -223,6 +254,7 @@ const hasMoreContent = computed(() => {
     .full-profile {
       opacity: 1;
       pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
       visibility: visible;
     }
   }

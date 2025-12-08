@@ -33,8 +33,6 @@ onMounted(() => {
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/mixins" as mixins;
 
-
-
 .image-container {
   inset: 0;
   overflow: hidden;
@@ -74,7 +72,9 @@ onMounted(() => {
   padding: 1.2rem 2.5rem 0.7rem;
   position: sticky;
   top: 0;
-  transition: transform ease 0.1s;
+  transition:
+    transform ease 0.1s,
+    padding 0.3s ease;
   z-index: 3;
 }
 
@@ -82,7 +82,6 @@ onMounted(() => {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.4rem;
   position: relative;
   z-index: 1;
 }
