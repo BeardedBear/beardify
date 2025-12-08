@@ -10,6 +10,7 @@ import { getDiscogsIdByArtistName } from "@/helpers/musicbrainz";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { cleanUrl } from "@/helpers/urls";
 import { isEP, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
+import { getWikidataArtistByName, getWikidataIdBySpotifyId } from "@/helpers/wikidata";
 
 export const useArtist = defineStore("artist", {
   actions: {
@@ -17,6 +18,7 @@ export const useArtist = defineStore("artist", {
       this.artist = defaultArtist;
       this.discogsArtist = null;
       this.discogsId = null;
+      this.wikidataArtist = null;
       this.topTracks = { tracks: [] };
       this.albums = [];
       this.albumsLive = [];
@@ -50,6 +52,9 @@ export const useArtist = defineStore("artist", {
 
         // Fetch Discogs ID from MusicBrainz
         this.getDiscogsId(e.data.name);
+
+        // Fetch Wikidata artist data
+        this.getWikidataArtist(artistId, e.data.name);
       } catch {
         // silent fail
       }
@@ -119,6 +124,23 @@ export const useArtist = defineStore("artist", {
       }
     },
 
+    async getWikidataArtist(spotifyId: string, artistName: string) {
+      try {
+        // First try to find by Spotify ID (more accurate)
+        const wikidataId = await getWikidataIdBySpotifyId(spotifyId);
+
+        if (wikidataId) {
+          const { getWikidataArtist } = await import("@/helpers/wikidata");
+          this.wikidataArtist = await getWikidataArtist(wikidataId);
+        } else {
+          // Fallback to name search
+          this.wikidataArtist = await getWikidataArtistByName(artistName);
+        }
+      } catch {
+        this.wikidataArtist = null;
+      }
+    },
+
     switchFollow(artistId: string) {
       if (this.followStatus) {
         instance().delete(`me/following?type=artist&ids=${artistId}`);
@@ -146,5 +168,6 @@ export const useArtist = defineStore("artist", {
     relatedArtists: { artists: [] },
     singles: [],
     topTracks: { tracks: [] },
+    wikidataArtist: null,
   }),
 });

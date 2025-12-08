@@ -22,15 +22,24 @@
     <ButtonIndex icon-only @click.stop.prevent="openLink(link.youtube)" variant="nude">
       <i class="icon-youtube" />
     </ButtonIndex>
+    <ButtonIndex
+      v-if="artistStore.wikidataArtist?.identifiers.officialWebsite"
+      icon-only
+      @click.stop.prevent="openLink(artistStore.wikidataArtist.identifiers.officialWebsite)"
+      variant="nude"
+    >
+      <i class="icon-link" />
+    </ButtonIndex>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUpdated, ref } from "vue";
+import { computed, onMounted, onUpdated, ref } from "vue";
 
-import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useFrame } from "@/components/frame/FrameStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
+import { useArtist } from "@/views/artist/ArtistStore";
 
 const props = defineProps<{
   artistName: string;
@@ -38,8 +47,35 @@ const props = defineProps<{
 }>();
 
 const frameStore = useFrame();
+const artistStore = useArtist();
 const link = ref<Record<string, string>>({});
 const artistNameNormalized = ref<string>("");
+
+// Use Wikidata Wikipedia URL if available, otherwise fallback to constructed URL
+const wikipediaUrl = computed(() => {
+  return artistStore.wikidataArtist?.wikipediaUrl || `https://en.wikipedia.org/wiki/${artistNameNormalized.value}`;
+});
+
+// Use Wikidata Discogs ID if available, otherwise use constructed URL
+const discogsUrl = computed(() => {
+  const wikidataDiscogsId = artistStore.wikidataArtist?.identifiers.discogsId;
+  if (wikidataDiscogsId) {
+    return `https://www.discogs.com/artist/${wikidataDiscogsId}`;
+  }
+  if (artistStore.discogsId) {
+    return `https://www.discogs.com/artist/${artistStore.discogsId}`;
+  }
+  return `https://www.discogs.com/artist/${artistNameNormalized.value}`;
+});
+
+// Use Wikidata Rate Your Music ID if available
+const rymUrl = computed(() => {
+  const rymId = artistStore.wikidataArtist?.identifiers.rateYourMusicId;
+  if (rymId) {
+    return `https://rateyourmusic.com/artist/${rymId}`;
+  }
+  return `https://rateyourmusic.com/search?searchtype=a&searchterm=${artistNameNormalized.value}`;
+});
 
 function openLink(url: string): void {
   window.open(url, "_blank");
@@ -48,12 +84,12 @@ function openLink(url: string): void {
 function updateLinks(): void {
   artistNameNormalized.value = normalizeDiacritics(props.artistName).replaceAll("&", "and");
   link.value = {
-    discogs: `https://www.discogs.com/artist/${artistNameNormalized.value}`,
+    discogs: discogsUrl.value,
     google: `https://www.google.com/search?q=${artistNameNormalized.value}&igu=1`,
     lastfm: `https://www.last.fm/music/${artistNameNormalized.value}`,
-    rym: `https://rateyourmusic.com/search?searchtype=a&searchterm=${artistNameNormalized.value}`,
+    rym: rymUrl.value,
     sputnik: `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${artistNameNormalized.value}&amp;x=0&amp;y=0`,
-    wikipedia: `https://en.wikipedia.org/wiki/${artistNameNormalized.value}`,
+    wikipedia: wikipediaUrl.value,
     youtube: `https://www.youtube.com/results?search_query=${artistNameNormalized.value}`,
   };
 }
