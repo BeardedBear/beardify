@@ -9,7 +9,6 @@
       <Options />
     </div>
     <ArtistProfile />
-    <SocialLinks />
   </div>
 </template>
 
@@ -18,7 +17,6 @@ import { onMounted, ref } from "vue";
 
 import Options from "@/components/artist/ArtistOptions.vue";
 import ArtistProfile from "@/components/artist/ArtistProfile.vue";
-import SocialLinks from "@/components/artist/ArtistSocialLinks.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const domHeader = ref<HTMLDivElement | null>(null);
@@ -34,9 +32,10 @@ onMounted(() => {
 @use "@/assets/scss/mixins" as mixins;
 
 .img {
-  filter: blur(15px);
+  filter: blur(50px);
   inset: 0;
-  opacity: 0.2;
+  opacity: 0.15;
+  pointer-events: none;
   position: absolute;
   top: 50%;
   transform: translateY(-33%);
@@ -60,7 +59,6 @@ onMounted(() => {
 
 .header {
   background-color: var(--bg-color-darker);
-  overflow: hidden;
   padding: 1.2rem 2.5rem 0.7rem;
   position: sticky;
   top: 0;

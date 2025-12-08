@@ -35,7 +35,7 @@
 .icon-twitter:before {
     content: "\f111";
 }
-.icon-youtube1:before {
+.icon-youtube:before {
     content: "\f1b6";
 }
 .icon-facebook:before {
@@ -58,9 +58,6 @@
 }
 .icon-spotify:before {
     content: "\e934";
-}
-.icon-youtube:before {
-    content: "\e92c";
 }
 .icon-beardify:before {
     content: "\e940";

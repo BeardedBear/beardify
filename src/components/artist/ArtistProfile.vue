@@ -1,5 +1,11 @@
 <template>
-  <div class="profile" v-if="artistStore.discogsArtist?.profile" v-html="formattedProfile" />
+  <div class="profile-wrapper" v-if="artistStore.discogsArtist?.profile">
+    <span class="profile-text" v-html="firstSentence" />
+    <div class="more-button" v-if="hasMoreContent">
+      <i class="icon-more-horizontal" />
+      <div class="full-profile" v-html="formattedProfile" />
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -16,7 +22,7 @@ const LINK_ATTRS = 'target="_blank" rel="noopener noreferrer" class="discogs-lin
  * Discogs entity types configuration
  * Maps entity type letter to URL path and display text
  */
-const DISCOGS_ENTITIES: Record<string, { path: string; text: string; searchType: string }> = {
+const DISCOGS_ENTITIES: Record<string, { path: string; searchType: string; text: string }> = {
   a: { path: "artist", searchType: "artist", text: "artist" },
   l: { path: "label", searchType: "label", text: "label" },
   m: { path: "master", searchType: "master", text: "release" },
@@ -86,19 +92,47 @@ function parseDiscogsMarkup(text: string): string {
   return result;
 }
 
+/**
+ * Extract the first sentence from text
+ */
+function getFirstSentence(text: string): string {
+  // Match first sentence ending with . ! or ? followed by space or end of string
+  const match = text.match(/^[^.!?]*[.!?]/);
+  return match ? match[0] : text;
+}
+
 const formattedProfile = computed(() => {
   if (!artistStore.discogsArtist?.profile) return "";
   return parseDiscogsMarkup(artistStore.discogsArtist.profile);
 });
+
+const firstSentence = computed(() => {
+  if (!artistStore.discogsArtist?.profile) return "";
+  const first = getFirstSentence(artistStore.discogsArtist.profile);
+  return parseDiscogsMarkup(first);
+});
+
+const hasMoreContent = computed(() => {
+  if (!artistStore.discogsArtist?.profile) return false;
+  const first = getFirstSentence(artistStore.discogsArtist.profile);
+  return artistStore.discogsArtist.profile.length > first.length;
+});
 </script>
 
 <style lang="scss" scoped>
-.profile {
+.profile-wrapper {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  max-width: 60rem;
+  position: relative;
+}
+
+.profile-text {
   color: var(--font-color-light);
   font-size: 0.9rem;
   line-height: 1.4;
-  margin-top: 0.5rem;
-  max-width: 60rem;
   opacity: 0.5;
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -120,6 +154,76 @@ const formattedProfile = computed(() => {
 
     &:hover {
       text-decoration: underline;
+    }
+  }
+}
+
+.full-profile {
+  background-color: var(--bg-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 5px rgb(0 0 0 / 20%);
+  color: var(--font-color-light);
+  font-size: 0.9rem;
+  left: 50%;
+  line-height: 1.6;
+  max-height: 300px;
+  max-width: 600px;
+  min-width: 300px;
+  opacity: 0;
+  overflow-y: auto;
+  padding: 1.2rem;
+  pointer-events: none;
+  position: absolute;
+  top: calc(100%);
+  transform: translateX(-50%);
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
+  visibility: hidden;
+  z-index: 100;
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(em) {
+    font-style: italic;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(strong) {
+    font-weight: bold;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(.discogs-link),
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(a) {
+    color: var(--primary-color-light);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.more-button {
+  background-color: var(--bg-color-dark);
+  border-radius: 0.3rem;
+  color: var(--font-color-light);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 1rem;
+  height: 1.5rem;
+  opacity: 0.6;
+  padding: 0.2rem 0.4rem;
+  position: relative;
+
+  &:hover {
+    opacity: 1;
+
+    .full-profile {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
     }
   }
 }
