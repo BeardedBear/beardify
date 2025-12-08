@@ -10,7 +10,7 @@ import { getDiscogsIdByArtistName } from "@/helpers/musicbrainz";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { cleanUrl } from "@/helpers/urls";
 import { isEP, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
-import { getWikidataArtistByName, getWikidataIdBySpotifyId } from "@/helpers/wikidata";
+import { getWikidataArtistByName, getWikidataIdBySpotifyId, getWikipediaExtract } from "@/helpers/wikidata";
 
 export const useArtist = defineStore("artist", {
   actions: {
@@ -20,6 +20,7 @@ export const useArtist = defineStore("artist", {
       this.discogsArtist = null;
       this.discogsId = null;
       this.wikidataArtist = null;
+      this.wikipediaExtract = null;
       this.topTracks = { tracks: [] };
       this.albums = [];
       this.albumsLive = [];
@@ -137,6 +138,11 @@ export const useArtist = defineStore("artist", {
           // Fallback to name search
           this.wikidataArtist = await getWikidataArtistByName(artistName);
         }
+
+        // Fetch Wikipedia extract if we have a Wikipedia URL
+        if (this.wikidataArtist?.wikipediaUrl) {
+          this.wikipediaExtract = await getWikipediaExtract(this.wikidataArtist.wikipediaUrl);
+        }
       } catch {
         this.wikidataArtist = null;
       }
@@ -171,5 +177,6 @@ export const useArtist = defineStore("artist", {
     singles: [],
     topTracks: { tracks: [] },
     wikidataArtist: null,
+    wikipediaExtract: null,
   }),
 });

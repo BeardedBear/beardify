@@ -47,7 +47,7 @@ defineEmits<{
   align-items: center;
   background-color: transparent;
   border: none;
-  border-radius:$radius $radius 0 0 ;
+  border-radius: $radius $radius 0 0;
   color: var(--font-color-light);
   cursor: pointer;
   display: flex;

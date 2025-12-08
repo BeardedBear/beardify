@@ -1,10 +1,5 @@
 <template>
   <div class="artist-info">
-    <div class="info-section" v-if="artistStore.discogsArtist?.profile">
-      <h3 class="section-title">Biography</h3>
-      <div class="biography" v-html="formattedProfile" />
-    </div>
-
     <div class="info-section" v-if="artistStore.wikidataArtist">
       <h3 class="section-title">Details</h3>
       <div class="details-grid">
@@ -25,6 +20,14 @@
           <span class="detail-value">{{ artistStore.artist.popularity }}%</span>
         </div>
       </div>
+    </div>
+
+    <div class="info-section" v-if="hasBiography">
+      <h3 class="section-title">Biography</h3>
+      <!-- Wikipedia content (priority) -->
+      <div class="wikipedia-content" v-if="artistStore.wikipediaExtract" v-html="artistStore.wikipediaExtract" />
+      <!-- Fallback to Discogs profile if no Wikipedia -->
+      <div class="discogs-biography" v-else-if="artistStore.discogsArtist?.profile" v-html="formattedDiscogsProfile" />
     </div>
 
     <div class="info-section" v-if="hasExternalLinks">
@@ -73,7 +76,10 @@
       </div>
     </div>
 
-    <div class="info-section" v-if="!artistStore.discogsArtist?.profile && !artistStore.wikidataArtist">
+    <div
+      class="info-section"
+      v-if="!artistStore.discogsArtist?.profile && !artistStore.wikidataArtist && !artistStore.wikipediaExtract"
+    >
       <p class="no-info">No additional information available for this artist.</p>
     </div>
   </div>
@@ -97,8 +103,8 @@ const DISCOGS_ENTITIES: Record<string, { path: string; searchType: string; text:
 };
 
 const TEXT_FORMATS: Array<{ pattern: RegExp; replacement: string }> = [
-  { pattern: /\[i\](.*?)\[\/i\]/gi, replacement: "<em>$1</em>" },
   { pattern: /\[b\](.*?)\[\/b\]/gi, replacement: "<strong>$1</strong>" },
+  { pattern: /\[i\](.*?)\[\/i\]/gi, replacement: "<em>$1</em>" },
   { pattern: /\[u\](.*?)\[\/u\]/gi, replacement: "<u>$1</u>" },
 ];
 
@@ -112,6 +118,10 @@ function createDiscogsSearchLink(type: string, name: string): string {
   const entity = DISCOGS_ENTITIES[type.toLowerCase()];
   if (!entity) return `[${type}=${name}]`;
   return `<a href="${DISCOGS_BASE_URL}/search/?q=${encodeURIComponent(name)}&type=${entity.searchType}" ${LINK_ATTRS}>${name}</a>`;
+}
+
+function formatNumber(num: number): string {
+  return num.toLocaleString();
 }
 
 function parseDiscogsMarkup(text: string): string {
@@ -129,17 +139,18 @@ function parseDiscogsMarkup(text: string): string {
     '<a href="$1" target="_blank" rel="noopener noreferrer">$2</a>',
   );
   result = result.replace(/\[url\](.*?)\[\/url\]/gi, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+  result = result.replace(/\n/g, "<br>");
 
   return result;
 }
 
-function formatNumber(num: number): string {
-  return num.toLocaleString();
-}
-
-const formattedProfile = computed(() => {
+const formattedDiscogsProfile = computed(() => {
   if (!artistStore.discogsArtist?.profile) return "";
   return parseDiscogsMarkup(artistStore.discogsArtist.profile);
+});
+
+const hasBiography = computed(() => {
+  return artistStore.wikipediaExtract || artistStore.discogsArtist?.profile;
 });
 
 const hasExternalLinks = computed(() => {
@@ -162,12 +173,144 @@ const hasExternalLinks = computed(() => {
 }
 
 .section-title {
+  align-items: center;
   border-bottom: 1px solid var(--bg-color-light);
   color: var(--font-color-default);
+  display: flex;
   font-size: 1.1rem;
   font-weight: 600;
+  gap: 0.5rem;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
+}
+
+.source-link {
+  color: var(--font-color-light);
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  i {
+    font-size: 0.9rem;
+  }
+}
+
+.wikipedia-content {
+  color: var(--font-color-light);
+  font-size: 0.95rem;
+  line-height: 1.7;
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(section) {
+    margin-bottom: 1.5rem;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(p) {
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(h2) {
+    border-bottom: 1px solid var(--bg-color-light);
+    color: var(--font-color-default);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    margin-top: 1.5rem;
+    padding-bottom: 0.4rem;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(h3) {
+    color: var(--font-color-default);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    margin-top: 1.2rem;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(h4) {
+    color: var(--font-color-default);
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(ul),
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(ol) {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(li) {
+    margin-bottom: 0.3rem;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(a) {
+    color: var(--primary-color-light);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(b),
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(strong) {
+    font-weight: bold;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(i),
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(em) {
+    font-style: italic;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(table) {
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(th),
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(td) {
+    border: 1px solid var(--bg-color-light);
+    padding: 0.5rem;
+    text-align: left;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(th) {
+    background-color: var(--bg-color-dark);
+    font-weight: 600;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(blockquote) {
+    border-left: 3px solid var(--primary-color-default);
+    margin: 1rem 0;
+    padding-left: 1rem;
+  }
 }
 
 .biography {

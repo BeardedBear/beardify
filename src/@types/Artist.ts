@@ -35,6 +35,7 @@ export interface ArtistPage {
   singles: AlbumSimplified[];
   topTracks: ArtistTopTracks;
   wikidataArtist: null | WikidataArtist;
+  wikipediaExtract: null | string;
 }
 
 export interface ArtistSimplified {

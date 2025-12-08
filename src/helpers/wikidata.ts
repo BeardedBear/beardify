@@ -116,6 +116,26 @@ interface WikidataSearchResult {
 }
 
 /**
+ * Sections to exclude from Wikipedia content
+ */
+const EXCLUDED_WIKIPEDIA_SECTIONS = [
+  "Band members",
+  "Discography",
+  "External links",
+  "Further reading",
+  "Members",
+  "Notes",
+  "References",
+  "See also",
+  "Sources",
+  "Tours",
+  "Awards",
+  "Bibliography",
+  "Chart performance",
+  "Credits",
+];
+
+/**
  * Creates a Wikidata API client instance
  */
 const wikidataClient = ky.create({
@@ -216,6 +236,63 @@ export async function getWikidataIdBySpotifyId(spotifyId: string): Promise<null 
 }
 
 /**
+ * Get Wikipedia article content (extract) from a Wikipedia URL
+ * @param wikipediaUrl - The full Wikipedia URL
+ * @returns Promise resolving to the article extract HTML or null
+ */
+export async function getWikipediaExtract(wikipediaUrl: string): Promise<null | string> {
+  try {
+    // Extract language and title from URL
+    // e.g., "https://en.wikipedia.org/wiki/Radiohead" -> lang: "en", title: "Radiohead"
+    const urlMatch = wikipediaUrl.match(/https?:\/\/(\w+)\.wikipedia\.org\/wiki\/(.+)/);
+    if (!urlMatch) {
+      return null;
+    }
+
+    const [, lang, encodedTitle] = urlMatch;
+    const title = decodeURIComponent(encodedTitle);
+
+    // Use MediaWiki API with extracts - full article, HTML format
+    const params = new URLSearchParams({
+      action: "query",
+      format: "json",
+      origin: "*",
+      prop: "extracts",
+      titles: title,
+    });
+
+    const response = await fetch(`https://${lang}.wikipedia.org/w/api.php?${params.toString()}`);
+    const data = (await response.json()) as {
+      query?: {
+        pages: Record<
+          string,
+          {
+            extract?: string;
+            pageid: number;
+            title: string;
+          }
+        >;
+      };
+    };
+
+    if (!data.query?.pages) {
+      return null;
+    }
+
+    // Get the first page (there should only be one)
+    const pages = Object.values(data.query.pages);
+    if (pages.length === 0 || !pages[0].extract) {
+      return null;
+    }
+
+    // Clean the HTML to remove unwanted sections
+    return cleanWikipediaHtml(pages[0].extract);
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Search for an artist in Wikidata by name
  * @param artistName - The name of the artist to search for
  * @returns Promise resolving to the Wikidata entity ID or null
@@ -244,6 +321,39 @@ export async function searchWikidataArtist(artistName: string): Promise<null | s
   } catch {
     return null;
   }
+}
+
+/**
+ * Remove unwanted sections from Wikipedia HTML content
+ * @param html - The raw HTML content from Wikipedia
+ * @returns Cleaned HTML without excluded sections
+ */
+function cleanWikipediaHtml(html: string): string {
+  // Wikipedia can use different HTML structures for headers:
+  // - <h2><span id="...">Title</span></h2>
+  // - <h2 id="...">Title</h2>
+  // - <h2><span class="mw-headline" id="...">Title</span></h2>
+  // We need to match all variations and remove everything until the next h2 or end
+
+  let result = html;
+
+  for (const section of EXCLUDED_WIKIPEDIA_SECTIONS) {
+    // Pattern to match h2/h3 containing the section title and everything until the next h2 or end
+    const patterns = [
+      // Match <h2>...<span>Title</span>...</h2> followed by content until next <h2 or end
+      new RegExp(`<h2[^>]*>[^<]*<span[^>]*>[^<]*${section}[^<]*</span>[^<]*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
+      // Match <h2>Title</h2> directly (no span)
+      new RegExp(`<h2[^>]*>\\s*${section}\\s*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
+      // Match <h3> variants for subsections
+      new RegExp(`<h3[^>]*>[^<]*<span[^>]*>[^<]*${section}[^<]*</span>[^<]*</h3>[\\s\\S]*?(?=<h[23]|$)`, "gi"),
+    ];
+
+    for (const pattern of patterns) {
+      result = result.replace(pattern, "");
+    }
+  }
+
+  return result;
 }
 
 /**
