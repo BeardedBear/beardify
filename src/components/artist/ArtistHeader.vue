@@ -1,7 +1,9 @@
 <template>
   <div class="header" ref="domHeader">
-    <img :src="artistStore.artist.images[0].url" alt="" class="img" v-if="artistStore.artist.images.length" />
-    <img class="img" src="/img/default.png" v-else />
+    <div class="image-container">
+      <img :src="artistStore.artist.images[0].url" alt="" class="img" v-if="artistStore.artist.images.length" />
+      <img class="img" src="/img/default.png" v-else />
+    </div>
     <div class="inner">
       <div class="title">
         <div class="name">{{ artistStore.artist.name }}</div>
@@ -31,15 +33,25 @@ onMounted(() => {
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/mixins" as mixins;
 
-.img {
-  filter: blur(50px);
+
+
+.image-container {
   inset: 0;
-  opacity: 0.15;
+  overflow: hidden;
   pointer-events: none;
   position: absolute;
-  top: 50%;
-  transform: translateY(-33%);
-  width: 100%;
+  z-index: 1;
+
+  .img {
+    filter: blur(15px);
+    inset: 0;
+    opacity: 0.2;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-33%);
+    width: 100%;
+  }
 }
 
 .title {
