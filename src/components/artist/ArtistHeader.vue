@@ -16,6 +16,7 @@
     <div class="profile" v-if="artistStore.discogsArtist?.profile">
       {{ artistStore.discogsArtist.profile }}
     </div>
+    <SocialLinks />
   </div>
 </template>
 
@@ -23,6 +24,7 @@
 import { onMounted, ref } from "vue";
 
 import Options from "@/components/artist/ArtistOptions.vue";
+import SocialLinks from "@/components/artist/ArtistSocialLinks.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const domHeader = ref<HTMLDivElement | null>(null);
