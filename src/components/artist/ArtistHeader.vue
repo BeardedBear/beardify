@@ -43,7 +43,6 @@ onMounted(() => {
   width: 100%;
 }
 
-
 .title {
   align-items: center;
   display: flex;
