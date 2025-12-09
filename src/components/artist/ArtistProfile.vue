@@ -116,9 +116,8 @@ function parseDiscogsMarkup(text: string): string {
   // [url]http://...[/url] -> <a href="...">...</a>
   result = result.replace(/\[url\](.*?)\[\/url\]/gi, (_, url) => {
     const sanitizedUrl = sanitizeUrl(url);
-    // Sanitize the display URL to prevent XSS
-    const sanitizedDisplayUrl = DOMPurify.sanitize(url, { ALLOWED_TAGS: [] });
-    return `<a href="${sanitizedUrl}" target="_blank" rel="noopener noreferrer">${sanitizedDisplayUrl}</a>`;
+    // Display the sanitized URL to prevent XSS
+    return `<a href="${sanitizedUrl}" target="_blank" rel="noopener noreferrer">${sanitizedUrl}</a>`;
   });
 
   return result;
