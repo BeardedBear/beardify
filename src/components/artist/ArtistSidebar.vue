@@ -10,6 +10,46 @@
       </div>
     </div>
 
+    <div class="sidebar-section" v-if="activeMembers.length || formerMembers.length">
+      <h3 class="sidebar-title">Members</h3>
+      <div class="sidebar-members" v-if="activeMembers.length">
+        <a
+          v-for="member in activeMembers"
+          :key="member.id"
+          :href="member.url"
+          class="sidebar-member"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img v-if="member.thumbnail" :src="member.thumbnail" :alt="member.name" class="member-thumbnail" />
+          <div v-else class="member-placeholder">
+            <i class="icon-user" />
+          </div>
+          <span class="member-name">{{ member.name }}</span>
+        </a>
+      </div>
+
+      <template v-if="formerMembers.length">
+        <h4 class="sidebar-subtitle">Former</h4>
+        <div class="sidebar-members">
+          <a
+            v-for="member in formerMembers"
+            :key="member.id"
+            :href="member.url"
+            class="sidebar-member inactive"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img v-if="member.thumbnail" :src="member.thumbnail" :alt="member.name" class="member-thumbnail" />
+            <div v-else class="member-placeholder">
+              <i class="icon-user" />
+            </div>
+            <span class="member-name">{{ member.name }}</span>
+          </a>
+        </div>
+      </template>
+    </div>
+
     <div class="sidebar-section" v-if="externalLinks.length">
       <h3 class="sidebar-title">External Links</h3>
       <div class="sidebar-links">
@@ -45,7 +85,30 @@ interface ExternalLink {
   url: string;
 }
 
+interface MemberItem {
+  active: boolean;
+  id: number;
+  name: string;
+  thumbnail: string | null;
+  url: string;
+}
+
 const artistStore = useArtist();
+
+const activeMembers = computed<MemberItem[]>(() => {
+  const discogsMembers = artistStore.discogsArtist?.members;
+  if (!discogsMembers?.length) return [];
+
+  return discogsMembers
+    .filter((member) => member.active)
+    .map((member) => ({
+      active: member.active,
+      id: member.id,
+      name: member.name.replace(/\s*\(\d+\)$/, ""),
+      thumbnail: member.thumbnail_url || null,
+      url: `https://www.discogs.com/artist/${member.id}`,
+    }));
+});
 
 const details = computed<DetailItem[]>(() => {
   const items: DetailItem[] = [];
@@ -91,12 +154,33 @@ const externalLinks = computed<ExternalLink[]>(() => {
   return links;
 });
 
-const hasContent = computed(() => details.value.length > 0 || externalLinks.value.length > 0);
+const formerMembers = computed<MemberItem[]>(() => {
+  const discogsMembers = artistStore.discogsArtist?.members;
+  if (!discogsMembers?.length) return [];
+
+  return discogsMembers
+    .filter((member) => !member.active)
+    .map((member) => ({
+      active: member.active,
+      id: member.id,
+      name: member.name.replace(/\s*\(\d+\)$/, ""),
+      thumbnail: member.thumbnail_url || null,
+      url: `https://www.discogs.com/artist/${member.id}`,
+    }));
+});
+
+const hasContent = computed(
+  () =>
+    details.value.length > 0 ||
+    externalLinks.value.length > 0 ||
+    activeMembers.value.length > 0 ||
+    formerMembers.value.length > 0,
+);
 </script>
 
 <style lang="scss" scoped>
-  $radius: 0.5rem;
-  $margin: 0.2rem;
+$radius: 0.5rem;
+$margin: 0.2rem;
 
 .sidebar {
   display: flex;
@@ -116,6 +200,16 @@ const hasContent = computed(() => details.value.length > 0 || externalLinks.valu
   font-weight: 600;
   margin: $margin;
   padding: 0.5rem 1rem;
+  text-transform: uppercase;
+}
+
+.sidebar-subtitle {
+  border-top: 1px solid var(--bg-color-light);
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 0 1rem;
+  opacity: 0.6;
+  padding: 0.75rem 0 0.25rem;
   text-transform: uppercase;
 }
 
@@ -177,5 +271,67 @@ const hasContent = computed(() => details.value.length > 0 || externalLinks.valu
   span {
     font-size: 0.85rem;
   }
+}
+
+.sidebar-members {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem;
+}
+
+.sidebar-member {
+  align-items: center;
+  border-radius: 0.25rem;
+  color: var(--font-color-light);
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background-color: var(--bg-color-light);
+    color: var(--font-color-default);
+  }
+
+  &.inactive {
+    opacity: 0.6;
+  }
+}
+
+.member-thumbnail {
+  border-radius: 50%;
+  height: 24px;
+  object-fit: cover;
+  width: 24px;
+}
+
+.member-placeholder {
+  align-items: center;
+  background-color: var(--bg-color-light);
+  border-radius: 50%;
+  display: flex;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+
+  i {
+    font-size: 0.7rem;
+    opacity: 0.5;
+  }
+}
+
+.member-name {
+  flex: 1;
+  font-size: 0.85rem;
+}
+
+.member-status {
+  font-size: 0.7rem;
+  font-style: italic;
+  opacity: 0.5;
 }
 </style>
