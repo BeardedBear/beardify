@@ -36,6 +36,7 @@ export interface ArtistPage {
   topTracks: ArtistTopTracks;
   wikidataArtist: null | WikidataArtist;
   wikipediaExtract: null | string;
+  wikipediaLanguage: string;
 }
 
 export interface ArtistSimplified {
@@ -94,6 +95,7 @@ export interface WikidataArtist {
   identifiers: WikidataArtistIdentifiers;
   imageUrl: null | string;
   label: null | string;
+  wikipediaLanguages: WikipediaLanguage[];
   wikipediaUrl: null | string;
 }
 
@@ -119,4 +121,13 @@ export interface WikidataArtistIdentifiers {
   spotifyId: null | string;
   twitterUsername: null | string;
   youtubeChannelId: null | string;
+}
+
+/**
+ * Available Wikipedia language
+ */
+export interface WikipediaLanguage {
+  code: string;
+  name: string;
+  url: string;
 }

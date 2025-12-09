@@ -23,7 +23,21 @@
     </div>
 
     <div class="info-section" v-if="hasBiography">
-      <h3 class="section-title">Biography</h3>
+      <div class="section-header">
+        <h3 class="section-title">Biography</h3>
+        <!-- Wikipedia language selector -->
+        <div class="language-selector" v-if="hasMultipleLanguages">
+          <button
+            v-for="lang in artistStore.wikidataArtist?.wikipediaLanguages"
+            :key="lang.code"
+            class="language-button"
+            :class="{ active: artistStore.wikipediaLanguage === lang.code }"
+            @click="switchLanguage(lang.url, lang.code)"
+          >
+            {{ lang.code.toUpperCase() }}
+          </button>
+        </div>
+      </div>
       <!-- Wikipedia content (priority) -->
       <div class="wikipedia-content" v-if="artistStore.wikipediaExtract" v-html="artistStore.wikipediaExtract" />
       <!-- Fallback to Discogs profile if no Wikipedia -->
@@ -161,6 +175,14 @@ const hasExternalLinks = computed(() => {
     artistStore.wikidataArtist?.identifiers.rateYourMusicId
   );
 });
+
+const hasMultipleLanguages = computed(() => {
+  return (artistStore.wikidataArtist?.wikipediaLanguages?.length ?? 0) > 1;
+});
+
+function switchLanguage(url: string, code: string): void {
+  artistStore.switchWikipediaLanguage(url, code);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -170,6 +192,35 @@ const hasExternalLinks = computed(() => {
 
 .info-section {
   margin-bottom: 2rem;
+}
+
+.language-button {
+  background: var(--bg-color-light);
+  border: none;
+  border-radius: 0.25rem;
+  color: var(--font-color-light);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: var(--bg-color-lighter);
+    color: var(--font-color-default);
+  }
+
+  &.active {
+    background: var(--primary-color-default);
+    color: var(--bg-color-darker);
+  }
+}
+
+.language-selector {
+  display: flex;
+  gap: 0.25rem;
 }
 
 .section-title {
@@ -182,6 +233,19 @@ const hasExternalLinks = computed(() => {
   gap: 0.5rem;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
+}
+
+.section-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  .section-title {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
 }
 
 .source-link {

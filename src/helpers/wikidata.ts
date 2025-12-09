@@ -43,6 +43,7 @@ export interface WikidataArtist {
   identifiers: WikidataArtistIdentifiers;
   imageUrl: null | string;
   label: null | string;
+  wikipediaLanguages: WikipediaLanguage[];
   wikipediaUrl: null | string;
 }
 
@@ -68,6 +69,15 @@ export interface WikidataArtistIdentifiers {
   spotifyId: null | string;
   twitterUsername: null | string;
   youtubeChannelId: null | string;
+}
+
+/**
+ * Interface for available Wikipedia language
+ */
+export interface WikipediaLanguage {
+  code: string;
+  name: string;
+  url: string;
 }
 
 /**
@@ -129,12 +139,38 @@ const EXCLUDED_WIKIPEDIA_SECTIONS = [
   "See also",
   "Sources",
   "Tours",
-  "Awards",
-  "Bibliography",
-  "Chart performance",
-  "Credits",
-  "Personnel",
 ];
+
+/**
+ * Language code to name mapping for common Wikipedia languages
+ */
+const LANGUAGE_NAMES: Record<string, string> = {
+  ca: "Català",
+  cs: "Čeština",
+  da: "Dansk",
+  de: "Deutsch",
+  en: "English",
+  es: "Español",
+  fi: "Suomi",
+  fr: "Français",
+  he: "עברית",
+  hu: "Magyar",
+  id: "Indonesia",
+  it: "Italiano",
+  ja: "日本語",
+  ko: "한국어",
+  nl: "Nederlands",
+  no: "Norsk",
+  pl: "Polski",
+  pt: "Português",
+  ro: "Română",
+  ru: "Русский",
+  sv: "Svenska",
+  tr: "Türkçe",
+  uk: "Українська",
+  vi: "Tiếng Việt",
+  zh: "中文",
+};
 
 /**
  * Creates a Wikidata API client instance
@@ -393,6 +429,46 @@ function getWikimediaImageUrl(imageName: null | string): null | string {
 }
 
 /**
+ * Get all available Wikipedia languages from sitelinks
+ * @param sitelinks - The sitelinks object from Wikidata
+ * @returns Array of available Wikipedia languages
+ */
+function getWikipediaLanguages(
+  sitelinks: Record<string, { badges: string[]; site: string; title: string }> | undefined,
+): WikipediaLanguage[] {
+  if (!sitelinks) {
+    return [];
+  }
+
+  const languages: WikipediaLanguage[] = [];
+
+  // Extract Wikipedia sitelinks (format: "enwiki", "frwiki", etc.)
+  for (const [key, value] of Object.entries(sitelinks)) {
+    const match = key.match(/^(\w+)wiki$/);
+    if (match && !key.includes("commons") && !key.includes("species")) {
+      const code = match[1];
+      // Skip non-language wikis
+      if (code.length <= 3) {
+        languages.push({
+          code,
+          name: LANGUAGE_NAMES[code] || code.toUpperCase(),
+          url: `https://${code}.wikipedia.org/wiki/${encodeURIComponent(value.title.replace(/ /g, "_"))}`,
+        });
+      }
+    }
+  }
+
+  // Sort: English first, then French, then alphabetically by name
+  return languages.sort((a, b) => {
+    if (a.code === "en") return -1;
+    if (b.code === "en") return 1;
+    if (a.code === "fr") return -1;
+    if (b.code === "fr") return 1;
+    return a.name.localeCompare(b.name);
+  });
+}
+
+/**
  * Get Wikipedia URL from sitelinks
  * @param sitelinks - The sitelinks object from Wikidata
  * @returns Wikipedia URL or null
@@ -451,6 +527,7 @@ function parseWikidataEntity(entity: WikidataEntity): WikidataArtist {
     },
     imageUrl: getWikimediaImageUrl(getClaimStringValue(claims, WIKIDATA_PROPERTIES.IMAGE)),
     label: entity.labels?.en?.value || entity.labels?.fr?.value || null,
+    wikipediaLanguages: getWikipediaLanguages(entity.sitelinks),
     wikipediaUrl: getWikipediaUrl(entity.sitelinks),
   };
 }

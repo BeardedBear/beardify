@@ -21,6 +21,7 @@ export const useArtist = defineStore("artist", {
       this.discogsId = null;
       this.wikidataArtist = null;
       this.wikipediaExtract = null;
+      this.wikipediaLanguage = "en";
       this.topTracks = { tracks: [] };
       this.albums = [];
       this.albumsLive = [];
@@ -139,10 +140,22 @@ export const useArtist = defineStore("artist", {
           this.wikidataArtist = await getWikidataArtistByName(artistName);
         }
 
-        // Fetch Wikipedia extract if we have a Wikipedia URL
-        if (this.wikidataArtist?.wikipediaUrl) {
-          this.wikipediaExtract = await getWikipediaExtract(this.wikidataArtist.wikipediaUrl);
+        // Fetch Wikipedia extract if we have available languages
+        const languages = this.wikidataArtist?.wikipediaLanguages || [];
+        if (languages.length > 0) {
+          // Get browser/system language (e.g., "fr-FR" -> "fr")
+          const browserLang = navigator.language.split("-")[0];
+
+          // Priority: browser language > English > first available
+          const selectedLang =
+            languages.find((l) => l.code === browserLang) || languages.find((l) => l.code === "en") || languages[0];
+
+          if (selectedLang) {
+            this.wikipediaLanguage = selectedLang.code;
+            this.wikipediaExtract = await getWikipediaExtract(selectedLang.url);
+          }
         }
+        // If no Wikipedia, Discogs fallback is handled in ArtistInfo.vue
       } catch {
         this.wikidataArtist = null;
       }
@@ -156,6 +169,11 @@ export const useArtist = defineStore("artist", {
         instance().put(`me/following?type=artist&ids=${artistId}`);
         this.followStatus = true;
       }
+    },
+
+    async switchWikipediaLanguage(url: string, languageCode: string) {
+      this.wikipediaLanguage = languageCode;
+      this.wikipediaExtract = await getWikipediaExtract(url);
     },
 
     updateHeaderHeight(height: number) {
@@ -178,5 +196,6 @@ export const useArtist = defineStore("artist", {
     topTracks: { tracks: [] },
     wikidataArtist: null,
     wikipediaExtract: null,
+    wikipediaLanguage: "en",
   }),
 });
