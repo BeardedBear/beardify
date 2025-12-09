@@ -11,6 +11,7 @@
 </template>
 
 <script lang="ts" setup>
+import DOMPurify from "dompurify";
 import { computed } from "vue";
 
 import { useArtist } from "@/views/artist/ArtistStore";
@@ -55,7 +56,29 @@ function createDiscogsLinkById(type: string, id: string): string {
 function createDiscogsSearchLink(type: string, name: string): string {
   const entity = DISCOGS_ENTITIES[type.toLowerCase()];
   if (!entity) return `[${type}=${name}]`;
-  return `<a href="${DISCOGS_BASE_URL}/search/?q=${encodeURIComponent(name)}&type=${entity.searchType}" ${LINK_ATTRS}>${name}</a>`;
+  // Sanitize the display name to prevent XSS
+  const sanitizedName = DOMPurify.sanitize(name, { ALLOWED_TAGS: [] });
+  return `<a href="${DISCOGS_BASE_URL}/search/?q=${encodeURIComponent(name)}&type=${entity.searchType}" ${LINK_ATTRS}>${sanitizedName}</a>`;
+}
+
+/**
+ * Validate and sanitize a URL to prevent XSS attacks
+ */
+function sanitizeUrl(url: string): string {
+  // Remove any HTML entities that might have been escaped
+  const decodedUrl = url.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+
+  // Only allow http, https, and ftp protocols
+  try {
+    const urlObj = new URL(decodedUrl);
+    if (!["http:", "https:", "ftp:"].includes(urlObj.protocol)) {
+      return "#";
+    }
+    return urlObj.href;
+  } catch {
+    // If URL is invalid, return a safe placeholder
+    return "#";
+  }
 }
 
 /**
@@ -83,13 +106,20 @@ function parseDiscogsMarkup(text: string): string {
   result = result.replace(/\[([al])=([^\]]+)\]/gi, (_, type, name) => createDiscogsSearchLink(type, name));
 
   // [url=http://...]text[/url] -> <a href="...">text</a>
-  result = result.replace(
-    /\[url=(.*?)\](.*?)\[\/url\]/gi,
-    '<a href="$1" target="_blank" rel="noopener noreferrer">$2</a>',
-  );
+  result = result.replace(/\[url=(.*?)\](.*?)\[\/url\]/gi, (_, url, text) => {
+    const sanitizedUrl = sanitizeUrl(url);
+    // Sanitize the link text to prevent XSS
+    const sanitizedText = DOMPurify.sanitize(text, { ALLOWED_TAGS: [] });
+    return `<a href="${sanitizedUrl}" target="_blank" rel="noopener noreferrer">${sanitizedText}</a>`;
+  });
 
   // [url]http://...[/url] -> <a href="...">...</a>
-  result = result.replace(/\[url\](.*?)\[\/url\]/gi, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+  result = result.replace(/\[url\](.*?)\[\/url\]/gi, (_, url) => {
+    const sanitizedUrl = sanitizeUrl(url);
+    // Sanitize the display URL to prevent XSS
+    const sanitizedDisplayUrl = DOMPurify.sanitize(url, { ALLOWED_TAGS: [] });
+    return `<a href="${sanitizedUrl}" target="_blank" rel="noopener noreferrer">${sanitizedDisplayUrl}</a>`;
+  });
 
   return result;
 }
