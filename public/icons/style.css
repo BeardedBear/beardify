@@ -1,234 +1,247 @@
 @font-face {
-  font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?qkpj8p');
-  src:  url('fonts/icomoon.eot?qkpj8p#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?qkpj8p') format('truetype'),
-    url('fonts/icomoon.woff?qkpj8p') format('woff'),
-    url('fonts/icomoon.svg?qkpj8p#icomoon') format('svg');
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
+    font-family: "Beardify";
+    src: url("fonts/Beardify.woff2") format("woff2"),
+        url("fonts/Beardify.ttf") format("truetype"),
+        url("fonts/Beardify.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
 }
+.icon, [class^="icon-"], [class*=" icon-"] {
+    /* Use !important to prevent extensions from overriding this font. */
+    font-family: "Beardify" !important;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
 
-[class^="icon-"], [class*=" icon-"] {
-  /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'icomoon' !important;
-  speak: never;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
-
-.icon-queue:before {
-  content: "\e944";
+.icon-instagram:before {
+    content: "\f419";
 }
-.icon-note:before {
-  content: "\e943";
+.icon-link:before {
+    content: "\f192";
 }
-.icon-follow:before {
-  content: "\e941";
+.icon-soundcloud:before {
+    content: "\f24f";
 }
-.icon-followed:before {
-  content: "\e942";
+.icon-bandcamp:before {
+    content: "\fba4";
 }
-.icon-lastfm:before {
-  content: "\e936";
-}
-.icon-spotify:before {
-  content: "\e934";
+.icon-twitter:before {
+    content: "\f111";
 }
 .icon-youtube:before {
-  content: "\e92c";
+    content: "\f1b6";
+}
+.icon-facebook:before {
+    content: "\f240";
+}
+.icon-queue:before {
+    content: "\e944";
+}
+.icon-note:before {
+    content: "\e943";
+}
+.icon-follow:before {
+    content: "\e941";
+}
+.icon-followed:before {
+    content: "\e942";
+}
+.icon-lastfm:before {
+    content: "\e936";
+}
+.icon-spotify:before {
+    content: "\e934";
 }
 .icon-beardify:before {
-  content: "\e940";
+    content: "\e940";
 }
 .icon-ep:before {
-  content: "\e93f";
+    content: "\e93f";
 }
 .icon-discogs:before {
-  content: "\e919";
+    content: "\e919";
 }
 .icon-rym:before {
-  content: "\e92a";
+    content: "\e92a";
 }
 .icon-sputnik:before {
-  content: "\e918";
+    content: "\e918";
 }
 .icon-google:before {
-  content: "\e917";
+    content: "\e917";
 }
 .icon-wikipedia:before {
-  content: "\e915";
+    content: "\e915";
 }
 .icon-single:before {
-  content: "\e924";
+    content: "\e924";
 }
 .icon-check:before {
-  content: "\e93e";
+    content: "\e93e";
 }
 .icon-arrow-down-left:before {
-  content: "\e91a";
+    content: "\e91a";
 }
 .icon-arrow-down-right:before {
-  content: "\e91b";
+    content: "\e91b";
 }
 .icon-arrow-up-left:before {
-  content: "\e938";
+    content: "\e938";
 }
 .icon-arrow-up-right:before {
-  content: "\e939";
+    content: "\e939";
 }
 .icon-arrow-right:before {
-  content: "\e93a";
+    content: "\e93a";
 }
 .icon-arrow-left:before {
-  content: "\e93b";
+    content: "\e93b";
 }
 .icon-arrow-down:before {
-  content: "\e93c";
+    content: "\e93c";
 }
 .icon-arrow-up:before {
-  content: "\e93d";
+    content: "\e93d";
 }
 .icon-podcast:before {
-  content: "\e937";
+    content: "\e937";
 }
 .icon-public:before {
-  content: "\e935";
+    content: "\e935";
 }
 .icon-collaborative:before {
-  content: "\e933";
+    content: "\e933";
 }
 .icon-airplay:before {
-  content: "\e900";
+    content: "\e900";
 }
 .icon-chevron-down:before {
-  content: "\e91c";
+    content: "\e91c";
 }
 .icon-chevron-left:before {
-  content: "\e91d";
+    content: "\e91d";
 }
 .icon-chevron-right:before {
-  content: "\e91e";
+    content: "\e91e";
 }
 .icon-chevron-up:before {
-  content: "\e91f";
+    content: "\e91f";
 }
 .icon-circle:before {
-  content: "\e929";
+    content: "\e929";
 }
 .icon-album:before {
-  content: "\e923";
+    content: "\e923";
 }
 .icon-edit-3:before {
-  content: "\e92f";
+    content: "\e92f";
 }
 .icon-fast-forward:before {
-  content: "\e901";
+    content: "\e901";
 }
 .icon-file-text:before {
-  content: "\e902";
+    content: "\e902";
 }
 .icon-folder:before {
-  content: "\e903";
+    content: "\e903";
 }
 .icon-headphones:before {
-  content: "\e904";
+    content: "\e904";
 }
 .icon-heart:before {
-  content: "\e905";
+    content: "\e905";
 }
 .icon-compilation:before {
-  content: "\e925";
+    content: "\e925";
 }
 .icon-moon:before {
-  content: "\e927";
+    content: "\e927";
 }
 .icon-more-horizontal:before {
-  content: "\e92d";
+    content: "\e92d";
 }
 .icon-more-vertical:before {
-  content: "\e92e";
+    content: "\e92e";
 }
 .icon-music:before {
-  content: "\e906";
+    content: "\e906";
 }
 .icon-play1:before {
-  content: "\e907";
+    content: "\e907";
 }
 .icon-plus:before {
-  content: "\e930";
+    content: "\e930";
 }
 .icon-repeat:before {
-  content: "\e908";
+    content: "\e908";
 }
 .icon-rewind:before {
-  content: "\e909";
+    content: "\e909";
 }
 .icon-refresh:before {
-  content: "\e92b";
+    content: "\e92b";
 }
 .icon-save:before {
-  content: "\e926";
+    content: "\e926";
 }
 .icon-search:before {
-  content: "\e916";
+    content: "\e916";
 }
 .icon-settings:before {
-  content: "\e90a";
+    content: "\e90a";
 }
 .icon-share:before {
-  content: "\e931";
+    content: "\e931";
 }
 .icon-shuffle:before {
-  content: "\e932";
+    content: "\e932";
 }
 .icon-skip-back:before {
-  content: "\e90b";
+    content: "\e90b";
 }
 .icon-skip-forward:before {
-  content: "\e90c";
+    content: "\e90c";
 }
 .icon-square:before {
-  content: "\e90d";
+    content: "\e90d";
 }
 .icon-sun:before {
-  content: "\e928";
+    content: "\e928";
 }
 .icon-trash:before {
-  content: "\e920";
+    content: "\e920";
 }
 .icon-trash-2:before {
-  content: "\e921";
+    content: "\e921";
 }
 .icon-volume:before {
-  content: "\e90e";
+    content: "\e90e";
 }
 .icon-volume-1:before {
-  content: "\e90f";
+    content: "\e90f";
 }
 .icon-volume-2:before {
-  content: "\e910";
+    content: "\e910";
 }
 .icon-volume-x:before {
-  content: "\e911";
+    content: "\e911";
 }
 .icon-x:before {
-  content: "\e922";
+    content: "\e922";
 }
 .icon-skip-forward1:before {
-  content: "\e912";
+    content: "\e912";
 }
 .icon-pause:before {
-  content: "\e913";
+    content: "\e913";
 }
 .icon-play:before {
-  content: "\e914";
+    content: "\e914";
 }
