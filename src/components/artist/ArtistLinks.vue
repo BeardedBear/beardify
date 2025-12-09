@@ -9,17 +9,19 @@
     <ButtonIndex icon-only @click.stop.prevent="openLink(link.rym)" variant="nude">
       <i class="icon-rym" />
     </ButtonIndex>
-    <span class="separator">·</span>
-    <ButtonIndex
-      v-for="socialLink in socialLinks"
-      :key="socialLink.url"
-      :title="socialLink.name"
-      icon-only
-      variant="nude"
-      @click.stop.prevent="openLink(socialLink.url)"
-    >
-      <i :class="socialLink.icon" />
-    </ButtonIndex>
+    <template v-if="!floating">
+      <span class="separator">·</span>
+      <ButtonIndex
+        v-for="socialLink in socialLinks"
+        :key="socialLink.url"
+        :title="socialLink.name"
+        icon-only
+        variant="nude"
+        @click.stop.prevent="openLink(socialLink.url)"
+      >
+        <i :class="socialLink.icon" />
+      </ButtonIndex>
+    </template>
   </div>
 </template>
 
@@ -180,11 +182,17 @@ const socialLinks = computed<SocialLink[]>(() => {
 
 // Use Wikidata Wikipedia URL if available, otherwise fallback to constructed URL
 const wikipediaUrl = computed(() => {
+  if (props.floating) {
+    return `https://en.wikipedia.org/wiki/${artistNameNormalized.value}`;
+  }
   return artistStore.wikidataArtist?.wikipediaUrl || `https://en.wikipedia.org/wiki/${artistNameNormalized.value}`;
 });
 
 // Use Wikidata Discogs ID if available, otherwise use constructed URL
 const discogsUrl = computed(() => {
+  if (props.floating) {
+    return `https://www.discogs.com/artist/${artistNameNormalized.value}`;
+  }
   const wikidataDiscogsId = artistStore.wikidataArtist?.identifiers.discogsId;
   if (wikidataDiscogsId) {
     return `https://www.discogs.com/artist/${wikidataDiscogsId}`;
@@ -197,6 +205,9 @@ const discogsUrl = computed(() => {
 
 // Use Wikidata Rate Your Music ID if available
 const rymUrl = computed(() => {
+  if (props.floating) {
+    return `https://rateyourmusic.com/search?searchtype=a&searchterm=${artistNameNormalized.value}`;
+  }
   const rymId = artistStore.wikidataArtist?.identifiers.rateYourMusicId;
   if (rymId) {
     return `https://rateyourmusic.com/artist/${rymId}`;
