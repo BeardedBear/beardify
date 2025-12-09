@@ -242,6 +242,7 @@ function onLanguageChange(option: LanguageOption): void {
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(em) {
     font-style: italic;
+    font-weight: bold;
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */

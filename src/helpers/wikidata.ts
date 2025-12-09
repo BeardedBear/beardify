@@ -126,19 +126,171 @@ interface WikidataSearchResult {
 }
 
 /**
- * Sections to exclude from Wikipedia content
+ * Sections to exclude from Wikipedia content (multilingual)
+ * Each array contains translations for the same section across supported languages
  */
-const EXCLUDED_WIKIPEDIA_SECTIONS = [
+const EXCLUDED_WIKIPEDIA_SECTIONS: string[] = [
+  // Band members
   "Band members",
-  "Discography",
-  "External links",
-  "Further reading",
+  "Membres du groupe",
+  "Mitglieder",
+  "Miembros",
+  "Membri del gruppo",
+  "Leden",
+  "Membros",
+  "Участники",
+  "メンバー",
+  "成员",
+  "멤버",
+
+  // Members
   "Members",
+  "Membres",
+  "Mitglieder",
+  "Miembros",
+  "Membri",
+  "Leden",
+  "Membros",
+  "Участники",
+  "メンバー",
+  "成員",
+  "멤버",
+
+  // External links
+  "External links",
+  "Liens externes",
+  "Weblinks",
+  "Enlaces externos",
+  "Collegamenti esterni",
+  "Externe links",
+  "Ligações externas",
+  "Внешние ссылки",
+  "外部リンク",
+  "外部链接",
+  "외부 링크",
+
+  // Further reading
+  "Further reading",
+  "Bibliographie",
+  "Literatur",
+  "Bibliografía",
+  "Bibliografia",
+  "Literatuur",
+  "Leitura adicional",
+  "Литература",
+  "参考文献",
+  "延伸阅读",
+  "더 읽기",
+
+  // Notes
   "Notes",
+  "Notes et références",
+  "Anmerkungen",
+  "Notas",
+  "Note",
+  "Noten",
+  "Notas",
+  "Примечания",
+  "脚注",
+  "注释",
+  "각주",
+
+  // References
   "References",
+  "Références",
+  "Einzelnachweise",
+  "Referencias",
+  "Note",
+  "Referenties",
+  "Referências",
+  "Ссылки",
+  "出典",
+  "参考资料",
+  "각주",
+
+  // See also
   "See also",
+  "Voir aussi",
+  "Siehe auch",
+  "Véase también",
+  "Voci correlate",
+  "Zie ook",
+  "Ver também",
+  "См. также",
+  "関連項目",
+  "参见",
+  "같이 보기",
+
+  // Sources
   "Sources",
+  "Sources",
+  "Quellen",
+  "Fuentes",
+  "Fonti",
+  "Bronnen",
+  "Fontes",
+  "Источники",
+  "出典",
+  "来源",
+  "출처",
+
+  // Tours
   "Tours",
+  "Tournées",
+  "Tourneen",
+  "Giras",
+  "Tour",
+  "Tournees",
+  "Turnês",
+  "Туры",
+  "ツアー",
+  "巡回演出",
+  "투어",
+
+  // Awards (bonus - commonly excluded)
+  "Awards",
+  "Récompenses",
+  "Auszeichnungen",
+  "Premios",
+  "Premi",
+  "Prijzen",
+  "Prêmios",
+  "Награды",
+  "受賞歴",
+  "奖项",
+  "수상",
+
+  // Filmography (for artists who acted)
+  "Filmography",
+  "Filmographie",
+  "Filmografie",
+  "Filmografía",
+  "Filmografia",
+  "Filmografie",
+  "Фильмография",
+  "フィルモグラフィー",
+  "影视作品",
+  "필모그래피",
+
+  // Annexes (French Wikipedia specific section)
+  "Annexes",
+];
+
+/**
+ * Regex patterns for sections to exclude (for sections with many variants)
+ * These patterns match section titles that START with the given prefix
+ */
+const EXCLUDED_WIKIPEDIA_SECTION_PATTERNS: RegExp[] = [
+  // Discography in all languages (matches "Discography", "Discography (selection)", "Discographie studio", etc.)
+  /^Discograph/i, // English, French
+  /^Diskografi/i, // German, Swedish, Norwegian, Danish
+  /^Discografía/i, // Spanish
+  /^Discografia/i, // Italian, Portuguese
+  /^Discografie/i, // Dutch, Romanian
+  /^Дискография/i, // Russian
+  /^ディスコグラフィ/i, // Japanese
+  /^音乐作品/i, // Chinese
+  /^음반/i, // Korean (음반 목록, 음반 discography)
 ];
 
 /**
@@ -374,15 +526,39 @@ function cleanWikipediaHtml(html: string): string {
 
   let result = html;
 
+  // Helper function to escape special regex characters in exact section names
+  const escapeRegex = (str: string): string => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  // Remove sections matching exact names
   for (const section of EXCLUDED_WIKIPEDIA_SECTIONS) {
+    const escapedSection = escapeRegex(section);
     // Pattern to match h2/h3 containing the section title and everything until the next h2 or end
     const patterns = [
       // Match <h2>...<span>Title</span>...</h2> followed by content until next <h2 or end
-      new RegExp(`<h2[^>]*>[^<]*<span[^>]*>[^<]*${section}[^<]*</span>[^<]*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
+      new RegExp(`<h2[^>]*>[^<]*<span[^>]*>[^<]*${escapedSection}[^<]*</span>[^<]*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
       // Match <h2>Title</h2> directly (no span)
-      new RegExp(`<h2[^>]*>\\s*${section}\\s*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
+      new RegExp(`<h2[^>]*>\\s*${escapedSection}\\s*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
       // Match <h3> variants for subsections
-      new RegExp(`<h3[^>]*>[^<]*<span[^>]*>[^<]*${section}[^<]*</span>[^<]*</h3>[\\s\\S]*?(?=<h[23]|$)`, "gi"),
+      new RegExp(`<h3[^>]*>[^<]*<span[^>]*>[^<]*${escapedSection}[^<]*</span>[^<]*</h3>[\\s\\S]*?(?=<h[23]|$)`, "gi"),
+    ];
+
+    for (const pattern of patterns) {
+      result = result.replace(pattern, "");
+    }
+  }
+
+  // Remove sections matching regex patterns (for sections with many variants like Discography)
+  for (const sectionPattern of EXCLUDED_WIKIPEDIA_SECTION_PATTERNS) {
+    // Convert the section pattern to a string source without anchors for embedding
+    const patternSource = sectionPattern.source.replace(/^\^/, "");
+
+    const patterns = [
+      // Match <h2>...<span>Title</span>...</h2> followed by content until next <h2 or end
+      new RegExp(`<h2[^>]*>[^<]*<span[^>]*>[^<]*${patternSource}[^<]*</span>[^<]*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
+      // Match <h2>Title</h2> directly (no span)
+      new RegExp(`<h2[^>]*>\\s*${patternSource}[^<]*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
+      // Match <h3> variants for subsections
+      new RegExp(`<h3[^>]*>[^<]*<span[^>]*>[^<]*${patternSource}[^<]*</span>[^<]*</h3>[\\s\\S]*?(?=<h[23]|$)`, "gi"),
     ];
 
     for (const pattern of patterns) {
