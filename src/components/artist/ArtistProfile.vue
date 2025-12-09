@@ -11,118 +11,12 @@
 </template>
 
 <script lang="ts" setup>
-import DOMPurify from "dompurify";
 import { computed } from "vue";
 
 import { parseDiscogsMarkup } from "@/helpers/discogs";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const artistStore = useArtist();
-
-const DISCOGS_BASE_URL = "https://www.discogs.com";
-const LINK_ATTRS = 'target="_blank" rel="noopener noreferrer" class="discogs-link"';
-
-/**
- * Discogs entity types configuration
- * Maps entity type letter to URL path and display text
- */
-const DISCOGS_ENTITIES: Record<string, { path: string; searchType: string; text: string }> = {
-  a: { path: "artist", searchType: "artist", text: "artist" },
-  l: { path: "label", searchType: "label", text: "label" },
-  m: { path: "master", searchType: "master", text: "release" },
-  r: { path: "release", searchType: "release", text: "release" },
-};
-
-/**
- * Text formatting tags configuration
- */
-const TEXT_FORMATS: Array<{ pattern: RegExp; replacement: string }> = [
-  { pattern: /\[i\](.*?)\[\/i\]/gi, replacement: "<em>$1</em>" },
-  { pattern: /\[b\](.*?)\[\/b\]/gi, replacement: "<strong>$1</strong>" },
-  { pattern: /\[u\](.*?)\[\/u\]/gi, replacement: "<u>$1</u>" },
-];
-
-/**
- * Create a Discogs link by ID
- */
-function createDiscogsLinkById(type: string, id: string): string {
-  const entity = DISCOGS_ENTITIES[type.toLowerCase()];
-  if (!entity) return `[${type}${id}]`;
-  return `<a href="${DISCOGS_BASE_URL}/${entity.path}/${id}" ${LINK_ATTRS}>${entity.text}</a>`;
-}
-
-/**
- * Create a Discogs search link by name
- */
-function createDiscogsSearchLink(type: string, name: string): string {
-  const entity = DISCOGS_ENTITIES[type.toLowerCase()];
-  if (!entity) return `[${type}=${name}]`;
-  // Sanitize the display name to prevent XSS
-  const sanitizedName = DOMPurify.sanitize(name, { ALLOWED_TAGS: [] });
-  return `<a href="${DISCOGS_BASE_URL}/search/?q=${encodeURIComponent(name)}&type=${entity.searchType}" ${LINK_ATTRS}>${sanitizedName}</a>`;
-}
-
-/**
- * Validate and sanitize a URL to prevent XSS attacks
- */
-function sanitizeUrl(url: string): string {
-  // Remove any HTML entities that might have been escaped
-  const decodedUrl = url.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-
-  // Only allow http, https, and ftp protocols
-  try {
-    const urlObj = new URL(decodedUrl);
-    if (!["http:", "https:", "ftp:"].includes(urlObj.protocol)) {
-      return "#";
-    }
-    return urlObj.href;
-  } catch {
-    // If URL is invalid, return a safe placeholder
-    return "#";
-  }
-}
-
-/**
- * Parse Discogs markup and convert to HTML
- * Supported tags:
- * - [i], [b], [u] -> text formatting
- * - [a], [l], [r], [m] -> Discogs entity links (by ID or name)
- * - [url] -> external links
- */
-function parseDiscogsMarkup(text: string): string {
-  let result = text;
-
-  // Escape HTML to prevent XSS
-  result = result.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-  // Apply text formatting
-  for (const { pattern, replacement } of TEXT_FORMATS) {
-    result = result.replace(pattern, replacement);
-  }
-
-  // [x123456] or [x=123456] -> link to Discogs entity by ID
-  result = result.replace(/\[([almr])=?(\d+)\]/gi, (_, type, id) => createDiscogsLinkById(type, id));
-
-  // [x=Name] -> link to Discogs search by name (non-numeric)
-  result = result.replace(/\[([al])=([^\]]+)\]/gi, (_, type, name) => createDiscogsSearchLink(type, name));
-
-  // [url=http://...]text[/url] -> <a href="...">text</a>
-  result = result.replace(/\[url=(.*?)\](.*?)\[\/url\]/gi, (_, url, text) => {
-    const sanitizedUrl = sanitizeUrl(url);
-    // Sanitize the link text to prevent XSS
-    const sanitizedText = DOMPurify.sanitize(text, { ALLOWED_TAGS: [] });
-    return `<a href="${sanitizedUrl}" target="_blank" rel="noopener noreferrer">${sanitizedText}</a>`;
-  });
-
-  // [url]http://...[/url] -> <a href="...">...</a>
-  result = result.replace(/\[url\](.*?)\[\/url\]/gi, (_, url) => {
-    const sanitizedUrl = sanitizeUrl(url);
-    // Display the sanitized URL to prevent XSS
-    return `<a href="${sanitizedUrl}" target="_blank" rel="noopener noreferrer">${sanitizedUrl}</a>`;
-  });
-
-  return result;
-}
 
 /**
  * Extract the first sentence from text, but limit to max characters
