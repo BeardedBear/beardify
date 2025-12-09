@@ -14,6 +14,7 @@
 import DOMPurify from "dompurify";
 import { computed } from "vue";
 
+import { parseDiscogsMarkup } from "@/helpers/discogs";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const artistStore = useArtist();

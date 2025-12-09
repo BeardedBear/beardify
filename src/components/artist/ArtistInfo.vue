@@ -56,6 +56,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import ArtistSidebar from "@/components/artist/ArtistSidebar.vue";
 import CustomSelect, { type SelectOption } from "@/components/ui/CustomSelect.vue";
 import LanguageSelect, { type LanguageOption } from "@/components/ui/LanguageSelect.vue";
+import { parseDiscogsMarkup } from "@/helpers/discogs";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 interface WikipediaSection {
@@ -136,54 +137,6 @@ onBeforeUnmount(() => {
     observer = null;
   }
 });
-
-const DISCOGS_BASE_URL = "https://www.discogs.com";
-const LINK_ATTRS = 'target="_blank" rel="noopener noreferrer" class="discogs-link"';
-
-const DISCOGS_ENTITIES: Record<string, { path: string; searchType: string; text: string }> = {
-  a: { path: "artist", searchType: "artist", text: "artist" },
-  l: { path: "label", searchType: "label", text: "label" },
-  m: { path: "master", searchType: "master", text: "release" },
-  r: { path: "release", searchType: "release", text: "release" },
-};
-
-const TEXT_FORMATS: Array<{ pattern: RegExp; replacement: string }> = [
-  { pattern: /\[b\](.*?)\[\/b\]/gi, replacement: "<strong>$1</strong>" },
-  { pattern: /\[i\](.*?)\[\/i\]/gi, replacement: "<em>$1</em>" },
-  { pattern: /\[u\](.*?)\[\/u\]/gi, replacement: "<u>$1</u>" },
-];
-
-function createDiscogsLinkById(type: string, id: string): string {
-  const entity = DISCOGS_ENTITIES[type.toLowerCase()];
-  if (!entity) return `[${type}${id}]`;
-  return `<a href="${DISCOGS_BASE_URL}/${entity.path}/${id}" ${LINK_ATTRS}>${entity.text}</a>`;
-}
-
-function createDiscogsSearchLink(type: string, name: string): string {
-  const entity = DISCOGS_ENTITIES[type.toLowerCase()];
-  if (!entity) return `[${type}=${name}]`;
-  return `<a href="${DISCOGS_BASE_URL}/search/?q=${encodeURIComponent(name)}&type=${entity.searchType}" ${LINK_ATTRS}>${name}</a>`;
-}
-
-function parseDiscogsMarkup(text: string): string {
-  let result = text;
-  result = result.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-  for (const { pattern, replacement } of TEXT_FORMATS) {
-    result = result.replace(pattern, replacement);
-  }
-
-  result = result.replace(/\[([almr])=?(\d+)\]/gi, (_, type, id) => createDiscogsLinkById(type, id));
-  result = result.replace(/\[([al])=([^\]]+)\]/gi, (_, type, name) => createDiscogsSearchLink(type, name));
-  result = result.replace(
-    /\[url=(.*?)\](.*?)\[\/url\]/gi,
-    '<a href="$1" target="_blank" rel="noopener noreferrer">$2</a>',
-  );
-  result = result.replace(/\[url\](.*?)\[\/url\]/gi, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
-  result = result.replace(/\n/g, "<br>");
-
-  return result;
-}
 
 const formattedDiscogsProfile = computed(() => {
   if (!artistStore.discogsArtist?.profile) return "";
