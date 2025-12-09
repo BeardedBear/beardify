@@ -1,96 +1,39 @@
 <template>
   <div class="artist-info">
-    <div class="info-section" v-if="artistStore.wikidataArtist">
-      <h3 class="section-title">Details</h3>
-      <div class="details-grid">
-        <div class="detail-item" v-if="artistStore.wikidataArtist.description">
-          <span class="detail-label">Description</span>
-          <span class="detail-value">{{ artistStore.wikidataArtist.description }}</span>
+    <div class="main-content">
+      <div class="info-section" v-if="hasBiography">
+        <div class="section-header">
+          <LanguageSelect
+            v-if="hasMultipleLanguages"
+            :model-value="artistStore.wikipediaLanguage"
+            :options="artistStore.wikidataArtist?.wikipediaLanguages ?? []"
+            @change="onLanguageChange"
+          />
         </div>
-        <div class="detail-item" v-if="artistStore.artist.genres?.length">
-          <span class="detail-label">Genres</span>
-          <span class="detail-value">{{ artistStore.artist.genres.join(", ") }}</span>
-        </div>
-        <div class="detail-item" v-if="artistStore.artist.followers">
-          <span class="detail-label">Followers</span>
-          <span class="detail-value">{{ formatNumber(artistStore.artist.followers.total) }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="info-section" v-if="hasBiography">
-      <div class="section-header">
-        <LanguageSelect
-          v-if="hasMultipleLanguages"
-          :model-value="artistStore.wikipediaLanguage"
-          :options="artistStore.wikidataArtist?.wikipediaLanguages ?? []"
-          @change="onLanguageChange"
+        <div class="wikipedia-content" v-if="artistStore.wikipediaExtract" v-html="artistStore.wikipediaExtract" />
+        <div
+          class="discogs-biography"
+          v-else-if="artistStore.discogsArtist?.profile"
+          v-html="formattedDiscogsProfile"
         />
       </div>
-      <!-- Wikipedia content (priority) -->
-      <div class="wikipedia-content" v-if="artistStore.wikipediaExtract" v-html="artistStore.wikipediaExtract" />
-      <!-- Fallback to Discogs profile if no Wikipedia -->
-      <div class="discogs-biography" v-else-if="artistStore.discogsArtist?.profile" v-html="formattedDiscogsProfile" />
-    </div>
 
-    <div class="info-section" v-if="hasExternalLinks">
-      <h3 class="section-title">External Links</h3>
-      <div class="external-links">
-        <a
-          v-if="artistStore.wikidataArtist?.wikipediaUrl"
-          :href="artistStore.wikidataArtist.wikipediaUrl"
-          class="external-link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i class="icon-wikipedia" />
-          <span>Wikipedia</span>
-        </a>
-        <a
-          v-if="artistStore.discogsId"
-          :href="`https://www.discogs.com/artist/${artistStore.discogsId}`"
-          class="external-link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i class="icon-discogs" />
-          <span>Discogs</span>
-        </a>
-        <a
-          v-if="artistStore.wikidataArtist?.identifiers.musicbrainzId"
-          :href="`https://musicbrainz.org/artist/${artistStore.wikidataArtist.identifiers.musicbrainzId}`"
-          class="external-link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i class="icon-musicbrainz" />
-          <span>MusicBrainz</span>
-        </a>
-        <a
-          v-if="artistStore.wikidataArtist?.identifiers.rateYourMusicId"
-          :href="`https://rateyourmusic.com/artist/${artistStore.wikidataArtist.identifiers.rateYourMusicId}`"
-          class="external-link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i class="icon-rym" />
-          <span>Rate Your Music</span>
-        </a>
+      <div
+        class="info-section"
+        v-if="!artistStore.discogsArtist?.profile && !artistStore.wikidataArtist && !artistStore.wikipediaExtract"
+      >
+        <p class="no-info">No additional information available for this artist.</p>
       </div>
     </div>
 
-    <div
-      class="info-section"
-      v-if="!artistStore.discogsArtist?.profile && !artistStore.wikidataArtist && !artistStore.wikipediaExtract"
-    >
-      <p class="no-info">No additional information available for this artist.</p>
-    </div>
+    <ArtistSidebar />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed } from "vue";
 
+import ArtistSidebar from "@/components/artist/ArtistSidebar.vue";
 import LanguageSelect, { type LanguageOption } from "@/components/ui/LanguageSelect.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
@@ -124,10 +67,6 @@ function createDiscogsSearchLink(type: string, name: string): string {
   return `<a href="${DISCOGS_BASE_URL}/search/?q=${encodeURIComponent(name)}&type=${entity.searchType}" ${LINK_ATTRS}>${name}</a>`;
 }
 
-function formatNumber(num: number): string {
-  return num.toLocaleString();
-}
-
 function parseDiscogsMarkup(text: string): string {
   let result = text;
   result = result.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -157,15 +96,6 @@ const hasBiography = computed(() => {
   return artistStore.wikipediaExtract || artistStore.discogsArtist?.profile;
 });
 
-const hasExternalLinks = computed(() => {
-  return (
-    artistStore.wikidataArtist?.wikipediaUrl ||
-    artistStore.discogsId ||
-    artistStore.wikidataArtist?.identifiers.musicbrainzId ||
-    artistStore.wikidataArtist?.identifiers.rateYourMusicId
-  );
-});
-
 const hasMultipleLanguages = computed(() => {
   return (artistStore.wikidataArtist?.wikipediaLanguages?.length ?? 0) > 1;
 });
@@ -177,7 +107,13 @@ function onLanguageChange(option: LanguageOption): void {
 
 <style lang="scss" scoped>
 .artist-info {
-  max-width: 60rem;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr 18rem;
+}
+
+.main-content {
+  min-width: 0;
 }
 
 .info-section {
