@@ -1,24 +1,15 @@
 <template>
   <div :class="{ floating }" class="links">
-    <!-- <ButtonIndex @click.stop.prevent="frameStore.open(link.wikipedia, 'Wikipedia')" variant="nude">
-      <i class="icon-wikipedia" />
-    </ButtonIndex>
     <ButtonIndex @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')" variant="nude">
       <i class="icon-sputnik" />
     </ButtonIndex>
-    <ButtonIndex @click.stop.prevent="frameStore.open(link.google, 'Google')" variant="nude">
-      <i class="icon-google" />
-    </ButtonIndex>-->
     <ButtonIndex icon-only @click.stop.prevent="openLink(link.discogs)" variant="nude">
       <i class="icon-discogs" />
     </ButtonIndex>
     <ButtonIndex icon-only @click.stop.prevent="openLink(link.rym)" variant="nude">
       <i class="icon-rym" />
     </ButtonIndex>
-    <span class="separator">|</span>
-    <!-- <ButtonIndex icon-only @click.stop.prevent="openLink(link.youtube)" variant="nude">
-      <i class="icon-youtube" />
-    </ButtonIndex> -->
+    <span class="separator">·</span>
     <ButtonIndex
       v-for="socialLink in socialLinks"
       :key="socialLink.url"
@@ -35,7 +26,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUpdated, ref } from "vue";
 
-// import { useFrame } from "@/components/frame/FrameStore";
+import { useFrame } from "@/components/frame/FrameStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
 import { useArtist } from "@/views/artist/ArtistStore";
@@ -51,7 +42,7 @@ const props = defineProps<{
   floating?: boolean;
 }>();
 
-// const frameStore = useFrame();
+const frameStore = useFrame();
 const artistStore = useArtist();
 const link = ref<Record<string, string>>({});
 const artistNameNormalized = ref<string>("");
