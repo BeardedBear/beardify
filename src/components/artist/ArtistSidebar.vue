@@ -26,6 +26,9 @@
             <i class="icon-user" />
           </div>
           <span class="member-name">{{ member.name }}</span>
+          <div v-if="member.thumbnail" class="member-popup">
+            <img :src="member.thumbnail" :alt="member.name" />
+          </div>
         </a>
       </div>
 
@@ -45,6 +48,9 @@
               <i class="icon-user" />
             </div>
             <span class="member-name">{{ member.name }}</span>
+            <div v-if="member.thumbnail" class="member-popup">
+              <img :src="member.thumbnail" :alt="member.name" />
+            </div>
           </a>
         </div>
       </template>
@@ -280,25 +286,60 @@ $margin: 0.2rem;
   padding: 1rem;
 }
 
+.member-popup {
+  $size: 200px;
+
+  background-color: var(--bg-color-dark);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 40%);
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  right: calc(100% + 0.75rem);
+  top: 50%;
+  transform: translateX(10px) translateY(-50%);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  z-index: 100;
+
+  img {
+    display: block;
+    object-fit: cover;
+    width: $size;
+  }
+}
+
 .sidebar-member {
   align-items: center;
   border-radius: 0.25rem;
   color: var(--font-color-light);
   display: flex;
+  font-weight: bold;
   gap: 0.5rem;
   padding: 0.4rem 0.5rem;
+  position: relative;
   text-decoration: none;
   transition:
     background-color 0.15s ease,
     color 0.15s ease;
+  z-index: 1;
 
   &:hover {
     background-color: var(--bg-color-light);
     color: var(--font-color-default);
+    z-index: 10;
+
+    .member-popup {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0) translateY(-50%);
+    }
   }
 
   &.inactive {
-    opacity: 0.6;
+    color: var(--font-color);
   }
 }
 
