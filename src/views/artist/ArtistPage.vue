@@ -2,31 +2,33 @@
   <div class="loader" v-if="artistStore.artist.name === ''"><Loader /></div>
   <div class="artist-page" v-else>
     <ArtistHeader />
-    <div class="content" v-if="artistStore.activeTab === 'discography'">
-      <div class="list">
-        <div
-          v-if="
-            !artistStore.albums.length &&
-            !artistStore.eps.length &&
-            !artistStore.singles.length &&
-            !artistStore.albumsLive.length
-          "
-        >
-          {{ artistStore.artist.name }} didn't release anything, it's a bit sad.
+    <Transition name="tab-fade" mode="out-in">
+      <div class="content" v-if="artistStore.activeTab === 'discography'" key="discography">
+        <div class="list">
+          <div
+            v-if="
+              !artistStore.albums.length &&
+              !artistStore.eps.length &&
+              !artistStore.singles.length &&
+              !artistStore.albumsLive.length
+            "
+          >
+            {{ artistStore.artist.name }} didn't release anything, it's a bit sad.
+          </div>
+          <BlockAlbums />
+          <BlockAlbumsLive />
+          <BlockEps />
+          <BlockSingles />
         </div>
-        <BlockAlbums />
-        <BlockAlbumsLive />
-        <BlockEps />
-        <BlockSingles />
+        <div class="top">
+          <TopTracks class="top-item" />
+          <RelatedArtists class="top-item related-artists" />
+        </div>
       </div>
-      <div class="top">
-        <TopTracks class="top-item" />
-        <RelatedArtists class="top-item related-artists" />
+      <div class="content content--info" v-else-if="artistStore.activeTab === 'info'" key="info">
+        <ArtistInfo />
       </div>
-    </div>
-    <div class="content content--info" v-else-if="artistStore.activeTab === 'info'">
-      <ArtistInfo />
-    </div>
+    </Transition>
   </div>
 </template>
 
@@ -124,5 +126,22 @@ artistStore.clean().finally(() => {
 .loader {
   display: grid;
   place-content: center;
+}
+
+.tab-fade-enter-active,
+.tab-fade-leave-active {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.tab-fade-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.tab-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 </style>

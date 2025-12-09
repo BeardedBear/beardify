@@ -133,6 +133,7 @@ const EXCLUDED_WIKIPEDIA_SECTIONS = [
   "Bibliography",
   "Chart performance",
   "Credits",
+  "Personnel",
 ];
 
 /**
