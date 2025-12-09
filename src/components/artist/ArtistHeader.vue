@@ -16,7 +16,8 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { useElementBounding } from "@vueuse/core";
+import { ref, watch } from "vue";
 
 import Options from "@/components/artist/ArtistOptions.vue";
 import ArtistProfile from "@/components/artist/ArtistProfile.vue";
@@ -25,14 +26,17 @@ import { useArtist } from "@/views/artist/ArtistStore";
 
 const domHeader = ref<HTMLDivElement | null>(null);
 const artistStore = useArtist();
+const { height } = useElementBounding(domHeader);
 
 const tabs: Tab[] = [
   { icon: "icon-disc", id: "discography", label: "Discography" },
   { icon: "icon-info", id: "info", label: "Info" },
 ];
 
-onMounted(() => {
-  if (domHeader.value) artistStore.updateHeaderHeight(domHeader.value?.getBoundingClientRect().height);
+watch(height, (newHeight) => {
+  if (newHeight > 0) {
+    artistStore.updateHeaderHeight(newHeight);
+  }
 });
 </script>
 

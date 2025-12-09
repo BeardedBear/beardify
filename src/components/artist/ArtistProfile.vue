@@ -1,6 +1,6 @@
 <template>
-  <div class="profile-container" :class="{ visible: artistStore.discogsArtist?.profile }">
-    <div class="profile-wrapper" v-if="artistStore.discogsArtist?.profile">
+  <div class="profile-container">
+    <div class="profile-wrapper" :class="{ visible: artistStore.discogsArtist?.profile }">
       <span class="profile-text" v-html="firstSentence" />
       <div class="more-button" v-if="hasMoreContent">
         <i class="icon-more-horizontal" />
@@ -133,20 +133,7 @@ const hasMoreContent = computed(() => {
 $transition-duration: 0.2s;
 
 .profile-container {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  transform: translateY(-5px);
-  transition:
-    grid-template-rows $transition-duration ease,
-    opacity $transition-duration ease,
-    transform $transition-duration ease;
-
-  &.visible {
-    grid-template-rows: 1fr;
-    opacity: 1;
-    transform: translateY(0);
-  }
+  min-height: 1.5rem; // Reserve space for the text line height
 }
 
 .profile-wrapper {
@@ -155,7 +142,17 @@ $transition-duration: 0.2s;
   gap: 0.5rem;
   max-width: 60rem;
   min-height: 0;
+  opacity: 0;
   position: relative;
+  transform: translateY(-5px);
+  transition:
+    opacity $transition-duration ease,
+    transform $transition-duration ease;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .profile-text {

@@ -2,15 +2,38 @@
   <div class="artist-info">
     <div class="main-content">
       <div class="info-section" v-if="hasBiography">
-        <div class="section-header">
+        <div ref="sentinelRef" class="sentinel" />
+        <nav
+          class="wikipedia-nav"
+          :class="{ stuck: isStuck }"
+          v-if="wikipediaSections.length > 0 || hasMultipleLanguages"
+          :style="{ top: artistStore.headerHeight + 'px' }"
+        >
+          <select
+            v-if="wikipediaSections.length > 0"
+            class="section-select"
+            @change="onSectionChange"
+          >
+            <option value="" disabled selected>Go to section...</option>
+            <option v-for="section in wikipediaSections" :key="section.id" :value="section.id">
+              {{ section.title }}
+            </option>
+          </select>
+
           <LanguageSelect
             v-if="hasMultipleLanguages"
             :model-value="artistStore.wikipediaLanguage"
             :options="artistStore.wikidataArtist?.wikipediaLanguages ?? []"
             @change="onLanguageChange"
           />
-        </div>
-        <div class="wikipedia-content" v-if="artistStore.wikipediaExtract" v-html="artistStore.wikipediaExtract" />
+        </nav>
+
+        <div
+          ref="wikipediaContentRef"
+          class="wikipedia-content"
+          v-if="artistStore.wikipediaExtract"
+          v-html="artistStore.wikipediaExtract"
+        />
         <div
           class="discogs-biography"
           v-else-if="artistStore.discogsArtist?.profile"
@@ -31,13 +54,82 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import ArtistSidebar from "@/components/artist/ArtistSidebar.vue";
 import LanguageSelect, { type LanguageOption } from "@/components/ui/LanguageSelect.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
+interface WikipediaSection {
+  id: string;
+  title: string;
+}
+
 const artistStore = useArtist();
+const wikipediaContentRef = ref<HTMLElement | null>(null);
+const sentinelRef = ref<HTMLElement | null>(null);
+const wikipediaSections = ref<WikipediaSection[]>([]);
+const isStuck = ref(false);
+
+// Observer to detect when nav is stuck
+let observer: IntersectionObserver | null = null;
+
+function setupIntersectionObserver(): void {
+  const scrollContainer = document.querySelector(".artist-page");
+  if (!scrollContainer || !sentinelRef.value) return;
+
+  // Disconnect existing observer if any
+  if (observer) {
+    observer.disconnect();
+  }
+
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      isStuck.value = !entry.isIntersecting;
+    },
+    {
+      root: scrollContainer,
+      threshold: 0,
+      rootMargin: `-${artistStore.headerHeight}px 0px 0px 0px`,
+    },
+  );
+
+  observer.observe(sentinelRef.value);
+}
+
+// Watch for headerHeight changes to recreate observer with correct rootMargin
+watch(
+  () => artistStore.headerHeight,
+  (newHeight) => {
+    if (newHeight > 0 && sentinelRef.value) {
+      setupIntersectionObserver();
+    }
+  },
+);
+
+// Watch for sentinel ref to be available
+watch(
+  () => sentinelRef.value,
+  (sentinel) => {
+    if (sentinel && artistStore.headerHeight > 0) {
+      setupIntersectionObserver();
+    }
+  },
+);
+
+onMounted(() => {
+  // Initial setup if both conditions are met
+  if (sentinelRef.value && artistStore.headerHeight > 0) {
+    setupIntersectionObserver();
+  }
+});
+
+onBeforeUnmount(() => {
+  if (observer) {
+    observer.disconnect();
+    observer = null;
+  }
+});
 
 const DISCOGS_BASE_URL = "https://www.discogs.com";
 const LINK_ATTRS = 'target="_blank" rel="noopener noreferrer" class="discogs-link"';
@@ -103,6 +195,80 @@ const hasMultipleLanguages = computed(() => {
 function onLanguageChange(option: LanguageOption): void {
   artistStore.switchWikipediaLanguage(option.url, option.code);
 }
+
+function extractSections(): void {
+  // Wait a bit for the DOM to be fully updated after v-html changes
+  setTimeout(() => {
+    if (!wikipediaContentRef.value) {
+      wikipediaSections.value = [];
+      return;
+    }
+
+    const headingElements = wikipediaContentRef.value.querySelectorAll("h2, h3");
+    const sections: WikipediaSection[] = [];
+
+    headingElements.forEach((heading, index) => {
+      const title = heading.textContent?.trim();
+      if (title) {
+        const id = `wiki-section-${index}`;
+        heading.id = id;
+        sections.push({ id, title });
+      }
+    });
+
+    wikipediaSections.value = sections;
+  }, 100);
+}
+
+function onSectionChange(event: Event): void {
+  const target = event.target as HTMLSelectElement;
+  const sectionId = target.value;
+
+  if (sectionId) {
+    scrollToSection(sectionId);
+    // Reset the select to show placeholder again
+    target.value = "";
+  }
+}
+
+function scrollToSection(sectionId: string): void {
+  const element = document.getElementById(sectionId);
+  const scrollContainer = document.querySelector(".artist-page");
+
+  if (element && scrollContainer) {
+    // Calculate the offset: header height + nav bar height + some padding
+    const navBarHeight = 50;
+    const padding = 16;
+    const offset = artistStore.headerHeight + navBarHeight + padding;
+
+    // Get element position relative to the scroll container
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    const currentScroll = scrollContainer.scrollTop;
+    const elementPosition = elementRect.top - containerRect.top + currentScroll;
+    const offsetPosition = elementPosition - offset;
+
+    scrollContainer.scrollTo({
+      behavior: "smooth",
+      top: offsetPosition,
+    });
+  }
+}
+
+watch(
+  () => artistStore.wikipediaExtract,
+  () => {
+    nextTick(() => {
+      extractSections();
+    });
+  },
+);
+
+onMounted(() => {
+  nextTick(() => {
+    extractSections();
+  });
+});
 </script>
 
 <style lang="scss" scoped>
@@ -118,30 +284,64 @@ function onLanguageChange(option: LanguageOption): void {
 
 .info-section {
   margin-bottom: 2rem;
+  position: relative;
 }
 
-.section-title {
+.sentinel {
+  height: 1px;
+  pointer-events: none;
+  position: relative;
+  width: 100%;
+}
+
+.wikipedia-nav {
   align-items: center;
-  border-bottom: 1px solid var(--bg-color-light);
-  color: var(--font-color-default);
+  background: var(--bg-color);
+  border-radius: 0.5rem;
   display: flex;
-  font-size: 1.1rem;
-  font-weight: 600;
   gap: 0.5rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-}
-
-.section-header {
-  align-items: center;
-  display: flex;
   justify-content: space-between;
   margin-bottom: 1rem;
+  padding: 0.5rem;
+  position: sticky;
+  top: 0;
+  transition: border-radius 0.2s ease;
+  z-index: 10;
 
-  .section-title {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
+  &.stuck {
+    border-radius: 0 0 0.5rem 0.5rem;
+  }
+}
+
+.section-select {
+  appearance: none;
+  background-color: var(--bg-color-light);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-position: right 0.6rem center;
+  background-repeat: no-repeat;
+  border: none;
+  border-radius: 0.3rem;
+  color: var(--font-color-light);
+  cursor: pointer;
+  font-size: 0.85rem;
+  min-width: 10rem;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    background-color: var(--bg-color-light);
+    color: var(--font-color-default);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  option {
+    background-color: var(--bg-color-dark);
+    color: var(--font-color-default);
   }
 }
 

@@ -177,7 +177,7 @@ export const useArtist = defineStore("artist", {
     },
 
     updateHeaderHeight(height: number) {
-      this.headerHeight = height - 5;
+      this.headerHeight = height;
     },
   },
 
