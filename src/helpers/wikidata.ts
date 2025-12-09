@@ -294,35 +294,20 @@ const EXCLUDED_WIKIPEDIA_SECTION_PATTERNS: RegExp[] = [
 ];
 
 /**
- * Language code to name mapping for common Wikipedia languages
+ * Get language display name using Intl API with fallback
  */
-const LANGUAGE_NAMES: Record<string, string> = {
-  ca: "Català",
-  cs: "Čeština",
-  da: "Dansk",
-  de: "Deutsch",
-  en: "English",
-  es: "Español",
-  fi: "Suomi",
-  fr: "Français",
-  he: "עברית",
-  hu: "Magyar",
-  id: "Indonesia",
-  it: "Italiano",
-  ja: "日本語",
-  ko: "한국어",
-  nl: "Nederlands",
-  no: "Norsk",
-  pl: "Polski",
-  pt: "Português",
-  ro: "Română",
-  ru: "Русский",
-  sv: "Svenska",
-  tr: "Türkçe",
-  uk: "Українська",
-  vi: "Tiếng Việt",
-  zh: "中文",
-};
+function getLanguageDisplayName(code: string): string {
+  try {
+    const displayNames = new Intl.DisplayNames(["en"], { type: "language" });
+    const name = displayNames.of(code);
+    if (name && name !== code) {
+      return name;
+    }
+  } catch {
+    // Fallback if Intl API fails
+  }
+  return code.toUpperCase();
+}
 
 /**
  * Creates a Wikidata API client instance
@@ -627,7 +612,7 @@ function getWikipediaLanguages(
       if (code.length <= 3) {
         languages.push({
           code,
-          name: LANGUAGE_NAMES[code] || code.toUpperCase(),
+          name: getLanguageDisplayName(code),
           url: `https://${code}.wikipedia.org/wiki/${encodeURIComponent(value.title.replace(/ /g, "_"))}`,
         });
       }

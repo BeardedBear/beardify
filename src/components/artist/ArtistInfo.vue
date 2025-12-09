@@ -9,16 +9,13 @@
           v-if="wikipediaSections.length > 0 || hasMultipleLanguages"
           :style="{ top: artistStore.headerHeight + 'px' }"
         >
-          <select
+          <CustomSelect
             v-if="wikipediaSections.length > 0"
-            class="section-select"
+            :model-value="selectedSection"
+            :options="sectionOptions"
+            placeholder="Go to section..."
             @change="onSectionChange"
-          >
-            <option value="" disabled selected>Go to section...</option>
-            <option v-for="section in wikipediaSections" :key="section.id" :value="section.id">
-              {{ section.title }}
-            </option>
-          </select>
+          />
 
           <LanguageSelect
             v-if="hasMultipleLanguages"
@@ -57,6 +54,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import ArtistSidebar from "@/components/artist/ArtistSidebar.vue";
+import CustomSelect, { type SelectOption } from "@/components/ui/CustomSelect.vue";
 import LanguageSelect, { type LanguageOption } from "@/components/ui/LanguageSelect.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
@@ -69,7 +67,15 @@ const artistStore = useArtist();
 const wikipediaContentRef = ref<HTMLElement | null>(null);
 const sentinelRef = ref<HTMLElement | null>(null);
 const wikipediaSections = ref<WikipediaSection[]>([]);
+const selectedSection = ref("");
 const isStuck = ref(false);
+
+const sectionOptions = computed<SelectOption[]>(() =>
+  wikipediaSections.value.map((section) => ({
+    label: section.title,
+    value: section.id,
+  })),
+);
 
 // Observer to detect when nav is stuck
 let observer: IntersectionObserver | null = null;
@@ -220,15 +226,10 @@ function extractSections(): void {
   }, 100);
 }
 
-function onSectionChange(event: Event): void {
-  const target = event.target as HTMLSelectElement;
-  const sectionId = target.value;
-
-  if (sectionId) {
-    scrollToSection(sectionId);
-    // Reset the select to show placeholder again
-    target.value = "";
-  }
+function onSectionChange(option: SelectOption): void {
+  scrollToSection(option.value);
+  // Reset selection to allow re-selecting the same section
+  selectedSection.value = "";
 }
 
 function scrollToSection(sectionId: string): void {
@@ -310,38 +311,6 @@ onMounted(() => {
 
   &.stuck {
     border-radius: 0 0 0.5rem 0.5rem;
-  }
-}
-
-.section-select {
-  appearance: none;
-  background-color: var(--bg-color-light);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-position: right 0.6rem center;
-  background-repeat: no-repeat;
-  border: none;
-  border-radius: 0.3rem;
-  color: var(--font-color-light);
-  cursor: pointer;
-  font-size: 0.85rem;
-  min-width: 10rem;
-  padding: 0.5rem 2rem 0.5rem 0.75rem;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
-
-  &:hover {
-    background-color: var(--bg-color-light);
-    color: var(--font-color-default);
-  }
-
-  &:focus {
-    outline: none;
-  }
-
-  option {
-    background-color: var(--bg-color-dark);
-    color: var(--font-color-default);
   }
 }
 

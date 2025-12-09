@@ -1,13 +1,14 @@
 <template>
-  <div ref="selectRef" class="language-select" :class="{ open: isOpen }">
+  <div ref="selectRef" class="custom-select" :class="{ open: isOpen, disabled }">
     <!-- Hidden sizer to determine minimum width based on longest option -->
     <div class="select-sizer" aria-hidden="true">
-      <span v-for="option in options" :key="option.code" class="sizer-option">
-        {{ option.name }}
+      <span v-for="option in options" :key="option.value" class="sizer-option">
+        {{ option.label }}
       </span>
+      <span class="sizer-option">{{ placeholder }}</span>
     </div>
 
-    <button type="button" class="select-trigger" @click="toggle">
+    <button type="button" class="select-trigger" :disabled="disabled" @click="toggle">
       <span class="select-value">{{ displayValue }}</span>
       <i class="icon-chevron-down" />
     </button>
@@ -16,13 +17,13 @@
       <div v-if="isOpen" class="select-dropdown">
         <button
           v-for="option in options"
-          :key="option.code"
+          :key="option.value"
           type="button"
           class="select-option"
-          :class="{ selected: option.code === modelValue }"
+          :class="{ selected: option.value === modelValue }"
           @click="selectOption(option)"
         >
-          {{ option.name }}
+          {{ option.label }}
         </button>
       </div>
     </Transition>
@@ -32,36 +33,47 @@
 <script lang="ts" setup>
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
-export interface LanguageOption {
-  code: string;
-  name: string;
-  url: string;
+export interface SelectOption {
+  label: string;
+  value: string;
 }
 
-const props = defineProps<{
-  modelValue: string;
-  options: LanguageOption[];
-}>();
+const props = withDefaults(
+  defineProps<{
+    disabled?: boolean;
+    modelValue?: string;
+    options: SelectOption[];
+    placeholder?: string;
+  }>(),
+  {
+    disabled: false,
+    modelValue: "",
+    placeholder: "Select...",
+  },
+);
 
 const emit = defineEmits<{
   "update:modelValue": [value: string];
-  change: [option: LanguageOption];
+  change: [option: SelectOption];
 }>();
 
 const isOpen = ref(false);
 const selectRef = ref<HTMLElement | null>(null);
 
 const displayValue = computed(() => {
-  const option = props.options.find((o) => o.code === props.modelValue);
-  return option?.name ?? props.modelValue;
+  if (!props.modelValue) return props.placeholder;
+  const option = props.options.find((o) => o.value === props.modelValue);
+  return option?.label ?? props.placeholder;
 });
 
 function toggle(): void {
-  isOpen.value = !isOpen.value;
+  if (!props.disabled) {
+    isOpen.value = !isOpen.value;
+  }
 }
 
-function selectOption(option: LanguageOption): void {
-  emit("update:modelValue", option.code);
+function selectOption(option: SelectOption): void {
+  emit("update:modelValue", option.value);
   emit("change", option);
   isOpen.value = false;
 }
@@ -82,10 +94,15 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-.language-select {
+.custom-select {
   display: inline-flex;
   flex-direction: column;
   position: relative;
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 
 .select-sizer {
@@ -146,12 +163,12 @@ onBeforeUnmount(() => {
   box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
   display: flex;
   flex-direction: column;
+  left: 0;
   max-height: 200px;
-  min-width: 100%;
   overflow: hidden auto;
   position: absolute;
-  right: 0;
   top: calc(100% + 4px);
+  width: 100%;
   z-index: 100;
 }
 
@@ -166,7 +183,6 @@ onBeforeUnmount(() => {
   transition:
     background-color 0.15s ease,
     color 0.15s ease;
-  white-space: nowrap;
 
   &:hover {
     background-color: var(--bg-color-lighter);
