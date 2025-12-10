@@ -1,6 +1,6 @@
 import ky from "ky";
 
-import { DiscogsArtist } from "@/@types/Artist";
+import { DiscogsArtist, DiscogsArtistReleasesResponse } from "@/@types/Artist";
 
 /**
  * Discogs API configuration
@@ -69,6 +69,41 @@ export async function getDiscogsArtist(discogsId: string): Promise<DiscogsArtist
     return data;
   } catch (error) {
     console.error("Error fetching Discogs artist:", error);
+    return null;
+  }
+}
+
+/**
+ * Get artist releases from Discogs
+ * @param discogsId - The Discogs ID of the artist
+ * @param page - Page number (default: 1)
+ * @param perPage - Results per page (default: 100, max: 100)
+ * @returns Promise resolving to DiscogsArtistReleasesResponse or null
+ */
+export async function getDiscogsArtistReleases(
+  discogsId: string,
+  page = 1,
+  perPage = 100,
+): Promise<DiscogsArtistReleasesResponse | null> {
+  try {
+    if (!DISCOGS_TOKEN) {
+      console.warn("Discogs token not configured");
+      return null;
+    }
+
+    const response = await discogsClient.get(`artists/${discogsId}/releases`, {
+      searchParams: {
+        page: page.toString(),
+        per_page: perPage.toString(),
+        sort: "year",
+        sort_order: "desc",
+      },
+    });
+    const data = await response.json<DiscogsArtistReleasesResponse>();
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching Discogs artist releases:", error);
     return null;
   }
 }

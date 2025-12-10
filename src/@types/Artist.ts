@@ -28,6 +28,7 @@ export interface ArtistPage {
   artist: Artist;
   discogsArtist: DiscogsArtist | null;
   discogsId: null | string;
+  discogsReleases: Map<string, string>;
   eps: AlbumSimplified[];
   followStatus: boolean | undefined;
   headerHeight: number;
@@ -65,6 +66,20 @@ export interface DiscogsArtist {
 }
 
 // Discogs API types
+export interface DiscogsArtistReleasesResponse {
+  pagination: {
+    items: number;
+    page: number;
+    pages: number;
+    per_page: number;
+    urls: {
+      last?: string;
+      next?: string;
+    };
+  };
+  releases: DiscogsRelease[];
+}
+
 export interface DiscogsImage {
   height: number;
   resource_url: string;
@@ -80,6 +95,20 @@ export interface DiscogsMember {
   name: string;
   resource_url: string;
   thumbnail_url: string;
+}
+
+export interface DiscogsRelease {
+  artist: string;
+  format: string;
+  id: number;
+  label: string;
+  main_release: number;
+  resource_url: string;
+  role: string;
+  thumb: string;
+  title: string;
+  type: "master" | "release";
+  year: number;
 }
 
 export interface RelatedArtists {

@@ -5,7 +5,7 @@ import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "@/@types/Ar
 import { defaultArtist } from "@/@types/Defaults";
 import { Paging } from "@/@types/Paging";
 import { instance } from "@/api";
-import { getDiscogsArtist } from "@/helpers/discogs";
+import { getDiscogsArtist, getDiscogsArtistReleases } from "@/helpers/discogs";
 import { getDiscogsIdByArtistName } from "@/helpers/musicbrainz";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { cleanUrl } from "@/helpers/urls";
@@ -19,6 +19,7 @@ export const useArtist = defineStore("artist", {
       this.artist = defaultArtist;
       this.discogsArtist = null;
       this.discogsId = null;
+      this.discogsReleases = new Map();
       this.wikidataArtist = null;
       this.wikipediaExtract = null;
       this.wikipediaLanguage = "en";
@@ -67,6 +68,11 @@ export const useArtist = defineStore("artist", {
       try {
         const artist = await getDiscogsArtist(discogsId);
         this.discogsArtist = artist;
+
+        // Fetch releases after getting artist data
+        if (artist) {
+          this.getDiscogsReleases(discogsId);
+        }
       } catch {
         this.discogsArtist = null;
       }
@@ -83,6 +89,46 @@ export const useArtist = defineStore("artist", {
         }
       } catch {
         this.discogsId = null;
+      }
+    },
+
+    async getDiscogsReleases(discogsId: string) {
+      try {
+        const releasesData = await getDiscogsArtistReleases(discogsId);
+
+        if (releasesData) {
+          // Create a Map to store release type info by album title (normalized)
+          const releaseMap = new Map<string, string>();
+
+          releasesData.releases.forEach((release) => {
+            // Normalize title for matching (remove special chars, lowercase, trim)
+            const normalizedTitle = release.title
+              .toLowerCase()
+              .replace(/[^\w\s]/g, "")
+              .trim();
+
+            // Only store if it's a master release and contains format info
+            if (release.type === "master" && release.format) {
+              const format = release.format.toLowerCase();
+
+              // Detect EP or Album based on format string
+              if (format.includes("ep")) {
+                releaseMap.set(normalizedTitle, "EP");
+              } else if (
+                format.includes("album") ||
+                format.includes("lp") ||
+                format.includes("vinyl") ||
+                format.includes("cd")
+              ) {
+                releaseMap.set(normalizedTitle, "Album");
+              }
+            }
+          });
+
+          this.discogsReleases = releaseMap;
+        }
+      } catch (error) {
+        console.error("Error fetching Discogs releases:", error);
       }
     },
 
@@ -109,10 +155,47 @@ export const useArtist = defineStore("artist", {
         const e = await instance().get<Paging<AlbumSimplified>>(
           `artists/${artistId}/albums?market=FR&include_groups=single&limit=50`,
         );
-        const onlySingles = e.data.items.filter((item: AlbumSimplified) => !isEP(item));
-        const onlyEps = e.data.items.filter((item: AlbumSimplified) => isEP(item));
+
+        const onlySingles: AlbumSimplified[] = [];
+        const onlyEps: AlbumSimplified[] = [];
+
+        e.data.items.forEach((item: AlbumSimplified) => {
+          // Normalize album name for Discogs matching
+          const normalizedName = item.name
+            .toLowerCase()
+            .replace(/[^\w\s]/g, "")
+            .trim();
+
+          // Check Discogs data first if available
+          if (this.discogsReleases.size > 0) {
+            const discogsType = this.discogsReleases.get(normalizedName);
+
+            if (discogsType === "EP") {
+              onlyEps.push(item);
+            } else if (discogsType === "Album") {
+              // Some albums might be wrongly categorized as singles in Spotify
+              this.albums.push(item);
+            } else {
+              // Fallback to original logic if not found in Discogs
+              if (isEP(item)) {
+                onlyEps.push(item);
+              } else {
+                onlySingles.push(item);
+              }
+            }
+          } else {
+            // Fallback to original logic if Discogs data not available
+            if (isEP(item)) {
+              onlyEps.push(item);
+            } else {
+              onlySingles.push(item);
+            }
+          }
+        });
+
         this.singles = removeDuplicatesAlbums(onlySingles);
         this.eps = removeDuplicatesAlbums(onlyEps);
+        this.albums = removeDuplicatesAlbums(this.albums);
       } catch {
         // silent fail
       }
@@ -188,6 +271,7 @@ export const useArtist = defineStore("artist", {
     artist: defaultArtist,
     discogsArtist: null,
     discogsId: null,
+    discogsReleases: new Map(),
     eps: [],
     followStatus: false,
     headerHeight: 0,
