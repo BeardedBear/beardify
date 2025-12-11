@@ -47,15 +47,15 @@ import { NotificationType } from "@/@types/Notification";
 import { Paging } from "@/@types/Paging";
 import { TrackSimplified, TrackToRemove } from "@/@types/Track";
 import { instance } from "@/api";
+import ArtistList from "@/components/artist/ArtistList.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
+import { usePlayer } from "@/components/player/PlayerStore";
+import Cover from "@/components/ui/AlbumCover.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { notification } from "@/helpers/notifications";
 import { playAlbum } from "@/helpers/playAlbum"; // Import the playAlbum helper
 import router from "@/router";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
-import Cover from "@/components/ui/AlbumCover.vue";
-import ArtistList from "@/components/artist/ArtistList.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import { useDialog } from "@/components/dialog/DialogStore";
-import { usePlayer } from "@/components/player/PlayerStore";
 
 const props = defineProps<{
   album: Album | AlbumSimplified;
