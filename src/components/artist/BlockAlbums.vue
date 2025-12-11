@@ -32,6 +32,5 @@ const albumGroups = computed(() => groupAlbumVariants(artistStore.albums));
   display: grid;
   gap: 1.2rem;
   grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-
 }
 </style>

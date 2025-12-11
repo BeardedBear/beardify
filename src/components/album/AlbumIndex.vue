@@ -2,12 +2,7 @@
   <div :class="{ 'exact-search': exactSearch }" class="album">
     <div class="current" v-if="isPlaying"><i class="icon-volume-2" /></div>
     <div :class="{ 'is-playing': isPlaying }" class="cover">
-      <Cover
-        :images="album.images"
-        :size="coverSize ? coverSize : 'medium'"
-        @click="router.push(`/album/${album.id}`)"
-        class="img"
-      />
+      <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" @click="handleAlbumClick" class="img" />
       <ButtonIndex no-default-class class="play" type="button" @click="handlePlayAlbum(album.uri)">
         <i class="icon-play" />
       </ButtonIndex>
@@ -80,6 +75,16 @@ const playerStore = usePlayer();
 const isPlaying = computed<boolean>(
   () => props.album.uri === playerStore.playerState?.track_window.current_track.album.uri,
 );
+
+/**
+ * Handle album click to navigate and close dialog if open
+ */
+function handleAlbumClick(): void {
+  if (dialogStore.show) {
+    dialogStore.close();
+  }
+  router.push(`/album/${props.album.id}`);
+}
 
 /**
  * Wrapper function to call the imported playAlbum helper function

@@ -31,6 +31,6 @@ const liveAlbumGroups = computed(() => groupAlbumVariants(artistStore.albumsLive
 .albums {
   display: grid;
   gap: 1.2rem;
-  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
 }
 </style>

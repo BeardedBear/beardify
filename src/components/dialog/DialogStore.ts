@@ -23,6 +23,7 @@ export const useDialog = defineStore("dialog", {
     },
 
     open(data: {
+      albumGroup?: Dialog["albumGroup"];
       albumId?: string;
       playlistId?: string;
       track?: Spotify.Track | Track | TrackSimplified;
@@ -34,6 +35,7 @@ export const useDialog = defineStore("dialog", {
       if (data.albumId) this.albumId = data.albumId;
       if (data.track?.uri) this.track = data.track;
       if (data.playlistId) this.playlistId = data.playlistId;
+      if (data.albumGroup) this.albumGroup = data.albumGroup;
     },
 
     restore() {

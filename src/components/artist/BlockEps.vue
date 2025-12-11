@@ -32,6 +32,5 @@ const epGroups = computed(() => groupAlbumVariants(artistStore.eps));
   display: grid;
   gap: 1.2rem;
   grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-
 }
 </style>

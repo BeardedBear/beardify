@@ -1,6 +1,9 @@
+import { AlbumGroup } from "@/helpers/groupAlbumVariants";
+
 import { Track, TrackSimplified } from "./Track";
 
 export interface Dialog {
+  albumGroup?: AlbumGroup;
   albumId?: string;
   isClosing: boolean;
   isMinimized: boolean;
@@ -13,6 +16,7 @@ export interface Dialog {
 export type DialogType =
   | "addalbum"
   | "addSong"
+  | "albumVariants"
   | "createCollection"
   | "createPlaylist"
   | "editPlaylist"
