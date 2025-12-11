@@ -22,6 +22,12 @@ const VARIANT_KEYWORDS = [
   "instrumental",
   "acoustic",
   "live",
+  "commentary",
+  "interview",
+  "documentary",
+  "in addition",
+  "revisited",
+  "exclusive",
 ];
 
 /**
@@ -48,6 +54,11 @@ const VARIANT_PATTERNS = [
   /\s*[^+]+\+$/i,
   // Colon with location/venue info: ": Location Name" or ": Venue MMXXIV"
   /\s*:\s*[A-Z][a-zA-Z\s]+(?:MMXX|MM[CDXLVI]+|\d{4})?\s*$/i,
+  // Square brackets with year and variant info: [2021 Remaster], [Deluxe Edition]
+  /\s*\[[^\]]*(?:remaster|deluxe|expanded|special|bonus|edition|version|\d{4})[^\]]*\]/i,
+  // Track by Track, Behind the Scenes, Making of, etc.
+  /\s*-\s*track\s+by\s+track(?:\s+commentary)?$/i,
+  /\s*-\s*(?:behind\s+the\s+scenes|making\s+of|the\s+making\s+of)$/i,
 ];
 
 /**
@@ -134,6 +145,13 @@ function normalizeAlbumName(name: string): string {
     normalized = normalized.replace(pattern, "");
   });
 
-  // Clean up any remaining whitespace
-  return normalized.trim().toLowerCase();
+  // Normalize punctuation and capitalization
+  normalized = normalized
+    .toLowerCase()
+    .replace(/\.{2,}\s*/g, "...") // Normalize ellipsis and remove trailing space
+    .replace(/\bvol\.\s*/gi, "volume ") // Normalize "Vol." to "Volume"
+    .replace(/\s+/g, " ") // Normalize multiple spaces to single space
+    .trim();
+
+  return normalized;
 }
