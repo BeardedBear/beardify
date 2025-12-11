@@ -43,10 +43,9 @@ const props = defineProps<{
 const dialogStore = useDialog();
 
 const displayAlbum = computed(() => {
-  const hasVariants = props.group.variants.length > 0;
   return {
     ...props.group.baseAlbum,
-    name: getDisplayName(props.group.baseAlbum.name, hasVariants),
+    name: getDisplayName(props.group.baseAlbum.name),
   };
 });
 

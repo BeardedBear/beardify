@@ -45,6 +45,10 @@ const VARIANT_PATTERNS = [
   // Complex parentheses with multiple info: (30th Anniversary Edition / Remastered 2022)
   /\s*\(\d+th\s+anniversary\s+edition(?:\s*\/\s*.+)?\)/i,
   /\s*\([^)]*(?:remaster|deluxe|expanded|special|bonus)[^)]*\)/i,
+  // Parentheses with year and remaster: (2019 Remaster), (2023 Remastered)
+  /\s*\(\d{4}\s*remaster(?:ed)?\)/i,
+  // Parentheses with anniversary: (20th Anniversary), (25th Anniversary Edition)
+  /\s*\(\d+th\s+anniversary(?:\s+edition)?\)/i,
   // Anniversary with ordinal: 30th Anniversary, 25th Anniversary
   /\s*\d+th\s+anniversary(?:\s+edition)?$/i,
   // Year-based remaster: "2023 Remastered", "2020 Remaster"
@@ -62,21 +66,20 @@ const VARIANT_PATTERNS = [
 ];
 
 /**
- * Get display name for an album, removing variant suffixes if it's a single album without variants
- * For use in the UI to show cleaner names
+ * Get display name for an album, removing variant suffixes
+ * For use in the UI to show cleaner names in the discography
  */
-export function getDisplayName(name: string, hasVariants: boolean): string {
-  if (hasVariants) {
-    return name; // Keep original name if there are variants
-  }
-
-  // Remove variant suffixes for single albums
+export function getDisplayName(name: string): string {
+  // Always remove variant suffixes for cleaner display
   let displayName = name.trim();
   VARIANT_PATTERNS.forEach((pattern) => {
     displayName = displayName.replace(pattern, "");
   });
 
-  return displayName.trim();
+  displayName = displayName.trim();
+
+  // If cleaning removed everything, keep the original name
+  return displayName.length > 0 ? displayName : name;
 }
 
 /**
@@ -166,8 +169,9 @@ function normalizeAlbumName(name: string): string {
   // Normalize punctuation and capitalization
   normalized = normalized
     .toLowerCase()
-    .replace(/\.{2,}\s*/g, "...") // Normalize ellipsis and remove trailing space
+    .replace(/\s*\.{2,}\s*/g, "...") // Normalize ellipsis and remove spaces around it
     .replace(/\bvol\.\s*/gi, "volume ") // Normalize "Vol." to "Volume"
+    .replace(/[?!]+$/g, "") // Remove trailing question marks and exclamation points
     .replace(/\s+/g, " ") // Normalize multiple spaces to single space
     .trim();
 
