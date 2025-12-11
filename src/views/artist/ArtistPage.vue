@@ -62,7 +62,7 @@ artistStore.clean().finally(() => {
   background-color: var(--bg-color-darker);
   margin-bottom: 0.8rem;
   position: sticky;
-  z-index: 2;
+  z-index: 15;
 }
 </style>
 
@@ -81,6 +81,7 @@ artistStore.clean().finally(() => {
   margin: 0 auto;
   max-width: 120rem;
   padding: 2rem 2.5rem;
+  position: relative;
 
   @include responsive.xl {
     grid-template-columns: 1fr;

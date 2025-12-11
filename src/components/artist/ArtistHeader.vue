@@ -95,7 +95,7 @@ watch(height, (newHeight) => {
   transition:
     transform ease 0.1s,
     padding 0.3s ease;
-  z-index: 3;
+  z-index: 20;
 }
 
 .inner {
