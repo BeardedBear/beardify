@@ -56,9 +56,4 @@ function openVariantsDialog(): void {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
 
-/* keep minimal styles; indicator handled in AlbumIndex.vue */
-</style>

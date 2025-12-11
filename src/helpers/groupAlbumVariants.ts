@@ -63,7 +63,7 @@ const VARIANT_PATTERNS = [
   ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*${kw}\\s*(edition|version)?$`, "i")),
   // Complex parentheses with multiple info: (30th Anniversary Edition / Remastered 2022)
   /\s*\(\d+th\s+anniversary\s+edition(?:\s*\/\s*.+)?\)/i,
-  /\s*\([^)]*(?:remaster|deluxe|expanded|special|bonus)[^)]*\)/i,
+  /\s*\([^)]*(?:remaster|deluxe|expanded|special|bonus|version|extra)[^)]*\)/i,
   // Parentheses with "The Complete Sessions" and years: (The Complete Sessions 1998-1999)
   /\s*\(the\s+complete\s+sessions\s+\d{4}[-–]\d{4}\)/i,
   // Parentheses with year and remaster: (2019 Remaster), (2023 Remastered)
