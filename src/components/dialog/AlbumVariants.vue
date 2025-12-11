@@ -60,20 +60,18 @@ const gridClass = computed(() => {
 .album-variants-grid {
   display: grid;
   gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
   padding: 2rem;
 
   &.grid-small {
-    grid-template-columns: repeat(2, 1fr);
     max-width: 30rem;
   }
 
   &.grid-medium {
-    grid-template-columns: repeat(2, 1fr);
     max-width: 35rem;
   }
 
   &.grid-large {
-    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
     max-height: 80vh;
     max-width: 90vw;
     overflow-y: auto;

@@ -7,30 +7,47 @@ export interface AlbumGroup {
 }
 
 /**
- * Common variant suffixes to strip from album names
+ * Common variant keywords and patterns
+ */
+const VARIANT_KEYWORDS = [
+  "deluxe",
+  "remaster",
+  "remastered",
+  "expanded",
+  "special edition",
+  "anniversary edition",
+  "bonus track",
+  "explicit",
+  "clean",
+  "instrumental",
+  "acoustic",
+  "live",
+];
+
+/**
+ * Generate regex patterns from keywords with different formats
  */
 const VARIANT_PATTERNS = [
-  /\s*\(deluxe\s*(edition|version)?\)/i,
-  /\s*\(remastered\)/i,
-  /\s*\(remaster\)/i,
-  /\s*\(expanded\s*(edition|version)?\)/i,
-  /\s*\(special\s*edition\)/i,
-  /\s*\(anniversary\s*edition\)/i,
-  /\s*\(bonus\s*track\s*(edition|version)?\)/i,
-  /\s*\(explicit\)/i,
-  /\s*\(clean\)/i,
-  /\s*\(instrumental\)/i,
-  /\s*\(acoustic\)/i,
-  /\s*\(live\)/i,
-  /\s*-\s*deluxe\s*(edition|version)?$/i,
-  /\s*-\s*remastered$/i,
-  /\s*-\s*remaster$/i,
-  /\s*-\s*expanded\s*(edition|version)?$/i,
-  /\s*-\s*special\s*edition$/i,
-  /\s*deluxe\s*(edition|version)?$/i,
-  /\s*remastered$/i,
-  /\s*remaster$/i,
-  /\s*\d{4}\s*remaster(ed)?$/i, // e.g., "2023 Remastered"
+  // Parentheses format: (keyword), (keyword edition), (keyword version)
+  ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*\\(${kw}\\s*(edition|version)?\\)`, "i")),
+  // Dash suffix: - keyword, - keyword edition, - keyword version
+  ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*-\\s*${kw}\\s*(edition|version)?$`, "i")),
+  // Colon suffix: : keyword
+  ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*:\\s*${kw}$`, "i")),
+  // Standalone suffix: keyword, keyword edition, keyword version
+  ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*${kw}\\s*(edition|version)?$`, "i")),
+  // Complex parentheses with multiple info: (30th Anniversary Edition / Remastered 2022)
+  /\s*\(\d+th\s+anniversary\s+edition(?:\s*\/\s*.+)?\)/i,
+  /\s*\([^)]*(?:remaster|deluxe|expanded|special|bonus)[^)]*\)/i,
+  // Anniversary with ordinal: 30th Anniversary, 25th Anniversary
+  /\s*\d+th\s+anniversary(?:\s+edition)?$/i,
+  // Year-based remaster: "2023 Remastered", "2020 Remaster"
+  /\s*\d{4}\s*remaster(ed)?$/i,
+  // Plus sign combinations: "+ anything" or "anything +"
+  /\s*\+\s*[^+]+$/i,
+  /\s*[^+]+\+$/i,
+  // Colon with location/venue info: ": Location Name" or ": Venue MMXXIV"
+  /\s*:\s*[A-Z][a-zA-Z\s]+(?:MMXX|MM[CDXLVI]+|\d{4})?\s*$/i,
 ];
 
 /**

@@ -52,8 +52,6 @@ function openVariantsDialog(): void {
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
 
-
-
 .album-group-main {
   position: relative;
 }
@@ -71,7 +69,9 @@ function openVariantsDialog(): void {
     font-weight: bold;
     height: 1.5rem;
     position: absolute;
-    transition: left 0.15s ease, top 0.15s ease;
+    transition:
+      left 0.15s ease,
+      top 0.15s ease;
     width: 1.5rem;
 
     &-1 {
@@ -103,5 +103,4 @@ function openVariantsDialog(): void {
     }
   }
 }
-
 </style>
