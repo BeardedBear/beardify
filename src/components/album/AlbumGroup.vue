@@ -13,8 +13,8 @@
           :without-release-date="withoutReleaseDate"
         />
         <div v-if="group.variants.length > 0" class="album-group-stack-indicator" @click="openVariantsDialog">
-          <div class="album-group-stack-layer album-group-stack-layer--1"></div>
-          <div class="album-group-stack-layer album-group-stack-layer--2">+{{ group.variants.length }}</div>
+          <div class="album-group-stack-layer album-group-stack-layer-1"></div>
+          <div class="album-group-stack-layer album-group-stack-layer-2">+{{ group.variants.length }}</div>
         </div>
       </div>
     </div>
@@ -52,42 +52,56 @@ function openVariantsDialog(): void {
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
 
+
+
 .album-group-main {
   position: relative;
 }
 
-.album-group-stack-indicator {
-  cursor: pointer;
-  left: 0.5rem;
-  position: absolute;
-  top: 0.5rem;
-  z-index: 10;
-}
+.album-group-stack {
+  $indicator-offset: 0.5rem;
+  $size: 1.5rem;
 
-.album-group-stack-layer {
-  --offset: 0.3rem;
+  &-layer {
+    background: var(--bg-color-light);
+    border: 0.1rem solid var(--bg-color-lighter);
+    border-radius: 0.3rem;
+    box-shadow: 0 0.2rem 0.4rem rgb(0 0 0 / 30%);
+    font-size: 0.8rem;
+    font-weight: bold;
+    height: 1.5rem;
+    position: absolute;
+    transition: left 0.15s ease, top 0.15s ease;
+    width: 1.5rem;
 
-  background: var(--bg-color-light);
-  border: 0.1rem solid var(--bg-color-lighter);
-  border-radius: 0.3rem;
-  box-shadow: 0 0.2rem 0.4rem rgb(0 0 0 / 30%);
-  font-size: 0.8rem;
-  font-weight: bold;
-  height: 1.5rem;
-  position: absolute;
-  width: 1.5rem;
+    &-1 {
+      left: calc($indicator-offset - 0.3rem);
+      top: calc($indicator-offset - 0.3rem);
+    }
 
-  &--1 {
-    left: calc(var(--offset) - 0.3rem);
-    top: calc(var(--offset) - 0.3rem);
+    &-2 {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      left: calc($indicator-offset - 0.3rem);
+      top: calc($indicator-offset - 0.3rem);
+    }
   }
 
-  &--2 {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    left: calc(var(--offset) - 0.6rem);
-    top: calc(var(--offset) - 0.6rem);
+  &-indicator {
+    cursor: pointer;
+    height: $size;
+    left: $indicator-offset;
+    position: absolute;
+    top: $indicator-offset;
+    width: $size;
+    z-index: 10;
+
+    &:hover .album-group-stack-layer-1 {
+      left: calc($indicator-offset - -0.05rem);
+      top: calc($indicator-offset - -0.05rem);
+    }
   }
 }
+
 </style>
