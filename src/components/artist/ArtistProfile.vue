@@ -22,9 +22,12 @@ const artistStore = useArtist();
  * Extract the first sentence from text, but limit to max characters
  */
 function getFirstSentence(text: string, maxLength = 120): string {
+  // Remove all line breaks and normalize whitespace
+  const cleanText = text.replace(/\s+/g, " ").trim();
+
   // Match first sentence ending with . ! or ? followed by space or end of string
-  const match = text.match(/^[^.!?]*[.!?]/);
-  const firstSentence = match ? match[0] : text;
+  const match = cleanText.match(/^[^.!?]*[.!?]/);
+  const firstSentence = match ? match[0] : cleanText;
 
   // If first sentence is within limit, return it
   if (firstSentence.length <= maxLength) {
@@ -32,7 +35,7 @@ function getFirstSentence(text: string, maxLength = 120): string {
   }
 
   // Otherwise truncate at maxLength and add ellipsis
-  return text.slice(0, maxLength).trim() + "…";
+  return cleanText.slice(0, maxLength).trim() + "…";
 }
 
 const formattedProfile = computed(() => {
@@ -72,6 +75,7 @@ $transition-duration: 0.2s;
   transition:
     opacity $transition-duration ease,
     transform $transition-duration ease;
+  z-index: 1;
 
   &.visible {
     opacity: 1;
@@ -157,7 +161,7 @@ $transition-duration: 0.2s;
 }
 
 .more-button {
-  background-color: var(--bg-color-dark);
+  background-color: var(--bg-color);
   border-radius: 0.3rem;
   color: var(--font-color-light);
   cursor: pointer;

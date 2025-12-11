@@ -5,18 +5,23 @@
       EP's
     </div>
     <div class="eps">
-      <div :key="index" v-for="(album, index) in artistStore.eps">
-        <Album :album="album" can-save />
+      <div :key="index" v-for="(group, index) in epGroups">
+        <AlbumGroup :group="group" can-save />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
+
+import AlbumGroup from "@/components/album/AlbumGroup.vue";
+import { groupAlbumVariants } from "@/helpers/groupAlbumVariants";
 import { useArtist } from "@/views/artist/ArtistStore";
-import Album from "@/components/album/AlbumIndex.vue";
 
 const artistStore = useArtist();
+
+const epGroups = computed(() => groupAlbumVariants(artistStore.eps));
 </script>
 
 <style lang="scss" scoped>
@@ -26,18 +31,6 @@ const artistStore = useArtist();
 .eps {
   display: grid;
   gap: 1.2rem;
-  grid-template-columns: repeat(4, 1fr);
-
-  @include responsive.l {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  @include responsive.l {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include responsive.hdpi {
-    grid-template-columns: repeat(6, 1fr);
-  }
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
 }
 </style>

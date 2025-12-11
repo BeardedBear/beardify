@@ -5,18 +5,23 @@
       Live albums
     </div>
     <div class="albums">
-      <div :key="index" v-for="(album, index) in artistStore.albumsLive">
-        <Album :album="album" can-save />
+      <div :key="index" v-for="(group, index) in liveAlbumGroups">
+        <AlbumGroup :group="group" can-save />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
+
+import AlbumGroup from "@/components/album/AlbumGroup.vue";
+import { groupAlbumVariants } from "@/helpers/groupAlbumVariants";
 import { useArtist } from "@/views/artist/ArtistStore";
-import Album from "@/components/album/AlbumIndex.vue";
 
 const artistStore = useArtist();
+
+const liveAlbumGroups = computed(() => groupAlbumVariants(artistStore.albumsLive));
 </script>
 
 <style lang="scss" scoped>
@@ -26,14 +31,6 @@ const artistStore = useArtist();
 .albums {
   display: grid;
   gap: 1.2rem;
-  grid-template-columns: repeat(4, 1fr);
-
-  @include responsive.l {
-    grid-template-columns: repeat(5, 1fr);
-  }
-
-  @include responsive.hdpi {
-    grid-template-columns: repeat(8, 1fr);
-  }
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
 }
 </style>

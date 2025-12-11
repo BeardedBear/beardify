@@ -19,47 +19,54 @@ export function isSingle(album: Album | AlbumSimplified | CurrentlyPlayingAlbum)
   return album.total_tracks < minimumNumberOfTracks && album.album_type === "single";
 }
 
+// Keywords for live album detection
+const LIVE_ALBUM_KEYWORDS = [
+  "live in",
+  "live on",
+  "live at",
+  "live from",
+  "live over",
+  "in live",
+  "on live",
+  "official live",
+  "live olympia",
+  "live series",
+  "live session",
+  "live performance",
+  "live anthology",
+  "live bootleg",
+  "world tour",
+  "in concert",
+  "concert",
+  "royal albert hall",
+  "wacken",
+  "mtv unplugged",
+  "live & unplugged",
+  "live and unplugged",
+  "bbc",
+  "live and",
+  "live &",
+];
+
+// Special patterns for live album detection
+const LIVE_ALBUM_SPECIAL_PATTERNS = [
+  "\\(live",
+  "\\[live",
+  "\\- live",
+  "live\\!",
+  "\\…live",
+  "live \\'",
+  "live 1",
+  "live\\, 1",
+  "live 2",
+  "live\\, 2",
+  "\\.\\.\\.live",
+  "live\\;",
+  "\\: live",
+];
+
 // Cache compiled regex for live album detection
-const liveAlbumRegex = new RegExp(
-  `(${[
-    "live in",
-    "live on",
-    "live at",
-    "live from",
-    "live over",
-    "in live",
-    "on live",
-    "\\(live",
-    "\\[live",
-    "official live",
-    "live olympia",
-    "live series",
-    "live session",
-    "live performance",
-    "live anthology",
-    "live bootleg",
-    "\\- live",
-    "live\\!",
-    "\\…live",
-    "live \\'",
-    "live 1",
-    "live\\, 1",
-    "live 2",
-    "live\\, 2",
-    "\\.\\.\\.live",
-    "live\\;",
-    "\\: live",
-    "world tour",
-    "in concert",
-    "concert",
-    "royal albert hall",
-    "wacken",
-    "mtv unplugged",
-    "live & unplugged",
-    "live and unplugged",
-    "bbc",
-  ].join("|")})`,
-);
+const liveAlbumRegex = new RegExp(`(${[...LIVE_ALBUM_KEYWORDS, ...LIVE_ALBUM_SPECIAL_PATTERNS].join("|")})`);
 
 export function useCheckLiveAlbum(albumName: string): boolean {
   const cleanedName = albumName.toLowerCase().trim();

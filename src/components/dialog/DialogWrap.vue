@@ -21,7 +21,7 @@
         <div class="head" v-if="withTitle">
           <div>{{ title }}</div>
           <div class="head-buttons">
-            <ButtonIndex no-default-class class="minimize" @click="handleMinimize">
+            <ButtonIndex v-if="withMinimize" no-default-class class="minimize" @click="handleMinimize">
               <i class="icon-minus" />
             </ButtonIndex>
             <ButtonIndex no-default-class class="close" @click="dialogStore.close()">
@@ -39,13 +39,14 @@
 import { useMotion } from "@vueuse/motion";
 import { ref, watch } from "vue";
 
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 defineProps<{
   big?: boolean;
   preContent?: boolean;
   title?: string;
+  withMinimize?: boolean;
   withTitle: boolean;
 }>();
 
