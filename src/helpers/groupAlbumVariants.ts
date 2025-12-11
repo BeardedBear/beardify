@@ -38,6 +38,7 @@ const VARIANT_KEYWORDS = [
   "alternate sequence",
   "pa",
   "remixes",
+  "tour edition",
 ];
 
 /**
@@ -46,6 +47,8 @@ const VARIANT_KEYWORDS = [
 const VARIANT_PATTERNS = [
   // Parenthetical variants: (B-Sides and Rarities), (B-Sides), (Rarities), (Bonus Tracks), etc. (MUST BE FIRST)
   /\s*\((B[-\s]?Sides( and Rarities)?|Rarities|Bonus Tracks|Bonus Disc|Bonus CD|Bonus Edition|Bonus Material|Bonus Content|Bonus Songs|Bonus EP|Bonus Single|Bonus)\)/i,
+  // Parenthetical stereo/mono/surround/year-based mixes: (Stereo Mix), (Mono Mix), (Surround Mix), (2007 Stereo Mix), (2015 Mono Mix)
+  /\s*\((\d{4}\s*)?(Stereo|Mono|Surround)\s+Mix\)/i,
   // Dash with anniversary and additional text: – 10th Anniversary Commentary (MUST BE EARLY)
   /\s*[-–—]\s*\d+th\s+anniversary.*$/i,
   // Dash with "The" + variant keyword: - The Remixes, - The Deluxe Edition (MUST BE BEFORE DASH KEYWORDS)
