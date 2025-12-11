@@ -24,6 +24,10 @@
       >
         <i class="icon-trash-2" />
       </ButtonIndex>
+      <div v-if="variantCount && variantCount > 0" class="album-group-stack-indicator" @click.stop="variantClick && variantClick()">
+        <div class="album-group-stack-layer album-group-stack-layer-1"></div>
+        <div class="album-group-stack-layer album-group-stack-layer-2">{{ variantCount }}</div>
+      </div>
     </div>
     <div v-if="!withoutMetas">
       <div class="name">{{ album.name }}</div>
@@ -66,6 +70,8 @@ const props = defineProps<{
   withArtists?: boolean;
   withoutMetas?: boolean;
   withoutReleaseDate?: boolean;
+  variantCount?: number;
+  variantClick?: (() => void) | undefined;
 }>();
 
 const currentRouteId = useRoute().params.id;
@@ -302,5 +308,65 @@ async function deleteAlbum(albumId: string): Promise<void> {
   font-size: 0.8rem;
   font-style: italic;
   opacity: 0.3;
+}
+
+/* Album group stack indicator styles (part of Album component to avoid !important) */
+.album-group-stack {
+  $indicator-offset: 0.5rem;
+  $size: 1.5rem;
+
+  &-layer {
+    background: var(--bg-color-light);
+    border: 0.1rem solid var(--bg-color-lighter);
+    border-radius: 0.3rem;
+    box-shadow: 0 0.2rem 0.4rem rgb(0 0 0 / 30%);
+    font-size: 0.8rem;
+    font-weight: bold;
+    height: 1.5rem;
+    position: absolute;
+    transition:
+      left 0.15s ease,
+      top 0.15s ease;
+    width: 1.5rem;
+
+    &-1 {
+      left: calc($indicator-offset - 0.3rem);
+      top: calc($indicator-offset - 0.3rem);
+    }
+
+    &-2 {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      left: calc($indicator-offset - 0.3rem);
+      top: calc($indicator-offset - 0.3rem);
+    }
+  }
+
+  &-indicator {
+    cursor: pointer;
+    height: $size;
+    left: $indicator-offset;
+    opacity: 0;
+    position: absolute;
+    top: $indicator-offset;
+    transform: translateY(-0.15rem) scale(0.97);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    visibility: hidden;
+    width: $size;
+    z-index: 10;
+
+    &:hover .album-group-stack-layer-1 {
+      left: calc($indicator-offset - -0.05rem);
+      top: calc($indicator-offset - -0.05rem);
+    }
+  }
+}
+
+/* show indicator when hovering the album (indicator is inside .album so hover persists) */
+.album:hover .album-group-stack-indicator {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
 }
 </style>
