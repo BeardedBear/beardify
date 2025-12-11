@@ -24,7 +24,11 @@
       >
         <i class="icon-trash-2" />
       </ButtonIndex>
-      <div v-if="variantCount && variantCount > 0" class="album-group-stack-indicator" @click.stop="variantClick && variantClick()">
+      <div
+        v-if="variantCount && variantCount > 0"
+        class="album-group-stack-indicator"
+        @click.stop="variantClick && variantClick()"
+      >
         <div class="album-group-stack-layer album-group-stack-layer-1"></div>
         <div class="album-group-stack-layer album-group-stack-layer-2">{{ variantCount }}</div>
       </div>
@@ -351,7 +355,9 @@ async function deleteAlbum(albumId: string): Promise<void> {
     position: absolute;
     top: $indicator-offset;
     transform: translateY(-0.15rem) scale(0.97);
-    transition: opacity 0.18s ease, transform 0.18s ease;
+    transition:
+      opacity 0.18s ease,
+      transform 0.18s ease;
     visibility: hidden;
     width: $size;
     z-index: 10;
