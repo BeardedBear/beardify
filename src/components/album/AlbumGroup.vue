@@ -3,7 +3,7 @@
     <div class="album-group-wrapper">
       <div class="album-group-main">
         <Album
-          :album="group.baseAlbum"
+          :album="displayAlbum"
           :can-delete="canDelete"
           :can-save="canSave"
           :cover-size="coverSize"
@@ -14,7 +14,7 @@
         />
         <div v-if="group.variants.length > 0" class="album-group-stack-indicator" @click="openVariantsDialog">
           <div class="album-group-stack-layer album-group-stack-layer-1"></div>
-          <div class="album-group-stack-layer album-group-stack-layer-2">{{ group.variants.length + 1}}</div>
+          <div class="album-group-stack-layer album-group-stack-layer-2">{{ group.variants.length + 1 }}</div>
         </div>
       </div>
     </div>
@@ -22,10 +22,12 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
+
 import { ImageSize } from "@/@types/Image";
 import Album from "@/components/album/AlbumIndex.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
-import { AlbumGroup } from "@/helpers/groupAlbumVariants";
+import { AlbumGroup, getDisplayName } from "@/helpers/groupAlbumVariants";
 
 const props = defineProps<{
   canDelete?: boolean;
@@ -39,6 +41,14 @@ const props = defineProps<{
 }>();
 
 const dialogStore = useDialog();
+
+const displayAlbum = computed(() => {
+  const hasVariants = props.group.variants.length > 0;
+  return {
+    ...props.group.baseAlbum,
+    name: getDisplayName(props.group.baseAlbum.name, hasVariants),
+  };
+});
 
 function openVariantsDialog(): void {
   dialogStore.open({

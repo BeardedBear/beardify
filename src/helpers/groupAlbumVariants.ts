@@ -62,6 +62,24 @@ const VARIANT_PATTERNS = [
 ];
 
 /**
+ * Get display name for an album, removing variant suffixes if it's a single album without variants
+ * For use in the UI to show cleaner names
+ */
+export function getDisplayName(name: string, hasVariants: boolean): string {
+  if (hasVariants) {
+    return name; // Keep original name if there are variants
+  }
+
+  // Remove variant suffixes for single albums
+  let displayName = name.trim();
+  VARIANT_PATTERNS.forEach((pattern) => {
+    displayName = displayName.replace(pattern, "");
+  });
+
+  return displayName.trim();
+}
+
+/**
  * Group albums by their base name, keeping variants together
  * The base album is chosen as:
  * 1. The non-variant version if it exists
