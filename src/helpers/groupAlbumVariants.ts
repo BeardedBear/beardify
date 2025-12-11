@@ -36,14 +36,20 @@ const VARIANT_KEYWORDS = [
   "international standard",
   "alternate",
   "alternate sequence",
+  "pa",
+  "remixes",
 ];
 
 /**
  * Generate regex patterns from keywords with different formats
  */
 const VARIANT_PATTERNS = [
-  // Dash with anniversary and additional text: – 10th Anniversary Commentary (MUST BE FIRST)
+  // Parenthetical variants: (B-Sides and Rarities), (B-Sides), (Rarities), (Bonus Tracks), etc. (MUST BE FIRST)
+  /\s*\((B[-\s]?Sides( and Rarities)?|Rarities|Bonus Tracks|Bonus Disc|Bonus CD|Bonus Edition|Bonus Material|Bonus Content|Bonus Songs|Bonus EP|Bonus Single|Bonus)\)/i,
+  // Dash with anniversary and additional text: – 10th Anniversary Commentary (MUST BE EARLY)
   /\s*[-–—]\s*\d+th\s+anniversary.*$/i,
+  // Dash with "The" + variant keyword: - The Remixes, - The Deluxe Edition (MUST BE BEFORE DASH KEYWORDS)
+  /\s*[-–—]\s*the\s+(?:remixes|remaster|deluxe|expanded|bonus)$/i,
   // Parentheses format: (keyword), (keyword edition), (keyword version)
   ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*\\(${kw}\\s*(edition|version)?\\)`, "i")),
   // Dash suffix: - keyword, - keyword edition, - keyword version
