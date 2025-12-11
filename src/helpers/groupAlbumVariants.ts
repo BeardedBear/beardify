@@ -55,23 +55,24 @@ const VARIANT_PATTERNS = [
  * The base album is chosen as:
  * 1. The non-variant version if it exists
  * 2. Otherwise, the earliest release (by date)
+ * Maintains original album order in the discography
  */
 export function groupAlbumVariants(albums: AlbumSimplified[]): AlbumGroup[] {
-  const groupsMap = new Map<string, AlbumSimplified[]>();
+  const groupsMap = new Map<string, { albums: AlbumSimplified[]; firstIndex: number }>();
 
-  // Group albums by normalized name
-  albums.forEach((album) => {
+  // Group albums by normalized name, tracking first occurrence
+  albums.forEach((album, index) => {
     const baseName = normalizeAlbumName(album.name);
     if (!groupsMap.has(baseName)) {
-      groupsMap.set(baseName, []);
+      groupsMap.set(baseName, { albums: [], firstIndex: index });
     }
-    groupsMap.get(baseName)!.push(album);
+    groupsMap.get(baseName)!.albums.push(album);
   });
 
   // Convert to AlbumGroup array
   const groups: AlbumGroup[] = [];
 
-  groupsMap.forEach((albumList, baseName) => {
+  groupsMap.forEach(({ albums: albumList }, baseName) => {
     if (albumList.length === 1) {
       // Single album, no variants
       groups.push({
@@ -107,6 +108,9 @@ export function groupAlbumVariants(albums: AlbumSimplified[]): AlbumGroup[] {
       });
     }
   });
+
+  // Sort groups by base album release date (newest first to match Spotify's order)
+  groups.sort((a, b) => b.baseAlbum.release_date.localeCompare(a.baseAlbum.release_date));
 
   return groups;
 }

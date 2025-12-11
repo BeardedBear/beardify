@@ -14,7 +14,7 @@
         />
         <div v-if="group.variants.length > 0" class="album-group-stack-indicator" @click="openVariantsDialog">
           <div class="album-group-stack-layer album-group-stack-layer-1"></div>
-          <div class="album-group-stack-layer album-group-stack-layer-2">+{{ group.variants.length }}</div>
+          <div class="album-group-stack-layer album-group-stack-layer-2">{{ group.variants.length + 1}}</div>
         </div>
       </div>
     </div>
