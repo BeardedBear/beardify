@@ -99,7 +99,9 @@ function openVariantsDialog(): void {
   }
 
   &-indicator {
+    /* hidden by default; shown when hovering .album-group-main below */
     cursor: pointer;
+    display: none;
     height: $size;
     left: $indicator-offset;
     position: absolute;
@@ -111,6 +113,27 @@ function openVariantsDialog(): void {
       left: calc($indicator-offset - -0.05rem);
       top: calc($indicator-offset - -0.05rem);
     }
+  }
+}
+
+.album-group-main:hover .album-group-stack-indicator {
+  display: block;
+}
+</style>
+
+<style lang="scss">
+// Keep Album hover styles active when hovering the group indicator
+.album-group-main:hover .album {
+  /* show action buttons */
+  .play,
+  .add,
+  .delete {
+    display: block !important;
+  }
+
+  /* dim the cover image */
+  .img {
+    opacity: 0.4 !important;
   }
 }
 </style>
