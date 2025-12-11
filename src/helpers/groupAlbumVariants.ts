@@ -11,6 +11,8 @@ export interface AlbumGroup {
  */
 const VARIANT_KEYWORDS = [
   "deluxe",
+  "edition de luxe",
+  "édition de luxe",
   "remaster",
   "remastered",
   "expanded",
@@ -23,17 +25,25 @@ const VARIANT_KEYWORDS = [
   "acoustic",
   "live",
   "commentary",
+  "track commentary",
   "interview",
   "documentary",
   "in addition",
   "revisited",
   "exclusive",
+  "abridged",
+  "international",
+  "international standard",
+  "alternate",
+  "alternate sequence",
 ];
 
 /**
  * Generate regex patterns from keywords with different formats
  */
 const VARIANT_PATTERNS = [
+  // Dash with anniversary and additional text: – 10th Anniversary Commentary (MUST BE FIRST)
+  /\s*[-–—]\s*\d+th\s+anniversary.*$/i,
   // Parentheses format: (keyword), (keyword edition), (keyword version)
   ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*\\(${kw}\\s*(edition|version)?\\)`, "i")),
   // Dash suffix: - keyword, - keyword edition, - keyword version
@@ -45,12 +55,16 @@ const VARIANT_PATTERNS = [
   // Complex parentheses with multiple info: (30th Anniversary Edition / Remastered 2022)
   /\s*\(\d+th\s+anniversary\s+edition(?:\s*\/\s*.+)?\)/i,
   /\s*\([^)]*(?:remaster|deluxe|expanded|special|bonus)[^)]*\)/i,
+  // Parentheses with "The Complete Sessions" and years: (The Complete Sessions 1998-1999)
+  /\s*\(the\s+complete\s+sessions\s+\d{4}[-–]\d{4}\)/i,
   // Parentheses with year and remaster: (2019 Remaster), (2023 Remastered)
   /\s*\(\d{4}\s*remaster(?:ed)?\)/i,
+  // Parentheses with year and mix: (2025 Mix), (2023 Remix)
+  /\s*\(\d{4}\s*(?:re)?mix\)/i,
   // Parentheses with anniversary: (20th Anniversary), (25th Anniversary Edition)
   /\s*\(\d+th\s+anniversary(?:\s+edition)?\)/i,
-  // Anniversary with ordinal: 30th Anniversary, 25th Anniversary
-  /\s*\d+th\s+anniversary(?:\s+edition)?$/i,
+  // Anniversary with ordinal: 30th Anniversary, 25th Anniversary, 10th Anniversary Commentary
+  /\s*\d+th\s+anniversary(?:\s+(?:edition|commentary|remaster|deluxe))?$/i,
   // Year-based remaster: "2023 Remastered", "2020 Remaster"
   /\s*\d{4}\s*remaster(ed)?$/i,
   // Plus sign combinations: "+ anything" or "anything +"

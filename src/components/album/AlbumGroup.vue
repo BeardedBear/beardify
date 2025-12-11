@@ -32,6 +32,7 @@ import { AlbumGroup, getDisplayName } from "@/helpers/groupAlbumVariants";
 const props = defineProps<{
   canDelete?: boolean;
   canSave?: boolean;
+  cleanName?: boolean;
   coverSize?: ImageSize | undefined;
   exactSearch?: boolean;
   group: AlbumGroup;
@@ -45,7 +46,7 @@ const dialogStore = useDialog();
 const displayAlbum = computed(() => {
   return {
     ...props.group.baseAlbum,
-    name: getDisplayName(props.group.baseAlbum.name),
+    name: props.cleanName ? getDisplayName(props.group.baseAlbum.name) : props.group.baseAlbum.name,
   };
 });
 
