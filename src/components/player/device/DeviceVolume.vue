@@ -1,9 +1,6 @@
 <template>
   <div @click="onClick" @mousemove="onMove" @mouseleave="onLeave" class="volume" ref="refVolume">
-    <div
-      :style="{ width: volumeToSliderPercent(playerStore.devices.activeDevice.volume_percent ?? 0) + '%' }"
-      class="cursor"
-    />
+    <div :style="{ width: currentSliderPercent + '%' }" class="cursor" />
     <div :style="{ width: sliderPercent + '%' }" class="hover">
       <div class="perc">{{ previewVolume + "%" }}</div>
     </div>
@@ -17,6 +14,7 @@
 import { NotificationType } from "@/@types/Notification";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { notification } from "@/helpers/notifications";
+import { clamp, sliderPercentToVolume, volumeToSliderPercent } from "@/helpers/volume";
 import { computed, onMounted, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
@@ -24,27 +22,13 @@ import { usePlayer } from "@/components/player/PlayerStore";
 const refVolume = ref<HTMLDivElement | null>(null);
 const sliderPercent = ref<number>(0); // 0..100 slider visual position
 const previewVolume = computed<number>(() => sliderPercentToVolume(sliderPercent.value));
+const currentSliderPercent = computed<number>(() =>
+  volumeToSliderPercent(playerStore.devices.activeDevice.volume_percent ?? 0),
+);
 const playerStore = usePlayer();
 const previousVolume = ref<number | null>(null);
 const oldDeviceVolume = ref<number | null>(null);
-
 const isMuted = computed(() => playerStore.devices.activeDevice.volume_percent === 0);
-
-const GAMMA = 1.8; // Curvature: slider -> perceived volume mapping (higher = more low-end range)
-
-function clamp(n: number, min = 0, max = 100) {
-  return Math.min(max, Math.max(min, n));
-}
-
-function sliderPercentToVolume(p: number): number {
-  const s = clamp(p) / 100;
-  return Math.round(Math.pow(s, GAMMA) * 100);
-}
-
-function volumeToSliderPercent(v: number): number {
-  const vol = clamp(v) / 100;
-  return Math.round(Math.pow(vol, 1 / GAMMA) * 100);
-}
 
 // Ensure slider follows current device volume when device changes
 onMounted(() => {
