@@ -1,6 +1,6 @@
 <template>
   <div @click="onClick" @mousemove="onMove" @mouseleave="onLeave" class="volume" ref="refVolume">
-    <div :style="{ width: playerStore.devices.activeDevice.volume_percent + '%' }" class="cursor" />
+    <div :style="{ width: volumeToSliderPercent(playerStore.devices.activeDevice.volume_percent ?? 0) + '%' }" class="cursor" />
     <div :style="{ width: sliderPercent + '%' }" class="hover">
       <div class="perc">{{ previewVolume + "%" }}</div>
     </div>
@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
 
@@ -46,10 +46,6 @@ watch(
   },
 );
 
-onUnmounted(() => {
-  // nothing to cleanup (no global listeners)
-});
-
 function onMove(e: MouseEvent): void {
   const el = refVolume.value;
   if (!el) return;
@@ -63,7 +59,13 @@ function onLeave(): void {
   sliderPercent.value = volumeToSliderPercent(playerStore.devices.activeDevice.volume_percent ?? 0);
 }
 
-function onClick(): void {
+function onClick(e?: MouseEvent): void {
+  const el = refVolume.value;
+  if (e && el) {
+    const rect = el.getBoundingClientRect();
+    const pos = clamp(((e.clientX - rect.left) / rect.width) * 100);
+    sliderPercent.value = Math.round(pos);
+  }
   playerStore.setVolume(previewVolume.value);
 }
 </script>
@@ -106,11 +108,11 @@ function onClick(): void {
   }
 
   .hover {
-    background-color: var(--primary-color-lighter);
+    background-color: var(--primary-color-light);
     bottom: 0;
     display: none;
     left: 0;
-    opacity: 0.5;
+    opacity: 0.7;
     position: absolute;
     top: 0;
   }
