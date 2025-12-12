@@ -26,6 +26,7 @@ const sliderPercent = ref<number>(0); // 0..100 slider visual position
 const previewVolume = computed<number>(() => sliderPercentToVolume(sliderPercent.value));
 const playerStore = usePlayer();
 const previousVolume = ref<number | null>(null);
+const oldDeviceVolume = ref<number | null>(null);
 
 const isMuted = computed(() => playerStore.devices.activeDevice.volume_percent === 0);
 
@@ -78,30 +79,48 @@ async function onClick(e?: MouseEvent): Promise<void> {
     const pos = clamp(((e.clientX - rect.left) / rect.width) * 100);
     sliderPercent.value = Math.round(pos);
   }
+  // Optimistic UI update: set device volume in the store immediately
+  oldDeviceVolume.value = playerStore.devices.activeDevice.volume_percent ?? 0;
+  playerStore.devices.activeDevice.volume_percent = previewVolume.value;
   try {
     await playerStore.setVolume(previewVolume.value);
   } catch (err: any) {
     console.error("Failed to set volume:", err);
+    // revert UI to previous device volume on failure
+    if (oldDeviceVolume.value !== null) {
+      playerStore.devices.activeDevice.volume_percent = oldDeviceVolume.value;
+    }
     notification({ msg: "Failed to set volume", type: NotificationType.Error });
+  } finally {
+    oldDeviceVolume.value = null;
   }
 }
 
 async function toggleMute(): Promise<void> {
   const current = playerStore.devices.activeDevice.volume_percent ?? 0;
   try {
+    oldDeviceVolume.value = playerStore.devices.activeDevice.volume_percent ?? 0;
     if (current === 0) {
       // unmute
       const to = previousVolume.value ?? 50;
       previousVolume.value = null;
+      playerStore.devices.activeDevice.volume_percent = to; // optimistic
       await playerStore.setVolume(to);
     } else {
       // mute
       previousVolume.value = current;
+      playerStore.devices.activeDevice.volume_percent = 0; // optimistic
       await playerStore.setVolume(0);
     }
   } catch (err: any) {
     console.error("Failed to toggle mute:", err);
+    // revert on failure
+    if (oldDeviceVolume.value !== null) {
+      playerStore.devices.activeDevice.volume_percent = oldDeviceVolume.value;
+    }
     notification({ msg: "Failed to set volume", type: NotificationType.Error });
+  } finally {
+    oldDeviceVolume.value = null;
   }
 }
 </script>
