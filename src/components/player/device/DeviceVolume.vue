@@ -1,13 +1,20 @@
 <template>
   <div @click="onClick" @mousemove="onMove" @mouseleave="onLeave" class="volume" ref="refVolume">
-    <div :style="{ width: volumeToSliderPercent(playerStore.devices.activeDevice.volume_percent ?? 0) + '%' }" class="cursor" />
+    <div
+      :style="{ width: volumeToSliderPercent(playerStore.devices.activeDevice.volume_percent ?? 0) + '%' }"
+      class="cursor"
+    />
     <div :style="{ width: sliderPercent + '%' }" class="hover">
       <div class="perc">{{ previewVolume + "%" }}</div>
     </div>
   </div>
+  <ButtonIndex no-default-class type="button" variant="nude" @click="toggleMute">
+    <i :class="isMuted ? 'icon-volume-x' : 'icon-volume-2'" />
+  </ButtonIndex>
 </template>
 
 <script lang="ts" setup>
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { computed, onMounted, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
@@ -16,6 +23,9 @@ const refVolume = ref<HTMLDivElement | null>(null);
 const sliderPercent = ref<number>(0); // 0..100 slider visual position
 const previewVolume = computed<number>(() => sliderPercentToVolume(sliderPercent.value));
 const playerStore = usePlayer();
+const previousVolume = ref<number | null>(null);
+
+const isMuted = computed(() => playerStore.devices.activeDevice.volume_percent === 0);
 
 const GAMMA = 2.2; // Curvature: slider -> perceived volume mapping (higher = more low-end range)
 
@@ -67,6 +77,20 @@ function onClick(e?: MouseEvent): void {
     sliderPercent.value = Math.round(pos);
   }
   playerStore.setVolume(previewVolume.value);
+}
+
+function toggleMute(): void {
+  const current = playerStore.devices.activeDevice.volume_percent ?? 0;
+  if (current === 0) {
+    // unmute
+    const to = previousVolume.value ?? 50;
+    previousVolume.value = null;
+    playerStore.setVolume(to);
+  } else {
+    // mute
+    previousVolume.value = current;
+    playerStore.setVolume(0);
+  }
 }
 </script>
 
