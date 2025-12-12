@@ -14,7 +14,9 @@
 </template>
 
 <script lang="ts" setup>
+import { NotificationType } from "@/@types/Notification";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { notification } from "@/helpers/notifications";
 import { computed, onMounted, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
@@ -27,7 +29,7 @@ const previousVolume = ref<number | null>(null);
 
 const isMuted = computed(() => playerStore.devices.activeDevice.volume_percent === 0);
 
-const GAMMA = 2.2; // Curvature: slider -> perceived volume mapping (higher = more low-end range)
+const GAMMA = 1.8; // Curvature: slider -> perceived volume mapping (higher = more low-end range)
 
 function clamp(n: number, min = 0, max = 100) {
   return Math.min(max, Math.max(min, n));
@@ -69,27 +71,37 @@ function onLeave(): void {
   sliderPercent.value = volumeToSliderPercent(playerStore.devices.activeDevice.volume_percent ?? 0);
 }
 
-function onClick(e?: MouseEvent): void {
+async function onClick(e?: MouseEvent): Promise<void> {
   const el = refVolume.value;
   if (e && el) {
     const rect = el.getBoundingClientRect();
     const pos = clamp(((e.clientX - rect.left) / rect.width) * 100);
     sliderPercent.value = Math.round(pos);
   }
-  playerStore.setVolume(previewVolume.value);
+  try {
+    await playerStore.setVolume(previewVolume.value);
+  } catch (err: any) {
+    console.error("Failed to set volume:", err);
+    notification({ msg: "Failed to set volume", type: NotificationType.Error });
+  }
 }
 
-function toggleMute(): void {
+async function toggleMute(): Promise<void> {
   const current = playerStore.devices.activeDevice.volume_percent ?? 0;
-  if (current === 0) {
-    // unmute
-    const to = previousVolume.value ?? 50;
-    previousVolume.value = null;
-    playerStore.setVolume(to);
-  } else {
-    // mute
-    previousVolume.value = current;
-    playerStore.setVolume(0);
+  try {
+    if (current === 0) {
+      // unmute
+      const to = previousVolume.value ?? 50;
+      previousVolume.value = null;
+      await playerStore.setVolume(to);
+    } else {
+      // mute
+      previousVolume.value = current;
+      await playerStore.setVolume(0);
+    }
+  } catch (err: any) {
+    console.error("Failed to toggle mute:", err);
+    notification({ msg: "Failed to set volume", type: NotificationType.Error });
   }
 }
 </script>
