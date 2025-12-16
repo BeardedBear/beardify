@@ -34,13 +34,16 @@
         :aria-current="device.id === playerStore.devices.activeDevice.id"
       >
         <span>{{ device.name }}</span>
-        <LoadingDots v-if="playerStore.lastRequestedDeviceId === device.id && playerStore.isSettingDevice" size="xx-small" />
+        <LoadingDots
+          v-if="playerStore.lastRequestedDeviceId === device.id && playerStore.isSettingDevice"
+          size="xx-small"
+        />
         <i
           v-if="device.id === playerStore.devices.activeDevice.id"
           class="icon-check active-label"
           aria-hidden="true"
           title="Active device"
-          />
+        />
       </ButtonIndex>
       <ButtonIndex variant="border" class="refresh" type="button" size="small" @click="playerStore.getDeviceList()">
         <i class="icon-refresh"></i>
