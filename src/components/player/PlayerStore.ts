@@ -14,8 +14,112 @@ import { createSpotifyPlayer } from "@/spotify";
 // Heartbeat interval in milliseconds (4 minutes)
 const HEARTBEAT_INTERVAL = 4 * 60 * 1000;
 
+// Device switching configuration
+const DEVICE_SWITCH_TIMEOUT_MS = 15_000;
+const ACTIVATION_DELAY_MS = 200;
+const RETRY_DELAY_MS = 300;
+
+/** Helper function for async delays */
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const usePlayer = defineStore("player", {
   actions: {
+    async _attemptDeviceActivation(
+      targetDeviceId: string,
+      maxAttempts: number,
+      hasTimedOut: () => boolean,
+    ): Promise<void> {
+      for (let attempt = 0; attempt < maxAttempts && !hasTimedOut(); attempt++) {
+        const desiredId = this.lastRequestedDeviceId ?? targetDeviceId;
+
+        if (this._isDeviceAlreadyActive(desiredId)) break;
+
+        const activated = await this._tryActivateDevice(desiredId, maxAttempts, hasTimedOut);
+
+        if (hasTimedOut()) break;
+        if (this._shouldStopAfterActivation(activated, desiredId)) break;
+      }
+    },
+
+    async _executeDeviceSwitch(targetDeviceId: string, retries: number): Promise<void> {
+      this.isSettingDevice = true;
+      this.playerState = defaultPlaybackState;
+
+      const startTime = Date.now();
+      const hasTimedOut = (): boolean => Date.now() - startTime >= DEVICE_SWITCH_TIMEOUT_MS;
+      const maxAttempts = Math.max(1, retries);
+
+      await this._attemptDeviceActivation(targetDeviceId, maxAttempts, hasTimedOut);
+      await this._finalizeDeviceSwitch(targetDeviceId, retries, hasTimedOut);
+    },
+
+    async _finalizeDeviceSwitch(targetDeviceId: string, retries: number, hasTimedOut: () => boolean): Promise<void> {
+      const finalRequested = this.lastRequestedDeviceId;
+      this.lastRequestedDeviceId = null;
+      this.isSettingDevice = false;
+
+      // Handle pending device request
+      if (!hasTimedOut() && finalRequested && finalRequested !== this.devices.activeDevice?.id) {
+        await this.setDevice(finalRequested, retries);
+        return;
+      }
+
+      // Notify if switch failed
+      if (!this._isDeviceAlreadyActive(targetDeviceId)) {
+        useNotification().addNotification({
+          msg: "Failed to switch device",
+          type: NotificationType.Error,
+        });
+      }
+    },
+
+    _isDeviceAlreadyActive(deviceId: string): boolean {
+      return this.devices.activeDevice?.id === deviceId;
+    },
+
+    async _performActivationAttempt(deviceId: string): Promise<boolean> {
+      try {
+        await instance().put("me/player", { device_ids: [deviceId] });
+
+        const { data } = await instance().get<DevicesResponse>("me/player/devices");
+        this.devices.list = data.devices;
+
+        const activeDevice = data.devices.find((device) => device.id === deviceId);
+        if (activeDevice) {
+          this.devices.activeDevice = activeDevice;
+          this.startDeviceHeartbeat();
+          return true;
+        }
+
+        await sleep(ACTIVATION_DELAY_MS);
+        return false;
+      } catch {
+        await sleep(RETRY_DELAY_MS);
+        return false;
+      }
+    },
+
+    _shouldStopAfterActivation(activated: boolean, desiredId: string): boolean {
+      const hasNewRequest = this.lastRequestedDeviceId && this.lastRequestedDeviceId !== desiredId;
+
+      if (activated) {
+        if (this.lastRequestedDeviceId === desiredId) {
+          this.lastRequestedDeviceId = null;
+        }
+        return !hasNewRequest;
+      }
+
+      return !hasNewRequest;
+    },
+
+    async _tryActivateDevice(deviceId: string, maxRetries: number, hasTimedOut: () => boolean): Promise<boolean> {
+      for (let attempt = 0; attempt < maxRetries && !hasTimedOut(); attempt++) {
+        const success = await this._performActivationAttempt(deviceId);
+        if (success) return true;
+      }
+      return false;
+    },
+
     async addTrackToQueue(trackUri: string): Promise<void> {
       try {
         await instance().post(`me/player/queue?uri=${trackUri}`);
@@ -154,16 +258,14 @@ export const usePlayer = defineStore("player", {
       this.currentlyPlaying.progress_ms = progress;
     },
 
-    async setDevice(deviceId: null | string): Promise<void> {
-      this.playerState = defaultPlaybackState;
-      await instance().put("me/player", { device_ids: [deviceId] });
-      const { data } = await instance().get<DevicesResponse>("me/player/devices");
-      this.devices.list = data.devices;
-      const activeDevice = data.devices.find((device): boolean => device.id === deviceId);
-      if (activeDevice) {
-        this.devices.activeDevice = activeDevice;
-        this.startDeviceHeartbeat();
-      }
+    async setDevice(deviceId: null | string, retries = 3): Promise<void> {
+      const targetDeviceId = deviceId ?? this.thisDeviceId;
+      if (this.devices.activeDevice?.id === targetDeviceId) return;
+
+      this.lastRequestedDeviceId = targetDeviceId;
+      if (this.isSettingDevice) return;
+
+      await this._executeDeviceSwitch(targetDeviceId, retries);
     },
 
     async setVolume(volume: number): Promise<void> {
@@ -276,6 +378,8 @@ export const usePlayer = defineStore("player", {
       list: [],
     },
     heartbeatInterval: null,
+    isSettingDevice: false,
+    lastRequestedDeviceId: null,
     playerState: defaultPlaybackState,
     queue: [],
     queueOpened: false,

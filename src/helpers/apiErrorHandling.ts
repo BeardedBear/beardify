@@ -39,18 +39,18 @@ export async function ensureActiveDevice(): Promise<null | string> {
 
     // If we have this device available, try to activate it
     if (playerStore.thisDeviceId) {
-      playerStore.setDevice(playerStore.thisDeviceId);
-      // Wait a moment for the device to activate
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await playerStore.setDevice(playerStore.thisDeviceId);
+      // Wait a moment for the device to activate if needed
+      await new Promise((resolve) => setTimeout(resolve, 250));
       return playerStore.thisDeviceId;
     }
 
     // If we have any device in the list, try to activate the first one
     if (playerStore.devices.list.length > 0) {
       const firstDeviceId = playerStore.devices.list[0].id;
-      playerStore.setDevice(firstDeviceId);
-      // Wait a moment for the device to activate
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await playerStore.setDevice(firstDeviceId);
+      // Wait a moment for the device to activate if needed
+      await new Promise((resolve) => setTimeout(resolve, 250));
       return firstDeviceId;
     }
   } catch {

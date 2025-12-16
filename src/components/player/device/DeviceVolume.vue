@@ -159,16 +159,16 @@ async function setVolumeOptimistic(volume: number): Promise<void> {
   .hover {
     background-color: var(--primary-color-light);
     bottom: 0;
-    display: none;
     left: 0;
-    opacity: 0.7;
+    opacity: 0;
+    pointer-events: none;
     position: absolute;
     top: 0;
   }
 
   &:hover {
     .hover {
-      display: block;
+      opacity: 0.7;
     }
   }
 }

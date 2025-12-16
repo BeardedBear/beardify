@@ -10,6 +10,8 @@ export interface Player {
     list: Device[];
   };
   heartbeatInterval: null | number; // Interval ID for keeping the device active
+  isSettingDevice?: boolean;
+  lastRequestedDeviceId?: null | string;
   playerState: Spotify.PlaybackState;
   queue: Spotify.Track[];
   queueOpened: boolean;
