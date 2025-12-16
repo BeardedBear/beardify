@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { computed } from "vue";
 
 import Foot from "@/components/album/AlbumFoot.vue";
 import Head from "@/components/album/AlbumHead.vue";
@@ -61,7 +61,6 @@ import { playSongs } from "@/helpers/play";
 import { useAlbum } from "@/views/album/AlbumStore";
 
 const props = defineProps({ id: { default: "", type: String } });
-const albumpage = ref();
 const albumStore = useAlbum();
 const playerStore = usePlayer();
 const dialogStore = useDialog();

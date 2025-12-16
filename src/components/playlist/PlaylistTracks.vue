@@ -1,5 +1,5 @@
 <template>
-  <template :key="track" v-for="(track, index) in trackList">
+  <template :key="track.track.id" v-for="(track, index) in trackList">
     <div
       :class="{
         active: isCurrentTrack(track.track, currentTrack),

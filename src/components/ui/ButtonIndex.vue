@@ -3,7 +3,7 @@ import { computed } from "vue";
 import { type RouteLocationRaw, RouterLink } from "vue-router";
 
 export interface ButtonProps {
-  align?: "left" | "center" | "right";
+  align?: "left" | "center" | "right" | "justify";
   as?: "button" | "a" | "router-link";
   class?: string;
   disabled?: boolean;
@@ -79,6 +79,17 @@ const classes = computed(() => {
     classList.push("button-small");
   } else if (props.size === "x-small") {
     classList.push("button-x-small");
+  }
+
+  // Add alignment classes
+  if (props.align === "left") {
+    classList.push("button-align-left");
+  } else if (props.align === "right") {
+    classList.push("button-align-right");
+  } else if (props.align === "justify") {
+    classList.push("button-align-justify");
+  } else {
+    classList.push("button-align-center");
   }
 
   // Add icon-only class
@@ -207,6 +218,11 @@ const classes = computed(() => {
 
   &-align-right {
     place-content: right;
+  }
+
+  &-align-justify {
+    display: flex;
+    place-content: space-between;
   }
 }
 </style>
