@@ -28,9 +28,9 @@
 import { onClickOutside } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import TrackHistory from "@/components/player/history/TrackHistory.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
@@ -54,11 +54,17 @@ onClickOutside(popup, () => playerStore.closeQueue());
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/responsive" as responsive;
+
 .wrap {
   display: flex;
   flex-direction: column;
   position: relative;
   text-align: left;
+
+  @include responsive.mobile {
+    display: none;
+  }
 }
 
 .body {

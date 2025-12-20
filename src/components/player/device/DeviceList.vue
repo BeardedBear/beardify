@@ -1,6 +1,6 @@
 <template>
   <QueuedTracks />
-  <div class="devices">
+  <div class="devices" ref="devicesRef">
     <ButtonIndex
       variant="primary"
       align="left"
@@ -8,12 +8,12 @@
       size="small"
       type="button"
       :disabled="playerStore.isSettingDevice"
-      @click="playerStore.setDevice(playerStore.devices.activeDevice.id)"
+      @click="toggleList"
       @mouseenter="playerStore.getDeviceList()"
     >
       <span>{{ playerStore.devices.activeDevice.name }}</span>
     </ButtonIndex>
-    <div class="available-device-list">
+    <div :class="{ 'is-visible': showList }" class="available-device-list">
       <LoadingDots size="x-small" v-if="!playerStore.devices.list.length" />
       <ButtonIndex
         variant="full"
@@ -27,6 +27,7 @@
           () => {
             if (!playerStore.isSettingDevice && device.id !== playerStore.devices.activeDevice.id)
               playerStore.setDevice(device.id);
+            showList = false;
           }
         "
         v-else
@@ -54,7 +55,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { onClickOutside } from "@vueuse/core";
+import { computed, ref } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
 import QueuedTracks from "@/components/player/device/QueuedTracks.vue";
@@ -63,6 +65,17 @@ import LoadingDots from "@/components/ui/LoadingDots.vue";
 
 const playerStore = usePlayer();
 const deviceListFiltered = computed(() => playerStore.devices.list.sort((a, b) => a.name.localeCompare(b.name)));
+const showList = ref(false);
+const devicesRef = ref(null);
+
+function toggleList() {
+  playerStore.getDeviceList();
+  showList.value = !showList.value;
+}
+
+onClickOutside(devicesRef, () => {
+  showList.value = false;
+});
 </script>
 
 <style lang="scss" scoped>
@@ -90,6 +103,7 @@ $gap-list: 10px;
     transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
   z-index: 9999;
 
+  &.is-visible,
   &:hover {
     opacity: 1;
     pointer-events: auto;

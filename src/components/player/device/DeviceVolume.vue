@@ -1,13 +1,15 @@
 <template>
-  <div @click="onClick" @mousemove="onMove" @mouseleave="onLeave" class="volume" ref="refVolume">
-    <div :style="{ width: currentSliderPercent + '%' }" class="cursor" />
-    <div :style="{ width: sliderPercent + '%' }" class="hover">
-      <div class="perc">{{ previewVolume + "%" }}</div>
+  <div class="volume-wrapper">
+    <div @click="onClick" @mousemove="onMove" @mouseleave="onLeave" class="volume" ref="refVolume">
+      <div :style="{ width: currentSliderPercent + '%' }" class="cursor" />
+      <div :style="{ width: sliderPercent + '%' }" class="hover">
+        <div class="perc">{{ previewVolume + "%" }}</div>
+      </div>
     </div>
+    <ButtonIndex no-default-class type="button" variant="nude" @click="toggleMute">
+      <i :class="isMuted ? 'icon-volume-x' : 'icon-volume-2'" />
+    </ButtonIndex>
   </div>
-  <ButtonIndex no-default-class type="button" variant="nude" @click="toggleMute">
-    <i :class="isMuted ? 'icon-volume-x' : 'icon-volume-2'" />
-  </ButtonIndex>
 </template>
 
 <script lang="ts" setup>
@@ -120,6 +122,18 @@ async function setVolumeOptimistic(volume: number): Promise<void> {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/responsive" as responsive;
+
+.volume-wrapper {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+
+  @include responsive.mobile {
+    display: none;
+  }
+}
+
 .volume {
   background-color: var(--bg-color-light);
   cursor: pointer;

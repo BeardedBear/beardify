@@ -26,15 +26,14 @@ import Loader from "@/components/ui/LoadingDots.vue";
 .meta {
   align-items: center;
   display: flex;
-
-  // grid-template-columns: 1fr auto 1fr;
   justify-content: space-between;
   padding: 0.9rem 1.2rem 0.5rem;
 
   @include responsive.mobile {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    padding: 0.6rem 0.8rem 0.4rem;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.8rem;
   }
 }
 

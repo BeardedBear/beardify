@@ -78,19 +78,11 @@ watch(
   align-items: center;
   display: flex;
   gap: 0.8rem;
-
-  @include responsive.mobile {
-    gap: 0.4rem;
-  }
 }
 
 .time {
   font-size: 0.9rem;
   font-weight: bold;
-
-  @include responsive.mobile {
-    display: none;
-  }
 }
 
 .controls {
@@ -99,11 +91,6 @@ watch(
   flex: 1;
   gap: 1.2rem;
   justify-content: center;
-
-  @include responsive.mobile {
-    flex: 0;
-    gap: 0.6rem;
-  }
 }
 
 .control-button {
