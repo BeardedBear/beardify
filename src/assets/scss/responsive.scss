@@ -7,9 +7,8 @@ $xl: 2000px;
 $fourk: 2560px;
 
 @mixin mobile {
-  // @media
-
-  @media (width <= $mobile-width) {
+  // Mobile breakpoint - use max-width for broader compatibility
+  @media (max-width: $mobile-width) {
     @content;
   }
 }

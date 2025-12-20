@@ -190,8 +190,24 @@ body {
 
 #app-content {
   display: grid;
-  grid-template-columns: 19rem 1fr;
+
+  /* Use a flex-friendly fallback for sidebar and main content. On small screens we collapse to a single column. */
+  grid-template-columns: minmax(0, 19rem) 1fr;
   overflow: hidden;
+
+  @include responsive.mobile {
+    grid-template-columns: 1fr;
+
+    /* Hide the sidebar visually on mobile to avoid layout overflow; the component still exists in the DOM. */
+    .sidebar {
+      display: none;
+    }
+
+    /* Allow the main content to scroll horizontally if needed (prevents the entire app from overflowing hidden) */
+    & > *:nth-child(2) {
+      overflow-x: auto;
+    }
+  }
 
   @include responsive.hdpi {
     grid-template-columns: 25rem 1fr;

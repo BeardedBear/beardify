@@ -22,3 +22,7 @@ pnpm-debug.log*
 *.sw?
 
 .claude/settings.local.json
+
+# Playwright test artifacts
+tests/e2e/test-results/
+playwright-report/

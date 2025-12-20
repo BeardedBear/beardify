@@ -1,0 +1,51 @@
+name: Playwright E2E Tests
+
+on:
+  pull_request:
+  push:
+    branches: [ master ]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Start dev server
+        run: |
+          npm run dev --silent &
+          npx wait-on http://127.0.0.1:3000 --timeout 60000
+
+      - name: Run Playwright tests
+        env:
+          TEST_SPOTIFY_ACCESS_TOKEN: ${{ secrets.TEST_SPOTIFY_ACCESS_TOKEN }}
+          TEST_SPOTIFY_ME_JSON: ${{ secrets.TEST_SPOTIFY_ME_JSON }}
+        run: npm run test:e2e --if-present --silent
+
+      - name: Upload Playwright artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: |
+            tests/e2e/test-results
+            tests/e2e/**/*.spec.ts-snapshots
+            playwright-report

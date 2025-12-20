@@ -28,9 +28,9 @@
 import { onClickOutside } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import TrackHistory from "@/components/player/history/TrackHistory.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
@@ -38,6 +38,7 @@ const isPlayingPodcast = computed(() => {
   const track = currentTrack.value;
   return track?.type === "episode" || track?.uri?.includes("spotify:episode:");
 });
+
 const popup = ref<HTMLElement | null>();
 
 watch(currentTrack, (track) => {

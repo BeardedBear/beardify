@@ -8,6 +8,7 @@
     "lint": "vue-tsc --noEmit && eslint src/**/*.{vue,ts} && prettier --c ./src/**/*.{ts,vue,json} && stylelint ./src/**/*.{vue,scss}",
     "build": "npm run lint && vite build",
     "fix": "prettier --write ./src/**/*.{ts,vue,json} && eslint src/**/*.{vue,ts} --fix && stylelint ./src/**/*.{vue,scss} --fix",
+    "test:e2e": "playwright test",
     "preview": "npm run build && vite preview"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",
+    "@playwright/test": "^1.57.0",
     "@rushstack/eslint-patch": "^1.14.0",
     "@types/dompurify": "^3.0.5",
     "@types/node": "^24.9.1",
