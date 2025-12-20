@@ -22,6 +22,7 @@ import { useSearch } from "@/components/search/SearchStore";
 
 const searchStore = useSearch();
 const result = ref<HTMLDivElement | null>(null);
+void result;
 
 document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
   if (keyboardEvent.key === "Escape") searchStore.reset();
