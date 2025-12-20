@@ -95,18 +95,6 @@ playlistStore.clean().finally(() => {
     padding-right ease 0.2s,
     padding-left ease 0.2s;
 
-  @include responsive.mobile {
-    gap: 1rem;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding: 1rem;
-  }
-
-  @include responsive.tablet {
-    gap: 1.5rem;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    padding: 1.5rem;
-  }
-
   @media (width <= 1200px) {
     $padd: 2rem;
 
@@ -133,6 +121,18 @@ playlistStore.clean().finally(() => {
 
   @include responsive.hdpi {
     grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  @include responsive.tablet {
+    gap: 1.5rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 1.5rem;
+  }
+
+  @include responsive.mobile {
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 1rem;
   }
 }
 

@@ -218,8 +218,8 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 
 .backdrop {
   background: rgb(0 0 0 / 50%);
-  inset: 0;
   display: none;
+  inset: 0;
   position: fixed;
   z-index: 999;
 
