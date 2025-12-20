@@ -8,7 +8,7 @@
         <i class="add icon-plus"></i>
       </div>
     </div>
-    <div>
+    <div class="text-content">
       <div>
         <span class="trackname">{{ currentTrack.name }} —&nbsp;</span>
         <ArtistList :artist-list="currentTrack.artists" :feat="true" />
@@ -26,10 +26,10 @@
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 
-import { transformUriToid } from "@/helpers/helper";
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
+import { transformUriToid } from "@/helpers/helper";
 
 const playerStore = usePlayer();
 const dialogStore = useDialog();
@@ -38,6 +38,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 
 <style lang="scss" scoped>
 @use "sass:color";
+@use "@/assets/scss/responsive" as responsive;
 
 .cover {
   border-radius: 0.3rem;
@@ -111,9 +112,30 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
   display: flex;
   flex: 1;
   gap: 1rem;
+  min-width: 0;
+  overflow: hidden;
 
   img {
     height: 3rem;
+
+    @include responsive.mobile {
+      height: 2.5rem;
+    }
+  }
+
+  @include responsive.mobile {
+    gap: 0.6rem;
+  }
+}
+
+.text-content {
+  min-width: 0;
+  overflow: hidden;
+
+  > div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 </style>

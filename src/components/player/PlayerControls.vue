@@ -50,9 +50,9 @@
 import { useIntervalFn } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
-import { timecode } from "@/helpers/date";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { timecode } from "@/helpers/date";
 
 const playerStore = usePlayer();
 const currentTime = ref<number>(0);
@@ -72,16 +72,25 @@ watch(
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/responsive" as responsive;
 
 .btns {
   align-items: center;
   display: flex;
   gap: 0.8rem;
+
+  @include responsive.mobile {
+    gap: 0.4rem;
+  }
 }
 
 .time {
   font-size: 0.9rem;
   font-weight: bold;
+
+  @include responsive.mobile {
+    display: none;
+  }
 }
 
 .controls {
@@ -90,6 +99,11 @@ watch(
   flex: 1;
   gap: 1.2rem;
   justify-content: center;
+
+  @include responsive.mobile {
+    flex: 0;
+    gap: 0.6rem;
+  }
 }
 
 .control-button {

@@ -40,6 +40,10 @@ export const useSidebar = defineStore("sidebar", {
       }
     },
 
+    close() {
+      this.isOpen = false;
+    },
+
     async getPlaylists(initialUrl: string) {
       if (!initialUrl || router.currentRoute.value.name === "Login") {
         return;
@@ -95,6 +99,10 @@ export const useSidebar = defineStore("sidebar", {
       }
     },
 
+    open() {
+      this.isOpen = true;
+    },
+
     refreshPlaylists() {
       this.playlists = [];
       this.collections = [];
@@ -137,10 +145,15 @@ export const useSidebar = defineStore("sidebar", {
         throw error;
       }
     },
+
+    toggle() {
+      this.isOpen = !this.isOpen;
+    },
   },
 
   state: (): Sidebar => ({
     collections: [],
+    isOpen: false,
     playlists: [],
   }),
 });

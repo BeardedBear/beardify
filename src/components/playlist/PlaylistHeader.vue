@@ -24,7 +24,16 @@
       </div>
     </div>
 
-    <div class="right">
+    <ButtonIndex class="mobile-options-toggle" icon-only @click="showOptions = true">
+      <i class="icon-more-horizontal" />
+    </ButtonIndex>
+
+    <div class="backdrop" v-if="showOptions" @click="showOptions = false" />
+
+    <div class="right" :class="{ 'is-open': showOptions }">
+      <div class="mobile-close" @click="showOptions = false">
+        <i class="icon-x" />
+      </div>
       <Actions />
       <input
         class="search"
@@ -44,8 +53,8 @@ import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 
 import { PlaylistTrack } from "@/@types/Playlist";
-import Cover from "@/components/ui/AlbumCover.vue";
 import Actions from "@/components/playlist/PlaylistActions.vue";
+import Cover from "@/components/ui/AlbumCover.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 import { timecodeWithUnits } from "@/helpers/date";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
@@ -58,6 +67,7 @@ defineProps<{
 
 const playlistStore = usePlaylist();
 const searchElement = ref<HTMLInputElement | null>(null);
+const showOptions = ref(false);
 
 onMounted(() => {
   if (searchElement.value) searchElement.value.focus();
@@ -160,6 +170,62 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   display: flex;
   font-size: 1.1rem;
   gap: 0.5rem;
+
+  @include responsive.mobile {
+    background: var(--bg-color-dark);
+    border-radius: 1rem;
+    display: none;
+    flex-direction: column;
+    gap: 1.5rem;
+    left: 50%;
+    padding: 3rem 2rem 2rem;
+    position: fixed;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    z-index: 1000;
+
+    &.is-open {
+      display: flex;
+    }
+
+    .search {
+      width: 100%;
+    }
+  }
+}
+
+.mobile-options-toggle {
+  display: none;
+  font-size: 1.4rem;
+
+  @include responsive.mobile {
+    display: block; // ButtonIndex handles display
+  }
+}
+
+.mobile-close {
+  cursor: pointer;
+  display: none;
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+
+  @include responsive.mobile {
+    display: block;
+  }
+}
+
+.backdrop {
+  background: rgb(0 0 0 / 50%);
+  inset: 0;
+  display: none;
+  position: fixed;
+  z-index: 999;
+
+  @include responsive.mobile {
+    display: block;
+  }
 }
 
 .cover {

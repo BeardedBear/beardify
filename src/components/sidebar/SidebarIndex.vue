@@ -1,8 +1,18 @@
 <template>
-  <div class="sidebar loading" v-if="!sidebarStore.playlists.length && !sidebarStore.collections.length">
+  <!-- Backdrop for mobile sidebar -->
+  <div class="sidebar-backdrop" :class="{ 'is-visible': sidebarStore.isOpen }" @click="sidebarStore.close()" />
+  <div
+    class="sidebar loading"
+    :class="{ 'is-open': sidebarStore.isOpen }"
+    v-if="!sidebarStore.playlists.length && !sidebarStore.collections.length"
+  >
     <Loader />
   </div>
-  <div :class="{ 'search-opened': collectionSearchOpened || playlistSearchOpened }" class="sidebar" v-else>
+  <div
+    :class="{ 'search-opened': collectionSearchOpened || playlistSearchOpened, 'is-open': sidebarStore.isOpen }"
+    class="sidebar"
+    v-else
+  >
     <Topbar />
     <Menu />
     <div class="sidebar-item">
@@ -115,21 +125,22 @@
 <script lang="ts" setup>
 import { onClickOutside } from "@vueuse/core";
 import { computed, ref, Ref, watch } from "vue";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute } from "vue-router";
 
-import { useAuth } from "@/views/auth/AuthStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
-import Loader from "@/components/ui/LoadingDots.vue";
-import Topbar from "@/components/sidebar/SidebarHead.vue";
 import Menu from "@/components/sidebar/MainMenu.vue";
 import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
+import Topbar from "@/components/sidebar/SidebarHead.vue";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
 import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
+import { useAuth } from "@/views/auth/AuthStore";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const authStore = useAuth();
+const route = useRoute();
 
 // Collection search
 const collectionSearchOpened = ref<boolean>(false);
@@ -177,6 +188,12 @@ const filteredPlaylists = computed(() => {
   return sidebarStore.playlists.filter((playlist) => playlist.name.toLowerCase().includes(searchQuery));
 });
 
+// Close sidebar on route change (mobile)
+watch(
+  () => route.fullPath,
+  () => sidebarStore.close(),
+);
+
 if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlists.length)
   sidebarStore.getPlaylists("me/playlists?limit=50");
 </script>
@@ -184,6 +201,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 <style lang="scss" scoped>
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .empty {
   font-style: italic;
@@ -266,6 +284,22 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   grid-template-rows: auto auto auto;
   overflow: hidden;
 
+  @include responsive.tablet-down {
+    bottom: 0;
+    left: 0;
+    max-width: 20rem;
+    position: fixed;
+    top: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 80%;
+    z-index: 1000;
+
+    &.is-open {
+      transform: translateX(0);
+    }
+  }
+
   &.search-opened {
     grid-template-rows: auto auto 1fr 1fr;
   }
@@ -273,6 +307,21 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   &.loading {
     display: grid;
     place-content: center;
+  }
+}
+
+.sidebar-backdrop {
+  background-color: rgb(0 0 0 / 50%);
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 0.3s ease;
+  z-index: 999;
+
+  &.is-visible {
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 

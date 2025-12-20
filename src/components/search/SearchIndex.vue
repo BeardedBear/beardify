@@ -1,7 +1,7 @@
 <template>
   <div class="search">
     <SearchInput />
-    <div class="results" ref="result">
+    <div class="results">
       <SearchArtists />
       <SearchAlbums />
       <SearchSongs />
@@ -11,8 +11,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-
 import SearchAlbums from "@/components/search/SearchAlbums.vue";
 import SearchArtists from "@/components/search/SearchArtists.vue";
 import SearchInput from "@/components/search/SearchInput.vue";
@@ -21,7 +19,6 @@ import SearchSongs from "@/components/search/SearchSongs.vue";
 import { useSearch } from "@/components/search/SearchStore";
 
 const searchStore = useSearch();
-const result = ref<HTMLDivElement | null>(null);
 
 document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
   if (keyboardEvent.key === "Escape") searchStore.reset();
@@ -31,9 +28,11 @@ document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
 <style lang="scss" scoped>
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .search {
   flex: 1;
+  overflow-y: auto;
   position: relative;
 }
 
@@ -48,5 +47,17 @@ document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
   right: 0;
   top: 100%;
   z-index: 999;
+
+  @include responsive.mobile {
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    padding: 0.5rem;
+  }
+
+  @include responsive.tablet {
+    gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0.8rem;
+  }
 }
 </style>
