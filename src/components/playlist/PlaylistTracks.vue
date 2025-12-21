@@ -67,6 +67,10 @@ import { NotificationType } from "@/@types/Notification";
 import { PlaylistTrack } from "@/@types/Playlist";
 import { PublicUser } from "@/@types/PublicUser";
 import { instance } from "@/api";
+import AlbumLink from "@/components/album/AlbumLink.vue";
+import ArtistList from "@/components/artist/ArtistList.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
+import { usePlayer } from "@/components/player/PlayerStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { date, timecode } from "@/helpers/date";
 import { isCurrentTrack } from "@/helpers/helper";
@@ -75,10 +79,6 @@ import { playSongs } from "@/helpers/play";
 import { isAlbum, isCompilation, isEP, isSingle } from "@/helpers/useCleanAlbums";
 import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
-import AlbumLink from "@/components/album/AlbumLink.vue";
-import ArtistList from "@/components/artist/ArtistList.vue";
-import { useDialog } from "@/components/dialog/DialogStore";
-import { usePlayer } from "@/components/player/PlayerStore";
 
 const props = defineProps<{
   trackList: PlaylistTrack[];
@@ -138,6 +138,16 @@ async function deleteSong(songId: string): Promise<void> {
 
   &.deletable {
     grid-template-columns: 2.2rem 1fr 0.9fr auto 0.3fr 2.8rem auto;
+
+    @include responsive.mobile {
+      grid-template-columns: 2.2rem 1fr auto auto;
+    }
+  }
+
+  @include responsive.mobile {
+    gap: 0.5rem;
+    grid-template-columns: 2.2rem 1fr auto;
+    padding: 0.5rem;
   }
 
   &-icon {
@@ -190,10 +200,18 @@ async function deleteSong(songId: string): Promise<void> {
       height: $size;
       width: $size;
     }
+
+    @include responsive.mobile {
+      display: none;
+    }
   }
 
   .date {
     text-align: right;
+
+    @include responsive.mobile {
+      display: none;
+    }
   }
 
   .link {
@@ -245,6 +263,10 @@ async function deleteSong(songId: string): Promise<void> {
   display: flex;
   font-size: 0.9rem;
   text-align: left;
+
+  @include responsive.mobile {
+    display: none;
+  }
 
   i {
     font-size: 1rem;
