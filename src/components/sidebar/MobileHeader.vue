@@ -38,7 +38,6 @@ const dialogStore = useDialog();
   }
 }
 
-
 .logo-link {
   display: flex;
   flex: 1;
