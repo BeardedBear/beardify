@@ -1,6 +1,4 @@
 <template>
-  <!-- <pre>{{ currentTrack }}</pre> -->
-  <!-- {{ currentTrack.album.images }} -->
   <div class="what" v-if="currentTrack">
     <div class="cover-wrap">
       <img :src="currentTrack.album.images[1].url || ''" class="cover" v-if="currentTrack.album.images.length" />
@@ -9,9 +7,12 @@
       </div>
     </div>
     <div class="text-content">
-      <div>
-        <span class="trackname">{{ currentTrack.name }} —&nbsp;</span>
-        <ArtistList :artist-list="currentTrack.artists" :feat="true" />
+      <div class="track-details">
+        <span class="trackname">{{ currentTrack.name }}</span>
+        <span class="separator">—&nbsp;</span>
+        <span class="artists">
+          <ArtistList :artist-list="currentTrack.artists" :feat="true" />
+        </span>
       </div>
       <div class="album">
         <router-link :to="`/album/${transformUriToid(currentTrack.album.uri)}`" class="link">
@@ -78,8 +79,44 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
   }
 }
 
+.track-details {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include responsive.mobile {
+    display: flex;
+    flex-direction: column;
+    white-space: normal;
+  }
+}
+
 .trackname {
   font-weight: bold;
+
+  @include responsive.mobile {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+}
+
+.separator {
+  @include responsive.mobile {
+    display: none;
+  }
+}
+
+.artists {
+  @include responsive.mobile {
+    font-size: 0.9em;
+    opacity: 0.8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
 }
 
 .artistname {

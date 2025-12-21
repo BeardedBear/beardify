@@ -33,10 +33,8 @@ import Loader from "@/components/ui/LoadingDots.vue";
 
   @include responsive.mobile {
     gap: 0.5rem;
-    grid-template-areas:
-      "metas metas"
-      "controls device";
-    grid-template-columns: 1fr auto;
+    grid-template-areas: "controls metas device";
+    grid-template-columns: auto 1fr auto;
     padding: 0.8rem;
   }
 }
