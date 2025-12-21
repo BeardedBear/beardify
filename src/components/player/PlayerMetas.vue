@@ -1,6 +1,4 @@
 <template>
-  <!-- <pre>{{ currentTrack }}</pre> -->
-  <!-- {{ currentTrack.album.images }} -->
   <div class="what" v-if="currentTrack">
     <div class="cover-wrap">
       <img :src="currentTrack.album.images[1].url || ''" class="cover" v-if="currentTrack.album.images.length" />
@@ -8,10 +6,13 @@
         <i class="add icon-plus"></i>
       </div>
     </div>
-    <div>
-      <div>
-        <span class="trackname">{{ currentTrack.name }} —&nbsp;</span>
-        <ArtistList :artist-list="currentTrack.artists" :feat="true" />
+    <div class="text-content">
+      <div class="track-details">
+        <span class="trackname">{{ currentTrack.name }}</span>
+        <span class="separator">—&nbsp;</span>
+        <span class="artists">
+          <ArtistList :artist-list="currentTrack.artists" :feat="true" />
+        </span>
       </div>
       <div class="album">
         <router-link :to="`/album/${transformUriToid(currentTrack.album.uri)}`" class="link">
@@ -26,10 +27,10 @@
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 
-import { transformUriToid } from "@/helpers/helper";
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
+import { transformUriToid } from "@/helpers/helper";
 
 const playerStore = usePlayer();
 const dialogStore = useDialog();
@@ -38,6 +39,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 
 <style lang="scss" scoped>
 @use "sass:color";
+@use "@/assets/scss/responsive" as responsive;
 
 .cover {
   border-radius: 0.3rem;
@@ -77,8 +79,44 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
   }
 }
 
+.track-details {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include responsive.mobile {
+    display: flex;
+    flex-direction: column;
+    white-space: normal;
+  }
+}
+
 .trackname {
   font-weight: bold;
+
+  @include responsive.mobile {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+}
+
+.separator {
+  @include responsive.mobile {
+    display: none;
+  }
+}
+
+.artists {
+  @include responsive.mobile {
+    font-size: 0.9em;
+    opacity: 0.8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
 }
 
 .artistname {
@@ -111,9 +149,30 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
   display: flex;
   flex: 1;
   gap: 1rem;
+  min-width: 0;
+  overflow: hidden;
 
   img {
     height: 3rem;
+
+    @include responsive.mobile {
+      height: 2.5rem;
+    }
+  }
+
+  @include responsive.mobile {
+    gap: 0.6rem;
+  }
+}
+
+.text-content {
+  min-width: 0;
+  overflow: hidden;
+
+  > div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 </style>

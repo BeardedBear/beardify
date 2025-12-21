@@ -57,10 +57,20 @@ watch(
   justify-content: space-between;
   margin-bottom: 3rem;
 
+  @include responsive.mobile {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
   .name {
     flex: 1;
     font-size: 2rem;
     font-weight: bold;
+
+    @include responsive.mobile {
+      font-size: 1.5rem;
+    }
   }
 }
 
@@ -75,6 +85,14 @@ watch(
   overflow-y: auto;
   padding: 1rem 5rem;
   transition: padding ease 0.2s;
+
+  @include responsive.mobile {
+    padding: 1rem;
+  }
+
+  @include responsive.tablet {
+    padding: 1rem 2rem;
+  }
 
   @media (width <= 1200px) {
     padding: 1rem 3rem;

@@ -4,7 +4,10 @@
     <DialogList />
     <div id="app-content">
       <Sidebar />
-      <router-view :key="useRoute().fullPath" v-slot="{ Component }"><component :is="Component" /></router-view>
+      <div class="main-content">
+        <MobileHeader />
+        <router-view :key="useRoute().fullPath" v-slot="{ Component }"><component :is="Component" /></router-view>
+      </div>
     </div>
     <Player key="player" />
     <Notification />
@@ -24,6 +27,7 @@ import MinimizedWindows from "@/components/minimized/MinimizedWindows.vue";
 import Notification from "@/components/notification/NotificationIndex.vue";
 import Player from "@/components/player/PlayerIndex.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
+import MobileHeader from "@/components/sidebar/MobileHeader.vue";
 import Sidebar from "@/components/sidebar/SidebarIndex.vue";
 import { useKeyboardEvents } from "@/helpers/useKeyboardEvents";
 import { useAuth } from "@/views/auth/AuthStore";
@@ -192,10 +196,21 @@ body {
   display: grid;
   grid-template-columns: 19rem 1fr;
   overflow: hidden;
+  position: relative;
 
   @include responsive.hdpi {
     grid-template-columns: 25rem 1fr;
   }
+
+  @include responsive.tablet-down {
+    grid-template-columns: 1fr;
+  }
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .loading {

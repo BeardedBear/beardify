@@ -51,10 +51,10 @@ import Foot from "@/components/album/AlbumFoot.vue";
 import Head from "@/components/album/AlbumHead.vue";
 import Album from "@/components/album/AlbumIndex.vue";
 import ArtistList from "@/components/artist/ArtistList.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
-import Loader from "@/components/ui/LoadingDots.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
 import { timecode } from "@/helpers/date";
 import { isCurrentTrack } from "@/helpers/helper";
 import { playSongs } from "@/helpers/play";
@@ -150,6 +150,11 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   gap: 3rem;
   justify-content: center;
 
+  @include responsive.tablet-down {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
   @include responsive.l {
     flex-direction: column;
   }
@@ -157,11 +162,20 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 
 .content-cover {
   width: 18rem;
+
+  @include responsive.tablet-down {
+    margin: 0 auto;
+    width: 12rem;
+  }
 }
 
 .content-tracks {
   flex: 1;
   font-size: 1rem;
+
+  @include responsive.mobile {
+    font-size: 0.85rem;
+  }
 }
 
 .album-page {
@@ -171,6 +185,14 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   overflow-y: scroll;
   padding: 2rem 2.2rem;
   scroll-behavior: smooth;
+
+  @include responsive.mobile {
+    padding: 1rem;
+  }
+
+  @include responsive.tablet {
+    padding: 1.5rem;
+  }
 }
 
 .loader {

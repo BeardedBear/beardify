@@ -1,31 +1,58 @@
 // Module responsive pour être utilisé avec @use
 // Compatibilité avec Dart Sass 3.0.0
 
-$mobile-width: 20rem;
+// Breakpoints
+$mobile-max: 767px;
+$tablet-min: 768px;
+$tablet-max: 1024px;
+$desktop-min: 1025px;
 $l: 1930px;
 $xl: 2000px;
 $fourk: 2560px;
 
+// Mobile only (< 768px)
 @mixin mobile {
-  // @media
-
-  @media (width <= $mobile-width) {
+  @media (max-width: $mobile-max) {
     @content;
   }
 }
 
+// Tablet only (768px - 1024px)
+@mixin tablet {
+  @media (min-width: $tablet-min) and (max-width: $tablet-max) {
+    @content;
+  }
+}
+
+// Tablet and below (<= 1024px)
+@mixin tablet-down {
+  @media (max-width: $tablet-max) {
+    @content;
+  }
+}
+
+// Desktop and above (> 1024px)
+@mixin desktop {
+  @media (min-width: $desktop-min) {
+    @content;
+  }
+}
+
+// Large screens (> 1930px)
 @mixin l {
   @media (min-width: $l) {
     @content;
   }
 }
 
+// Extra large screens (> 2000px)
 @mixin xl {
   @media (min-width: $xl) {
     @content;
   }
 }
 
+// 4K screens (> 2560px)
 @mixin hdpi {
   @media (min-width: $fourk) {
     @content;

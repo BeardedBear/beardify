@@ -35,7 +35,7 @@
     </div>
     <div v-if="!withoutMetas">
       <div class="name">{{ album.name }}</div>
-      <div v-if="withArtists">
+      <div v-if="withArtists" class="artists">
         <ArtistList :artist-list="album.artists" feat />
       </div>
       <div class="date" v-if="album.release_date && !withoutReleaseDate">
@@ -302,10 +302,22 @@ async function deleteAlbum(albumId: string): Promise<void> {
 }
 
 .name {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
   font-weight: bold;
   line-break: auto;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   margin: 0.3rem 0 0;
+  overflow: hidden;
   overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+}
+
+.artists {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .date {

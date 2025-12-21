@@ -4,7 +4,7 @@
       <ButtonIndex
         no-default-class
         :class="{ active: playerStore.currentlyPlaying?.shuffle_state }"
-        class="control-button"
+        class="control-button shuffle"
         @click="playerStore.toggleShuffle()"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
@@ -13,7 +13,7 @@
       <ButtonIndex
         no-default-class
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
-        class="control-button"
+        class="control-button repeat"
         @click="playerStore.toggleRepeat()"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
@@ -32,7 +32,7 @@
       </ButtonIndex>
       <ButtonIndex
         no-default-class
-        class="control-button"
+        class="control-button next"
         @click="playerStore.next()"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
@@ -50,9 +50,9 @@
 import { useIntervalFn } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
-import { timecode } from "@/helpers/date";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { timecode } from "@/helpers/date";
 
 const playerStore = usePlayer();
 const currentTime = ref<number>(0);
@@ -72,6 +72,7 @@ watch(
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/responsive" as responsive;
 
 .btns {
   align-items: center;
@@ -82,6 +83,10 @@ watch(
 .time {
   font-size: 0.9rem;
   font-weight: bold;
+
+  @include responsive.mobile {
+    display: none;
+  }
 }
 
 .controls {
@@ -99,6 +104,7 @@ watch(
   color: currentcolor;
   cursor: pointer;
   font-size: 1.3rem;
+  line-height: 0;
   opacity: 0.5;
   padding: 0.4rem 0.5rem;
 
@@ -126,6 +132,24 @@ watch(
 
     &:active {
       background-color: var(--bg-color-lighter);
+    }
+  }
+
+  &.repeat {
+    @include responsive.mobile {
+      display: none;
+    }
+  }
+
+  &.shuffle {
+    @include responsive.mobile {
+      display: none;
+    }
+  }
+
+  &.next {
+    @include responsive.mobile {
+      display: none;
     }
   }
 }

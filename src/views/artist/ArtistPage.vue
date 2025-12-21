@@ -83,6 +83,12 @@ artistStore.clean().finally(() => {
   padding: 2rem 2.5rem;
   position: relative;
 
+  @include responsive.tablet-down {
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
   @include responsive.xl {
     grid-template-columns: 1fr;
   }
@@ -94,10 +100,18 @@ artistStore.clean().finally(() => {
 
 .content-block {
   margin-bottom: 3rem;
+
+  @include responsive.mobile {
+    margin-bottom: 2rem;
+  }
 }
 
 .top {
   flex: 0 0 22rem;
+
+  @include responsive.tablet-down {
+    order: -1;
+  }
 
   @include responsive.xl {
     order: -1;
@@ -106,6 +120,10 @@ artistStore.clean().finally(() => {
 
 .top-item {
   margin-bottom: 2.5rem;
+
+  @include responsive.tablet-down {
+    margin-bottom: 1.5rem;
+  }
 
   @include responsive.xl {
     margin-bottom: 0;
@@ -119,6 +137,10 @@ artistStore.clean().finally(() => {
 }
 
 .related-artists {
+  @include responsive.tablet-down {
+    display: none;
+  }
+
   @include responsive.xl {
     display: none;
   }

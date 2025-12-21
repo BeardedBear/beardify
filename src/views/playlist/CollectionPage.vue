@@ -33,10 +33,10 @@ import { SlickItem, SlickList } from "vue-slicksort";
 
 import { AlbumSimplified } from "@/@types/Album";
 import Album from "@/components/album/AlbumIndex.vue";
+import Header from "@/components/playlist/PlaylistHeader.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
-import Header from "@/components/playlist/PlaylistHeader.vue";
 import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -87,7 +87,7 @@ playlistStore.clean().finally(() => {
 
   display: grid;
   gap: 2rem;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   padding: 2rem 5rem;
   padding-left: $padd;
   padding-right: $padd;
@@ -98,7 +98,7 @@ playlistStore.clean().finally(() => {
   @media (width <= 1200px) {
     $padd: 2rem;
 
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     padding-left: $padd;
     padding-right: $padd;
   }
@@ -106,7 +106,7 @@ playlistStore.clean().finally(() => {
   @include responsive.l {
     $padd: 2rem;
 
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     padding-left: $padd;
     padding-right: $padd;
   }
@@ -114,13 +114,25 @@ playlistStore.clean().finally(() => {
   @include responsive.l {
     $padd: 2rem;
 
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     padding-left: $padd;
     padding-right: $padd;
   }
 
   @include responsive.hdpi {
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  @include responsive.tablet {
+    gap: 1.5rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 1.5rem;
+  }
+
+  @include responsive.mobile {
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 1rem;
   }
 }
 

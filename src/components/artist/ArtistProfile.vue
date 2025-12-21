@@ -57,6 +57,8 @@ const hasMoreContent = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/responsive" as responsive;
+
 $transition-duration: 0.2s;
 
 .profile-container {
@@ -130,6 +132,15 @@ $transition-duration: 0.2s;
   position: absolute;
   top: calc(100%);
   transform: translateX(-50%) translateY(-5px);
+
+  @include responsive.mobile {
+    left: auto;
+    max-width: 85vw;
+    min-width: unset;
+    right: 0;
+    transform: translateY(-5px);
+  }
+
   transition:
     opacity 0.2s ease,
     transform 0.2s ease,

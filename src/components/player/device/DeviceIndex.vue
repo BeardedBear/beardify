@@ -9,22 +9,27 @@
 </template>
 
 <script lang="ts" setup>
-import Loader from "@/components/ui/LoadingDots.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import DevicesList from "@/components/player/device/DeviceList.vue";
 import DeviceVolume from "@/components/player/device/DeviceVolume.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
 
 const playerStore = usePlayer();
 </script>
 
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 .wrap {
   align-items: center;
   display: flex;
   flex: 1;
   justify-content: end;
+
+  @include responsive.mobile {
+    justify-content: center;
+  }
 }
 
 .device {

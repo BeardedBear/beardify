@@ -77,6 +77,14 @@ userStore.clean().finally(() => {
   padding: 2rem 5rem;
   position: relative;
 
+  @include responsive.mobile {
+    padding: 1rem;
+  }
+
+  @include responsive.tablet {
+    padding: 1.5rem 2rem;
+  }
+
   .inner {
     align-items: center;
     display: flex;
@@ -127,9 +135,25 @@ userStore.clean().finally(() => {
   max-width: 100rem;
   padding: 2rem 4rem;
 
+  @include responsive.mobile {
+    padding: 1rem;
+  }
+
+  @include responsive.tablet {
+    padding: 1.5rem 2rem;
+  }
+
   .gallery {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+
+    @include responsive.mobile {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include responsive.tablet {
+      grid-template-columns: repeat(4, 1fr);
+    }
 
     @include responsive.l {
       grid-template-columns: repeat(8, 1fr);
