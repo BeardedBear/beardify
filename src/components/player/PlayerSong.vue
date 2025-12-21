@@ -1,9 +1,9 @@
 <template>
   <template v-if="usePlayer().playerState.track_window.current_track.id">
     <div class="meta">
-      <What />
-      <Controls />
-      <Device />
+      <div class="area-metas"><What /></div>
+      <div class="area-controls"><Controls /></div>
+      <div class="area-device"><Device /></div>
     </div>
     <SeekBar />
   </template>
@@ -25,16 +25,33 @@ import Loader from "@/components/ui/LoadingDots.vue";
 
 .meta {
   align-items: center;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  gap: 1rem;
+  grid-template-areas: "metas controls device";
+  grid-template-columns: 1fr auto 1fr;
   padding: 0.9rem 1.2rem 0.5rem;
 
   @include responsive.mobile {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
+    grid-template-areas:
+      "metas metas"
+      "controls device";
+    grid-template-columns: 1fr auto;
     padding: 0.8rem;
   }
+}
+
+.area-metas {
+  grid-area: metas;
+  min-width: 0;
+}
+
+.area-controls {
+  grid-area: controls;
+}
+
+.area-device {
+  grid-area: device;
 }
 
 .options {

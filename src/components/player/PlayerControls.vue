@@ -4,7 +4,7 @@
       <ButtonIndex
         no-default-class
         :class="{ active: playerStore.currentlyPlaying?.shuffle_state }"
-        class="control-button"
+        class="control-button shuffle"
         @click="playerStore.toggleShuffle()"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
@@ -13,7 +13,7 @@
       <ButtonIndex
         no-default-class
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
-        class="control-button"
+        class="control-button repeat"
         @click="playerStore.toggleRepeat()"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
@@ -32,7 +32,7 @@
       </ButtonIndex>
       <ButtonIndex
         no-default-class
-        class="control-button"
+        class="control-button next"
         @click="playerStore.next()"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
@@ -83,6 +83,10 @@ watch(
 .time {
   font-size: 0.9rem;
   font-weight: bold;
+
+  @include responsive.mobile {
+    display: none;
+  }
 }
 
 .controls {
@@ -94,6 +98,7 @@ watch(
 }
 
 .control-button {
+  line-height: 0;
   background-color: transparent;
   border: none;
   border-radius: 1rem;
@@ -127,6 +132,24 @@ watch(
 
     &:active {
       background-color: var(--bg-color-lighter);
+    }
+  }
+
+  &.repeat {
+    @include responsive.mobile {
+      display: none;
+    }
+  }
+
+  &.shuffle {
+    @include responsive.mobile {
+      display: none;
+    }
+  }
+
+  &.next {
+    @include responsive.mobile {
+      display: none;
     }
   }
 }

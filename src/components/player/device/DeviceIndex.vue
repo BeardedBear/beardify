@@ -29,7 +29,6 @@ const playerStore = usePlayer();
 
   @include responsive.mobile {
     justify-content: center;
-    margin-top: 0.5rem;
   }
 }
 
