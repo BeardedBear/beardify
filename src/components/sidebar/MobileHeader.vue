@@ -1,6 +1,6 @@
 <template>
   <div class="mobile-header">
-    <ButtonIndex icon-only class="menu-button" @click="sidebarStore.toggle()">
+    <ButtonIndex icon-only @click="sidebarStore.toggle()">
       <i class="icon-menu" />
     </ButtonIndex>
     <router-link to="/" class="logo-link">
@@ -31,19 +31,18 @@ const dialogStore = useDialog();
   background: var(--bg-color-dark);
   display: none;
   justify-content: space-between;
-  padding: 0.8rem 1rem;
+  padding: 0.5rem 0.8rem;
 
   @include responsive.tablet-down {
     display: flex;
   }
 }
 
-.menu-button {
-  font-size: 1.3rem;
-}
 
 .logo-link {
   display: flex;
+  flex: 1;
+  justify-content: center;
 }
 
 .logo {

@@ -20,6 +20,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+.icon-menu:before {
+    content: "\f07c";
+}
 .icon-instagram:before {
     content: "\f419";
 }

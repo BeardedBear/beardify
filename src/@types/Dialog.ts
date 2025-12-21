@@ -17,6 +17,7 @@ export type DialogType =
   | "addalbum"
   | "addSong"
   | "albumVariants"
+  | "artistOptions"
   | "createCollection"
   | "createPlaylist"
   | "editPlaylist"

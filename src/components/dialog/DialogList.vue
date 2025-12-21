@@ -6,6 +6,7 @@
   <EditPlaylist v-else-if="dialogStore.type === 'editPlaylist'" />
   <AddCollection v-else-if="dialogStore.type === 'createCollection'" />
   <WidevineWarning v-else-if="dialogStore.type === 'widevine'" />
+  <ArtistOptionsDialog v-else-if="dialogStore.type === 'artistOptions'" />
   <SearchDialog v-else-if="dialogStore.type === 'search'" />
 </template>
 
@@ -15,6 +16,7 @@ import AddCollection from "@/components/dialog/AddCollection.vue";
 import AddPlaylist from "@/components/dialog/AddPlaylist.vue";
 import AddSong from "@/components/dialog/AddSong.vue";
 import AlbumVariants from "@/components/dialog/AlbumVariants.vue";
+import ArtistOptionsDialog from "@/components/dialog/ArtistOptionsDialog.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import EditPlaylist from "@/components/dialog/EditPlaylist.vue";
 import SearchDialog from "@/components/dialog/SearchDialog.vue";

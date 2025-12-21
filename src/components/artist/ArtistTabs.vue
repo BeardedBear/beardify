@@ -33,6 +33,8 @@ defineEmits<{
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/responsive" as responsive;
+
 .tabs {
   display: flex;
   gap: 0.5rem;
@@ -60,6 +62,10 @@ defineEmits<{
   transition:
     background-color 0.2s ease,
     opacity 0.2s ease;
+
+  @include responsive.mobile {
+    padding: 0.5rem 0.8rem;
+  }
 
   &:hover {
     background-color: var(--bg-color-dark);

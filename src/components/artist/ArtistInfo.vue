@@ -226,10 +226,16 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/responsive" as responsive;
+
 .artist-info {
   display: grid;
   gap: 2rem;
   grid-template-columns: 1fr 18rem;
+
+  @include responsive.tablet-down {
+    grid-template-columns: 1fr;
+  }
 }
 
 .main-content {
@@ -264,6 +270,11 @@ onMounted(() => {
 
   &.stuck {
     border-radius: 0 0 0.5rem 0.5rem;
+  }
+
+  @include responsive.mobile {
+    position: relative;
+    top: 0 !important;
   }
 }
 
