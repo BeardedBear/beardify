@@ -98,13 +98,13 @@ watch(
 }
 
 .control-button {
-  line-height: 0;
   background-color: transparent;
   border: none;
   border-radius: 1rem;
   color: currentcolor;
   cursor: pointer;
   font-size: 1.3rem;
+  line-height: 0;
   opacity: 0.5;
   padding: 0.4rem 0.5rem;
 

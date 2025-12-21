@@ -17,12 +17,14 @@ import Dialog from "@/components/dialog/DialogWrap.vue";
   justify-content: center;
   padding: 1.5rem;
 
-  :deep(.options) {
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep() .options {
     flex-direction: column;
     width: 100%;
   }
 
-  :deep(.follow) {
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep() .follow {
     width: 100%;
   }
 }
