@@ -1,5 +1,4 @@
 <template>
-  <!-- Backdrop for mobile sidebar -->
   <div class="sidebar-backdrop" :class="{ 'is-visible': sidebarStore.isOpen }" @click="sidebarStore.close()" />
   <div
     class="sidebar loading"
