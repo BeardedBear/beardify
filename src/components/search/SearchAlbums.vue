@@ -36,6 +36,7 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/search-item" as search;
+@use "@/assets/scss/responsive" as responsive;
 
 .album {
   border-radius: 1rem;
@@ -67,6 +68,10 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 .album-list {
   align-content: start;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+
+  @include responsive.mobile {
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  }
 }
 </style>
