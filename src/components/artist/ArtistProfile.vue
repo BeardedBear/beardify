@@ -1,11 +1,11 @@
 <template>
   <div class="profile-container">
     <div class="profile-wrapper" :class="{ visible: artistStore.discogsArtist?.profile }">
-      <span class="profile-text" v-html="firstSentence" />
-      <div class="more-button" v-if="hasMoreContent">
-        <i class="icon-more-horizontal" />
-        <div class="full-profile" v-html="formattedProfile" />
-      </div>
+      <span
+        class="profile-text"
+        v-html="trimmedProfile"
+        :title="trimmedProfile === fullProfile ? undefined : fullProfile"
+      />
     </div>
   </div>
 </template>
@@ -17,42 +17,14 @@ import { parseDiscogsMarkup } from "@/helpers/discogs";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const artistStore = useArtist();
+const fullProfile = computed(() => artistStore.discogsArtist?.profile ?? "");
 
-/**
- * Extract the first sentence from text, but limit to max characters
- */
-function getFirstSentence(text: string, maxLength = 120): string {
-  // Remove all line breaks and normalize whitespace
-  const cleanText = text.replace(/\s+/g, " ").trim();
-
-  // Match first sentence ending with . ! or ? followed by space or end of string
-  const match = cleanText.match(/^[^.!?]*[.!?]/);
-  const firstSentence = match ? match[0] : cleanText;
-
-  // If first sentence is within limit, return it
-  if (firstSentence.length <= maxLength) {
-    return firstSentence;
-  }
-
-  // Otherwise truncate at maxLength and add ellipsis
-  return cleanText.slice(0, maxLength).trim() + "…";
-}
-
-const formattedProfile = computed(() => {
-  if (!artistStore.discogsArtist?.profile) return "";
-  return parseDiscogsMarkup(artistStore.discogsArtist.profile);
-});
-
-const firstSentence = computed(() => {
-  if (!artistStore.discogsArtist?.profile) return "";
-  const first = getFirstSentence(artistStore.discogsArtist.profile);
-  return parseDiscogsMarkup(first);
-});
-
-const hasMoreContent = computed(() => {
-  if (!artistStore.discogsArtist?.profile) return false;
-  const first = getFirstSentence(artistStore.discogsArtist.profile);
-  return artistStore.discogsArtist.profile.length > first.length;
+const trimmedProfile = computed(() => {
+  const maxLength = 120;
+  if (!fullProfile.value) return "";
+  const cleanText = fullProfile.value.replace(/\s+/g, " ").trim();
+  const trimmedText = cleanText.length > maxLength ? cleanText.slice(0, maxLength).trimEnd() + "…" : cleanText;
+  return parseDiscogsMarkup(trimmedText);
 });
 </script>
 
@@ -110,87 +82,6 @@ $transition-duration: 0.2s;
 
     &:hover {
       text-decoration: underline;
-    }
-  }
-}
-
-.full-profile {
-  background-color: var(--bg-color);
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 5px rgb(0 0 0 / 20%);
-  color: var(--font-color-light);
-  font-size: 0.9rem;
-  left: 50%;
-  line-height: 1.6;
-  max-height: 300px;
-  max-width: 600px;
-  min-width: 300px;
-  opacity: 0;
-  overflow-y: auto;
-  padding: 1.2rem;
-  pointer-events: none;
-  position: absolute;
-  top: calc(100%);
-  transform: translateX(-50%) translateY(-5px);
-
-  @include responsive.mobile {
-    left: auto;
-    max-width: 85vw;
-    min-width: unset;
-    right: 0;
-    transform: translateY(-5px);
-  }
-
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease,
-    visibility 0.2s;
-  visibility: hidden;
-  z-index: 100;
-
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(em) {
-    font-style: italic;
-  }
-
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(strong) {
-    font-weight: bold;
-  }
-
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(.discogs-link),
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(a) {
-    color: var(--primary-color-light);
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
-
-.more-button {
-  background-color: var(--bg-color);
-  border-radius: 0.3rem;
-  color: var(--font-color-light);
-  cursor: pointer;
-  flex-shrink: 0;
-  font-size: 1rem;
-  height: 1.5rem;
-  opacity: 0.6;
-  padding: 0.2rem 0.4rem;
-  position: relative;
-
-  &:hover {
-    opacity: 1;
-
-    .full-profile {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateX(-50%) translateY(0);
-      visibility: visible;
     }
   }
 }
