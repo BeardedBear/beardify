@@ -20,8 +20,8 @@ const artistStore = useArtist();
 const fullProfile = computed(() => artistStore.discogsArtist?.profile ?? "");
 
 const trimmedProfile = computed(() => {
-  const maxLength = 120;
   if (!fullProfile.value) return "";
+  const maxLength = 120;
   const cleanText = fullProfile.value.replace(/\s+/g, " ").trim();
   const trimmedText = cleanText.length > maxLength ? cleanText.slice(0, maxLength).trimEnd() + "…" : cleanText;
   return parseDiscogsMarkup(trimmedText);
