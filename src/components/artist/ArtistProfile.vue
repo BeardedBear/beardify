@@ -1,11 +1,14 @@
 <template>
   <div class="profile-container">
     <div class="profile-wrapper" :class="{ visible: artistStore.discogsArtist?.profile }">
-      <span
-        class="profile-text"
-        v-html="trimmedProfile"
-        :title="trimmedProfile === fullProfile ? undefined : fullProfile"
-      />
+      <span class="profile-text" :title="trimmedProfile === fullProfile ? undefined : fullProfile">
+        <strong>{{ artistMetas?.disambiguation }}</strong>
+        from
+        <strong>{{ artistMetas?.["begin-area"]?.name }}</strong>
+        {{ artistMetas?.country }} - {{ artistMetas?.["life-span"]?.begin }}/{{
+          artistMetas?.["life-span"]?.ended ?? "active"
+        }}
+      </span>
     </div>
   </div>
 </template>
@@ -26,6 +29,8 @@ const trimmedProfile = computed(() => {
   const trimmedText = cleanText.length > maxLength ? cleanText.slice(0, maxLength).trimEnd() + "…" : cleanText;
   return parseDiscogsMarkup(trimmedText);
 });
+
+const artistMetas = computed(() => artistStore.musicbrainzArtist);
 </script>
 
 <style lang="scss" scoped>

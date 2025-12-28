@@ -362,52 +362,52 @@ export async function getWikidataArtistByName(artistName: string): Promise<null 
   }
 }
 
-/**
- * Get Wikidata entity ID by Spotify artist ID
- * Uses SPARQL query to find the entity
- * @param spotifyId - The Spotify artist ID
- * @returns Promise resolving to Wikidata entity ID or null
- */
-export async function getWikidataIdBySpotifyId(spotifyId: string): Promise<null | string> {
-  try {
-    const sparqlQuery = `
-      SELECT ?item WHERE {
-        ?item wdt:${WIKIDATA_PROPERTIES.SPOTIFY_ARTIST_ID} "${spotifyId}".
-      }
-      LIMIT 1
-    `;
+// /**
+//  * Get Wikidata entity ID by Spotify artist ID
+//  * Uses SPARQL query to find the entity
+//  * @param spotifyId - The Spotify artist ID
+//  * @returns Promise resolving to Wikidata entity ID or null
+//  */
+// export async function getWikidataIdBySpotifyId(spotifyId: string): Promise<null | string> {
+//   try {
+//     const sparqlQuery = `
+//       SELECT ?item WHERE {
+//         ?item wdt:${WIKIDATA_PROPERTIES.SPOTIFY_ARTIST_ID} "${spotifyId}".
+//       }
+//       LIMIT 1
+//     `;
 
-    const params = new URLSearchParams({
-      format: "json",
-      query: sparqlQuery,
-    });
+//     const params = new URLSearchParams({
+//       format: "json",
+//       query: sparqlQuery,
+//     });
 
-    const response = await wikidataClient.get(`https://query.wikidata.org/sparql?${params.toString()}`, {
-      headers: {
-        Accept: "application/sparql-results+json",
-        "User-Agent": USER_AGENT,
-      },
-    });
+//     const response = await wikidataClient.get(`https://query.wikidata.org/sparql?${params.toString()}`, {
+//       headers: {
+//         Accept: "application/sparql-results+json",
+//         "User-Agent": USER_AGENT,
+//       },
+//     });
 
-    const data = await response.json<{
-      results: {
-        bindings: Array<{
-          item: { type: string; value: string };
-        }>;
-      };
-    }>();
+//     const data = await response.json<{
+//       results: {
+//         bindings: Array<{
+//           item: { type: string; value: string };
+//         }>;
+//       };
+//     }>();
 
-    if (data.results.bindings.length > 0) {
-      const entityUri = data.results.bindings[0].item.value;
-      // Extract entity ID from URI (e.g., "http://www.wikidata.org/entity/Q483" -> "Q483")
-      return entityUri.split("/").pop() || null;
-    }
+//     if (data.results.bindings.length > 0) {
+//       const entityUri = data.results.bindings[0].item.value;
+//       // Extract entity ID from URI (e.g., "http://www.wikidata.org/entity/Q483" -> "Q483")
+//       return entityUri.split("/").pop() || null;
+//     }
 
-    return null;
-  } catch {
-    return null;
-  }
-}
+//     return null;
+//   } catch {
+//     return null;
+//   }
+// }
 
 /**
  * Get Wikipedia article content (extract) from a Wikipedia URL

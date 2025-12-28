@@ -6,11 +6,11 @@ import { defaultArtist } from "@/@types/Defaults";
 import { Paging } from "@/@types/Paging";
 import { instance } from "@/api";
 import { getDiscogsArtist, getDiscogsArtistReleases } from "@/helpers/discogs";
-import { getDiscogsIdByArtistName } from "@/helpers/musicbrainz";
+import { getIdsFromMusicBrainz, searchMusicBrainzArtistId } from "@/helpers/musicbrainz";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { cleanUrl } from "@/helpers/urls";
 import { isEP, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
-import { getWikidataArtistByName, getWikidataIdBySpotifyId, getWikipediaExtract } from "@/helpers/wikidata";
+import { getWikidataArtistByName, getWikipediaExtract } from "@/helpers/wikidata";
 
 export const useArtist = defineStore("artist", {
   actions: {
@@ -55,10 +55,10 @@ export const useArtist = defineStore("artist", {
         this.artist = e.data;
 
         // Fetch Discogs ID from MusicBrainz
-        this.getDiscogsId(e.data.name);
+        this.getIds(e.data.name);
 
         // Fetch Wikidata artist data
-        this.getWikidataArtist(artistId, e.data.name);
+        this.getWikidataArtist(e.data.name);
       } catch {
         // silent fail
       }
@@ -78,17 +78,27 @@ export const useArtist = defineStore("artist", {
       }
     },
 
-    async getDiscogsId(artistName: string) {
+    async getIds(artistName: string) {
       try {
-        const discogsId = await getDiscogsIdByArtistName(artistName);
-        this.discogsId = discogsId;
+        const artist = await searchMusicBrainzArtistId(artistName);
+
+        this.musicbrainzArtist = artist;
+
+        if (!artist?.id) {
+          return;
+        }
+
+        const ids = await getIdsFromMusicBrainz(artist.id);
+        this.discogsId = ids?.discogsId ?? null;
+        this.wikidataId = ids?.wikidataId ?? null;
 
         // Fetch artist data from Discogs if ID was found
-        if (discogsId) {
-          this.getDiscogsArtist(discogsId);
+        if (this.discogsId) {
+          this.getDiscogsArtist(this.discogsId);
         }
       } catch {
         this.discogsId = null;
+        this.wikidataId = null;
       }
     },
 
@@ -210,14 +220,14 @@ export const useArtist = defineStore("artist", {
       }
     },
 
-    async getWikidataArtist(spotifyId: string, artistName: string) {
+    async getWikidataArtist(artistName: string) {
       try {
         // First try to find by Spotify ID (more accurate)
-        const wikidataId = await getWikidataIdBySpotifyId(spotifyId);
+        // const wikidataId = await getWikidataIdBySpotifyId(spotifyId);
 
-        if (wikidataId) {
+        if (this.wikidataId) {
           const { getWikidataArtist } = await import("@/helpers/wikidata");
-          this.wikidataArtist = await getWikidataArtist(wikidataId);
+          this.wikidataArtist = await getWikidataArtist(this.wikidataId);
         } else {
           // Fallback to name search
           this.wikidataArtist = await getWikidataArtistByName(artistName);
@@ -275,11 +285,13 @@ export const useArtist = defineStore("artist", {
     eps: [],
     followStatus: false,
     headerHeight: 0,
+    musicbrainzArtist: null,
     relatedArtists: { artists: [] },
     singles: [],
     topTracks: { tracks: [] },
     wikidataArtist: null,
     wikipediaExtract: null,
     wikipediaLanguage: "en",
+    wikidataId: null,
   }),
 });
