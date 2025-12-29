@@ -5,7 +5,6 @@ import ky from "ky";
  * No authentication required for read-only access, only User-Agent is required
  * See: https://www.wikidata.org/wiki/Wikidata:REST_API/Authentication
  */
-const WIKIDATA_API_URL = "https://www.wikidata.org/w/api.php";
 const WIKIDATA_ENTITY_URL = "https://www.wikidata.org/wiki/Special:EntityData/";
 const USER_AGENT = "Beardify/1.0.0 (https://github.com/BeardedBear/beardify)";
 
@@ -107,22 +106,6 @@ interface WikidataEntity {
   labels?: Record<string, { language: string; value: string }>;
   sitelinks?: Record<string, { badges: string[]; site: string; title: string }>;
   type: string;
-}
-
-/**
- * Interface for Wikidata search result
- */
-interface WikidataSearchResult {
-  search: Array<{
-    description?: string;
-    id: string;
-    label: string;
-    url: string;
-  }>;
-  searchinfo: {
-    search: string;
-  };
-  success: number;
 }
 
 /**
@@ -345,24 +328,6 @@ export async function getWikidataArtist(entityId: string): Promise<null | Wikida
 }
 
 /**
- * Search and get artist data from Wikidata by name
- * @param artistName - The name of the artist
- * @returns Promise resolving to WikidataArtist or null
- */
-export async function getWikidataArtistByName(artistName: string): Promise<null | WikidataArtist> {
-  try {
-    const entityId = await searchWikidataArtist(artistName);
-    if (!entityId) {
-      return null;
-    }
-
-    return await getWikidataArtist(entityId);
-  } catch {
-    return null;
-  }
-}
-
-/**
  * Get Wikipedia article content (extract) from a Wikipedia URL
  * @param wikipediaUrl - The full Wikipedia URL
  * @returns Promise resolving to the article extract HTML or null
@@ -414,37 +379,6 @@ export async function getWikipediaExtract(wikipediaUrl: string): Promise<null | 
 
     // Clean the HTML to remove unwanted sections
     return cleanWikipediaHtml(pages[0].extract);
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Search for an artist in Wikidata by name
- * @param artistName - The name of the artist to search for
- * @returns Promise resolving to the Wikidata entity ID or null
- */
-export async function searchWikidataArtist(artistName: string): Promise<null | string> {
-  try {
-    const params = new URLSearchParams({
-      action: "wbsearchentities",
-      format: "json",
-      language: "en",
-      limit: "5",
-      origin: "*",
-      search: artistName,
-      type: "item",
-    });
-
-    const response = await wikidataClient.get(`${WIKIDATA_API_URL}?${params.toString()}`);
-    const data = await response.json<WikidataSearchResult>();
-
-    if (data.success && data.search.length > 0) {
-      // Return the first result (most relevant match)
-      return data.search[0].id;
-    }
-
-    return null;
   } catch {
     return null;
   }
