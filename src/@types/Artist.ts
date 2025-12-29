@@ -1,4 +1,5 @@
 import type { MusicBrainzArtist } from "@/helpers/musicbrainz";
+
 import { AlbumSimplified } from "./Album";
 import { Image } from "./Image";
 import { ExternalUrls } from "./Misc";

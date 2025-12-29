@@ -80,22 +80,63 @@ export const useArtist = defineStore("artist", {
       }
     },
 
+    async getDiscogsReleases(discogsId: string) {
+      try {
+        const releasesData = await getDiscogsArtistReleases(discogsId);
+
+        if (releasesData) {
+          // Create a Map to store release type info by album title (normalized)
+          const releaseMap = new Map<string, string>();
+
+          releasesData.releases.forEach((release) => {
+            // Normalize title for matching (remove special chars, lowercase, trim)
+            const normalizedTitle = release.title
+              .toLowerCase()
+              .replace(/[^\w\s]/g, "")
+              .trim();
+
+            // Only store if it's a master release and contains format info
+            if (release.type === "master" && release.format) {
+              const format = release.format.toLowerCase();
+
+              // Detect EP or Album based on format string
+              if (format.includes("ep")) {
+                releaseMap.set(normalizedTitle, "EP");
+              } else if (
+                format.includes("album") ||
+                format.includes("lp") ||
+                format.includes("vinyl") ||
+                format.includes("cd")
+              ) {
+                releaseMap.set(normalizedTitle, "Album");
+              }
+            }
+          });
+
+          this.discogsReleases = releaseMap;
+        }
+      } catch {
+        // Error fetching Discogs releases - silent fail
+      }
+    },
+
+    async getFollowStatus(artistId: string) {
+      try {
+        const e = await instance().get<boolean[]>(`me/following/contains?type=artist&ids=${artistId}`);
+        this.followStatus = e.data.pop();
+      } catch {
+        // silent fail
+      }
+    },
+
     async getIds(artistName: string) {
       try {
         const artist = await searchMusicBrainzArtistId(artistName);
 
-        console.log("tags", artist?.tags);
-
-        this.musicbrainzArtist = artist;
-        // if (artist && this.musicbrainzArtist) {
-        //   console.log("this.musicbrainzArtist", this.musicbrainzArtist);
-        // }
-        // this.musicbrainzArtist = artist;
-
         if (!artist?.id) return;
 
         const artistFull = await getIdsFromMusicBrainz(artist.id);
-        // this.musicbrainzArtist = artistFull;
+        this.musicbrainzArtist = { ...artist, ...artistFull };
 
         if (artistFull && artistFull.relations) {
           // Extract Discogs ID
@@ -134,55 +175,6 @@ export const useArtist = defineStore("artist", {
       } catch {
         this.discogsId = null;
         this.wikidataId = null;
-      }
-    },
-
-    async getDiscogsReleases(discogsId: string) {
-      try {
-        const releasesData = await getDiscogsArtistReleases(discogsId);
-
-        if (releasesData) {
-          // Create a Map to store release type info by album title (normalized)
-          const releaseMap = new Map<string, string>();
-
-          releasesData.releases.forEach((release) => {
-            // Normalize title for matching (remove special chars, lowercase, trim)
-            const normalizedTitle = release.title
-              .toLowerCase()
-              .replace(/[^\w\s]/g, "")
-              .trim();
-
-            // Only store if it's a master release and contains format info
-            if (release.type === "master" && release.format) {
-              const format = release.format.toLowerCase();
-
-              // Detect EP or Album based on format string
-              if (format.includes("ep")) {
-                releaseMap.set(normalizedTitle, "EP");
-              } else if (
-                format.includes("album") ||
-                format.includes("lp") ||
-                format.includes("vinyl") ||
-                format.includes("cd")
-              ) {
-                releaseMap.set(normalizedTitle, "Album");
-              }
-            }
-          });
-
-          this.discogsReleases = releaseMap;
-        }
-      } catch (error) {
-        console.error("Error fetching Discogs releases:", error);
-      }
-    },
-
-    async getFollowStatus(artistId: string) {
-      try {
-        const e = await instance().get<boolean[]>(`me/following/contains?type=artist&ids=${artistId}`);
-        this.followStatus = e.data.pop();
-      } catch {
-        // silent fail
       }
     },
 
@@ -318,8 +310,8 @@ export const useArtist = defineStore("artist", {
     singles: [],
     topTracks: { tracks: [] },
     wikidataArtist: null,
+    wikidataId: null,
     wikipediaExtract: null,
     wikipediaLanguage: "en",
-    wikidataId: null,
   }),
 });

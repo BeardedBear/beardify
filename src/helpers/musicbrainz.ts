@@ -7,33 +7,36 @@ const MUSICBRAINZ_API_URL = "https://musicbrainz.org/ws/2/";
 const USER_AGENT = "Beardify/1.0.0 (https://github.com/BeardedBear/beardify)";
 
 /**
+ * Interface for MusicBrainz artist
+ */
+export interface MusicBrainzArtist {
+  area?: MusicBrainzArea;
+  "begin-area"?: MusicBrainzArea;
+  country?: string;
+  disambiguation?: string;
+  id: string;
+  "life-span"?: MusicBrainzLifeSpan;
+  name: string;
+  relations?: MusicBrainzArtistRelation[];
+  score?: number;
+  "sort-name": string;
+  tags?: MusicBrainzTag[];
+  type: string;
+  "type-id": string;
+}
+
+/**
  * Interface for MusicBrainz area/location
  */
 interface MusicBrainzArea {
   id: string;
-  type: string;
-  "type-id": string;
+  "life-span": {
+    ended: null | string;
+  };
   name: string;
   "sort-name": string;
-  "life-span": {
-    ended: string | null;
-  };
-}
-
-/**
- * Interface for MusicBrainz life span
- */
-interface MusicBrainzLifeSpan {
-  begin: string | null;
-  ended: string | null;
-}
-
-/**
- * Interface for MusicBrainz tag
- */
-interface MusicBrainzTag {
-  count: number;
-  name: string;
+  type: string;
+  "type-id": string;
 }
 
 /**
@@ -41,41 +44,21 @@ interface MusicBrainzTag {
  */
 interface MusicBrainzArtistRelation {
   "attribute-ids": Record<string, string>;
-  begin: string | null;
-  "target-credit": string;
-  direction: string;
-  "target-type": string;
   "attribute-values": Record<string, string>;
-  ended: boolean;
-  type: "discogs" | "wikidata" | "allmusic" | "official homepage" | string;
   attributes: unknown[];
+  begin: null | string;
+  direction: string;
+  end: null | string;
+  ended: boolean;
+  "source-credit": string;
+  "target-credit": string;
+  "target-type": string;
+  type: "allmusic" | "discogs" | "official homepage" | "wikidata" | string;
   "type-id": string;
   url?: {
     id: string;
     resource: string;
   };
-  end: string | null;
-  "source-credit": string;
-}
-
-/**
- * Interface for MusicBrainz artist
- */
-export interface MusicBrainzArtist {
-  id: string;
-  type: string;
-  "type-id": string;
-  score?: number;
-  name: string;
-  "sort-name": string;
-  country?: string;
-  area?: MusicBrainzArea;
-  "begin-area"?: MusicBrainzArea;
-  disambiguation?: string;
-  "life-span"?: MusicBrainzLifeSpan;
-  tags?: MusicBrainzTag[];
-  /** available only for artist search results */
-  relations?: MusicBrainzArtistRelation[];
 }
 
 /**
@@ -86,6 +69,22 @@ interface MusicBrainzArtistSearch {
   count: number;
   created: string;
   offset: number;
+}
+
+/**
+ * Interface for MusicBrainz life span
+ */
+interface MusicBrainzLifeSpan {
+  begin: null | string;
+  ended: null | string;
+}
+
+/**
+ * Interface for MusicBrainz tag
+ */
+interface MusicBrainzTag {
+  count: number;
+  name: string;
 }
 
 /**
@@ -135,7 +134,7 @@ export async function getIdsFromMusicBrainz(musicbrainzId: string): Promise<Musi
  * @param artistName - The name of the artist to search for
  * @returns Promise resolving MusicBrainzArtist
  */
-export async function searchMusicBrainzArtistId(artistName: string): Promise<null | MusicBrainzArtist> {
+export async function searchMusicBrainzArtistId(artistName: string): Promise<MusicBrainzArtist | null> {
   try {
     const response = await musicbrainzClient.get("artist", {
       searchParams: {

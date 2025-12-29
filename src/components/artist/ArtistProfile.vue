@@ -15,7 +15,7 @@
         -
         <span v-if="artistMetas?.['life-span']?.begin">{{ artistMetas?.["life-span"]?.begin }}/</span>
         {{ artistMetas?.["life-span"]?.ended ? "inactive" : "active" }}
-        <span v-for="value in artistMetas?.tags">{{ value }}d</span>
+        <span v-for="value in artistMetas?.tags">{{ value.name }},</span>
       </span>
     </div>
   </div>
