@@ -84,18 +84,22 @@ export const useArtist = defineStore("artist", {
       try {
         const artist = await searchMusicBrainzArtistId(artistName);
 
-        // console.log("artist", artist);
+        console.log("tags", artist?.tags);
 
+        this.musicbrainzArtist = artist;
+        // if (artist && this.musicbrainzArtist) {
+        //   console.log("this.musicbrainzArtist", this.musicbrainzArtist);
+        // }
         // this.musicbrainzArtist = artist;
 
         if (!artist?.id) return;
 
-        const ids = await getIdsFromMusicBrainz(artist.id);
-        this.musicbrainzArtist = ids;
+        const artistFull = await getIdsFromMusicBrainz(artist.id);
+        // this.musicbrainzArtist = artistFull;
 
-        if (ids && ids.relations) {
+        if (artistFull && artistFull.relations) {
           // Extract Discogs ID
-          const discogsRelation = ids.relations.find(
+          const discogsRelation = artistFull.relations.find(
             (rel) => rel.type === "discogs" && rel["target-type"] === "url" && rel.url,
           );
 
@@ -109,7 +113,7 @@ export const useArtist = defineStore("artist", {
           }
 
           // Extract Wikidata ID
-          const wikidataRelation = ids.relations.find(
+          const wikidataRelation = artistFull.relations.find(
             (rel) => rel.type === "wikidata" && rel["target-type"] === "url" && rel.url,
           );
 
@@ -122,16 +126,6 @@ export const useArtist = defineStore("artist", {
             }
           }
         }
-
-        // // Return null if neither ID was found
-        // if (!discogsId && !wikidataId) {
-        //   return null;
-        // }
-
-        // return { discogsId, wikidataId };
-
-        // this.discogsId = ids?.discogsId ?? null;
-        // this.wikidataId = ids?.wikidataId ?? null;
 
         // Fetch artist data from Discogs if ID was found
         if (this.discogsId) {

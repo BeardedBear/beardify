@@ -15,6 +15,7 @@
         -
         <span v-if="artistMetas?.['life-span']?.begin">{{ artistMetas?.["life-span"]?.begin }}/</span>
         {{ artistMetas?.["life-span"]?.ended ? "inactive" : "active" }}
+        <span v-for="value in artistMetas?.tags">{{ value }}d</span>
       </span>
     </div>
   </div>
@@ -49,10 +50,16 @@ function getCountryFlagUrl(countryCode: string): string {
     return "";
   }
 
-  // Use flagcdn.com for reliable flag images
-  // Convert to lowercase as required by the API
+  // Use local flag-icons package for square flags (1x1 aspect ratio)
+  // Convert to lowercase as required by the package
   const code = countryCode.toLowerCase();
-  return `https://flagcdn.com/${code}.svg`;
+
+  // In development, serve from node_modules
+  // In production, files are copied to /flags/ by vite-plugin-static-copy
+  if (import.meta.env.DEV) {
+    return `/node_modules/flag-icons/flags/4x3/${code}.svg`;
+  }
+  return `/flags/${code}.svg`;
 }
 </script>
 
