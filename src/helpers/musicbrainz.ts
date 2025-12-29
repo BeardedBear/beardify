@@ -104,38 +104,11 @@ const musicbrainzClient = ky.create({
 });
 
 /**
- * Get Discogs ID for an artist by searching MusicBrainz by artist name
- * @param artistName - The name of the artist
- * @returns Promise resolving to the Discogs ID or null
- */
-// export async function getDiscogsIdByArtistName(artistName: string): Promise<null | string> {
-//   console.log("getDiscogsIdByArtistName");
-//   try {
-//     // First, search for the artist's ID in MusicBrainz
-//     const musicbrainzId = await searchMusicBrainzArtistId(artistName);
-
-//     if (!musicbrainzId) {
-//       return null;
-//     }
-
-//     // Then, get the Discogs ID from the MusicBrainz artist
-//     const result = await getIdsFromMusicBrainz(musicbrainzId);
-
-//     return result?.discogsId || null;
-//   } catch {
-//     return null;
-//   }
-// }
-
-/**
  * Get Discogs ID and Wikidata ID from MusicBrainz artist
  * @param musicbrainzId - The MusicBrainz ID of the artist
  * @returns Promise resolving to an object with discogsId and wikidataId, or null
  */
-export async function getIdsFromMusicBrainz(
-  musicbrainzId: string,
-): Promise<{ discogsId: string; wikidataId: string } | null> {
-  console.log("getIdsFromMusicBrainz");
+export async function getIdsFromMusicBrainz(musicbrainzId: string): Promise<MusicBrainzArtist | null> {
   try {
     const response = await musicbrainzClient.get(`artist/${musicbrainzId}`, {
       searchParams: {
@@ -146,47 +119,12 @@ export async function getIdsFromMusicBrainz(
 
     const data = await response.json<MusicBrainzArtist>();
 
-    let discogsId = "";
-    let wikidataId = "";
+    return data;
 
-    if (data.relations) {
-      // Extract Discogs ID
-      const discogsRelation = data.relations.find(
-        (rel) => rel.type === "discogs" && rel["target-type"] === "url" && rel.url,
-      );
+    // console.log("data", data);
 
-      if (discogsRelation && discogsRelation.url) {
-        // Extract Discogs ID from URL
-        // Example URL: https://www.discogs.com/artist/12345
-        const match = discogsRelation.url.resource.match(/\/artist\/(\d+)/);
-        if (match && match[1]) {
-          discogsId = match[1];
-        }
-      }
-
-      // Extract Wikidata ID
-      const wikidataRelation = data.relations.find(
-        (rel) => rel.type === "wikidata" && rel["target-type"] === "url" && rel.url,
-      );
-
-      if (wikidataRelation && wikidataRelation.url) {
-        // Extract Wikidata ID from URL
-        // Example URL: https://www.wikidata.org/wiki/Q1625046
-        const match = wikidataRelation.url.resource.match(/\/wiki\/(Q\d+)/);
-        if (match && match[1]) {
-          wikidataId = match[1];
-        }
-      }
-    }
-
-    // Return null if neither ID was found
-    if (!discogsId && !wikidataId) {
-      return null;
-    }
-
-    console.log("{ discogsId, wikidataId }", { discogsId, wikidataId });
-
-    return { discogsId, wikidataId };
+    // let discogsId = "";
+    // let wikidataId = "";
   } catch {
     return null;
   }
@@ -212,8 +150,6 @@ export async function searchMusicBrainzArtistId(artistName: string): Promise<nul
     if (data.artists && data.artists.length > 0) {
       return data.artists[0];
     }
-
-    console.log(data);
 
     return null;
   } catch {

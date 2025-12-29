@@ -10,7 +10,7 @@ import { getIdsFromMusicBrainz, searchMusicBrainzArtistId } from "@/helpers/musi
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { cleanUrl } from "@/helpers/urls";
 import { isEP, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
-import { getWikidataArtistByName, getWikipediaExtract } from "@/helpers/wikidata";
+import { getWikipediaExtract } from "@/helpers/wikidata";
 
 export const useArtist = defineStore("artist", {
   actions: {
@@ -55,10 +55,12 @@ export const useArtist = defineStore("artist", {
         this.artist = e.data;
 
         // Fetch Discogs ID from MusicBrainz
-        this.getIds(e.data.name);
+        await this.getIds(e.data.name);
 
+        if (this.wikidataId) {
+          this.getWikidataArtist(this.wikidataId);
+        }
         // Fetch Wikidata artist data
-        this.getWikidataArtist(e.data.name);
       } catch {
         // silent fail
       }
@@ -82,15 +84,54 @@ export const useArtist = defineStore("artist", {
       try {
         const artist = await searchMusicBrainzArtistId(artistName);
 
-        this.musicbrainzArtist = artist;
+        // console.log("artist", artist);
 
-        if (!artist?.id) {
-          return;
-        }
+        // this.musicbrainzArtist = artist;
+
+        if (!artist?.id) return;
 
         const ids = await getIdsFromMusicBrainz(artist.id);
-        this.discogsId = ids?.discogsId ?? null;
-        this.wikidataId = ids?.wikidataId ?? null;
+        this.musicbrainzArtist = ids;
+
+        if (ids && ids.relations) {
+          // Extract Discogs ID
+          const discogsRelation = ids.relations.find(
+            (rel) => rel.type === "discogs" && rel["target-type"] === "url" && rel.url,
+          );
+
+          if (discogsRelation && discogsRelation.url) {
+            // Extract Discogs ID from URL
+            // Example URL: https://www.discogs.com/artist/12345
+            const match = discogsRelation.url.resource.match(/\/artist\/(\d+)/);
+            if (match && match[1]) {
+              this.discogsId = match[1];
+            }
+          }
+
+          // Extract Wikidata ID
+          const wikidataRelation = ids.relations.find(
+            (rel) => rel.type === "wikidata" && rel["target-type"] === "url" && rel.url,
+          );
+
+          if (wikidataRelation && wikidataRelation.url) {
+            // Extract Wikidata ID from URL
+            // Example URL: https://www.wikidata.org/wiki/Q1625046
+            const match = wikidataRelation.url.resource.match(/\/wiki\/(Q\d+)/);
+            if (match && match[1]) {
+              this.wikidataId = match[1];
+            }
+          }
+        }
+
+        // // Return null if neither ID was found
+        // if (!discogsId && !wikidataId) {
+        //   return null;
+        // }
+
+        // return { discogsId, wikidataId };
+
+        // this.discogsId = ids?.discogsId ?? null;
+        // this.wikidataId = ids?.wikidataId ?? null;
 
         // Fetch artist data from Discogs if ID was found
         if (this.discogsId) {
@@ -220,18 +261,11 @@ export const useArtist = defineStore("artist", {
       }
     },
 
-    async getWikidataArtist(artistName: string) {
+    async getWikidataArtist(wikidataArtistId: string): Promise<void> {
+      if (!wikidataArtistId) return;
       try {
-        // First try to find by Spotify ID (more accurate)
-        // const wikidataId = await getWikidataIdBySpotifyId(spotifyId);
-
-        if (this.wikidataId) {
-          const { getWikidataArtist } = await import("@/helpers/wikidata");
-          this.wikidataArtist = await getWikidataArtist(this.wikidataId);
-        } else {
-          // Fallback to name search
-          this.wikidataArtist = await getWikidataArtistByName(artistName);
-        }
+        const { getWikidataArtist } = await import("@/helpers/wikidata");
+        this.wikidataArtist = await getWikidataArtist(wikidataArtistId);
 
         // Fetch Wikipedia extract if we have available languages
         const languages = this.wikidataArtist?.wikipediaLanguages || [];

@@ -5,9 +5,9 @@
         <strong>{{ artistMetas?.disambiguation }}</strong>
         from
         <strong>{{ artistMetas?.["begin-area"]?.name }}</strong>
-        {{ artistMetas?.country }} - {{ artistMetas?.["life-span"]?.begin }}/{{
-          artistMetas?.["life-span"]?.ended ?? "active"
-        }}
+        {{ artistMetas?.country }} -
+        <span v-if="artistMetas?.['life-span']?.begin">{{ artistMetas?.["life-span"]?.begin }}/</span>
+        {{ artistMetas?.["life-span"]?.ended ? "inactive" : "active" }}
       </span>
     </div>
   </div>

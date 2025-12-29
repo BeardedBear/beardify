@@ -142,7 +142,6 @@ export const useAuth = defineStore("auth", {
         async () => {
           try {
             await this.refresh();
-            console.log("Token auto-refreshed successfully");
           } catch (error) {
             console.error("Auto-refresh failed:", error);
             // Don't logout immediately on auto-refresh failure
