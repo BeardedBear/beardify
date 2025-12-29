@@ -4,8 +4,15 @@
       <span class="profile-text" :title="trimmedProfile === fullProfile ? undefined : fullProfile">
         <strong>{{ artistMetas?.disambiguation }}</strong>
         from
+        <img
+          v-if="artistMetas?.country"
+          :src="getCountryFlagUrl(artistMetas.country)"
+          :alt="artistMetas?.area?.name || artistMetas?.country"
+          :title="artistMetas?.area?.name || artistMetas?.country"
+          class="country-flag"
+        />
         <strong>{{ artistMetas?.["begin-area"]?.name }}</strong>
-        {{ artistMetas?.country }} -
+        -
         <span v-if="artistMetas?.['life-span']?.begin">{{ artistMetas?.["life-span"]?.begin }}/</span>
         {{ artistMetas?.["life-span"]?.ended ? "inactive" : "active" }}
       </span>
@@ -31,6 +38,22 @@ const trimmedProfile = computed(() => {
 });
 
 const artistMetas = computed(() => artistStore.musicbrainzArtist);
+
+/**
+ * Get flag image URL from ISO country code
+ * @param countryCode - ISO 3166-1 alpha-2 country code (e.g., "GB", "US", "FR")
+ * @returns Flag image URL
+ */
+function getCountryFlagUrl(countryCode: string): string {
+  if (!countryCode || countryCode.length !== 2) {
+    return "";
+  }
+
+  // Use flagcdn.com for reliable flag images
+  // Convert to lowercase as required by the API
+  const code = countryCode.toLowerCase();
+  return `https://flagcdn.com/${code}.svg`;
+}
 </script>
 
 <style lang="scss" scoped>
@@ -89,5 +112,13 @@ $transition-duration: 0.2s;
       text-decoration: underline;
     }
   }
+}
+
+.country-flag {
+  display: inline-block;
+  height: 0.8em;
+  margin: 0 0.2em;
+  vertical-align: middle;
+  width: auto;
 }
 </style>
