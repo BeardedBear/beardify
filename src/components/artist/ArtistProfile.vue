@@ -4,7 +4,7 @@
       <template v-if="artistTags && artistTags.length > 0">
         <span>
           <span v-for="value in artistTags.slice(0, 5)" class="tag">
-            {{ typeof value === 'string' ? value : value.name }}
+            {{ typeof value === "string" ? value : value.name }}
           </span>
         </span>
         <span>·</span>
@@ -43,7 +43,6 @@ const artistStore = useArtist();
 const artistMetas = computed(() => artistStore.musicbrainzArtist);
 const artistTags = computed(() => artistMetas.value?.tags || artistStore.artist.genres);
 
-
 /**
  * Get flag image URL from ISO country code
  * @param countryCode - ISO 3166-1 alpha-2 country code (e.g., "GB", "US", "FR")
@@ -79,14 +78,13 @@ $transition-duration: 0.2s;
   min-height: 1.5rem; // Reserve space for the text line height
 }
 
-.tag  {
+.tag {
   background-color: rgb(255 255 255 / 10%);
   border-radius: 0.25rem;
   margin-right: 0.25rem;
   padding: 0.1rem 0.3rem;
   text-transform: capitalize;
 }
-
 
 .profile-wrapper {
   align-items: center;
