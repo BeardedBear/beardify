@@ -2,35 +2,48 @@
   <div class="profile-container">
     <div class="profile-wrapper" :class="{ visible: artistTags.length }">
       <span v-if="artistTags && artistTags.length > 0">
-        <span v-for="value in artistTags" class="tag">
+        <span v-for="value in artistTags.slice(0, 5)" class="tag">
           {{ typeof value === 'string' ? value : value.name }}
         </span>
-        ·
       </span>
-      <span><img
-        v-if="artistMetas?.country"
-        :src="getCountryFlagUrl(artistMetas.country)"
-        :alt="artistMetas?.area?.name || artistMetas?.country"
-        :title="artistMetas?.area?.name || artistMetas?.country"
-        class="country-flag"
-      />
-      <strong>{{ artistMetas?.["begin-area"]?.name }}</strong></span>
-      ·
-      <span><span v-if="artistMetas?.['life-span']?.begin">{{ artistMetas?.["life-span"]?.begin }}</span>
-      /
-      <span>{{ artistMetas?.["life-span"]?.ended ? "inactive" : "active" }}</span></span>
+      <span>·</span>
+      <span :title="artistMetas?.area?.name || artistMetas?.country">
+        <img
+          v-if="artistMetas?.country"
+          :src="getCountryFlagUrl(artistMetas.country)"
+          :alt="artistMetas?.area?.name || artistMetas?.country"
+          class="country-flag"
+        />
+        <strong>{{ artistMetas?.["begin-area"]?.name }}</strong>
+      </span>
+      <span>·</span>
+      <span>
+        <template v-if="artistMetas?.['life-span']?.begin">
+          <span>{{ artistMetas?.["life-span"]?.begin }}</span>
+          <span>/</span>
+        </template>
+        <span>{{ artistMetas?.["life-span"]?.ended ? "Inactive" : "Active" }}</span>
+      </span>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const artistStore = useArtist();
 const artistMetas = computed(() => artistStore.musicbrainzArtist);
 const artistTags = computed(() => artistMetas.value?.tags || artistStore.artist.genres);
+
+onMounted(() => {
+  console.log('coucou', )
+});
+
+onUnmounted(() => {
+  console.log('byebye');
+});
 
 /**
  * Get flag image URL from ISO country code
@@ -61,14 +74,15 @@ function getCountryFlagUrl(countryCode: string): string {
 $transition-duration: 0.2s;
 
 .profile-container {
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
   min-height: 1.5rem; // Reserve space for the text line height
 }
 
 .tag  {
   background-color: rgb(255 255 255 / 10%);
   border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: bold;
   margin-right: 0.25rem;
   padding: 0.1rem 0.3rem;
   text-transform: capitalize;
