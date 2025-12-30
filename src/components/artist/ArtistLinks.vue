@@ -161,6 +161,34 @@ function getDiscogsSocialLinks(): SocialLink[] {
 }
 
 /**
+ * Extract social links from MusicBrainz relations
+ */
+function getMusicBrainzSocialLinks(): SocialLink[] {
+  const links: SocialLink[] = [];
+  const relations = artistStore.musicbrainzArtist?.relations;
+  if (!relations) return links;
+
+  for (const rel of relations) {
+    const resource = rel.url?.resource;
+    if (!resource) continue;
+    const url = extractUrl(resource) || resource;
+    // skip internal MusicBrainz links
+    if (url.includes("musicbrainz.org")) continue;
+
+    for (const { icon, name, pattern } of SOCIAL_PATTERNS) {
+      if (pattern.test(url)) {
+        if (!links.some((l) => l.name === name)) {
+          links.push({ icon, name, url });
+        }
+        break;
+      }
+    }
+  }
+
+  return links;
+}
+
+/**
  * Merge and deduplicate social links from Wikidata and Discogs
  */
 const socialLinks = computed<SocialLink[]>(() => {
@@ -172,6 +200,14 @@ const socialLinks = computed<SocialLink[]>(() => {
     linkMap.set(l.name, l);
   }
   for (const l of discogsLinks) {
+    if (!linkMap.has(l.name)) {
+      linkMap.set(l.name, l);
+    }
+  }
+
+  // Include MusicBrainz relations-derived social links
+  const musicbrainzLinks = getMusicBrainzSocialLinks();
+  for (const l of musicbrainzLinks) {
     if (!linkMap.has(l.name)) {
       linkMap.set(l.name, l);
     }
