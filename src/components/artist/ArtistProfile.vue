@@ -1,22 +1,24 @@
 <template>
   <div class="profile-container">
-    <div class="profile-wrapper" :class="{ visible: artistStore.discogsArtist?.profile }">
-      <span class="profile-text" :title="trimmedProfile === fullProfile ? undefined : fullProfile">
-        <strong>{{ artistMetas?.disambiguation }}</strong>
-        from
-        <img
-          v-if="artistMetas?.country"
-          :src="getCountryFlagUrl(artistMetas.country)"
-          :alt="artistMetas?.area?.name || artistMetas?.country"
-          :title="artistMetas?.area?.name || artistMetas?.country"
-          class="country-flag"
-        />
-        <strong>{{ artistMetas?.["begin-area"]?.name }}</strong>
-        -
-        <span v-if="artistMetas?.['life-span']?.begin">{{ artistMetas?.["life-span"]?.begin }}/</span>
-        {{ artistMetas?.["life-span"]?.ended ? "inactive" : "active" }}
-        <span v-for="value in artistMetas?.tags">{{ value.name }},</span>
+    <div class="profile-wrapper" :class="{ visible: artistTags.length }">
+      <span v-if="artistTags && artistTags.length > 0">
+        <span v-for="value in artistTags" class="tag">
+          {{ typeof value === 'string' ? value : value.name }}
+        </span>
+        ·
       </span>
+      <span><img
+        v-if="artistMetas?.country"
+        :src="getCountryFlagUrl(artistMetas.country)"
+        :alt="artistMetas?.area?.name || artistMetas?.country"
+        :title="artistMetas?.area?.name || artistMetas?.country"
+        class="country-flag"
+      />
+      <strong>{{ artistMetas?.["begin-area"]?.name }}</strong></span>
+      ·
+      <span><span v-if="artistMetas?.['life-span']?.begin">{{ artistMetas?.["life-span"]?.begin }}</span>
+      /
+      <span>{{ artistMetas?.["life-span"]?.ended ? "inactive" : "active" }}</span></span>
     </div>
   </div>
 </template>
@@ -24,21 +26,11 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import { parseDiscogsMarkup } from "@/helpers/discogs";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const artistStore = useArtist();
-const fullProfile = computed(() => artistStore.discogsArtist?.profile ?? "");
-
-const trimmedProfile = computed(() => {
-  if (!fullProfile.value) return "";
-  const maxLength = 120;
-  const cleanText = fullProfile.value.replace(/\s+/g, " ").trim();
-  const trimmedText = cleanText.length > maxLength ? cleanText.slice(0, maxLength).trimEnd() + "…" : cleanText;
-  return parseDiscogsMarkup(trimmedText);
-});
-
 const artistMetas = computed(() => artistStore.musicbrainzArtist);
+const artistTags = computed(() => artistMetas.value?.tags || artistStore.artist.genres);
 
 /**
  * Get flag image URL from ISO country code
@@ -72,6 +64,17 @@ $transition-duration: 0.2s;
   min-height: 1.5rem; // Reserve space for the text line height
 }
 
+.tag  {
+  background-color: rgb(255 255 255 / 10%);
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-right: 0.25rem;
+  padding: 0.1rem 0.3rem;
+  text-transform: capitalize;
+}
+
+
 .profile-wrapper {
   align-items: center;
   display: flex;
@@ -92,40 +95,10 @@ $transition-duration: 0.2s;
   }
 }
 
-.profile-text {
-  color: var(--font-color-light);
-  font-size: 0.9rem;
-  line-height: 1.4;
-  opacity: 0.5;
-
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(em) {
-    font-style: italic;
-  }
-
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(strong) {
-    font-weight: bold;
-  }
-
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(.discogs-link),
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(a) {
-    color: var(--primary-color-light);
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
-
 .country-flag {
   display: inline-block;
   height: 0.8em;
-  margin: 0 0.2em;
-  vertical-align: middle;
+  margin: 0 0.3rem;
   width: auto;
 }
 </style>
