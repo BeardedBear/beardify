@@ -117,13 +117,7 @@ export async function getIdsFromMusicBrainz(musicbrainzId: string): Promise<Musi
     });
 
     const data = await response.json<MusicBrainzArtist>();
-
     return data;
-
-    // console.log("data", data);
-
-    // let discogsId = "";
-    // let wikidataId = "";
   } catch {
     return null;
   }

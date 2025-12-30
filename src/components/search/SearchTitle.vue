@@ -13,7 +13,6 @@ defineProps<{
 <style lang="scss" scoped>
 @use "@/assets/scss/responsive" as responsive;
 
-
 .search-title {
   color: var(--primary-color);
   font-size: 0.9rem;

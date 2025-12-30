@@ -87,7 +87,7 @@ function extractSections(): void {
   }, 100);
 }
 
-function onSectionChange(_sectionId: string): void {
+function onSectionChange(): void {
   // The scroll is handled by the ArtistNavigation component
 }
 

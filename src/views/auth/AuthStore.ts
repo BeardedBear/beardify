@@ -59,7 +59,6 @@ export const useAuth = defineStore("auth", {
         // Start auto-refresh timer
         this.startAutoRefresh();
 
-        // Redirect to the original page or home
         router.push(referer || RouteName.Home);
       } catch (error) {
         console.error("Authentication failed:", error);
