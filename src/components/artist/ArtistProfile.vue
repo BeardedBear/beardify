@@ -1,28 +1,34 @@
 <template>
-  <div class="profile-container"">
+  <div class="profile-container">
     <div class="profile-wrapper" :class="{ visible: artistMetas }">
-      <span v-if="artistTags && artistTags.length > 0">
-        <span v-for="value in artistTags.slice(0, 5)" class="tag">
-          {{ typeof value === 'string' ? value : value.name }}
+      <template v-if="artistTags && artistTags.length > 0">
+        <span>
+          <span v-for="value in artistTags.slice(0, 5)" class="tag">
+            {{ typeof value === 'string' ? value : value.name }}
+          </span>
         </span>
-      </span>
-      <span>·</span>
-      <span :title="artistMetas?.area?.name || artistMetas?.country">
-        <img
-          v-if="artistMetas?.country"
-          :src="getCountryFlagUrl(artistMetas.country)"
-          :alt="artistMetas?.area?.name || artistMetas?.country"
-          class="country-flag"
-        />
-        <strong>{{ artistMetas?.["begin-area"]?.name }}</strong>
-      </span>
-      <span>·</span>
+        <span>·</span>
+      </template>
+      <template v-if="artistMetas?.area || artistMetas?.country">
+        <span :title="artistMetas?.area?.name || artistMetas?.country">
+          <img
+            v-if="artistMetas?.country"
+            :src="getCountryFlagUrl(artistMetas.country)"
+            :alt="artistMetas?.area?.name || artistMetas?.country"
+            class="country-flag"
+          />
+          <strong>{{ artistMetas?.["begin-area"]?.name }}</strong>
+        </span>
+        <span>·</span>
+      </template>
       <span>
         <template v-if="artistMetas?.['life-span']?.begin">
           <span>{{ artistMetas?.["life-span"]?.begin }}</span>
           <span>/</span>
         </template>
-        <span>{{ artistMetas?.["life-span"]?.ended ? "Inactive" : "Active" }}</span>
+        <span v-if="artistMetas?.['life-span']?.ended || artistMetas?.['life-span']?.begin">
+          <span>{{ artistMetas?.["life-span"]?.ended ? "Inactive" : "Active" }}</span>
+        </span>
       </span>
     </div>
   </div>
