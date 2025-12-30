@@ -99,6 +99,45 @@ const musicbrainzClient = ky.create({
 });
 
 /**
+ * Extracts external IDs (Discogs, Wikidata) from MusicBrainz relations
+ */
+export function extractExternalIds(artistFull: MusicBrainzArtist): {
+  discogsId: null | string;
+  wikidataId: null | string;
+} {
+  let discogsId: null | string = null;
+  let wikidataId: null | string = null;
+
+  if (artistFull.relations) {
+    // Extract Discogs ID
+    const discogsRelation = artistFull.relations.find(
+      (rel) => rel.type === "discogs" && rel["target-type"] === "url" && rel.url,
+    );
+
+    if (discogsRelation?.url) {
+      const match = discogsRelation.url.resource.match(/\/artist\/(\d+)/);
+      if (match?.[1]) {
+        discogsId = match[1];
+      }
+    }
+
+    // Extract Wikidata ID
+    const wikidataRelation = artistFull.relations.find(
+      (rel) => rel.type === "wikidata" && rel["target-type"] === "url" && rel.url,
+    );
+
+    if (wikidataRelation?.url) {
+      const match = wikidataRelation.url.resource.match(/\/wiki\/(Q\d+)/);
+      if (match?.[1]) {
+        wikidataId = match[1];
+      }
+    }
+  }
+
+  return { discogsId, wikidataId };
+}
+
+/**
  * Get Discogs ID and Wikidata ID from MusicBrainz artist
  * @param musicbrainzId - The MusicBrainz ID of the artist
  * @returns Promise resolving to the MusicBrainzArtist object with relations, or null

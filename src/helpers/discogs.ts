@@ -1,6 +1,7 @@
 import ky from "ky";
 
-import { DiscogsArtist, DiscogsArtistReleasesResponse } from "@/@types/Artist";
+import { DiscogsArtist, DiscogsArtistReleasesResponse, DiscogsRelease } from "@/@types/Artist";
+import { normalizeString } from "@/helpers/helper";
 
 /**
  * Discogs API configuration
@@ -115,6 +116,35 @@ export function parseDiscogsMarkup(text: string): string {
   result = result.replace(/\n/g, "<br>");
 
   return result;
+}
+
+/**
+ * Processes Discogs releases to create a map of title -> release type (EP, Album)
+ */
+
+export function processDiscogsReleases(releases: DiscogsRelease[]): Map<string, string> {
+  const releaseMap = new Map<string, string>();
+
+  releases.forEach((release) => {
+    const normalizedTitle = normalizeString(release.title);
+
+    if (release.type === "master" && release.format) {
+      const format = release.format.toLowerCase();
+
+      if (format.includes("ep")) {
+        releaseMap.set(normalizedTitle, "EP");
+      } else if (
+        format.includes("album") ||
+        format.includes("lp") ||
+        format.includes("vinyl") ||
+        format.includes("cd")
+      ) {
+        releaseMap.set(normalizedTitle, "Album");
+      }
+    }
+  });
+
+  return releaseMap;
 }
 
 /**
