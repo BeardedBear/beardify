@@ -4,7 +4,6 @@ import ky from "ky";
  * MusicBrainz API configuration
  */
 const MUSICBRAINZ_API_URL = "https://musicbrainz.org/ws/2/";
-const USER_AGENT = "Beardify/1.0.0 (https://github.com/BeardedBear/beardify)";
 
 /**
  * Interface for MusicBrainz artist
@@ -91,9 +90,6 @@ interface MusicBrainzTag {
  * Creates a MusicBrainz API client instance
  */
 const musicbrainzClient = ky.create({
-  headers: {
-    "User-Agent": USER_AGENT,
-  },
   prefixUrl: MUSICBRAINZ_API_URL,
   retry: {
     limit: 1,
@@ -105,47 +101,53 @@ const musicbrainzClient = ky.create({
 /**
  * Get Discogs ID and Wikidata ID from MusicBrainz artist
  * @param musicbrainzId - The MusicBrainz ID of the artist
- * @returns Promise resolving to an object with discogsId and wikidataId, or null
+ * @returns Promise resolving to the MusicBrainzArtist object with relations, or null
  */
 export async function getIdsFromMusicBrainz(musicbrainzId: string): Promise<MusicBrainzArtist | null> {
-  try {
-    const response = await musicbrainzClient.get(`artist/${musicbrainzId}`, {
-      searchParams: {
-        fmt: "json",
-        inc: "url-rels",
-      },
-    });
-
-    const data = await response.json<MusicBrainzArtist>();
-    return data;
-  } catch {
-    return null;
-  }
+  return fetchFromMusicBrainz<MusicBrainzArtist>(`artist/${musicbrainzId}`, {
+    inc: "url-rels",
+  });
 }
 
 /**
  * Search for an artist by name in MusicBrainz
  * @param artistName - The name of the artist to search for
- * @returns Promise resolving MusicBrainzArtist
+ * @returns Promise resolving to the first matching MusicBrainzArtist or null
  */
 export async function searchMusicBrainzArtistId(artistName: string): Promise<MusicBrainzArtist | null> {
+  const data = await fetchFromMusicBrainz<MusicBrainzArtistSearch>("artist", {
+    limit: 1,
+    query: `artist:"${artistName}"`,
+  });
+
+  if (data && data.artists && data.artists.length > 0) {
+    return data.artists[0];
+  }
+
+  return null;
+}
+
+/**
+ * Generic fetch function for MusicBrainz API
+ * @param path - API endpoint path
+ * @param searchParams - Query parameters
+ * @returns Promise resolving to the requested data type or null
+ */
+async function fetchFromMusicBrainz<T>(
+  path: string,
+  searchParams: Record<string, number | string> = {},
+): Promise<null | T> {
   try {
-    const response = await musicbrainzClient.get("artist", {
+    const response = await musicbrainzClient.get(path, {
       searchParams: {
-        fmt: "json",
-        limit: 1,
-        query: `artist:"${artistName}"`,
+        fmt: "json", // Always request JSON format
+        ...searchParams,
       },
     });
 
-    const data = await response.json<MusicBrainzArtistSearch>();
-
-    if (data.artists && data.artists.length > 0) {
-      return data.artists[0];
-    }
-
-    return null;
-  } catch {
+    return await response.json<T>();
+  } catch (error) {
+    console.error(`Error fetching MusicBrainz data from ${path}:`, error);
     return null;
   }
 }
