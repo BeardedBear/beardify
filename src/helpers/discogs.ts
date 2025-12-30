@@ -17,7 +17,6 @@ const LINK_ATTRS = 'target="_blank" rel="noopener noreferrer" class="discogs-lin
 
 /**
  * Discogs entity types configuration
- * Maps entity type letter to URL path and display text
  */
 const DISCOGS_ENTITIES: Record<string, { path: string; searchType: string; text: string }> = {
   a: { path: "artist", searchType: "artist", text: "artist" },
@@ -57,20 +56,7 @@ const discogsClient = ky.create({
  * @returns Promise resolving to the full DiscogsArtist object or null
  */
 export async function getDiscogsArtist(discogsId: string): Promise<DiscogsArtist | null> {
-  try {
-    if (!DISCOGS_TOKEN) {
-      console.warn("Discogs token not configured");
-      return null;
-    }
-
-    const response = await discogsClient.get(`artists/${discogsId}`);
-    const data = await response.json<DiscogsArtist>();
-
-    return data;
-  } catch (error) {
-    console.error("Error fetching Discogs artist:", error);
-    return null;
-  }
+  return fetchFromDiscogs<DiscogsArtist>(`artists/${discogsId}`);
 }
 
 /**
@@ -85,27 +71,12 @@ export async function getDiscogsArtistReleases(
   page = 1,
   perPage = 100,
 ): Promise<DiscogsArtistReleasesResponse | null> {
-  try {
-    if (!DISCOGS_TOKEN) {
-      console.warn("Discogs token not configured");
-      return null;
-    }
-
-    const response = await discogsClient.get(`artists/${discogsId}/releases`, {
-      searchParams: {
-        page: page.toString(),
-        per_page: perPage.toString(),
-        sort: "year",
-        sort_order: "desc",
-      },
-    });
-    const data = await response.json<DiscogsArtistReleasesResponse>();
-
-    return data;
-  } catch (error) {
-    console.error("Error fetching Discogs artist releases:", error);
-    return null;
-  }
+  return fetchFromDiscogs<DiscogsArtistReleasesResponse>(`artists/${discogsId}/releases`, {
+    page: page.toString(),
+    per_page: perPage.toString(),
+    sort: "year",
+    sort_order: "desc",
+  });
 }
 
 /**
@@ -118,10 +89,7 @@ export async function getDiscogsArtistReleases(
  * @returns HTML string with converted markup
  */
 export function parseDiscogsMarkup(text: string): string {
-  let result = text;
-
-  // Escape HTML to prevent XSS
-  result = result.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  let result = escapeHtml(text);
 
   // Apply text formatting
   for (const { pattern, replacement } of TEXT_FORMATS) {
@@ -165,4 +133,32 @@ function createDiscogsSearchLink(type: string, name: string): string {
   const entity = DISCOGS_ENTITIES[type.toLowerCase()];
   if (!entity) return `[${type}=${name}]`;
   return `<a href="${DISCOGS_BASE_URL}/search/?q=${encodeURIComponent(name)}&type=${entity.searchType}" ${LINK_ATTRS}>${name}</a>`;
+}
+
+/**
+ * Helper to escape HTML characters
+ */
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+/**
+ * Generic fetch function for Discogs API
+ * @param path - API endpoint path
+ * @param searchParams - Query parameters
+ * @returns Promise resolving to the requested data type or null
+ */
+async function fetchFromDiscogs<T>(path: string, searchParams?: Record<string, string>): Promise<null | T> {
+  if (!DISCOGS_TOKEN) {
+    console.warn("Discogs token not configured");
+    return null;
+  }
+
+  try {
+    const response = await discogsClient.get(path, { searchParams });
+    return await response.json<T>();
+  } catch (error) {
+    console.error(`Error fetching Discogs data from ${path}:`, error);
+    return null;
+  }
 }
