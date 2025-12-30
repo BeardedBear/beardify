@@ -1,6 +1,6 @@
 <template>
-  <div class="profile-container">
-    <div class="profile-wrapper" :class="{ visible: artistTags.length }">
+  <div class="profile-container"">
+    <div class="profile-wrapper" :class="{ visible: artistMetas }">
       <span v-if="artistTags && artistTags.length > 0">
         <span v-for="value in artistTags.slice(0, 5)" class="tag">
           {{ typeof value === 'string' ? value : value.name }}
@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted } from "vue";
+import { computed } from "vue";
 
 import { useArtist } from "@/views/artist/ArtistStore";
 
@@ -37,13 +37,6 @@ const artistStore = useArtist();
 const artistMetas = computed(() => artistStore.musicbrainzArtist);
 const artistTags = computed(() => artistMetas.value?.tags || artistStore.artist.genres);
 
-onMounted(() => {
-  console.log('coucou', )
-});
-
-onUnmounted(() => {
-  console.log('byebye');
-});
 
 /**
  * Get flag image URL from ISO country code

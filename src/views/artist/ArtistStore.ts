@@ -111,6 +111,7 @@ export const useArtist = defineStore("artist", {
     },
 
     async getIds(artistName: string) {
+      this.musicbrainzArtist = null;
       try {
         const artist = await searchMusicBrainzArtistId(artistName);
 
