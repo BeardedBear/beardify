@@ -8,9 +8,9 @@ import { defaultPlaybackState, Player } from "@/@types/Player";
 import { Track } from "@/@types/Track";
 import { instance } from "@/api";
 import { useNotification } from "@/components/notification/NotificationStore";
+import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
 import { createSpotifyPlayer } from "@/spotify";
-import { isTouchDevice } from "@/helpers/isTouchDevice";
 
 // Heartbeat interval in milliseconds (4 minutes)
 const HEARTBEAT_INTERVAL = 4 * 60 * 1000;
