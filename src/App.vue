@@ -10,6 +10,7 @@
       </div>
     </div>
     <Player key="player" />
+    <PlayerSlideUp />
     <Notification />
     <Frame />
     <MinimizedWindows />
@@ -26,6 +27,7 @@ import Frame from "@/components/frame/FrameIndex.vue";
 import MinimizedWindows from "@/components/minimized/MinimizedWindows.vue";
 import Notification from "@/components/notification/NotificationIndex.vue";
 import Player from "@/components/player/PlayerIndex.vue";
+import PlayerSlideUp from "@/components/player/PlayerSlideUp.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import MobileHeader from "@/components/sidebar/MobileHeader.vue";
 import Sidebar from "@/components/sidebar/SidebarIndex.vue";

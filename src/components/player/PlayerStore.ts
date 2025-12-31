@@ -136,6 +136,10 @@ export const usePlayer = defineStore("player", {
       }
     },
 
+    closePanel(): void {
+      this.panelOpened = false;
+    },
+
     closeQueue(): void {
       this.queueOpened = false;
     },
@@ -223,6 +227,11 @@ export const usePlayer = defineStore("player", {
 
     next(): void {
       instance().post("me/player/next");
+    },
+
+    // Slide-up panel controls
+    openPanel(): void {
+      this.panelOpened = true;
     },
 
     openQueue(): void {
@@ -313,6 +322,10 @@ export const usePlayer = defineStore("player", {
       this.getDeviceList();
     },
 
+    togglePanel(): void {
+      this.panelOpened = !this.panelOpened;
+    },
+
     toggleRepeat(): void {
       if (this.currentlyPlaying.repeat_state === "off") {
         (async (): Promise<void> => {
@@ -380,6 +393,7 @@ export const usePlayer = defineStore("player", {
     heartbeatInterval: null,
     isSettingDevice: false,
     lastRequestedDeviceId: null,
+    panelOpened: false,
     playerState: defaultPlaybackState,
     queue: [],
     queueOpened: false,
