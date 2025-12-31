@@ -12,13 +12,7 @@
       @mouseenter="playerStore.getDeviceList()"
     >
       <span>
-        <i
-          :class="deviceIconClass(playerStore.devices.activeDevice?.type)"
-          :title="playerStore.devices.activeDevice?.type"
-          role="img"
-          :aria-label="playerStore.devices.activeDevice?.type"
-          aria-hidden="false"
-        ></i>
+        <DeviceTypeIcon :type="playerStore.devices.activeDevice?.type" />
         {{ playerStore.devices.activeDevice.name }}
       </span>
     </ButtonIndex>
@@ -44,13 +38,7 @@
         :aria-current="device.id === playerStore.devices.activeDevice.id"
       >
         <span>
-          <i
-            :class="deviceIconClass(device.type)"
-            :title="device.type"
-            role="img"
-            :aria-label="device.type"
-            aria-hidden="false"
-          ></i>
+          <DeviceTypeIcon :type="device.type" />
           {{ device.name }}
         </span>
         <LoadingDots
@@ -76,8 +64,8 @@
 import { onClickOutside } from "@vueuse/core";
 import { computed, ref } from "vue";
 
-import type { DeviceType } from "@/@types/Device";
 import { usePlayer } from "@/components/player/PlayerStore";
+import DeviceTypeIcon from "@/components/player/device/DeviceType.vue";
 import QueuedTracks from "@/components/player/device/QueuedTracks.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import LoadingDots from "@/components/ui/LoadingDots.vue";
@@ -87,10 +75,6 @@ const deviceListFiltered = computed(() => playerStore.devices.list.sort((a, b) =
 const showList = ref(false);
 const devicesRef = ref(null);
 
-function deviceIconClass(type?: DeviceType | null):string[] {
-  const t = (type ?? "unknown").replace(/_/g, "-").toLowerCase();
-  return ["device-type", `icon-${t}`];
-}
 
 function toggleList() {
   playerStore.getDeviceList();
@@ -182,17 +166,5 @@ $gap-list: 10px;
   vertical-align: middle;
 }
 
-.device-type {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  display: inline-block;
-  font-size: 1.1rem; // fallback for glyphs if no SVG provided
-  height: 1.2rem;
-  line-height: 1;
-  margin-right: 0.6rem;
-  opacity: 0.95;
-  vertical-align: middle;
-  width: 1.2rem;
-}
+
 </style>
