@@ -32,7 +32,7 @@
             <span v-if="!artistMetas['life-span'].end">
               {{ artistMetas?.["life-span"]?.ended ? " / Inactive" : " / Active" }}
             </span>
-            <span v-else>/ {{ artistMetas["life-span"].end?.split("-")[0] }}</span>
+            <span v-else>&nbsp;/ {{ artistMetas["life-span"].end?.split("-")[0] }}</span>
           </template>
         </span>
       </template>
