@@ -1,11 +1,13 @@
 <template>
   <template v-if="usePlayer().playerState.track_window.current_track.id">
-    <div class="meta" @click.stop="openSlideUp">
-      <div class="area-metas"><What /></div>
-      <div class="area-controls"><Controls /></div>
-      <div class="area-device"><Device /></div>
+    <div class="surface" @click.capture="onSurfaceClick">
+      <div class="meta">
+        <div class="area-metas"><What /></div>
+        <div class="area-controls"><Controls /></div>
+        <div class="area-device"><Device /></div>
+      </div>
+      <SeekBar />
     </div>
-    <SeekBar />
   </template>
   <Loader v-else />
 </template>
@@ -21,9 +23,20 @@ import { isTouchDevice } from "@/helpers/isTouchDevice";
 
 const playerStore = usePlayer();
 
-function openSlideUp(): void {
+function onSurfaceClick(event: MouseEvent): void {
   // Only open the slide-up on touch devices (mobile)
   if (!isTouchDevice()) return;
+
+  const target = (event?.target as HTMLElement) || null;
+  if (!target) return;
+
+  // Elements that should be allowed to handle the click themselves
+  const interactiveSelector = 'button, a, input, textarea, select, .controls, .btns, .control-button, .area-device, .time, .progress-wrap, .progress, .seek, .bar';
+  if (target.closest(interactiveSelector)) return;
+
+  // We're in capture phase: prevent the click from reaching target handlers
+  event.preventDefault();
+  event.stopPropagation();
 
   playerStore.openPanel();
 }
@@ -47,6 +60,12 @@ function openSlideUp(): void {
     grid-template-areas: "controls metas device";
     grid-template-columns: auto 1fr auto;
     padding: 0.8rem;
+  }
+}
+
+.surface {
+  @include responsive.mobile {
+    cursor: pointer;
   }
 }
 

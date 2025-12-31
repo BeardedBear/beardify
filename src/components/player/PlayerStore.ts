@@ -10,6 +10,7 @@ import { instance } from "@/api";
 import { useNotification } from "@/components/notification/NotificationStore";
 import { notification } from "@/helpers/notifications";
 import { createSpotifyPlayer } from "@/spotify";
+import { isTouchDevice } from "@/helpers/isTouchDevice";
 
 // Heartbeat interval in milliseconds (4 minutes)
 const HEARTBEAT_INTERVAL = 4 * 60 * 1000;
@@ -230,7 +231,9 @@ export const usePlayer = defineStore("player", {
     },
 
     // Slide-up panel controls
+    // Opening is restricted to touch devices (mobile) to avoid showing the mobile-only slide-up on desktop
     openPanel(): void {
+      if (!isTouchDevice()) return;
       this.panelOpened = true;
     },
 
@@ -323,6 +326,8 @@ export const usePlayer = defineStore("player", {
     },
 
     togglePanel(): void {
+      // Prevent toggling open on non-touch devices; allow closing always
+      if (!this.panelOpened && !isTouchDevice()) return;
       this.panelOpened = !this.panelOpened;
     },
 
