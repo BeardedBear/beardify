@@ -7,9 +7,9 @@
             {{ typeof value === "string" ? value : value.name }}
           </span>
         </span>
-        <span>·</span>
       </template>
       <template v-if="artistMetas?.area || artistMetas?.country">
+        <span>·</span>
         <span :title="artistMetas?.area?.name || artistMetas?.country">
           <img
             v-if="artistMetas?.country"
@@ -111,6 +111,7 @@ $transition-duration: 0.2s;
 }
 
 .country-flag {
+  border-radius: 0.1rem;
   display: inline-block;
   height: 0.8em;
   margin: 0 0.3rem;
