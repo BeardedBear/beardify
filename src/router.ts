@@ -13,7 +13,6 @@ import ReleaseListPage from "@/views/releases/ReleaseListPage.vue";
 import UserPage from "@/views/user/UserPage.vue";
 
 export enum RouteName {
-  About = "/about/",
   Album = "/album/",
   Artist = "/artist/",
   Auth = "/auth/",

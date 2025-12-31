@@ -54,6 +54,7 @@ import { RouterLink } from "vue-router";
 
 import { PlaylistTrack } from "@/@types/Playlist";
 import Actions from "@/components/playlist/PlaylistActions.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 import { timecodeWithUnits } from "@/helpers/date";

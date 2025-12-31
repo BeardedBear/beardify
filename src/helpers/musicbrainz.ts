@@ -4,53 +4,93 @@ import ky from "ky";
  * MusicBrainz API configuration
  */
 const MUSICBRAINZ_API_URL = "https://musicbrainz.org/ws/2/";
-const USER_AGENT = "Beardify/1.0.0 (https://github.com/BeardedBear/beardify)";
 
 /**
- * Interface for MusicBrainz artist details with relations
+ * Interface for MusicBrainz artist
  */
-interface MusicBrainzArtist {
+export interface MusicBrainzArtist {
+  area?: MusicBrainzArea;
+  "begin-area"?: MusicBrainzArea;
+  country?: string;
+  disambiguation?: string;
   id: string;
+  "life-span"?: MusicBrainzLifeSpan;
   name: string;
-  relations?: Array<{
-    "target-type": string;
-    type: string;
-    url?: {
-      id: string;
-      resource: string;
-    };
-  }>;
+  relations?: MusicBrainzArtistRelation[];
+  score?: number;
+  "sort-name": string;
+  tags?: MusicBrainzTag[];
+  type: "Character" | "Choir" | "Group" | "Orchestra" | "Person" | string;
+  "type-id": string;
+}
+
+/**
+ * Interface for MusicBrainz area/location
+ */
+interface MusicBrainzArea {
+  id: string;
+  "life-span": {
+    ended: null | string;
+  };
+  name: string;
+  "sort-name": string;
+  type: string;
+  "type-id": string;
+}
+
+/**
+ * Interface for MusicBrainz artist relation
+ */
+interface MusicBrainzArtistRelation {
+  "attribute-ids": Record<string, string>;
+  "attribute-values": Record<string, string>;
+  attributes: unknown[];
+  begin: null | string;
+  direction: string;
+  end: null | string;
+  ended: boolean;
+  "source-credit": string;
+  "target-credit": string;
+  "target-type": string;
+  type: "allmusic" | "discogs" | "official homepage" | "wikidata" | string;
+  "type-id": string;
+  url?: {
+    id: string;
+    resource: string;
+  };
 }
 
 /**
  * Interface for MusicBrainz artist search results
  */
 interface MusicBrainzArtistSearch {
-  artists: Array<{
-    id: string;
-    name: string;
-    relations?: Array<{
-      "target-type": string;
-      type: string;
-      url?: {
-        id: string;
-        resource: string;
-      };
-    }>;
-    score: number;
-  }>;
+  artists: MusicBrainzArtist[];
   count: number;
   created: string;
   offset: number;
 }
 
 /**
+ * Interface for MusicBrainz life span
+ */
+interface MusicBrainzLifeSpan {
+  begin: null | string;
+  end: null | string;
+  ended: null | string;
+}
+
+/**
+ * Interface for MusicBrainz tag
+ */
+interface MusicBrainzTag {
+  count: number;
+  name: string;
+}
+
+/**
  * Creates a MusicBrainz API client instance
  */
 const musicbrainzClient = ky.create({
-  headers: {
-    "User-Agent": USER_AGENT,
-  },
   prefixUrl: MUSICBRAINZ_API_URL,
   retry: {
     limit: 1,
@@ -60,88 +100,94 @@ const musicbrainzClient = ky.create({
 });
 
 /**
- * Get Discogs ID for an artist by searching MusicBrainz by artist name
- * @param artistName - The name of the artist
- * @returns Promise resolving to the Discogs ID or null
+ * Extracts external IDs (Discogs, Wikidata) from MusicBrainz relations
  */
-export async function getDiscogsIdByArtistName(artistName: string): Promise<null | string> {
-  try {
-    // First, search for the artist in MusicBrainz
-    const musicbrainzId = await searchMusicBrainzArtist(artistName);
+export function extractExternalIds(artistFull: MusicBrainzArtist): {
+  discogsId: null | string;
+  wikidataId: null | string;
+} {
+  let discogsId: null | string = null;
+  let wikidataId: null | string = null;
 
-    if (!musicbrainzId) {
-      return null;
-    }
+  if (artistFull.relations) {
+    // Extract Discogs ID
+    const discogsRelation = artistFull.relations.find(
+      (rel) => rel.type === "discogs" && rel["target-type"] === "url" && rel.url,
+    );
 
-    // Then, get the Discogs ID from the MusicBrainz artist
-    const discogsId = await getDiscogsIdFromMusicBrainz(musicbrainzId);
-
-    return discogsId;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Get Discogs ID from MusicBrainz artist
- * @param musicbrainzId - The MusicBrainz ID of the artist
- * @returns Promise resolving to the Discogs ID or null
- */
-export async function getDiscogsIdFromMusicBrainz(musicbrainzId: string): Promise<null | string> {
-  try {
-    const response = await musicbrainzClient.get(`artist/${musicbrainzId}`, {
-      searchParams: {
-        fmt: "json",
-        inc: "url-rels",
-      },
-    });
-
-    const data = await response.json<MusicBrainzArtist>();
-
-    if (data.relations) {
-      const discogsRelation = data.relations.find(
-        (rel) => rel.type === "discogs" && rel["target-type"] === "url" && rel.url,
-      );
-
-      if (discogsRelation && discogsRelation.url) {
-        // Extract Discogs ID from URL
-        // Example URL: https://www.discogs.com/artist/12345
-        const match = discogsRelation.url.resource.match(/\/artist\/(\d+)/);
-        if (match && match[1]) {
-          return match[1];
-        }
+    if (discogsRelation?.url) {
+      const match = discogsRelation.url.resource.match(/\/artist\/(\d+)/);
+      if (match?.[1]) {
+        discogsId = match[1];
       }
     }
 
-    return null;
-  } catch {
-    return null;
+    // Extract Wikidata ID
+    const wikidataRelation = artistFull.relations.find(
+      (rel) => rel.type === "wikidata" && rel["target-type"] === "url" && rel.url,
+    );
+
+    if (wikidataRelation?.url) {
+      const match = wikidataRelation.url.resource.match(/\/wiki\/(Q\d+)/);
+      if (match?.[1]) {
+        wikidataId = match[1];
+      }
+    }
   }
+
+  return { discogsId, wikidataId };
+}
+
+/**
+ * Get Discogs ID and Wikidata ID from MusicBrainz artist
+ * @param musicbrainzId - The MusicBrainz ID of the artist
+ * @returns Promise resolving to the MusicBrainzArtist object with relations, or null
+ */
+export async function getIdsFromMusicBrainz(musicbrainzId: string): Promise<MusicBrainzArtist | null> {
+  return fetchFromMusicBrainz<MusicBrainzArtist>(`artist/${musicbrainzId}`, {
+    inc: "url-rels",
+  });
 }
 
 /**
  * Search for an artist by name in MusicBrainz
  * @param artistName - The name of the artist to search for
- * @returns Promise resolving to the MusicBrainz artist ID or null
+ * @returns Promise resolving to the first matching MusicBrainzArtist or null
  */
-export async function searchMusicBrainzArtist(artistName: string): Promise<null | string> {
+export async function searchMusicBrainzArtistId(artistName: string): Promise<MusicBrainzArtist | null> {
+  const data = await fetchFromMusicBrainz<MusicBrainzArtistSearch>("artist", {
+    limit: 1,
+    query: `artist:"${artistName}"`,
+  });
+
+  if (data && data.artists && data.artists.length > 0) {
+    return data.artists[0];
+  }
+
+  return null;
+}
+
+/**
+ * Generic fetch function for MusicBrainz API
+ * @param path - API endpoint path
+ * @param searchParams - Query parameters
+ * @returns Promise resolving to the requested data type or null
+ */
+async function fetchFromMusicBrainz<T>(
+  path: string,
+  searchParams: Record<string, number | string> = {},
+): Promise<null | T> {
   try {
-    const response = await musicbrainzClient.get("artist", {
+    const response = await musicbrainzClient.get(path, {
       searchParams: {
-        fmt: "json",
-        limit: 1,
-        query: `artist:"${artistName}"`,
+        fmt: "json", // Always request JSON format
+        ...searchParams,
       },
     });
 
-    const data = await response.json<MusicBrainzArtistSearch>();
-
-    if (data.artists && data.artists.length > 0) {
-      return data.artists[0].id;
-    }
-
-    return null;
-  } catch {
+    return await response.json<T>();
+  } catch (error) {
+    console.error(`Error fetching MusicBrainz data from ${path}:`, error);
     return null;
   }
 }

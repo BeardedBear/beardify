@@ -1,3 +1,5 @@
+import type { MusicBrainzArtist } from "@/helpers/musicbrainz";
+
 import { AlbumSimplified } from "./Album";
 import { Image } from "./Image";
 import { ExternalUrls } from "./Misc";
@@ -32,10 +34,12 @@ export interface ArtistPage {
   eps: AlbumSimplified[];
   followStatus: boolean | undefined;
   headerHeight: number;
+  musicbrainzArtist: MusicBrainzArtist | null;
   relatedArtists: RelatedArtists;
   singles: AlbumSimplified[];
   topTracks: ArtistTopTracks;
   wikidataArtist: null | WikidataArtist;
+  wikidataId: null | string;
   wikipediaExtract: null | string;
   wikipediaLanguage: string;
 }

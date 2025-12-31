@@ -11,11 +11,17 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/responsive" as responsive;
+
 .search-title {
   color: var(--primary-color);
   font-size: 0.9rem;
   font-weight: bold;
   margin: 0 0 1rem;
   text-transform: uppercase;
+
+  @include responsive.mobile {
+    padding: 0.5rem;
+  }
 }
 </style>

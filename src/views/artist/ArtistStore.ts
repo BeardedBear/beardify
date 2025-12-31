@@ -5,12 +5,13 @@ import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "@/@types/Ar
 import { defaultArtist } from "@/@types/Defaults";
 import { Paging } from "@/@types/Paging";
 import { instance } from "@/api";
-import { getDiscogsArtist, getDiscogsArtistReleases } from "@/helpers/discogs";
-import { getDiscogsIdByArtistName } from "@/helpers/musicbrainz";
+import { getDiscogsArtist, getDiscogsArtistReleases, processDiscogsReleases } from "@/helpers/discogs";
+import { normalizeString } from "@/helpers/helper";
+import { extractExternalIds, getIdsFromMusicBrainz, searchMusicBrainzArtistId } from "@/helpers/musicbrainz";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { cleanUrl } from "@/helpers/urls";
 import { isEP, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
-import { getWikidataArtistByName, getWikidataIdBySpotifyId, getWikipediaExtract } from "@/helpers/wikidata";
+import { getWikipediaExtract } from "@/helpers/wikidata";
 
 export const useArtist = defineStore("artist", {
   actions: {
@@ -35,30 +36,41 @@ export const useArtist = defineStore("artist", {
     async getAlbums(url: string) {
       try {
         const cleanedUrl = cleanUrl(url);
-        const e = await instance().get<Paging<AlbumSimplified>>(cleanedUrl);
-        const cleanFromOtherMarkets = e.data.items.filter((album: AlbumSimplified) =>
-          album.available_markets.includes("FR"),
-        );
-        const lives = cleanFromOtherMarkets.filter((album: AlbumSimplified) => useCheckLiveAlbum(album.name));
-        const albums = cleanFromOtherMarkets.filter((album: AlbumSimplified) => !useCheckLiveAlbum(album.name));
+        const { data } = await instance().get<Paging<AlbumSimplified>>(cleanedUrl);
 
-        this.albums = removeDuplicatesAlbums(this.albums.concat(albums));
-        this.albumsLive = removeDuplicatesAlbums(this.albumsLive.concat(lives));
-        if (e.data.next) await this.getAlbums(e.data.next);
+        const frenchMarketAlbums = data.items.filter((album) => album.available_markets.includes("FR"));
+
+        const lives: AlbumSimplified[] = [];
+        const albums: AlbumSimplified[] = [];
+
+        frenchMarketAlbums.forEach((album) => {
+          if (useCheckLiveAlbum(album.name)) {
+            lives.push(album);
+          } else {
+            albums.push(album);
+          }
+        });
+
+        this.albums = removeDuplicatesAlbums([...this.albums, ...albums]);
+        this.albumsLive = removeDuplicatesAlbums([...this.albumsLive, ...lives]);
+
+        if (data.next) await this.getAlbums(data.next);
       } catch {
         // silent fail
       }
     },
+
     async getArtist(artistId: string) {
       try {
-        const e = await instance().get<Artist>(`artists/${artistId}`);
-        this.artist = e.data;
+        const { data } = await instance().get<Artist>(`artists/${artistId}`);
+        this.artist = data;
 
-        // Fetch Discogs ID from MusicBrainz
-        this.getDiscogsId(e.data.name);
+        // Fetch external IDs and data
+        await this.getIds(data.name);
 
-        // Fetch Wikidata artist data
-        this.getWikidataArtist(artistId, e.data.name);
+        if (this.wikidataId) {
+          this.getWikidataArtist(this.wikidataId);
+        }
       } catch {
         // silent fail
       }
@@ -69,7 +81,6 @@ export const useArtist = defineStore("artist", {
         const artist = await getDiscogsArtist(discogsId);
         this.discogsArtist = artist;
 
-        // Fetch releases after getting artist data
         if (artist) {
           this.getDiscogsReleases(discogsId);
         }
@@ -78,73 +89,57 @@ export const useArtist = defineStore("artist", {
       }
     },
 
-    async getDiscogsId(artistName: string) {
-      try {
-        const discogsId = await getDiscogsIdByArtistName(artistName);
-        this.discogsId = discogsId;
-
-        // Fetch artist data from Discogs if ID was found
-        if (discogsId) {
-          this.getDiscogsArtist(discogsId);
-        }
-      } catch {
-        this.discogsId = null;
-      }
-    },
-
     async getDiscogsReleases(discogsId: string) {
       try {
         const releasesData = await getDiscogsArtistReleases(discogsId);
 
         if (releasesData) {
-          // Create a Map to store release type info by album title (normalized)
-          const releaseMap = new Map<string, string>();
-
-          releasesData.releases.forEach((release) => {
-            // Normalize title for matching (remove special chars, lowercase, trim)
-            const normalizedTitle = release.title
-              .toLowerCase()
-              .replace(/[^\w\s]/g, "")
-              .trim();
-
-            // Only store if it's a master release and contains format info
-            if (release.type === "master" && release.format) {
-              const format = release.format.toLowerCase();
-
-              // Detect EP or Album based on format string
-              if (format.includes("ep")) {
-                releaseMap.set(normalizedTitle, "EP");
-              } else if (
-                format.includes("album") ||
-                format.includes("lp") ||
-                format.includes("vinyl") ||
-                format.includes("cd")
-              ) {
-                releaseMap.set(normalizedTitle, "Album");
-              }
-            }
-          });
-
-          this.discogsReleases = releaseMap;
+          this.discogsReleases = processDiscogsReleases(releasesData.releases);
         }
-      } catch (error) {
-        console.error("Error fetching Discogs releases:", error);
-      }
-    },
-
-    async getFollowStatus(artistId: string) {
-      try {
-        const e = await instance().get<boolean[]>(`me/following/contains?type=artist&ids=${artistId}`);
-        this.followStatus = e.data.pop();
       } catch {
         // silent fail
       }
     },
 
+    async getFollowStatus(artistId: string) {
+      try {
+        const { data } = await instance().get<boolean[]>(`me/following/contains?type=artist&ids=${artistId}`);
+        this.followStatus = data[0] ?? false;
+      } catch {
+        // silent fail
+      }
+    },
+
+    async getIds(artistName: string) {
+      this.musicbrainzArtist = null;
+      try {
+        const artist = await searchMusicBrainzArtistId(artistName);
+
+        if (!artist?.id) return;
+
+        const artistFull = await getIdsFromMusicBrainz(artist.id);
+        if (!artistFull) return;
+
+        this.musicbrainzArtist = { ...artist, ...artistFull };
+
+        const { discogsId, wikidataId } = extractExternalIds(artistFull);
+
+        if (discogsId) this.discogsId = discogsId;
+        if (wikidataId) this.wikidataId = wikidataId;
+
+        if (this.discogsId) {
+          this.getDiscogsArtist(this.discogsId);
+        }
+      } catch {
+        this.discogsId = null;
+        this.wikidataId = null;
+      }
+    },
+
     async getRelatedArtists(artistId: string) {
       try {
-        const e = await instance().get<RelatedArtists>(`artists/${artistId}/related-artists`);
-        this.relatedArtists.artists = e.data.artists.slice(0, 15);
+        const { data } = await instance().get<RelatedArtists>(`artists/${artistId}/related-artists`);
+        this.relatedArtists.artists = data.artists.slice(0, 15);
       } catch {
         // silent fail
       }
@@ -152,50 +147,34 @@ export const useArtist = defineStore("artist", {
 
     async getSingles(artistId: string) {
       try {
-        const e = await instance().get<Paging<AlbumSimplified>>(
+        const { data } = await instance().get<Paging<AlbumSimplified>>(
           `artists/${artistId}/albums?market=FR&include_groups=single&limit=50`,
         );
 
         const onlySingles: AlbumSimplified[] = [];
         const onlyEps: AlbumSimplified[] = [];
+        const albumsToMove: AlbumSimplified[] = [];
 
-        e.data.items.forEach((item: AlbumSimplified) => {
-          // Normalize album name for Discogs matching
-          const normalizedName = item.name
-            .toLowerCase()
-            .replace(/[^\w\s]/g, "")
-            .trim();
+        data.items.forEach((item) => {
+          const normalizedName = normalizeString(item.name);
+          const discogsType = this.discogsReleases.get(normalizedName);
 
-          // Check Discogs data first if available
-          if (this.discogsReleases.size > 0) {
-            const discogsType = this.discogsReleases.get(normalizedName);
-
-            if (discogsType === "EP") {
-              onlyEps.push(item);
-            } else if (discogsType === "Album") {
-              // Some albums might be wrongly categorized as singles in Spotify
-              this.albums.push(item);
-            } else {
-              // Fallback to original logic if not found in Discogs
-              if (isEP(item)) {
-                onlyEps.push(item);
-              } else {
-                onlySingles.push(item);
-              }
-            }
+          if (discogsType === "EP") {
+            onlyEps.push(item);
+          } else if (discogsType === "Album") {
+            albumsToMove.push(item);
+          } else if (isEP(item)) {
+            onlyEps.push(item);
           } else {
-            // Fallback to original logic if Discogs data not available
-            if (isEP(item)) {
-              onlyEps.push(item);
-            } else {
-              onlySingles.push(item);
-            }
+            onlySingles.push(item);
           }
         });
 
         this.singles = removeDuplicatesAlbums(onlySingles);
         this.eps = removeDuplicatesAlbums(onlyEps);
-        this.albums = removeDuplicatesAlbums(this.albums);
+        if (albumsToMove.length > 0) {
+          this.albums = removeDuplicatesAlbums([...this.albums, ...albumsToMove]);
+        }
       } catch {
         // silent fail
       }
@@ -203,33 +182,22 @@ export const useArtist = defineStore("artist", {
 
     async getTopTracks(artistId: string) {
       try {
-        const e = await instance().get<ArtistTopTracks>(`artists/${artistId}/top-tracks?market=FR`);
-        this.topTracks = e.data;
+        const { data } = await instance().get<ArtistTopTracks>(`artists/${artistId}/top-tracks?market=FR`);
+        this.topTracks = data;
       } catch {
         // silent fail
       }
     },
 
-    async getWikidataArtist(spotifyId: string, artistName: string) {
+    async getWikidataArtist(wikidataArtistId: string): Promise<void> {
+      if (!wikidataArtistId) return;
       try {
-        // First try to find by Spotify ID (more accurate)
-        const wikidataId = await getWikidataIdBySpotifyId(spotifyId);
+        const { getWikidataArtist } = await import("@/helpers/wikidata");
+        this.wikidataArtist = await getWikidataArtist(wikidataArtistId);
 
-        if (wikidataId) {
-          const { getWikidataArtist } = await import("@/helpers/wikidata");
-          this.wikidataArtist = await getWikidataArtist(wikidataId);
-        } else {
-          // Fallback to name search
-          this.wikidataArtist = await getWikidataArtistByName(artistName);
-        }
-
-        // Fetch Wikipedia extract if we have available languages
         const languages = this.wikidataArtist?.wikipediaLanguages || [];
         if (languages.length > 0) {
-          // Get browser/system language (e.g., "fr-FR" -> "fr")
           const browserLang = navigator.language.split("-")[0];
-
-          // Priority: browser language > English > first available
           const selectedLang =
             languages.find((l) => l.code === browserLang) || languages.find((l) => l.code === "en") || languages[0];
 
@@ -238,7 +206,6 @@ export const useArtist = defineStore("artist", {
             this.wikipediaExtract = await getWikipediaExtract(selectedLang.url);
           }
         }
-        // If no Wikipedia, Discogs fallback is handled in ArtistInfo.vue
       } catch {
         this.wikidataArtist = null;
       }
@@ -275,10 +242,12 @@ export const useArtist = defineStore("artist", {
     eps: [],
     followStatus: false,
     headerHeight: 0,
+    musicbrainzArtist: null,
     relatedArtists: { artists: [] },
     singles: [],
     topTracks: { tracks: [] },
     wikidataArtist: null,
+    wikidataId: null,
     wikipediaExtract: null,
     wikipediaLanguage: "en",
   }),
