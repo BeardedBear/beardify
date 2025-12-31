@@ -17,7 +17,7 @@ import { NotificationType } from "@/@types/Notification";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { notification } from "@/helpers/notifications";
 import { clamp, sliderPercentToVolume, volumeToSliderPercent } from "@/helpers/volume";
-import { computed, defineProps, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
 
