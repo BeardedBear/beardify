@@ -1,16 +1,16 @@
 <template>
-  <div :class="{ 'exact-search': exactSearch }" class="album">
+  <div ref="albumRef" :class="{ 'exact-search': exactSearch, 'actions-open': actionsOpen }" class="album">
     <div class="current" v-if="isPlaying"><i class="icon-volume-2" /></div>
     <div :class="{ 'is-playing': isPlaying }" class="cover">
-      <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" @click="handleAlbumClick" class="img" />
-      <ButtonIndex no-default-class class="play" type="button" @click="handlePlayAlbum(album.uri)">
+      <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" @click="handleCoverClick" class="img" />
+      <ButtonIndex no-default-class class="play" type="button" @click.stop="handlePlayAlbum(album.uri)">
         <i class="icon-play" />
       </ButtonIndex>
       <ButtonIndex
         no-default-class
         class="button-action add"
         type="button"
-        @click="dialogStore.open({ type: 'addalbum', albumId: album.id })"
+        @click.stop="dialogStore.open({ type: 'addalbum', albumId: album.id })"
         v-if="canSave"
       >
         <i class="icon-plus" />
@@ -19,7 +19,7 @@
         no-default-class
         class="button-action delete"
         type="button"
-        @click="deleteAlbum(album.id)"
+        @click.stop="deleteAlbum(album.id)"
         v-if="canDelete"
       >
         <i class="icon-trash-2" />
@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import { Album, AlbumSimplified } from "@/@types/Album";
@@ -60,6 +60,7 @@ import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
 import Cover from "@/components/ui/AlbumCover.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
 import { playAlbum } from "@/helpers/playAlbum"; // Import the playAlbum helper
 import router from "@/router";
@@ -85,6 +86,33 @@ const playerStore = usePlayer();
 const isPlaying = computed<boolean>(
   () => props.album.uri === playerStore.playerState?.track_window.current_track.album.uri,
 );
+const actionsOpen = ref(false);
+const albumRef = ref<HTMLElement | null>(null);
+
+
+function handleCoverClick(): void {
+  if (isTouchDevice()) {
+    if (actionsOpen.value) {
+      handleAlbumClick();
+      return;
+    }
+
+    actionsOpen.value = !actionsOpen.value;
+  } else {
+    handleAlbumClick();
+  }
+}
+
+function onDocumentClick(e: MouseEvent): void {
+  if (!actionsOpen.value || !albumRef.value) return;
+  const target = e.target as Node;
+  if (!albumRef.value.contains(target)) {
+    actionsOpen.value = false;
+  }
+}
+
+onMounted(() => document.addEventListener('click', onDocumentClick));
+onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
 
 /**
  * Handle album click to navigate and close dialog if open
@@ -184,8 +212,23 @@ async function deleteAlbum(albumId: string): Promise<void> {
   font-family: "IBM Plex Sans Condensed", Helvetica, Arial, sans-serif;
   line-height: 1.4;
   position: relative;
+}
 
-  &:hover {
+.album.actions-open {
+  .play,
+  .add,
+  .delete {
+    display: block;
+  }
+
+  .img {
+    opacity: 0.4;
+  }
+}
+
+/* Hover-based interactions for devices that support it */
+@media (hover: hover) {
+  .album:hover {
     .play,
     .add,
     .delete {
@@ -381,8 +424,16 @@ async function deleteAlbum(albumId: string): Promise<void> {
   }
 }
 
-/* show indicator when hovering the album (indicator is inside .album so hover persists) */
-.album:hover .album-group-stack-indicator {
+/* show indicator on hover-capable devices and when actions are toggled on touch */
+@media (hover: hover) {
+  .album:hover .album-group-stack-indicator {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    visibility: visible;
+  }
+}
+
+.album.actions-open .album-group-stack-indicator {
   opacity: 1;
   transform: translateY(0) scale(1);
   visibility: visible;
