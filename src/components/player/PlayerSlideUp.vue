@@ -3,32 +3,29 @@
     <div v-if="playerStore.panelOpened" class="player-slide-up" role="dialog" aria-modal="true">
       <div class="backdrop" @click="playerStore.closePanel"></div>
       <div class="panel" tabindex="0" @keydown.esc="playerStore.closePanel">
-        <div class="handle" @click="playerStore.closePanel" aria-hidden>
-          <div class="bar"></div>
-        </div>
         <div class="content">
           <div class="cover">
             <img :src="currentTrack?.album?.images[0]?.url" alt="cover" v-if="currentTrack" />
           </div>
           <div class="metas">
-            <h3 class="title">{{ currentTrack?.name }}</h3>
-            <p class="artists">{{ artistNames }}</p>
-            <div class="controls">
-              <PlayerControls />
-              <div class="extra">
-                <Device />
+            <div class="meta-header">
+              <div>
+                <h3 class="title">{{ currentTrack?.name }}</h3>
+                <p class="artists">{{ artistNames }}</p>
+                <p class="album" v-if="currentTrack?.album?.name">{{ currentTrack?.album?.name }}</p>
+              </div>
+              <div class="device-inline">
+                <Device :forceMobile="true" />
               </div>
             </div>
-            <SeekBar />
-            <div class="more-info">
-              <!-- Queue / repeat / shuffle / device info -->
-              <div class="row">
-                <ButtonIndex icon-only @click="playerStore.openQueue()" title="Queue" />
-                <ButtonIndex icon-only :class="playerStore.currentlyPlaying.repeat_state !== 'off' ? 'active' : ''" @click="playerStore.toggleRepeat()" title="Repeat" />
-                <ButtonIndex icon-only :class="playerStore.currentlyPlaying.shuffle_state ? 'active' : ''" @click="playerStore.toggleShuffle()" title="Shuffle" />
-              </div>
+
+            <div class="controls">
+              <PlayerControls :forceMobile="true" />
             </div>
           </div>
+        </div>
+        <div class="bottom-bar">
+          <SeekBar />
         </div>
       </div>
     </div>
@@ -40,13 +37,12 @@ import Device from "@/components/player/device/DeviceIndex.vue";
 import PlayerControls from "@/components/player/PlayerControls.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import SeekBar from "@/components/player/SeekBar.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { computed } from "vue";
 
 const playerStore = usePlayer();
 
 const currentTrack = computed(() => playerStore.playerState?.track_window?.current_track);
-const artistNames = computed(() => (currentTrack.value?.artists || []).map(a => a.name).join(', '));
+const artistNames = computed(() => (currentTrack.value?.artists || []).map((a) => a.name).join(", "));
 </script>
 
 <style lang="scss" scoped>
@@ -76,6 +72,7 @@ const artistNames = computed(() => (currentTrack.value?.artists || []).map(a => 
     max-height: 92vh;
     overflow: auto;
     padding: 1rem;
+    padding-bottom: 4rem;
     position: absolute;
     right: 0;
     z-index: 1000;
@@ -91,25 +88,10 @@ const artistNames = computed(() => (currentTrack.value?.artists || []).map(a => 
     }
   }
 
-  .handle {
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    padding: 0.4rem 0;
-
-    .bar {
-      background: var(--bg-color-light);
-      border-radius: 4px;
-      height: 0.35rem;
-      opacity: 0.8;
-      width: 3rem;
-    }
-  }
-
   .content {
     display: grid;
     gap: 1rem;
-    grid-template-columns: 120px 1fr;
+    grid-template-columns: 1fr;
     padding-bottom: 2rem;
 
     .cover img {
@@ -119,17 +101,57 @@ const artistNames = computed(() => (currentTrack.value?.artists || []).map(a => 
     }
 
     .metas {
+      .meta-header {
+        align-items: center;
+        display: flex;
+        gap: 1rem;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+
+        @include responsive.mobile {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+
       .title {
         font-size: 1.1rem;
         margin: 0 0 0.25rem;
       }
 
       .artists {
-        margin: 0 0 0.75rem;
+        margin: 0 0 0.25rem;
         opacity: 0.8;
       }
 
+      .album {
+        font-size: 0.95rem;
+        margin: 0 0 0.5rem;
+        opacity: 0.8;
+      }
+
+      .device-inline {
+        align-items: center;
+        display: flex;
+        justify-content: flex-end;
+        min-width: 130px;
+
+        @include responsive.mobile {
+          justify-content: center;
+          margin-top: 0.5rem;
+          width: 100%;
+        }
+      }
+
       .controls {
+        align-items: center;
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        margin-top: 1rem;
+      }
+
+      .controls .extra {
         align-items: center;
         display: flex;
         gap: 0.5rem;
@@ -142,12 +164,13 @@ const artistNames = computed(() => (currentTrack.value?.artists || []).map(a => 
   }
 }
 
-.slide-up-enter-active, .slide-up-leave-active {
+.slide-up-enter-active,
+.slide-up-leave-active {
   transition: transform 280ms ease;
-
 }
 
-.slide-up-enter-from, .slide-up-leave-to {
+.slide-up-enter-from,
+.slide-up-leave-to {
   transform: translateY(100%);
 }
 </style>

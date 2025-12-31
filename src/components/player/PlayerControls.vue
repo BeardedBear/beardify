@@ -1,5 +1,5 @@
 <template>
-  <div class="controls">
+  <div class="controls" :class="{ 'force-mobile': props.forceMobile }">
     <div class="btns">
       <ButtonIndex
         no-default-class
@@ -48,12 +48,13 @@
 
 <script lang="ts" setup>
 import { useIntervalFn } from "@vueuse/core";
-import { computed, ref, watch } from "vue";
+import { computed, defineProps, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { timecode } from "@/helpers/date";
 
+const props = defineProps<{ forceMobile?: boolean }>();
 const playerStore = usePlayer();
 const currentTime = ref<number>(0);
 const duration = computed(() => playerStore.playerState?.duration);
@@ -151,6 +152,19 @@ watch(
     @include responsive.mobile {
       display: none;
     }
+  }
+
+  /* Force show on mobile when parent adds .force-mobile */
+  .force-mobile &.repeat {
+    display: inline-flex;
+  }
+
+  .force-mobile &.shuffle {
+    display: inline-flex;
+  }
+
+  .force-mobile &.next {
+    display: inline-flex;
   }
 }
 </style>

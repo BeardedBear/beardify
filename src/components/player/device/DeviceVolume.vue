@@ -1,5 +1,5 @@
 <template>
-  <div class="volume-wrapper">
+  <div :class="['volume-wrapper', { 'force-visible': forceMobile }]">
     <div @click="onClick" @mousemove="onMove" @mouseleave="onLeave" class="volume" ref="refVolume">
       <div :style="{ width: currentSliderPercent + '%' }" class="cursor" />
       <div :style="{ width: sliderPercent + '%' }" class="hover">
@@ -17,9 +17,11 @@ import { NotificationType } from "@/@types/Notification";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { notification } from "@/helpers/notifications";
 import { clamp, sliderPercentToVolume, volumeToSliderPercent } from "@/helpers/volume";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, defineProps, onMounted, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
+
+const props = defineProps<{ forceMobile?: boolean }>();
 
 const refVolume = ref<HTMLDivElement | null>(null);
 const sliderPercent = ref<number>(0); // 0..100 slider visual position
@@ -131,6 +133,10 @@ async function setVolumeOptimistic(volume: number): Promise<void> {
 
   @include responsive.mobile {
     display: none;
+
+    &.force-visible {
+      display: flex;
+    }
   }
 }
 
