@@ -11,7 +11,16 @@
       @click="toggleList"
       @mouseenter="playerStore.getDeviceList()"
     >
-      <span>{{ playerStore.devices.activeDevice.name }}</span>
+      <span>
+        <i
+          :class="deviceIconClass(playerStore.devices.activeDevice?.type)"
+          :title="playerStore.devices.activeDevice?.type"
+          role="img"
+          :aria-label="playerStore.devices.activeDevice?.type"
+          aria-hidden="false"
+        ></i>
+        {{ playerStore.devices.activeDevice.name }}
+      </span>
     </ButtonIndex>
     <div :class="{ 'is-visible': showList }" class="available-device-list">
       <LoadingDots size="x-small" v-if="!playerStore.devices.list.length" />
@@ -34,7 +43,16 @@
         v-for="(device, _key) in deviceListFiltered"
         :aria-current="device.id === playerStore.devices.activeDevice.id"
       >
-        <span>{{ device.name }}</span>
+        <span>
+          <i
+            :class="deviceIconClass(device.type)"
+            :title="device.type"
+            role="img"
+            :aria-label="device.type"
+            aria-hidden="false"
+          ></i>
+          {{ device.name }}
+        </span>
         <LoadingDots
           v-if="playerStore.lastRequestedDeviceId === device.id && playerStore.isSettingDevice"
           size="xx-small"
@@ -58,6 +76,7 @@
 import { onClickOutside } from "@vueuse/core";
 import { computed, ref } from "vue";
 
+import type { DeviceType } from "@/@types/Device";
 import { usePlayer } from "@/components/player/PlayerStore";
 import QueuedTracks from "@/components/player/device/QueuedTracks.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
@@ -67,6 +86,11 @@ const playerStore = usePlayer();
 const deviceListFiltered = computed(() => playerStore.devices.list.sort((a, b) => a.name.localeCompare(b.name)));
 const showList = ref(false);
 const devicesRef = ref(null);
+
+function deviceIconClass(type?: DeviceType | null):string[] {
+  const t = (type ?? "unknown").replace(/_/g, "-").toLowerCase();
+  return ["device-type", `icon-${t}`];
+}
 
 function toggleList() {
   playerStore.getDeviceList();
@@ -156,5 +180,19 @@ $gap-list: 10px;
   margin-left: 0.5rem;
   opacity: 0.9;
   vertical-align: middle;
+}
+
+.device-type {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: inline-block;
+  font-size: 1.1rem; // fallback for glyphs if no SVG provided
+  height: 1.2rem;
+  line-height: 1;
+  margin-right: 0.6rem;
+  opacity: 0.95;
+  vertical-align: middle;
+  width: 1.2rem;
 }
 </style>
