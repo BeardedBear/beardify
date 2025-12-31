@@ -26,7 +26,6 @@ const normalizedType = computed(() => (props.type ?? "unknown").replace(/_/g, "-
   font-size: 1.1rem; // fallback for glyphs if no SVG provided
   height: 1.2rem;
   line-height: 1;
-  margin-right: 0.3rem;
   opacity: 0.95;
   vertical-align: middle;
   width: 1.2rem;
