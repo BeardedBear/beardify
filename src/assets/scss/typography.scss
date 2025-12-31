@@ -1,0 +1,19 @@
+@use "@/assets/scss/responsive" as responsive;
+
+
+html {
+  /* stylelint-disable property-no-vendor-prefix */
+  font-size: clamp(14px, calc(0.9rem + 0.6vw), 16px);
+  line-height: 1.4;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  /* stylelint-enable property-no-vendor-prefix */
+}
+
+/* Slightly increase max size on very wide screens (>= 1930px) using existing mixin */
+@include responsive.l {
+  html {
+    font-size: clamp(14px, calc(1rem + 0.8vw), 18px);
+  }
+}
+

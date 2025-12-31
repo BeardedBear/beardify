@@ -125,6 +125,7 @@ onBeforeUnmount(() => {
 @use "@/assets/scss/responsive" as responsive;
 @use "@/assets/scss/heading" as heading;
 @use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/typography" as typography;
 @import "../node_modules/normalize.css/normalize.css";
 
 *,
@@ -141,13 +142,6 @@ input {
   }
 }
 
-html {
-  font-size: 16px;
-
-  @media (resolution >= 2.9dppx) {
-    font-size: 32px;
-  }
-}
 
 body {
   overflow: hidden;
