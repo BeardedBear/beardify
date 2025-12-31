@@ -21,7 +21,7 @@ import { computed, onMounted, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
 
-const props = defineProps<{ forceMobile?: boolean }>();
+defineProps<{ forceMobile?: boolean }>();
 
 const refVolume = ref<HTMLDivElement | null>(null);
 const sliderPercent = ref<number>(0); // 0..100 slider visual position
