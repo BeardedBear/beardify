@@ -13,7 +13,7 @@
     >
       <span :title="playerStore.devices.activeDevice ? `Device ID: ${playerStore.devices.activeDevice.id}` : ''" class="active-device-label">
         <DeviceTypeIcon :type="playerStore.devices.activeDevice?.type" />
-        {{ formatName(playerStore.devices.activeDevice) }}
+        <span class="device-name">{{ formatName(playerStore.devices.activeDevice, true) }}</span>
       </span>
     </ButtonIndex>
     <div :class="{ 'is-visible': showList }" class="available-device-list">
@@ -39,8 +39,8 @@
       >
         <span :title="`Device ID: ${device.id}`" class="device-label">
           <DeviceTypeIcon :type="device.type" />
-          {{ formatName(device) }}
-          <span v-if="device.id === playerStore.thisDeviceId" class="device-badge local">Here</span>
+          <span class="device-name">{{ formatName(device) }}</span>
+          <span v-if="device.id === playerStore.thisDeviceId" class="device-badge local" title="Périphérique local">Here</span>
           <i
             v-if="device.id === playerStore.devices.activeDevice.id"
             class="icon-check active-label"
@@ -63,7 +63,7 @@
 
 <script lang="ts" setup>
 import type { Device } from "@/@types/Device";
-import { onClickOutside } from "@vueuse/core";
+import { onClickOutside, useWindowSize } from "@vueuse/core";
 import { computed, ref } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
@@ -85,13 +85,22 @@ const nameCounts = computed(() => {
   return m;
 });
 
-function formatName(device?: Device | null) {
+const { width } = useWindowSize();
+const isMobile = computed(() => (width.value ?? 9999) <= 480);
+
+function truncate(str: string, max: number) {
+  return str.length > max ? `${str.slice(0, max - 1)}…` : str;
+}
+
+function formatName(device?: Device | null, shortenable = false): string {
   if (!device) return "";
   const count = nameCounts.value.get(device.name) || 0;
+  let name = device.name;
   if (count > 1 && device.id) {
-    return `${device.name}`;
+    name = `${device.name}`;
   }
-  return device.name;
+  if (isMobile.value && shortenable) return truncate(name, 10);
+  return name;
 }
 
 const showList = ref(false);
@@ -208,6 +217,17 @@ $gap-list: 10px;
   border: 1px solid var(--primary-color);
   color: var(--primary-color);
 }
+
+.device-name {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+
 
 
 </style>
