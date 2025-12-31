@@ -88,7 +88,6 @@ $transition-duration: 0.2s;
   flex-wrap: wrap;
   gap: 0.25rem;
 
-
   @include responsive.mobile {
     display: block;
     margin-bottom: 0.5rem;
@@ -119,7 +118,6 @@ $transition-duration: 0.2s;
     }
   }
 }
-
 
 .profile-wrapper {
   align-items: center;

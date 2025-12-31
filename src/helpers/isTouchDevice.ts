@@ -8,11 +8,11 @@ export function isTouchDevice(): boolean {
 
     // Prefer matchMedia when available (covers many modern mobile devices)
     if (window.matchMedia) {
-      if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return true;
+      if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return true;
     }
 
     // Fallback to feature detection
-    return 'ontouchstart' in window;
+    return "ontouchstart" in window;
   } catch {
     return false;
   }

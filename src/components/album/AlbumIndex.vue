@@ -89,7 +89,6 @@ const isPlaying = computed<boolean>(
 const actionsOpen = ref(false);
 const albumRef = ref<HTMLElement | null>(null);
 
-
 function handleCoverClick(): void {
   if (isTouchDevice()) {
     if (actionsOpen.value) {
@@ -111,8 +110,8 @@ function onDocumentClick(e: MouseEvent): void {
   }
 }
 
-onMounted(() => document.addEventListener('click', onDocumentClick));
-onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
+onMounted(() => document.addEventListener("click", onDocumentClick));
+onBeforeUnmount(() => document.removeEventListener("click", onDocumentClick));
 
 /**
  * Handle album click to navigate and close dialog if open

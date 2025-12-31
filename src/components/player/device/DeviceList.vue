@@ -11,7 +11,10 @@
       @click="toggleList"
       @mouseenter="playerStore.getDeviceList()"
     >
-      <span :title="playerStore.devices.activeDevice ? `Device ID: ${playerStore.devices.activeDevice.id}` : ''" class="active-device-label">
+      <span
+        :title="playerStore.devices.activeDevice ? `Device ID: ${playerStore.devices.activeDevice.id}` : ''"
+        class="active-device-label"
+      >
         <DeviceTypeIcon :type="playerStore.devices.activeDevice?.type" />
         <span class="device-name">{{ formatName(playerStore.devices.activeDevice, true) }}</span>
       </span>
@@ -40,7 +43,9 @@
         <span :title="`Device ID: ${device.id}`" class="device-label">
           <DeviceTypeIcon :type="device.type" />
           <span class="device-name">{{ formatName(device) }}</span>
-          <span v-if="device.id === playerStore.thisDeviceId" class="device-badge local" title="Périphérique local">Here</span>
+          <span v-if="device.id === playerStore.thisDeviceId" class="device-badge local" title="Périphérique local">
+            Here
+          </span>
           <i
             v-if="device.id === playerStore.devices.activeDevice.id"
             class="icon-check active-label"
@@ -105,7 +110,6 @@ function formatName(device?: Device | null, shortenable = false): string {
 
 const showList = ref(false);
 const devicesRef = ref(null);
-
 
 function toggleList() {
   playerStore.getDeviceList();
@@ -187,7 +191,8 @@ $gap-list: 10px;
   }
 }
 
-.device-label, .active-device-label {
+.device-label,
+.active-device-label {
   align-items: center;
   display: inline-flex;
   gap: 0.4rem;
@@ -226,8 +231,4 @@ $gap-list: 10px;
   vertical-align: middle;
   white-space: nowrap;
 }
-
-
-
-
 </style>

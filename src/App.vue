@@ -142,7 +142,6 @@ input {
   }
 }
 
-
 body {
   overflow: hidden;
   scrollbar-color: var(--primary-color-dark) var(--bg-color-dark);
