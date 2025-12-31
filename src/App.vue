@@ -10,6 +10,7 @@
       </div>
     </div>
     <Player key="player" />
+    <PlayerSlideUp />
     <Notification />
     <Frame />
     <MinimizedWindows />
@@ -26,6 +27,7 @@ import Frame from "@/components/frame/FrameIndex.vue";
 import MinimizedWindows from "@/components/minimized/MinimizedWindows.vue";
 import Notification from "@/components/notification/NotificationIndex.vue";
 import Player from "@/components/player/PlayerIndex.vue";
+import PlayerSlideUp from "@/components/player/PlayerSlideUp.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import MobileHeader from "@/components/sidebar/MobileHeader.vue";
 import Sidebar from "@/components/sidebar/SidebarIndex.vue";
@@ -125,6 +127,7 @@ onBeforeUnmount(() => {
 @use "@/assets/scss/responsive" as responsive;
 @use "@/assets/scss/heading" as heading;
 @use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/typography" as typography;
 @import "../node_modules/normalize.css/normalize.css";
 
 *,
@@ -138,14 +141,6 @@ input {
     color: var(--font-color);
     font-style: italic;
     opacity: 0.3;
-  }
-}
-
-html {
-  font-size: 16px;
-
-  @media (resolution >= 2.9dppx) {
-    font-size: 32px;
   }
 }
 

@@ -20,6 +20,27 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+.icon-game_console:before {
+    content: "\f5a4";
+}
+.icon-tv:before {
+    content: "\f39a";
+}
+.icon-smartphone:before {
+    content: "\f509";
+}
+.icon-tablet:before {
+    content: "\f0a0";
+}
+.icon-speaker:before {
+    content: "\f243";
+}
+.icon-automobile:before {
+    content: "\f142";
+}
+.icon-computer:before {
+    content: "\f471";
+}
 .icon-menu:before {
     content: "\f07c";
 }

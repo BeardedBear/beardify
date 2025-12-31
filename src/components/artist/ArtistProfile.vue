@@ -1,15 +1,13 @@
 <template>
   <div class="profile-container">
     <div class="profile-wrapper" :class="{ visible: artistMetas }">
-      <template v-if="artistTags && artistTags.length > 0">
-        <span>
-          <span v-for="value in artistTags.slice(0, 5)" class="tag">
-            {{ typeof value === "string" ? value : value.name }}
-          </span>
+      <span v-if="artistTags && artistTags.length > 0" class="tag-list">
+        <span v-for="value in artistTags.slice(0, 5)" class="tag">
+          {{ typeof value === "string" ? value : value.name }}
         </span>
-      </template>
+      </span>
       <template v-if="artistMetas?.area || artistMetas?.country">
-        <span>·</span>
+        <span class="dot desktop-only">·</span>
         <span :title="artistMetas?.area?.name || artistMetas?.country">
           <img
             v-if="artistMetas?.country"
@@ -21,7 +19,7 @@
         </span>
       </template>
       <template v-if="artistMetas?.['life-span']?.begin">
-        <span v-if="artistMetas?.['life-span']?.begin">·</span>
+        <span class="dot">·</span>
         <span>
           <template v-if="artistMetas.type === 'Person'">
             <span v-if="artistMetas.type === 'Person'">Born {{ formatDate(artistMetas?.["life-span"]?.begin) }}</span>
@@ -85,18 +83,45 @@ $transition-duration: 0.2s;
   min-height: 1.5rem; // Reserve space for the text line height
 }
 
+.tag-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+
+  @include responsive.mobile {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+}
+
 .tag {
   background-color: rgb(255 255 255 / 10%);
   border-radius: 0.25rem;
-  margin-right: 0.25rem;
   padding: 0.1rem 0.3rem;
   text-transform: capitalize;
+
+  @include responsive.mobile {
+    margin: 0 0.25rem 0.25rem 0;
+  }
+}
+
+.dot {
+  margin: 0 1rem;
+
+  @include responsive.mobile {
+    margin: 0 0.5rem;
+  }
+
+  &.desktop-only {
+    @include responsive.mobile {
+      display: none;
+    }
+  }
 }
 
 .profile-wrapper {
   align-items: center;
   display: flex;
-  gap: 0.5rem;
   max-width: 60rem;
   min-height: 0;
   opacity: 0;
@@ -111,13 +136,17 @@ $transition-duration: 0.2s;
     opacity: 1;
     transform: translateY(0);
   }
+
+  @include responsive.mobile {
+    display: block;
+  }
 }
 
 .country-flag {
   border-radius: 0.1rem;
   display: inline-block;
   height: 0.8em;
-  margin: 0 0.3rem;
+  margin: 0 0.3rem 0 0;
   width: auto;
 }
 </style>

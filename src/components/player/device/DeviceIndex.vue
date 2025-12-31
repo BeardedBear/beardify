@@ -1,7 +1,7 @@
 <template>
   <div class="wrap" v-if="playerStore.devices.activeDevice.id">
     <div class="device">
-      <DeviceVolume />
+      <DeviceVolume :forceMobile="forceMobile" />
       <DevicesList />
     </div>
   </div>
@@ -13,8 +13,11 @@ import { usePlayer } from "@/components/player/PlayerStore";
 import DevicesList from "@/components/player/device/DeviceList.vue";
 import DeviceVolume from "@/components/player/device/DeviceVolume.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
+import { defineProps } from "vue";
 
+const props = defineProps<{ forceMobile?: boolean }>();
 const playerStore = usePlayer();
+const forceMobile = props.forceMobile ?? false;
 </script>
 
 <style lang="scss" scoped>

@@ -8,6 +8,7 @@ import { defaultPlaybackState, Player } from "@/@types/Player";
 import { Track } from "@/@types/Track";
 import { instance } from "@/api";
 import { useNotification } from "@/components/notification/NotificationStore";
+import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
 import { createSpotifyPlayer } from "@/spotify";
 
@@ -136,6 +137,10 @@ export const usePlayer = defineStore("player", {
       }
     },
 
+    closePanel(): void {
+      this.panelOpened = false;
+    },
+
     closeQueue(): void {
       this.queueOpened = false;
     },
@@ -223,6 +228,13 @@ export const usePlayer = defineStore("player", {
 
     next(): void {
       instance().post("me/player/next");
+    },
+
+    // Slide-up panel controls
+    // Opening is restricted to touch devices (mobile) to avoid showing the mobile-only slide-up on desktop
+    openPanel(): void {
+      if (!isTouchDevice()) return;
+      this.panelOpened = true;
     },
 
     openQueue(): void {
@@ -313,6 +325,12 @@ export const usePlayer = defineStore("player", {
       this.getDeviceList();
     },
 
+    togglePanel(): void {
+      // Prevent toggling open on non-touch devices; allow closing always
+      if (!this.panelOpened && !isTouchDevice()) return;
+      this.panelOpened = !this.panelOpened;
+    },
+
     toggleRepeat(): void {
       if (this.currentlyPlaying.repeat_state === "off") {
         (async (): Promise<void> => {
@@ -380,6 +398,7 @@ export const usePlayer = defineStore("player", {
     heartbeatInterval: null,
     isSettingDevice: false,
     lastRequestedDeviceId: null,
+    panelOpened: false,
     playerState: defaultPlaybackState,
     queue: [],
     queueOpened: false,

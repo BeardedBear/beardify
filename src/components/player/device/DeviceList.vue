@@ -11,7 +11,13 @@
       @click="toggleList"
       @mouseenter="playerStore.getDeviceList()"
     >
-      <span>{{ playerStore.devices.activeDevice.name }}</span>
+      <span
+        :title="playerStore.devices.activeDevice ? `Device ID: ${playerStore.devices.activeDevice.id}` : ''"
+        class="active-device-label"
+      >
+        <DeviceTypeIcon :type="playerStore.devices.activeDevice?.type" />
+        <span class="device-name">{{ formatName(playerStore.devices.activeDevice, true) }}</span>
+      </span>
     </ButtonIndex>
     <div :class="{ 'is-visible': showList }" class="available-device-list">
       <LoadingDots size="x-small" v-if="!playerStore.devices.list.length" />
@@ -34,16 +40,22 @@
         v-for="(device, _key) in deviceListFiltered"
         :aria-current="device.id === playerStore.devices.activeDevice.id"
       >
-        <span>{{ device.name }}</span>
+        <span :title="`Device ID: ${device.id}`" class="device-label">
+          <DeviceTypeIcon :type="device.type" />
+          <span class="device-name">{{ formatName(device) }}</span>
+          <span v-if="device.id === playerStore.thisDeviceId" class="device-badge local" title="Périphérique local">
+            Here
+          </span>
+          <i
+            v-if="device.id === playerStore.devices.activeDevice.id"
+            class="icon-check active-label"
+            aria-hidden="true"
+            title="Active device"
+          />
+        </span>
         <LoadingDots
           v-if="playerStore.lastRequestedDeviceId === device.id && playerStore.isSettingDevice"
           size="xx-small"
-        />
-        <i
-          v-if="device.id === playerStore.devices.activeDevice.id"
-          class="icon-check active-label"
-          aria-hidden="true"
-          title="Active device"
         />
       </ButtonIndex>
       <ButtonIndex variant="border" class="refresh" type="button" size="small" @click="playerStore.getDeviceList()">
@@ -55,16 +67,47 @@
 </template>
 
 <script lang="ts" setup>
-import { onClickOutside } from "@vueuse/core";
+import type { Device } from "@/@types/Device";
+import { onClickOutside, useWindowSize } from "@vueuse/core";
 import { computed, ref } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
+import DeviceTypeIcon from "@/components/player/device/DeviceType.vue";
 import QueuedTracks from "@/components/player/device/QueuedTracks.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import LoadingDots from "@/components/ui/LoadingDots.vue";
 
 const playerStore = usePlayer();
 const deviceListFiltered = computed(() => playerStore.devices.list.sort((a, b) => a.name.localeCompare(b.name)));
+
+// Count device names so we can disambiguate identical names in the UI
+const nameCounts = computed(() => {
+  const m = new Map<string, number>();
+  playerStore.devices.list.forEach((d) => {
+    const count = m.get(d.name) || 0;
+    m.set(d.name, count + 1);
+  });
+  return m;
+});
+
+const { width } = useWindowSize();
+const isMobile = computed(() => (width.value ?? 9999) <= 480);
+
+function truncate(str: string, max: number) {
+  return str.length > max ? `${str.slice(0, max - 1)}…` : str;
+}
+
+function formatName(device?: Device | null, shortenable = false): string {
+  if (!device) return "";
+  const count = nameCounts.value.get(device.name) || 0;
+  let name = device.name;
+  if (count > 1 && device.id) {
+    name = `${device.name}`;
+  }
+  if (isMobile.value && shortenable) return truncate(name, 10);
+  return name;
+}
+
 const showList = ref(false);
 const devicesRef = ref(null);
 
@@ -148,13 +191,44 @@ $gap-list: 10px;
   }
 }
 
-.active-label {
+.device-label,
+.active-device-label {
   align-items: center;
-  color: var(--primary-color);
   display: inline-flex;
-  font-size: 0.9rem;
-  margin-left: 0.5rem;
-  opacity: 0.9;
+  gap: 0.4rem;
+}
+
+.device-badge {
+  align-items: center;
+  background-color: var(--bg-color-default);
+  border-radius: 999px;
+  color: var(--font-color-default);
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: bold;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0.15rem 0.4rem;
+  text-transform: uppercase;
+}
+
+.device-badge.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.device-badge.local {
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.device-name {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   vertical-align: middle;
+  white-space: nowrap;
 }
 </style>

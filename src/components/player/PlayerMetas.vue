@@ -9,7 +9,7 @@
     <div class="text-content">
       <div class="track-details">
         <span class="trackname">{{ currentTrack.name }}</span>
-        <span class="separator">—&nbsp;</span>
+        <span class="separator">&nbsp;·&nbsp;</span>
         <span class="artists">
           <ArtistList :artist-list="currentTrack.artists" :feat="true" />
         </span>

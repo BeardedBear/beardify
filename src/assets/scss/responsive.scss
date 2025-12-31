@@ -31,6 +31,13 @@ $fourk: 2560px;
   }
 }
 
+// Tablet and up (>= 768px)
+@mixin tablet-up {
+  @media (min-width: $tablet-min) {
+    @content;
+  }
+}
+
 // Desktop and above (> 1024px)
 @mixin desktop {
   @media (min-width: $desktop-min) {
