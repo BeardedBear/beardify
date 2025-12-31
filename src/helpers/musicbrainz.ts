@@ -20,7 +20,7 @@ export interface MusicBrainzArtist {
   score?: number;
   "sort-name": string;
   tags?: MusicBrainzTag[];
-  type: string;
+  type: "Character" | "Choir" | "Group" | "Orchestra" | "Person" | string;
   "type-id": string;
 }
 
@@ -75,6 +75,7 @@ interface MusicBrainzArtistSearch {
  */
 interface MusicBrainzLifeSpan {
   begin: null | string;
+  end: null | string;
   ended: null | string;
 }
 

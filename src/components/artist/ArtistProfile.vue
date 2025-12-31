@@ -19,17 +19,21 @@
           />
           <strong>{{ artistMetas?.["begin-area"]?.name }}</strong>
         </span>
-        <span>·</span>
       </template>
-      <span>
-        <template v-if="artistMetas?.['life-span']?.begin">
-          <span>{{ artistMetas?.["life-span"]?.begin }}</span>
-          <span>/</span>
-        </template>
-        <span v-if="artistMetas?.['life-span']?.ended || artistMetas?.['life-span']?.begin">
-          <span>{{ artistMetas?.["life-span"]?.ended ? "Inactive" : "Active" }}</span>
+      <template v-if="artistMetas?.['life-span']?.begin">
+        <span v-if="artistMetas?.['life-span']?.begin">·</span>
+        <span>
+            <template v-if="artistMetas.type === 'Person'">
+              <span v-if="artistMetas.type === 'Person'">Born {{ artistMetas?.["life-span"]?.begin }}</span>
+              <span v-if="artistMetas?.['life-span']?.end"> / Died {{ artistMetas?.['life-span']?.end }}</span>
+            </template>
+            <template v-else>
+              <span>{{ artistMetas?.["life-span"]?.begin.split("-")[0] }}</span>
+              <span v-if="!artistMetas['life-span'].end">{{ artistMetas?.["life-span"]?.ended ? " / Inactive" : " / Active" }}</span>
+              <span v-else> / {{ artistMetas['life-span'].end?.split("-")[0] }}</span>
+          </template>
         </span>
-      </span>
+      </template>
     </div>
   </div>
 </template>
