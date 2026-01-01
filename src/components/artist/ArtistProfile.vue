@@ -97,6 +97,7 @@ $transition-duration: 0.2s;
 .tag {
   background-color: rgb(255 255 255 / 10%);
   border-radius: 0.25rem;
+  display: inline-block;
   padding: 0.1rem 0.3rem;
   text-transform: capitalize;
 
