@@ -11,8 +11,18 @@
             <div class="meta-header">
               <div>
                 <h3 class="title">{{ currentTrack?.name }}</h3>
-                <p class="artists">{{ artistNames }}</p>
-                <p class="album" v-if="currentTrack?.album?.name">{{ currentTrack?.album?.name }}</p>
+                <p class="artists">
+                  <ArtistList :artist-list="currentTrack?.artists" :feat="false" />
+                </p>
+                <p class="album" v-if="currentTrack?.album?.name">
+                  <router-link
+                    :to="`/album/${transformUriToid(currentTrack.album.uri)}`"
+                    class="link"
+                    @click="playerStore.closePanel"
+                  >
+                    {{ currentTrack?.album?.name }}
+                  </router-link>
+                </p>
               </div>
               <div class="device-inline">
                 <Device :forceMobile="true" />
@@ -33,16 +43,17 @@
 </template>
 
 <script lang="ts" setup>
+import ArtistList from "@/components/artist/ArtistList.vue";
 import Device from "@/components/player/device/DeviceIndex.vue";
 import PlayerControls from "@/components/player/PlayerControls.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import SeekBar from "@/components/player/SeekBar.vue";
+import { transformUriToid } from "@/helpers/helper";
 import { computed } from "vue";
 
 const playerStore = usePlayer();
 
 const currentTrack = computed(() => playerStore.playerState?.track_window?.current_track);
-const artistNames = computed(() => (currentTrack.value?.artists || []).map((a) => a.name).join(", "));
 </script>
 
 <style lang="scss" scoped>
@@ -128,6 +139,18 @@ const artistNames = computed(() => (currentTrack.value?.artists || []).map((a) =
         font-size: 0.95rem;
         margin: 0 0 0.5rem;
         opacity: 0.8;
+
+        .link {
+          color: currentcolor;
+          cursor: pointer;
+          opacity: 0.8;
+          text-decoration: none;
+
+          &:hover {
+            color: var(--primary-color);
+            opacity: 1;
+          }
+        }
       }
 
       .device-inline {
