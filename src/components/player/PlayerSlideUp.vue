@@ -25,12 +25,12 @@
                 </p>
               </div>
               <div class="device-inline">
-                <Device :forceMobile="true" />
+                <Device forceMobile />
               </div>
             </div>
 
             <div class="controls">
-              <PlayerControls :forceMobile="true" />
+              <PlayerControls forceMobile />
             </div>
           </div>
         </div>
@@ -82,7 +82,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
     left: 0;
     max-height: 92vh;
     overflow: auto;
-    padding: 1rem;
+    padding: 2rem;
     padding-bottom: 4rem;
     position: absolute;
     right: 0;
