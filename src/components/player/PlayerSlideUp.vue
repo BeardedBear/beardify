@@ -2,7 +2,7 @@
   <transition name="slide-up">
     <div v-if="playerStore.panelOpened" class="player-slide-up" role="dialog" aria-modal="true">
       <div class="backdrop" @click="playerStore.closePanel"></div>
-      <div class="panel" tabindex="0" @keydown.esc="playerStore.closePanel">
+      <div ref="panelRef" class="panel" tabindex="0" @keydown.esc="playerStore.closePanel" :style="panelStyle">
         <div class="content">
           <div class="cover">
             <img :src="currentTrack?.album?.images[0]?.url" alt="cover" v-if="currentTrack" />
@@ -11,16 +11,26 @@
             <div class="meta-header">
               <div>
                 <h3 class="title">{{ currentTrack?.name }}</h3>
-                <p class="artists">{{ artistNames }}</p>
-                <p class="album" v-if="currentTrack?.album?.name">{{ currentTrack?.album?.name }}</p>
+                <p class="artists">
+                  <ArtistList :artist-list="currentTrack?.artists" :feat="false" />
+                </p>
+                <p class="album" v-if="currentTrack?.album?.name">
+                  <router-link
+                    :to="`/album/${transformUriToid(currentTrack.album.uri)}`"
+                    class="link"
+                    @click="playerStore.closePanel"
+                  >
+                    {{ currentTrack?.album?.name }}
+                  </router-link>
+                </p>
               </div>
               <div class="device-inline">
-                <Device :forceMobile="true" />
+                <Device forceMobile />
               </div>
             </div>
 
             <div class="controls">
-              <PlayerControls :forceMobile="true" />
+              <PlayerControls forceMobile />
             </div>
           </div>
         </div>
@@ -33,16 +43,90 @@
 </template>
 
 <script lang="ts" setup>
+import ArtistList from "@/components/artist/ArtistList.vue";
 import Device from "@/components/player/device/DeviceIndex.vue";
 import PlayerControls from "@/components/player/PlayerControls.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import SeekBar from "@/components/player/SeekBar.vue";
-import { computed } from "vue";
+import { transformUriToid } from "@/helpers/helper";
+import { isTouchDevice } from "@/helpers/isTouchDevice";
+import { useSwipe } from "@vueuse/core";
+import { computed, ref, watch } from "vue";
 
 const playerStore = usePlayer();
 
 const currentTrack = computed(() => playerStore.playerState?.track_window?.current_track);
-const artistNames = computed(() => (currentTrack.value?.artists || []).map((a) => a.name).join(", "));
+
+// Mobile swipe-to-close support (VueUse)
+// Close on a downward swipe only on small screens and when panel is scrolled to top
+const panelRef = ref<HTMLElement | null>(null);
+const { direction, lengthY } = useSwipe(panelRef);
+const SWIPE_THRESHOLD = 80; // px
+
+// Handle swipe translation and commit/rollback on end
+const translateY = ref(0);
+const isSwiping = ref(false);
+const swipeTransition = ref(false);
+let endTimer: number | undefined;
+
+watch([direction, lengthY], ([d, len]) => {
+  const l = len ?? 0;
+  const isMobile = isTouchDevice();
+
+  // Active downward swipe
+  if (d === "down" && isMobile && l > 0) {
+    isSwiping.value = true;
+    swipeTransition.value = false;
+    translateY.value = Math.min(l, window.innerHeight);
+    // If exceeds threshold, close immediately (visual will be handled on end)
+    return;
+  }
+
+  // End of swipe (direction none or other) -> decide commit or rollback
+  if (isSwiping.value) {
+    isSwiping.value = false;
+    swipeTransition.value = true;
+    // commit close
+    if (translateY.value >= SWIPE_THRESHOLD && isMobile) {
+      // animate out then close
+      translateY.value = window.innerHeight;
+      endTimer = window.setTimeout(() => {
+        playerStore.closePanel();
+        // reset state after close
+        translateY.value = 0;
+        swipeTransition.value = false;
+      }, 220);
+    } else {
+      // rollback
+      translateY.value = 0;
+      endTimer = window.setTimeout(() => {
+        swipeTransition.value = false;
+      }, 180);
+    }
+  }
+});
+
+// Reset visual state when panel is closed/opened via other means
+watch(
+  () => playerStore.panelOpened,
+  (open) => {
+    if (!open) {
+      // ensure any visual translation is reset
+      translateY.value = 0;
+      swipeTransition.value = false;
+      isSwiping.value = false;
+      if (endTimer) {
+        clearTimeout(endTimer);
+        endTimer = undefined;
+      }
+    }
+  },
+);
+
+const panelStyle = computed(() => ({
+  transform: `translateY(${translateY.value}px)`,
+  transition: swipeTransition.value ? "transform 200ms ease" : "none",
+}));
 </script>
 
 <style lang="scss" scoped>
@@ -64,17 +148,17 @@ const artistNames = computed(() => (currentTrack.value?.artists || []).map((a) =
 
   .panel {
     background-color: var(--bg-color);
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
     bottom: 0;
-    box-shadow: 0 -6px 24px rgb(0 0 0 / 40%);
+    box-shadow: 0 -1rem 3rem rgb(0 0 0);
     left: 0;
     max-height: 92vh;
     overflow: auto;
-    padding: 1rem;
-    padding-bottom: 4rem;
+    padding: 2rem;
     position: absolute;
     right: 0;
+    touch-action: pan-y;
     z-index: 1000;
 
     /* Tablet+ layout */
@@ -128,6 +212,18 @@ const artistNames = computed(() => (currentTrack.value?.artists || []).map((a) =
         font-size: 0.95rem;
         margin: 0 0 0.5rem;
         opacity: 0.8;
+
+        .link {
+          color: currentcolor;
+          cursor: pointer;
+          opacity: 0.8;
+          text-decoration: none;
+
+          &:hover {
+            color: var(--primary-color);
+            opacity: 1;
+          }
+        }
       }
 
       .device-inline {

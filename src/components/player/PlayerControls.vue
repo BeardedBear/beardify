@@ -5,6 +5,7 @@
         no-default-class
         :class="{ active: playerStore.currentlyPlaying?.shuffle_state }"
         class="control-button shuffle"
+        :size="props.forceMobile ? 'big' : 'default'"
         @click="playerStore.toggleShuffle()"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
@@ -22,12 +23,19 @@
       <ButtonIndex
         no-default-class
         class="control-button play"
+        :size="props.forceMobile ? 'big' : 'default'"
         @click="playerStore.play()"
         v-if="playerStore.playerState?.paused"
       >
         <i class="icon-play" />
       </ButtonIndex>
-      <ButtonIndex no-default-class class="control-button play" @click="playerStore.pause()" v-else>
+      <ButtonIndex
+        no-default-class
+        class="control-button play"
+        @click="playerStore.pause()"
+        v-else
+        :size="props.forceMobile ? 'big' : 'default'"
+      >
         <i class="icon-pause" />
       </ButtonIndex>
       <ButtonIndex
@@ -35,6 +43,7 @@
         class="control-button next"
         @click="playerStore.next()"
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
+        :size="props.forceMobile ? 'big' : 'default'"
       >
         <i class="icon-skip-forward" />
       </ButtonIndex>
@@ -48,7 +57,7 @@
 
 <script lang="ts" setup>
 import { useIntervalFn } from "@vueuse/core";
-import { computed, defineProps, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
@@ -123,6 +132,11 @@ watch(
     background-color: var(--bg-color-lighter);
   }
 
+  &.button-big {
+    font-size: 1.5rem;
+    padding: 0.5rem 0.6rem;
+  }
+
   &.play {
     font-size: 2rem;
     opacity: 1;
@@ -133,6 +147,11 @@ watch(
 
     &:active {
       background-color: var(--bg-color-lighter);
+    }
+
+    &.button-big {
+      font-size: 2.5rem;
+      padding: 0.6rem 0.7rem;
     }
   }
 

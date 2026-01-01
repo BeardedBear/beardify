@@ -13,9 +13,10 @@
 
 <script lang="ts" setup>
 import { Artist, ArtistSimplified } from "@/@types/Artist";
-import router from "@/router";
-import { useDialog } from "@/components/dialog/DialogStore";
 import ArtistLinks from "@/components/artist/ArtistLinks.vue";
+import { useDialog } from "@/components/dialog/DialogStore";
+import { usePlayer } from "@/components/player/PlayerStore";
+import router from "@/router";
 
 const dialogStore = useDialog();
 
@@ -34,6 +35,7 @@ defineProps<{
 function goArtist(artistUri: string): void {
   router.push(artistUri);
   if (dialogStore.show) dialogStore.close();
+  usePlayer().closePanel();
 }
 </script>
 

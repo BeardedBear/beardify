@@ -6,7 +6,7 @@
         <div class="perc">{{ previewVolume + "%" }}</div>
       </div>
     </div>
-    <ButtonIndex no-default-class type="button" variant="nude" @click="toggleMute">
+    <ButtonIndex v-if="!forceMobile" no-default-class type="button" variant="nude" @click="toggleMute">
       <i :class="isMuted ? 'icon-volume-x' : 'icon-volume-2'" />
     </ButtonIndex>
   </div>
@@ -149,6 +149,10 @@ async function setVolumeOptimistic(volume: number): Promise<void> {
   height: 1.7rem;
   position: relative;
   width: 6rem;
+
+  @include responsive.mobile {
+    width: 10rem;
+  }
 
   &::before {
     background-color: var(--bg-color);

@@ -10,7 +10,7 @@ export interface ButtonProps {
   href?: string;
   iconOnly?: boolean;
   noDefaultClass?: boolean;
-  size?: "default" | "small" | "x-small";
+  size?: "big" | "default" | "small" | "x-small";
   target?: "_blank" | "_self" | "_parent" | "_top";
   to?: RouteLocationRaw;
   type?: "button" | "submit" | "reset";
@@ -77,6 +77,8 @@ const classes = computed(() => {
   // Add size classes
   if (props.size === "small") {
     classList.push("button-small");
+  } else if (props.size === "big") {
+    classList.push("button-big");
   } else if (props.size === "x-small") {
     classList.push("button-x-small");
   }
@@ -177,6 +179,11 @@ const classes = computed(() => {
       background-color: transparent;
       opacity: 1;
     }
+  }
+
+  &-big {
+    font-size: 1rem;
+    padding: 0.75rem 1.2rem;
   }
 
   &-small {
