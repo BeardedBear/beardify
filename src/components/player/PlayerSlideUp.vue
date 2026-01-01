@@ -2,13 +2,7 @@
   <transition name="slide-up">
     <div v-if="playerStore.panelOpened" class="player-slide-up" role="dialog" aria-modal="true">
       <div class="backdrop" @click="playerStore.closePanel"></div>
-        <div
-          ref="panelRef"
-          class="panel"
-          tabindex="0"
-          @keydown.esc="playerStore.closePanel"
-          :style="panelStyle"
-        >
+      <div ref="panelRef" class="panel" tabindex="0" @keydown.esc="playerStore.closePanel" :style="panelStyle">
         <div class="content">
           <div class="cover">
             <img :src="currentTrack?.album?.images[0]?.url" alt="cover" v-if="currentTrack" />
@@ -76,7 +70,7 @@ const swipeTransition = ref(false);
 let endTimer: number | undefined;
 
 watch([direction, lengthY], ([d, len]) => {
-  const l = (len ?? 0);
+  const l = len ?? 0;
   const isMobile = isTouchDevice();
 
   // Active downward swipe
@@ -113,18 +107,21 @@ watch([direction, lengthY], ([d, len]) => {
 });
 
 // Reset visual state when panel is closed/opened via other means
-watch(() => playerStore.panelOpened, (open) => {
-  if (!open) {
-    // ensure any visual translation is reset
-    translateY.value = 0;
-    swipeTransition.value = false;
-    isSwiping.value = false;
-    if (endTimer) {
-      clearTimeout(endTimer);
-      endTimer = undefined;
+watch(
+  () => playerStore.panelOpened,
+  (open) => {
+    if (!open) {
+      // ensure any visual translation is reset
+      translateY.value = 0;
+      swipeTransition.value = false;
+      isSwiping.value = false;
+      if (endTimer) {
+        clearTimeout(endTimer);
+        endTimer = undefined;
+      }
     }
-  }
-});
+  },
+);
 
 const panelStyle = computed(() => ({
   transform: `translateY(${translateY.value}px)`,
@@ -154,7 +151,7 @@ const panelStyle = computed(() => ({
     border-top-left-radius: 2rem;
     border-top-right-radius: 2rem;
     bottom: 0;
-    box-shadow: 0 -1rem 3rem rgb(0 0 0 );
+    box-shadow: 0 -1rem 3rem rgb(0 0 0);
     left: 0;
     max-height: 92vh;
     overflow: auto;
