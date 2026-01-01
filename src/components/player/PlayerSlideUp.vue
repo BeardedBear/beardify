@@ -75,15 +75,14 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
 
   .panel {
     background-color: var(--bg-color);
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
     bottom: 0;
-    box-shadow: 0 -6px 24px rgb(0 0 0 / 40%);
+    box-shadow: 0 -1rem 3rem rgb(0 0 0 );
     left: 0;
     max-height: 92vh;
     overflow: auto;
     padding: 2rem;
-    padding-bottom: 4rem;
     position: absolute;
     right: 0;
     z-index: 1000;
