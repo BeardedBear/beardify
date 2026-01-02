@@ -16,7 +16,7 @@
           </router-link>
           <span v-else>{{ playlistStore.playlist.owner.display_name }}</span>
           <span>&nbsp;·&nbsp;{{ playlistStore.playlist.tracks.total }} items</span>
-          <span v-if="!noDuration">— {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
+          <span v-if="!noDuration">&nbsp;·&nbsp;{{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
         </div>
         <div class="description" v-if="playlistStore.playlist.description !== 'No description'">
           {{ playlistStore.playlist.description }}
@@ -209,5 +209,9 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   border-radius: 0.3rem;
   height: 7rem;
   width: 7rem;
+
+  @include responsive.mobile {
+    display: none;
+  }
 }
 </style>
