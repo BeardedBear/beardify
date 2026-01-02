@@ -70,6 +70,10 @@
           Confirm
         </ButtonIndex>
       </div>
+      <div class="bottom" v-if="isTouchDevice()">
+        <p>Share content</p>
+        <ShareContent :beardify-url="$route.fullPath" :spotify-url="playlistStore.playlist.external_urls.spotify" />
+      </div>
     </div>
   </Dialog>
 </template>
@@ -81,15 +85,19 @@ import { UpdatePlaylistValues } from "@/@types/Dialog";
 import { NotificationType } from "@/@types/Notification";
 import { Playlist } from "@/@types/Playlist";
 import { instance } from "@/api";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import { notification } from "@/helpers/notifications";
-import { useAuth } from "@/views/auth/AuthStore";
-import Loading from "@/components/ui/LoadingDots.vue";
-import { useSidebar } from "@/components/sidebar/SidebarStore";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Dialog from "@/components/dialog/DialogWrap.vue";
+import { useSidebar } from "@/components/sidebar/SidebarStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import Loading from "@/components/ui/LoadingDots.vue";
+import { isTouchDevice } from "@/helpers/isTouchDevice";
+import { notification } from "@/helpers/notifications";
+import { useAuth } from "@/views/auth/AuthStore";
+import { usePlaylist } from "@/views/playlist/PlaylistStore";
+import ShareContent from "../ui/ShareContent.vue";
 
 const dialogStore = useDialog();
+const playlistStore = usePlaylist();
 const sidebarStore = useSidebar();
 const values: UpdatePlaylistValues = reactive({
   collaborative: false,
@@ -150,6 +158,16 @@ function remove(): void {
 
   to {
     opacity: 1;
+  }
+}
+
+.bottom {
+  border-top: 0.1rem solid var(--bg-color-light);
+  margin-top: 1rem;
+
+  p {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
   }
 }
 

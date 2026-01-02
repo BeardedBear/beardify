@@ -23,42 +23,17 @@
         </div>
       </div>
     </div>
-
-    <div>
-      <ButtonIndex class="mobile-options-toggle" icon-only @click="showOptions = true" size="small">
-        <i class="icon-more-horizontal" />
-      </ButtonIndex>
-    </div>
-
-    <div class="backdrop" v-if="showOptions" @click="showOptions = false" />
-
-    <div class="right" :class="{ 'is-open': showOptions }">
-      <div class="mobile-close" @click="showOptions = false">
-        <i class="icon-x" />
-      </div>
-      <Actions />
-      <input
-        class="search"
-        placeholder="Filter album/artist"
-        ref="searchElement"
-        type="search"
-        v-if="$route.name === 'Collection'"
-        v-model="playlistStore.filter"
-      />
-      <ShareContent :beardify-url="$route.fullPath" :spotify-url="playlistStore.playlist.external_urls.spotify" />
-    </div>
+    <Actions />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 
 import { PlaylistTrack } from "@/@types/Playlist";
+import { useDialog } from "@/components/dialog/DialogStore";
 import Actions from "@/components/playlist/PlaylistActions.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import ShareContent from "@/components/ui/ShareContent.vue";
 import { timecodeWithUnits } from "@/helpers/date";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -69,12 +44,11 @@ defineProps<{
 }>();
 
 const playlistStore = usePlaylist();
-const searchElement = ref<HTMLInputElement | null>(null);
-const showOptions = ref(false);
+const dialogStore = useDialog();
 
-onMounted(() => {
-  if (searchElement.value) searchElement.value.focus();
-});
+function openOptions(): void {
+  dialogStore.open({ playlistId: playlistStore.playlist.id, type: "playlistOptions" });
+}
 
 function sumDuration(tracks: PlaylistTrack[]): number {
   return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
