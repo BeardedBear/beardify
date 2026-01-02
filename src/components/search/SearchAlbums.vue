@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="album-wrap">
     <SearchTitle title="Albums" />
     <div class="album-list">
       <template v-if="searchStore.albums.length">
@@ -73,5 +73,9 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
   @include responsive.mobile {
     grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
   }
+}
+
+.album-wrap {
+  padding: 0 1rem;
 }
 </style>

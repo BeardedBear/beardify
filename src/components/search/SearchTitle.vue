@@ -21,7 +21,7 @@ defineProps<{
   text-transform: uppercase;
 
   @include responsive.mobile {
-    padding: 0.5rem;
+    padding: 0 0 0.5rem;
   }
 }
 </style>

@@ -34,6 +34,8 @@ const searchStore = useSearch();
 @use "@/assets/scss/search-item" as search;
 
 .podcast-list {
+  padding: 0 1rem;
+
   .podcast {
     @include search.search-item-base;
   }
