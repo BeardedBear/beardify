@@ -4,11 +4,11 @@
       <div class="title">{{ album.name }}</div>
       <div class="infos">
         <ArtistList :artist-list="album.artists" />
-        —
+        <span>&nbsp;·&nbsp;</span>
         <span v-if="album.release_date_precision === 'year'">{{ album.release_date }}</span>
         <span v-else-if="album.release_date_precision === 'month'">{{ album.release_date.split("-").shift() }}</span>
         <span v-else>{{ date(album.release_date) }}</span>
-        —
+        <span>&nbsp;·&nbsp;</span>
         <span>{{ timecodeWithUnits(sumDuration(album.tracks.items)) }}</span>
       </div>
     </div>
@@ -39,10 +39,10 @@
 <script lang="ts" setup>
 import { Album } from "@/@types/Album";
 import { Track, TrackSimplified } from "@/@types/Track";
-import { date, timecodeWithUnits } from "@/helpers/date";
 import ArtistList from "@/components/artist/ArtistList.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
+import { date, timecodeWithUnits } from "@/helpers/date";
 
 const props = defineProps<{ album: Album }>();
 
@@ -63,8 +63,9 @@ function openLink(url: string): void {
   display: flex;
   justify-content: space-between;
 
-  @include responsive.l {
+  @include responsive.mobile {
     flex-direction: column;
+    gap: 1rem;
   }
 }
 
