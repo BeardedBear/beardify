@@ -20,7 +20,7 @@
 
 <script lang="ts" setup>
 import { useElementBounding } from "@vueuse/core";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 
 import Options from "@/components/artist/ArtistOptions.vue";
 import ArtistProfile from "@/components/artist/ArtistProfile.vue";
@@ -34,14 +34,31 @@ const artistStore = useArtist();
 const dialogStore = useDialog();
 const { height } = useElementBounding(domHeader);
 
-const tabs: Tab[] = [
+const infoAvailable = computed(() => {
+  return Boolean(artistStore.wikidataArtist || artistStore.wikipediaExtract);
+});
+
+const tabs = computed<Tab[]>(() => [
   { icon: "icon-disc", id: "discography", label: "Discography" },
-  { icon: "icon-info", id: "info", label: "Info" },
-];
+  {
+    icon: "icon-info",
+    id: "info",
+    label: "Info",
+    disabled: !infoAvailable.value,
+    tooltip: !infoAvailable.value ? "No additional information available" : undefined,
+  },
+]);
 
 watch(height, (newHeight) => {
   if (newHeight > 0) {
     artistStore.updateHeaderHeight(newHeight);
+  }
+});
+
+// If info becomes unavailable while the Info tab is active, reset to Discography
+watch(infoAvailable, (available) => {
+  if (!available && artistStore.activeTab === "info") {
+    artistStore.activeTab = "discography";
   }
 });
 </script>
