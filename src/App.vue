@@ -218,7 +218,7 @@ body {
 }
 
 .main-content {
-  display: flex;
+  display: grid;
   flex-direction: column;
   overflow: hidden;
 }

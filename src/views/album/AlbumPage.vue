@@ -107,12 +107,16 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 }
 
 .track {
+  @include font-bold;
+
   border-radius: 0.4rem;
   cursor: pointer;
   display: grid;
   font-size: 0.9rem;
-
-  @include font-bold;
+  grid-template-columns: 2rem 1fr auto;
+  margin-bottom: 0.3rem;
+  padding: 0.4rem 0.8rem;
+  position: relative;
 
   &:hover {
     background-color: var(--bg-color-dark);
@@ -139,6 +143,8 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 
 .track-number {
   @include font-italic;
+
+  opacity: 0.5;
 }
 
 .content {
