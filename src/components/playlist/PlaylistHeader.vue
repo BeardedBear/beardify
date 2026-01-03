@@ -18,7 +18,12 @@
           <span>&nbsp;·&nbsp;{{ playlistStore.playlist.tracks.total }} items</span>
           <span v-if="!noDuration">&nbsp;·&nbsp;{{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
         </div>
-        <div class="description" v-if="playlistStore.playlist.description !== 'No description'">
+        <div
+          class="description"
+          v-if="
+            playlistStore.playlist.description !== 'null' && playlistStore.playlist.description !== 'No description'
+          "
+        >
           {{ playlistStore.playlist.description }}
         </div>
       </div>
