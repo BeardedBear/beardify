@@ -63,6 +63,17 @@ artistStore.clean().finally(() => {
   margin-bottom: 0.8rem;
   position: sticky;
   z-index: 15;
+
+  &::after {
+    background-color: var(--bg-color-darker);
+    bottom: 0;
+    content: "";
+    height: 100%;
+    left: -1rem;
+    position: absolute;
+    right: -1rem;
+    z-index: -1;
+  }
 }
 </style>
 
