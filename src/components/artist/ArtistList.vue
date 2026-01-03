@@ -2,7 +2,9 @@
   <span :key="index" v-for="(artist, index) in artistList">
     <span :class="{ feat }" @click.stop="goArtist(`/artist/${artist.uri.split(':').pop()}`)" class="artist">
       <span>{{ artist.name }}</span>
-      <span class="options"><ArtistLinks :artist-name="artist.name" floating /></span>
+      <span class="options">
+        <ArtistLinks :artist-name="artist.name" floating />
+      </span>
     </span>
     <span class="separator" v-if="artistList && artistList.length - 1 !== index">
       /

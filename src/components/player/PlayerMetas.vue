@@ -81,9 +81,12 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 }
 
 .track-details {
-  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  @media (hover: hover) {
+    overflow: visible;
+  }
 
   @include responsive.mobile {
     display: flex;
@@ -155,7 +158,6 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
   flex: 1;
   gap: 1rem;
   min-width: 0;
-  overflow: hidden;
 
   @include responsive.mobile {
     pointer-events: none;
@@ -176,10 +178,16 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 
 .text-content {
   min-width: 0;
-  overflow: hidden;
+
+  @media (hover: hover) {
+    overflow: visible;
+
+    > div {
+      overflow: visible;
+    }
+  }
 
   > div {
-    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }

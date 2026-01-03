@@ -359,7 +359,7 @@ async function deleteAlbum(albumId: string): Promise<void> {
 }
 
 .artists {
-  overflow: hidden;
+  overflow: visible;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

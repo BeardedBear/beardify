@@ -71,7 +71,9 @@ function openLink(url: string): void {
 }
 
 .infos {
-  opacity: 0.4;
+  color: var(--font-color-darker);
+
+  // opacity: 0.4;
 }
 
 .title {
