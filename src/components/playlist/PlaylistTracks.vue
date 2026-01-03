@@ -187,7 +187,9 @@ async function deleteSong(songId: string): Promise<void> {
   .owner {
     color: currentcolor;
     font-size: 0.9rem;
-    font-style: italic;
+
+    @include font-italic;
+
     opacity: 0.5;
     text-decoration: none;
   }

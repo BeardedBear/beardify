@@ -178,14 +178,14 @@ $radius: 2rem;
 }
 
 .head {
+  @include font-bold;
+  @include squircle;
+
   background-color: var(--bg-color-light);
   border-radius: $radius $radius 0 0;
   font-size: 1rem;
-  font-weight: 700;
   padding: 1rem 1.5rem;
   position: relative;
-
-  @include squircle;
 }
 
 @keyframes pop-dialog-content {

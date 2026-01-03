@@ -139,7 +139,9 @@ onBeforeUnmount(() => {
 input {
   &::placeholder {
     color: var(--font-color);
-    font-style: italic;
+
+    @include font-italic;
+
     opacity: 0.3;
   }
 }
@@ -147,6 +149,12 @@ input {
 body {
   -webkit-font-smoothing: subpixel-antialiased;
   -webkit-font-smoothing: antialiased;
+  font-variation-settings:
+    "slnt" var(--font-variation-slnt),
+    "wdth" var(--font-variation-wdth),
+    "GRAD" var(--font-variation-grad),
+    "ROND" var(--font-variation-rond),
+    "wght" var(--font-variation-wght);
   overflow: hidden;
   scrollbar-color: var(--primary-color-dark) var(--bg-color-dark);
   scrollbar-width: thin;
@@ -182,22 +190,10 @@ body {
   background-color: var(--bg-color-darker);
   color: var(--font-color);
   display: grid;
-  font-family:
-    "Google Sans Flex",
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
+  font-family: var(--font-family-base);
   font-optical-sizing: auto;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  font-variation-settings:
-    "opsz" 20,
-    "wght" 400;
-  font-weight: 400;
   grid-template-rows: 1fr auto;
   height: 100vh;
   line-height: 1.4;

@@ -30,11 +30,11 @@
 
 <script lang="ts" setup>
 import { Release } from "@/@types/Releases";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import { useReleases } from "@/views/releases/ReleasesStore";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
 import { useSearch } from "@/components/search/SearchStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { useReleases } from "@/views/releases/ReleasesStore";
 
 defineProps<{
   release: Release;

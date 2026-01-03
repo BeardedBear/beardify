@@ -121,20 +121,24 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 }
 
 .artistname {
+  @include font-bold;
+
   color: currentcolor;
-  font-weight: 700;
   text-decoration: none;
 }
 
 .album {
   font-size: 0.9rem;
-  font-style: italic;
+
+  @include font-italic;
 
   .link {
     color: currentcolor;
     cursor: pointer;
     font-size: 0.9rem;
-    font-style: italic;
+
+    @include font-italic;
+
     opacity: 0.5;
     text-decoration: none;
 

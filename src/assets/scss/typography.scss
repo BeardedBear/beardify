@@ -1,5 +1,17 @@
 @use "@/assets/scss/responsive" as responsive;
 
+:root {
+  --font-family-base:
+    "Google Sans Flex", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen, ubuntu, cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
+  --font-variation-slnt: 0;
+  --font-variation-slnt-italic: -10;
+  --font-variation-wdth: 60;
+  --font-variation-grad: 0;
+  --font-variation-rond: 20;
+  --font-variation-wght: 400;
+  --font-variation-wght-bold: 600;
+}
 
 html {
   /* stylelint-disable property-no-vendor-prefix */
@@ -10,10 +22,22 @@ html {
   /* stylelint-enable property-no-vendor-prefix */
 }
 
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-family-base);
+  font-variation-settings:
+    "slnt" var(--font-variation-slnt),
+    "wdth" var(--font-variation-wdth),
+    "GRAD" var(--font-variation-grad),
+    "ROND" var(--font-variation-rond),
+    "wght" var(--font-variation-wght);
+}
+
 /* Slightly increase max size on very wide screens (>= 1930px) using existing mixin */
 @include responsive.l {
   html {
     font-size: clamp(14px, calc(1rem + 0.8vw), 18px);
   }
 }
-

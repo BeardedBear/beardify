@@ -125,7 +125,9 @@ onClickOutside(popup, () => playerStore.closeQueue());
 .empty-message {
   color: var(--font-color);
   font-size: 0.9rem;
-  font-style: italic;
+
+  @include font-italic;
+
   opacity: 0.6;
 }
 </style>

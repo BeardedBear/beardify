@@ -41,8 +41,8 @@
 </template>
 
 <script lang="ts" setup>
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useConfig } from "@/components/config/ConfigStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 const configStore = useConfig();
 

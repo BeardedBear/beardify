@@ -40,11 +40,11 @@ import { onClickOutside } from "@vueuse/core";
 import { ref } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
-import { notification } from "@/helpers/notifications";
-import { useAuth } from "@/views/auth/AuthStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Colors from "@/components/config/ColorsTheme.vue";
 import { useConfig } from "@/components/config/ConfigStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { notification } from "@/helpers/notifications";
+import { useAuth } from "@/views/auth/AuthStore";
 
 const env = process.env.NODE_ENV;
 const authStore = useAuth();
@@ -71,8 +71,9 @@ onClickOutside(domConfig, (): void => configStore.close());
 }
 
 .section-title {
+  @include font-bold;
+
   font-size: 0.8rem;
-  font-weight: 700;
   opacity: 0.5;
   text-transform: uppercase;
 }
@@ -84,9 +85,9 @@ onClickOutside(domConfig, (): void => configStore.close());
 }
 
 .user-mail {
+  @include font-italic;
+
   font-size: 0.9rem;
-  font-style: italic;
-  font-weight: 400;
   margin-top: 0.1rem;
   opacity: 0.5;
 }

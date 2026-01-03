@@ -3,16 +3,32 @@
   corner-shape: squircle;
 }
 
-// Use this mixin to replace literal `font-weight: bold;` occurrences
-// Ensures consistent weight and enables variable font axis when available
 @mixin font-bold {
-  font-weight: 700;
+  font-variation-settings:
+    "slnt" var(--font-variation-slnt),
+    "wdth" var(--font-variation-wdth),
+    "GRAD" var(--font-variation-grad),
+    "ROND" var(--font-variation-rond),
+    "wght" var(--font-variation-wght-bold);
 
-  /* stylelint-disable-next-line no-invalid-position-declaration */
-  @supports (font-variation-settings: "wght" 700) {
-    /* stylelint-disable-next-line no-invalid-position-declaration, property-no-unknown */
-    font-variation-settings: "wght" 700;
+  @supports not font-tech(variations) {
+    /* stylelint-disable-next-line no-invalid-position-declaration */
+    font-weight: 700;
   }
+}
+
+@mixin font-italic {
+  @supports not font-tech(variations) {
+    /* stylelint-disable-next-line no-invalid-position-declaration */
+    font-style: italic;
+  }
+
+  font-variation-settings:
+    "slnt" var(--font-variation-slnt-italic),
+    "wdth" var(--font-variation-wdth),
+    "GRAD" var(--font-variation-grad),
+    "ROND" var(--font-variation-rond),
+    "wght" var(--font-variation-wght);
 }
 
 @keyframes pop-content {

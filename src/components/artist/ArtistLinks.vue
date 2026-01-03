@@ -125,6 +125,7 @@ onUpdated(() => updateLinks());
 
 <style lang="scss" scoped>
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .links {
   align-items: center;
@@ -144,9 +145,10 @@ onUpdated(() => updateLinks());
   }
 
   .link-name {
+    @include font-bold;
+
     color: var(--font-color);
     display: none; /* hidden on desktop */
-    font-weight: 600;
     white-space: nowrap;
   }
 }

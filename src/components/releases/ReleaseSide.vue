@@ -23,9 +23,10 @@ const releasesStore = useReleases();
 @use "@/assets/scss/mixins" as *;
 
 .title {
+  @include font-bold;
+
   background-color: var(--bg-color-darker);
   color: var(--primary-color);
-  font-weight: 700;
   padding: 1rem 0.5rem 0.5rem;
   position: sticky;
   text-transform: uppercase;

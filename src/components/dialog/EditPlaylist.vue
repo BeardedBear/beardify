@@ -233,7 +233,7 @@ label {
   &::placeholder {
     color: var(--font-color);
     font-style: italic;
-    font-weight: normal;
+    font-weight: var(--font-variation-wgth);
     opacity: 0.2;
   }
 

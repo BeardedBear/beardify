@@ -41,6 +41,7 @@ function goArtist(artistUri: string): void {
 
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as *;
 
 .separator {
   opacity: 0.2;
@@ -91,7 +92,9 @@ function goArtist(artistUri: string): void {
 
   &.feat {
     font-size: 0.9rem;
-    font-style: italic;
+
+    @include font-italic;
+
     opacity: 0.5;
   }
 

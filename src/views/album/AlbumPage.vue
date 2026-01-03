@@ -138,8 +138,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 }
 
 .track-number {
-  font-style: italic;
-  opacity: 0.5;
+  @include font-italic;
 }
 
 .content {

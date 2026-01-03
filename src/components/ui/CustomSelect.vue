@@ -94,7 +94,11 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 .custom-select {
+  @include font-bold;
+
   display: inline-flex;
   flex-direction: column;
   max-width: 60%;
@@ -122,6 +126,8 @@ onBeforeUnmount(() => {
 }
 
 .select-trigger {
+  @include font-bold;
+
   align-items: center;
   background-color: var(--bg-color-lighter);
   border: none;

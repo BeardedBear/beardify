@@ -7,7 +7,6 @@
       class="tab"
       @click="$emit('update:modelValue', tab.id)"
     >
-      <!-- <i :class="tab.icon" /> -->
       <span>{{ tab.label }}</span>
     </button>
   </div>
@@ -55,8 +54,6 @@ defineEmits<{
   cursor: pointer;
   display: flex;
 
-  // font-size: 0.9rem;
-
   @include font-bold;
 
   gap: 0.4rem;
@@ -79,9 +76,5 @@ defineEmits<{
     background-color: var(--bg-color-darker);
     opacity: 1;
   }
-
-  // i {
-  //   font-size: 1rem;
-  // }
 }
 </style>

@@ -21,13 +21,13 @@
 </template>
 
 <script lang="ts" setup>
+import { useDialog } from "@/components/dialog/DialogStore";
+import { usePlayer } from "@/components/player/PlayerStore";
+import Cover from "@/components/ui/AlbumCover.vue";
 import { timecode } from "@/helpers/date";
 import { isCurrentTrack } from "@/helpers/helper";
 import { playSongs } from "@/helpers/play";
 import { useArtist } from "@/views/artist/ArtistStore";
-import Cover from "@/components/ui/AlbumCover.vue";
-import { useDialog } from "@/components/dialog/DialogStore";
-import { usePlayer } from "@/components/player/PlayerStore";
 
 const artistStore = useArtist();
 const playerStore = usePlayer();

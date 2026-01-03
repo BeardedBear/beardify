@@ -366,7 +366,9 @@ async function deleteAlbum(albumId: string): Promise<void> {
 
 .date {
   font-size: 0.8rem;
-  font-style: italic;
+
+  @include font-italic;
+
   opacity: 0.3;
 }
 

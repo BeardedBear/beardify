@@ -202,19 +202,21 @@ $margin: 0.2rem;
 }
 
 .sidebar-title {
+  @include font-bold;
+
   background-color: var(--bg-color-light);
   border-radius: $radius $radius 0 0;
   font-size: 0.9rem;
-  font-weight: 600;
   margin: $margin;
   padding: 0.5rem 1rem;
   text-transform: uppercase;
 }
 
 .sidebar-subtitle {
+  @include font-bold;
+
   border-top: 1px solid var(--bg-color-light);
   font-size: 0.75rem;
-  font-weight: 600;
   margin: 0 1rem;
   opacity: 0.6;
   padding: 0.75rem 0 0.25rem;

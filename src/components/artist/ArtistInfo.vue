@@ -165,10 +165,11 @@ onMounted(() => {
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(h2) {
+    @include font-bold;
+
     border-bottom: 1px solid var(--bg-color-light);
     color: var(--font-color-default);
     font-size: 1.2rem;
-    font-weight: 600;
     margin-bottom: 0.8rem;
     margin-top: 1.5rem;
     padding-bottom: 0.4rem;
@@ -176,18 +177,20 @@ onMounted(() => {
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(h3) {
+    @include font-bold;
+
     color: var(--font-color-default);
     font-size: 1rem;
-    font-weight: 600;
     margin-bottom: 0.6rem;
     margin-top: 1.2rem;
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(h4) {
+    @include font-bold;
+
     color: var(--font-color-default);
     font-size: 0.95rem;
-    font-weight: 600;
     margin-bottom: 0.5rem;
     margin-top: 1rem;
   }
@@ -226,8 +229,7 @@ onMounted(() => {
   :deep(i),
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(em) {
-    font-style: italic;
-
+    @include font-italic;
     @include font-bold;
   }
 
@@ -249,8 +251,9 @@ onMounted(() => {
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(th) {
+    @include font-bold;
+
     background-color: var(--bg-color-dark);
-    font-weight: 600;
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -268,7 +271,7 @@ onMounted(() => {
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(em) {
-    font-style: italic;
+    @include font-italic;
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */

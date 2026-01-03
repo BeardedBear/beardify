@@ -106,9 +106,10 @@ const getDialogTitle = (): string => {
   }
 
   span {
+    @include font-bold;
+
     color: var(--font-color);
     font-size: 0.9rem;
-    font-weight: 500;
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;

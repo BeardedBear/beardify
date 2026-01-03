@@ -119,6 +119,7 @@ const classes = computed(() => {
 
 .button {
   @include squircle;
+  @include font-bold;
 
   align-items: center;
   appearance: none;
@@ -128,8 +129,7 @@ const classes = computed(() => {
   color: var(--font-color-dark);
   cursor: pointer;
   display: inline-flex;
-  font-family: inherit;
-  font-weight: 700;
+  font-family: var(--font-family-base);
   gap: 8px;
   justify-content: center;
   line-height: 1;

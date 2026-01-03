@@ -73,7 +73,9 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 
 .description {
   font-size: 0.9rem;
-  font-style: italic;
+
+  @include font-italic;
+
   margin-top: 0.5rem;
   max-width: 80%;
   opacity: 0.5;

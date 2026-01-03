@@ -24,8 +24,8 @@
 
 <script lang="ts" setup>
 import { Track, TrackSimplified } from "@/@types/Track";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 
 const { addTrackToQueue } = usePlayer();

@@ -23,17 +23,17 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
 import { NotificationType } from "@/@types/Notification";
 import { instance } from "@/api";
-import { notification } from "@/helpers/notifications";
-import { trackAllreadyExist } from "@/helpers/playlist";
-import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
-import { useSidebar } from "@/components/sidebar/SidebarStore";
-import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Dialog from "@/components/dialog/DialogWrap.vue";
 import PreContentTrack from "@/components/dialog/PreContentTrack.vue";
+import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
+import { useSidebar } from "@/components/sidebar/SidebarStore";
+import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
+import { notification } from "@/helpers/notifications";
+import { trackAllreadyExist } from "@/helpers/playlist";
+import { computed } from "vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
