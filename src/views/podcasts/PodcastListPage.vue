@@ -19,9 +19,9 @@
 </template>
 
 <script lang="ts" setup>
+import PodcastCard from "@/components/podcast/PodcastCard.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
-import PodcastCard from "@/components/podcast/PodcastCard.vue";
 import { usePodcasts } from "@/views/podcasts/PodcastsStore";
 
 const podcastsStore = usePodcasts();
@@ -33,6 +33,7 @@ podcastsStore.clean().finally(() => {
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .loader {
   display: grid;
@@ -61,7 +62,8 @@ podcastsStore.clean().finally(() => {
   .name {
     flex: 1;
     font-size: 2.5rem;
-    font-weight: bold;
+
+    @include font-bold;
   }
 }
 </style>

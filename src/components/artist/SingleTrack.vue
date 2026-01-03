@@ -18,11 +18,11 @@
 <script lang="ts" setup>
 import { AlbumSimplified } from "@/@types/Album";
 import { instance } from "@/api";
+import ArtistList from "@/components/artist/ArtistList.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
+import Cover from "@/components/ui/AlbumCover.vue";
 import { date } from "@/helpers/date";
 import { isCurrentTrack } from "@/helpers/helper";
-import Cover from "@/components/ui/AlbumCover.vue";
-import { usePlayer } from "@/components/player/PlayerStore";
-import ArtistList from "@/components/artist/ArtistList.vue";
 
 defineProps<{
   single: AlbumSimplified;
@@ -36,6 +36,8 @@ function playSingle(albumUri: string): void {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 .single {
   align-items: center;
   border-radius: 0.3rem;
@@ -70,7 +72,8 @@ function playSingle(albumUri: string): void {
 
 .name {
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
 }
 
 .cover {

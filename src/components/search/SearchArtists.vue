@@ -38,6 +38,7 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/search-item" as search;
+@use "@/assets/scss/mixins" as *;
 
 .artist-list {
   padding: 0 1rem;
@@ -57,7 +58,9 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
     color: currentcolor;
     display: flex;
     font-size: 0.9rem;
-    font-weight: bold;
+
+    @include font-bold;
+
     gap: 1rem;
     margin-bottom: 0.4rem;
     padding: 0.5rem;

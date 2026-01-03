@@ -81,7 +81,7 @@ watch(
 
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 @use "@/assets/scss/responsive" as responsive;
 
 .btns {
@@ -92,7 +92,8 @@ watch(
 
 .time {
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
 
   @include responsive.mobile {
     display: none;
@@ -118,7 +119,7 @@ watch(
   opacity: 0.5;
   padding: 0.4rem 0.5rem;
 
-  @include mixins.squircle;
+  @include squircle;
 
   &.active {
     opacity: 1;

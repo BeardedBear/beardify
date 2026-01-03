@@ -55,6 +55,7 @@ onClickOutside(popup, () => playerStore.closeQueue());
 
 <style lang="scss" scoped>
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .wrap {
   display: flex;
@@ -102,7 +103,9 @@ onClickOutside(popup, () => playerStore.closeQueue());
 
 .section-title {
   font-size: 0.8rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   margin-top: 10px;
   opacity: 0.5;
   padding: 0 10px;
@@ -122,7 +125,9 @@ onClickOutside(popup, () => playerStore.closeQueue());
 .empty-message {
   color: var(--font-color);
   font-size: 0.9rem;
-  font-style: italic;
+
+  @include font-italic;
+
   opacity: 0.6;
 }
 </style>

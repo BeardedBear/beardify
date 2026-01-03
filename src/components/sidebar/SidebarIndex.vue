@@ -201,6 +201,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .empty {
   font-style: italic;
@@ -213,7 +214,9 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   color: currentcolor;
   display: flex;
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   justify-content: space-between;
   padding: 0.3rem 1.2rem 0.3rem 1rem;
   text-decoration: none;
@@ -341,7 +344,9 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   border: none;
   border-radius: 0.2rem;
   color: var(--font-color);
-  font-weight: bold;
+
+  @include font-bold;
+
   padding: 0.2rem 0.5rem;
   width: 100%;
 

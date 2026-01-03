@@ -58,6 +58,7 @@ function openLink(url: string): void {
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .album-header {
   display: flex;
@@ -70,12 +71,16 @@ function openLink(url: string): void {
 }
 
 .infos {
-  opacity: 0.4;
+  color: var(--font-color-darker);
+
+  // opacity: 0.4;
 }
 
 .title {
   font-size: 2rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   margin-bottom: 0.4rem;
 }
 

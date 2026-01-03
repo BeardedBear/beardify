@@ -71,6 +71,7 @@ userStore.clean().finally(() => {
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .head {
   overflow: hidden;
@@ -112,7 +113,8 @@ userStore.clean().finally(() => {
 
   .name {
     font-size: 2rem;
-    font-weight: bold;
+
+    @include font-bold;
   }
 
   .avatar-bg {
@@ -145,23 +147,7 @@ userStore.clean().finally(() => {
 
   .gallery {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-
-    @include responsive.mobile {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @include responsive.tablet {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    @include responsive.l {
-      grid-template-columns: repeat(8, 1fr);
-    }
-
-    @include responsive.hdpi {
-      grid-template-columns: repeat(9, 1fr);
-    }
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   }
 
   .playlist-cover {
@@ -174,10 +160,13 @@ userStore.clean().finally(() => {
   .playlist {
     border-radius: 0.5rem;
     color: var(--font-color);
-    font-weight: bold;
     padding: 1rem;
     text-decoration: none;
-    transition: 0.15s;
+    transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
+
+    @include font-bold;
 
     &:hover {
       background-color: var(--bg-color-light);

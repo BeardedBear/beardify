@@ -74,11 +74,11 @@
 
 <script lang="ts" setup>
 import { Episode } from "@/@types/Podcast";
+import { usePlayer } from "@/components/player/PlayerStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import Loading from "@/components/ui/LoadingDots.vue";
 import { date, timecodeWithUnits } from "@/helpers/date";
 import { playSong } from "@/helpers/play";
-import Loading from "@/components/ui/LoadingDots.vue";
-import { usePlayer } from "@/components/player/PlayerStore";
 
 const playerStore = usePlayer();
 
@@ -88,6 +88,8 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 .progress {
   background-color: var(--bg-color-dark);
   border-radius: 1rem;
@@ -128,7 +130,9 @@ defineProps<{
   .metas {
     display: flex;
     font-size: 0.9rem;
-    font-weight: bold;
+
+    @include font-bold;
+
     gap: 0.5rem;
     opacity: 0.5;
   }
@@ -172,14 +176,16 @@ defineProps<{
 }
 
 .description {
-  font-style: italic;
+  @include font-italic;
+
   margin-top: 0.5rem;
   opacity: 0.3;
 }
 
 .name {
   font-size: 1.1rem;
-  font-weight: bold;
+
+  @include font-bold;
 }
 
 .content {

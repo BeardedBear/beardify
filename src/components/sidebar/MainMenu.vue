@@ -28,7 +28,7 @@ import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 <style lang="scss" scoped>
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 .menu {
   display: flex;
@@ -43,11 +43,13 @@ import ButtonIndex from "@/components/ui/ButtonIndex.vue";
   display: block;
   flex: 1;
   font-size: 1rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   padding: 0.4rem 0.8rem;
   text-decoration: none;
 
-  @include mixins.squircle;
+  @include squircle;
 
   &.disabled {
     cursor: not-allowed;

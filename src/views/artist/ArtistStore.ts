@@ -112,6 +112,10 @@ export const useArtist = defineStore("artist", {
 
     async getIds(artistName: string) {
       this.musicbrainzArtist = null;
+      this.discogsId = null;
+      this.wikidataId = null;
+      this.wikidataArtist = null;
+      this.wikipediaExtract = null;
       try {
         const artist = await searchMusicBrainzArtistId(artistName);
 
@@ -124,11 +128,22 @@ export const useArtist = defineStore("artist", {
 
         const { discogsId, wikidataId } = extractExternalIds(artistFull);
 
-        if (discogsId) this.discogsId = discogsId;
-        if (wikidataId) this.wikidataId = wikidataId;
+        // Update discogs fields: set or clear and fetch when present
+        if (discogsId) {
+          this.discogsId = discogsId;
+          this.getDiscogsArtist(discogsId);
+        } else {
+          this.discogsId = null;
+          this.discogsArtist = null;
+        }
 
-        if (this.discogsId) {
-          this.getDiscogsArtist(this.discogsId);
+        // Update wikidata fields: set or clear; clear related data when absent
+        if (wikidataId) {
+          this.wikidataId = wikidataId;
+        } else {
+          this.wikidataId = null;
+          this.wikidataArtist = null;
+          this.wikipediaExtract = null;
         }
       } catch {
         this.discogsId = null;

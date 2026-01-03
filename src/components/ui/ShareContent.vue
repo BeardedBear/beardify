@@ -30,7 +30,7 @@ const clipboardBeardify = useClipboard({
 </script>
 
 <style lang="scss" scoped>
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 $radius: 1rem;
 
@@ -42,7 +42,7 @@ $radius: 1rem;
   height: 2.25rem;
   position: relative;
 
-  @include mixins.squircle;
+  @include squircle;
 }
 
 .title {
@@ -51,7 +51,7 @@ $radius: 1rem;
   border-radius: $radius 0 0 $radius;
   display: flex;
 
-  @include mixins.squircle;
+  @include squircle;
 }
 
 .share-icon {
@@ -101,7 +101,9 @@ $radius: 1rem;
 .copied {
   animation: pop 0.2s ease both;
   font-size: 0.8rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   left: 50%;
   margin-right: 0.8rem;
   opacity: 0.5;

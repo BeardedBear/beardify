@@ -122,6 +122,8 @@ onClickOutside(devicesRef, () => {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 $gap-list: 10px;
 
 .available-device-list {
@@ -205,7 +207,9 @@ $gap-list: 10px;
   color: var(--font-color-default);
   display: inline-block;
   font-size: 0.6rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   justify-content: center;
   min-width: 32px;
   padding: 0.15rem 0.4rem;

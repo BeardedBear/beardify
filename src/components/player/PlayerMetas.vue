@@ -40,6 +40,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 <style lang="scss" scoped>
 @use "sass:color";
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .cover {
   border-radius: 0.3rem;
@@ -80,9 +81,12 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 }
 
 .track-details {
-  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  @media (hover: hover) {
+    overflow: visible;
+  }
 
   @include responsive.mobile {
     display: flex;
@@ -92,7 +96,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 }
 
 .trackname {
-  font-weight: bold;
+  @include font-bold;
 
   @include responsive.mobile {
     overflow: hidden;
@@ -120,20 +124,24 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 }
 
 .artistname {
+  @include font-bold;
+
   color: currentcolor;
-  font-weight: 700;
   text-decoration: none;
 }
 
 .album {
   font-size: 0.9rem;
-  font-style: italic;
+
+  @include font-italic;
 
   .link {
     color: currentcolor;
     cursor: pointer;
     font-size: 0.9rem;
-    font-style: italic;
+
+    @include font-italic;
+
     opacity: 0.5;
     text-decoration: none;
 
@@ -150,7 +158,6 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
   flex: 1;
   gap: 1rem;
   min-width: 0;
-  overflow: hidden;
 
   @include responsive.mobile {
     pointer-events: none;
@@ -171,10 +178,16 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 
 .text-content {
   min-width: 0;
-  overflow: hidden;
+
+  @media (hover: hover) {
+    overflow: visible;
+
+    > div {
+      overflow: visible;
+    }
+  }
 
   > div {
-    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }

@@ -73,6 +73,7 @@ watch(
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 @keyframes pop-seek {
   from {
@@ -121,7 +122,9 @@ watch(
       bottom: calc(100% + 0.4rem);
       color: color.change(white, $alpha: 0.8);
       font-size: 0.9rem;
-      font-weight: bold;
+
+      @include font-bold;
+
       padding: 0.1rem 0.4rem;
       pointer-events: none;
       position: absolute;

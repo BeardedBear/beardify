@@ -27,13 +27,13 @@
 <script lang="ts" setup>
 import { RouterLink } from "vue-router";
 
-import router from "@/router";
-import { useAuth } from "@/views/auth/AuthStore";
-import Cover from "@/components/ui/AlbumCover.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Config from "@/components/config/ConfigIndex.vue";
 import { useConfig } from "@/components/config/ConfigStore";
 import { useDialog } from "@/components/dialog/DialogStore";
+import Cover from "@/components/ui/AlbumCover.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import router from "@/router";
+import { useAuth } from "@/views/auth/AuthStore";
 
 const authStore = useAuth();
 const configStore = useConfig();
@@ -42,7 +42,7 @@ const dialogStore = useDialog();
 
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 .topbar {
   align-items: center;
@@ -91,7 +91,7 @@ const dialogStore = useDialog();
     height: $size;
     width: $size;
 
-    @include mixins.squircle;
+    @include squircle;
   }
 
   .icon {
@@ -103,7 +103,9 @@ const dialogStore = useDialog();
     bottom: $offset;
     color: var(--bg-color);
     font-size: 0.7rem;
-    font-weight: bold;
+
+    @include font-bold;
+
     position: absolute;
     right: $offset;
   }
@@ -125,7 +127,8 @@ const dialogStore = useDialog();
 
   a {
     color: var(--bg-color-light);
-    font-weight: bold;
+
+    @include font-bold;
 
     &.router-link-exact-active {
       color: var(--primary-color);

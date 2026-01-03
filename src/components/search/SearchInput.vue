@@ -17,8 +17,8 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useSearch } from "@/components/search/SearchStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 const searchStore = useSearch();
 const query = ref<string>("");
@@ -41,7 +41,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 $radius: 1rem;
 
@@ -51,17 +51,18 @@ $radius: 1rem;
 }
 
 .input {
+  @include font-bold;
+
   background-color: var(--bg-color-light);
   border: 0;
   border-radius: $radius;
   color: currentcolor;
   font-size: 1.2rem;
-  font-weight: 700;
   outline: 0;
   padding: 0.8rem 1.2rem;
   width: 100%;
 
-  @include mixins.squircle;
+  @include squircle;
 }
 
 .reset {

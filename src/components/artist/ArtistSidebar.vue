@@ -185,6 +185,8 @@ const hasContent = computed(
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 $radius: 0.5rem;
 $margin: 0.2rem;
 
@@ -200,19 +202,21 @@ $margin: 0.2rem;
 }
 
 .sidebar-title {
+  @include font-bold;
+
   background-color: var(--bg-color-light);
   border-radius: $radius $radius 0 0;
   font-size: 0.9rem;
-  font-weight: 600;
   margin: $margin;
   padding: 0.5rem 1rem;
   text-transform: uppercase;
 }
 
 .sidebar-subtitle {
+  @include font-bold;
+
   border-top: 1px solid var(--bg-color-light);
   font-size: 0.75rem;
-  font-weight: 600;
   margin: 0 1rem;
   opacity: 0.6;
   padding: 0.75rem 0 0.25rem;
@@ -234,7 +238,9 @@ $margin: 0.2rem;
 
 .sidebar-label {
   font-size: 0.7rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   opacity: 0.6;
   text-transform: uppercase;
 }
@@ -316,7 +322,9 @@ $margin: 0.2rem;
   border-radius: 0.25rem;
   color: var(--font-color-light);
   display: flex;
-  font-weight: bold;
+
+  @include font-bold;
+
   gap: 0.5rem;
   padding: 0.4rem 0.5rem;
   position: relative;

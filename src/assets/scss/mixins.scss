@@ -3,6 +3,34 @@
   corner-shape: squircle;
 }
 
+@mixin font-bold {
+  font-variation-settings:
+    "slnt" var(--font-variation-slnt),
+    "wdth" var(--font-variation-wdth),
+    "GRAD" var(--font-variation-grad),
+    "ROND" var(--font-variation-rond),
+    "wght" var(--font-variation-wght-bold);
+
+  @supports not font-tech(variations) {
+    /* stylelint-disable-next-line no-invalid-position-declaration */
+    font-weight: 700;
+  }
+}
+
+@mixin font-italic {
+  @supports not font-tech(variations) {
+    /* stylelint-disable-next-line no-invalid-position-declaration */
+    font-style: italic;
+  }
+
+  font-variation-settings:
+    "slnt" var(--font-variation-slnt-italic),
+    "wdth" var(--font-variation-wdth),
+    "GRAD" var(--font-variation-grad),
+    "ROND" var(--font-variation-rond),
+    "wght" var(--font-variation-wght);
+}
+
 @keyframes pop-content {
   from {
     opacity: 0;

@@ -16,10 +16,10 @@
 </template>
 
 <script lang="ts" setup>
-import Loader from "@/components/ui/LoadingDots.vue";
-import PageFit from "@/components/ui/PageFit.vue";
 import PodcastEpisode from "@/components/podcast/PodcastEpisode.vue";
 import PodcastFollowButton from "@/components/podcast/PodcastFollowButton.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
+import PageFit from "@/components/ui/PageFit.vue";
 import { usePodcasts } from "@/views/podcasts/PodcastsStore";
 
 const props = defineProps<{ id: string }>();
@@ -33,6 +33,8 @@ podcastsStore.clean().finally(() => {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 .loader {
   display: grid;
   place-content: center;
@@ -53,7 +55,8 @@ podcastsStore.clean().finally(() => {
   .name {
     flex: 1;
     font-size: 2.5rem;
-    font-weight: bold;
+
+    @include font-bold;
   }
 }
 </style>

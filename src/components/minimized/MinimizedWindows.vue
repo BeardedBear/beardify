@@ -66,7 +66,7 @@ const getDialogTitle = (): string => {
 </script>
 
 <style lang="scss" scoped>
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 .minimized-windows {
   bottom: 7rem;
@@ -90,7 +90,7 @@ const getDialogTitle = (): string => {
   pointer-events: all;
   transition: all 0.1s ease;
 
-  @include mixins.squircle;
+  @include squircle;
 }
 
 .window-content {
@@ -106,9 +106,10 @@ const getDialogTitle = (): string => {
   }
 
   span {
+    @include font-bold;
+
     color: var(--font-color);
     font-size: 0.9rem;
-    font-weight: 500;
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;

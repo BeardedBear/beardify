@@ -18,7 +18,12 @@
           <span>&nbsp;·&nbsp;{{ playlistStore.playlist.tracks.total }} items</span>
           <span v-if="!noDuration">&nbsp;·&nbsp;{{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
         </div>
-        <div class="description" v-if="playlistStore.playlist.description !== 'No description'">
+        <div
+          class="description"
+          v-if="
+            playlistStore.playlist.description !== 'null' && playlistStore.playlist.description !== 'No description'
+          "
+        >
           {{ playlistStore.playlist.description }}
         </div>
       </div>
@@ -53,7 +58,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 .search {
   background: var(--bg-color);
@@ -61,17 +66,21 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   border-radius: 1rem;
   color: var(--font);
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   outline: none;
   padding: 0.6rem 1rem;
   width: 10rem;
 
-  @include mixins.squircle;
+  @include squircle;
 }
 
 .description {
   font-size: 0.9rem;
-  font-style: italic;
+
+  @include font-italic;
+
   margin-top: 0.5rem;
   max-width: 80%;
   opacity: 0.5;
@@ -79,7 +88,8 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 
 .metas {
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
 
   .owner {
     color: var(--primary-color);
@@ -89,7 +99,9 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 
 .title {
   font-size: 2rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   line-height: 1;
   margin-bottom: 0.5rem;
 }

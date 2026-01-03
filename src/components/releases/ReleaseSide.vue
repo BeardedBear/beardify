@@ -20,10 +20,13 @@ const releasesStore = useReleases();
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 .title {
+  @include font-bold;
+
   background-color: var(--bg-color-darker);
   color: var(--primary-color);
-  font-weight: 700;
   padding: 1rem 0.5rem 0.5rem;
   position: sticky;
   text-transform: uppercase;
@@ -34,7 +37,9 @@ const releasesStore = useReleases();
   border-radius: 0.3rem;
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   padding: 0.2rem 0.6rem;
   text-transform: capitalize;
 

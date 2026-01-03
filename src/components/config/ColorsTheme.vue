@@ -41,8 +41,8 @@
 </template>
 
 <script lang="ts" setup>
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useConfig } from "@/components/config/ConfigStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 const configStore = useConfig();
 
@@ -72,7 +72,7 @@ const textColors: TextColors[] = [
 </script>
 
 <style lang="scss" scoped>
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 .schemes {
   display: flex;
@@ -142,7 +142,7 @@ const textColors: TextColors[] = [
 .radio-item {
   $radius: 1rem;
 
-  @include mixins.squircle;
+  @include squircle;
 
   background-color: var(--bg-color);
   border: 0;

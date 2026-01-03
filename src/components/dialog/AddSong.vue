@@ -23,17 +23,17 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
 import { NotificationType } from "@/@types/Notification";
 import { instance } from "@/api";
-import { notification } from "@/helpers/notifications";
-import { trackAllreadyExist } from "@/helpers/playlist";
-import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
-import { useSidebar } from "@/components/sidebar/SidebarStore";
-import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Dialog from "@/components/dialog/DialogWrap.vue";
 import PreContentTrack from "@/components/dialog/PreContentTrack.vue";
+import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
+import { useSidebar } from "@/components/sidebar/SidebarStore";
+import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
+import { notification } from "@/helpers/notifications";
+import { trackAllreadyExist } from "@/helpers/playlist";
+import { computed } from "vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -67,6 +67,7 @@ async function add(songUri: string, playlistId: string): Promise<void> {
 
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as *;
 
 .content {
   padding: 0.5rem;
@@ -76,7 +77,9 @@ async function add(songUri: string, playlistId: string): Promise<void> {
   align-items: center;
   display: flex;
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   justify-content: space-between;
 
   i {
@@ -89,7 +92,9 @@ async function add(songUri: string, playlistId: string): Promise<void> {
   border-radius: 0.3rem;
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   opacity: 0.7;
   padding: 0.5rem 1rem;
   transition: 0.1s;

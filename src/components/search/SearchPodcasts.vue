@@ -32,6 +32,7 @@ const searchStore = useSearch();
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/search-item" as search;
+@use "@/assets/scss/mixins" as *;
 
 .podcast-list {
   padding: 0 1rem;
@@ -53,7 +54,9 @@ const searchStore = useSearch();
 
 .name {
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   margin-bottom: 0.2rem;
 }
 
