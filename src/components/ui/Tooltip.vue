@@ -42,6 +42,9 @@ function hide() {
 }
 
 .tooltip {
+  --tooltip-translate: 0;
+  --tooltip-scale-current: var(--tooltip-scale-end);
+
   background: var(--bg-color-darker);
   border-radius: 0.4rem;
   color: var(--font-color);
@@ -51,6 +54,7 @@ function hide() {
   padding: 0.4rem 0.6rem;
   pointer-events: none;
   position: absolute;
+  transform: translate(-50%, var(--tooltip-translate)) scale(var(--tooltip-scale-current));
   white-space: nowrap;
   will-change: transform, opacity;
   z-index: 50;
@@ -76,35 +80,31 @@ function hide() {
 
 /* Top placement: slide up slightly */
 .tooltip.top {
+  --tooltip-translate: calc(-1 * var(--tooltip-translate-offset));
+  --tooltip-scale-current: var(--tooltip-scale-end);
+
   bottom: 100%;
   left: 50%;
-  transform: translate(-50%, calc(-1 * var(--tooltip-translate-offset))) scale(var(--tooltip-scale-end));
 }
 
 .tooltip.top.tooltip-enter-from,
 .tooltip.top.tooltip-leave-to {
-  transform: translate(-50%, calc(-1 * var(--tooltip-translate-distance))) scale(var(--tooltip-scale-start));
-}
-
-.tooltip.top.tooltip-enter-to,
-.tooltip.top.tooltip-leave-from {
-  transform: translate(-50%, calc(-1 * var(--tooltip-translate-offset))) scale(var(--tooltip-scale-end));
+  --tooltip-translate: calc(-1 * var(--tooltip-translate-distance));
+  --tooltip-scale-current: var(--tooltip-scale-start);
 }
 
 /* Bottom placement: slide down slightly */
 .tooltip.bottom {
+  --tooltip-translate: var(--tooltip-translate-offset);
+  --tooltip-scale-current: var(--tooltip-scale-end);
+
   left: 50%;
   top: 100%;
-  transform: translate(-50%, var(--tooltip-translate-offset)) scale(var(--tooltip-scale-end));
 }
 
 .tooltip.bottom.tooltip-enter-from,
 .tooltip.bottom.tooltip-leave-to {
-  transform: translate(-50%, var(--tooltip-translate-distance)) scale(var(--tooltip-scale-start));
-}
-
-.tooltip.bottom.tooltip-enter-to,
-.tooltip.bottom.tooltip-leave-from {
-  transform: translate(-50%, var(--tooltip-translate-offset)) scale(var(--tooltip-scale-end));
+  --tooltip-translate: var(--tooltip-translate-distance);
+  --tooltip-scale-current: var(--tooltip-scale-start);
 }
 </style>
