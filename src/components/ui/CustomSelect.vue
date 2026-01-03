@@ -97,6 +97,7 @@ onBeforeUnmount(() => {
 .custom-select {
   display: inline-flex;
   flex-direction: column;
+  max-width: 60%;
   position: relative;
 
   &.disabled {

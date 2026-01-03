@@ -67,7 +67,7 @@ function scrollToTop(): void {
 
 .nav {
   animation: pop-nav 0.5s ease 0.5s both;
-  bottom: 7rem;
+  bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

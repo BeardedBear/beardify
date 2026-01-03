@@ -31,7 +31,6 @@
 import { RouterLink } from "vue-router";
 
 import { PlaylistTrack } from "@/@types/Playlist";
-import { useDialog } from "@/components/dialog/DialogStore";
 import Actions from "@/components/playlist/PlaylistActions.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
 import { timecodeWithUnits } from "@/helpers/date";
@@ -44,11 +43,6 @@ defineProps<{
 }>();
 
 const playlistStore = usePlaylist();
-const dialogStore = useDialog();
-
-function openOptions(): void {
-  dialogStore.open({ playlistId: playlistStore.playlist.id, type: "playlistOptions" });
-}
 
 function sumDuration(tracks: PlaylistTrack[]): number {
   return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
