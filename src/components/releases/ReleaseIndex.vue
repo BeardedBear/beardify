@@ -52,6 +52,8 @@ function search(artist: string, album: string): void {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 .release-wrap {
   display: flex;
   gap: 0.3rem;
@@ -80,7 +82,9 @@ function search(artist: string, album: string): void {
   display: grid;
   flex: 1;
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   grid-template-columns: 0.6fr 0.6fr 1fr;
   justify-content: space-between;
   margin-bottom: 0.3rem;

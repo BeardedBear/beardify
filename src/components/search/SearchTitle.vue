@@ -12,11 +12,14 @@ defineProps<{
 
 <style lang="scss" scoped>
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .search-title {
   color: var(--primary-color);
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   margin: 0 0 1rem;
   text-transform: uppercase;
 

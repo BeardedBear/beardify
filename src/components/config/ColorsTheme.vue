@@ -72,7 +72,7 @@ const textColors: TextColors[] = [
 </script>
 
 <style lang="scss" scoped>
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 .schemes {
   display: flex;
@@ -142,7 +142,7 @@ const textColors: TextColors[] = [
 .radio-item {
   $radius: 1rem;
 
-  @include mixins.squircle;
+  @include squircle;
 
   background-color: var(--bg-color);
   border: 0;

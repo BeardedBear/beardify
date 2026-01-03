@@ -38,6 +38,7 @@ const searchStore = useSearch();
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/search-item" as search;
+@use "@/assets/scss/mixins" as *;
 
 .song-list {
   padding: 0 1rem;
@@ -62,6 +63,7 @@ const searchStore = useSearch();
 
 .track-name {
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
 }
 </style>

@@ -53,7 +53,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 .search {
   background: var(--bg-color);
@@ -61,12 +61,14 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   border-radius: 1rem;
   color: var(--font);
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   outline: none;
   padding: 0.6rem 1rem;
   width: 10rem;
 
-  @include mixins.squircle;
+  @include squircle;
 }
 
 .description {
@@ -79,7 +81,8 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 
 .metas {
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
 
   .owner {
     color: var(--primary-color);
@@ -89,7 +92,9 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 
 .title {
   font-size: 2rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   line-height: 1;
   margin-bottom: 0.5rem;
 }

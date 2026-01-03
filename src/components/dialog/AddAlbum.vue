@@ -68,6 +68,7 @@ async function add(albumId: string, playlistId: string): Promise<void> {
 
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as *;
 
 .content {
   padding: 0.5rem;
@@ -88,7 +89,9 @@ async function add(albumId: string, playlistId: string): Promise<void> {
   border-radius: 0.3rem;
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   opacity: 0.7;
   padding: 0.5rem 1rem;
   transition: 0.1s;

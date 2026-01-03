@@ -36,6 +36,8 @@ function playSingle(albumUri: string): void {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 .single {
   align-items: center;
   border-radius: 0.3rem;
@@ -70,7 +72,8 @@ function playSingle(albumUri: string): void {
 
 .name {
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
 }
 
 .cover {

@@ -56,7 +56,7 @@ onClickOutside(domConfig, (): void => configStore.close());
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 .section {
   background: var(--bg-color);
@@ -67,7 +67,7 @@ onClickOutside(domConfig, (): void => configStore.close());
   margin-top: 1rem;
   padding: 0.8rem;
 
-  @include mixins.squircle;
+  @include squircle;
 }
 
 .section-title {
@@ -78,7 +78,8 @@ onClickOutside(domConfig, (): void => configStore.close());
 }
 
 .user {
-  font-weight: bold;
+  @include font-bold;
+
   margin-bottom: 1.2rem;
 }
 
@@ -126,7 +127,7 @@ onClickOutside(domConfig, (): void => configStore.close());
   width: 15rem;
   z-index: 999;
 
-  @include mixins.squircle;
+  @include squircle;
 
   &.bye {
     animation: bye-config ease 0.2s both;

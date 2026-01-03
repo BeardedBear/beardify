@@ -104,7 +104,7 @@ watch(
 
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 $radius: 2rem;
 
@@ -127,7 +127,7 @@ $radius: 2rem;
   font-size: 1rem;
   padding: 0.4rem 0.5rem;
 
-  @include mixins.squircle;
+  @include squircle;
 
   &:hover {
     background-color: var(--bg-color);
@@ -185,7 +185,7 @@ $radius: 2rem;
   padding: 1rem 1.5rem;
   position: relative;
 
-  @include mixins.squircle;
+  @include squircle;
 }
 
 @keyframes pop-dialog-content {
@@ -244,7 +244,7 @@ $radius: 2rem;
   grid-template-rows: auto 1fr;
   position: relative;
 
-  @include mixins.squircle;
+  @include squircle;
 }
 
 .content {

@@ -40,6 +40,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 <style lang="scss" scoped>
 @use "sass:color";
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .cover {
   border-radius: 0.3rem;
@@ -92,7 +93,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 }
 
 .trackname {
-  font-weight: bold;
+  @include font-bold;
 
   @include responsive.mobile {
     overflow: hidden;

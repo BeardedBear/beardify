@@ -22,10 +22,14 @@ const releasesStore = useReleases();
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 .month {
   background-color: var(--bg-color-darker);
   color: var(--primary-color);
-  font-weight: bold;
+
+  @include font-bold;
+
   padding: 1rem 0.5rem;
   position: sticky;
   text-transform: uppercase;

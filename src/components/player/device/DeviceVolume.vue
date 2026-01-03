@@ -125,6 +125,7 @@ async function setVolumeOptimistic(volume: number): Promise<void> {
 
 <style lang="scss" scoped>
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .volume-wrapper {
   align-items: center;
@@ -145,7 +146,9 @@ async function setVolumeOptimistic(volume: number): Promise<void> {
   cursor: pointer;
   display: inline-block;
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   height: 1.7rem;
   position: relative;
   width: 6rem;

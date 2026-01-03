@@ -73,12 +73,15 @@ function getCountryFlagUrl(countryCode: string): string {
 
 <style lang="scss" scoped>
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 $transition-duration: 0.2s;
 
 .profile-container {
   font-size: 0.75rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   margin-top: 0.5rem;
   min-height: 1.5rem; // Reserve space for the text line height
 }

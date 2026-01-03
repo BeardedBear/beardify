@@ -71,6 +71,7 @@ userStore.clean().finally(() => {
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .head {
   overflow: hidden;
@@ -112,7 +113,8 @@ userStore.clean().finally(() => {
 
   .name {
     font-size: 2rem;
-    font-weight: bold;
+
+    @include font-bold;
   }
 
   .avatar-bg {
@@ -174,10 +176,8 @@ userStore.clean().finally(() => {
   .playlist {
     border-radius: 0.5rem;
     color: var(--font-color);
-    font-weight: bold;
-    padding: 1rem;
-    text-decoration: none;
-    transition: 0.15s;
+
+    @include font-bold;
 
     &:hover {
       background-color: var(--bg-color-light);

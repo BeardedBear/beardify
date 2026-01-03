@@ -41,7 +41,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 $radius: 1rem;
 
@@ -61,7 +61,7 @@ $radius: 1rem;
   padding: 0.8rem 1.2rem;
   width: 100%;
 
-  @include mixins.squircle;
+  @include squircle;
 }
 
 .reset {

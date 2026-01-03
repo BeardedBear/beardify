@@ -109,6 +109,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .artist-info {
   display: grid;
@@ -218,7 +219,7 @@ onMounted(() => {
   :deep(b),
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(strong) {
-    font-weight: bold;
+    @include font-bold;
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -226,7 +227,8 @@ onMounted(() => {
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(em) {
     font-style: italic;
-    font-weight: bold;
+
+    @include font-bold;
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -271,7 +273,7 @@ onMounted(() => {
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(strong) {
-    font-weight: bold;
+    @include font-bold;
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */

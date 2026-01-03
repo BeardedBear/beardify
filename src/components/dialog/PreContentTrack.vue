@@ -41,6 +41,7 @@ function openLink(url: string): void {
 
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as *;
 
 .track {
   align-items: center;
@@ -70,7 +71,7 @@ function openLink(url: string): void {
 }
 
 .name {
-  font-weight: bold;
+  @include font-bold;
 }
 
 .options {

@@ -115,10 +115,10 @@ const classes = computed(() => {
 </template>
 
 <style scoped lang="scss">
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 .button {
-  @include mixins.squircle;
+  @include squircle;
 
   align-items: center;
   appearance: none;

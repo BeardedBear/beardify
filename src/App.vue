@@ -126,7 +126,7 @@ onBeforeUnmount(() => {
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/responsive" as responsive;
 @use "@/assets/scss/heading" as heading;
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 @use "@/assets/scss/typography" as typography;
 @import "../node_modules/normalize.css/normalize.css";
 
@@ -145,9 +145,14 @@ input {
 }
 
 body {
+  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-font-smoothing: antialiased;
   overflow: hidden;
   scrollbar-color: var(--primary-color-dark) var(--bg-color-dark);
   scrollbar-width: thin;
+
+  /* Improve font rendering on many platforms */
+  text-rendering: optimizelegibility;
 }
 
 ::selection {
@@ -177,14 +182,28 @@ body {
   background-color: var(--bg-color-darker);
   color: var(--font-color);
   display: grid;
-  font-family: "IBM Plex Sans Condensed", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  font-family:
+    "Google Sans Flex",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-optical-sizing: auto;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings:
+    "opsz" 20,
+    "wght" 400;
+  font-weight: 400;
   grid-template-rows: 1fr auto;
   height: 100vh;
   line-height: 1.4;
   min-height: 100vh;
   overflow: hidden;
+  text-rendering: optimizelegibility;
 }
 
 #app-content {

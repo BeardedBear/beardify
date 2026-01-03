@@ -50,6 +50,7 @@ watch(
 
 <style lang="scss" scoped>
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .title {
   align-items: center;
@@ -66,7 +67,8 @@ watch(
   .name {
     flex: 1;
     font-size: 2rem;
-    font-weight: bold;
+
+    @include font-bold;
 
     @include responsive.mobile {
       font-size: 1.5rem;

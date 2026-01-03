@@ -1,77 +1,82 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/img/favicon.png" />
+    <script type="module" src="https://sdk.scdn.co/spotify-player.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex&display=swap" rel="stylesheet" />
+    <link href="/icons/style.css" rel="stylesheet" />
+    <title>Beardify</title>
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/img/sharing-twitter.png" />
+    <meta name="image" property="og:image" content="/img/sharing-twitter.png" />
+    <meta name="twitter:title" content="Beardify" />
+    <meta name="title" property="og:title" content="Beardify" />
+    <meta
+      name="twitter:description"
+      content="Experimental Spotify client with album collection feature (and more)..."
+    />
+    <meta
+      name="description"
+      property="og:description"
+      content="Experimental Spotify client with album collection feature (and more)..."
+    />
+    <meta name="description" content="Experimental Spotify client with album collection feature (and more)..." />
+    <meta name="author" content="@BeardedBear" />
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="/img/favicon.png" />
-  <script type="module" src="https://sdk.scdn.co/spotify-player.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
-  <link href="/icons/style.css" rel="stylesheet" />
-  <title>Beardify</title>
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="/img/sharing-twitter.png" />
-  <meta name="image" property="og:image" content="/img/sharing-twitter.png" />
-  <meta name="twitter:title" content="Beardify" />
-  <meta name="title" property="og:title" content="Beardify" />
-  <meta name="twitter:description" content="Experimental Spotify client with album collection feature (and more)..." />
-  <meta name="description" property="og:description" content="Experimental Spotify client with album collection feature (and more)..." />
-  <meta name="description" content="Experimental Spotify client with album collection feature (and more)..." />
-  <meta name="author" content="@BeardedBear" />
-</head>
-
-<body>
-  <noscript>
-    <strong>
-      We're sorry but Beardify doesn't work properly without JavaScript enabled. Please enable it to continue.
-    </strong>
-  </noscript>
-  <style>
-    body {
-      font-size: 16px;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      width: 100%;
-    }
-
-    .loading-app {
-      background: #181b21;
-      display: grid;
-      height: 100vh;
-      place-content: center;
-      width: 100vw;
-    }
-
-    .loader-app {
-      animation: spin 0.3s linear infinite;
-      border: 0.4rem solid #1b1e26;
-      border-radius: 50%;
-      border-top: 0.4rem solid #9064ff;
-      height: 2.8rem;
-      width: 2.8rem;
-    }
-
-    @keyframes spin {
-      from {
-        transform: rotate(0deg);
+  <body>
+    <noscript>
+      <strong>
+        We're sorry but Beardify doesn't work properly without JavaScript enabled. Please enable it to continue.
+      </strong>
+    </noscript>
+    <style>
+      body {
+        font-size: 16px;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        width: 100%;
       }
 
-      to {
-        transform: rotate(360deg);
+      .loading-app {
+        background: #181b21;
+        display: grid;
+        height: 100vh;
+        place-content: center;
+        width: 100vw;
       }
-    }
-  </style>
-  <div id="app">
-    <div class="loading-app">
-      <div class="loader-app"></div>
+
+      .loader-app {
+        animation: spin 0.3s linear infinite;
+        border: 0.4rem solid #1b1e26;
+        border-radius: 50%;
+        border-top: 0.4rem solid #9064ff;
+        height: 2.8rem;
+        width: 2.8rem;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <div id="app">
+      <div class="loading-app">
+        <div class="loader-app"></div>
+      </div>
     </div>
-  </div>
-  <script type="module" src="/src/main.ts"></script>
-  <script type="module" src="/src/spotify.ts"></script>
-</body>
-
+    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/spotify.ts"></script>
+  </body>
 </html>

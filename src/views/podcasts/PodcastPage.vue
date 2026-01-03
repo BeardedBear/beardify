@@ -33,6 +33,8 @@ podcastsStore.clean().finally(() => {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 .loader {
   display: grid;
   place-content: center;
@@ -53,7 +55,8 @@ podcastsStore.clean().finally(() => {
   .name {
     flex: 1;
     font-size: 2.5rem;
-    font-weight: bold;
+
+    @include font-bold;
   }
 }
 </style>

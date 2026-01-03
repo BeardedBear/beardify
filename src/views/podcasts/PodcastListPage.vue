@@ -33,6 +33,7 @@ podcastsStore.clean().finally(() => {
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .loader {
   display: grid;
@@ -61,7 +62,8 @@ podcastsStore.clean().finally(() => {
   .name {
     flex: 1;
     font-size: 2.5rem;
-    font-weight: bold;
+
+    @include font-bold;
   }
 }
 </style>

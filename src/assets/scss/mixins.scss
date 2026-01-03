@@ -3,6 +3,18 @@
   corner-shape: squircle;
 }
 
+// Use this mixin to replace literal `font-weight: bold;` occurrences
+// Ensures consistent weight and enables variable font axis when available
+@mixin font-bold {
+  font-weight: 700;
+
+  /* stylelint-disable-next-line no-invalid-position-declaration */
+  @supports (font-variation-settings: "wght" 700) {
+    /* stylelint-disable-next-line no-invalid-position-declaration, property-no-unknown */
+    font-variation-settings: "wght" 700;
+  }
+}
+
 @keyframes pop-content {
   from {
     opacity: 0;

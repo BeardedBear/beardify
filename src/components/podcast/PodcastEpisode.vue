@@ -88,6 +88,8 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 .progress {
   background-color: var(--bg-color-dark);
   border-radius: 1rem;
@@ -128,7 +130,9 @@ defineProps<{
   .metas {
     display: flex;
     font-size: 0.9rem;
-    font-weight: bold;
+
+    @include font-bold;
+
     gap: 0.5rem;
     opacity: 0.5;
   }
@@ -179,7 +183,8 @@ defineProps<{
 
 .name {
   font-size: 1.1rem;
-  font-weight: bold;
+
+  @include font-bold;
 }
 
 .content {

@@ -170,13 +170,13 @@ async function deleteAlbum(albumId: string): Promise<void> {
 <style lang="scss" scoped>
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 
 .play {
   $offset: 1rem;
   $size: 2.5rem;
 
-  @include mixins.squircle;
+  @include squircle;
 
   animation: pop-play-button 0.2s ease both;
   background: var(--primary-color);
@@ -208,7 +208,7 @@ async function deleteAlbum(albumId: string): Promise<void> {
 .album {
   animation: popAlbum 1s ease both;
   color: var(--font-color);
-  font-family: "IBM Plex Sans Condensed", Helvetica, Arial, sans-serif;
+  font-family: inherit;
   line-height: 1.4;
   position: relative;
 }
@@ -288,7 +288,7 @@ async function deleteAlbum(albumId: string): Promise<void> {
   transition: transform ease 0.1s;
   will-change: transform;
 
-  @include mixins.squircle;
+  @include squircle;
 
   &:hover {
     background-color: color.change(black, $alpha: 0.5);
@@ -346,7 +346,9 @@ async function deleteAlbum(albumId: string): Promise<void> {
 .name {
   -webkit-box-orient: vertical;
   display: -webkit-box;
-  font-weight: bold;
+
+  @include font-bold;
+
   line-break: auto;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -379,7 +381,9 @@ async function deleteAlbum(albumId: string): Promise<void> {
     border-radius: 0.3rem;
     box-shadow: 0 0.2rem 0.4rem rgb(0 0 0 / 30%);
     font-size: 0.8rem;
-    font-weight: bold;
+
+    @include font-bold;
+
     height: 1.5rem;
     position: absolute;
     transition:

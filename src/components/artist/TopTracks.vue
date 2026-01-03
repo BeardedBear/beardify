@@ -37,6 +37,7 @@ const dialogStore = useDialog();
 <style lang="scss" scoped>
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as *;
 
 .cover-wrap {
   position: relative;
@@ -77,7 +78,9 @@ const dialogStore = useDialog();
   cursor: pointer;
   display: flex;
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   gap: 1rem;
   margin-bottom: 0.5rem;
   padding-right: 0.8rem;

@@ -19,6 +19,8 @@ const notificationStore = useNotification();
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 @keyframes pop-notif {
   0%,
   100% {
@@ -49,7 +51,9 @@ const notificationStore = useNotification();
   border-radius: 0.3rem;
   color: #fff;
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   margin-top: 0.8rem;
   padding: 0.4rem 1rem;
   position: relative;

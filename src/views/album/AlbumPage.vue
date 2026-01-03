@@ -74,6 +74,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .fit {
   display: flex;
@@ -110,11 +111,8 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   cursor: pointer;
   display: grid;
   font-size: 0.9rem;
-  font-weight: bold;
-  grid-template-columns: 2rem 1fr auto;
-  margin-bottom: 0.3rem;
-  padding: 0.4rem 0.8rem;
-  position: relative;
+
+  @include font-bold;
 
   &:hover {
     background-color: var(--bg-color-dark);

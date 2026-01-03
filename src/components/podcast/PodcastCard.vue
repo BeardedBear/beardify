@@ -18,6 +18,8 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/mixins" as *;
+
 .podcast {
   background-color: var(--bg-color);
   border-radius: 1rem;
@@ -40,7 +42,8 @@ defineProps<{
 }
 
 .name {
-  font-weight: bold;
+  @include font-bold;
+
   margin-top: 1rem;
 }
 </style>

@@ -48,7 +48,7 @@ watch(height, (newHeight) => {
 
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as mixins;
+@use "@/assets/scss/mixins" as *;
 @use "@/assets/scss/responsive" as responsive;
 
 .image-container {
@@ -87,7 +87,8 @@ watch(height, (newHeight) => {
 
 .name {
   font-size: 2rem;
-  font-weight: bold;
+
+  @include font-bold;
 
   &.scrolled {
     font-size: 1.6rem;

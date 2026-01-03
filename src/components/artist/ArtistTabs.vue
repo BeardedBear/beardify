@@ -34,6 +34,7 @@ defineEmits<{
 
 <style lang="scss" scoped>
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .tabs {
   display: flex;
@@ -55,7 +56,9 @@ defineEmits<{
   display: flex;
 
   // font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   gap: 0.4rem;
   opacity: 0.5;
   padding: 0.5rem 1.5rem;

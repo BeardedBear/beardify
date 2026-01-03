@@ -121,9 +121,10 @@ async function deleteSong(songId: string): Promise<void> {
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/responsive" as responsive;
+@use "@/assets/scss/mixins" as *;
 
 .track-name {
-  font-weight: bold;
+  @include font-bold;
 }
 
 .track {
@@ -253,7 +254,9 @@ async function deleteSong(songId: string): Promise<void> {
 
 .duration {
   font-size: 0.9rem;
-  font-weight: bold;
+
+  @include font-bold;
+
   padding-right: 0.5rem;
   text-align: right;
 }
