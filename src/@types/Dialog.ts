@@ -21,6 +21,7 @@ export type DialogType =
   | "createCollection"
   | "createPlaylist"
   | "editPlaylist"
+  | "playlistOptions"
   | "search"
   | "widevine"
   | null;

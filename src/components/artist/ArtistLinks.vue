@@ -2,12 +2,15 @@
   <div :class="{ floating }" class="links">
     <ButtonIndex @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')" variant="nude">
       <i class="icon-sputnik" />
+      <span class="link-name">Sputnik</span>
     </ButtonIndex>
     <ButtonIndex icon-only @click.stop.prevent="openLink(link.discogs)" variant="nude">
       <i class="icon-discogs" />
+      <span class="link-name">Discogs</span>
     </ButtonIndex>
     <ButtonIndex icon-only @click.stop.prevent="openLink(link.rym)" variant="nude">
       <i class="icon-rym" />
+      <span class="link-name">RateYourMusic</span>
     </ButtonIndex>
     <template v-if="!floating">
       <span class="separator">·</span>
@@ -20,6 +23,7 @@
         @click.stop.prevent="openLink(socialLink.url)"
       >
         <i :class="socialLink.icon" />
+        <span class="link-name">{{ socialLink.name }}</span>
       </ButtonIndex>
     </template>
   </div>
@@ -120,14 +124,66 @@ onUpdated(() => updateLinks());
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/responsive" as responsive;
+
 .links {
   align-items: center;
   display: flex;
+  gap: 0.25rem;
+  justify-content: flex-start;
   position: relative;
+  width: 100%;
+
+  &.floating {
+    justify-content: center;
+  }
 
   .separator {
     color: rgb(125 125 125 / 50%);
     margin: 0 0.3rem;
+  }
+
+  .link-name {
+    color: var(--font-color);
+    display: none; /* hidden on desktop */
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}
+
+/* Mobile: vertical list, show names next to icons */
+@include responsive.mobile {
+  .links {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    .separator {
+      display: none;
+    }
+
+    .button {
+      justify-content: flex-start;
+      opacity: 0.95;
+      padding-left: 0.6rem;
+      padding-right: 0.6rem;
+      width: 100%;
+    }
+
+    .link-name {
+      display: inline-block;
+      font-size: 0.95rem;
+      margin-left: 0.5rem;
+    }
+
+    /* ensure icons are aligned and have a fixed width */
+    i[class^="icon-"] {
+      align-items: center;
+      display: inline-flex;
+      font-size: 1rem;
+      justify-content: center;
+      width: 1.25rem;
+    }
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="song-list">
     <SearchTitle title="Songs" />
     <template v-if="searchStore.albums.length">
       <div
@@ -27,10 +27,10 @@
 </template>
 
 <script lang="ts" setup>
-import { playSong } from "@/helpers/play";
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useSearch } from "@/components/search/SearchStore";
 import SearchTitle from "@/components/search/SearchTitle.vue";
+import { playSong } from "@/helpers/play";
 
 const searchStore = useSearch();
 </script>
@@ -38,6 +38,10 @@ const searchStore = useSearch();
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/search-item" as search;
+
+.song-list {
+  padding: 0 1rem;
+}
 
 .track {
   align-items: center;

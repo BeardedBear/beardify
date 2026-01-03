@@ -24,9 +24,9 @@
 import { computed, ComputedRef } from "vue";
 import { RouterLink } from "vue-router";
 
-import Cover from "@/components/ui/AlbumCover.vue";
 import { useSearch } from "@/components/search/SearchStore";
 import SearchTitle from "@/components/search/SearchTitle.vue";
+import Cover from "@/components/ui/AlbumCover.vue";
 
 const searchStore = useSearch();
 const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
@@ -40,6 +40,8 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
 @use "@/assets/scss/search-item" as search;
 
 .artist-list {
+  padding: 0 1rem;
+
   .avatar {
     $size: 2.5rem;
 

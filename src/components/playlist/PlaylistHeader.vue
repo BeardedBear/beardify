@@ -15,48 +15,24 @@
             {{ playlistStore.playlist.owner.display_name }}
           </router-link>
           <span v-else>{{ playlistStore.playlist.owner.display_name }}</span>
-          <span>— {{ playlistStore.playlist.tracks.total }} items</span>
-          <span v-if="!noDuration">— {{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
+          <span>&nbsp;·&nbsp;{{ playlistStore.playlist.tracks.total }} items</span>
+          <span v-if="!noDuration">&nbsp;·&nbsp;{{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
         </div>
         <div class="description" v-if="playlistStore.playlist.description !== 'No description'">
           {{ playlistStore.playlist.description }}
         </div>
       </div>
     </div>
-
-    <ButtonIndex class="mobile-options-toggle" icon-only @click="showOptions = true">
-      <i class="icon-more-horizontal" />
-    </ButtonIndex>
-
-    <div class="backdrop" v-if="showOptions" @click="showOptions = false" />
-
-    <div class="right" :class="{ 'is-open': showOptions }">
-      <div class="mobile-close" @click="showOptions = false">
-        <i class="icon-x" />
-      </div>
-      <Actions />
-      <input
-        class="search"
-        placeholder="Filter album/artist"
-        ref="searchElement"
-        type="search"
-        v-if="$route.name === 'Collection'"
-        v-model="playlistStore.filter"
-      />
-      <ShareContent :beardify-url="$route.fullPath" :spotify-url="playlistStore.playlist.external_urls.spotify" />
-    </div>
+    <Actions />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 
 import { PlaylistTrack } from "@/@types/Playlist";
 import Actions from "@/components/playlist/PlaylistActions.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
-import ShareContent from "@/components/ui/ShareContent.vue";
 import { timecodeWithUnits } from "@/helpers/date";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -67,12 +43,6 @@ defineProps<{
 }>();
 
 const playlistStore = usePlaylist();
-const searchElement = ref<HTMLInputElement | null>(null);
-const showOptions = ref(false);
-
-onMounted(() => {
-  if (searchElement.value) searchElement.value.focus();
-});
 
 function sumDuration(tracks: PlaylistTrack[]): number {
   return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
@@ -233,5 +203,9 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   border-radius: 0.3rem;
   height: 7rem;
   width: 7rem;
+
+  @include responsive.mobile {
+    display: none;
+  }
 }
 </style>

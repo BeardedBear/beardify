@@ -248,8 +248,8 @@ $radius: 2rem;
 }
 
 .content {
-  max-height: 30rem;
-  min-width: 25rem;
+  max-height: 40rem;
+  min-width: 20rem;
   overflow: auto;
 
   &.big {

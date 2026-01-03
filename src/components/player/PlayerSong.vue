@@ -6,7 +6,8 @@
         <div class="area-controls"><Controls /></div>
         <div class="area-device"><Device /></div>
       </div>
-      <SeekBar />
+      <!-- {{ isTouchDevice() }} -->
+      <SeekBar :clickDisable="isTouchDevice()" />
     </div>
   </template>
   <Loader v-else />
@@ -22,6 +23,7 @@ import Loader from "@/components/ui/LoadingDots.vue";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 
 const playerStore = usePlayer();
+// const
 
 function onSurfaceClick(event: MouseEvent): void {
   // Only open the slide-up on touch devices (mobile)
@@ -32,7 +34,7 @@ function onSurfaceClick(event: MouseEvent): void {
 
   // Elements that should be allowed to handle the click themselves
   const interactiveSelector =
-    "button, a, input, textarea, select, .controls, .btns, .control-button, .area-device, .time, .progress-wrap, .progress, .seek, .bar";
+    "button, a, router-link, input, textarea, select, .controls, .btns, .control-button, .area-device, .time, .progress-wrap, .progress, .seek, .bar, .album";
   if (target.closest(interactiveSelector)) return;
 
   // We're in capture phase: prevent the click from reaching target handlers

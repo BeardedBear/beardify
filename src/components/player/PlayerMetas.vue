@@ -11,7 +11,7 @@
         <span class="trackname">{{ currentTrack.name }}</span>
         <span class="separator">&nbsp;·&nbsp;</span>
         <span class="artists">
-          <ArtistList :artist-list="currentTrack.artists" :feat="true" />
+          <ArtistList :artist-list="currentTrack.artists" feat />
         </span>
       </div>
       <div class="album">
@@ -151,6 +151,10 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
   gap: 1rem;
   min-width: 0;
   overflow: hidden;
+
+  @include responsive.mobile {
+    pointer-events: none;
+  }
 
   img {
     height: 3rem;

@@ -1,5 +1,5 @@
 <template>
-  <div :style="{ padding: '0 1.2rem' }">
+  <div class="seek-bar" :class="{ 'click-disabled': props.clickDisable }">
     <div class="progress-wrap" ref="progressWrap">
       <div class="progress">
         <div
@@ -19,10 +19,16 @@
 import { useIntervalFn, useMouseInElement } from "@vueuse/core";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 
-import { timecode } from "@/helpers/date";
 import { usePlayer } from "@/components/player/PlayerStore";
+import { timecode } from "@/helpers/date";
 
+interface Props {
+  clickDisable?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), <{ clickDisable?: boolean }>{ clickDisable: false });
 const progressWrap = ref<HTMLDivElement>();
+
 const { elementWidth, elementX } = useMouseInElement(progressWrap);
 const perc = ref<number>(0);
 const time = ref<string>("");
@@ -66,6 +72,7 @@ watch(
 <style lang="scss" scoped>
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
 
 @keyframes pop-seek {
   from {
@@ -74,6 +81,18 @@ watch(
 
   to {
     opacity: 1;
+  }
+}
+
+.seek-bar {
+  padding: 0 1.2rem;
+
+  &.click-disabled {
+    pointer-events: none;
+  }
+
+  @include responsive.mobile {
+    padding: 0 0.8rem;
   }
 }
 
