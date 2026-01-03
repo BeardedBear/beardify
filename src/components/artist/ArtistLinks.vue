@@ -1,30 +1,31 @@
 <template>
   <div :class="{ floating }" class="links">
-    <ButtonIndex @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')" variant="nude">
-      <i class="icon-sputnik" />
-      <span class="link-name">Sputnik</span>
-    </ButtonIndex>
-    <ButtonIndex icon-only @click.stop.prevent="openLink(link.discogs)" variant="nude">
-      <i class="icon-discogs" />
-      <span class="link-name">Discogs</span>
-    </ButtonIndex>
-    <ButtonIndex icon-only @click.stop.prevent="openLink(link.rym)" variant="nude">
-      <i class="icon-rym" />
-      <span class="link-name">RateYourMusic</span>
-    </ButtonIndex>
+    <Tooltip text="Sputnik" placement="bottom">
+      <ButtonIndex @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')" variant="nude">
+        <i class="icon-sputnik" />
+        <span class="link-name">Sputnik</span>
+      </ButtonIndex>
+    </Tooltip>
+    <Tooltip text="Discogs" placement="bottom">
+      <ButtonIndex icon-only @click.stop.prevent="openLink(link.discogs)" variant="nude">
+        <i class="icon-discogs" />
+        <span class="link-name">Discogs</span>
+      </ButtonIndex>
+    </Tooltip>
+    <Tooltip text="RateYourMusic" placement="bottom">
+      <ButtonIndex icon-only @click.stop.prevent="openLink(link.rym)" variant="nude">
+        <i class="icon-rym" />
+        <span class="link-name">RateYourMusic</span>
+      </ButtonIndex>
+    </Tooltip>
     <template v-if="!floating">
       <span class="separator">·</span>
-      <ButtonIndex
-        v-for="socialLink in socialLinks"
-        :key="socialLink.url"
-        :title="socialLink.name"
-        icon-only
-        variant="nude"
-        @click.stop.prevent="openLink(socialLink.url)"
-      >
-        <i :class="socialLink.icon" />
-        <span class="link-name">{{ socialLink.name }}</span>
-      </ButtonIndex>
+      <Tooltip v-for="socialLink in socialLinks" :key="socialLink.url" :text="socialLink.name" placement="bottom">
+        <ButtonIndex icon-only variant="nude" @click.stop.prevent="openLink(socialLink.url)">
+          <i :class="socialLink.icon" />
+          <span class="link-name">{{ socialLink.name }}</span>
+        </ButtonIndex>
+      </Tooltip>
     </template>
   </div>
 </template>
@@ -34,6 +35,7 @@ import { computed, onMounted, onUpdated, ref } from "vue";
 
 import { useFrame } from "@/components/frame/FrameStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import Tooltip from "@/components/ui/Tooltip.vue";
 import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
 import { useArtist } from "@/views/artist/ArtistStore";
 
