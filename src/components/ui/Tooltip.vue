@@ -17,8 +17,8 @@
 </template>
 
 <script lang="ts" setup>
+import { useElementBounding, useEventListener, useResizeObserver, useWindowSize } from "@vueuse/core";
 import { nextTick, ref } from "vue";
-import { useEventListener, useResizeObserver } from "@vueuse/core";
 
 const props = defineProps<{
   text: string;
@@ -34,20 +34,34 @@ const wrapperRef = ref<HTMLElement | null>(null);
 const anchored = ref(false);
 const tooltipStyle = ref<Record<string, string>>({});
 
+// Use VueUse to reactively track viewport and element bounds
+const { width: viewportWidth, height: viewportHeight } = useWindowSize();
+const { left: wrapLeft, top: wrapTop, bottom: wrapBottom, width: wrapWidth, height: wrapHeight } = useElementBounding(wrapperRef);
+const { width: tipWidth, height: tipHeight } = useElementBounding(tooltipRef);
+
 function updatePosition() {
   if (!tooltipRef.value || !wrapperRef.value) return;
-  const tip = tooltipRef.value.getBoundingClientRect();
-  const wrap = wrapperRef.value.getBoundingClientRect();
 
   const margin = 8; // px
-  const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
-  const viewportHeight = document.documentElement.clientHeight || window.innerHeight;
+
+  // Read sizes/positions from VueUse bounding refs (fall back to getBoundingClientRect if not yet populated)
+  const tipW = (tipWidth.value ?? 0) || (tooltipRef.value.getBoundingClientRect().width || 0);
+  const tipH = (tipHeight.value ?? 0) || (tooltipRef.value.getBoundingClientRect().height || 0);
+
+  const wrapL = (wrapLeft.value ?? 0) || (wrapperRef.value.getBoundingClientRect().left || 0);
+  const wrapT = (wrapTop.value ?? 0) || (wrapperRef.value.getBoundingClientRect().top || 0);
+  const wrapW = (wrapWidth.value ?? 0) || (wrapperRef.value.getBoundingClientRect().width || 0);
+  const wrapH = (wrapHeight.value ?? 0) || (wrapperRef.value.getBoundingClientRect().height || 0);
+  const wrapBottomVal = (wrapBottom.value ?? (wrapT + wrapH));
+
+  const vpW = viewportWidth.value ?? (document.documentElement.clientWidth || window.innerWidth);
+  const vpH = viewportHeight.value ?? (document.documentElement.clientHeight || window.innerHeight);
 
   // Horizontal: desired centered left in viewport
-  const desiredLeftViewport = wrap.left + (wrap.width - tip.width) / 2;
+  const desiredLeftViewport = wrapL + (wrapW - tipW) / 2;
   const clampedLeftViewport = Math.min(
     Math.max(desiredLeftViewport, margin),
-    Math.max(viewportWidth - tip.width - margin, margin)
+    Math.max(vpW - tipW - margin, margin)
   );
 
   // Vertical: compute desired top depending on placement
@@ -55,11 +69,11 @@ function updatePosition() {
   let finalPlacement = placement;
 
   if (placement === "top") {
-    desiredTopViewport = wrap.top - tip.height;
+    desiredTopViewport = wrapT - tipH;
     // If it would go above viewport, try flipping to bottom
     if (desiredTopViewport < margin) {
-      const spaceBelow = viewportHeight - wrap.bottom - margin;
-      if (spaceBelow >= tip.height) {
+      const spaceBelow = vpH - wrapBottomVal - margin;
+      if (spaceBelow >= tipH) {
         finalPlacement = "bottom";
       } else {
         // clamp to top margin
@@ -68,16 +82,16 @@ function updatePosition() {
     }
   } else {
     // bottom placement
-    desiredTopViewport = wrap.bottom;
+    desiredTopViewport = wrapBottomVal;
     // If it would go below viewport, try flipping to top
-    if (desiredTopViewport + tip.height > viewportHeight - margin) {
-      const spaceAbove = wrap.top - margin;
-      if (spaceAbove >= tip.height) {
+    if (desiredTopViewport + tipH > vpH - margin) {
+      const spaceAbove = wrapT - margin;
+      if (spaceAbove >= tipH) {
         finalPlacement = "top";
-        desiredTopViewport = wrap.top - tip.height;
+        desiredTopViewport = wrapT - tipH;
       } else {
         // clamp to bottom margin
-        desiredTopViewport = Math.max(viewportHeight - tip.height - margin, margin);
+        desiredTopViewport = Math.max(vpH - tipH - margin, margin);
       }
     }
   }
@@ -90,7 +104,7 @@ function updatePosition() {
     // if we clamped vertically (clampedTop differs from desiredTopViewport) or flipped
     (finalPlacement !== placement) ||
     desiredTopViewport < margin ||
-    desiredTopViewport + tip.height > viewportHeight - margin;
+    desiredTopViewport + tipH > vpH - margin;
 
   if (needAnchor) {
     anchored.value = true;
@@ -98,10 +112,10 @@ function updatePosition() {
     const left = clampedLeftViewport;
     // If finalPlacement changed to bottom, desiredTopViewport should be wrap.bottom
     if (finalPlacement === "bottom" && placement === "top") {
-      desiredTopViewport = wrap.bottom;
+      desiredTopViewport = wrapBottomVal;
     }
     // Ensure desiredTopViewport is within viewport margins
-    const clampedTop = Math.min(Math.max(desiredTopViewport, margin), Math.max(viewportHeight - tip.height - margin, margin));
+    const clampedTop = Math.min(Math.max(desiredTopViewport, margin), Math.max(vpH - tipH - margin, margin));
 
     tooltipStyle.value = {
       position: "fixed",
