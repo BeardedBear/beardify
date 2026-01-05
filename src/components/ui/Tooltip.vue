@@ -46,6 +46,7 @@ function hide() {
   --tooltip-scale-current: var(--tooltip-scale-end);
 
   background: var(--bg-color-darker);
+  border: 1px solid var(--bg-color-light);
   border-radius: 0.4rem;
   color: var(--font-color);
   display: inline-block;

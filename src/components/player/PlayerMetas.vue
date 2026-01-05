@@ -8,7 +8,14 @@
     </div>
     <div class="text-content">
       <div class="track-details">
-        <span class="trackname">{{ currentTrack.name }}</span>
+        <template v-if="!isTrackNameLong">
+          <span class="trackname">{{ currentTrack.name }}</span>
+        </template>
+        <template v-else>
+          <Tooltip :text="currentTrack.name">
+            <span class="trackname">{{ truncatedTrackName }}</span>
+          </Tooltip>
+        </template>
         <span class="separator">&nbsp;·&nbsp;</span>
         <span class="artists">
           <ArtistList :artist-list="currentTrack.artists" feat />
@@ -30,11 +37,20 @@ import { RouterLink } from "vue-router";
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
+import Tooltip from "@/components/ui/Tooltip.vue";
 import { transformUriToid } from "@/helpers/helper";
 
 const playerStore = usePlayer();
 const dialogStore = useDialog();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
+
+// Limit for track name characters before showing tooltip
+const TRACKNAME_CHAR_LIMIT = 35;
+const isTrackNameLong = computed(() => ((currentTrack.value?.name ?? "").length > TRACKNAME_CHAR_LIMIT));
+const truncatedTrackName = computed(() => {
+  const name = currentTrack.value?.name ?? "";
+  return name.length > TRACKNAME_CHAR_LIMIT ? name.slice(0, TRACKNAME_CHAR_LIMIT - 1) + "…" : name;
+});
 </script>
 
 <style lang="scss" scoped>
