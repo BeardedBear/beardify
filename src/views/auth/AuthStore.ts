@@ -99,13 +99,18 @@ export const useAuth = defineStore("auth", {
     },
 
     async refresh() {
+      // If we don't have a refresh token, bail early instead of sending an invalid request
+      if (!this.storage?.refreshToken) {
+        throw new Error("No refresh token available");
+      }
+
       try {
         const data = await http
           .post("https://accounts.spotify.com/api/token", {
             body: formUrlEncoded({
               client_id: api.clientId,
               grant_type: "refresh_token",
-              refresh_token: this.storage?.refreshToken,
+              refresh_token: this.storage.refreshToken,
             }),
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
@@ -115,18 +120,30 @@ export const useAuth = defineStore("auth", {
 
         this.accessToken = data.access_token;
         await this.getMe();
+
+        // Only update stored refresh token if the provider returned one.
+        // Spotify may not return a refresh_token on refresh requests; avoid overwriting the existing token with undefined.
+        const currentRefresh = this.storage?.refreshToken || "";
+        const newRefresh = data.refresh_token ?? currentRefresh;
+        if (!data.refresh_token) {
+          // Helpful debug info when refresh tokens are not rotated
+          // (not an error, but useful when investigating 400s from token endpoint)
+          console.debug("AuthStore.refresh: no new refresh_token returned; keeping existing one");
+        }
+
         this.storage = {
           codeChallenge: "",
           codeVerifier: "",
           referer: "",
-          refreshToken: data.refresh_token,
+          refreshToken: newRefresh,
         };
 
         // Store timestamp of last successful refresh
         localStorage.setItem("spotify_token_last_refresh", Date.now().toString());
 
         return true;
-      } catch {
+      } catch (error) {
+        console.error("Token refresh failed:", error);
         throw new Error("Token refresh failed");
       }
     },
