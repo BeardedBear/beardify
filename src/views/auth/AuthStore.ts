@@ -1,5 +1,4 @@
 import formUrlEncoded from "form-urlencoded";
-import ky from "ky";
 import { defineStore } from "pinia";
 import pkceChallenge from "pkce-challenge";
 
@@ -10,6 +9,7 @@ import { api, instance } from "@/api";
 import { useConfig } from "@/components/config/ConfigStore";
 import { usePlayer } from "@/components/player/PlayerStore";
 import { clearAuthData } from "@/helpers/authUtils";
+import { http } from "@/helpers/http";
 import router, { RouteName } from "@/router";
 
 // Store the refresh interval ID outside of the store state to prevent persistence issues
@@ -33,7 +33,7 @@ export const useAuth = defineStore("auth", {
       };
 
       try {
-        const data = await ky
+        const data = await http
           .post("https://accounts.spotify.com/api/token", {
             body: formUrlEncoded(payload),
             headers: {
@@ -100,7 +100,7 @@ export const useAuth = defineStore("auth", {
 
     async refresh() {
       try {
-        const data = await ky
+        const data = await http
           .post("https://accounts.spotify.com/api/token", {
             body: formUrlEncoded({
               client_id: api.clientId,

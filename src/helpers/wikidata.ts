@@ -1,4 +1,4 @@
-import ky from "ky";
+import { http } from "@/helpers/http";
 
 /**
  * Wikidata API configuration
@@ -295,7 +295,7 @@ function getLanguageDisplayName(code: string): string {
 /**
  * Creates a Wikidata API client instance
  */
-const wikidataClient = ky.create({
+const wikidataClient = http.extend({
   headers: {
     "User-Agent": USER_AGENT,
   },
@@ -353,7 +353,7 @@ export async function getWikipediaExtract(wikipediaUrl: string): Promise<null | 
       titles: title,
     });
 
-    const response = await fetch(`https://${lang}.wikipedia.org/w/api.php?${params.toString()}`);
+    const response = await http.get(`https://${lang}.w/api.php?${params.toString()}`);
     const data = (await response.json()) as {
       query?: {
         pages: Record<

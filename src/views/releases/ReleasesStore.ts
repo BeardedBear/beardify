@@ -1,7 +1,7 @@
-import ky from "ky";
 import { defineStore } from "pinia";
 
 import { MenuItem, Release, ReleasesCheck, ReleasesPage } from "@/@types/Releases";
+import { http } from "@/helpers/http";
 import { useCheckLiveAlbum, useCheckReissueAlbum } from "@/helpers/useCleanAlbums";
 import { useMergeReleaseSlugs } from "@/helpers/useMergeReleaseSlugs";
 import { useAuth } from "@/views/auth/AuthStore";
@@ -16,13 +16,13 @@ export const useReleases = defineStore("releases", {
     async createReleasesCheckEntry() {
       const authStore = useAuth();
       const userId = authStore.me?.id;
-      const data = await ky
+      const data = await http
         .get(`https://2fpx4328.directus.app/items/releases_check?filter[user][_eq]=${userId}`)
         .json<{ data: ReleasesCheck[] }>();
 
       if (!data.data.length) {
         try {
-          await ky.post("https://2fpx4328.directus.app/items/releases_check", {
+          await http.post("https://2fpx4328.directus.app/items/releases_check", {
             json: {
               checks: [],
               user: useAuth().me?.id,
@@ -39,7 +39,7 @@ export const useReleases = defineStore("releases", {
     },
 
     async getReleases() {
-      const data = await ky
+      const data = await http
         .get(`https://2fpx4328.directus.app/assets/7e053788-71a4-46b3-b349-44b300a1b0a2?t=${new Date().getTime()}`)
         .json<Release[]>();
 
@@ -108,7 +108,7 @@ export const useReleases = defineStore("releases", {
       const allreadyExist = this.checks?.some((r) => r.id === releaseId);
       const checks = !allreadyExist ? addChecks : delChecks;
 
-      ky.patch(`https://2fpx4328.directus.app/items/releases_check/${this.uid}`, {
+      http.patch(`https://2fpx4328.directus.app/items/releases_check/${this.uid}`, {
         json: { checks },
       });
 
