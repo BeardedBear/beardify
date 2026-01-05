@@ -104,7 +104,7 @@ const truncatedTrackName = computed(() => {
     overflow: visible;
   }
 
-  @include responsive.mobile {
+  @include responsive.tablet-down {
     display: flex;
     flex-direction: column;
     white-space: normal;
@@ -123,7 +123,7 @@ const truncatedTrackName = computed(() => {
 }
 
 .separator {
-  @include responsive.mobile {
+  @include responsive.tablet-down {
     display: none;
   }
 }
