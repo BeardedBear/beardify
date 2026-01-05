@@ -353,7 +353,7 @@ export async function getWikipediaExtract(wikipediaUrl: string): Promise<null | 
       titles: title,
     });
 
-    const response = await http.get(`https://${lang}.w/api.php?${params.toString()}`);
+    const response = await http.get(`https://${lang}.wikipedia.org/w/api.php?${params.toString()}`);
     const data = (await response.json()) as {
       query?: {
         pages: Record<
