@@ -1,5 +1,5 @@
 <template>
-  <span ref="wrapperRef" class="tooltip-wrapper" @mouseenter="show" @mouseleave="hide" @focusin="show" @focusout="hide">
+  <span ref="wrapperRef" class="tooltip-wrapper">
     <slot />
     <transition name="tooltip" appear>
       <span
@@ -17,7 +17,8 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onBeforeUnmount, ref } from "vue";
+import { nextTick, ref } from "vue";
+import { useEventListener, useResizeObserver } from "@vueuse/core";
 
 const props = defineProps<{
   text: string;
@@ -117,24 +118,35 @@ function show() {
   visible.value = true;
   // reset to original placement each time we show
   currentPlacement.value = placement;
-  nextTick(() => {
-    updatePosition();
-    window.addEventListener("resize", updatePosition);
-    window.addEventListener("scroll", updatePosition, true);
-  });
+  nextTick(() => updatePosition());
 }
 function hide() {
   visible.value = false;
   anchored.value = false;
   tooltipStyle.value = {};
   currentPlacement.value = placement;
-  window.removeEventListener("resize", updatePosition);
-  window.removeEventListener("scroll", updatePosition, true);
 }
 
-onBeforeUnmount(() => {
-  window.removeEventListener("resize", updatePosition);
-  window.removeEventListener("scroll", updatePosition, true);
+// Mouse enter/leave and focus handlers (use VueUse event helpers)
+useEventListener(wrapperRef, "mouseenter", show);
+useEventListener(wrapperRef, "mouseleave", hide);
+useEventListener(wrapperRef, "focusin", show);
+useEventListener(wrapperRef, "focusout", hide);
+
+// Update position on viewport changes when visible
+useEventListener(window, "resize", () => { if (visible.value) updatePosition(); });
+useEventListener(window, "scroll", () => { if (visible.value) updatePosition(); }, { capture: true });
+
+// React to dimension changes of the wrapper or tooltip
+useResizeObserver(wrapperRef, () => { if (visible.value) updatePosition(); });
+useResizeObserver(tooltipRef, () => { if (visible.value) updatePosition(); });
+
+// Click outside to hide tooltip
+useEventListener(document, "pointerdown", (e: PointerEvent) => {
+  const target = e.target as Node | null;
+  if (visible.value && wrapperRef.value && target && !wrapperRef.value.contains(target)) {
+    hide();
+  }
 });
 </script>
 
