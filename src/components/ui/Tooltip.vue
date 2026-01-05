@@ -189,12 +189,13 @@ useEventListener(document, "pointerdown", (e: PointerEvent) => {
   color: var(--font-color);
   display: inline-block;
   font-size: 0.9rem;
+  max-width: 300px;
   opacity: 1;
   padding: 0.4rem 0.6rem;
   pointer-events: none;
   position: absolute;
   transform: translate(-50%, var(--tooltip-translate)) scale(var(--tooltip-scale-current));
-  white-space: nowrap;
+  white-space: normal;
   will-change: transform, opacity;
   z-index: 50;
 }
