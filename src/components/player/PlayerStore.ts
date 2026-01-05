@@ -20,6 +20,10 @@ const DEVICE_SWITCH_TIMEOUT_MS = 15_000;
 const ACTIVATION_DELAY_MS = 200;
 const RETRY_DELAY_MS = 300;
 
+// Heartbeat failure handling
+const HEARTBEAT_FAILURE_THRESHOLD = 3; // number of consecutive failures before notifying
+const HEARTBEAT_FAILURE_NOTIFY_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes cooldown between repeated notifications
+
 /** Helper function for async delays */
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -289,10 +293,26 @@ export const usePlayer = defineStore("player", {
       this.stopDeviceHeartbeat();
 
       this.heartbeatInterval = window.setInterval((): void => {
-        // If we have an active device, send a signal to keep it active
+        // If we have an active device, attempt to KEEP it active by sending a lightweight PUT
+        // (transfer playback to the same device without altering playback state). Then refresh
+        // the device list to detect changes and re-activate if necessary.
         if (this.devices.activeDevice?.id) {
           (async (): Promise<void> => {
             try {
+              // Keepalive transfer (should be a no-op if already active) to help prevent Spotify
+              // from demoting the device due to inactivity
+              await instance().put("me/player", { device_ids: [this.devices.activeDevice.id] });
+
+              // Ping the SDK player instance to keep its session alive and detect disconnects early
+              try {
+                const player = createSpotifyPlayer();
+                const sdkState = await player.getCurrentState();
+                if (!sdkState) await player.connect();
+              } catch (e) {
+                if (import.meta.env.DEV) console.debug("SDK ping/connect failed during heartbeat", e);
+              }
+
+              // Still verify device status via API and fall back to setDevice if needed
               const { data } = await instance().get<DevicesResponse>("me/player/devices");
               const currentDevice = data.devices.find((device): boolean => device.id === this.devices.activeDevice.id);
               if (currentDevice && !currentDevice.is_active) {
@@ -300,8 +320,45 @@ export const usePlayer = defineStore("player", {
               } else if (!currentDevice && data.devices.length > 0) {
                 this.setDevice(data.devices[0].id);
               }
-            } catch {
-              // silent heartbeat error
+
+              // Success: reset failure counters
+              this.heartbeatFailureCount = 0;
+              this.heartbeatFailureNotified = false;
+            } catch (e) {
+              // Count consecutive heartbeat failures and notify/retry after threshold
+              this.heartbeatFailureCount = (this.heartbeatFailureCount ?? 0) + 1;
+
+              if (import.meta.env.DEV) {
+                // eslint-disable-next-line no-console
+                console.debug("Heartbeat keepalive failed for device", this.devices.activeDevice?.id, e);
+              }
+
+              if (this.heartbeatFailureCount >= HEARTBEAT_FAILURE_THRESHOLD && !this.heartbeatFailureNotified) {
+                this.heartbeatFailureNotified = true;
+
+                notification({
+                  msg: "Device keepalive failing repeatedly. Attempting to reconnect the SDK and refresh device list.",
+                  type: NotificationType.Warning,
+                });
+
+                // Try to reconnect the SDK player and refresh device list
+                try {
+                  const player = createSpotifyPlayer();
+                  await player.connect();
+                } catch {
+                  // ignore
+                }
+                try {
+                  await this.getDeviceList();
+                } catch {
+                  // ignore
+                }
+
+                // Reset notification flag after cooldown so user can be notified again later if problem persists
+                setTimeout(() => {
+                  this.heartbeatFailureNotified = false;
+                }, HEARTBEAT_FAILURE_NOTIFY_COOLDOWN_MS);
+              }
             }
           })();
         }
@@ -395,6 +452,9 @@ export const usePlayer = defineStore("player", {
       activeDevice: defaultDevice,
       list: [],
     },
+    // Track heartbeat failures to notify and attempt reconnection when needed
+    heartbeatFailureCount: 0,
+    heartbeatFailureNotified: false,
     heartbeatInterval: null,
     isSettingDevice: false,
     lastRequestedDeviceId: null,

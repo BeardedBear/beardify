@@ -31,8 +31,12 @@ const handleSDKError = (error: Error): void => {
   });
 };
 
-// Create a player factory function that the global handler will call
+// Use a singleton player instance so repeated calls reuse the same SDK player
+let spotifyPlayer: null | Spotify.Player = null;
+
 const createPlayer = (): Spotify.Player => {
+  if (spotifyPlayer) return spotifyPlayer;
+
   // Capture uncaught SDK errors
   try {
     const player = new Spotify.Player({
@@ -168,6 +172,7 @@ const createPlayer = (): Spotify.Player => {
       }
     });
 
+    spotifyPlayer = player;
     return player;
   } catch {
     // No need for error variable since we're only showing a notification
@@ -200,12 +205,14 @@ const createPlayer = (): Spotify.Player => {
       setVolume: async (): Promise<void> => undefined,
       togglePlay: async (): Promise<void> => undefined,
     } satisfies Spotify.Player;
+
+    spotifyPlayer = stub;
     return stub;
   }
 };
 
 // Export the player creation function for use elsewhere in the app
-export const createSpotifyPlayer = createPlayer;
+export const createSpotifyPlayer = (): Spotify.Player => createPlayer();
 
 // !! IMPORTANT: Assign the function to window.onSpotifyWebPlaybackSDKReady
 // This is what the Spotify SDK is looking for
