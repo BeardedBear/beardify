@@ -307,9 +307,24 @@ export const usePlayer = defineStore("player", {
               try {
                 const player = createSpotifyPlayer();
                 const sdkState = await player.getCurrentState();
-                if (!sdkState) await player.connect();
+                if (!sdkState) {
+                  const connected = await player.connect();
+                  if (connected) {
+                    const volPercent = this.devices.activeDevice?.volume_percent;
+                    if (typeof volPercent === "number") {
+                      try {
+                        await player.setVolume(Math.max(0, Math.min(1, volPercent / 100)));
+                      } catch {
+                        // ignore
+                      }
+                    }
+                  }
+                }
               } catch (e) {
-                if (import.meta.env.DEV) console.debug("SDK ping/connect failed during heartbeat", e);
+                if (import.meta.env.DEV) {
+                  // eslint-disable-next-line no-console
+                  console.debug("SDK ping/connect failed during heartbeat", e);
+                }
               }
 
               // Still verify device status via API and fall back to setDevice if needed

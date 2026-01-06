@@ -39,8 +39,15 @@ const createPlayer = (): Spotify.Player => {
 
   // Capture uncaught SDK errors
   try {
-    const player = new Spotify.Player({
-      getOAuthToken: (cb): void => {
+    // Determine initial volume from active device if available so we don't force max volume
+    const activeVolumePercent = usePlayer().devices.activeDevice?.volume_percent;
+    const initialVolume =
+      typeof activeVolumePercent === "number" && !Number.isNaN(activeVolumePercent)
+        ? Math.max(0, Math.min(1, activeVolumePercent / 100))
+        : undefined;
+
+    const playerInit: Spotify.PlayerInit = {
+      getOAuthToken: (cb: (token: string) => void): void => {
         try {
           const token = useAuth().accessToken;
           cb(token);
@@ -59,12 +66,26 @@ const createPlayer = (): Spotify.Player => {
         }
       },
       name: "Beardify",
-      volume: 1,
-    });
+    };
+
+    const initOptions = typeof initialVolume === "number" ? { ...playerInit, volume: initialVolume } : playerInit;
+    const player = new Spotify.Player(initOptions as Spotify.PlayerInit);
 
     // Managing successful connection events
     player.addListener("ready", ({ device_id }) => {
       usePlayer().thisDevice(device_id);
+
+      // Restore previously-known volume for this device if available to avoid jumping to max
+      const volPercent = usePlayer().devices.activeDevice?.volume_percent;
+      if (typeof volPercent === "number") {
+        const v = Math.max(0, Math.min(1, volPercent / 100));
+        player.setVolume(v).catch((e) => {
+          if (import.meta.env.DEV) {
+            // eslint-disable-next-line no-console
+            console.debug("Failed to restore SDK volume on ready:", e);
+          }
+        });
+      }
     });
 
     // Managing player state changes
@@ -133,6 +154,18 @@ const createPlayer = (): Spotify.Player => {
         const success = await player.connect();
         if (success) {
           connectAttempt = 0; // Reset counter in case of success
+
+          // Ensure the SDK player's volume matches the stored device volume to avoid sudden max volume
+          const volPercentOnConnect = usePlayer().devices.activeDevice?.volume_percent;
+          if (typeof volPercentOnConnect === "number") {
+            const v = Math.max(0, Math.min(1, volPercentOnConnect / 100));
+            player.setVolume(v).catch((e) => {
+              if (import.meta.env.DEV) {
+                // eslint-disable-next-line no-console
+                console.debug("Failed to restore SDK volume on connect:", e);
+              }
+            });
+          }
         } else if (connectAttempt < maxAttempts) {
           const delay = Math.min(1000 * Math.pow(2, connectAttempt), 30000); // Exponential backoff limited to 30s
           notification({
