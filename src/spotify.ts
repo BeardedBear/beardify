@@ -2,6 +2,7 @@ import { NotificationType } from "@/@types/Notification";
 import { usePlayer } from "@/components/player/PlayerStore";
 import { clearAuthData } from "@/helpers/authUtils";
 import { notification } from "@/helpers/notifications";
+import { getLastStoredVolume, getStoredDeviceVolume } from "@/helpers/player";
 import { useAuth } from "@/views/auth/AuthStore";
 
 // Global error handler for uncaught SDK errors
@@ -39,11 +40,19 @@ const createPlayer = (): Spotify.Player => {
 
   // Capture uncaught SDK errors
   try {
-    // Determine initial volume from active device if available so we don't force max volume
-    const activeVolumePercent = usePlayer().devices.activeDevice?.volume_percent;
+    // Determine initial volume: prefer stored volume, then active device, then last used volume
+    // We check localStorage first because on page refresh, the Pinia store is not yet populated
+    // and thisDeviceId is empty until the "ready" event fires
+    const playerStore = usePlayer();
+    const storedVolume = getStoredDeviceVolume(playerStore.thisDeviceId);
+    const activeVolumePercent = playerStore.devices.activeDevice?.volume_percent;
+    const lastVolume = getLastStoredVolume();
+
+    // Use stored volume for device first, then API-reported volume, then last used volume as fallback
+    const volumePercent = storedVolume ?? activeVolumePercent ?? lastVolume;
     const initialVolume =
-      typeof activeVolumePercent === "number" && !Number.isNaN(activeVolumePercent)
-        ? Math.max(0, Math.min(1, activeVolumePercent / 100))
+      typeof volumePercent === "number" && !Number.isNaN(volumePercent)
+        ? Math.max(0, Math.min(1, volumePercent / 100))
         : undefined;
 
     const playerInit: Spotify.PlayerInit = {
@@ -83,7 +92,12 @@ const createPlayer = (): Spotify.Player => {
           // ignore network errors here
         }
 
-        const volPercent = usePlayer().devices.activeDevice?.volume_percent;
+        // Prefer stored volume (from localStorage) over API-reported volume
+        const stored = getStoredDeviceVolume(device_id);
+        const apiVolPercent = usePlayer().devices.activeDevice?.volume_percent;
+        const lastVol = getLastStoredVolume();
+        const volPercent = stored ?? apiVolPercent ?? lastVol;
+
         if (typeof volPercent === "number") {
           const v = Math.max(0, Math.min(1, volPercent / 100));
           player.setVolume(v).catch((e) => {
@@ -170,28 +184,18 @@ const createPlayer = (): Spotify.Player => {
           }
 
           // Prefer persisted stored volume for this device when available (avoid sudden max)
-          try {
-            const { getStoredDeviceVolume } = await import("@/helpers/player");
-            const devId = usePlayer().devices.activeDevice?.id;
-            const stored = getStoredDeviceVolume(devId);
-            const volPercentOnConnect =
-              typeof stored === "number" ? stored : usePlayer().devices.activeDevice?.volume_percent;
-            if (typeof volPercentOnConnect === "number") {
-              const v = Math.max(0, Math.min(1, volPercentOnConnect / 100));
-              player.setVolume(v).catch((e) => {
-                if (import.meta.env.DEV) {
-                  // eslint-disable-next-line no-console
-                  console.debug("Failed to restore SDK volume on connect:", e);
-                }
-              });
-            }
-          } catch {
-            // fallback to device-provided volume
-            const volPercentOnConnect = usePlayer().devices.activeDevice?.volume_percent;
-            if (typeof volPercentOnConnect === "number") {
-              const v = Math.max(0, Math.min(1, volPercentOnConnect / 100));
-              player.setVolume(v).catch(() => {});
-            }
+          const devId = usePlayer().devices.activeDevice?.id;
+          const stored = getStoredDeviceVolume(devId);
+          const lastVol = getLastStoredVolume();
+          const volPercentOnConnect = stored ?? usePlayer().devices.activeDevice?.volume_percent ?? lastVol;
+          if (typeof volPercentOnConnect === "number") {
+            const v = Math.max(0, Math.min(1, volPercentOnConnect / 100));
+            player.setVolume(v).catch((e) => {
+              if (import.meta.env.DEV) {
+                // eslint-disable-next-line no-console
+                console.debug("Failed to restore SDK volume on connect:", e);
+              }
+            });
           }
         } else if (connectAttempt < maxAttempts) {
           const delay = Math.min(1000 * Math.pow(2, connectAttempt), 30000); // Exponential backoff limited to 30s

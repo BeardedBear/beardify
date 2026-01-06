@@ -46,7 +46,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window.curren
 
 // Limit for track name characters before showing tooltip
 const TRACKNAME_CHAR_LIMIT = 35;
-const isTrackNameLong = computed(() => ((currentTrack.value?.name ?? "").length > TRACKNAME_CHAR_LIMIT));
+const isTrackNameLong = computed(() => (currentTrack.value?.name ?? "").length > TRACKNAME_CHAR_LIMIT);
 const truncatedTrackName = computed(() => {
   const name = currentTrack.value?.name ?? "";
   return name.length > TRACKNAME_CHAR_LIMIT ? name.slice(0, TRACKNAME_CHAR_LIMIT - 1) + "…" : name;
