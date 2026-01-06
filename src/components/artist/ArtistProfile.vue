@@ -8,7 +8,7 @@
       </span>
       <template v-if="artistMetas?.area || artistMetas?.country">
         <span class="dot desktop-only">·</span>
-        <span :title="artistMetas?.area?.name || artistMetas?.country">
+        <Tooltip :text="artistMetas?.area?.name || artistMetas?.country || ''" placement="bottom">
           <img
             v-if="artistMetas?.country"
             :src="getCountryFlagUrl(artistMetas.country)"
@@ -16,7 +16,7 @@
             class="country-flag"
           />
           <strong>{{ artistMetas?.["begin-area"]?.name }}</strong>
-        </span>
+        </Tooltip>
       </template>
       <template v-if="artistMetas?.['life-span']?.begin">
         <span class="dot">·</span>
@@ -41,6 +41,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
+import Tooltip from "@/components/ui/Tooltip.vue";
 import { formatDate } from "@/helpers/date";
 import { useArtist } from "@/views/artist/ArtistStore";
 
