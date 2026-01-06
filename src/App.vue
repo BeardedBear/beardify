@@ -147,6 +147,7 @@ input {
 }
 
 body {
+  font-family: var(--font-family-base);
   -webkit-font-smoothing: subpixel-antialiased;
   -webkit-font-smoothing: antialiased;
   font-variation-settings:
@@ -190,7 +191,6 @@ body {
   background-color: var(--bg-color-darker);
   color: var(--font-color);
   display: grid;
-  font-family: var(--font-family-base);
   font-optical-sizing: auto;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;

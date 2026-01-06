@@ -188,8 +188,9 @@ useEventListener(document, "pointerdown", (e: PointerEvent) => {
   --tooltip-scale-current: var(--tooltip-scale-end);
 
   background: var(--bg-color-darker);
-  border: 1px solid var(--bg-color-light);
+  border: 1px solid var(--bg-color-lighter);
   border-radius: 0.4rem;
+  box-shadow: 0.12rem 0.12rem 0.24rem rgb(0 0 0 / 12%);
   color: var(--font-color);
   display: inline-block;
   font-family: inherit;
@@ -197,7 +198,7 @@ useEventListener(document, "pointerdown", (e: PointerEvent) => {
   max-width: 300px;
   opacity: 1;
   overflow-wrap: normal;
-  padding: 0.4rem 0.6rem;
+  padding: 0.3rem 0.6rem;
   pointer-events: none;
   position: fixed;
   transform: translate(0, var(--tooltip-translate)) scale(var(--tooltip-scale-current));
