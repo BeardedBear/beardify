@@ -36,7 +36,13 @@ const tooltipStyle = ref<Record<string, string>>({});
 
 // Use VueUse to reactively track viewport and element bounds
 const { width: viewportWidth, height: viewportHeight } = useWindowSize();
-const { left: wrapLeft, top: wrapTop, bottom: wrapBottom, width: wrapWidth, height: wrapHeight } = useElementBounding(wrapperRef);
+const {
+  left: wrapLeft,
+  top: wrapTop,
+  bottom: wrapBottom,
+  width: wrapWidth,
+  height: wrapHeight,
+} = useElementBounding(wrapperRef);
 const { width: tipWidth, height: tipHeight } = useElementBounding(tooltipRef);
 
 function updatePosition() {
@@ -45,24 +51,21 @@ function updatePosition() {
   const margin = 8; // px
 
   // Read sizes/positions from VueUse bounding refs (fall back to getBoundingClientRect if not yet populated)
-  const tipW = (tipWidth.value ?? 0) || (tooltipRef.value.getBoundingClientRect().width || 0);
-  const tipH = (tipHeight.value ?? 0) || (tooltipRef.value.getBoundingClientRect().height || 0);
+  const tipW = (tipWidth.value ?? 0) || tooltipRef.value.getBoundingClientRect().width || 0;
+  const tipH = (tipHeight.value ?? 0) || tooltipRef.value.getBoundingClientRect().height || 0;
 
-  const wrapL = (wrapLeft.value ?? 0) || (wrapperRef.value.getBoundingClientRect().left || 0);
-  const wrapT = (wrapTop.value ?? 0) || (wrapperRef.value.getBoundingClientRect().top || 0);
-  const wrapW = (wrapWidth.value ?? 0) || (wrapperRef.value.getBoundingClientRect().width || 0);
-  const wrapH = (wrapHeight.value ?? 0) || (wrapperRef.value.getBoundingClientRect().height || 0);
-  const wrapBottomVal = (wrapBottom.value ?? (wrapT + wrapH));
+  const wrapL = (wrapLeft.value ?? 0) || wrapperRef.value.getBoundingClientRect().left || 0;
+  const wrapT = (wrapTop.value ?? 0) || wrapperRef.value.getBoundingClientRect().top || 0;
+  const wrapW = (wrapWidth.value ?? 0) || wrapperRef.value.getBoundingClientRect().width || 0;
+  const wrapH = (wrapHeight.value ?? 0) || wrapperRef.value.getBoundingClientRect().height || 0;
+  const wrapBottomVal = wrapBottom.value ?? wrapT + wrapH;
 
   const vpW = viewportWidth.value ?? (document.documentElement.clientWidth || window.innerWidth);
   const vpH = viewportHeight.value ?? (document.documentElement.clientHeight || window.innerHeight);
 
   // Horizontal: desired centered left in viewport
   const desiredLeftViewport = wrapL + (wrapW - tipW) / 2;
-  const clampedLeftViewport = Math.min(
-    Math.max(desiredLeftViewport, margin),
-    Math.max(vpW - tipW - margin, margin)
-  );
+  const clampedLeftViewport = Math.min(Math.max(desiredLeftViewport, margin), Math.max(vpW - tipW - margin, margin));
 
   // Vertical: compute desired top depending on placement
   let desiredTopViewport: number;
@@ -100,9 +103,10 @@ function updatePosition() {
   currentPlacement.value = finalPlacement;
 
   // Determine whether we need to anchor (use fixed positioning)
-  const needAnchor = Math.abs(clampedLeftViewport - desiredLeftViewport) > 1 ||
+  const needAnchor =
+    Math.abs(clampedLeftViewport - desiredLeftViewport) > 1 ||
     // if we clamped vertically (clampedTop differs from desiredTopViewport) or flipped
-    (finalPlacement !== placement) ||
+    finalPlacement !== placement ||
     desiredTopViewport < margin ||
     desiredTopViewport + tipH > vpH - margin;
 
@@ -120,7 +124,7 @@ function updatePosition() {
     tooltipStyle.value = {
       position: "fixed",
       left: `${left}px`,
-      top: `${clampedTop}px`
+      top: `${clampedTop}px`,
     };
   } else {
     anchored.value = false;
@@ -148,12 +152,25 @@ useEventListener(wrapperRef, "focusin", show);
 useEventListener(wrapperRef, "focusout", hide);
 
 // Update position on viewport changes when visible
-useEventListener(window, "resize", () => { if (visible.value) updatePosition(); });
-useEventListener(window, "scroll", () => { if (visible.value) updatePosition(); }, { capture: true });
+useEventListener(window, "resize", () => {
+  if (visible.value) updatePosition();
+});
+useEventListener(
+  window,
+  "scroll",
+  () => {
+    if (visible.value) updatePosition();
+  },
+  { capture: true },
+);
 
 // React to dimension changes of the wrapper or tooltip
-useResizeObserver(wrapperRef, () => { if (visible.value) updatePosition(); });
-useResizeObserver(tooltipRef, () => { if (visible.value) updatePosition(); });
+useResizeObserver(wrapperRef, () => {
+  if (visible.value) updatePosition();
+});
+useResizeObserver(tooltipRef, () => {
+  if (visible.value) updatePosition();
+});
 
 // Click outside to hide tooltip
 useEventListener(document, "pointerdown", (e: PointerEvent) => {
@@ -191,12 +208,14 @@ useEventListener(document, "pointerdown", (e: PointerEvent) => {
   font-size: 0.9rem;
   max-width: 300px;
   opacity: 1;
+  overflow-wrap: normal;
   padding: 0.4rem 0.6rem;
   pointer-events: none;
   position: absolute;
   transform: translate(-50%, var(--tooltip-translate)) scale(var(--tooltip-scale-current));
   white-space: normal;
   will-change: transform, opacity;
+  word-break: normal;
   z-index: 50;
 }
 
