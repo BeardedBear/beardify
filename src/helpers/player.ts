@@ -53,12 +53,12 @@ export async function setShuffleState(state: boolean): Promise<boolean> {
 
 // Persist device volume in localStorage so we can restore when the API reports a default 100
 const STORAGE_PREFIX = "beardify.deviceVolume.";
-const GLOBAL_VOLUME_KEY = "beardify.lastVolume";
+const LAST_VOLUME_KEY = `${STORAGE_PREFIX}last`;
 
 // Get the last used volume (fallback when device ID is not yet known)
 export function getLastStoredVolume(): null | number {
   try {
-    const v = localStorage.getItem(GLOBAL_VOLUME_KEY);
+    const v = localStorage.getItem(LAST_VOLUME_KEY);
     if (!v) return null;
     const n = Number(v);
     return Number.isFinite(n) ? n : null;
@@ -84,7 +84,7 @@ export function saveDeviceVolume(deviceId: null | string | undefined, volumePerc
   try {
     localStorage.setItem(`${STORAGE_PREFIX}${deviceId}`, String(Math.round(volumePercent)));
     // Also save as last used volume for fallback on page refresh
-    localStorage.setItem(GLOBAL_VOLUME_KEY, String(Math.round(volumePercent)));
+    localStorage.setItem(LAST_VOLUME_KEY, String(Math.round(volumePercent)));
   } catch {
     // ignore storage errors
   }
