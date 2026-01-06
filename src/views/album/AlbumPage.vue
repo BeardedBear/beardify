@@ -112,7 +112,6 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   border-radius: 0.4rem;
   cursor: pointer;
   display: grid;
-  font-size: 0.9rem;
   grid-template-columns: 2rem 1fr auto;
   margin-bottom: 0.3rem;
   padding: 0.4rem 0.8rem;

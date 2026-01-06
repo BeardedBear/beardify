@@ -65,7 +65,6 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   border: none;
   border-radius: 1rem;
   color: var(--font);
-  font-size: 0.9rem;
 
   @include font-bold;
 
@@ -77,8 +76,6 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 .description {
-  font-size: 0.9rem;
-
   @include font-italic;
 
   margin-top: 0.5rem;
@@ -87,8 +84,6 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 .metas {
-  font-size: 0.9rem;
-
   @include font-bold;
 
   .owner {

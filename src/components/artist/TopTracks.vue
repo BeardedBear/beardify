@@ -77,7 +77,6 @@ const dialogStore = useDialog();
   border-radius: 0.3rem;
   cursor: pointer;
   display: flex;
-  font-size: 0.9rem;
 
   @include font-bold;
 

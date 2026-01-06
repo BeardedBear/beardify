@@ -79,7 +79,7 @@ function getCountryFlagUrl(countryCode: string): string {
 $transition-duration: 0.2s;
 
 .profile-container {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
 
   @include font-bold;
 

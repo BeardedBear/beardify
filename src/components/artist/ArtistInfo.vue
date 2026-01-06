@@ -146,7 +146,6 @@ onMounted(() => {
 
 .wikipedia-content {
   color: var(--font-color-light);
-  font-size: 0.95rem;
   line-height: 1.7;
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -190,7 +189,6 @@ onMounted(() => {
     @include font-bold;
 
     color: var(--font-color-default);
-    font-size: 0.95rem;
     margin-bottom: 0.5rem;
     margin-top: 1rem;
   }
@@ -265,7 +263,6 @@ onMounted(() => {
 
 .biography {
   color: var(--font-color-light);
-  font-size: 0.95rem;
   line-height: 1.7;
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -312,7 +309,6 @@ onMounted(() => {
 
 .detail-value {
   color: var(--font-color-default);
-  font-size: 0.95rem;
 }
 
 .external-links {
@@ -350,7 +346,6 @@ onMounted(() => {
 
 .no-info {
   color: var(--font-color-light);
-  font-size: 0.95rem;
   opacity: 0.6;
 }
 </style>

@@ -206,7 +206,7 @@ $margin: 0.2rem;
 
   background-color: var(--bg-color-light);
   border-radius: $radius $radius 0 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
   margin: $margin;
   padding: 0.5rem 1rem;
   text-transform: uppercase;
@@ -216,7 +216,6 @@ $margin: 0.2rem;
   @include font-bold;
 
   border-top: 1px solid var(--bg-color-light);
-  font-size: 0.75rem;
   margin: 0 1rem;
   opacity: 0.6;
   padding: 0.75rem 0 0.25rem;
@@ -237,7 +236,7 @@ $margin: 0.2rem;
 }
 
 .sidebar-label {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
 
   @include font-bold;
 
@@ -247,7 +246,6 @@ $margin: 0.2rem;
 
 .sidebar-value {
   color: var(--font-color-default);
-  font-size: 0.85rem;
   line-height: 1.4;
 }
 
@@ -281,7 +279,7 @@ $margin: 0.2rem;
   }
 
   span {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -375,11 +373,9 @@ $margin: 0.2rem;
 
 .member-name {
   flex: 1;
-  font-size: 0.85rem;
 }
 
 .member-status {
-  font-size: 0.7rem;
   font-style: italic;
   opacity: 0.5;
 }

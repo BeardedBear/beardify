@@ -176,7 +176,6 @@ onUpdated(() => updateLinks());
 
     .link-name {
       display: inline-block;
-      font-size: 0.95rem;
       margin-left: 0.5rem;
     }
 

@@ -136,7 +136,6 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
       }
 
       .album {
-        font-size: 0.95rem;
         margin: 0 0 0.5rem;
         opacity: 0.8;
 

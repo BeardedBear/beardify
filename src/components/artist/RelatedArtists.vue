@@ -20,8 +20,8 @@
 <script lang="ts" setup>
 import { RouterLink } from "vue-router";
 
-import { useArtist } from "@/views/artist/ArtistStore";
 import Cover from "@/components/ui/AlbumCover.vue";
+import { useArtist } from "@/views/artist/ArtistStore";
 
 const artistStore = useArtist();
 </script>
@@ -43,7 +43,6 @@ const artistStore = useArtist();
   border-radius: 0.3rem;
   color: currentcolor;
   cursor: pointer;
-  font-size: 0.8rem;
   padding: 0.8rem;
   text-align: center;
   text-decoration: none;

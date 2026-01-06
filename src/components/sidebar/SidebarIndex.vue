@@ -213,7 +213,6 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   align-items: center;
   color: currentcolor;
   display: flex;
-  font-size: 0.9rem;
 
   @include font-bold;
 
