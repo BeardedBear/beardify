@@ -256,6 +256,7 @@ async function deleteSong(songId: string): Promise<void> {
 
 .duration {
   font-size: 0.9rem;
+  font-variant: tabular-nums;
 
   @include font-bold;
 

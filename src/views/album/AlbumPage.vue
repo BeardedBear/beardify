@@ -35,7 +35,7 @@
                 />
               </div>
             </div>
-            <div>{{ timecode(track.duration_ms) }}</div>
+            <div class="duration">{{ timecode(track.duration_ms) }}</div>
           </div>
         </div>
       </div>
@@ -144,6 +144,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 .track-number {
   @include font-italic;
 
+  font-variant: tabular-nums;
   opacity: 0.5;
 }
 
@@ -201,5 +202,9 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 .loader {
   display: grid;
   place-content: center;
+}
+
+.duration {
+  font-variant: tabular-nums;
 }
 </style>

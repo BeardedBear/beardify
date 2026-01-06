@@ -103,4 +103,8 @@ const dialogStore = useDialog();
 .name {
   flex: 1;
 }
+
+.duration {
+  font-variant: tabular-nums;
+}
 </style>
