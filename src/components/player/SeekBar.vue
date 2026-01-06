@@ -140,6 +140,7 @@ watch(
     left: 0;
     position: absolute;
     top: 0;
+    transition: width linear 0.2s;
   }
 }
 
