@@ -162,6 +162,10 @@ body {
 
   /* Improve font rendering on many platforms */
   text-rendering: optimizelegibility;
+
+  @include responsive.tablet-up {
+    --font-variation-wdth: 70;
+  }
 }
 
 ::selection {
