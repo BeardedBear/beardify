@@ -2,6 +2,7 @@ import ky, { Options } from "ky";
 
 import { ApiResponse, SpotifyOptions } from "@/@types/Api";
 import { clearAuthData } from "@/helpers/authUtils";
+import { http } from "@/helpers/http";
 import { useAuth } from "@/views/auth/AuthStore";
 
 /**
@@ -110,7 +111,7 @@ function createKyInstance(): typeof ky {
   let refreshAttempts = 0;
   const MAX_REFRESH_ATTEMPTS = 3; // Increased to 3 attempts to keep session alive
 
-  return ky.create({
+  return http.extend({
     headers: {
       Authorization: `Bearer ${authStore.accessToken}`,
       "Content-Type": "application/json",
@@ -152,12 +153,7 @@ function createKyInstance(): typeof ky {
         },
       ],
     },
+
     prefixUrl: api.url,
-    retry: {
-      limit: 2,
-      methods: ["get"],
-      statusCodes: [408, 413, 429, 500, 502, 503, 504],
-    },
-    timeout: 5000,
   });
 }

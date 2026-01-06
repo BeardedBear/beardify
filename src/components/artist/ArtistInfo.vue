@@ -229,8 +229,7 @@ onMounted(() => {
   :deep(i),
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(em) {
-    @include font-italic;
-    @include font-bold;
+    @include font-bold-italic;
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */

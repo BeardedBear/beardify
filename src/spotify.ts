@@ -2,6 +2,7 @@ import { NotificationType } from "@/@types/Notification";
 import { usePlayer } from "@/components/player/PlayerStore";
 import { clearAuthData } from "@/helpers/authUtils";
 import { notification } from "@/helpers/notifications";
+import { getLastStoredVolume, getStoredDeviceVolume } from "@/helpers/player";
 import { useAuth } from "@/views/auth/AuthStore";
 
 // Global error handler for uncaught SDK errors
@@ -31,12 +32,31 @@ const handleSDKError = (error: Error): void => {
   });
 };
 
-// Create a player factory function that the global handler will call
+// Use a singleton player instance so repeated calls reuse the same SDK player
+let spotifyPlayer: null | Spotify.Player = null;
+
 const createPlayer = (): Spotify.Player => {
+  if (spotifyPlayer) return spotifyPlayer;
+
   // Capture uncaught SDK errors
   try {
-    const player = new Spotify.Player({
-      getOAuthToken: (cb): void => {
+    // Determine initial volume: prefer stored volume, then active device, then last used volume
+    // We check localStorage first because on page refresh, the Pinia store is not yet populated
+    // and thisDeviceId is empty until the "ready" event fires
+    const playerStore = usePlayer();
+    const storedVolume = getStoredDeviceVolume(playerStore.thisDeviceId);
+    const activeVolumePercent = playerStore.devices.activeDevice?.volume_percent;
+    const lastVolume = getLastStoredVolume();
+
+    // Use stored volume for device first, then API-reported volume, then last used volume as fallback
+    const volumePercent = storedVolume ?? activeVolumePercent ?? lastVolume;
+    const initialVolume =
+      typeof volumePercent === "number" && !Number.isNaN(volumePercent)
+        ? Math.max(0, Math.min(1, volumePercent / 100))
+        : undefined;
+
+    const playerInit: Spotify.PlayerInit = {
+      getOAuthToken: (cb: (token: string) => void): void => {
         try {
           const token = useAuth().accessToken;
           cb(token);
@@ -55,12 +75,39 @@ const createPlayer = (): Spotify.Player => {
         }
       },
       name: "Beardify",
-      volume: 1,
-    });
+    };
+
+    const initOptions = typeof initialVolume === "number" ? { ...playerInit, volume: initialVolume } : playerInit;
+    const player = new Spotify.Player(initOptions as Spotify.PlayerInit);
 
     // Managing successful connection events
     player.addListener("ready", ({ device_id }) => {
       usePlayer().thisDevice(device_id);
+
+      // Attempt to refresh the device list (populates volume_percent) and then restore volume
+      (async (): Promise<void> => {
+        try {
+          await usePlayer().getDeviceList();
+        } catch {
+          // ignore network errors here
+        }
+
+        // Prefer stored volume (from localStorage) over API-reported volume
+        const stored = getStoredDeviceVolume(device_id);
+        const apiVolPercent = usePlayer().devices.activeDevice?.volume_percent;
+        const lastVol = getLastStoredVolume();
+        const volPercent = stored ?? apiVolPercent ?? lastVol;
+
+        if (typeof volPercent === "number") {
+          const v = Math.max(0, Math.min(1, volPercent / 100));
+          player.setVolume(v).catch((e) => {
+            if (import.meta.env.DEV) {
+              // eslint-disable-next-line no-console
+              console.debug("Failed to restore SDK volume on ready:", e);
+            }
+          });
+        }
+      })();
     });
 
     // Managing player state changes
@@ -129,6 +176,27 @@ const createPlayer = (): Spotify.Player => {
         const success = await player.connect();
         if (success) {
           connectAttempt = 0; // Reset counter in case of success
+          // Refresh device list to ensure we have the latest volume_percent set by the API
+          try {
+            await usePlayer().getDeviceList();
+          } catch {
+            // ignore
+          }
+
+          // Prefer persisted stored volume for this device when available (avoid sudden max)
+          const devId = usePlayer().devices.activeDevice?.id;
+          const stored = getStoredDeviceVolume(devId);
+          const lastVol = getLastStoredVolume();
+          const volPercentOnConnect = stored ?? usePlayer().devices.activeDevice?.volume_percent ?? lastVol;
+          if (typeof volPercentOnConnect === "number") {
+            const v = Math.max(0, Math.min(1, volPercentOnConnect / 100));
+            player.setVolume(v).catch((e) => {
+              if (import.meta.env.DEV) {
+                // eslint-disable-next-line no-console
+                console.debug("Failed to restore SDK volume on connect:", e);
+              }
+            });
+          }
         } else if (connectAttempt < maxAttempts) {
           const delay = Math.min(1000 * Math.pow(2, connectAttempt), 30000); // Exponential backoff limited to 30s
           notification({
@@ -168,6 +236,7 @@ const createPlayer = (): Spotify.Player => {
       }
     });
 
+    spotifyPlayer = player;
     return player;
   } catch {
     // No need for error variable since we're only showing a notification
@@ -200,12 +269,14 @@ const createPlayer = (): Spotify.Player => {
       setVolume: async (): Promise<void> => undefined,
       togglePlay: async (): Promise<void> => undefined,
     } satisfies Spotify.Player;
+
+    spotifyPlayer = stub;
     return stub;
   }
 };
 
 // Export the player creation function for use elsewhere in the app
-export const createSpotifyPlayer = createPlayer;
+export const createSpotifyPlayer = (): Spotify.Player => createPlayer();
 
 // !! IMPORTANT: Assign the function to window.onSpotifyWebPlaybackSDKReady
 // This is what the Spotify SDK is looking for

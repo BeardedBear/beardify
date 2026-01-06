@@ -62,9 +62,9 @@ const challenge = ref<string | undefined>(undefined);
     }
   }
 
-  clearAuthData();
-
-  if (!authStore.storage) {
+  // Only generate new storage if we don't have valid PKCE codes
+  // Don't call clearAuthData() here - it would wipe the codeVerifier needed after Spotify redirect
+  if (!authStore.storage?.codeChallenge || !authStore.storage?.codeVerifier) {
     await authStore.generateStorage(router.currentRoute.value.query.ref?.toString());
   }
   challenge.value = authStore.storage?.codeChallenge;

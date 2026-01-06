@@ -92,6 +92,7 @@ watch(
 
 .time {
   font-size: 0.9rem;
+  font-variant: tabular-nums;
 
   @include font-bold;
 

@@ -9,6 +9,8 @@ export interface Player {
     activeDevice: Device;
     list: Device[];
   };
+  heartbeatFailureCount?: number;
+  heartbeatFailureNotified?: boolean;
   heartbeatInterval: null | number; // Interval ID for keeping the device active
   isSettingDevice?: boolean;
   lastRequestedDeviceId?: null | string;

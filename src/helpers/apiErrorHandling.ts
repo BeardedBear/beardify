@@ -5,6 +5,7 @@ import { NotificationType } from "@/@types/Notification";
 import { instance } from "@/api";
 import { usePlayer } from "@/components/player/PlayerStore";
 import { notification } from "@/helpers/notifications";
+import { createSpotifyPlayer } from "@/spotify";
 
 // Define a type for API errors
 export interface ApiError {
@@ -93,24 +94,49 @@ export async function handlePlaybackApiError(
   retry: (deviceId: string) => Promise<void>,
 ): Promise<void> {
   if (isApiError(error) && error.response?.status === 404) {
-    // Device might not be ready yet, try once more with a delay
+    // Device might not be ready yet. Try a retry, and proactively attempt to connect the Web Playback SDK
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      const newDeviceId = await ensureActiveDevice();
+
+      // First pass: try to find an active device
+      let newDeviceId = await ensureActiveDevice();
+
+      // If still not present, try to kick the Web Playback SDK (might register this device)
+      if (!newDeviceId) {
+        try {
+          createSpotifyPlayer().connect();
+        } catch {
+          // ignore any errors from SDK connect attempt
+        }
+
+        // Wait a bit longer for SDK to register a device
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        newDeviceId = await ensureActiveDevice();
+      }
 
       if (newDeviceId) {
         await retry(newDeviceId);
+        return;
       } else {
         throw new Error("No device available");
       }
-    } catch {
-      // If still failing after retry, notify user
+    } catch (e) {
+      // If still failing after retry and SDK attempt, refresh device list and notify user with clearer guidance
       const playerStore = usePlayer();
-      playerStore.getDeviceList();
+      try {
+        await playerStore.getDeviceList();
+      } catch {
+        // ignore refresh errors
+      }
+
       notification({
-        msg: "Device not found. Refreshing device list...",
+        msg: "No active device found. Please open Spotify on one of your devices or enable the Web Player, then retry. Refreshing device list...",
         type: NotificationType.Warning,
       });
+
+      // Log original error for debugging (keeps user-facing message concise)
+      // eslint-disable-next-line no-console
+      console.debug("Playback API error (404 / NO_ACTIVE_DEVICE):", e);
     }
   } else if (isApiError(error) && error.response?.status === 403) {
     notification({
