@@ -1,18 +1,20 @@
 <template>
   <span ref="wrapperRef" class="tooltip-wrapper">
     <slot />
-    <transition name="tooltip" appear>
-      <span
-        v-if="visible"
-        ref="tooltipRef"
-        class="tooltip"
-        :class="[currentPlacement, { anchored }]"
-        :style="tooltipStyle"
-        role="status"
-      >
-        {{ text }}
-      </span>
-    </transition>
+    <Teleport to="body">
+      <transition name="tooltip" appear>
+        <span
+          v-if="visible"
+          ref="tooltipRef"
+          class="tooltip"
+          :class="[currentPlacement]"
+          :style="tooltipStyle"
+          role="status"
+        >
+          {{ text }}
+        </span>
+      </transition>
+    </Teleport>
   </span>
 </template>
 
@@ -31,7 +33,6 @@ const currentPlacement = ref<typeof placement>(placement);
 
 const tooltipRef = ref<HTMLElement | null>(null);
 const wrapperRef = ref<HTMLElement | null>(null);
-const anchored = ref(false);
 const tooltipStyle = ref<Record<string, string>>({});
 
 // Use VueUse to reactively track viewport and element bounds
@@ -102,34 +103,19 @@ function updatePosition() {
   // If we ended up flipping, update currentPlacement
   currentPlacement.value = finalPlacement;
 
-  // Determine whether we need to anchor (use fixed positioning)
-  const needAnchor =
-    Math.abs(clampedLeftViewport - desiredLeftViewport) > 1 ||
-    // if we clamped vertically (clampedTop differs from desiredTopViewport) or flipped
-    finalPlacement !== placement ||
-    desiredTopViewport < margin ||
-    desiredTopViewport + tipH > vpH - margin;
-
-  if (needAnchor) {
-    anchored.value = true;
-    // Use fixed positioning so we can place at viewport coordinates
-    const left = clampedLeftViewport;
-    // If finalPlacement changed to bottom, desiredTopViewport should be wrap.bottom
-    if (finalPlacement === "bottom" && placement === "top") {
-      desiredTopViewport = wrapBottomVal;
-    }
-    // Ensure desiredTopViewport is within viewport margins
-    const clampedTop = Math.min(Math.max(desiredTopViewport, margin), Math.max(vpH - tipH - margin, margin));
-
-    tooltipStyle.value = {
-      position: "fixed",
-      left: `${left}px`,
-      top: `${clampedTop}px`,
-    };
-  } else {
-    anchored.value = false;
-    tooltipStyle.value = {};
+  // Always use fixed positioning since tooltip is teleported to body
+  // If finalPlacement changed to bottom, desiredTopViewport should be wrap.bottom
+  if (finalPlacement === "bottom" && placement === "top") {
+    desiredTopViewport = wrapBottomVal;
   }
+  // Ensure desiredTopViewport is within viewport margins
+  const clampedTop = Math.min(Math.max(desiredTopViewport, margin), Math.max(vpH - tipH - margin, margin));
+
+  tooltipStyle.value = {
+    position: "fixed",
+    left: `${clampedLeftViewport}px`,
+    top: `${clampedTop}px`,
+  };
 }
 
 function show() {
@@ -140,7 +126,6 @@ function show() {
 }
 function hide() {
   visible.value = false;
-  anchored.value = false;
   tooltipStyle.value = {};
   currentPlacement.value = placement;
 }
@@ -183,20 +168,22 @@ useEventListener(document, "pointerdown", (e: PointerEvent) => {
 
 <style scoped lang="scss">
 .tooltip-wrapper {
+  display: inline-block;
+  position: relative;
+}
+</style>
+
+<style lang="scss">
+/* Tooltip styles - unscoped because tooltip is teleported to body */
+.tooltip {
   --tooltip-duration: 0.32s;
   --tooltip-easing: cubic-bezier(0.2, 0.9, 0.2, 1);
-  --tooltip-translate-offset: 0.4rem; /* base offset */
-  --tooltip-translate-distance: 1rem; /* enter/leave distance */
+  --tooltip-translate-offset: 0.4rem;
+  --tooltip-translate-distance: 1rem;
   --tooltip-scale-start: 0.98;
   --tooltip-scale-end: 1;
   --tooltip-opacity-from: 0;
   --tooltip-opacity-to: 1;
-
-  display: inline-block;
-  position: relative;
-}
-
-.tooltip {
   --tooltip-translate: 0;
   --tooltip-scale-current: var(--tooltip-scale-end);
 
@@ -205,18 +192,19 @@ useEventListener(document, "pointerdown", (e: PointerEvent) => {
   border-radius: 0.4rem;
   color: var(--font-color);
   display: inline-block;
+  font-family: inherit;
   font-size: 0.9rem;
   max-width: 300px;
   opacity: 1;
   overflow-wrap: normal;
   padding: 0.4rem 0.6rem;
   pointer-events: none;
-  position: absolute;
-  transform: translate(-50%, var(--tooltip-translate)) scale(var(--tooltip-scale-current));
+  position: fixed;
+  transform: translate(0, var(--tooltip-translate)) scale(var(--tooltip-scale-current));
   white-space: normal;
-  will-change: transform, opacity;
+  will-change: transform, opacity, left, top;
   word-break: normal;
-  z-index: 50;
+  z-index: 10000;
 }
 
 /* Transition states */
@@ -242,8 +230,7 @@ useEventListener(document, "pointerdown", (e: PointerEvent) => {
   --tooltip-translate: calc(-1 * var(--tooltip-translate-offset));
   --tooltip-scale-current: var(--tooltip-scale-end);
 
-  bottom: 100%;
-  left: 50%;
+  transform-origin: center bottom;
 }
 
 .tooltip.top.tooltip-enter-from,
@@ -257,33 +244,12 @@ useEventListener(document, "pointerdown", (e: PointerEvent) => {
   --tooltip-translate: var(--tooltip-translate-offset);
   --tooltip-scale-current: var(--tooltip-scale-end);
 
-  left: 50%;
-  top: 100%;
+  transform-origin: center top;
 }
 
 .tooltip.bottom.tooltip-enter-from,
 .tooltip.bottom.tooltip-leave-to {
   --tooltip-translate: var(--tooltip-translate-distance);
   --tooltip-scale-current: var(--tooltip-scale-start);
-}
-
-/* When the tooltip is 'anchored' (repositioned to avoid viewport overflow)
-   remove the horizontal -50% translate and position it using an explicit left/top px value */
-.tooltip.anchored {
-  bottom: auto;
-  left: auto;
-  position: fixed;
-  top: auto;
-  transform: translate(0, var(--tooltip-translate)) scale(var(--tooltip-scale-current));
-  will-change: left, top, transform;
-}
-
-/* Ensure transform-origin matches placement for smoother flips */
-.tooltip.anchored.top {
-  transform-origin: center bottom;
-}
-
-.tooltip.anchored.bottom {
-  transform-origin: center top;
 }
 </style>
