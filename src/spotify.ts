@@ -75,17 +75,25 @@ const createPlayer = (): Spotify.Player => {
     player.addListener("ready", ({ device_id }) => {
       usePlayer().thisDevice(device_id);
 
-      // Restore previously-known volume for this device if available to avoid jumping to max
-      const volPercent = usePlayer().devices.activeDevice?.volume_percent;
-      if (typeof volPercent === "number") {
-        const v = Math.max(0, Math.min(1, volPercent / 100));
-        player.setVolume(v).catch((e) => {
-          if (import.meta.env.DEV) {
-            // eslint-disable-next-line no-console
-            console.debug("Failed to restore SDK volume on ready:", e);
-          }
-        });
-      }
+      // Attempt to refresh the device list (populates volume_percent) and then restore volume
+      (async (): Promise<void> => {
+        try {
+          await usePlayer().getDeviceList();
+        } catch {
+          // ignore network errors here
+        }
+
+        const volPercent = usePlayer().devices.activeDevice?.volume_percent;
+        if (typeof volPercent === "number") {
+          const v = Math.max(0, Math.min(1, volPercent / 100));
+          player.setVolume(v).catch((e) => {
+            if (import.meta.env.DEV) {
+              // eslint-disable-next-line no-console
+              console.debug("Failed to restore SDK volume on ready:", e);
+            }
+          });
+        }
+      })();
     });
 
     // Managing player state changes
@@ -154,17 +162,36 @@ const createPlayer = (): Spotify.Player => {
         const success = await player.connect();
         if (success) {
           connectAttempt = 0; // Reset counter in case of success
+          // Refresh device list to ensure we have the latest volume_percent set by the API
+          try {
+            await usePlayer().getDeviceList();
+          } catch {
+            // ignore
+          }
 
-          // Ensure the SDK player's volume matches the stored device volume to avoid sudden max volume
-          const volPercentOnConnect = usePlayer().devices.activeDevice?.volume_percent;
-          if (typeof volPercentOnConnect === "number") {
-            const v = Math.max(0, Math.min(1, volPercentOnConnect / 100));
-            player.setVolume(v).catch((e) => {
-              if (import.meta.env.DEV) {
-                // eslint-disable-next-line no-console
-                console.debug("Failed to restore SDK volume on connect:", e);
-              }
-            });
+          // Prefer persisted stored volume for this device when available (avoid sudden max)
+          try {
+            const { getStoredDeviceVolume } = await import("@/helpers/player");
+            const devId = usePlayer().devices.activeDevice?.id;
+            const stored = getStoredDeviceVolume(devId);
+            const volPercentOnConnect =
+              typeof stored === "number" ? stored : usePlayer().devices.activeDevice?.volume_percent;
+            if (typeof volPercentOnConnect === "number") {
+              const v = Math.max(0, Math.min(1, volPercentOnConnect / 100));
+              player.setVolume(v).catch((e) => {
+                if (import.meta.env.DEV) {
+                  // eslint-disable-next-line no-console
+                  console.debug("Failed to restore SDK volume on connect:", e);
+                }
+              });
+            }
+          } catch {
+            // fallback to device-provided volume
+            const volPercentOnConnect = usePlayer().devices.activeDevice?.volume_percent;
+            if (typeof volPercentOnConnect === "number") {
+              const v = Math.max(0, Math.min(1, volPercentOnConnect / 100));
+              player.setVolume(v).catch(() => {});
+            }
           }
         } else if (connectAttempt < maxAttempts) {
           const delay = Math.min(1000 * Math.pow(2, connectAttempt), 30000); // Exponential backoff limited to 30s

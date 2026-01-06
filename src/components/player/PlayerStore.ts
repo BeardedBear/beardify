@@ -10,6 +10,13 @@ import { instance } from "@/api";
 import { useNotification } from "@/components/notification/NotificationStore";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
+import {
+  isPodcastTrack,
+  mapQueueToSpotifyTracks,
+  notifyQueueError,
+  setRepeatState,
+  setShuffleState,
+} from "@/helpers/player";
 import { createSpotifyPlayer } from "@/spotify";
 
 // Heartbeat interval in milliseconds (4 minutes)
@@ -124,7 +131,6 @@ export const usePlayer = defineStore("player", {
       }
       return false;
     },
-
     async addTrackToQueue(trackUri: string): Promise<void> {
       try {
         await instance().post(`me/player/queue?uri=${trackUri}`);
@@ -192,39 +198,12 @@ export const usePlayer = defineStore("player", {
       }
       try {
         const { data } = await instance().get<QueueResponse>("me/player/queue");
-        const spotifyTracks = data.queue.map(
-          (track): Spotify.Track =>
-            ({
-              album: {
-                images: track.album.images,
-                name: track.album.name,
-                uri: track.album.uri,
-              },
-              artists: track.artists.map(
-                (artist): Spotify.Artist => ({
-                  name: artist.name,
-                  uri: artist.uri,
-                }),
-              ),
-              duration_ms: track.duration_ms,
-              id: track.id,
-              is_playable: track.is_playable || true,
-              media_type: "audio",
-              name: track.name,
-              type: "track",
-              uid: track.id,
-              uri: track.uri,
-            }) satisfies Spotify.Track,
-        );
-        this.queue = spotifyTracks;
+        this.queue = mapQueueToSpotifyTracks(data.queue);
       } catch {
         const currentTrack = this.playerState?.track_window?.current_track;
-        const isPlayingPodcast = currentTrack?.type === "episode" || currentTrack?.uri?.includes("spotify:episode:");
+        const isPlayingPodcast = isPodcastTrack(currentTrack);
         if (!isPlayingPodcast) {
-          useNotification().addNotification({
-            msg: "Error getting queue",
-            type: NotificationType.Error,
-          });
+          notifyQueueError();
         }
         this.queue = [];
       }
@@ -242,15 +221,11 @@ export const usePlayer = defineStore("player", {
     },
 
     openQueue(): void {
-      // Check if currently playing content is a podcast episode
+      // Only get queue when not playing a podcast episode
       const currentTrack = this.playerState?.track_window?.current_track;
-      const isPlayingPodcast = currentTrack?.type === "episode" || currentTrack?.uri?.includes("spotify:episode:");
-
-      // Only get queue if not playing a podcast episode
-      if (!isPlayingPodcast) {
+      if (!isPodcastTrack(currentTrack)) {
         this.getQueue();
       } else {
-        // Clear queue for podcast episodes as they don't have a queue
         this.queue = [];
       }
 
@@ -259,13 +234,13 @@ export const usePlayer = defineStore("player", {
 
     pause(): void {
       instance().put("me/player/pause", {
-        device_id: this.devices.activeDevice,
+        device_id: this.devices.activeDevice?.id,
       });
     },
 
     play(): void {
       instance().put("me/player/play", {
-        device_id: this.devices.activeDevice,
+        device_id: this.devices.activeDevice?.id,
       });
     },
 
@@ -287,6 +262,13 @@ export const usePlayer = defineStore("player", {
     async setVolume(volume: number): Promise<void> {
       await instance().put(`me/player/volume?volume_percent=${Math.round(volume)}`);
       this.devices.activeDevice.volume_percent = volume;
+      // Persist the volume for the current device so we can restore it later
+      try {
+        const { saveDeviceVolume } = await import("@/helpers/player");
+        saveDeviceVolume(this.devices.activeDevice?.id, Math.round(volume));
+      } catch {
+        // ignore
+      }
     },
 
     startDeviceHeartbeat(): void {
@@ -379,7 +361,6 @@ export const usePlayer = defineStore("player", {
         }
       }, HEARTBEAT_INTERVAL);
     },
-
     // Stop the heartbeat
     stopDeviceHeartbeat(): void {
       if (this.heartbeatInterval) {
@@ -403,47 +384,23 @@ export const usePlayer = defineStore("player", {
       this.panelOpened = !this.panelOpened;
     },
 
-    toggleRepeat(): void {
-      if (this.currentlyPlaying.repeat_state === "off") {
-        (async (): Promise<void> => {
-          try {
-            await instance().put("me/player/repeat?state=context");
-            this.currentlyPlaying.repeat_state = "context";
-          } catch {
-            // silent
-          }
-        })();
-      } else {
-        (async (): Promise<void> => {
-          try {
-            await instance().put("me/player/repeat?state=off");
-            this.currentlyPlaying.repeat_state = "off";
-          } catch {
-            // silent
-          }
-        })();
+    async toggleRepeat(): Promise<void> {
+      const nextState = this.currentlyPlaying.repeat_state === "off" ? "context" : "off";
+      try {
+        const ok = await setRepeatState(nextState);
+        if (ok) this.currentlyPlaying.repeat_state = nextState;
+      } catch {
+        // silent
       }
     },
 
-    toggleShuffle(): void {
-      if (this.currentlyPlaying.shuffle_state) {
-        (async (): Promise<void> => {
-          try {
-            await instance().put("me/player/shuffle?state=false");
-            this.currentlyPlaying.shuffle_state = false;
-          } catch {
-            // silent
-          }
-        })();
-      } else {
-        (async (): Promise<void> => {
-          try {
-            await instance().put("me/player/shuffle?state=true");
-            this.currentlyPlaying.shuffle_state = true;
-          } catch {
-            // silent
-          }
-        })();
+    async toggleShuffle(): Promise<void> {
+      const nextState = !this.currentlyPlaying.shuffle_state;
+      try {
+        const ok = await setShuffleState(nextState);
+        if (ok) this.currentlyPlaying.shuffle_state = nextState;
+      } catch {
+        // silent
       }
     },
 
