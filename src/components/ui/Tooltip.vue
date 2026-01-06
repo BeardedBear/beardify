@@ -37,13 +37,7 @@ const tooltipStyle = ref<Record<string, string>>({});
 
 // Use VueUse to reactively track viewport and element bounds
 const { width: viewportWidth, height: viewportHeight } = useWindowSize();
-const {
-  left: wrapLeft,
-  top: wrapTop,
-  bottom: wrapBottom,
-  width: wrapWidth,
-  height: wrapHeight,
-} = useElementBounding(wrapperRef);
+const { x: wrapLeft, y: wrapTop, bottom: wrapBottom, width: wrapWidth } = useElementBounding(wrapperRef);
 const { width: tipWidth, height: tipHeight } = useElementBounding(tooltipRef);
 
 function updatePosition() {
@@ -51,21 +45,15 @@ function updatePosition() {
 
   const margin = 8; // px
 
-  // Read sizes/positions from VueUse bounding refs (fall back to getBoundingClientRect if not yet populated)
-  const tipW = (tipWidth.value ?? 0) || tooltipRef.value.getBoundingClientRect().width || 0;
-  const tipH = (tipHeight.value ?? 0) || tooltipRef.value.getBoundingClientRect().height || 0;
-
-  const wrapL = (wrapLeft.value ?? 0) || wrapperRef.value.getBoundingClientRect().left || 0;
-  const wrapT = (wrapTop.value ?? 0) || wrapperRef.value.getBoundingClientRect().top || 0;
-  const wrapW = (wrapWidth.value ?? 0) || wrapperRef.value.getBoundingClientRect().width || 0;
-  const wrapH = (wrapHeight.value ?? 0) || wrapperRef.value.getBoundingClientRect().height || 0;
-  const wrapBottomVal = wrapBottom.value ?? wrapT + wrapH;
+  // Read sizes/positions from VueUse bounding refs
+  const tipW = tipWidth.value || 0;
+  const tipH = tipHeight.value || 0;
 
   const vpW = viewportWidth.value ?? (document.documentElement.clientWidth || window.innerWidth);
   const vpH = viewportHeight.value ?? (document.documentElement.clientHeight || window.innerHeight);
 
   // Horizontal: desired centered left in viewport
-  const desiredLeftViewport = wrapL + (wrapW - tipW) / 2;
+  const desiredLeftViewport = wrapLeft.value + (wrapWidth.value - tipW) / 2;
   const clampedLeftViewport = Math.min(Math.max(desiredLeftViewport, margin), Math.max(vpW - tipW - margin, margin));
 
   // Vertical: compute desired top depending on placement
@@ -73,10 +61,10 @@ function updatePosition() {
   let finalPlacement = placement;
 
   if (placement === "top") {
-    desiredTopViewport = wrapT - tipH;
+    desiredTopViewport = wrapTop.value - tipH;
     // If it would go above viewport, try flipping to bottom
     if (desiredTopViewport < margin) {
-      const spaceBelow = vpH - wrapBottomVal - margin;
+      const spaceBelow = vpH - wrapBottom.value - margin;
       if (spaceBelow >= tipH) {
         finalPlacement = "bottom";
       } else {
@@ -86,18 +74,19 @@ function updatePosition() {
     }
   } else {
     // bottom placement
-    desiredTopViewport = wrapBottomVal;
+    desiredTopViewport = wrapBottom.value;
     // If it would go below viewport, try flipping to top
     if (desiredTopViewport + tipH > vpH - margin) {
-      const spaceAbove = wrapT - margin;
+      const spaceAbove = wrapTop.value - margin;
       if (spaceAbove >= tipH) {
         finalPlacement = "top";
-        desiredTopViewport = wrapT - tipH;
+        desiredTopViewport = wrapTop.value - tipH;
       } else {
         // clamp to bottom margin
         desiredTopViewport = Math.max(vpH - tipH - margin, margin);
       }
     }
+    console.log("update", wrapperRef.value.offsetLeft);
   }
 
   // If we ended up flipping, update currentPlacement
@@ -106,7 +95,7 @@ function updatePosition() {
   // Always use fixed positioning since tooltip is teleported to body
   // If finalPlacement changed to bottom, desiredTopViewport should be wrap.bottom
   if (finalPlacement === "bottom" && placement === "top") {
-    desiredTopViewport = wrapBottomVal;
+    desiredTopViewport = wrapBottom.value;
   }
   // Ensure desiredTopViewport is within viewport margins
   const clampedTop = Math.min(Math.max(desiredTopViewport, margin), Math.max(vpH - tipH - margin, margin));
@@ -124,6 +113,7 @@ function show() {
   currentPlacement.value = placement;
   nextTick(() => updatePosition());
 }
+
 function hide() {
   visible.value = false;
   tooltipStyle.value = {};
@@ -131,10 +121,8 @@ function hide() {
 }
 
 // Mouse enter/leave and focus handlers (use VueUse event helpers)
-useEventListener(wrapperRef, "mouseenter", show);
-useEventListener(wrapperRef, "mouseleave", hide);
-useEventListener(wrapperRef, "focusin", show);
-useEventListener(wrapperRef, "focusout", hide);
+useEventListener(wrapperRef, ["focusin", "mouseenter"], show);
+useEventListener(wrapperRef, ["focusout", "mouseleave"], hide);
 
 // Update position on viewport changes when visible
 useEventListener(window, "resize", () => {
@@ -150,19 +138,8 @@ useEventListener(
 );
 
 // React to dimension changes of the wrapper or tooltip
-useResizeObserver(wrapperRef, () => {
+useResizeObserver([tooltipRef, wrapperRef], () => {
   if (visible.value) updatePosition();
-});
-useResizeObserver(tooltipRef, () => {
-  if (visible.value) updatePosition();
-});
-
-// Click outside to hide tooltip
-useEventListener(document, "pointerdown", (e: PointerEvent) => {
-  const target = e.target as Node | null;
-  if (visible.value && wrapperRef.value && target && !wrapperRef.value.contains(target)) {
-    hide();
-  }
 });
 </script>
 
