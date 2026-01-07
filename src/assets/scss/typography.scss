@@ -15,7 +15,7 @@
 
 html {
   /* stylelint-disable property-no-vendor-prefix */
-  font-size: clamp(14px, calc(0.9rem + 0.6vw), 15px);
+  font-size: clamp(14px, calc(0.9rem + 0.6vw), 14px);
   line-height: 1.4;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
@@ -33,13 +33,6 @@ textarea {
     "GRAD" var(--font-variation-grad),
     "ROND" var(--font-variation-rond),
     "wght" var(--font-variation-wght);
-}
-
-/* Slightly increase max size on very wide screens (>= 1930px) using existing mixin */
-@include responsive.l {
-  html {
-    font-size: clamp(14px, calc(1rem + 0.8vw), 18px);
-  }
 }
 
 @include responsive.mobile {
