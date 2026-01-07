@@ -140,7 +140,7 @@ onMounted(() => {
   }
 
   i {
-    font-size: 0.9rem;
+    font-size: var(--font-size-md);
   }
 }
 
@@ -168,7 +168,7 @@ onMounted(() => {
 
     border-bottom: 1px solid var(--bg-color-light);
     color: var(--font-color-default);
-    font-size: 1.2rem;
+    font-size: var(--font-size-xl);
     margin-bottom: 0.8rem;
     margin-top: 1.5rem;
     padding-bottom: 0.4rem;
@@ -179,7 +179,7 @@ onMounted(() => {
     @include font-bold;
 
     color: var(--font-color-default);
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     margin-bottom: 0.6rem;
     margin-top: 1.2rem;
   }
@@ -302,7 +302,7 @@ onMounted(() => {
 
 .detail-label {
   color: var(--font-color-light);
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   opacity: 0.6;
   text-transform: uppercase;
 }
@@ -336,11 +336,11 @@ onMounted(() => {
   }
 
   i {
-    font-size: 1.1rem;
+    font-size: var(--font-size-lg);
   }
 
   span {
-    font-size: 0.9rem;
+    font-size: var(--font-size-md);
   }
 }
 

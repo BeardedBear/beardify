@@ -206,7 +206,7 @@ $margin: 0.2rem;
 
   background-color: var(--bg-color-light);
   border-radius: $radius $radius 0 0;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   margin: $margin;
   padding: 0.5rem 1rem;
   text-transform: uppercase;
@@ -236,7 +236,7 @@ $margin: 0.2rem;
 }
 
 .sidebar-label {
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
 
   @include font-bold;
 
@@ -274,12 +274,12 @@ $margin: 0.2rem;
   }
 
   i {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     opacity: 0.7;
   }
 
   span {
-    font-size: 0.8rem;
+    font-size: var(--font-size-sm);
   }
 }
 
@@ -366,7 +366,7 @@ $margin: 0.2rem;
   width: 24px;
 
   i {
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
     opacity: 0.5;
   }
 }

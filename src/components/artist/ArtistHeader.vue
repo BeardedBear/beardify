@@ -103,7 +103,7 @@ watch(infoAvailable, (available) => {
 }
 
 .name {
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
 
   @include font-bold;
 

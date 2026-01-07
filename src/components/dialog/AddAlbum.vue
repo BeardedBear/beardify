@@ -88,7 +88,7 @@ async function add(albumId: string, playlistId: string): Promise<void> {
 .collection {
   border-radius: 0.3rem;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-size-md);
 
   @include font-bold;
 

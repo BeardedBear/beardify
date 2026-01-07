@@ -206,7 +206,7 @@ $gap-list: 10px;
   border-radius: 999px;
   color: var(--font-color-default);
   display: inline-block;
-  font-size: 0.6rem;
+  font-size: var(--font-size-xs);
 
   @include font-bold;
 

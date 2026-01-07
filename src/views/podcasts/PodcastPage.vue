@@ -54,7 +54,7 @@ podcastsStore.clean().finally(() => {
 
   .name {
     flex: 1;
-    font-size: 2.5rem;
+    font-size: var(--font-size-4xl);
 
     @include font-bold;
   }

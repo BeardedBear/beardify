@@ -43,7 +43,7 @@ const dialogStore = useDialog();
   position: relative;
 
   .add {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     transition: 0.15s;
     will-change: transform;
 

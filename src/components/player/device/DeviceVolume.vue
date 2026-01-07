@@ -145,7 +145,7 @@ async function setVolumeOptimistic(volume: number): Promise<void> {
   background-color: var(--bg-color-light);
   cursor: pointer;
   display: inline-block;
-  font-size: 0.9rem;
+  font-size: var(--font-size-md);
 
   @include font-bold;
 

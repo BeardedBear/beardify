@@ -91,7 +91,7 @@ watch(
 }
 
 .time {
-  font-size: 0.9rem;
+  font-size: var(--font-size-md);
   font-variant: tabular-nums;
 
   @include font-bold;
@@ -115,7 +115,7 @@ watch(
   border-radius: 1rem;
   color: currentcolor;
   cursor: pointer;
-  font-size: 1.3rem;
+  font-size: var(--font-size-xl);
   line-height: 0;
   opacity: 0.5;
   padding: 0.4rem 0.5rem;
@@ -135,12 +135,12 @@ watch(
   }
 
   &.button-big {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
     padding: 0.5rem 0.6rem;
   }
 
   &.play {
-    font-size: 2rem;
+    font-size: var(--font-size-3xl);
     opacity: 1;
 
     &:hover {
@@ -152,7 +152,7 @@ watch(
     }
 
     &.button-big {
-      font-size: 2.5rem;
+      font-size: var(--font-size-4xl);
       padding: 0.6rem 0.7rem;
     }
   }

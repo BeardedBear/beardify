@@ -42,7 +42,7 @@ import ButtonIndex from "@/components/ui/ButtonIndex.vue";
   color: var(--font-color);
   display: block;
   flex: 1;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 
   @include font-bold;
 

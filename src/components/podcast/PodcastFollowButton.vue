@@ -66,7 +66,7 @@ async function toggleFollow(): Promise<void> {
   }
 
   i {
-    font-size: 1.1rem;
+    font-size: var(--font-size-lg);
   }
 }
 </style>

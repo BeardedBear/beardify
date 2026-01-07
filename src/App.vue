@@ -124,6 +124,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/font-size" as *;
 @use "@/assets/scss/responsive" as responsive;
 @use "@/assets/scss/heading" as heading;
 @use "@/assets/scss/mixins" as *;

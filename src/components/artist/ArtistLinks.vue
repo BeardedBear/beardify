@@ -183,7 +183,7 @@ onUpdated(() => updateLinks());
     i[class^="icon-"] {
       align-items: center;
       display: inline-flex;
-      font-size: 1rem;
+      font-size: var(--font-size-base);
       justify-content: center;
       width: 1.25rem;
     }

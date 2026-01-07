@@ -65,13 +65,13 @@ function playSingle(albumUri: string): void {
 }
 
 .release-date {
-  font-size: 0.9rem;
+  font-size: var(--font-size-md);
   font-style: italic;
   opacity: 0.5;
 }
 
 .name {
-  font-size: 0.9rem;
+  font-size: var(--font-size-md);
 
   @include font-bold;
 }
