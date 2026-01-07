@@ -71,8 +71,6 @@ function playSingle(albumUri: string): void {
 }
 
 .name {
-  font-size: var(--font-size-sm);
-
   @include font-bold;
 }
 

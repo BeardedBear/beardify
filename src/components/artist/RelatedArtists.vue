@@ -29,6 +29,7 @@ const artistStore = useArtist();
 <style lang="scss" scoped>
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as *;
 
 .image {
   $size: 3rem;
@@ -40,6 +41,8 @@ const artistStore = useArtist();
 }
 
 .item {
+  @include font-bold;
+
   border-radius: 0.3rem;
   color: currentcolor;
   cursor: pointer;
