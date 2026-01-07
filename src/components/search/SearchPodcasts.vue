@@ -53,7 +53,7 @@ const searchStore = useSearch();
 }
 
 .name {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
 
   @include font-bold;
 
@@ -62,7 +62,7 @@ const searchStore = useSearch();
 
 .publisher {
   color: var(--text-color-light);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   opacity: 0.7;
 }
 </style>

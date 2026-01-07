@@ -109,7 +109,7 @@ const getDialogTitle = (): string => {
     @include font-bold;
 
     color: var(--font-color);
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -125,7 +125,7 @@ const getDialogTitle = (): string => {
   color: var(--font-color-light);
   cursor: pointer;
   display: flex;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   justify-content: center;
   opacity: 0;
   padding: 0.25rem;

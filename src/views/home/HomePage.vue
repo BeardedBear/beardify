@@ -66,12 +66,12 @@ watch(
 
   .name {
     flex: 1;
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-xl);
 
     @include font-bold;
 
     @include responsive.mobile {
-      font-size: var(--font-size-2xl);
+      font-size: var(--font-size-lg);
     }
   }
 }

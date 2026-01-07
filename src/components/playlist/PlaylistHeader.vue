@@ -93,7 +93,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 .title {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-xl);
 
   @include font-bold;
 
@@ -175,7 +175,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 
 .mobile-options-toggle {
   display: none;
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
 
   @include responsive.mobile {
     display: block;

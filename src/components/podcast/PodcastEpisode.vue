@@ -129,7 +129,7 @@ defineProps<{
 
   .metas {
     display: flex;
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
 
     @include font-bold;
 
@@ -183,7 +183,7 @@ defineProps<{
 }
 
 .name {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
 
   @include font-bold;
 }

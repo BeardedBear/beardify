@@ -77,7 +77,7 @@ function openLink(url: string): void {
 }
 
 .title {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-xl);
 
   @include font-bold;
 

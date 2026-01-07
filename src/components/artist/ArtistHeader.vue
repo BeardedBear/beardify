@@ -103,12 +103,12 @@ watch(infoAvailable, (available) => {
 }
 
 .name {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-xl);
 
   @include font-bold;
 
   &.scrolled {
-    font-size: 1.6rem;
+    font-size: var(--font-size-lg);
   }
 }
 

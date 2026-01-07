@@ -81,7 +81,7 @@ function search(artist: string, album: string): void {
   cursor: pointer;
   display: grid;
   flex: 1;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
 
   @include font-bold;
 

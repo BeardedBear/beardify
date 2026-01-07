@@ -95,7 +95,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   border: none;
   color: var(--font-color);
   cursor: pointer;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   opacity: 0;
   padding: 0;
   padding-right: 7px;
@@ -177,7 +177,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id));
   font-size: var(--font-size-base);
 
   @include responsive.mobile {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
   }
 }
 

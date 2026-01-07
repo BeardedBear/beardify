@@ -35,7 +35,7 @@ code {
   background-color: var(--bg-color-darker);
   border-radius: 0.4rem;
   display: block;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   margin: 0.4rem 0;
   padding: 0.3rem;
 }

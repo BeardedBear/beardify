@@ -160,7 +160,7 @@ useResizeObserver([tooltipRef, wrapperRef], () => {
   color: var(--font-color);
   display: inline-block;
   font-family: inherit;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   max-width: 300px;
   opacity: 1;
   overflow-wrap: normal;

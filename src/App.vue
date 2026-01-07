@@ -139,10 +139,10 @@ onBeforeUnmount(() => {
 
 input {
   &::placeholder {
-    color: var(--font-color);
-
     @include font-italic;
 
+    color: var(--font-color);
+    font-size: var(--font-size-base);
     opacity: 0.3;
   }
 }

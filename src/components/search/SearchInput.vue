@@ -57,7 +57,6 @@ $radius: 1rem;
   border: 0;
   border-radius: $radius;
   color: currentcolor;
-  font-size: var(--font-size-xl);
   outline: 0;
   padding: 0.8rem 1.2rem;
   width: 100%;

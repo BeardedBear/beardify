@@ -35,7 +35,7 @@ function goAlbum(albumId: string): void {
 .artist {
   color: currentcolor;
   cursor: pointer;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
 
   @include font-italic;
 

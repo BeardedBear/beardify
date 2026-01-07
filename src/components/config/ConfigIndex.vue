@@ -87,7 +87,7 @@ onClickOutside(domConfig, (): void => configStore.close());
 .user-mail {
   @include font-italic;
 
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   margin-top: 0.1rem;
   opacity: 0.5;
 }

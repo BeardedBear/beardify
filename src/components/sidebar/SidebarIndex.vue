@@ -226,7 +226,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
     border-radius: 2rem;
     color: var(--font-color);
     cursor: pointer;
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
     opacity: 0;
     padding: 0.2rem 0.7rem;
     position: absolute;

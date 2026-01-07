@@ -140,7 +140,7 @@ onMounted(() => {
   }
 
   i {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
   }
 }
 
@@ -302,7 +302,7 @@ onMounted(() => {
 
 .detail-label {
   color: var(--font-color-light);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   opacity: 0.6;
   text-transform: uppercase;
 }
@@ -340,7 +340,7 @@ onMounted(() => {
   }
 
   span {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
   }
 }
 

@@ -67,7 +67,7 @@ const truncatedTrackName = computed(() => {
   position: relative;
 
   .add {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-xl);
     transition: 0.2s;
     will-change: transform;
 
@@ -130,7 +130,7 @@ const truncatedTrackName = computed(() => {
 
 .artists {
   @include responsive.mobile {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
     opacity: 0.8;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -147,14 +147,14 @@ const truncatedTrackName = computed(() => {
 }
 
 .album {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
 
   @include font-italic;
 
   .link {
     color: currentcolor;
     cursor: pointer;
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
 
     @include font-italic;
 

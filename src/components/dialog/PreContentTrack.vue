@@ -59,14 +59,14 @@ function openLink(url: string): void {
 .note {
   background-color: var(--bg-color-lighter);
   border-radius: 5px;
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   opacity: 0.5;
   padding: 10px;
 }
 
 .artist {
   color: var(--text-color-light);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   opacity: 0.5;
 }
 
@@ -84,7 +84,7 @@ function openLink(url: string): void {
     color: currentcolor;
     cursor: pointer;
     display: flex;
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-xl);
     opacity: 0.3;
     text-decoration: none;
 

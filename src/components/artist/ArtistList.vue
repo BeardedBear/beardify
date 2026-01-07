@@ -93,7 +93,7 @@ function goArtist(artistUri: string): void {
   text-decoration: none;
 
   &.feat {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
 
     @include font-italic;
 

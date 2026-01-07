@@ -57,12 +57,12 @@ const searchStore = useSearch();
 }
 
 .track-icon {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   opacity: 0.1;
 }
 
 .track-name {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
 
   @include font-bold;
 }

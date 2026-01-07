@@ -121,7 +121,7 @@ watch(
       border-radius: 0.3rem;
       bottom: calc(100% + 0.4rem);
       color: color.change(white, $alpha: 0.8);
-      font-size: var(--font-size-md);
+      font-size: var(--font-size-sm);
 
       @include font-bold;
 

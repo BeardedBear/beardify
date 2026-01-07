@@ -186,7 +186,7 @@ async function deleteAlbum(albumId: string): Promise<void> {
   color: color.change(white, $alpha: 0.8);
   cursor: pointer;
   display: none;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   height: $size;
   left: $offset;
   line-height: 0;
@@ -282,7 +282,7 @@ async function deleteAlbum(albumId: string): Promise<void> {
   color: currentcolor;
   cursor: pointer;
   display: none;
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-lg);
   padding: 0.4rem 0.5rem;
   position: absolute;
   transition: transform ease 0.1s;
@@ -323,7 +323,7 @@ async function deleteAlbum(albumId: string): Promise<void> {
   i {
     animation: bounce 0.5s cubic-bezier(1, 0, 1, 0) 0s infinite alternate;
     color: white;
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     position: absolute;
     right: 0.3rem;
     top: 0.3rem;

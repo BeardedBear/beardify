@@ -112,7 +112,7 @@ userStore.clean().finally(() => {
   }
 
   .name {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-xl);
 
     @include font-bold;
   }

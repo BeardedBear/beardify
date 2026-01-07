@@ -113,7 +113,7 @@ onBeforeUnmount(() => {
 .select-sizer {
   display: flex;
   flex-direction: column;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   height: 0;
   overflow: hidden;
   padding: 0 2rem 0 0.75rem;
@@ -135,7 +135,7 @@ onBeforeUnmount(() => {
   color: var(--font-color-light);
   cursor: pointer;
   display: flex;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   gap: 0.5rem;
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
@@ -184,7 +184,7 @@ onBeforeUnmount(() => {
   border: none;
   color: var(--font-color-light);
   cursor: pointer;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   padding: 0.6rem 0.75rem;
   text-align: left;
   transition:
