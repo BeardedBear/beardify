@@ -121,7 +121,7 @@ b {
 }
 
 .icon {
-  font-size: 1.3rem;
+  font-size: var(--font-size-xl);
   margin-right: 0.3rem;
   position: relative;
   top: 0.2rem;

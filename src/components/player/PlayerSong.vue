@@ -6,7 +6,6 @@
         <div class="area-controls"><Controls /></div>
         <div class="area-device"><Device /></div>
       </div>
-      <!-- {{ isTouchDevice() }} -->
       <SeekBar :clickDisable="isTouchDevice()" />
     </div>
   </template>
@@ -23,7 +22,6 @@ import Loader from "@/components/ui/LoadingDots.vue";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 
 const playerStore = usePlayer();
-// const
 
 function onSurfaceClick(event: MouseEvent): void {
   // Only open the slide-up on touch devices (mobile)

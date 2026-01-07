@@ -153,7 +153,7 @@ async function deleteSong(songId: string): Promise<void> {
 
   &-icon {
     &-item {
-      font-size: 1.5rem;
+      font-size: var(--font-size-xl);
       opacity: 0.1;
     }
 
@@ -186,7 +186,7 @@ async function deleteSong(songId: string): Promise<void> {
   .date,
   .owner {
     color: currentcolor;
-    font-size: 0.9rem;
+    font-size: var(--font-size-sm);
 
     @include font-italic;
 
@@ -255,7 +255,7 @@ async function deleteSong(songId: string): Promise<void> {
 }
 
 .duration {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-variant: tabular-nums;
 
   @include font-bold;
@@ -267,7 +267,7 @@ async function deleteSong(songId: string): Promise<void> {
 .album {
   align-items: center;
   display: flex;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   text-align: left;
 
   @include responsive.mobile {
@@ -275,7 +275,7 @@ async function deleteSong(songId: string): Promise<void> {
   }
 
   i {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     margin-right: 0.8rem;
     opacity: 0.3;
 

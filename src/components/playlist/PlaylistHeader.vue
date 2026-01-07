@@ -65,7 +65,6 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   border: none;
   border-radius: 1rem;
   color: var(--font);
-  font-size: 0.9rem;
 
   @include font-bold;
 
@@ -77,8 +76,6 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 .description {
-  font-size: 0.9rem;
-
   @include font-italic;
 
   margin-top: 0.5rem;
@@ -87,8 +84,6 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 .metas {
-  font-size: 0.9rem;
-
   @include font-bold;
 
   .owner {
@@ -98,7 +93,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 .title {
-  font-size: 2rem;
+  font-size: var(--font-size-xl);
 
   @include font-bold;
 
@@ -151,7 +146,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 .right {
   align-items: center;
   display: flex;
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   gap: 0.5rem;
 
   @include responsive.mobile {
@@ -180,10 +175,10 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 
 .mobile-options-toggle {
   display: none;
-  font-size: 1.4rem;
+  font-size: var(--font-size-xl);
 
   @include responsive.mobile {
-    display: block; // ButtonIndex handles display
+    display: block;
   }
 }
 

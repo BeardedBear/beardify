@@ -50,7 +50,7 @@ const notificationStore = useNotification();
   background: rgb(73 145 52);
   border-radius: 0.3rem;
   color: #fff;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 
   @include font-bold;
 

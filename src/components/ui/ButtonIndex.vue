@@ -182,17 +182,17 @@ const classes = computed(() => {
   }
 
   &-big {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     padding: 0.75rem 1.2rem;
   }
 
   &-small {
-    font-size: 0.9rem;
+    font-size: var(--font-size-sm);
     padding: 0.5rem 0.6rem;
   }
 
   &-x-small {
-    font-size: 0.8rem;
+    font-size: var(--font-size-sm);
     padding: 0.1rem 0.5rem;
   }
 

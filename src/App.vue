@@ -124,6 +124,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/font-size" as *;
 @use "@/assets/scss/responsive" as responsive;
 @use "@/assets/scss/heading" as heading;
 @use "@/assets/scss/mixins" as *;
@@ -138,10 +139,10 @@ onBeforeUnmount(() => {
 
 input {
   &::placeholder {
-    color: var(--font-color);
-
     @include font-italic;
 
+    color: var(--font-color);
+    font-size: var(--font-size-base);
     opacity: 0.3;
   }
 }
@@ -162,6 +163,10 @@ body {
 
   /* Improve font rendering on many platforms */
   text-rendering: optimizelegibility;
+
+  @include responsive.tablet-up {
+    --font-variation-wdth: 70;
+  }
 }
 
 ::selection {

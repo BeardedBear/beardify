@@ -124,7 +124,7 @@ $radius: 2rem;
   border-radius: 1rem;
   color: currentcolor;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   padding: 0.4rem 0.5rem;
 
   @include squircle;
@@ -183,7 +183,7 @@ $radius: 2rem;
 
   background-color: var(--bg-color-light);
   border-radius: $radius $radius 0 0;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   padding: 1rem 1.5rem;
   position: relative;
 }

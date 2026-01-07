@@ -38,7 +38,7 @@ document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
 
 .results {
   display: grid;
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   gap: 2rem;
   grid-template-columns: 0.6fr 1fr 0.8fr 0.8fr;
   justify-content: space-evenly;

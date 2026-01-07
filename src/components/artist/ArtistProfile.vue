@@ -79,12 +79,12 @@ function getCountryFlagUrl(countryCode: string): string {
 $transition-duration: 0.2s;
 
 .profile-container {
-  font-size: 0.75rem;
+  font-size: var(--font-size-sm);
 
   @include font-bold;
 
   margin-top: 0.5rem;
-  min-height: 1.5rem; // Reserve space for the text line height
+  min-height: 1.5rem;
 }
 
 .tag-list {

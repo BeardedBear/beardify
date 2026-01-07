@@ -96,13 +96,13 @@ onClickOutside(popup, () => playerStore.closeQueue());
 
   .heading {
     color: var(--text-color-dark);
-    font-size: 0.9rem;
+    font-size: var(--font-size-sm);
     padding: 3px 10px;
   }
 }
 
 .section-title {
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
 
   @include font-bold;
 
@@ -113,7 +113,7 @@ onClickOutside(popup, () => playerStore.closeQueue());
 }
 
 .queue-list {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   white-space: nowrap;
 }
 
@@ -124,7 +124,7 @@ onClickOutside(popup, () => playerStore.closeQueue());
 
 .empty-message {
   color: var(--font-color);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 
   @include font-italic;
 

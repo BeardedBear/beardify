@@ -126,7 +126,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
       }
 
       .title {
-        font-size: 1.1rem;
+        font-size: var(--font-size-lg);
         margin: 0 0 0.25rem;
       }
 
@@ -136,7 +136,6 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
       }
 
       .album {
-        font-size: 0.95rem;
         margin: 0 0 0.5rem;
         opacity: 0.8;
 

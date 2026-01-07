@@ -176,7 +176,6 @@ onUpdated(() => updateLinks());
 
     .link-name {
       display: inline-block;
-      font-size: 0.95rem;
       margin-left: 0.5rem;
     }
 
@@ -184,7 +183,7 @@ onUpdated(() => updateLinks());
     i[class^="icon-"] {
       align-items: center;
       display: inline-flex;
-      font-size: 1rem;
+      font-size: var(--font-size-base);
       justify-content: center;
       width: 1.25rem;
     }

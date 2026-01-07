@@ -140,13 +140,12 @@ onMounted(() => {
   }
 
   i {
-    font-size: 0.9rem;
+    font-size: var(--font-size-sm);
   }
 }
 
 .wikipedia-content {
   color: var(--font-color-light);
-  font-size: 0.95rem;
   line-height: 1.7;
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -169,7 +168,7 @@ onMounted(() => {
 
     border-bottom: 1px solid var(--bg-color-light);
     color: var(--font-color-default);
-    font-size: 1.2rem;
+    font-size: var(--font-size-xl);
     margin-bottom: 0.8rem;
     margin-top: 1.5rem;
     padding-bottom: 0.4rem;
@@ -180,7 +179,7 @@ onMounted(() => {
     @include font-bold;
 
     color: var(--font-color-default);
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     margin-bottom: 0.6rem;
     margin-top: 1.2rem;
   }
@@ -190,7 +189,6 @@ onMounted(() => {
     @include font-bold;
 
     color: var(--font-color-default);
-    font-size: 0.95rem;
     margin-bottom: 0.5rem;
     margin-top: 1rem;
   }
@@ -265,7 +263,6 @@ onMounted(() => {
 
 .biography {
   color: var(--font-color-light);
-  font-size: 0.95rem;
   line-height: 1.7;
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -305,14 +302,13 @@ onMounted(() => {
 
 .detail-label {
   color: var(--font-color-light);
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   opacity: 0.6;
   text-transform: uppercase;
 }
 
 .detail-value {
   color: var(--font-color-default);
-  font-size: 0.95rem;
 }
 
 .external-links {
@@ -340,17 +336,16 @@ onMounted(() => {
   }
 
   i {
-    font-size: 1.1rem;
+    font-size: var(--font-size-lg);
   }
 
   span {
-    font-size: 0.9rem;
+    font-size: var(--font-size-sm);
   }
 }
 
 .no-info {
   color: var(--font-color-light);
-  font-size: 0.95rem;
   opacity: 0.6;
 }
 </style>

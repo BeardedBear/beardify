@@ -8,14 +8,14 @@
   --font-variation-slnt-italic: -10;
   --font-variation-wdth: 50;
   --font-variation-grad: 0;
-  --font-variation-rond: 100;
+  --font-variation-rond: 0;
   --font-variation-wght: 400;
   --font-variation-wght-bold: 600;
 }
 
 html {
   /* stylelint-disable property-no-vendor-prefix */
-  font-size: clamp(14px, calc(0.9rem + 0.6vw), 16px);
+  font-size: clamp(14px, calc(0.9rem + 0.6vw), 14px);
   line-height: 1.4;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
@@ -35,9 +35,8 @@ textarea {
     "wght" var(--font-variation-wght);
 }
 
-/* Slightly increase max size on very wide screens (>= 1930px) using existing mixin */
-@include responsive.l {
+@include responsive.mobile {
   html {
-    font-size: clamp(14px, calc(1rem + 0.8vw), 18px);
+    font-size: clamp(14px, calc(1rem + 0.8vw), 16px);
   }
 }

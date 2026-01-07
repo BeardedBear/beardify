@@ -81,7 +81,7 @@ function search(artist: string, album: string): void {
   cursor: pointer;
   display: grid;
   flex: 1;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 
   @include font-bold;
 
@@ -108,7 +108,7 @@ function search(artist: string, album: string): void {
   }
 
   .tags {
-    font-size: 0.6rem;
+    font-size: var(--font-size-xs);
     justify-content: end;
     text-align: right;
     text-transform: uppercase;

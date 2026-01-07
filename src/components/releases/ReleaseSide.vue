@@ -36,7 +36,7 @@ const releasesStore = useReleases();
 .slug {
   border-radius: 0.3rem;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 
   @include font-bold;
 

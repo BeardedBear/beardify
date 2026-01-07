@@ -180,14 +180,13 @@ async function fetchFromMusicBrainz<T>(
   try {
     const response = await musicbrainzClient.get(path, {
       searchParams: {
-        fmt: "json", // Always request JSON format
+        fmt: "json",
         ...searchParams,
       },
     });
 
     return await response.json<T>();
-  } catch (error) {
-    console.error(`Error fetching MusicBrainz data from ${path}:`, error);
+  } catch {
     return null;
   }
 }

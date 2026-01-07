@@ -102,7 +102,7 @@ const dialogStore = useDialog();
     border-radius: 2rem;
     bottom: $offset;
     color: var(--bg-color);
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
 
     @include font-bold;
 

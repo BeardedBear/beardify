@@ -281,9 +281,12 @@ export const usePlayer = defineStore("player", {
         if (this.devices.activeDevice?.id) {
           (async (): Promise<void> => {
             try {
-              // Keepalive transfer (should be a no-op if already active) to help prevent Spotify
-              // from demoting the device due to inactivity
-              await instance().put("me/player", { device_ids: [this.devices.activeDevice.id] });
+              const doKeepalive = async (): Promise<void> => {
+                if (!this.playerState?.paused) return;
+                await instance().put("me/player", { device_ids: [this.devices.activeDevice.id] });
+              };
+
+              await doKeepalive();
 
               // Ping the SDK player instance to keep its session alive and detect disconnects early
               try {

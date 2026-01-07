@@ -20,8 +20,8 @@
 <script lang="ts" setup>
 import { RouterLink } from "vue-router";
 
-import { useArtist } from "@/views/artist/ArtistStore";
 import Cover from "@/components/ui/AlbumCover.vue";
+import { useArtist } from "@/views/artist/ArtistStore";
 
 const artistStore = useArtist();
 </script>
@@ -29,6 +29,7 @@ const artistStore = useArtist();
 <style lang="scss" scoped>
 @use "sass:color";
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as *;
 
 .image {
   $size: 3rem;
@@ -40,10 +41,11 @@ const artistStore = useArtist();
 }
 
 .item {
+  @include font-bold;
+
   border-radius: 0.3rem;
   color: currentcolor;
   cursor: pointer;
-  font-size: 0.8rem;
   padding: 0.8rem;
   text-align: center;
   text-decoration: none;

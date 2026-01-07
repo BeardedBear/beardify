@@ -55,7 +55,7 @@ $radius: 1rem;
 }
 
 .share-icon {
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   opacity: 0.2;
   padding: 0.3rem 0.7rem 0.3rem 0.5rem;
 }
@@ -65,7 +65,7 @@ $radius: 1rem;
   border: none;
   color: var(--font-color);
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   line-height: 1;
   opacity: 0.5;
   padding: 0 0.5rem;
@@ -100,7 +100,7 @@ $radius: 1rem;
 
 .copied {
   animation: pop 0.2s ease both;
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
 
   @include font-bold;
 

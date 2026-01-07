@@ -73,7 +73,7 @@ onClickOutside(domConfig, (): void => configStore.close());
 .section-title {
   @include font-bold;
 
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   opacity: 0.5;
   text-transform: uppercase;
 }
@@ -87,7 +87,7 @@ onClickOutside(domConfig, (): void => configStore.close());
 .user-mail {
   @include font-italic;
 
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   margin-top: 0.1rem;
   opacity: 0.5;
 }

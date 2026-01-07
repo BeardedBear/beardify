@@ -180,15 +180,13 @@ function escapeHtml(text: string): string {
  */
 async function fetchFromDiscogs<T>(path: string, searchParams?: Record<string, string>): Promise<null | T> {
   if (!DISCOGS_TOKEN) {
-    console.warn("Discogs token not configured");
     return null;
   }
 
   try {
     const response = await discogsClient.get(path, { searchParams });
     return await response.json<T>();
-  } catch (error) {
-    console.error(`Error fetching Discogs data from ${path}:`, error);
+  } catch {
     return null;
   }
 }

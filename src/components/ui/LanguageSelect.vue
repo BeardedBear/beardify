@@ -93,7 +93,7 @@ onBeforeUnmount(() => {
 .select-sizer {
   display: flex;
   flex-direction: column;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   height: 0;
   overflow: hidden;
   padding: 0 2rem 0 0.75rem;
@@ -115,7 +115,7 @@ onBeforeUnmount(() => {
   color: var(--font-color-light);
   cursor: pointer;
   display: flex;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   gap: 0.5rem;
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
@@ -130,7 +130,7 @@ onBeforeUnmount(() => {
   }
 
   i {
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
     transition: transform 0.2s ease;
 
     .open & {
@@ -164,13 +164,12 @@ onBeforeUnmount(() => {
   border: none;
   color: var(--font-color-light);
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   padding: 0.6rem 0.75rem;
   text-align: left;
   transition:
     background-color 0.15s ease,
     color 0.15s ease;
-  white-space: nowrap;
 
   &:hover {
     background-color: var(--bg-color-lighter);

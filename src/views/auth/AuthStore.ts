@@ -19,7 +19,6 @@ export const useAuth = defineStore("auth", {
   actions: {
     async authentification(query: string) {
       if (!this.storage) {
-        console.error("Authentication failed: no storage found");
         router.push(RouteName.Login);
         return;
       }
@@ -60,8 +59,7 @@ export const useAuth = defineStore("auth", {
         this.startAutoRefresh();
 
         router.push(referer || RouteName.Home);
-      } catch (error) {
-        console.error("Authentication failed:", error);
+      } catch {
         router.push(RouteName.Login);
         throw new Error("Authentication failed");
       }
@@ -125,11 +123,6 @@ export const useAuth = defineStore("auth", {
         // Spotify may not return a refresh_token on refresh requests; avoid overwriting the existing token with undefined.
         const currentRefresh = this.storage?.refreshToken || "";
         const newRefresh = data.refresh_token ?? currentRefresh;
-        if (!data.refresh_token) {
-          // Helpful debug info when refresh tokens are not rotated
-          // (not an error, but useful when investigating 400s from token endpoint)
-          console.debug("AuthStore.refresh: no new refresh_token returned; keeping existing one");
-        }
 
         this.storage = {
           codeChallenge: "",
@@ -142,8 +135,7 @@ export const useAuth = defineStore("auth", {
         localStorage.setItem("spotify_token_last_refresh", Date.now().toString());
 
         return true;
-      } catch (error) {
-        console.error("Token refresh failed:", error);
+      } catch {
         throw new Error("Token refresh failed");
       }
     },
@@ -158,14 +150,13 @@ export const useAuth = defineStore("auth", {
         async () => {
           try {
             await this.refresh();
-          } catch (error) {
-            console.error("Auto-refresh failed:", error);
+          } catch {
             // Don't logout immediately on auto-refresh failure
             // The API layer will handle auth errors on the next request
           }
         },
         20 * 60 * 1000,
-      ); // 20 minutes
+      );
     },
 
     stopAutoRefresh() {

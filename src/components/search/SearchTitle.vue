@@ -16,7 +16,7 @@ defineProps<{
 
 .search-title {
   color: var(--primary-color);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 
   @include font-bold;
 

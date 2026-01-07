@@ -76,7 +76,6 @@ async function add(songUri: string, playlistId: string): Promise<void> {
 .playlist {
   align-items: center;
   display: flex;
-  font-size: 0.9rem;
 
   @include font-bold;
 
@@ -91,7 +90,6 @@ async function add(songUri: string, playlistId: string): Promise<void> {
 .collection {
   border-radius: 0.3rem;
   cursor: pointer;
-  font-size: 0.9rem;
 
   @include font-bold;
 
