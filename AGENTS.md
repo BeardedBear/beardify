@@ -28,6 +28,29 @@ npm run preview       # Preview production build
 
 **Always run `npm run lint` before committing changes.**
 
+## Commit message formatting (Conventional Commits)
+
+We follow the Conventional Commits specification. Use the header format:
+`<type>(<scope>): <short summary>`
+
+Rules:
+- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `build`, `ci`, `revert`
+- Scope: optional but recommended (e.g. `player`, `auth`, `playlist`, `collection`, `api`, `styles`)
+- Summary: imperative mood, concise (<=50 chars), no trailing period
+- Body (optional): explain the "what" and "why" (not "how"); wrap lines at ~72 chars; leave one blank line between header and body
+- Footer: reference issues (e.g. `Closes #123`) or breaking changes using `BREAKING CHANGE: description`
+
+Examples:
+- `feat(collection): add #Collection marker when creating playlists`
+- `fix(api): handle 429 rate limits on playback requests`
+- `docs: update README with dev commands`
+- `chore(deps): bump pinia to 2.0.0`
+
+Best practices:
+- Run `npm run lint` before committing
+- Prefer "Squash and merge" for pull requests to keep history clean; use the PR title (following the spec) as the commit message when squashing
+- When introducing breaking changes, add `BREAKING CHANGE: ...` in the footer and describe the impact
+
 ## Architecture
 
 ### Directory Structure
