@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file consolidates guidance for AI agents working with this repository. Use the sections below for project information, agent-specific rules, and general guidelines to follow when making code changes.
 
 ## Project Overview
 
@@ -27,6 +27,20 @@ npm run preview       # Preview production build
 ```
 
 **Always run `npm run lint` before committing changes.**
+
+## General agent guidance
+
+These guidelines apply to all AI agents working on this repository:
+
+- Follow project conventions: Vue 3 Composition API, `<script setup>`, TypeScript strict mode, scoped styles, alphabetical import ordering, and Unix (LF) line endings.
+- Always run `npm run lint` and fix reported issues before committing.
+- Use the `instance()` helper from `src/api.ts` for all Spotify Web API calls (do not call `ky` directly).
+- Use `notification()` helper for user-facing messages and errors.
+- The `#Collection` naming convention is core business logic. Do not change Collection-related behavior without explicit approval from the maintainers.
+- Do not commit secrets, credentials, or environment variables into the repository.
+- Follow the commit message format in "Commit message formatting (Conventional Commits)" below.
+- Keep changes small and focused; prefer creating a pull request rather than pushing large, sweeping changes directly.
+- When unsure, open an issue or ask a maintainer for clarification.
 
 ## Commit message formatting (Conventional Commits)
 
@@ -116,13 +130,6 @@ Uses CSS custom properties with consistent naming:
 - OAuth 2.0 with PKCE flow
 - Token refresh every 30 minutes
 - Persistent session with localStorage
-
-### Player Features
-
-- Spotify Web Playback SDK integration
-- Active device polling every 5 minutes
-- Widevine DRM support detection for Brave browser
-- Premium-only features (Spotify API limitation)
 
 ### Collections System
 
