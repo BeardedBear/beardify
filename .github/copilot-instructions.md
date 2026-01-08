@@ -39,7 +39,7 @@ async followPodcast(podcastId: string) {
     this.isFollowing = true;
     notification({ msg: "Success message", type: NotificationType.Success });
   } catch (error) {
-    console.error("Error description:", error);
+    if (import.meta.env.DEV) console.error("Error description:", error);
     notification({ msg: "Error message", type: NotificationType.Error });
   }
 }

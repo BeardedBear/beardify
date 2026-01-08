@@ -1,17 +1,19 @@
 <template>
-  <div class="wrap" v-if="playerStore.devices.activeDevice.id">
+  <div v-if="playerStore.devices.activeDevice.id" class="wrap">
     <div class="device">
-      <DeviceVolume :forceMobile />
+      <DeviceVolume :force-mobile />
       <DevicesList />
     </div>
   </div>
-  <div class="options" v-else><Loader /></div>
+  <div v-else class="options">
+    <Loader />
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { usePlayer } from "@/components/player/PlayerStore";
 import DevicesList from "@/components/player/device/DeviceList.vue";
 import DeviceVolume from "@/components/player/device/DeviceVolume.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
 import Loader from "@/components/ui/LoadingDots.vue";
 
 const props = defineProps<{ forceMobile?: boolean }>();

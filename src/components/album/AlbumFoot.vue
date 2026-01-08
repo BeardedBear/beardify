@@ -8,7 +8,9 @@
     >
       {{ album.label }}
     </ButtonIndex>
-    <div class="mentions">{{ album.copyrights[0].text }}</div>
+    <div class="mentions">
+      {{ album.copyrights[0].text }}
+    </div>
   </div>
 </template>
 

@@ -1,25 +1,25 @@
 <template>
   <div class="release-wrap">
     <ButtonIndex no-default-class class="check" @click="releasesStore.toggleRelease(release.id)">
-      <i class="icon-check" v-if="releasesStore.checks?.find((r) => r.id === release.id)"></i>
-      <i class="icon-circle" v-else></i>
+      <i v-if="releasesStore.checks?.find((r) => r.id === release.id)" class="icon-check" />
+      <i v-else class="icon-circle" />
     </ButtonIndex>
     <div
       :class="{
         'is-playing': playerStore.currentlyPlaying.item?.artists[0].name.toLowerCase() === release.artist.toLowerCase(),
         checked: releasesStore.checks?.find((r) => r.id === release.id),
       }"
-      @click="search(release.artist, release.album)"
       class="release"
+      @click="search(release.artist, release.album)"
     >
       <div>{{ release.artist }}</div>
       <div>{{ release.album }}</div>
       <div class="tags">
         <span
-          :class="{ selected: releasesStore.activeSlug === slug }"
-          :key="ii"
-          class="slug"
           v-for="(slug, ii) in release.slug"
+          :key="ii"
+          :class="{ selected: releasesStore.activeSlug === slug }"
+          class="slug"
         >
           {{ slug }}
         </span>

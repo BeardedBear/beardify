@@ -30,8 +30,7 @@ export const usePodcasts = defineStore("podcasts", {
           type: NotificationType.Success,
         });
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Error following podcast:", error);
+        if (import.meta.env.DEV) console.error("Error following podcast:", error);
         notification({
           msg: "Error adding podcast",
           type: NotificationType.Error,
@@ -44,8 +43,7 @@ export const usePodcasts = defineStore("podcasts", {
         const response = await instance().get<boolean[]>(`me/shows/contains?ids=${podcastId}`);
         this.isFollowing = response.data[0] || false;
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Error fetching podcast follow status:", error);
+        if (import.meta.env.DEV) console.error("Error fetching podcast follow status:", error);
         this.isFollowing = false;
       }
     },
@@ -58,8 +56,7 @@ export const usePodcasts = defineStore("podcasts", {
         this.myPodcasts = this.myPodcasts.concat(validPodcasts);
         if (e.data.next) await this.getMyPodcasts(e.data.next);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Error fetching podcasts:", error);
+        if (import.meta.env.DEV) console.error("Error fetching podcasts:", error);
       }
     },
 
@@ -68,8 +65,7 @@ export const usePodcasts = defineStore("podcasts", {
         const { data } = await instance().get<Podcast>(`shows/${podcastId}`);
         this.podcast = data;
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Error fetching podcast:", error);
+        if (import.meta.env.DEV) console.error("Error fetching podcast:", error);
       }
     },
 
@@ -81,8 +77,7 @@ export const usePodcasts = defineStore("podcasts", {
         this.episodes = this.episodes.concat(validEpisodes);
         if (e.data.next) await this.getPodcastEpisodes(e.data.next);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Error fetching podcast episodes:", error);
+        if (import.meta.env.DEV) console.error("Error fetching podcast episodes:", error);
       }
     },
 
@@ -95,8 +90,7 @@ export const usePodcasts = defineStore("podcasts", {
         const { data } = await instance().get<PodcastItem>(`shows?ids=${podcasts.join()}`);
         this.list = data;
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Error fetching podcast list:", error);
+        if (import.meta.env.DEV) console.error("Error fetching podcast list:", error);
       }
     },
 
@@ -111,8 +105,7 @@ export const usePodcasts = defineStore("podcasts", {
           type: NotificationType.Success,
         });
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Error unfollowing podcast:", error);
+        if (import.meta.env.DEV) console.error("Error unfollowing podcast:", error);
         notification({
           msg: "Error removing podcast",
           type: NotificationType.Error,

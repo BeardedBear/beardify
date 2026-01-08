@@ -1,5 +1,7 @@
 <template>
-  <div class="fit"><slot /></div>
+  <div class="fit">
+    <slot />
+  </div>
 </template>
 
 <style lang="scss" scoped>

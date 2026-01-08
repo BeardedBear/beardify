@@ -1,17 +1,23 @@
 <template>
-  <div class="loader" v-if="!releasesStore.releases.length"><Loader /></div>
-  <div class="releases" v-else>
-    <div class="side"><ReleaseSide /></div>
-    <div class="list" ref="listDOM"><ReleaseList /></div>
+  <div v-if="!releasesStore.releases.length" class="loader">
+    <Loader />
+  </div>
+  <div v-else class="releases">
+    <div class="side">
+      <ReleaseSide />
+    </div>
+    <div ref="listDOM" class="list">
+      <ReleaseList />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch } from "vue";
 
-import Loader from "@/components/ui/LoadingDots.vue";
 import ReleaseList from "@/components/releases/ReleaseList.vue";
 import ReleaseSide from "@/components/releases/ReleaseSide.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
 import { useAuth } from "@/views/auth/AuthStore";
 import { useReleases } from "@/views/releases/ReleasesStore";
 

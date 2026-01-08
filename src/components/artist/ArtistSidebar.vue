@@ -1,18 +1,18 @@
 <template>
-  <aside class="sidebar" v-if="hasContent">
-    <div class="sidebar-section" v-if="details.length">
+  <aside v-if="hasContent" class="sidebar">
+    <div v-if="details.length" class="sidebar-section">
       <h3 class="sidebar-title">Details</h3>
       <div class="sidebar-list">
-        <div class="sidebar-item" v-for="item in details" :key="item.label">
+        <div v-for="item in details" :key="item.label" class="sidebar-item">
           <span class="sidebar-label">{{ item.label }}</span>
           <span class="sidebar-value">{{ item.value }}</span>
         </div>
       </div>
     </div>
 
-    <div class="sidebar-section" v-if="activeMembers.length || formerMembers.length">
+    <div v-if="activeMembers.length || formerMembers.length" class="sidebar-section">
       <h3 class="sidebar-title">Members</h3>
-      <div class="sidebar-members" v-if="activeMembers.length">
+      <div v-if="activeMembers.length" class="sidebar-members">
         <a
           v-for="member in activeMembers"
           :key="member.id"
@@ -56,7 +56,7 @@
       </template>
     </div>
 
-    <div class="sidebar-section" v-if="externalLinks.length">
+    <div v-if="externalLinks.length" class="sidebar-section">
       <h3 class="sidebar-title">External Links</h3>
       <div class="sidebar-links">
         <a
@@ -95,7 +95,7 @@ interface MemberItem {
   active: boolean;
   id: number;
   name: string;
-  thumbnail: string | null;
+  thumbnail: null | string;
   url: string;
 }
 

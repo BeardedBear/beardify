@@ -4,14 +4,14 @@
     <div class="album-list">
       <template v-if="searchStore.albums.length">
         <Album
+          v-for="(album, index) in searchStore.albums"
+          :key="index"
           :album="album"
           :exact-search="exactAlbumSearched ? album.name.toLowerCase().includes(exactAlbumSearched) : false"
-          :key="index"
-          @click="searchStore.reset()"
           class="album"
-          v-for="(album, index) in searchStore.albums"
           with-artists
           without-release-date
+          @click="searchStore.reset()"
         />
       </template>
       <template v-else>No album found</template>

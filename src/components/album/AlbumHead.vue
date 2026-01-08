@@ -1,7 +1,9 @@
 <template>
   <div class="album-header">
     <div>
-      <div class="title">{{ album.name }}</div>
+      <div class="title">
+        {{ album.name }}
+      </div>
       <div class="infos">
         <ArtistList :artist-list="album.artists" />
         <span>&nbsp;·&nbsp;</span>
@@ -46,12 +48,12 @@ import { date, timecodeWithUnits } from "@/helpers/date";
 
 const props = defineProps<{ album: Album }>();
 
-function sumDuration(tracks: Track[] | TrackSimplified[]): number {
-  return tracks.map((t: Track | TrackSimplified) => t.duration_ms).reduce((acc, value) => acc + value, 0);
-}
-
 function openLink(url: string): void {
   window.open(url, "_blank");
+}
+
+function sumDuration(tracks: Track[] | TrackSimplified[]): number {
+  return tracks.map((t: Track | TrackSimplified) => t.duration_ms).reduce((acc, value) => acc + value, 0);
 }
 </script>
 

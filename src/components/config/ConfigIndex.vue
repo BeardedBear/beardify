@@ -1,11 +1,13 @@
 <template>
-  <div :class="{ bye: configStore.bye }" class="config" ref="domConfig" v-if="configStore.show">
+  <div v-if="configStore.show" ref="domConfig" :class="{ bye: configStore.bye }" class="config">
     <div class="user">
       <div>{{ authStore.me?.display_name }}</div>
-      <div class="user-mail">{{ authStore.me?.email }}</div>
+      <div class="user-mail">
+        {{ authStore.me?.email }}
+      </div>
     </div>
 
-    <div class="section" v-if="env !== 'production'">
+    <div v-if="env !== 'production'" class="section">
       <div class="section-title">Debug</div>
       <ButtonIndex to="/login" variant="full">Login</ButtonIndex>
       <ButtonIndex variant="full" @click="authStore.refresh()">Refresh token</ButtonIndex>

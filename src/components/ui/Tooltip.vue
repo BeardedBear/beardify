@@ -24,8 +24,8 @@ import { nextTick, ref } from "vue";
 
 const props = withDefaults(
   defineProps<{
+    placement?: "bottom" | "top";
     text: string;
-    placement?: "top" | "bottom";
   }>(),
   { placement: "top" },
 );
@@ -33,18 +33,14 @@ const props = withDefaults(
 const MARGIN = 8;
 
 const visible = ref(false);
-const currentPlacement = ref<"top" | "bottom">(props.placement);
+const currentPlacement = ref<"bottom" | "top">(props.placement);
 const tooltipRef = ref<HTMLElement | null>(null);
 const wrapperRef = ref<HTMLElement | null>(null);
 const tooltipStyle = ref<Record<string, string>>({});
 
-const { width: viewportWidth, height: viewportHeight } = useWindowSize();
-const { x: wrapLeft, y: wrapTop, bottom: wrapBottom, width: wrapWidth } = useElementBounding(wrapperRef);
-const { width: tipWidth, height: tipHeight } = useElementBounding(tooltipRef);
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
+const { height: viewportHeight, width: viewportWidth } = useWindowSize();
+const { bottom: wrapBottom, width: wrapWidth, x: wrapLeft, y: wrapTop } = useElementBounding(wrapperRef);
+const { height: tipHeight, width: tipWidth } = useElementBounding(tooltipRef);
 
 function calculateHorizontalPosition(): number {
   const tipW = tipWidth.value || 0;
@@ -58,22 +54,38 @@ function calculateVerticalPosition(
   desiredTop: number,
   tipH: number,
   fallbackToBottom: boolean,
-): { top: number; placement: "top" | "bottom" } {
+): { placement: "bottom" | "top"; top: number } {
   const vpH = (viewportHeight.value ?? document.documentElement.clientHeight) || window.innerHeight;
 
   if (desiredTop < MARGIN && fallbackToBottom) {
     const spaceBelow = vpH - wrapBottom.value - MARGIN;
     if (spaceBelow >= tipH) {
-      return { top: wrapBottom.value, placement: "bottom" };
+      return { placement: "bottom", top: wrapBottom.value };
     }
   } else if (desiredTop + tipH > vpH - MARGIN && !fallbackToBottom) {
     const spaceAbove = wrapTop.value - MARGIN;
     if (spaceAbove >= tipH) {
-      return { top: wrapTop.value - tipH, placement: "top" };
+      return { placement: "top", top: wrapTop.value - tipH };
     }
   }
 
-  return { top: clamp(desiredTop, MARGIN, Math.max(vpH - tipH - MARGIN, MARGIN)), placement: props.placement };
+  return { placement: props.placement, top: clamp(desiredTop, MARGIN, Math.max(vpH - tipH - MARGIN, MARGIN)) };
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+function hide(): void {
+  visible.value = false;
+  tooltipStyle.value = {};
+  currentPlacement.value = props.placement;
+}
+
+function show(): void {
+  visible.value = true;
+  currentPlacement.value = props.placement;
+  nextTick(() => updatePosition());
 }
 
 function updatePosition(): void {
@@ -82,7 +94,7 @@ function updatePosition(): void {
   const tipH = tipHeight.value || 0;
   const horizontalPosition = calculateHorizontalPosition();
 
-  let verticalPosition: { top: number; placement: "top" | "bottom" };
+  let verticalPosition: { placement: "bottom" | "top"; top: number };
 
   if (props.placement === "top") {
     verticalPosition = calculateVerticalPosition(wrapTop.value - tipH, tipH, true);
@@ -93,22 +105,10 @@ function updatePosition(): void {
   currentPlacement.value = verticalPosition.placement;
 
   tooltipStyle.value = {
-    position: "fixed",
     left: `${horizontalPosition}px`,
+    position: "fixed",
     top: `${verticalPosition.top}px`,
   };
-}
-
-function show(): void {
-  visible.value = true;
-  currentPlacement.value = props.placement;
-  nextTick(() => updatePosition());
-}
-
-function hide(): void {
-  visible.value = false;
-  tooltipStyle.value = {};
-  currentPlacement.value = props.placement;
 }
 
 useEventListener(wrapperRef, ["focusin", "mouseenter"], show);

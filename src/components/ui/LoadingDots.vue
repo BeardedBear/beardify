@@ -6,7 +6,7 @@
       xxsmall: size === 'xx-small',
     }"
     class="loader"
-  ></div>
+  />
 </template>
 
 <script lang="ts" setup>

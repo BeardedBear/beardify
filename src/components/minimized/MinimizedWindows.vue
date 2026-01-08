@@ -12,7 +12,7 @@
         <i class="icon-message-square" />
         <span>{{ getDialogTitle() }}</span>
       </div>
-      <button class="close-btn" @click.stop="dialogStore.close()" aria-label="Close dialog">
+      <button class="close-btn" aria-label="Close dialog" @click.stop="dialogStore.close()">
         <i class="icon-x" />
       </button>
     </div>
@@ -29,7 +29,7 @@
         <i class="icon-external-link" />
         <span>{{ frameStore.siteName || "Frame" }}</span>
       </div>
-      <button class="close-btn" @click.stop="frameStore.close()" aria-label="Close frame">
+      <button class="close-btn" aria-label="Close frame" @click.stop="frameStore.close()">
         <i class="icon-x" />
       </button>
     </div>

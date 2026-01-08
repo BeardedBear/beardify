@@ -3,12 +3,12 @@
     <div class="wrap">
       <PlaylistActions />
       <input
+        v-if="route.name === 'Collection'"
+        ref="searchElement"
+        v-model="playlistStore.filter"
         class="search"
         placeholder="Filter album/artist"
-        ref="searchElement"
         type="search"
-        v-if="route.name === 'Collection'"
-        v-model="playlistStore.filter"
       />
       <ShareContent :beardify-url="route.fullPath" :spotify-url="playlistStore.playlist.external_urls.spotify" />
     </div>

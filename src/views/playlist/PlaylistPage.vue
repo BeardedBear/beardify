@@ -1,5 +1,7 @@
 <template>
-  <div class="loader" v-if="playlistStore.playlist.name === ''"><Loader /></div>
+  <div v-if="playlistStore.playlist.name === ''" class="loader">
+    <Loader />
+  </div>
   <PageScroller v-else>
     <div class="playlist">
       <Header not-fit />
@@ -9,12 +11,12 @@
         <AlbumGallery :album-list="albums" :icon-name="'album'" class="block" title="Albums" />
         <AlbumGallery :album-list="eps" :icon-name="'ep'" class="block" title="EP's" />
         <div class="heading sticky">
-          <i class="icon-single"></i>
+          <i class="icon-single" />
           Singles
         </div>
         <Tracks :track-list="singles" :contributors-data="contributorsData" />
       </template>
-      <Tracks :track-list="playlistStore.tracks" :contributors-data="contributorsData" v-else />
+      <Tracks v-else :track-list="playlistStore.tracks" :contributors-data="contributorsData" />
     </div>
   </PageScroller>
 </template>
@@ -25,10 +27,10 @@ import { computed, ref, watch } from "vue";
 import { PublicUser } from "@/@types/PublicUser";
 import { instance } from "@/api";
 import AlbumGallery from "@/components/album/AlbumGallery.vue";
-import Loader from "@/components/ui/LoadingDots.vue";
-import PageScroller from "@/components/ui/PageScroller.vue";
 import Header from "@/components/playlist/PlaylistHeader.vue";
 import Tracks from "@/components/playlist/PlaylistTracks.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
+import PageScroller from "@/components/ui/PageScroller.vue";
 import { isAlbum, isEP, isSingle, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -73,10 +75,10 @@ const fetchContributorsData = async (): Promise<void> => {
   const promises = uniqueContributorIds.value.map(async (userId) => {
     try {
       const response = await api.get<PublicUser>(`users/${userId}`);
-      return { userId, data: response.data };
+      return { data: response.data, userId };
     } catch (error) {
-      console.error(`Error fetching data for user ${userId}:`, error);
-      return { userId, data: null };
+      if (import.meta.env.DEV) console.error(`Error fetching data for user ${userId}:`, error);
+      return { data: null, userId };
     }
   });
 

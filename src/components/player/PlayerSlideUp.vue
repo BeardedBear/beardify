@@ -1,20 +1,22 @@
 <template>
   <transition name="slide-up">
     <div v-if="playerStore.panelOpened" class="player-slide-up" role="dialog" aria-modal="true">
-      <div class="backdrop" @click="playerStore.closePanel"></div>
+      <div class="backdrop" @click="playerStore.closePanel" />
       <div class="panel" tabindex="0" @keydown.esc="playerStore.closePanel">
         <div class="content">
           <div class="cover">
-            <img :src="currentTrack?.album?.images[0]?.url" alt="cover" v-if="currentTrack" />
+            <img v-if="currentTrack" :src="currentTrack?.album?.images[0]?.url" alt="cover" />
           </div>
           <div class="metas">
             <div class="meta-header">
               <div>
-                <h3 class="title">{{ currentTrack?.name }}</h3>
+                <h3 class="title">
+                  {{ currentTrack?.name }}
+                </h3>
                 <p class="artists">
                   <ArtistList :artist-list="currentTrack?.artists" :feat="false" />
                 </p>
-                <p class="album" v-if="currentTrack?.album?.name">
+                <p v-if="currentTrack?.album?.name" class="album">
                   <router-link
                     :to="`/album/${transformUriToid(currentTrack.album.uri)}`"
                     class="link"
@@ -25,12 +27,12 @@
                 </p>
               </div>
               <div class="device-inline">
-                <Device forceMobile />
+                <Device force-mobile />
               </div>
             </div>
 
             <div class="controls">
-              <PlayerControls forceMobile />
+              <PlayerControls force-mobile />
             </div>
           </div>
         </div>
@@ -43,13 +45,14 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
+
 import ArtistList from "@/components/artist/ArtistList.vue";
 import Device from "@/components/player/device/DeviceIndex.vue";
 import PlayerControls from "@/components/player/PlayerControls.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import SeekBar from "@/components/player/SeekBar.vue";
 import { transformUriToid } from "@/helpers/helper";
-import { computed } from "vue";
 
 const playerStore = usePlayer();
 

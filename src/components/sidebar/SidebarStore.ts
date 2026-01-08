@@ -94,8 +94,8 @@ export const useSidebar = defineStore("sidebar", {
           msg: "Error while fetching playlists",
           type: NotificationType.Error,
         });
-        // eslint-disable-next-line no-console
-        console.error("Failed to fetch playlists:", error);
+
+        if (import.meta.env.DEV) console.error("Failed to fetch playlists:", error);
       }
     },
 
@@ -133,8 +133,7 @@ export const useSidebar = defineStore("sidebar", {
           type: NotificationType.Success,
         });
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Error while deleting/unfollowing playlist:", error);
+        if (import.meta.env.DEV) console.error("Error while deleting/unfollowing playlist:", error);
         notification({
           msg:
             playlistStore.playlist.owner.id === authStore.me?.id

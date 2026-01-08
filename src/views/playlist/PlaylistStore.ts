@@ -41,8 +41,7 @@ export const usePlaylist = defineStore("playlist", {
         this.tracks = this.tracks.concat(e.data.items.filter((item: PlaylistTrack) => item.track));
         if (e.data.next) await this.getTracks(e.data.next);
       } catch (error: unknown) {
-        // eslint-disable-next-line no-console
-        console.error("Error fetching playlist tracks:", error);
+        if (import.meta.env.DEV) console.error("Error fetching playlist tracks:", error);
         if (typeof error === "object" && error && "message" in error) {
           const msg = (error as { message?: string }).message; // retain minimal structural narrowing
           if (msg && msg.includes("404") && url.includes("https://api.spotify.com/v1/https://api.spotify.com/v1/")) {

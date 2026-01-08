@@ -1,17 +1,21 @@
 <template>
   <div
     :class="{ active: isCurrentTrack(single, playerStore.playerState?.track_window.current_track) }"
-    @click="playSingle(single.uri)"
     class="single"
+    @click="playSingle(single.uri)"
   >
     <div class="what">
       <Cover :images="single.images" :size="'small'" class="cover" />
       <div>
-        <div class="name">{{ single.name }}</div>
+        <div class="name">
+          {{ single.name }}
+        </div>
         <ArtistList :artist-list="single.artists" feat />
       </div>
     </div>
-    <div class="release-date">{{ date(single.release_date) }}</div>
+    <div class="release-date">
+      {{ date(single.release_date) }}
+    </div>
   </div>
 </template>
 

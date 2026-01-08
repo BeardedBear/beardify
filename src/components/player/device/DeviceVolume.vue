@@ -1,9 +1,11 @@
 <template>
   <div :class="['volume-wrapper', { 'force-visible': forceMobile }]">
-    <div @click="onClick" @mousemove="onMove" @mouseleave="onLeave" class="volume" ref="refVolume">
+    <div ref="refVolume" class="volume" @click="onClick" @mousemove="onMove" @mouseleave="onLeave">
       <div :style="{ width: currentSliderPercent + '%' }" class="cursor" />
       <div :style="{ width: sliderPercent + '%' }" class="hover">
-        <div class="perc">{{ previewVolume + "%" }}</div>
+        <div class="perc">
+          {{ previewVolume + "%" }}
+        </div>
       </div>
     </div>
     <ButtonIndex v-if="!forceMobile" no-default-class type="button" variant="nude" @click="toggleMute">
@@ -13,13 +15,13 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, onMounted, ref, watch } from "vue";
+
 import { NotificationType } from "@/@types/Notification";
+import { usePlayer } from "@/components/player/PlayerStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { notification } from "@/helpers/notifications";
 import { clamp, sliderPercentToVolume, volumeToSliderPercent } from "@/helpers/volume";
-import { computed, onMounted, ref, watch } from "vue";
-
-import { usePlayer } from "@/components/player/PlayerStore";
 
 defineProps<{ forceMobile?: boolean }>();
 
@@ -30,8 +32,8 @@ const currentSliderPercent = computed<number>(() =>
   volumeToSliderPercent(playerStore.devices.activeDevice.volume_percent ?? 0),
 );
 const playerStore = usePlayer();
-const previousVolume = ref<number | null>(null);
-const oldDeviceVolume = ref<number | null>(null);
+const previousVolume = ref<null | number>(null);
+const oldDeviceVolume = ref<null | number>(null);
 const currentDeviceVolume = computed(() => playerStore.devices.activeDevice.volume_percent ?? 0);
 const isMuted = computed(() => playerStore.devices.activeDevice.volume_percent === 0);
 
@@ -48,25 +50,12 @@ watch(
   },
 );
 
-function onMove(e: MouseEvent): void {
-  const el = refVolume.value;
-  if (!el) return;
-  const rect = el.getBoundingClientRect();
-  const pos = clamp(((e.clientX - rect.left) / rect.width) * 100);
-  sliderPercent.value = Math.round(pos);
-}
-
-function getPercentFromEvent(e: MouseEvent | undefined): number | null {
+function getPercentFromEvent(e: MouseEvent | undefined): null | number {
   const el = refVolume.value;
   if (!e || !el) return null;
   const rect = el.getBoundingClientRect();
   const pos = clamp(((e.clientX - rect.left) / rect.width) * 100);
   return Math.round(pos);
-}
-
-function onLeave(): void {
-  // reset preview to current volume
-  sliderPercent.value = volumeToSliderPercent(currentDeviceVolume.value);
 }
 
 async function onClick(e?: MouseEvent): Promise<void> {
@@ -75,6 +64,39 @@ async function onClick(e?: MouseEvent): Promise<void> {
     sliderPercent.value = pos;
   }
   await setVolumeOptimistic(previewVolume.value);
+}
+
+function onLeave(): void {
+  // reset preview to current volume
+  sliderPercent.value = volumeToSliderPercent(currentDeviceVolume.value);
+}
+
+function onMove(e: MouseEvent): void {
+  const el = refVolume.value;
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const pos = clamp(((e.clientX - rect.left) / rect.width) * 100);
+  sliderPercent.value = Math.round(pos);
+}
+
+/**
+ * Set device volume with optimistic UI update and error revert.
+ */
+async function setVolumeOptimistic(volume: number): Promise<void> {
+  oldDeviceVolume.value = currentDeviceVolume.value ?? 0;
+  playerStore.devices.activeDevice.volume_percent = volume; // optimistic
+  try {
+    await playerStore.setVolume(volume);
+  } catch (err: any) {
+    if (import.meta.env.DEV) console.error("Failed to set volume:", err);
+    // revert UI on failure
+    if (oldDeviceVolume.value !== null) {
+      playerStore.devices.activeDevice.volume_percent = oldDeviceVolume.value;
+    }
+    notification({ msg: "Failed to set volume", type: NotificationType.Error });
+  } finally {
+    oldDeviceVolume.value = null;
+  }
 }
 
 async function toggleMute(): Promise<void> {
@@ -91,28 +113,8 @@ async function toggleMute(): Promise<void> {
       await setVolumeOptimistic(0);
     }
   } catch (err: any) {
-    console.error("Failed to toggle mute:", err);
+    if (import.meta.env.DEV) console.error("Failed to toggle mute:", err);
     // revert on failure
-    if (oldDeviceVolume.value !== null) {
-      playerStore.devices.activeDevice.volume_percent = oldDeviceVolume.value;
-    }
-    notification({ msg: "Failed to set volume", type: NotificationType.Error });
-  } finally {
-    oldDeviceVolume.value = null;
-  }
-}
-
-/**
- * Set device volume with optimistic UI update and error revert.
- */
-async function setVolumeOptimistic(volume: number): Promise<void> {
-  oldDeviceVolume.value = currentDeviceVolume.value ?? 0;
-  playerStore.devices.activeDevice.volume_percent = volume; // optimistic
-  try {
-    await playerStore.setVolume(volume);
-  } catch (err: any) {
-    console.error("Failed to set volume:", err);
-    // revert UI on failure
     if (oldDeviceVolume.value !== null) {
       playerStore.devices.activeDevice.volume_percent = oldDeviceVolume.value;
     }

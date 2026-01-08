@@ -1,25 +1,25 @@
 <template>
   <i
-    class="type-icon icon-music"
     v-if="authStore.me?.id === playlist.owner.id && !playlist.name.includes('#Collection')"
+    class="type-icon icon-music"
   />
   <i
-    class="type-icon others icon-music"
     v-if="
       authStore.me?.id !== playlist.owner.id &&
       playlist.owner.display_name !== 'Spotify' &&
       !playlist.name.includes('#Collection')
     "
+    class="type-icon others icon-music"
   />
   <i
-    class="type-icon icon-folder"
     v-if="authStore.me?.id === playlist.owner.id && playlist.name.includes('#Collection')"
+    class="type-icon icon-folder"
   />
   <i
-    class="type-icon others icon-folder"
     v-if="authStore.me?.id !== playlist.owner.id && playlist.name.includes('#Collection')"
+    class="type-icon others icon-folder"
   />
-  <i class="type-icon icon-spotify" v-if="playlist.owner.display_name === 'Spotify'" />
+  <i v-if="playlist.owner.display_name === 'Spotify'" class="type-icon icon-spotify" />
 </template>
 
 <script lang="ts" setup>

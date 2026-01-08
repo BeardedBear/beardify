@@ -1,22 +1,24 @@
 <template>
-  <div class="loader" v-if="playlistStore.playlist.name === ''"><Loader /></div>
+  <div v-if="playlistStore.playlist.name === ''" class="loader">
+    <Loader />
+  </div>
   <PageScroller v-else>
     <PageFit>
       <div class="collection">
         <Header no-cover no-duration />
         <div class="content">
           <SlickList
+            v-model:list="albumList"
             :press-delay="200"
-            @sort-end="syncNewPositions"
             axis="xy"
             class="album-list"
-            v-model:list="albumList"
+            @sort-end="syncNewPositions"
           >
             <SlickItem
+              v-for="(item, i) in albumListFiltered"
+              :key="item.id"
               :disabled="playlistStore.playlist.owner.id !== authStore.me?.id"
               :index="i"
-              :key="item.id"
-              v-for="(item, i) in albumListFiltered"
             >
               <Album :album="item" can-delete can-save with-artists />
             </SlickItem>

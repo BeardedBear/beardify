@@ -1,12 +1,16 @@
 <template>
-  <template v-if="useRoute().name === 'Login'"><router-view></router-view></template>
+  <template v-if="useRoute().name === 'Login'">
+    <router-view />
+  </template>
   <template v-else>
     <DialogList />
     <div id="app-content">
       <Sidebar />
       <div class="main-content">
         <MobileHeader />
-        <router-view :key="useRoute().fullPath" v-slot="{ Component }"><component :is="Component" /></router-view>
+        <router-view :key="useRoute().fullPath" v-slot="{ Component }">
+          <component :is="Component" />
+        </router-view>
       </div>
     </div>
     <Player key="player" />

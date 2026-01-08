@@ -1,9 +1,9 @@
 <template>
-  <div class="what" v-if="currentTrack">
+  <div v-if="currentTrack" class="what">
     <div class="cover-wrap">
-      <img :src="currentTrack.album.images[1].url || ''" class="cover" v-if="currentTrack.album.images.length" />
-      <div @click="dialogStore.open({ type: 'addSong', track: currentTrack })" class="hover">
-        <i class="add icon-plus"></i>
+      <img v-if="currentTrack.album.images.length" :src="currentTrack.album.images[1].url || ''" class="cover" />
+      <div class="hover" @click="dialogStore.open({ type: 'addSong', track: currentTrack })">
+        <i class="add icon-plus" />
       </div>
     </div>
     <div class="text-content">

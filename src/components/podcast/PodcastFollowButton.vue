@@ -11,7 +11,7 @@
         'icon-follow': !podcastsStore.isFollowing,
         'icon-followed': podcastsStore.isFollowing,
       }"
-    ></i>
+    />
     <span v-if="!podcastsStore.isFollowing">Follow podcast</span>
     <span v-else>Unfollow</span>
   </ButtonIndex>
@@ -42,7 +42,7 @@ async function toggleFollow(): Promise<void> {
       await podcastsStore.followPodcast(props.podcastId);
     }
   } catch (error) {
-    console.error("Error toggling podcast follow status:", error);
+    if (import.meta.env.DEV) console.error("Error toggling podcast follow status:", error);
   } finally {
     loading.value = false;
   }

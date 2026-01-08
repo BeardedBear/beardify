@@ -1,35 +1,37 @@
 <template>
   <div class="episode-wrap">
-    <div class="played" v-if="episode.resume_point?.fully_played">
-      <i class="icon icon-check"></i>
+    <div v-if="episode.resume_point?.fully_played" class="played">
+      <i class="icon icon-check" />
     </div>
     <div class="episode">
       <img :src="episode.images?.[1]?.url || episode.images?.[0]?.url" class="cover" />
       <div class="content">
-        <div class="name">{{ episode.name }}</div>
-        <div class="description" v-if="episode.description">
+        <div class="name">
+          {{ episode.name }}
+        </div>
+        <div v-if="episode.description" class="description">
           {{ `${episode.description.slice(0, 200)}...` }}
         </div>
       </div>
     </div>
     <div
-      class="progress"
       v-if="!episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0"
+      class="progress"
     >
       <div
+        v-if="playerStore.currentFromSDK?.id === episode.id && playerStore.currentlyPlaying.is_playing"
         :style="{
           width: `${(playerStore.currentlyPlaying.progress_ms / episode.duration_ms) * 100}%`,
         }"
         class="bar"
-        v-if="playerStore.currentFromSDK?.id === episode.id && playerStore.currentlyPlaying.is_playing"
-      ></div>
+      />
       <div
+        v-else
         :style="{
           width: `${((episode.resume_point?.resume_position_ms || 0) / episode.duration_ms) * 100}%`,
         }"
         class="bar"
-        v-else
-      ></div>
+      />
     </div>
     <div class="infos">
       <div class="metas">
@@ -39,8 +41,8 @@
       </div>
       <div class="actions">
         <Loading
-          :size="'small'"
           v-if="playerStore.currentFromSDK?.id === episode.id && playerStore.currentlyPlaying.is_playing"
+          :size="'small'"
         />
         <div v-else>
           <ButtonIndex

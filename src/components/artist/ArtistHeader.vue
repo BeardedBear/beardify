@@ -1,12 +1,14 @@
 <template>
-  <div class="header" ref="domHeader">
+  <div ref="domHeader" class="header">
     <div class="image-container">
-      <img :src="artistStore.artist.images[0].url" alt="" class="img" v-if="artistStore.artist.images.length" />
-      <img class="img" src="/img/default.png" v-else />
+      <img v-if="artistStore.artist.images.length" :src="artistStore.artist.images[0].url" alt="" class="img" />
+      <img v-else class="img" src="/img/default.png" />
     </div>
     <div class="inner">
       <div class="title">
-        <div class="name">{{ artistStore.artist.name }}</div>
+        <div class="name">
+          {{ artistStore.artist.name }}
+        </div>
       </div>
       <Options class="desktop-options" />
       <ButtonIndex class="mobile-options" icon-only @click="dialogStore.open({ type: 'artistOptions' })">
@@ -41,10 +43,10 @@ const infoAvailable = computed(() => {
 const tabs = computed<Tab[]>(() => [
   { icon: "icon-disc", id: "discography", label: "Discography" },
   {
+    disabled: !infoAvailable.value,
     icon: "icon-info",
     id: "info",
     label: "Info",
-    disabled: !infoAvailable.value,
     tooltip: !infoAvailable.value ? "No additional information available" : undefined,
   },
 ]);

@@ -3,19 +3,21 @@
     <SearchTitle title="Songs" />
     <template v-if="searchStore.albums.length">
       <div
+        v-for="(track, index) in searchStore.tracks"
         :key="index"
+        class="track"
         @click="
           () => {
             playSong(track.uri);
             searchStore.reset();
           }
         "
-        class="track"
-        v-for="(track, index) in searchStore.tracks"
       >
         <i class="track-icon icon-music" />
         <div>
-          <div class="track-name">{{ track.name }}</div>
+          <div class="track-name">
+            {{ track.name }}
+          </div>
           <div>
             <ArtistList :artist-list="track.artists" feat />
           </div>

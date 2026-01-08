@@ -1,7 +1,7 @@
 <template>
   <div class="surface" @click.capture="onSurfaceClick">
     <div class="meta">
-      <What :cover-url="playerStore.currentFromSDK?.album.images[1].url" v-if="playerStore.currentFromSDK" />
+      <What v-if="playerStore.currentFromSDK" :cover-url="playerStore.currentFromSDK?.album.images[1].url" />
       <Loader v-else />
       <Controls
         :duration="playerStore.currentFromSDK && playerStore.currentFromSDK.duration_ms"
