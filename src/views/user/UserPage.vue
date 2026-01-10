@@ -1,13 +1,17 @@
 <template>
-  <div class="loader" v-if="!userStore.user"><LoadingDots /></div>
-  <div class="user-page" v-else>
+  <div v-if="!userStore.user" class="loader">
+    <LoadingDots />
+  </div>
+  <div v-else class="user-page">
     <div class="head">
       <img :src="userStore.user.images[0].url" alt="" class="avatar-bg" />
       <div class="inner">
         <div class="metas">
           <img :src="userStore.user.images[0].url" alt="" class="avatar" />
           <div>
-            <div class="name">{{ userStore.user?.display_name }}</div>
+            <div class="name">
+              {{ userStore.user?.display_name }}
+            </div>
             <div class="followers">{{ userStore.user?.followers.total }} followers</div>
           </div>
         </div>
@@ -20,10 +24,10 @@
         <div class="heading sticky title">Collections</div>
         <div class="gallery">
           <router-link
+            v-for="collection in userStore.collections"
             :key="collection.id"
             :to="`/collection/${collection.id}`"
             class="playlist"
-            v-for="collection in userStore.collections"
           >
             <Cover :images="collection.images" :size="'large'" class="playlist-cover" />
             <div>{{ collection.name.replaceAll("#Collection ", "") }}</div>
@@ -34,10 +38,10 @@
         <div class="heading sticky title">Playlists</div>
         <div class="gallery">
           <router-link
+            v-for="playlist in userStore.playlists"
             :key="playlist.id"
             :to="`/playlist/${playlist.id}`"
             class="playlist"
-            v-for="playlist in userStore.playlists"
           >
             <Cover :images="playlist.images" :size="'large'" class="playlist-cover" />
             <div>{{ playlist.name }}</div>

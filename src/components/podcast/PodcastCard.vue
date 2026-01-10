@@ -1,7 +1,9 @@
 <template>
   <router-link :to="`/podcasts/${id}`" class="podcast">
     <img :src="covers[1].url" class="cover" />
-    <div class="name" v-if="name">{{ name }}</div>
+    <div v-if="name" class="name">
+      {{ name }}
+    </div>
   </router-link>
 </template>
 

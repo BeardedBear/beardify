@@ -2,7 +2,7 @@
   <div class="profile-container">
     <div class="profile-wrapper" :class="{ visible: artistMetas }">
       <span v-if="artistTags && artistTags.length > 0" class="tag-list">
-        <span v-for="value in artistTags.slice(0, 5)" class="tag">
+        <span v-for="(value, index) in artistTags.slice(0, 5)" :key="index" class="tag">
           {{ typeof value === "string" ? value : value.name }}
         </span>
       </span>

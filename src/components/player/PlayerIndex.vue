@@ -1,7 +1,11 @@
 <template>
   <div class="player">
-    <template v-if="playerStore.currentlyPlaying?.currently_playing_type === 'episode'"><PlayerEpisode /></template>
-    <template v-else><PlayerSong /></template>
+    <template v-if="playerStore.currentlyPlaying?.currently_playing_type === 'episode'">
+      <PlayerEpisode />
+    </template>
+    <template v-else>
+      <PlayerSong />
+    </template>
   </div>
 </template>
 

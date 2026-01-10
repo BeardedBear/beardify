@@ -1,25 +1,31 @@
 <template>
   <Dialog :title="`Edit a ${isCollection ? 'collection' : 'playlist'}`" with-title>
-    <div class="loading" v-if="values.name === ''"><Loading /></div>
-    <div class="wrap" v-else>
+    <div v-if="values.name === ''" class="loading">
+      <Loading />
+    </div>
+    <div v-else class="wrap">
       <div>
         <div class="section">
           <label for="name">Name</label>
-          <input class="input" id="name" type="text" v-if="isEditable" v-model="values.name" />
-          <div v-else>{{ values.name }}</div>
+          <input v-if="isEditable" id="name" v-model="values.name" class="input" type="text" />
+          <div v-else>
+            {{ values.name }}
+          </div>
         </div>
         <div class="section">
           <label for="description">Description</label>
           <textarea
-            class="textarea"
-            id="description"
-            placeholder="Add description"
             v-if="isEditable"
+            id="description"
             v-model="values.description"
-          ></textarea>
-          <div v-else>{{ values.description }}</div>
+            class="textarea"
+            placeholder="Add description"
+          />
+          <div v-else>
+            {{ values.description }}
+          </div>
         </div>
-        <div class="option-list section" v-if="isEditable">
+        <div v-if="isEditable" class="option-list section">
           <div class="option">
             <label for="public">Visibility</label>
             <div class="buttons">
@@ -63,14 +69,14 @@
       <div class="actions">
         <ButtonIndex @click="remove()">Delete {{ isCollection ? "collection" : "playlist" }}</ButtonIndex>
         <ButtonIndex
+          v-if="isEditable"
           variant="primary"
           @click="dialogStore.updatePlaylist(values, dialogStore.playlistId, isCollection)"
-          v-if="isEditable"
         >
           Confirm
         </ButtonIndex>
       </div>
-      <div class="bottom" v-if="isTouchDevice()">
+      <div v-if="isTouchDevice()" class="bottom">
         <p>Share content</p>
         <ShareContent :beardify-url="$route.fullPath" :spotify-url="playlistStore.playlist.external_urls.spotify" />
       </div>
@@ -94,6 +100,7 @@ import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
 import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
+
 import ShareContent from "../ui/ShareContent.vue";
 
 const dialogStore = useDialog();
@@ -135,8 +142,7 @@ function remove(): void {
       try {
         await sidebarStore.removePlaylist(playlistIdToDelete);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Error while deleting playlist:", error);
+        if (import.meta.env.DEV) console.error("Error while deleting playlist:", error);
         notification({ msg: "Unable to delete playlist", type: NotificationType.Error });
       }
     }, 300); // Slightly longer than the closing animation (200ms)

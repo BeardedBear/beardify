@@ -1,14 +1,14 @@
 <template>
-  <div class="loader" v-if="!homeStore.recommendedAlbums.length">
+  <div v-if="!homeStore.recommendedAlbums.length" class="loader">
     <Loader />
   </div>
-  <div class="home" v-else>
+  <div v-else class="home">
     <div class="home-content">
       <PageFit>
         <div class="title">
           <div class="name">Recommended albums</div>
           <ButtonIndex @click="getData()">
-            <i class="icon-refresh"></i>
+            <i class="icon-refresh" />
             Refresh
           </ButtonIndex>
         </div>

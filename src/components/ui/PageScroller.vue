@@ -1,12 +1,12 @@
 <template>
-  <div class="page" ref="page">
+  <div ref="page" class="page">
     <slot />
     <div class="nav">
       <ButtonIndex icon-only size="small" @click="scrollToTop()">
-        <i class="icon-arrow-up"></i>
+        <i class="icon-arrow-up" />
       </ButtonIndex>
       <ButtonIndex icon-only size="small" @click="scrollToBottom()">
-        <i class="icon-arrow-down"></i>
+        <i class="icon-arrow-down" />
       </ButtonIndex>
     </div>
   </div>

@@ -1,19 +1,19 @@
 <template>
   <div :class="{ floating }" class="links">
     <Tooltip text="Sputnik" placement="bottom">
-      <ButtonIndex @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')" variant="nude">
+      <ButtonIndex variant="nude" @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')">
         <i class="icon-sputnik" />
         <span class="link-name">Sputnik</span>
       </ButtonIndex>
     </Tooltip>
     <Tooltip text="Discogs" placement="bottom">
-      <ButtonIndex icon-only @click.stop.prevent="openLink(link.discogs)" variant="nude">
+      <ButtonIndex icon-only variant="nude" @click.stop.prevent="openLink(link.discogs)">
         <i class="icon-discogs" />
         <span class="link-name">Discogs</span>
       </ButtonIndex>
     </Tooltip>
     <Tooltip text="RateYourMusic" placement="bottom">
-      <ButtonIndex icon-only @click.stop.prevent="openLink(link.rym)" variant="nude">
+      <ButtonIndex icon-only variant="nude" @click.stop.prevent="openLink(link.rym)">
         <i class="icon-rym" />
         <span class="link-name">RateYourMusic</span>
       </ButtonIndex>
@@ -33,14 +33,14 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUpdated, ref } from "vue";
 
+import type { SocialLink } from "@/helpers/socialLinks";
+
 import { useFrame } from "@/components/frame/FrameStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Tooltip from "@/components/ui/Tooltip.vue";
 import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
-import { useArtist } from "@/views/artist/ArtistStore";
-
-import type { SocialLink } from "@/helpers/socialLinks";
 import { socialLinksFromDiscogs, socialLinksFromMusicBrainz, socialLinksFromWikidata } from "@/helpers/socialLinks";
+import { useArtist } from "@/views/artist/ArtistStore";
 
 const props = defineProps<{
   artistName: string;

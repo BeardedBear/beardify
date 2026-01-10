@@ -3,8 +3,12 @@
     <div class="meta">
       <i class="icon-note note" />
       <div>
-        <div class="name">{{ track?.name }}</div>
-        <div class="artist">{{ track?.artists[0].name }}</div>
+        <div class="name">
+          {{ track?.name }}
+        </div>
+        <div class="artist">
+          {{ track?.artists[0].name }}
+        </div>
       </div>
     </div>
     <div class="options">

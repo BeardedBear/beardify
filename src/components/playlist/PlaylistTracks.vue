@@ -1,44 +1,43 @@
 <template>
-  <template :key="track.track.id" v-for="(track, index) in trackList">
+  <template v-for="(track, index) in trackList" :key="track.track.id">
     <div
       :class="{
         active: isCurrentTrack(track.track, currentTrack),
         deletable: playlist.owner.id === me?.id || playlist.collaborative,
       }"
+      class="track"
       @click="
         playSongs(
           index,
           trackList.map((e) => e.track),
         )
       "
-      class="track"
     >
       <div class="track-icon">
         <i class="track-icon-item music icon-note" />
-        <i
-          @click.prevent.stop="open({ type: 'addSong', track: track.track })"
-          class="track-icon-item save icon-plus"
-        ></i>
+        <i class="track-icon-item save icon-plus" @click.prevent.stop="open({ type: 'addSong', track: track.track })" />
       </div>
       <div>
-        <div class="track-name">{{ track.track.name }}</div>
+        <div class="track-name">
+          {{ track.track.name }}
+        </div>
         <ArtistList :artist-list="track.track.artists" feat />
       </div>
       <div class="album">
-        <div class="adder" v-if="isAlbum(track.track.album)">
+        <div v-if="isAlbum(track.track.album)" class="adder">
           <i class="adder-icon icon-album" />
           <i
-            @click.prevent.stop="open({ type: 'addalbum', albumId: track.track.album.id })"
             class="adder-button icon-plus"
+            @click.prevent.stop="open({ type: 'addalbum', albumId: track.track.album.id })"
           />
         </div>
         <i
+          v-else
           :class="{
             'icon-ep': isEP(track.track.album),
             'icon-single': isSingle(track.track.album),
             'icon-compilation': isCompilation(track.track.album),
           }"
-          v-else
         />
         <AlbumLink :album="track.track.album" no-icon />
       </div>
@@ -49,11 +48,15 @@
           alt=""
         />
       </div>
-      <div class="date">{{ date(track.added_at) }}</div>
-      <div class="duration">{{ timecode(track.track.duration_ms) }}</div>
+      <div class="date">
+        {{ date(track.added_at) }}
+      </div>
+      <div class="duration">
+        {{ timecode(track.track.duration_ms) }}
+      </div>
       <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
         <ButtonIndex icon-only variant="nude" class="delete" @click.prevent.stop="deleteSong(track.track.uri)">
-          <i class="icon-trash-2"></i>
+          <i class="icon-trash-2" />
         </ButtonIndex>
       </div>
     </div>
@@ -81,8 +84,8 @@ import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 const props = defineProps<{
-  trackList: PlaylistTrack[];
   contributorsData?: Record<string, PublicUser>;
+  trackList: PlaylistTrack[];
 }>();
 
 const { open } = useDialog();
@@ -102,8 +105,8 @@ async function deleteSong(songId: string): Promise<void> {
   try {
     await instance().delete(`playlists/${playlist.id}/tracks`, {
       data: {
-        tracks: [{ uri: songId }],
         snapshot_id: playlist.snapshot_id,
+        tracks: [{ uri: songId }],
       },
     });
     removeSong(songId);

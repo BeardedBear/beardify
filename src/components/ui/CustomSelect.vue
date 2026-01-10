@@ -53,8 +53,8 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  "update:modelValue": [value: string];
   change: [option: SelectOption];
+  "update:modelValue": [value: string];
 }>();
 
 const isOpen = ref(false);
@@ -66,9 +66,9 @@ const displayValue = computed(() => {
   return option?.label ?? props.placeholder;
 });
 
-function toggle(): void {
-  if (!props.disabled) {
-    isOpen.value = !isOpen.value;
+function handleClickOutside(event: MouseEvent): void {
+  if (selectRef.value && !selectRef.value.contains(event.target as Node)) {
+    isOpen.value = false;
   }
 }
 
@@ -78,9 +78,9 @@ function selectOption(option: SelectOption): void {
   isOpen.value = false;
 }
 
-function handleClickOutside(event: MouseEvent): void {
-  if (selectRef.value && !selectRef.value.contains(event.target as Node)) {
-    isOpen.value = false;
+function toggle(): void {
+  if (!props.disabled) {
+    isOpen.value = !isOpen.value;
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <Dialog title="Create a collection" with-title>
     <div class="wrap">
-      <input class="input" placeholder="Collection's name" type="text" v-model="collectionName" />
+      <input v-model="collectionName" class="input" placeholder="Collection's name" type="text" />
       <ButtonIndex variant="primary" @click="create()">Create</ButtonIndex>
     </div>
   </Dialog>

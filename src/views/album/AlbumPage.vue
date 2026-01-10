@@ -1,6 +1,8 @@
 <template>
-  <div class="loader" v-if="albumStore.album.name === ''"><Loader /></div>
-  <div class="album-page" ref="albumpage" v-else>
+  <div v-if="albumStore.album.name === ''" class="loader">
+    <Loader />
+  </div>
+  <div v-else ref="albumpage" class="album-page">
     <div class="fit">
       <Head :album="albumStore.album" />
       <div class="content">
@@ -9,21 +11,21 @@
         </div>
         <div class="content-tracks">
           <div
+            v-for="(track, index) in albumStore.album.tracks.items"
+            :key="index"
             :class="{
               active: isCurrentTrack(track, currentTrack),
               unavailable: !track.available_markets.length,
             }"
-            :key="index"
-            @click="playSongs(index, albumStore.album.tracks.items)"
             class="track"
-            v-for="(track, index) in albumStore.album.tracks.items"
+            @click="playSongs(index, albumStore.album.tracks.items)"
           >
             <ButtonIndex
               no-default-class
               class="add"
               @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })"
             >
-              <i class="icon-plus"></i>
+              <i class="icon-plus" />
             </ButtonIndex>
             <span class="track-number">{{ track.track_number }}.</span>
             <div>
@@ -35,7 +37,9 @@
                 />
               </div>
             </div>
-            <div class="duration">{{ timecode(track.duration_ms) }}</div>
+            <div class="duration">
+              {{ timecode(track.duration_ms) }}
+            </div>
           </div>
         </div>
       </div>

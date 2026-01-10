@@ -3,10 +3,10 @@
     <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">Similar artists</div>
     <div class="list">
       <router-link
+        v-for="(artist, index) in artistStore.relatedArtists.artists"
         :key="index"
         :to="`/artist/${artist.id}`"
         class="item"
-        v-for="(artist, index) in artistStore.relatedArtists.artists"
       >
         <Cover :images="artist.images" class="image" size="small" />
         <div class="name">

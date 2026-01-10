@@ -1,12 +1,14 @@
 <template>
-  <div :key="category.name" v-for="category in releasesStore.menu">
-    <div class="title">{{ category.name }}</div>
+  <div v-for="category in releasesStore.menu" :key="category.name">
+    <div class="title">
+      {{ category.name }}
+    </div>
     <div
-      :class="{ selected: releasesStore.activeSlug === slug }"
-      :key="index"
-      @click="releasesStore.setActiveSlug(slug)"
-      class="slug"
       v-for="(slug, index) in category.slugs"
+      :key="index"
+      :class="{ selected: releasesStore.activeSlug === slug }"
+      class="slug"
+      @click="releasesStore.setActiveSlug(slug)"
     >
       {{ slug }}
     </div>

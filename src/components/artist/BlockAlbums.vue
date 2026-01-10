@@ -1,11 +1,11 @@
 <template>
-  <div class="content-block" v-if="artistStore.albums.length">
+  <div v-if="artistStore.albums.length" class="content-block">
     <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
-      <i class="icon-album"></i>
+      <i class="icon-album" />
       Albums
     </div>
     <div class="albums">
-      <div :key="index" v-for="(group, index) in albumGroups">
+      <div v-for="(group, index) in albumGroups" :key="index">
         <AlbumGroup :group="group" can-save clean-name />
       </div>
     </div>

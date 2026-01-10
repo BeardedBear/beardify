@@ -1,8 +1,8 @@
 <template>
-  <img :src="images[2].url" loading="lazy" v-if="size === 'small' && images.length >= 3" />
-  <img :src="images[1].url" loading="lazy" v-else-if="size === 'medium' && images.length >= 2" />
-  <img :src="images[0].url" loading="lazy" v-else-if="size === 'large' && images.length >= 1" />
-  <img src="/img/default.png" loading="lazy" v-else />
+  <img v-if="size === 'small' && images.length >= 3" :src="images[2].url" loading="lazy" />
+  <img v-else-if="size === 'medium' && images.length >= 2" :src="images[1].url" loading="lazy" />
+  <img v-else-if="size === 'large' && images.length >= 1" :src="images[0].url" loading="lazy" />
+  <img v-else src="/img/default.png" loading="lazy" />
 </template>
 
 <script lang="ts" setup>

@@ -9,8 +9,9 @@
 </template>
 
 <script lang="ts" setup>
-import type { DeviceType } from "@/@types/Device";
 import { computed } from "vue";
+
+import type { DeviceType } from "@/@types/Device";
 
 const props = defineProps<{ type?: DeviceType | null }>();
 

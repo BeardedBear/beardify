@@ -29,10 +29,10 @@
 
 <script lang="ts">
 export interface Tab {
+  disabled?: boolean;
   icon: string;
   id: string;
   label: string;
-  disabled?: boolean;
   tooltip?: string;
 }
 </script>

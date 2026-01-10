@@ -1,17 +1,21 @@
 <template>
-  <div class="loader" v-if="!podcastsStore.list && !podcastsStore.myPodcasts.length">
+  <div v-if="!podcastsStore.list && !podcastsStore.myPodcasts.length" class="loader">
     <Loader />
   </div>
-  <div class="podcasts" v-else>
+  <div v-else class="podcasts">
     <PageFit>
-      <div class="title"><div class="name">Podcasts</div></div>
-      <div v-if="!podcastsStore.myPodcasts.length"><Loader /></div>
-      <div class="podcast-list" v-else>
+      <div class="title">
+        <div class="name">Podcasts</div>
+      </div>
+      <div v-if="!podcastsStore.myPodcasts.length">
+        <Loader />
+      </div>
+      <div v-else class="podcast-list">
         <PodcastCard
-          :covers="podcast?.show.images"
+          v-for="(podcast, index) in podcastsStore.myPodcasts"
           :id="podcast.show.id"
           :key="index"
-          v-for="(podcast, index) in podcastsStore.myPodcasts"
+          :covers="podcast?.show.images"
         />
       </div>
     </PageFit>

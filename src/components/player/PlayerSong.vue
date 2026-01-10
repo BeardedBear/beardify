@@ -2,11 +2,17 @@
   <template v-if="usePlayer().playerState.track_window.current_track.id">
     <div class="surface" @click.capture="onSurfaceClick">
       <div class="meta">
-        <div class="area-metas"><What /></div>
-        <div class="area-controls"><Controls /></div>
-        <div class="area-device"><Device /></div>
+        <div class="area-metas">
+          <What />
+        </div>
+        <div class="area-controls">
+          <Controls />
+        </div>
+        <div class="area-device">
+          <Device />
+        </div>
       </div>
-      <SeekBar :clickDisable="isTouchDevice()" />
+      <SeekBar :click-disable="isTouchDevice()" />
     </div>
   </template>
   <Loader v-else />

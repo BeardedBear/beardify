@@ -1,13 +1,15 @@
 <template>
   <div class="content">
-    <div :key="index" v-for="(month, index) in releasesStore.monthList">
-      <div class="month">{{ month }}</div>
-      <template :key="release.id" v-for="release in releasesStore.releases">
+    <div v-for="(month, index) in releasesStore.monthList" :key="index">
+      <div class="month">
+        {{ month }}
+      </div>
+      <template v-for="release in releasesStore.releases" :key="release.id">
         <template v-if="releasesStore.activeSlug && month === release.releaseDate">
-          <Release :release="release" v-if="release.slug.includes(releasesStore.activeSlug)" />
+          <Release v-if="release.slug.includes(releasesStore.activeSlug)" :release="release" />
         </template>
         <template v-else>
-          <Release :release="release" v-if="month === release.releaseDate" />
+          <Release v-if="month === release.releaseDate" :release="release" />
         </template>
       </template>
     </div>

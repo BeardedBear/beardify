@@ -1,14 +1,16 @@
 <template>
   <div class="seek-bar" :class="{ 'click-disabled': props.clickDisable }">
-    <div class="progress-wrap" ref="progressWrap">
+    <div ref="progressWrap" class="progress-wrap">
       <div class="progress">
         <div
+          v-if="playerStore.playerState"
           :style="`width:${(currentTime / playerStore.playerState.duration) * 100}%`"
           class="bar"
-          v-if="playerStore.playerState"
         />
         <div :style="`width:${perc}%`" class="seek">
-          <div class="time">{{ time }}</div>
+          <div class="time">
+            {{ time }}
+          </div>
         </div>
       </div>
     </div>

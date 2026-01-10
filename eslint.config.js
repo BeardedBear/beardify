@@ -3,6 +3,7 @@ import tseslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import perfectionist from "eslint-plugin-perfectionist";
 import eslintPluginPrettier from "eslint-plugin-prettier";
+import pluginVue from "eslint-plugin-vue";
 import globals from "globals";
 
 export default [
@@ -12,6 +13,8 @@ export default [
   },
   // Configuration de base ESLint
   eslint.configs.recommended,
+  // Configuration recommandée pour Vue 3
+  ...pluginVue.configs["flat/recommended"],
 
   // Configuration globale
   {
@@ -52,12 +55,26 @@ export default [
     },
   },
 
-  // Configuration pour les fichiers Vue - Ignorons les erreurs d'analyse pour l'instant
+  // Configuration pour les fichiers Vue (TypeScript)
   {
     files: ["**/*.vue"],
-    ignores: ["**/*.vue"],
+    languageOptions: {
+      parserOptions: {
+        ecmaVersion: "latest",
+        parser: tsParser,
+        sourceType: "module",
+      },
+    },
+    plugins: {
+      "@typescript-eslint": tseslint,
+    },
     rules: {
-      // Désactiver temporairement l'analyse des fichiers Vue
+      "@typescript-eslint/no-unused-vars": "warn",
+      "vue/html-indent": "off",
+      "vue/html-self-closing": "off",
+      "vue/max-attributes-per-line": "off",
+      "vue/multi-word-component-names": "off",
+      "vue/singleline-html-element-content-newline": "off",
     },
   },
 
@@ -85,7 +102,12 @@ export default [
   {
     rules: {
       "linebreak-style": ["error", "unix"], // Force l'utilisation de LF (unix) au lieu de CRLF (windows)
-      "no-console": "warn",
+      "no-console": [
+        "warn",
+        {
+          allow: ["warn", "error"],
+        },
+      ],
       "no-debugger": "warn",
     },
   },

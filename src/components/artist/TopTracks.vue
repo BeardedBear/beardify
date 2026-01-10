@@ -2,20 +2,24 @@
   <div v-if="artistStore.topTracks.tracks?.length">
     <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">Top tracks</div>
     <div
-      :class="{ active: isCurrentTrack(trackItem, playerStore.playerState?.track_window.current_track) }"
-      :key="index"
-      @click="playSongs(index, artistStore.topTracks.tracks)"
-      class="item"
       v-for="(trackItem, index) in artistStore.topTracks.tracks"
+      :key="index"
+      :class="{ active: isCurrentTrack(trackItem, playerStore.playerState?.track_window.current_track) }"
+      class="item"
+      @click="playSongs(index, artistStore.topTracks.tracks)"
     >
       <div class="cover-wrap">
         <Cover :images="trackItem.album.images" class="cover" size="small" />
-        <div @click.prevent.stop="dialogStore.open({ type: 'addSong', track: trackItem })" class="hover">
-          <i class="add icon-plus"></i>
+        <div class="hover" @click.prevent.stop="dialogStore.open({ type: 'addSong', track: trackItem })">
+          <i class="add icon-plus" />
         </div>
       </div>
-      <div class="name">{{ trackItem.name }}</div>
-      <div class="duration">{{ timecode(trackItem.duration_ms) }}</div>
+      <div class="name">
+        {{ trackItem.name }}
+      </div>
+      <div class="duration">
+        {{ timecode(trackItem.duration_ms) }}
+      </div>
     </div>
   </div>
 </template>

@@ -1,11 +1,11 @@
 <template>
-  <div class="content-block" v-if="artistStore.eps.length">
+  <div v-if="artistStore.eps.length" class="content-block">
     <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
-      <i class="icon-ep"></i>
+      <i class="icon-ep" />
       EP's
     </div>
     <div class="eps">
-      <div :key="index" v-for="(group, index) in epGroups">
+      <div v-for="(group, index) in epGroups" :key="index">
         <AlbumGroup :group="group" can-save />
       </div>
     </div>

@@ -3,16 +3,20 @@
     <SearchTitle title="Podcasts" />
     <template v-if="searchStore.podcasts.length">
       <router-link
+        v-for="(podcast, index) in searchStore.podcasts"
         :key="index"
         :to="`/podcasts/${podcast.id}`"
-        @click="searchStore.reset()"
         class="podcast"
-        v-for="(podcast, index) in searchStore.podcasts"
+        @click="searchStore.reset()"
       >
         <img :src="podcast.images?.[1]?.url || podcast.images?.[0]?.url" class="cover" />
         <div class="content">
-          <div class="name">{{ podcast.name }}</div>
-          <div class="publisher" v-if="podcast.publisher">{{ podcast.publisher }}</div>
+          <div class="name">
+            {{ podcast.name }}
+          </div>
+          <div v-if="podcast.publisher" class="publisher">
+            {{ podcast.publisher }}
+          </div>
         </div>
       </router-link>
     </template>

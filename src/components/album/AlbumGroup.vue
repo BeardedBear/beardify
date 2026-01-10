@@ -50,8 +50,8 @@ const displayAlbum = computed(() => {
 
 function openVariantsDialog(): void {
   dialogStore.open({
-    type: "albumVariants",
     albumGroup: props.group,
+    type: "albumVariants",
   });
 }
 </script>

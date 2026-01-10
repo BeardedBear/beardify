@@ -1,7 +1,7 @@
 <template>
   <div class="artist-info">
     <div class="main-content">
-      <div class="info-section" v-if="hasBiography">
+      <div v-if="hasBiography" class="info-section">
         <ArtistNavigation
           :sections="wikipediaSections"
           :languages="artistStore.wikidataArtist?.wikipediaLanguages ?? []"
@@ -11,18 +11,21 @@
           @language-change="onLanguageChange"
         />
 
+        <!-- eslint-disable vue/no-v-html -->
         <div
+          v-if="artistStore.wikipediaExtract"
           ref="wikipediaContentRef"
           class="wikipedia-content"
-          v-if="artistStore.wikipediaExtract"
-          v-html="artistStore.wikipediaExtract"
+          v-html="sanitizedWikipediaExtract"
         />
-        <div class="biography" v-else-if="artistStore.discogsArtist?.profile" v-html="formattedDiscogsProfile" />
+        <!-- eslint-enable vue/no-v-html -->
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <div v-else-if="artistStore.discogsArtist?.profile" class="biography" v-html="formattedDiscogsProfile" />
       </div>
 
       <div
-        class="info-section"
         v-if="!artistStore.discogsArtist?.profile && !artistStore.wikidataArtist && !artistStore.wikipediaExtract"
+        class="info-section"
       >
         <p class="no-info">No additional information available for this artist.</p>
       </div>
@@ -33,6 +36,7 @@
 </template>
 
 <script lang="ts" setup>
+import DOMPurify from "dompurify";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 
 import ArtistNavigation from "@/components/artist/ArtistNavigation.vue";
@@ -50,18 +54,20 @@ const artistStore = useArtist();
 const wikipediaContentRef = ref<HTMLElement | null>(null);
 const wikipediaSections = ref<WikipediaSection[]>([]);
 
+const sanitizedWikipediaExtract = computed(() => {
+  if (!artistStore.wikipediaExtract) return "";
+  return DOMPurify.sanitize(artistStore.wikipediaExtract);
+});
+
 const formattedDiscogsProfile = computed(() => {
   if (!artistStore.discogsArtist?.profile) return "";
-  return parseDiscogsMarkup(artistStore.discogsArtist.profile);
+  const parsed = parseDiscogsMarkup(artistStore.discogsArtist.profile);
+  return DOMPurify.sanitize(parsed);
 });
 
 const hasBiography = computed(() => {
   return artistStore.wikipediaExtract || artistStore.discogsArtist?.profile;
 });
-
-function onLanguageChange(option: LanguageOption): void {
-  artistStore.switchWikipediaLanguage(option.url, option.code);
-}
 
 function extractSections(): void {
   // Wait a bit for the DOM to be fully updated after v-html changes
@@ -85,6 +91,10 @@ function extractSections(): void {
 
     wikipediaSections.value = sections;
   }, 100);
+}
+
+function onLanguageChange(option: LanguageOption): void {
+  artistStore.switchWikipediaLanguage(option.url, option.code);
 }
 
 function onSectionChange(): void {

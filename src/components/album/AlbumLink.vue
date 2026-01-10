@@ -1,12 +1,12 @@
 <template>
   <i
+    v-if="!noIcon"
     :class="{
       'icon-single': isSingle(album),
       'icon-compilation': isCompilation(album),
     }"
-    v-if="!noIcon"
   />
-  <span @click.prevent.stop="goAlbum(`/album/${album.id}`)" class="artist">{{ album.name }}</span>
+  <span class="artist" @click.prevent.stop="goAlbum(`/album/${album.id}`)">{{ album.name }}</span>
 </template>
 
 <script lang="ts" setup>

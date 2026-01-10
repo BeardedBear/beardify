@@ -1,6 +1,6 @@
 <template>
   <QueuedTracks />
-  <div class="devices" ref="devicesRef">
+  <div ref="devicesRef" class="devices">
     <ButtonIndex
       variant="primary"
       align="left"
@@ -20,15 +20,18 @@
       </span>
     </ButtonIndex>
     <div :class="{ 'is-visible': showList }" class="available-device-list">
-      <LoadingDots size="x-small" v-if="!playerStore.devices.list.length" />
+      <LoadingDots v-if="!playerStore.devices.list.length" size="x-small" />
       <ButtonIndex
-        variant="full"
+        v-for="(device, _key) in deviceListFiltered"
+        v-else
         :key="_key"
+        variant="full"
         type="button"
         size="small"
         align="justify"
         :disabled="playerStore.isSettingDevice"
         :class="device.id === playerStore.devices.activeDevice.id ? 'device-active' : ''"
+        :aria-current="device.id === playerStore.devices.activeDevice.id"
         @click="
           () => {
             if (!playerStore.isSettingDevice && device.id !== playerStore.devices.activeDevice.id)
@@ -36,9 +39,6 @@
             showList = false;
           }
         "
-        v-else
-        v-for="(device, _key) in deviceListFiltered"
-        :aria-current="device.id === playerStore.devices.activeDevice.id"
       >
         <span :title="`Device ID: ${device.id}`" class="device-label">
           <DeviceTypeIcon :type="device.type" />
@@ -59,7 +59,7 @@
         />
       </ButtonIndex>
       <ButtonIndex variant="border" class="refresh" type="button" size="small" @click="playerStore.getDeviceList()">
-        <i class="icon-refresh"></i>
+        <i class="icon-refresh" />
         Refresh
       </ButtonIndex>
     </div>
@@ -67,18 +67,19 @@
 </template>
 
 <script lang="ts" setup>
-import type { Device } from "@/@types/Device";
 import { onClickOutside, useWindowSize } from "@vueuse/core";
 import { computed, ref } from "vue";
 
-import { usePlayer } from "@/components/player/PlayerStore";
+import type { Device } from "@/@types/Device";
+
 import DeviceTypeIcon from "@/components/player/device/DeviceType.vue";
 import QueuedTracks from "@/components/player/device/QueuedTracks.vue";
+import { usePlayer } from "@/components/player/PlayerStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import LoadingDots from "@/components/ui/LoadingDots.vue";
 
 const playerStore = usePlayer();
-const deviceListFiltered = computed(() => playerStore.devices.list.sort((a, b) => a.name.localeCompare(b.name)));
+const deviceListFiltered = computed(() => [...playerStore.devices.list].sort((a, b) => a.name.localeCompare(b.name)));
 
 // Count device names so we can disambiguate identical names in the UI
 const nameCounts = computed(() => {
@@ -93,10 +94,6 @@ const nameCounts = computed(() => {
 const { width } = useWindowSize();
 const isMobile = computed(() => (width.value ?? 9999) <= 480);
 
-function truncate(str: string, max: number) {
-  return str.length > max ? `${str.slice(0, max - 1)}…` : str;
-}
-
 function formatName(device?: Device | null, shortenable = false): string {
   if (!device) return "";
   const count = nameCounts.value.get(device.name) || 0;
@@ -106,6 +103,10 @@ function formatName(device?: Device | null, shortenable = false): string {
   }
   if (isMobile.value && shortenable) return truncate(name, 10);
   return name;
+}
+
+function truncate(str: string, max: number) {
+  return str.length > max ? `${str.slice(0, max - 1)}…` : str;
 }
 
 const showList = ref(false);

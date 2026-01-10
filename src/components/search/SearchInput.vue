@@ -1,14 +1,14 @@
 <template>
   <div class="search">
     <input
-      @input="searchStore.updateQuery(query)"
+      ref="input"
+      v-model="query"
       class="input"
       placeholder="Recherche..."
-      ref="input"
       type="text"
-      v-model="query"
+      @input="searchStore.updateQuery(query)"
     />
-    <ButtonIndex no-default-class class="reset" @click="clearQuery()" v-if="query">
+    <ButtonIndex v-if="query" no-default-class class="reset" @click="clearQuery()">
       <i class="icon-x" />
     </ButtonIndex>
   </div>

@@ -6,7 +6,7 @@
       class="link"
       no-default-class
     >
-      <i class="icon icon-podcast"></i>
+      <i class="icon icon-podcast" />
       Podcasts
     </ButtonIndex>
     <ButtonIndex
@@ -15,7 +15,7 @@
       class="link disabled"
       no-default-class
     >
-      <i class="icon icon-album"></i>
+      <i class="icon icon-album" />
       Releases
     </ButtonIndex>
   </div>

@@ -1,16 +1,18 @@
 <template>
   <div class="wrap">
-    <div class="content" ref="popup" v-if="playerStore.queueOpened">
-      <div class="head"><div class="heading">Queue</div></div>
+    <div v-if="playerStore.queueOpened" ref="popup" class="content">
+      <div class="head">
+        <div class="heading">Queue</div>
+      </div>
       <div class="body">
         <div class="queue-list">
           <div class="section-title">Now</div>
-          <TrackHistory :cover-url="currentTrack.album.images[1].url" :track="currentTrack" v-if="currentTrack" />
+          <TrackHistory v-if="currentTrack" :cover-url="currentTrack.album.images[1].url" :track="currentTrack" />
           <div class="section-title">Next</div>
-          <div :key="key" v-for="(track, key) in playerStore.queue">
+          <div v-for="(track, key) in playerStore.queue" :key="key">
             <TrackHistory :cover-url="track.album.images[2].url" :index="key" :track="track" />
           </div>
-          <div class="empty-queue" v-if="playerStore.queue.length === 0">
+          <div v-if="playerStore.queue.length === 0" class="empty-queue">
             <div class="empty-message">
               {{ isPlayingPodcast ? "Queue not available for podcast episodes" : "No tracks in queue" }}
             </div>
@@ -19,7 +21,7 @@
       </div>
     </div>
     <ButtonIndex icon-only size="small" @click="playerStore.openQueue()">
-      <i class="icon-queue"></i>
+      <i class="icon-queue" />
     </ButtonIndex>
   </div>
 </template>

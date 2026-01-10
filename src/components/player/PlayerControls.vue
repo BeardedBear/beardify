@@ -2,48 +2,48 @@
   <div class="controls" :class="{ 'force-mobile': props.forceMobile }">
     <div class="btns">
       <ButtonIndex
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         no-default-class
         :class="{ active: playerStore.currentlyPlaying?.shuffle_state }"
         class="control-button shuffle"
         :size="props.forceMobile ? 'big' : 'default'"
         @click="playerStore.toggleShuffle()"
-        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-shuffle" />
       </ButtonIndex>
       <ButtonIndex
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         no-default-class
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
         class="control-button repeat"
         @click="playerStore.toggleRepeat()"
-        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
       >
         <i class="icon-repeat" />
       </ButtonIndex>
       <ButtonIndex
+        v-if="playerStore.playerState?.paused"
         no-default-class
         class="control-button play"
         :size="props.forceMobile ? 'big' : 'default'"
         @click="playerStore.play()"
-        v-if="playerStore.playerState?.paused"
       >
         <i class="icon-play" />
       </ButtonIndex>
       <ButtonIndex
+        v-else
         no-default-class
         class="control-button play"
-        @click="playerStore.pause()"
-        v-else
         :size="props.forceMobile ? 'big' : 'default'"
+        @click="playerStore.pause()"
       >
         <i class="icon-pause" />
       </ButtonIndex>
       <ButtonIndex
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         no-default-class
         class="control-button next"
-        @click="playerStore.next()"
-        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         :size="props.forceMobile ? 'big' : 'default'"
+        @click="playerStore.next()"
       >
         <i class="icon-skip-forward" />
       </ButtonIndex>

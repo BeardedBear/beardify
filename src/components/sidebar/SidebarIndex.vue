@@ -1,53 +1,53 @@
 <template>
   <div class="sidebar-backdrop" :class="{ 'is-visible': sidebarStore.isOpen }" @click="sidebarStore.close()" />
   <div
+    v-if="!sidebarStore.playlists.length && !sidebarStore.collections.length"
     class="sidebar loading"
     :class="{ 'is-open': sidebarStore.isOpen }"
-    v-if="!sidebarStore.playlists.length && !sidebarStore.collections.length"
   >
     <Loader />
   </div>
   <div
+    v-else
     :class="{ 'search-opened': collectionSearchOpened || playlistSearchOpened, 'is-open': sidebarStore.isOpen }"
     class="sidebar"
-    v-else
   >
     <Topbar />
     <Menu />
     <div class="sidebar-item">
-      <div class="heading title" v-if="!collectionSearchOpened">
+      <div v-if="!collectionSearchOpened" class="heading title">
         <div class="title-name">Collections</div>
         <div class="options">
           <ButtonIndex no-default-class class="icon" @click="sidebarStore.refreshPlaylists()">
-            <i class="icon-refresh"></i>
+            <i class="icon-refresh" />
           </ButtonIndex>
           <ButtonIndex no-default-class class="icon" @click="() => (collectionSearchOpened = true)">
-            <i class="icon-search"></i>
+            <i class="icon-search" />
           </ButtonIndex>
           <ButtonIndex no-default-class class="icon add" @click="dialogStore.open({ type: 'createCollection' })">
-            <i class="icon-plus"></i>
+            <i class="icon-plus" />
           </ButtonIndex>
         </div>
       </div>
-      <div class="heading title" v-else>
+      <div v-else class="heading title">
         <input
+          ref="collectionSearchInput"
+          v-model="collectionSearchQuery"
           class="search"
           placeholder="Search collection"
-          ref="collectionSearchInput"
           type="text"
-          v-model="collectionSearchQuery"
         />
       </div>
-      <div class="empty" v-if="!sidebarStore.collections.length">
+      <div v-if="!sidebarStore.collections.length" class="empty">
         Oh well, you don't have a collection ! To create one, you just have to create one with + button or rename a
         classic playlist but start with "#Collection". Magical, isn't it?
       </div>
-      <div :key="index" v-else v-for="(playlist, index) in filteredCollections">
+      <div v-for="(playlist, index) in filteredCollections" v-else :key="index">
         <router-link
+          v-if="playlist.id"
           :class="{ active: $route.params.id === playlist.id }"
           :to="`/collection/${playlist.id}`"
           class="playlist-item"
-          v-if="playlist.id"
         >
           <PlaylistIcon :playlist="playlist" />
           <div class="name">
@@ -64,44 +64,46 @@
               })
             "
           >
-            <i class="icon-more-vertical"></i>
+            <i class="icon-more-vertical" />
           </ButtonIndex>
         </router-link>
       </div>
     </div>
     <div class="sidebar-item">
-      <div class="heading title" v-if="!playlistSearchOpened">
+      <div v-if="!playlistSearchOpened" class="heading title">
         <div class="title-name">Playlists</div>
         <div class="options">
           <ButtonIndex no-default-class class="icon" @click="sidebarStore.refreshPlaylists()">
-            <i class="icon-refresh"></i>
+            <i class="icon-refresh" />
           </ButtonIndex>
           <ButtonIndex no-default-class class="icon" @click="() => (playlistSearchOpened = true)">
-            <i class="icon-search"></i>
+            <i class="icon-search" />
           </ButtonIndex>
           <ButtonIndex no-default-class class="icon add" @click="dialogStore.open({ type: 'createPlaylist' })">
-            <i class="icon-plus"></i>
+            <i class="icon-plus" />
           </ButtonIndex>
         </div>
       </div>
-      <div class="heading title" v-else>
+      <div v-else class="heading title">
         <input
+          ref="playlistSearchInput"
+          v-model="playlistSearchQuery"
           class="search"
           placeholder="Search playlist"
-          ref="playlistSearchInput"
           type="text"
-          v-model="playlistSearchQuery"
         />
       </div>
-      <div :key="index" v-for="(playlist, index) in filteredPlaylists">
+      <div v-for="(playlist, index) in filteredPlaylists" :key="index">
         <router-link
+          v-if="playlist.id && playlist.name !== ''"
           :class="{ active: $route.params.id === playlist.id }"
           :to="`/playlist/${playlist.id}`"
           class="playlist-item"
-          v-if="playlist.id && playlist.name !== ''"
         >
           <PlaylistIcon :playlist="playlist" />
-          <div class="name">{{ playlist.name }}</div>
+          <div class="name">
+            {{ playlist.name }}
+          </div>
           <VisibilityIcon :playlist="playlist" />
           <ButtonIndex
             no-default-class
@@ -113,7 +115,7 @@
               })
             "
           >
-            <i class="icon-more-vertical"></i>
+            <i class="icon-more-vertical" />
           </ButtonIndex>
         </router-link>
       </div>
@@ -161,8 +163,8 @@ const filteredCollections = computed(() => {
   return sidebarStore.collections
     .map((playlist) => ({
       ...playlist,
-      lowerName: playlist.name.toLowerCase(),
       displayName: playlist.name.replace("#Collection ", "").replace("#collection ", ""),
+      lowerName: playlist.name.toLowerCase(),
     }))
     .filter((playlist) => playlist.lowerName.includes(searchQuery));
 });

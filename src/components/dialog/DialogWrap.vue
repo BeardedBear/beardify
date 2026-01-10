@@ -1,11 +1,11 @@
 <template>
-  <div class="dialog" v-if="dialogStore.show">
+  <div v-if="dialogStore.show" class="dialog">
     <div
       v-show="!dialogStore.isMinimized"
       :class="{ 'is-closing': dialogStore.isClosing }"
-      @click="dialogStore.close()"
       class="bg"
-    ></div>
+      @click="dialogStore.close()"
+    />
     <div
       ref="wrapperRef"
       v-motion
@@ -14,11 +14,11 @@
       :class="{ 'is-closing': dialogStore.isClosing, big, minimized: dialogStore.isMinimized }"
       class="wrapper"
     >
-      <div class="pre-content" v-if="preContent">
+      <div v-if="preContent" class="pre-content">
         <slot name="pre-content" />
       </div>
       <div class="dialog-content">
-        <div class="head" v-if="withTitle">
+        <div v-if="withTitle" class="head">
           <div>{{ title }}</div>
           <div class="head-buttons">
             <ButtonIndex v-if="withMinimize" no-default-class class="minimize" @click="handleMinimize">
@@ -29,7 +29,9 @@
             </ButtonIndex>
           </div>
         </div>
-        <div :class="{ big }" class="content"><slot /></div>
+        <div :class="{ big }" class="content">
+          <slot />
+        </div>
       </div>
     </div>
   </div>
@@ -58,22 +60,22 @@ const handleMinimize = (): void => {
 
   const motion = useMotion(wrapperRef.value, {
     initial: {
-      scale: 1,
       opacity: 1,
+      scale: 1,
       x: 0,
       y: 0,
     },
   });
 
   motion.apply({
-    scale: 0.1,
     opacity: 0,
-    x: -window.innerWidth / 2 + 150,
-    y: window.innerHeight / 2 - 100,
+    scale: 0.1,
     transition: {
       duration: 400,
       ease: [0.4, 0, 0.2, 1],
     },
+    x: -window.innerWidth / 2 + 150,
+    y: window.innerHeight / 2 - 100,
   });
 
   setTimeout(() => {
@@ -87,15 +89,15 @@ watch(
     if (!isMinimized && wrapperRef.value) {
       const motion = useMotion(wrapperRef.value, {});
       motion.apply({
-        scale: 1,
         opacity: 1,
+        scale: 1,
+        transition: {
+          damping: 20,
+          stiffness: 200,
+          type: "spring",
+        },
         x: 0,
         y: 0,
-        transition: {
-          type: "spring",
-          stiffness: 200,
-          damping: 20,
-        },
       });
     }
   },
