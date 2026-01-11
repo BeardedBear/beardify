@@ -16,6 +16,7 @@
     <Player key="player" />
     <PlayerSlideUp />
     <Notification />
+
     <Frame />
     <MinimizedWindows />
   </template>
@@ -48,7 +49,7 @@ if (!navigator.userAgent.includes("Macintosh")) {
   (async () => {
     const config = [
       {
-        audioCapabilities: [{ contentType: 'audio/mp4;codecs="mp4a.40.2"' }],
+        audioCapabilities: [{ contentType: "audio/mp4;codecs=\"mp4a.40.2\"" }],
         initDataTypes: ["cenc"],
       },
     ];
@@ -100,7 +101,9 @@ const handleVisibilityChange = async (): Promise<void> => {
           retries--;
           if (retries > 0) {
             // Wait a bit before retrying (exponential backoff)
-            await new Promise((resolve) => setTimeout(resolve, 2000 * (4 - retries)));
+            await new Promise((resolve) =>
+              setTimeout(resolve, 2000 * (4 - retries)),
+            );
           }
           // If all retries fail, the API error handler will eventually redirect to login
         }

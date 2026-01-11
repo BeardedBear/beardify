@@ -11,8 +11,8 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: "node_modules/flag-icons/flags/4x3/*.svg",
           dest: "flags",
+          src: "node_modules/flag-icons/flags/4x3/*.svg",
         },
       ],
     }),

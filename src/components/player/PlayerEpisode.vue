@@ -30,8 +30,8 @@ function onSurfaceClick(event: MouseEvent): void {
   const target = (event?.target as HTMLElement) || null;
   if (!target) return;
 
-  const interactiveSelector =
-    "button, a, input, textarea, select, .controls, .btns, .control-button, .area-device, .time, .progress-wrap, .progress, .seek, .bar";
+  const interactiveSelector
+    = "button, a, input, textarea, select, .controls, .btns, .control-button, .area-device, .time, .progress-wrap, .progress, .seek, .bar";
   if (target.closest(interactiveSelector)) return;
 
   // Prevent the event from reaching target listeners (we are on capture phase)

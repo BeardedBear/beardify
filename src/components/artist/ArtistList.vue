@@ -25,9 +25,9 @@ const dialogStore = useDialog();
 defineProps<{
   artistList:
     | {
-        name: string;
-        uri: string;
-      }[]
+      name: string;
+      uri: string;
+    }[]
     | Artist[]
     | ArtistSimplified[]
     | undefined;

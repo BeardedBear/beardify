@@ -14,7 +14,7 @@ const USER_AGENT = "Beardify/1.0.0 (https://github.com/BeardedBear/beardify)";
  * Discogs markup parsing configuration
  */
 const DISCOGS_BASE_URL = "https://www.discogs.com";
-const LINK_ATTRS = 'target="_blank" rel="noopener noreferrer" class="discogs-link"';
+const LINK_ATTRS = "target=\"_blank\" rel=\"noopener noreferrer\" class=\"discogs-link\"";
 
 /**
  * Discogs entity types configuration
@@ -106,11 +106,11 @@ export function parseDiscogsMarkup(text: string): string {
   // [url=http://...]text[/url] -> <a href="...">text</a>
   result = result.replace(
     /\[url=(.*?)\](.*?)\[\/url\]/gi,
-    '<a href="$1" target="_blank" rel="noopener noreferrer">$2</a>',
+    "<a href=\"$1\" target=\"_blank\" rel=\"noopener noreferrer\">$2</a>",
   );
 
   // [url]http://...[/url] -> <a href="...">...</a>
-  result = result.replace(/\[url\](.*?)\[\/url\]/gi, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+  result = result.replace(/\[url\](.*?)\[\/url\]/gi, "<a href=\"$1\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");
 
   // Convert newlines to <br> tags
   result = result.replace(/\n/g, "<br>");
@@ -134,10 +134,10 @@ export function processDiscogsReleases(releases: DiscogsRelease[]): Map<string, 
       if (format.includes("ep")) {
         releaseMap.set(normalizedTitle, "EP");
       } else if (
-        format.includes("album") ||
-        format.includes("lp") ||
-        format.includes("vinyl") ||
-        format.includes("cd")
+        format.includes("album")
+        || format.includes("lp")
+        || format.includes("vinyl")
+        || format.includes("cd")
       ) {
         releaseMap.set(normalizedTitle, "Album");
       }

@@ -21,8 +21,8 @@ export function formatDate(date?: null | string): string {
     if (isNaN(d.getTime())) return date as string;
 
     // Use browser locale when available, fallback to en-US
-    const locale =
-      typeof navigator !== "undefined" && (navigator as unknown as { language?: string }).language
+    const locale
+      = typeof navigator !== "undefined" && (navigator as unknown as { language?: string }).language
         ? (navigator as unknown as { language?: string }).language
         : "en-US";
 

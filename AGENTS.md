@@ -20,7 +20,7 @@ Beardify is a custom Spotify web client built with Vue 3 + TypeScript that enhan
 ```bash
 # Development
 npm run dev           # Start dev server (port 3000)
-npm run lint          # Run all linting (TypeScript + ESLint + Prettier + Stylelint)
+npm run lint          # Run all linting (TypeScript + ESLint + Stylelint)
 npm run fix           # Auto-fix all linting issues
 npm run build         # Build for production (includes linting)
 npm run preview       # Preview production build
@@ -106,14 +106,17 @@ Uses CSS custom properties with consistent naming:
 - **Perfectionist plugin**: Alphabetical ordering for imports/exports
 - **Vue files**: Currently ignored for parsing (TypeScript handled separately)
 
-### Prettier Configuration
+### Formatting (ESLint stylistic rules)
 
-- **Print width**: 120 characters
-- **Semicolons**: Required
-- **Arrow parens**: Always use parentheses
-- **End of line**: LF (Unix)
-- **HTML whitespace**: Ignore for Vue templates
-- **Tab width**: 2 spaces (JSON/YAML files)
+- **Enforced by**: ESLint (stylistic rules) — see `eslint.config.js`
+- **Print width**: 120 characters (`max-len`)
+- **Semicolons**: Required (`semi`)
+- **Arrow parens**: Always use parentheses (`arrow-parens`)
+- **End of line**: LF (Unix) (`linebreak-style`)
+- **HTML whitespace**: Ignored in Vue templates (template whitespace rules are deliberately permissive)
+- **Tab width**: 2 spaces (enforced via `indent`; JSON/YAML files maintain 2 spaces)
+
+**Note**: Prettier has been removed from the project; formatting is now enforced via ESLint stylistic rules. Use `npm run fix` to auto-fix JS/TS/Vue and SCSS style issues.
 
 ### Stylelint Configuration
 

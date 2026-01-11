@@ -120,8 +120,8 @@ export const useSidebar = defineStore("sidebar", {
         this.collections = this.collections.filter((collection) => collection.id !== playlistId);
         playlistStore.followed = false;
         if (
-          router.currentRoute.value.params.id === playlistId ||
-          playlistStore.playlist.owner.id === authStore.me?.id
+          router.currentRoute.value.params.id === playlistId
+          || playlistStore.playlist.owner.id === authStore.me?.id
         ) {
           router.push("/");
         }

@@ -13,18 +13,18 @@ export interface Dialog {
   type: DialogType;
 }
 
-export type DialogType =
-  | "addalbum"
-  | "addSong"
-  | "albumVariants"
-  | "artistOptions"
-  | "createCollection"
-  | "createPlaylist"
-  | "editPlaylist"
-  | "playlistOptions"
-  | "search"
-  | "widevine"
-  | null;
+export type DialogType
+  = | "addalbum"
+    | "addSong"
+    | "albumVariants"
+    | "artistOptions"
+    | "createCollection"
+    | "createPlaylist"
+    | "editPlaylist"
+    | "playlistOptions"
+    | "search"
+    | "widevine"
+    | null;
 
 export interface UpdatePlaylistValues {
   collaborative: boolean;

@@ -177,10 +177,10 @@ const formerMembers = computed<MemberItem[]>(() => {
 
 const hasContent = computed(
   () =>
-    details.value.length > 0 ||
-    externalLinks.value.length > 0 ||
-    activeMembers.value.length > 0 ||
-    formerMembers.value.length > 0,
+    details.value.length > 0
+    || externalLinks.value.length > 0
+    || activeMembers.value.length > 0
+    || formerMembers.value.length > 0,
 );
 </script>
 

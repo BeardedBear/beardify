@@ -21,25 +21,25 @@ export interface Player {
   thisDeviceId: string;
 }
 
-export type PlayerError =
-  | "ALREADY_PAUSED"
-  | "ALREADY_PLAYING"
-  | "CONTEXT_DISALLOW"
-  | "DEVICE_NOT_CONTROLLABLE"
-  | "ENDLESS_CONTEXT"
-  | "NO_ACTIVE_DEVICE"
-  | "NO_NEXT_TRACK"
-  | "NO_PREV_TRACK"
-  | "NO_SPECIFIC_TRACK"
-  | "NOT_PAUSED"
-  | "NOT_PLAYING_CONTEXT"
-  | "NOT_PLAYING_LOCALLY"
-  | "NOT_PLAYING_TRACK"
-  | "PREMIUM_REQUIRED"
-  | "RATE_LIMITED"
-  | "REMOTE_CONTROL_DISALLOW"
-  | "UNKNOWN"
-  | "VOLUME_CONTROL_DISALLOW";
+export type PlayerError
+  = | "ALREADY_PAUSED"
+    | "ALREADY_PLAYING"
+    | "CONTEXT_DISALLOW"
+    | "DEVICE_NOT_CONTROLLABLE"
+    | "ENDLESS_CONTEXT"
+    | "NO_ACTIVE_DEVICE"
+    | "NO_NEXT_TRACK"
+    | "NO_PREV_TRACK"
+    | "NO_SPECIFIC_TRACK"
+    | "NOT_PAUSED"
+    | "NOT_PLAYING_CONTEXT"
+    | "NOT_PLAYING_LOCALLY"
+    | "NOT_PLAYING_TRACK"
+    | "PREMIUM_REQUIRED"
+    | "RATE_LIMITED"
+    | "REMOTE_CONTROL_DISALLOW"
+    | "UNKNOWN"
+    | "VOLUME_CONTROL_DISALLOW";
 
 const defaultAlbum: Spotify.Album = {
   images: [],

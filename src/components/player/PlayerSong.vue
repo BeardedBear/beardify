@@ -37,8 +37,8 @@ function onSurfaceClick(event: MouseEvent): void {
   if (!target) return;
 
   // Elements that should be allowed to handle the click themselves
-  const interactiveSelector =
-    "button, a, router-link, input, textarea, select, .controls, .btns, .control-button, .area-device, .time, .progress-wrap, .progress, .seek, .bar, .album";
+  const interactiveSelector
+    = "button, a, router-link, input, textarea, select, .controls, .btns, .control-button, .area-device, .time, .progress-wrap, .progress, .seek, .bar, .album";
   if (target.closest(interactiveSelector)) return;
 
   // We're in capture phase: prevent the click from reaching target handlers
