@@ -1,9 +1,11 @@
 <template>
-  <div class="loader" v-if="artistStore.artist.name === ''"><Loader /></div>
-  <div class="artist-page" v-else>
+  <div v-if="artistStore.artist.name === ''" class="loader">
+    <Loader />
+  </div>
+  <div v-else class="artist-page">
     <ArtistHeader />
     <Transition name="tab-fade" mode="out-in">
-      <div class="content" v-if="artistStore.activeTab === 'discography'" key="discography">
+      <div v-if="artistStore.activeTab === 'discography'" key="discography" class="content">
         <div class="list">
           <div
             v-if="
@@ -25,7 +27,7 @@
           <RelatedArtists class="top-item related-artists" />
         </div>
       </div>
-      <div class="content content--info" v-else-if="artistStore.activeTab === 'info'" key="info">
+      <div v-else-if="artistStore.activeTab === 'info'" key="info" class="content content--info">
         <ArtistInfo />
       </div>
     </Transition>

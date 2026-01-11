@@ -3,23 +3,23 @@
     <ArtistLinks :artist-name="artistStore.artist.name" />
     <ShareContent :beardify-url="$route.fullPath" :spotify-url="artistStore.artist.external_urls.spotify" />
     <ButtonIndex
+      v-if="artistStore.followStatus"
       :title="artistStore.artist.followers.total + ' followers'"
-      @click="switchFollow(artistStore.artist.id)"
       class="follow"
       variant="primary"
-      v-if="artistStore.followStatus"
+      @click="switchFollow(artistStore.artist.id)"
     >
       Followed
     </ButtonIndex>
-    <ButtonIndex @click="switchFollow(artistStore.artist.id)" class="follow" v-else>Follow</ButtonIndex>
+    <ButtonIndex v-else class="follow" @click="switchFollow(artistStore.artist.id)">Follow</ButtonIndex>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useArtist } from "@/views/artist/ArtistStore";
+import ArtistLinks from "@/components/artist/ArtistLinks.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
-import ArtistLinks from "@/components/artist/ArtistLinks.vue";
+import { useArtist } from "@/views/artist/ArtistStore";
 
 const artistStore = useArtist();
 

@@ -120,7 +120,8 @@ export const useAuth = defineStore("auth", {
         await this.getMe();
 
         // Only update stored refresh token if the provider returned one.
-        // Spotify may not return a refresh_token on refresh requests; avoid overwriting the existing token with undefined.
+        // Spotify may not return a refresh_token on refresh requests.
+        // Avoid overwriting the existing token with undefined.
         const currentRefresh = this.storage?.refreshToken || "";
         const newRefresh = data.refresh_token ?? currentRefresh;
 

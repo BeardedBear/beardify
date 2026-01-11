@@ -1,16 +1,16 @@
 <template>
   <div :class="{ 'not-fit': notFit }" class="playlist-header">
     <div class="playlist-header-left">
-      <Cover :images="playlistStore.playlist.images" class="cover" size="large" v-if="!noCover" />
+      <Cover v-if="!noCover" :images="playlistStore.playlist.images" class="cover" size="large" />
       <div>
         <div class="title">
           {{ playlistStore.playlist.name.replace("#Collection ", "") }}
         </div>
         <div class="metas">
           <router-link
+            v-if="playlistStore.playlist.owner.display_name !== 'Spotify'"
             :to="`/user/${playlistStore.playlist.owner.id}`"
             class="owner"
-            v-if="playlistStore.playlist.owner.display_name !== 'Spotify'"
           >
             {{ playlistStore.playlist.owner.display_name }}
           </router-link>
@@ -19,10 +19,10 @@
           <span v-if="!noDuration">&nbsp;·&nbsp;{{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
         </div>
         <div
-          class="description"
           v-if="
             playlistStore.playlist.description !== 'null' && playlistStore.playlist.description !== 'No description'
           "
+          class="description"
         >
           {{ playlistStore.playlist.description }}
         </div>

@@ -158,12 +158,12 @@ export async function handlePlaybackApiError(
  */
 export function isApiError(error: unknown): error is ApiError {
   return (
-    typeof error === "object" &&
-    error !== null &&
-    "response" in error &&
-    typeof error.response === "object" &&
-    error.response !== null &&
-    "status" in error.response &&
-    typeof error.response.status === "number"
+    typeof error === "object"
+    && error !== null
+    && "response" in error
+    && typeof error.response === "object"
+    && error.response !== null
+    && "status" in error.response
+    && typeof error.response.status === "number"
   );
 }

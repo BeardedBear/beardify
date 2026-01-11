@@ -2,9 +2,9 @@
   <div class="nav-container">
     <div ref="sentinelRef" class="sentinel" />
     <nav
+      v-if="hasSections || hasMultipleLanguages"
       class="wikipedia-nav"
       :class="{ stuck: isStuck }"
-      v-if="hasSections || hasMultipleLanguages"
       :style="{ top: headerHeight + 'px' }"
     >
       <CustomSelect
@@ -31,28 +31,28 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import CustomSelect, { type SelectOption } from "@/components/ui/CustomSelect.vue";
 import LanguageSelect, { type LanguageOption } from "@/components/ui/LanguageSelect.vue";
 
+interface Props {
+  currentLanguage?: string;
+  headerHeight?: number;
+  languages?: LanguageOption[];
+  sections?: WikipediaSection[];
+}
+
 interface WikipediaSection {
   id: string;
   title: string;
 }
 
-interface Props {
-  sections?: WikipediaSection[];
-  languages?: LanguageOption[];
-  currentLanguage?: string;
-  headerHeight?: number;
-}
-
 const props = withDefaults(defineProps<Props>(), {
-  sections: () => [],
-  languages: () => [],
   currentLanguage: "",
   headerHeight: 0,
+  languages: () => [],
+  sections: () => [],
 });
 
 const emit = defineEmits<{
-  sectionChange: [sectionId: string];
   languageChange: [option: LanguageOption];
+  sectionChange: [sectionId: string];
 }>();
 
 const sentinelRef = ref<HTMLElement | null>(null);
@@ -74,27 +74,8 @@ const languageOptions = computed(() => props.languages);
 // Observer to detect when nav is stuck
 let observer: IntersectionObserver | null = null;
 
-function setupIntersectionObserver(): void {
-  const scrollContainer = document.querySelector(".artist-page");
-  if (!scrollContainer || !sentinelRef.value) return;
-
-  // Disconnect existing observer if any
-  if (observer) {
-    observer.disconnect();
-  }
-
-  observer = new IntersectionObserver(
-    ([entry]) => {
-      isStuck.value = !entry.isIntersecting;
-    },
-    {
-      root: scrollContainer,
-      threshold: 0,
-      rootMargin: `-${props.headerHeight}px 0px 0px 0px`,
-    },
-  );
-
-  observer.observe(sentinelRef.value);
+function onLanguageChange(option: LanguageOption): void {
+  emit("languageChange", option);
 }
 
 function onSectionChange(option: SelectOption): void {
@@ -128,8 +109,27 @@ function scrollToSection(sectionId: string): void {
   }
 }
 
-function onLanguageChange(option: LanguageOption): void {
-  emit("languageChange", option);
+function setupIntersectionObserver(): void {
+  const scrollContainer = document.querySelector(".artist-page");
+  if (!scrollContainer || !sentinelRef.value) return;
+
+  // Disconnect existing observer if any
+  if (observer) {
+    observer.disconnect();
+  }
+
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      isStuck.value = !entry.isIntersecting;
+    },
+    {
+      root: scrollContainer,
+      rootMargin: `-${props.headerHeight}px 0px 0px 0px`,
+      threshold: 0,
+    },
+  );
+
+  observer.observe(sentinelRef.value);
 }
 
 // Watch for headerHeight changes to recreate observer with correct rootMargin

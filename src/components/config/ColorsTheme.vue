@@ -2,6 +2,8 @@
   <div class="colors">
     <div class="schemes">
       <ButtonIndex
+        v-for="(c, index) in textColors"
+        :key="index"
         no-default-class
         :class="{
           current: configStore.schemeLabel === `${c.name}`,
@@ -11,9 +13,7 @@
           default: c.name === 'default',
         }"
         class="scheme-item"
-        :key="index"
         @click="c.fn()"
-        v-for="(c, index) in textColors"
       />
     </div>
 

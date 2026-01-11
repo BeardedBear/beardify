@@ -1,26 +1,28 @@
 <template>
   <div ref="albumRef" :class="{ 'exact-search': exactSearch, 'actions-open': actionsOpen }" class="album">
-    <div class="current" v-if="isPlaying"><i class="icon-volume-2" /></div>
+    <div v-if="isPlaying" class="current">
+      <i class="icon-volume-2" />
+    </div>
     <div :class="{ 'is-playing': isPlaying }" class="cover">
-      <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" @click="handleCoverClick" class="img" />
+      <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" class="img" @click="handleCoverClick" />
       <ButtonIndex no-default-class class="play" type="button" @click.stop="handlePlayAlbum(album.uri)">
         <i class="icon-play" />
       </ButtonIndex>
       <ButtonIndex
+        v-if="canSave"
         no-default-class
         class="button-action add"
         type="button"
         @click.stop="dialogStore.open({ type: 'addalbum', albumId: album.id })"
-        v-if="canSave"
       >
         <i class="icon-plus" />
       </ButtonIndex>
       <ButtonIndex
+        v-if="canDelete"
         no-default-class
         class="button-action delete"
         type="button"
         @click.stop="deleteAlbum(album.id)"
-        v-if="canDelete"
       >
         <i class="icon-trash-2" />
       </ButtonIndex>
@@ -29,16 +31,20 @@
         class="album-group-stack-indicator"
         @click.stop="variantClick && variantClick()"
       >
-        <div class="album-group-stack-layer album-group-stack-layer-1"></div>
-        <div class="album-group-stack-layer album-group-stack-layer-2">{{ variantCount }}</div>
+        <div class="album-group-stack-layer album-group-stack-layer-1" />
+        <div class="album-group-stack-layer album-group-stack-layer-2">
+          {{ variantCount }}
+        </div>
       </div>
     </div>
     <div v-if="!withoutMetas">
-      <div class="name">{{ album.name }}</div>
+      <div class="name">
+        {{ album.name }}
+      </div>
       <div v-if="withArtists" class="artists">
         <ArtistList :artist-list="album.artists" feat />
       </div>
-      <div class="date" v-if="album.release_date && !withoutReleaseDate">
+      <div v-if="album.release_date && !withoutReleaseDate" class="date">
         {{ album.release_date.split("-").shift() }}
       </div>
     </div>
@@ -72,11 +78,11 @@ const props = defineProps<{
   canSave?: boolean;
   coverSize?: ImageSize | undefined;
   exactSearch?: boolean;
+  variantClick?: (() => void) | undefined;
+  variantCount?: number;
   withArtists?: boolean;
   withoutMetas?: boolean;
   withoutReleaseDate?: boolean;
-  variantCount?: number;
-  variantClick?: (() => void) | undefined;
 }>();
 
 const currentRouteId = useRoute().params.id;
@@ -113,24 +119,6 @@ function onDocumentClick(e: MouseEvent): void {
 onMounted(() => document.addEventListener("click", onDocumentClick));
 onBeforeUnmount(() => document.removeEventListener("click", onDocumentClick));
 
-/**
- * Handle album click to navigate and close dialog if open
- */
-function handleAlbumClick(): void {
-  if (dialogStore.show) {
-    dialogStore.close();
-  }
-  router.push(`/album/${props.album.id}`);
-}
-
-/**
- * Wrapper function to call the imported playAlbum helper function
- * This fixes the issue where albums were being added to the playlist twice
- */
-async function handlePlayAlbum(albumUri: string): Promise<void> {
-  await playAlbum(albumUri);
-}
-
 async function deleteAlbum(albumId: string): Promise<void> {
   try {
     const e = await instance().get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`);
@@ -148,7 +136,7 @@ async function deleteAlbum(albumId: string): Promise<void> {
     }
     try {
       await instance().delete(`playlists/${currentRouteId}/tracks`, {
-        data: { tracks: tracks, snapshot_id: playlistStore.playlist.snapshot_id },
+        data: { snapshot_id: playlistStore.playlist.snapshot_id, tracks: tracks },
       });
       playlistStore.removeTracks(tracks);
       notification({ msg: "Album successfully removed from playlist", type: NotificationType.Success });
@@ -164,6 +152,24 @@ async function deleteAlbum(albumId: string): Promise<void> {
       type: NotificationType.Error,
     });
   }
+}
+
+/**
+ * Handle album click to navigate and close dialog if open
+ */
+function handleAlbumClick(): void {
+  if (dialogStore.show) {
+    dialogStore.close();
+  }
+  router.push(`/album/${props.album.id}`);
+}
+
+/**
+ * Wrapper function to call the imported playAlbum helper function
+ * This fixes the issue where albums were being added to the playlist twice
+ */
+async function handlePlayAlbum(albumUri: string): Promise<void> {
+  await playAlbum(albumUri);
 }
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <div class="surface" @click.capture="onSurfaceClick">
     <div class="meta">
-      <What :cover-url="playerStore.currentFromSDK?.album.images[1].url" v-if="playerStore.currentFromSDK" />
+      <What v-if="playerStore.currentFromSDK" :cover-url="playerStore.currentFromSDK?.album.images[1].url" />
       <Loader v-else />
       <Controls
         :duration="playerStore.currentFromSDK && playerStore.currentFromSDK.duration_ms"
@@ -30,8 +30,8 @@ function onSurfaceClick(event: MouseEvent): void {
   const target = (event?.target as HTMLElement) || null;
   if (!target) return;
 
-  const interactiveSelector =
-    "button, a, input, textarea, select, .controls, .btns, .control-button, .area-device, .time, .progress-wrap, .progress, .seek, .bar";
+  const interactiveSelector
+    = "button, a, input, textarea, select, .controls, .btns, .control-button, .area-device, .time, .progress-wrap, .progress, .seek, .bar";
   if (target.closest(interactiveSelector)) return;
 
   // Prevent the event from reaching target listeners (we are on capture phase)

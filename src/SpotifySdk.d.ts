@@ -4,9 +4,9 @@ interface Window {
 }
 
 declare namespace Spotify {
-  type AddListenerFn = ((event: "not_ready" | "ready", cb: PlaybackInstanceListener) => void) &
-    ((event: "player_state_changed", cb: PlaybackStateListener) => void) &
-    ((event: ErrorTypes, cb: ErrorListener) => void);
+  type AddListenerFn = ((event: "not_ready" | "ready", cb: PlaybackInstanceListener) => void)
+    & ((event: "player_state_changed", cb: PlaybackStateListener) => void)
+    & ((event: ErrorTypes, cb: ErrorListener) => void);
 
   interface Album {
     images: Image[];

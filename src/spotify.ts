@@ -9,8 +9,8 @@ import { useAuth } from "@/views/auth/AuthStore";
 const handleSDKError = (error: Error): void => {
   // Intercept specific errors related to Cloud Playback
   if (
-    error.message &&
-    (error.message.includes("PlayLoad event failed with status 404") || error.message.includes("item_before_load"))
+    error.message
+    && (error.message.includes("PlayLoad event failed with status 404") || error.message.includes("item_before_load"))
   ) {
     // Don't notify the user for these specific error types
     // These are expected during normal operation of the Spotify SDK
@@ -50,8 +50,8 @@ const createPlayer = (): Spotify.Player => {
 
     // Use stored volume for device first, then API-reported volume, then last used volume as fallback
     const volumePercent = storedVolume ?? activeVolumePercent ?? lastVolume;
-    const initialVolume =
-      typeof volumePercent === "number" && !Number.isNaN(volumePercent)
+    const initialVolume
+      = typeof volumePercent === "number" && !Number.isNaN(volumePercent)
         ? Math.max(0, Math.min(1, volumePercent / 100))
         : undefined;
 
@@ -225,11 +225,11 @@ const createPlayer = (): Spotify.Player => {
     // Intercept uncaught SDK errors
     window.addEventListener("unhandledrejection", (event) => {
       if (
-        event.reason &&
-        event.reason.message &&
-        (event.reason.message.includes("Spotify") ||
-          event.reason.message.includes("PlayLoad") ||
-          event.reason.message.includes("item_before_load"))
+        event.reason
+        && event.reason.message
+        && (event.reason.message.includes("Spotify")
+          || event.reason.message.includes("PlayLoad")
+          || event.reason.message.includes("item_before_load"))
       ) {
         event.preventDefault(); // Prevent propagation of the unhandled error
         handleSDKError(event.reason);

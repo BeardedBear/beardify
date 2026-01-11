@@ -2,37 +2,37 @@
   <div>
     <div v-if="!isPlaylistOwner(playlistStore.playlist.owner)">
       <ButtonIndex
+        v-if="!playlistStore.followed"
         icon-only
         variant="nude"
         title="Follow the playlist"
         @click="playlistStore.followPlaylist(playlistStore.playlist.id)"
-        v-if="!playlistStore.followed"
       >
-        <i class="icon-follow"></i>
+        <i class="icon-follow" />
       </ButtonIndex>
       <ButtonIndex
+        v-else
         icon-only
         variant="nude"
         class="followed"
         title="Unfollow the playlist"
         @click="sidebarStore.removePlaylist(playlistStore.playlist.id)"
-        v-else
       >
-        <i class="icon-followed"></i>
+        <i class="icon-followed" />
       </ButtonIndex>
     </div>
-    <ButtonIndex icon-only variant="nude" @click="edit(playlistStore.playlist.id)" v-else>
-      <i class="icon-more-vertical"></i>
+    <ButtonIndex v-else icon-only variant="nude" @click="edit(playlistStore.playlist.id)">
+      <i class="icon-more-vertical" />
     </ButtonIndex>
   </div>
 </template>
 
 <script lang="ts" setup>
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
+import { useSidebar } from "@/components/sidebar/SidebarStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { isPlaylistOwner } from "@/helpers/playlist";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
-import { useSidebar } from "@/components/sidebar/SidebarStore";
 
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();

@@ -1,7 +1,7 @@
 <template>
   <Dialog title="Create a playlist" with-title>
     <div class="wrap">
-      <input class="input" placeholder="Playlist's name" type="text" v-model="playlistName" />
+      <input v-model="playlistName" class="input" placeholder="Playlist's name" type="text" />
       <ButtonIndex variant="primary" @click="create()">Create</ButtonIndex>
     </div>
   </Dialog>

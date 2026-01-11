@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="heading sticky" v-if="!noTitle">
-      <i :class="`icon-${iconName}`"></i>
+    <div v-if="!noTitle" class="heading sticky">
+      <i :class="`icon-${iconName}`" />
       {{ title }}
     </div>
     <div class="albums">
-      <div :key="index" v-for="(album, index) in albumList">
+      <div v-for="(album, index) in albumList" :key="index">
         <Album :album="album" can-save with-artists />
       </div>
     </div>

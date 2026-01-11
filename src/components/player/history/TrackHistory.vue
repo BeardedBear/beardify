@@ -7,7 +7,9 @@
           <template v-if="index !== undefined">{{ index + 1 }}.</template>
           {{ track.name.length > 20 ? track.name.substring(0, 20) + "..." : track.name }}
         </div>
-        <div><ArtistList :artist-list="track.artists" feat /></div>
+        <div>
+          <ArtistList :artist-list="track.artists" feat />
+        </div>
       </div>
     </div>
   </div>

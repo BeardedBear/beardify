@@ -4,7 +4,12 @@
       v-if="dialogStore.show && dialogStore.isMinimized"
       v-motion
       :initial="{ scale: 0, opacity: 0, x: -50 }"
-      :enter="{ scale: 1, opacity: 1, x: 0, transition: { type: 'spring', stiffness: 260, damping: 20 } }"
+      :enter="{
+        scale: 1,
+        opacity: 1,
+        x: 0,
+        transition: { type: 'spring', stiffness: 260, damping: 20 },
+      }"
       :leave="{ scale: 0, opacity: 0, x: -50, transition: { duration: 200 } }"
       class="minimized-window"
     >
@@ -12,7 +17,11 @@
         <i class="icon-message-square" />
         <span>{{ getDialogTitle() }}</span>
       </div>
-      <button class="close-btn" @click.stop="dialogStore.close()" aria-label="Close dialog">
+      <button
+        class="close-btn"
+        aria-label="Close dialog"
+        @click.stop="dialogStore.close()"
+      >
         <i class="icon-x" />
       </button>
     </div>
@@ -21,7 +30,12 @@
       v-if="frameStore.show && frameStore.isMinimized"
       v-motion
       :initial="{ scale: 0, opacity: 0, x: -50 }"
-      :enter="{ scale: 1, opacity: 1, x: 0, transition: { type: 'spring', stiffness: 260, damping: 20 } }"
+      :enter="{
+        scale: 1,
+        opacity: 1,
+        x: 0,
+        transition: { type: 'spring', stiffness: 260, damping: 20 },
+      }"
       :leave="{ scale: 0, opacity: 0, x: -50, transition: { duration: 200 } }"
       class="minimized-window"
     >
@@ -29,7 +43,11 @@
         <i class="icon-external-link" />
         <span>{{ frameStore.siteName || "Frame" }}</span>
       </div>
-      <button class="close-btn" @click.stop="frameStore.close()" aria-label="Close frame">
+      <button
+        class="close-btn"
+        aria-label="Close frame"
+        @click.stop="frameStore.close()"
+      >
         <i class="icon-x" />
       </button>
     </div>

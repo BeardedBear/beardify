@@ -1,12 +1,16 @@
 <template>
-  <template v-if="useRoute().name === 'Login'"><router-view></router-view></template>
+  <template v-if="useRoute().name === 'Login'">
+    <router-view />
+  </template>
   <template v-else>
     <DialogList />
     <div id="app-content">
       <Sidebar />
       <div class="main-content">
         <MobileHeader />
-        <router-view :key="useRoute().fullPath" v-slot="{ Component }"><component :is="Component" /></router-view>
+        <router-view :key="useRoute().fullPath" v-slot="{ Component }">
+          <component :is="Component" />
+        </router-view>
       </div>
     </div>
     <Player key="player" />
@@ -14,7 +18,7 @@
     <Notification />
     <Frame />
     <MinimizedWindows />
-  </template>
+</template>
 </template>
 
 <script lang="ts" setup>
@@ -44,7 +48,7 @@ if (!navigator.userAgent.includes("Macintosh")) {
   (async () => {
     const config = [
       {
-        audioCapabilities: [{ contentType: 'audio/mp4;codecs="mp4a.40.2"' }],
+        audioCapabilities: [{ contentType: "audio/mp4;codecs=\"mp4a.40.2\"" }],
         initDataTypes: ["cenc"],
       },
     ];
@@ -96,7 +100,9 @@ const handleVisibilityChange = async (): Promise<void> => {
           retries--;
           if (retries > 0) {
             // Wait a bit before retrying (exponential backoff)
-            await new Promise((resolve) => setTimeout(resolve, 2000 * (4 - retries)));
+            await new Promise((resolve) =>
+              setTimeout(resolve, 2000 * (4 - retries)),
+            );
           }
           // If all retries fail, the API error handler will eventually redirect to login
         }

@@ -16,8 +16,10 @@ const handleSpotifySDKErrors = (): void => {
   window.addEventListener("error", (event) => {
     // Check if the error is related to the Spotify SDK
     if (
-      event.message &&
-      (event.message.includes("Spotify") || event.message.includes("playback") || event.message.includes("player"))
+      event.message
+      && (event.message.includes("Spotify")
+        || event.message.includes("playback")
+        || event.message.includes("player"))
     ) {
       // Silent error handling for non-critical SDK errors
       event.preventDefault(); // Prevent error propagation
@@ -27,18 +29,20 @@ const handleSpotifySDKErrors = (): void => {
   // Handle unhandled promise rejections (very common with the Spotify SDK)
   window.addEventListener("unhandledrejection", (event) => {
     if (
-      event.reason &&
-      event.reason.message &&
-      (event.reason.message.includes("PlayLoad") ||
-        event.reason.message.includes("Spotify") ||
-        event.reason.message.includes("404") ||
-        event.reason.message.includes("item_before_load"))
+      event.reason
+      && event.reason.message
+      && (event.reason.message.includes("PlayLoad")
+        || event.reason.message.includes("Spotify")
+        || event.reason.message.includes("404")
+        || event.reason.message.includes("item_before_load"))
     ) {
       // Common Spotify SDK errors during playback
       event.preventDefault(); // Prevent error display in console
 
       // Completely suppress PlayLoad 404 errors (very common and harmless)
-      if (event.reason.message.includes("PlayLoad event failed with status 404")) {
+      if (
+        event.reason.message.includes("PlayLoad event failed with status 404")
+      ) {
         // Silent handling - these errors are expected and harmless with the Spotify SDK
         // They typically occur during item transitions or when connection state changes
         return;
@@ -48,7 +52,9 @@ const handleSpotifySDKErrors = (): void => {
       if (event.reason.message.includes("PlayLoad event failed")) {
         const authStore = useAuth();
         // Check if the token hasn't been refreshed recently
-        const lastRefresh = sessionStorage.getItem("spotify_token_last_refresh");
+        const lastRefresh = sessionStorage.getItem(
+          "spotify_token_last_refresh",
+        );
         const now = Date.now();
 
         if (!lastRefresh || now - parseInt(lastRefresh) > 300000) {
@@ -88,10 +94,10 @@ handleSpotifySDKErrors();
 
 // Check if we're on the auth callback page
 // Handle both /auth and /auth/ (with or without trailing slash)
-const isAuthCallback =
-  window.location.pathname === RouteName.Auth ||
-  window.location.pathname === RouteName.Auth.replace(/\/$/, "") ||
-  window.location.pathname.startsWith("/auth");
+const isAuthCallback
+  = window.location.pathname === RouteName.Auth
+    || window.location.pathname === RouteName.Auth.replace(/\/$/, "")
+    || window.location.pathname.startsWith("/auth");
 
 if (isAuthCallback) {
   // If we're on the auth page, just mount the app without trying to refresh

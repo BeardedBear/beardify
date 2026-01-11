@@ -1,14 +1,14 @@
 <template>
   <Dialog :title="`Add to a playlist`" pre-content with-title>
-    <template #pre-content v-if="dialogStore.track">
+    <template v-if="dialogStore.track" #pre-content>
       <PreContentTrack :track="dialogStore.track" />
     </template>
     <div class="content">
       <div
-        :key="index"
-        @click="add(dialogStore.track?.uri ? dialogStore.track?.uri : '', playlist.id)"
-        class="collection"
         v-for="(playlist, index) in filteredPlaylists"
+        :key="index"
+        class="collection"
+        @click="add(dialogStore.track?.uri ? dialogStore.track?.uri : '', playlist.id)"
       >
         <div class="playlist">
           <div>
@@ -23,6 +23,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
+
 import { NotificationType } from "@/@types/Notification";
 import { instance } from "@/api";
 import { useDialog } from "@/components/dialog/DialogStore";
@@ -33,7 +35,6 @@ import { useSidebar } from "@/components/sidebar/SidebarStore";
 import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
 import { notification } from "@/helpers/notifications";
 import { trackAllreadyExist } from "@/helpers/playlist";
-import { computed } from "vue";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -59,7 +60,7 @@ async function add(songUri: string, playlistId: string): Promise<void> {
           : "Failed to add track.",
         type: NotificationType.Error,
       });
-      console.error("Add track error:", error);
+      if (import.meta.env.DEV) console.error("Add track error:", error);
     }
   }
 }

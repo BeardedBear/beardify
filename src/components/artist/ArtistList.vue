@@ -1,12 +1,12 @@
 <template>
-  <span :key="index" v-for="(artist, index) in artistList">
-    <span :class="{ feat }" @click.stop="goArtist(`/artist/${artist.uri.split(':').pop()}`)" class="artist">
+  <span v-for="(artist, index) in artistList" :key="index">
+    <span :class="{ feat }" class="artist" @click.stop="goArtist(`/artist/${artist.uri.split(':').pop()}`)">
       <span>{{ artist.name }}</span>
       <span class="options">
         <ArtistLinks :artist-name="artist.name" floating />
       </span>
     </span>
-    <span class="separator" v-if="artistList && artistList.length - 1 !== index">
+    <span v-if="artistList && artistList.length - 1 !== index" class="separator">
       /
       <span v-if="!feat">&nbsp;</span>
     </span>
@@ -25,9 +25,9 @@ const dialogStore = useDialog();
 defineProps<{
   artistList:
     | {
-        name: string;
-        uri: string;
-      }[]
+      name: string;
+      uri: string;
+    }[]
     | Artist[]
     | ArtistSimplified[]
     | undefined;

@@ -213,8 +213,8 @@ export const useArtist = defineStore("artist", {
         const languages = this.wikidataArtist?.wikipediaLanguages || [];
         if (languages.length > 0) {
           const browserLang = navigator.language.split("-")[0];
-          const selectedLang =
-            languages.find((l) => l.code === browserLang) || languages.find((l) => l.code === "en") || languages[0];
+          const selectedLang
+            = languages.find((l) => l.code === browserLang) || languages.find((l) => l.code === "en") || languages[0];
 
           if (selectedLang) {
             this.wikipediaLanguage = selectedLang.code;

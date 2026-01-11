@@ -1,11 +1,13 @@
 <template>
   <div class="topbar">
-    <router-link to="/"><img class="logo" src="/img/logo.svg" /></router-link>
+    <router-link to="/">
+      <img class="logo" src="/img/logo.svg" />
+    </router-link>
     <div class="navigation">
-      <ButtonIndex icon-only @click="router.go(-1)" variant="full">
+      <ButtonIndex icon-only variant="full" @click="router.go(-1)">
         <i class="icon-arrow-left" />
       </ButtonIndex>
-      <ButtonIndex icon-only @click="router.go(1)" variant="full">
+      <ButtonIndex icon-only variant="full" @click="router.go(1)">
         <i class="icon-arrow-right" />
       </ButtonIndex>
     </div>
@@ -14,9 +16,9 @@
     </ButtonIndex>
     <div>
       <div v-if="authStore.me !== null">
-        <div @click="configStore.open()" class="avatar">
+        <div class="avatar" @click="configStore.open()">
           <Cover :images="authStore.me?.images" class="avatar-image" size="large" />
-          <i class="icon icon-chevron-down"></i>
+          <i class="icon icon-chevron-down" />
         </div>
         <Config />
       </div>

@@ -11,7 +11,7 @@
           :without-release-date="withoutReleaseDate"
         />
       </div>
-      <div :key="variant.id" v-for="variant in dialogStore.albumGroup!.variants" class="album-variants-item">
+      <div v-for="variant in dialogStore.albumGroup!.variants" :key="variant.id" class="album-variants-item">
         <Album
           :album="variant"
           :can-save="canSave"

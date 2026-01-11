@@ -2,11 +2,17 @@
   <template v-if="usePlayer().playerState.track_window.current_track.id">
     <div class="surface" @click.capture="onSurfaceClick">
       <div class="meta">
-        <div class="area-metas"><What /></div>
-        <div class="area-controls"><Controls /></div>
-        <div class="area-device"><Device /></div>
+        <div class="area-metas">
+          <What />
+        </div>
+        <div class="area-controls">
+          <Controls />
+        </div>
+        <div class="area-device">
+          <Device />
+        </div>
       </div>
-      <SeekBar :clickDisable="isTouchDevice()" />
+      <SeekBar :click-disable="isTouchDevice()" />
     </div>
   </template>
   <Loader v-else />
@@ -31,8 +37,8 @@ function onSurfaceClick(event: MouseEvent): void {
   if (!target) return;
 
   // Elements that should be allowed to handle the click themselves
-  const interactiveSelector =
-    "button, a, router-link, input, textarea, select, .controls, .btns, .control-button, .area-device, .time, .progress-wrap, .progress, .seek, .bar, .album";
+  const interactiveSelector
+    = "button, a, router-link, input, textarea, select, .controls, .btns, .control-button, .area-device, .time, .progress-wrap, .progress, .seek, .bar, .album";
   if (target.closest(interactiveSelector)) return;
 
   // We're in capture phase: prevent the click from reaching target handlers

@@ -1,11 +1,11 @@
 <template>
-  <div class="frame" v-if="frameStore.show">
+  <div v-if="frameStore.show" class="frame">
     <div
       v-show="!frameStore.isMinimized"
       :class="{ 'is-closing': frameStore.isClosing }"
-      @click="frameStore.close()"
       class="bg"
-    ></div>
+      @click="frameStore.close()"
+    />
     <div
       ref="wrapperRef"
       v-motion
@@ -23,7 +23,7 @@
           <ButtonIndex size="small" @click="frameStore.close()">Close</ButtonIndex>
         </div>
       </div>
-      <iframe :class="{ 'is-closing': frameStore.isClosing }" :src="frameStore.url" border="0"></iframe>
+      <iframe :class="{ 'is-closing': frameStore.isClosing }" :src="frameStore.url" border="0" />
     </div>
   </div>
 </template>
@@ -32,9 +32,9 @@
 import { useMotion } from "@vueuse/motion";
 import { ref, watch } from "vue";
 
+import { useFrame } from "@/components/frame/FrameStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import LoadingDots from "@/components/ui/LoadingDots.vue";
-import { useFrame } from "@/components/frame/FrameStore";
 
 const frameStore = useFrame();
 const wrapperRef = ref<HTMLElement | null>(null);
@@ -44,22 +44,22 @@ const handleMinimize = (): void => {
 
   const motion = useMotion(wrapperRef.value, {
     initial: {
-      scale: 1,
       opacity: 1,
+      scale: 1,
       x: 0,
       y: 0,
     },
   });
 
   motion.apply({
-    scale: 0.1,
     opacity: 0,
-    x: -window.innerWidth / 2 + 150,
-    y: window.innerHeight / 2 - 100,
+    scale: 0.1,
     transition: {
       duration: 400,
       ease: [0.4, 0, 0.2, 1],
     },
+    x: -window.innerWidth / 2 + 150,
+    y: window.innerHeight / 2 - 100,
   });
 
   setTimeout(() => {
@@ -73,15 +73,15 @@ watch(
     if (!isMinimized && wrapperRef.value) {
       const motion = useMotion(wrapperRef.value, {});
       motion.apply({
-        scale: 1,
         opacity: 1,
+        scale: 1,
+        transition: {
+          damping: 20,
+          stiffness: 200,
+          type: "spring",
+        },
         x: 0,
         y: 0,
-        transition: {
-          type: "spring",
-          stiffness: 200,
-          damping: 20,
-        },
       });
     }
   },

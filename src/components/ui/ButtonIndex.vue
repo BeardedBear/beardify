@@ -3,28 +3,31 @@ import { computed } from "vue";
 import { type RouteLocationRaw, RouterLink } from "vue-router";
 
 export interface ButtonProps {
-  align?: "left" | "center" | "right" | "justify";
-  as?: "button" | "a" | "router-link";
+  align?: "center" | "justify" | "left" | "right";
+  as?: "a" | "button" | "router-link";
   class?: string;
   disabled?: boolean;
   href?: string;
   iconOnly?: boolean;
   noDefaultClass?: boolean;
   size?: "big" | "default" | "small" | "x-small";
-  target?: "_blank" | "_self" | "_parent" | "_top";
+  target?: "_blank" | "_parent" | "_self" | "_top";
   to?: RouteLocationRaw;
-  type?: "button" | "submit" | "reset";
-  variant?: "default" | "primary" | "nude" | "full" | "border";
+  type?: "button" | "reset" | "submit";
+  variant?: "border" | "default" | "full" | "nude" | "primary";
 }
 
 const props = withDefaults(defineProps<ButtonProps>(), {
   align: "center",
   as: "button",
+  class: "",
   disabled: false,
+  href: "",
   iconOnly: false,
   noDefaultClass: false,
   size: "default",
   target: "_self",
+  to: undefined,
   type: "button",
   variant: "default",
 });

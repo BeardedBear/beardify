@@ -3,14 +3,14 @@
     <SearchTitle title="Artists" />
     <template v-if="searchStore.artists.length">
       <router-link
+        v-for="(artist, index) in searchStore.artists"
+        :key="index"
         :class="{
           'exact-search': exactArtistSearched === artist.name.toLowerCase(),
         }"
-        :key="index"
         :to="`/artist/${artist.id}`"
-        @click="searchStore.reset()"
         class="artist"
-        v-for="(artist, index) in searchStore.artists"
+        @click="searchStore.reset()"
       >
         <Cover :images="artist.images" class="avatar" size="small" />
         <div>{{ artist.name }}</div>
