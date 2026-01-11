@@ -95,10 +95,9 @@ handleSpotifySDKErrors();
 // Check if we're on the auth callback page
 // Handle both /auth and /auth/ (with or without trailing slash)
 const isAuthCallback
-
   = window.location.pathname === RouteName.Auth
-  || window.location.pathname === RouteName.Auth.replace(/\/$/, "")
-  || window.location.pathname.startsWith("/auth");
+    || window.location.pathname === RouteName.Auth.replace(/\/$/, "")
+    || window.location.pathname.startsWith("/auth");
 
 if (isAuthCallback) {
   // If we're on the auth page, just mount the app without trying to refresh

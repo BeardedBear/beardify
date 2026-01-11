@@ -16,10 +16,9 @@
     <Player key="player" />
     <PlayerSlideUp />
     <Notification />
-
     <Frame />
     <MinimizedWindows />
-  </template>
+</template>
 </template>
 
 <script lang="ts" setup>
