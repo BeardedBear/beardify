@@ -156,12 +156,14 @@ export async function getIdsFromMusicBrainz(musicbrainzId: string): Promise<Musi
  */
 export async function searchMusicBrainzArtistId(artistName: string): Promise<MusicBrainzArtist | null> {
   const data = await fetchFromMusicBrainz<MusicBrainzArtistSearch>("artist", {
-    limit: 1,
+    limit: 10,
     query: `artist:"${artistName}"`,
   });
 
   if (data && data.artists && data.artists.length > 0) {
-    return data.artists[0];
+    const normalizedSearchName = normalizeName(artistName);
+    const filtered = data.artists.filter((artist) => normalizeName(artist.name) === normalizedSearchName);
+    return filtered[0];
   }
 
   return null;
@@ -189,4 +191,17 @@ async function fetchFromMusicBrainz<T>(
   } catch {
     return null;
   }
+}
+
+/**
+ * Normalize a string by removing punctuation but keeping accents
+ * @param str - The string to normalize
+ * @returns The normalized string
+ */
+function normalizeName(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, "") // Remove all punctuation but keep letters (with accents) and numbers
+    .replace(/\s+/g, " ") // Normalize whitespace
+    .trim();
 }
