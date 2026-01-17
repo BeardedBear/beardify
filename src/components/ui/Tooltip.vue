@@ -1,7 +1,7 @@
 <template>
   <span ref="wrapperRef" class="tooltip-wrapper">
     <slot />
-    <Teleport to="body">
+    <Teleport v-if="text" to="body">
       <transition name="tooltip" appear>
         <span
           v-if="visible"

@@ -8,14 +8,16 @@
       </span>
       <template v-if="artistMetas?.area || artistMetas?.country">
         <span class="dot desktop-only">·</span>
-        <Tooltip :text="artistMetas?.area?.name || artistMetas?.country || ''" placement="bottom">
+        <Tooltip :text="getCountry" placement="bottom">
           <img
             v-if="artistMetas?.country"
             :src="getCountryFlagUrl(artistMetas.country)"
             :alt="artistMetas?.area?.name || artistMetas?.country"
             class="country-flag"
           />
-          <strong>{{ artistMetas?.["begin-area"]?.name || artistMetas?.area?.name }}</strong>
+          <strong>
+            {{ artistMetas?.["begin-area"]?.name || artistMetas?.area?.name }}
+          </strong>
         </Tooltip>
       </template>
       <template v-if="artistMetas?.['life-span']?.begin">
@@ -48,6 +50,11 @@ import { useArtist } from "@/views/artist/ArtistStore";
 const artistStore = useArtist();
 const artistMetas = computed(() => artistStore.musicbrainzArtist);
 const artistTags = computed(() => artistMetas.value?.tags || artistStore.artist.genres);
+const getCountry = computed(() => {
+  const countryName = getCountryName(artistMetas.value?.country);
+  const artistCountry = artistMetas.value?.["begin-area"]?.name || artistMetas.value?.area?.name;
+  return countryName !== artistCountry ? countryName : "";
+});
 
 /**
  * Get flag image URL from ISO country code
@@ -70,6 +77,25 @@ function getCountryFlagUrl(countryCode: string): string {
   }
   return `/flags/${code}.svg`;
 }
+
+/**
+ * Get country name from ISO country code
+ * @param countryCode - ISO 3166-1 alpha-2 country code (e.g., "GB", "US", "FR")
+ * @returns Country name in English
+ */
+function getCountryName(countryCode: string | undefined): string {
+  if (!countryCode) {
+    return "";
+  }
+
+  const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
+  try {
+    return regionNames.of(countryCode) || countryCode;
+  } catch {
+    return countryCode;
+  }
+}
+
 </script>
 
 <style lang="scss" scoped>
