@@ -161,7 +161,8 @@ export async function searchMusicBrainzArtistId(artistName: string): Promise<Mus
   });
 
   if (data && data.artists && data.artists.length > 0) {
-    const filtered = data.artists.filter((artist) => artist.name.toLowerCase() === artistName.toLowerCase());
+    const normalizedSearchName = normalizeName(artistName);
+    const filtered = data.artists.filter((artist) => normalizeName(artist.name) === normalizedSearchName);
     return filtered[0];
   }
 
@@ -190,4 +191,17 @@ async function fetchFromMusicBrainz<T>(
   } catch {
     return null;
   }
+}
+
+/**
+ * Normalize a string by removing punctuation but keeping accents
+ * @param str - The string to normalize
+ * @returns The normalized string
+ */
+function normalizeName(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, "") // Remove all punctuation but keep letters (with accents) and numbers
+    .replace(/\s+/g, " ") // Normalize whitespace
+    .trim();
 }
