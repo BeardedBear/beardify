@@ -156,12 +156,13 @@ export async function getIdsFromMusicBrainz(musicbrainzId: string): Promise<Musi
  */
 export async function searchMusicBrainzArtistId(artistName: string): Promise<MusicBrainzArtist | null> {
   const data = await fetchFromMusicBrainz<MusicBrainzArtistSearch>("artist", {
-    limit: 1,
+    limit: 10,
     query: `artist:"${artistName}"`,
   });
 
   if (data && data.artists && data.artists.length > 0) {
-    return data.artists[0];
+    const filtered = data.artists.filter((artist) => artist.name.toLowerCase() === artistName.toLowerCase());
+    return filtered[0];
   }
 
   return null;
