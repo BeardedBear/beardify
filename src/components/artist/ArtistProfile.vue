@@ -15,7 +15,7 @@
             :alt="artistMetas?.area?.name || artistMetas?.country"
             class="country-flag"
           />
-          <strong>{{ artistMetas?.["begin-area"]?.name }}</strong>
+          <strong>{{ artistMetas?.["begin-area"]?.name || artistMetas?.area?.name }}</strong>
         </Tooltip>
       </template>
       <template v-if="artistMetas?.['life-span']?.begin">
