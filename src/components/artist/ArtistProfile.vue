@@ -6,11 +6,11 @@
           {{ typeof value === "string" ? value : value.name }}
         </span>
       </span>
-      <template v-if="artistMetas?.area || artistMetas?.country">
+      <!-- {{ artistMetas }} -->
+      <template v-if="artistMetas?.country">
         <span class="dot desktop-only">·</span>
         <Tooltip :text="getCountry" placement="bottom">
           <img
-            v-if="artistMetas?.country"
             :src="getCountryFlagUrl(artistMetas.country)"
             :alt="artistMetas?.area?.name || artistMetas?.country"
             class="country-flag"
@@ -19,6 +19,10 @@
             {{ artistMetas?.["begin-area"]?.name || artistMetas?.area?.name }}
           </strong>
         </Tooltip>
+      </template>
+      <template v-else>
+        <span class="dot desktop-only">·</span>
+        {{ artistMetas?.["begin-area"]?.name ||artistMetas?.["begin-area"]?.id || artistMetas?.area?.name }}
       </template>
       <template v-if="artistMetas?.['life-span']?.begin">
         <span class="dot">·</span>
