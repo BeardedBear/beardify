@@ -88,6 +88,20 @@ interface MusicBrainzTag {
 }
 
 /**
+ * Interface for MusicBrainz URL lookup response with artist relations
+ */
+interface MusicBrainzUrlLookup {
+  id: string;
+  relations: {
+    artist: MusicBrainzArtist;
+    direction: string;
+    "target-type": string;
+    type: string;
+  }[];
+  resource: string;
+}
+
+/**
  * Creates a MusicBrainz API client instance
  */
 const musicbrainzClient = ky.create({
@@ -112,7 +126,8 @@ export function extractExternalIds(artistFull: MusicBrainzArtist): {
   if (artistFull.relations) {
     // Extract Discogs ID
     const discogsRelation = artistFull.relations.find(
-      (rel) => rel.type === "discogs" && rel["target-type"] === "url" && rel.url,
+      (rel) =>
+        rel.type === "discogs" && rel["target-type"] === "url" && rel.url,
     );
 
     if (discogsRelation?.url) {
@@ -124,7 +139,8 @@ export function extractExternalIds(artistFull: MusicBrainzArtist): {
 
     // Extract Wikidata ID
     const wikidataRelation = artistFull.relations.find(
-      (rel) => rel.type === "wikidata" && rel["target-type"] === "url" && rel.url,
+      (rel) =>
+        rel.type === "wikidata" && rel["target-type"] === "url" && rel.url,
     );
 
     if (wikidataRelation?.url) {
@@ -143,18 +159,22 @@ export function extractExternalIds(artistFull: MusicBrainzArtist): {
  * @param musicbrainzId - The MusicBrainz ID of the artist
  * @returns Promise resolving to the MusicBrainzArtist object with relations, or null
  */
-export async function getIdsFromMusicBrainz(musicbrainzId: string): Promise<MusicBrainzArtist | null> {
+export async function getIdsFromMusicBrainz(
+  musicbrainzId: string,
+): Promise<MusicBrainzArtist | null> {
   return fetchFromMusicBrainz<MusicBrainzArtist>(`artist/${musicbrainzId}`, {
     inc: "url-rels",
   });
 }
 
 /**
- * Search for an artist by name in MusicBrainz
+ * Search for an artist by name in MusicBrainz (fallback when Spotify URL lookup fails)
  * @param artistName - The name of the artist to search for
  * @returns Promise resolving to the first matching MusicBrainzArtist or null
  */
-export async function searchMusicBrainzArtistId(artistName: string): Promise<MusicBrainzArtist | null> {
+export async function searchMusicBrainzArtistId(
+  artistName: string,
+): Promise<MusicBrainzArtist | null> {
   const data = await fetchFromMusicBrainz<MusicBrainzArtistSearch>("artist", {
     limit: 10,
     query: `artist:"${artistName}"`,
@@ -162,8 +182,34 @@ export async function searchMusicBrainzArtistId(artistName: string): Promise<Mus
 
   if (data && data.artists && data.artists.length > 0) {
     const normalizedSearchName = normalizeName(artistName);
-    const filtered = data.artists.filter((artist) => normalizeName(artist.name) === normalizedSearchName);
+    const filtered = data.artists.filter(
+      (artist) => normalizeName(artist.name) === normalizedSearchName,
+    );
     return filtered[0];
+  }
+
+  return null;
+}
+
+/**
+ * Search for an artist by Spotify ID via MusicBrainz URL lookup.
+ * This avoids homonym issues by matching the exact Spotify URL relationship.
+ * @param spotifyId - The Spotify artist ID
+ * @returns Promise resolving to the MusicBrainzArtist or null
+ */
+export async function searchMusicBrainzBySpotifyId(
+  spotifyId: string,
+): Promise<MusicBrainzArtist | null> {
+  const data = await fetchFromMusicBrainz<MusicBrainzUrlLookup>("url", {
+    inc: "artist-rels",
+    resource: `https://open.spotify.com/artist/${spotifyId}`,
+  });
+
+  if (data?.relations?.length) {
+    const artistRel = data.relations.find(
+      (rel) => rel["target-type"] === "artist",
+    );
+    if (artistRel?.artist) return artistRel.artist;
   }
 
   return null;
