@@ -1,13 +1,27 @@
 import { defineStore } from "pinia";
 
 import { AlbumSimplified } from "@/@types/Album";
-import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "@/@types/Artist";
+import {
+  Artist,
+  ArtistPage,
+  ArtistTopTracks,
+  RelatedArtists,
+} from "@/@types/Artist";
 import { defaultArtist } from "@/@types/Defaults";
 import { Paging } from "@/@types/Paging";
 import { instance } from "@/api";
-import { getDiscogsArtist, getDiscogsArtistReleases, processDiscogsReleases } from "@/helpers/discogs";
+import {
+  getDiscogsArtist,
+  getDiscogsArtistReleases,
+  processDiscogsReleases,
+} from "@/helpers/discogs";
 import { normalizeString } from "@/helpers/helper";
-import { extractExternalIds, getIdsFromMusicBrainz, searchMusicBrainzArtistId } from "@/helpers/musicbrainz";
+import {
+  extractExternalIds,
+  getIdsFromMusicBrainz,
+  searchMusicBrainzArtistId,
+  searchMusicBrainzBySpotifyId,
+} from "@/helpers/musicbrainz";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { cleanUrl } from "@/helpers/urls";
 import { isEP, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
@@ -36,9 +50,12 @@ export const useArtist = defineStore("artist", {
     async getAlbums(url: string) {
       try {
         const cleanedUrl = cleanUrl(url);
-        const { data } = await instance().get<Paging<AlbumSimplified>>(cleanedUrl);
+        const { data }
+          = await instance().get<Paging<AlbumSimplified>>(cleanedUrl);
 
-        const frenchMarketAlbums = data.items.filter((album) => album.available_markets.includes("FR"));
+        const frenchMarketAlbums = data.items.filter((album) =>
+          album.available_markets.includes("FR"),
+        );
 
         const lives: AlbumSimplified[] = [];
         const albums: AlbumSimplified[] = [];
@@ -52,7 +69,10 @@ export const useArtist = defineStore("artist", {
         });
 
         this.albums = removeDuplicatesAlbums([...this.albums, ...albums]);
-        this.albumsLive = removeDuplicatesAlbums([...this.albumsLive, ...lives]);
+        this.albumsLive = removeDuplicatesAlbums([
+          ...this.albumsLive,
+          ...lives,
+        ]);
 
         if (data.next) await this.getAlbums(data.next);
       } catch {
@@ -65,8 +85,8 @@ export const useArtist = defineStore("artist", {
         const { data } = await instance().get<Artist>(`artists/${artistId}`);
         this.artist = data;
 
-        // Fetch external IDs and data
-        await this.getIds(data.name);
+        // Fetch external IDs and data (Spotify ID used for exact MusicBrainz match)
+        await this.getIds(data.name, data.id);
 
         if (this.wikidataId) {
           this.getWikidataArtist(this.wikidataId);
@@ -103,21 +123,27 @@ export const useArtist = defineStore("artist", {
 
     async getFollowStatus(artistId: string) {
       try {
-        const { data } = await instance().get<boolean[]>(`me/following/contains?type=artist&ids=${artistId}`);
+        const { data } = await instance().get<boolean[]>(
+          `me/following/contains?type=artist&ids=${artistId}`,
+        );
         this.followStatus = data[0] ?? false;
       } catch {
         // silent fail
       }
     },
 
-    async getIds(artistName: string) {
+    async getIds(artistName: string, spotifyId?: string) {
       this.musicbrainzArtist = null;
       this.discogsId = null;
       this.wikidataId = null;
       this.wikidataArtist = null;
       this.wikipediaExtract = null;
       try {
-        const artist = await searchMusicBrainzArtistId(artistName);
+        // Try exact match via Spotify URL, fallback to name search
+        const artist = spotifyId
+          ? ((await searchMusicBrainzBySpotifyId(spotifyId))
+            ?? (await searchMusicBrainzArtistId(artistName)))
+          : await searchMusicBrainzArtistId(artistName);
 
         if (!artist?.id) return;
 
@@ -153,7 +179,9 @@ export const useArtist = defineStore("artist", {
 
     async getRelatedArtists(artistId: string) {
       try {
-        const { data } = await instance().get<RelatedArtists>(`artists/${artistId}/related-artists`);
+        const { data } = await instance().get<RelatedArtists>(
+          `artists/${artistId}/related-artists`,
+        );
         this.relatedArtists.artists = data.artists.slice(0, 15);
       } catch {
         // silent fail
@@ -188,7 +216,10 @@ export const useArtist = defineStore("artist", {
         this.singles = removeDuplicatesAlbums(onlySingles);
         this.eps = removeDuplicatesAlbums(onlyEps);
         if (albumsToMove.length > 0) {
-          this.albums = removeDuplicatesAlbums([...this.albums, ...albumsToMove]);
+          this.albums = removeDuplicatesAlbums([
+            ...this.albums,
+            ...albumsToMove,
+          ]);
         }
       } catch {
         // silent fail
@@ -197,7 +228,9 @@ export const useArtist = defineStore("artist", {
 
     async getTopTracks(artistId: string) {
       try {
-        const { data } = await instance().get<ArtistTopTracks>(`artists/${artistId}/top-tracks?market=FR`);
+        const { data } = await instance().get<ArtistTopTracks>(
+          `artists/${artistId}/top-tracks?market=FR`,
+        );
         this.topTracks = data;
       } catch {
         // silent fail
@@ -214,7 +247,9 @@ export const useArtist = defineStore("artist", {
         if (languages.length > 0) {
           const browserLang = navigator.language.split("-")[0];
           const selectedLang
-            = languages.find((l) => l.code === browserLang) || languages.find((l) => l.code === "en") || languages[0];
+            = languages.find((l) => l.code === browserLang)
+              || languages.find((l) => l.code === "en")
+              || languages[0];
 
           if (selectedLang) {
             this.wikipediaLanguage = selectedLang.code;
