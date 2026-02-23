@@ -10,11 +10,8 @@
       <template v-if="artistMetas?.country">
         <span class="dot desktop-only">·</span>
         <Tooltip :text="getCountry" placement="bottom">
-          <img
-            :src="getCountryFlagUrl(artistMetas.country)"
-            :alt="artistMetas?.area?.name || artistMetas?.country"
-            class="country-flag"
-          />
+          <img :src="getCountryFlagUrl(artistMetas.country)" :alt="artistMetas?.area?.name || artistMetas?.country"
+            class="country-flag" />
           <strong>
             {{ artistMetas?.["begin-area"]?.name || artistMetas?.area?.name }}
           </strong>
@@ -22,7 +19,7 @@
       </template>
       <template v-else>
         <span class="dot desktop-only">·</span>
-        {{ artistMetas?.["begin-area"]?.name ||artistMetas?.["begin-area"]?.id || artistMetas?.area?.name }}
+        {{ artistMetas?.["begin-area"]?.name || artistMetas?.["begin-area"]?.id || artistMetas?.area?.name }}
       </template>
       <template v-if="artistMetas?.['life-span']?.begin">
         <span class="dot">·</span>
