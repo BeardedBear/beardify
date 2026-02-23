@@ -1,12 +1,16 @@
 <template>
   <div class="profile-container">
     <div class="profile-wrapper" :class="{ visible: artistMetas }">
-      <span v-if="artistTags && artistTags.length > 0" class="tag-list">
-        <span v-for="(value, index) in artistTags.slice(0, 5)" :key="index" class="tag">
-          {{ typeof value === "string" ? value : value.name }}
+      <template v-if="artistTags && artistTags.length > 0">
+        <span class="tag-list">
+          <span v-for="(value, index) in artistTags.slice(0, 5)" :key="index" class="tag">
+            {{ typeof value === "string" ? value : value.name }}
+          </span>
         </span>
-      </span>
-      <!-- {{ artistMetas }} -->
+      </template>
+      <template v-else-if="artistMetas?.disambiguation">
+        <span class="disambiguation">{{ artistMetas.disambiguation }}</span>
+      </template>
       <template v-if="artistMetas?.country">
         <span class="dot desktop-only">·</span>
         <Tooltip :text="getCountry" placement="bottom">
@@ -17,9 +21,9 @@
           </strong>
         </Tooltip>
       </template>
-      <template v-else>
+      <template v-else-if="artistMetas?.['begin-area']?.name || artistMetas?.area?.name">
         <span class="dot desktop-only">·</span>
-        {{ artistMetas?.["begin-area"]?.name || artistMetas?.["begin-area"]?.id || artistMetas?.area?.name }}
+        {{ artistMetas?.["begin-area"]?.name || artistMetas?.area?.name }}
       </template>
       <template v-if="artistMetas?.['life-span']?.begin">
         <span class="dot">·</span>
@@ -96,6 +100,10 @@ $transition-duration: 0.2s;
   @include responsive.mobile {
     margin: 0 0.25rem 0.25rem 0;
   }
+}
+
+.disambiguation {
+  opacity: 0.6;
 }
 
 .dot {
