@@ -168,13 +168,13 @@ export async function getIdsFromMusicBrainz(
 }
 
 /**
- * Search for an artist by name in MusicBrainz (fallback when Spotify URL lookup fails)
+ * Search for artists by name in MusicBrainz
  * @param artistName - The name of the artist to search for
- * @returns Promise resolving to the first matching MusicBrainzArtist or null
+ * @returns Promise resolving to all matching MusicBrainzArtist with the same name, or empty array
  */
 export async function searchMusicBrainzArtistId(
   artistName: string,
-): Promise<MusicBrainzArtist | null> {
+): Promise<MusicBrainzArtist[]> {
   const data = await fetchFromMusicBrainz<MusicBrainzArtistSearch>("artist", {
     limit: 10,
     query: `artist:"${artistName}"`,
@@ -182,13 +182,12 @@ export async function searchMusicBrainzArtistId(
 
   if (data && data.artists && data.artists.length > 0) {
     const normalizedSearchName = normalizeName(artistName);
-    const filtered = data.artists.filter(
+    return data.artists.filter(
       (artist) => normalizeName(artist.name) === normalizedSearchName,
     );
-    return filtered[0];
   }
 
-  return null;
+  return [];
 }
 
 /**

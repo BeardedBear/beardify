@@ -139,11 +139,15 @@ export const useArtist = defineStore("artist", {
       this.wikidataArtist = null;
       this.wikipediaExtract = null;
       try {
-        // Try exact match via Spotify URL, fallback to name search
-        const artist = spotifyId
-          ? ((await searchMusicBrainzBySpotifyId(spotifyId))
-            ?? (await searchMusicBrainzArtistId(artistName)))
-          : await searchMusicBrainzArtistId(artistName);
+        // Search by name first; if multiple homonyms found and Spotify ID available,
+        // use Spotify URL lookup for exact match
+        const nameResults = await searchMusicBrainzArtistId(artistName);
+        const artist
+          = nameResults.length === 1
+            ? nameResults[0]
+            : nameResults.length > 1 && spotifyId
+              ? ((await searchMusicBrainzBySpotifyId(spotifyId)) ?? nameResults[0])
+              : nameResults[0] ?? null;
 
         if (!artist?.id) return;
 
