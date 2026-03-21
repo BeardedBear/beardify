@@ -206,9 +206,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   grid-template-rows: 1fr auto;
-  height: 100vh;
+  height: 100dvh;
   line-height: 1.4;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
   text-rendering: optimizelegibility;
 }
