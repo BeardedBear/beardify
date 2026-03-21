@@ -1,19 +1,14 @@
 <template>
   <div v-if="frameStore.show" class="frame">
     <div
-      v-show="!frameStore.isMinimized"
-      :class="{ 'is-closing': frameStore.isClosing }"
-      class="bg"
+v-show="!frameStore.isMinimized" :class="{ 'is-closing': frameStore.isClosing }" class="bg"
       @click="frameStore.close()"
-    />
+/>
     <div
-      ref="wrapperRef"
-      v-motion
-      :initial="{ scale: 0.8, opacity: 0, y: 50 }"
+ref="wrapperRef" v-motion :initial="{ scale: 0.8, opacity: 0, y: 50 }"
       :enter="{ scale: 1, opacity: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 20 } }"
-      :class="{ minimized: frameStore.isMinimized }"
-      class="iframe-wrap"
-    >
+      :class="{ minimized: frameStore.isMinimized }" class="iframe-wrap"
+>
       <LoadingDots class="load" />
       <div class="head">
         <div>{{ frameStore.siteName }}</div>
@@ -167,7 +162,7 @@ iframe {
   animation: pop-bg 0.2s ease both;
   border: 0;
   border-radius: 10px;
-  height: 80vh;
+  height: 80dvh;
   width: 80vw;
 
   &.is-closing {
