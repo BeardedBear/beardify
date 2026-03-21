@@ -3,23 +3,15 @@
     <div :class="gridClass" class="album-variants-grid">
       <div class="album-variants-item">
         <Album
-          :album="dialogStore.albumGroup!.baseAlbum"
-          :can-save="canSave"
-          :cover-size="coverSize"
-          :with-artists="withArtists"
-          :without-metas="withoutMetas"
-          :without-release-date="withoutReleaseDate"
-        />
+:album="dialogStore.albumGroup!.baseAlbum" :can-save="canSave" :cover-size="coverSize"
+          :with-artists="withArtists" :without-metas="withoutMetas" :without-release-date="withoutReleaseDate"
+/>
       </div>
       <div v-for="variant in dialogStore.albumGroup!.variants" :key="variant.id" class="album-variants-item">
         <Album
-          :album="variant"
-          :can-save="canSave"
-          :cover-size="coverSize"
-          :with-artists="withArtists"
-          :without-metas="withoutMetas"
-          :without-release-date="withoutReleaseDate"
-        />
+:album="variant" :can-save="canSave" :cover-size="coverSize" :with-artists="withArtists"
+          :without-metas="withoutMetas" :without-release-date="withoutReleaseDate"
+/>
       </div>
     </div>
   </DialogWrap>
@@ -72,7 +64,7 @@ const gridClass = computed(() => {
   }
 
   &.grid-large {
-    max-height: 80vh;
+    max-height: 80dvh;
     max-width: 90vw;
     overflow-y: auto;
     width: 70rem;

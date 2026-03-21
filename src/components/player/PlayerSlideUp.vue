@@ -18,10 +18,9 @@
                 </p>
                 <p v-if="currentTrack?.album?.name" class="album">
                   <router-link
-                    :to="`/album/${transformUriToid(currentTrack.album.uri)}`"
-                    class="link"
+:to="`/album/${transformUriToid(currentTrack.album.uri)}`" class="link"
                     @click="playerStore.closePanel"
-                  >
+>
                     {{ currentTrack?.album?.name }}
                   </router-link>
                 </p>
@@ -83,7 +82,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
     bottom: 0;
     box-shadow: 0 -1rem 3rem rgb(0 0 0);
     left: 0;
-    max-height: 92vh;
+    max-height: 92dvh;
     overflow: auto;
     padding: 2rem;
     position: absolute;

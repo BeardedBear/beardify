@@ -1,19 +1,14 @@
 <template>
   <div v-if="dialogStore.show" class="dialog">
     <div
-      v-show="!dialogStore.isMinimized"
-      :class="{ 'is-closing': dialogStore.isClosing }"
-      class="bg"
+v-show="!dialogStore.isMinimized" :class="{ 'is-closing': dialogStore.isClosing }" class="bg"
       @click="dialogStore.close()"
-    />
+/>
     <div
-      ref="wrapperRef"
-      v-motion
-      :initial="{ scale: 0.8, opacity: 0, y: 30 }"
+ref="wrapperRef" v-motion :initial="{ scale: 0.8, opacity: 0, y: 30 }"
       :enter="{ scale: 1, opacity: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 20 } }"
-      :class="{ 'is-closing': dialogStore.isClosing, big, minimized: dialogStore.isMinimized }"
-      class="wrapper"
-    >
+      :class="{ 'is-closing': dialogStore.isClosing, big, minimized: dialogStore.isMinimized }" class="wrapper"
+>
       <div v-if="preContent" class="pre-content">
         <slot name="pre-content" />
       </div>
@@ -255,8 +250,8 @@ $radius: 2rem;
   overflow: auto;
 
   &.big {
-    height: 80vh;
-    max-height: 80vh;
+    height: 80dvh;
+    max-height: 80dvh;
     max-width: 90vw;
     width: 70rem;
   }
