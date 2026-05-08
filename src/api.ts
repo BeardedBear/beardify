@@ -101,59 +101,49 @@ export function instance(): ApiInstance {
   };
 }
 
+// Module-level state shared across all instance() calls to prevent concurrent refresh attempts
+let isRefreshing = false;
+let refreshAttempts = 0;
+const MAX_REFRESH_ATTEMPTS = 3;
+
 /**
  * Creates a base ky instance with authentication and common configuration
  * @returns Configured ky instance
  */
 function createKyInstance(): typeof ky {
   const authStore = useAuth();
-  let isRefreshing = false;
-  let refreshAttempts = 0;
-  const MAX_REFRESH_ATTEMPTS = 3; // Increased to 3 attempts to keep session alive
 
   return http.extend({
+    baseUrl: api.url,
     headers: {
       Authorization: `Bearer ${authStore.accessToken}`,
       "Content-Type": "application/json",
     },
     hooks: {
       afterResponse: [
-        async (_input, _options, response): Promise<void> => {
-          // Gérer les erreurs 401 (Unauthorized) en tentant de rafraîchir le token
+        async ({ response }): Promise<void> => {
           if (response.status === 401 && !isRefreshing && refreshAttempts < MAX_REFRESH_ATTEMPTS) {
             isRefreshing = true;
             refreshAttempts++;
             try {
-              // Tenter de rafraîchir le token
               await authStore.refresh();
               isRefreshing = false;
-              // Reset attempts counter on success
               refreshAttempts = 0;
-              // Le token a été rafraîchi, on recharge la page pour que les requêtes utilisent le nouveau token
-              window.location.reload();
+              // No page reload — future instance() calls read the updated token from the store
             } catch {
               isRefreshing = false;
-              // Only redirect to login after all attempts are exhausted
               if (refreshAttempts >= MAX_REFRESH_ATTEMPTS) {
-                // Le refresh a échoué après plusieurs tentatives
                 refreshAttempts = 0;
                 clearAuthData();
-
-                // Save the current path before redirecting
                 const currentPath = window.location.pathname;
                 if (currentPath !== "/login/") {
                   window.location.href = `/login/?ref=${encodeURIComponent(currentPath)}`;
-                } else {
-                  window.location.href = "/login/";
                 }
               }
-              // If not all attempts used, just let the request fail and user can retry
             }
           }
         },
       ],
     },
-
-    prefixUrl: api.url,
   });
 }

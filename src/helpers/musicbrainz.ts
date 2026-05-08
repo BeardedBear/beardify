@@ -105,7 +105,7 @@ interface MusicBrainzUrlLookup {
  * Creates a MusicBrainz API client instance
  */
 const musicbrainzClient = ky.create({
-  prefixUrl: MUSICBRAINZ_API_URL,
+  baseUrl: MUSICBRAINZ_API_URL,
   retry: {
     limit: 1,
     statusCodes: [429, 503],

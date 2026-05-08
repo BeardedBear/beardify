@@ -164,6 +164,9 @@ const createPlayer = (): Spotify.Player => {
         msg: "Lost connection to Spotify",
         type: NotificationType.Warning,
       });
+      setTimeout(() => {
+        player.connect().catch(() => {});
+      }, 5000);
     });
 
     // Connection strategy with progressive retries

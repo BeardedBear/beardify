@@ -156,7 +156,6 @@ export const usePlayer = defineStore("player", {
     },
 
     async getDeviceList(): Promise<void> {
-      this.devices.list = [];
       const { data } = await instance().get<DevicesResponse>("me/player/devices");
       const activeDevice = data.devices.find((device): boolean => device.is_active);
       this.devices.list = data.devices;
@@ -165,14 +164,13 @@ export const usePlayer = defineStore("player", {
         this.devices.activeDevice = activeDevice;
       } else if (activeDevice?.is_active) {
         this.devices.activeDevice = activeDevice;
-      } else {
+      } else if (this.thisDeviceId) {
         this.setDevice(this.thisDeviceId);
       }
       this.startDeviceHeartbeat();
     },
 
     async getExternalPlayerState(): Promise<void> {
-      this.playerState = defaultPlaybackState;
       const { data } = await instance().get<CurrentlyPlaying>("me/player");
       if (!data.item) return;
       const { item } = data;
@@ -272,7 +270,7 @@ export const usePlayer = defineStore("player", {
     },
 
     startDeviceHeartbeat(): void {
-      this.stopDeviceHeartbeat();
+      if (this.heartbeatInterval !== null) return;
 
       this.heartbeatInterval = window.setInterval((): void => {
         // If we have an active device, attempt to KEEP it active by sending a lightweight PUT

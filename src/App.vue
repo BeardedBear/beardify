@@ -60,17 +60,10 @@ if (!navigator.userAgent.includes("Macintosh")) {
   })();
 }
 
-// Keep token active - store interval ID for cleanup
-// Refresh every 20 minutes for safety margin (tokens expire after 1 hour)
-const tokenRefreshInterval = setInterval(async () => {
-  try {
-    await authStore.refresh();
-  } catch {
-    // silent keep-alive failure
-  }
-}, 1_200_000); // 20 minutes
+// Token auto-refresh is handled by AuthStore.startAutoRefresh() called in main.ts.
+// No duplicate interval here.
 
-// Keep device active every 5 minutes - store interval ID for cleanup
+// Keep device list fresh every 5 minutes
 const deviceRefreshInterval = setInterval(async () => {
   try {
     await usePlayer().getDeviceList();
@@ -83,46 +76,36 @@ const deviceRefreshInterval = setInterval(async () => {
 // This handles cases where the user closes the laptop, switches tabs for a long time, etc.
 const handleVisibilityChange = async (): Promise<void> => {
   if (!document.hidden) {
-    // Check if we need to refresh the token based on time elapsed
     const lastRefresh = localStorage.getItem("spotify_token_last_refresh");
     const now = Date.now();
-    const REFRESH_THRESHOLD = 15 * 60 * 1000; // 15 minutes (safety margin before 20min interval)
+    const REFRESH_THRESHOLD = 15 * 60 * 1000; // 15 minutes
 
     if (!lastRefresh || now - parseInt(lastRefresh) > REFRESH_THRESHOLD) {
-      // Token needs refresh
-      let retries = 3; // Multiple attempts to keep the session alive
+      let retries = 3;
       while (retries > 0) {
         try {
           await authStore.refresh();
-          await usePlayer().getDeviceList();
-          break; // Success, exit retry loop
+          break;
         } catch {
           retries--;
           if (retries > 0) {
-            // Wait a bit before retrying (exponential backoff)
-            await new Promise((resolve) =>
-              setTimeout(resolve, 2000 * (4 - retries)),
-            );
+            await new Promise((resolve) => setTimeout(resolve, 2000 * (4 - retries)));
           }
-          // If all retries fail, the API error handler will eventually redirect to login
         }
       }
-    } else {
-      // Token is still fresh, just refresh device list
-      try {
-        await usePlayer().getDeviceList();
-      } catch {
-        // silent
-      }
+    }
+
+    try {
+      await usePlayer().getDeviceList();
+    } catch {
+      // silent
     }
   }
 };
 
 document.addEventListener("visibilitychange", handleVisibilityChange);
 
-// Cleanup intervals and event listeners when app is unmounted
 onBeforeUnmount(() => {
-  clearInterval(tokenRefreshInterval);
   clearInterval(deviceRefreshInterval);
   document.removeEventListener("visibilitychange", handleVisibilityChange);
 });

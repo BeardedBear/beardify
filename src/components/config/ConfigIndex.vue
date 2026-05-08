@@ -48,7 +48,7 @@ import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { notification } from "@/helpers/notifications";
 import { useAuth } from "@/views/auth/AuthStore";
 
-const env = process.env.NODE_ENV;
+const env = import.meta.env.MODE;
 const authStore = useAuth();
 const configStore = useConfig();
 const domConfig = ref<HTMLElement | null>(null);

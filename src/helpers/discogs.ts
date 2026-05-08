@@ -39,11 +39,11 @@ const TEXT_FORMATS: Array<{ pattern: RegExp; replacement: string }> = [
  * Creates a Discogs API client instance
  */
 const discogsClient = ky.create({
+  baseUrl: DISCOGS_API_URL,
   headers: {
     Authorization: `Discogs token=${DISCOGS_TOKEN}`,
     "User-Agent": USER_AGENT,
   },
-  prefixUrl: DISCOGS_API_URL,
   retry: {
     limit: 1,
     statusCodes: [429, 503],
