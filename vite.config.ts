@@ -1,4 +1,6 @@
 import vue from "@vitejs/plugin-vue";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
@@ -16,6 +18,21 @@ export default defineConfig({
         },
       ],
     }),
+    {
+      configureServer(server): void {
+        server.middlewares.use("/flags/", (req, res, next) => {
+          try {
+            const file = resolve("node_modules/flag-icons/flags/4x3", req.url?.slice(1) ?? "");
+            const content = readFileSync(file);
+            res.setHeader("Content-Type", "image/svg+xml");
+            res.end(content);
+          } catch {
+            next();
+          }
+        });
+      },
+      name: "flag-icons-dev",
+    },
   ],
   resolve: {
     alias: {
