@@ -1,5 +1,6 @@
 import ky from "ky";
 
+export const BEARDIFY_USER_AGENT = "Beardify/1.0.0 (https://github.com/BeardedBear/beardify)";
 export const DEFAULT_TIMEOUT_MS = 5000;
 export const DEFAULT_RETRY_LIMIT = 3;
 export const DEFAULT_RETRY_METHODS = ["get", "put", "delete", "patch", "post"];

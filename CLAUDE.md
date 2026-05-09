@@ -10,32 +10,35 @@ Beardify is a custom Spotify web client built with Vue 3 + TypeScript that enhan
 
 - **Vue 3** with Composition API and `<script setup>` syntax
 - **TypeScript** (strict mode)
-- **Vite** for build/dev server
+- **Vite 8** for build/dev server
 - **Pinia** for state management with persistence
 - **SCSS** with CSS custom properties for theming
+- **ky v2** for HTTP requests (via `instance()` helper)
 - **Spotify Web API + Web Playback SDK**
 
 ## Essential Commands
 
 ```bash
 # Development
-npm run dev           # Start dev server (port 3000)
-npm run lint          # Run all linting (TypeScript + ESLint + Stylelint)
-npm run fix           # Auto-fix all linting issues
-npm run build         # Build for production (includes linting)
-npm run preview       # Preview production build
+bun run dev           # Start dev server (port 3000)
+bun run lint          # Run all linting (TypeScript + ESLint + Stylelint)
+bun run fix           # Auto-fix all linting issues
+bun run build         # Build for production (includes linting)
+bun run preview       # Preview production build
 ```
 
-**Always run `npm run lint` before committing changes.**
+**Always run `bun run lint` before committing changes.**
 
 ## General agent guidance
 
 These guidelines apply to all AI agents working on this repository:
 
 - Follow project conventions: Vue 3 Composition API, `<script setup>`, TypeScript strict mode, scoped styles, alphabetical import ordering, and Unix (LF) line endings.
-- Always run `npm run lint` and fix reported issues before committing.
-- Use the `instance()` helper from `src/api.ts` for all Spotify Web API calls (do not call `ky` directly).
+- Always run `bun run lint` and fix reported issues before committing.
+- Use the `instance()` helper from `src/api.ts` for all Spotify Web API calls (do not call `ky` directly). Exception: `discogs.ts` and external APIs use `ky` or `http` directly because they target non-Spotify endpoints.
 - Use `notification()` helper for user-facing messages and errors.
+- Use `sleep()` from `src/helpers/sleep.ts` for async delays — do not inline `new Promise(resolve => setTimeout(resolve, ms))`.
+- Use `BEARDIFY_USER_AGENT` from `src/helpers/http.ts` as the User-Agent header for external API calls.
 - The `#Collection` naming convention is core business logic. Do not change Collection-related behavior without explicit approval from the maintainers.
 - Do not commit secrets, credentials, or environment variables into the repository.
 - Follow the commit message format in "Commit message formatting (Conventional Commits)" below.
@@ -61,7 +64,7 @@ Examples:
 - `chore(deps): bump pinia to 2.0.0`
 
 Best practices:
-- Run `npm run lint` before committing
+- Run `bun run lint` before committing
 - Prefer "Squash and merge" for pull requests to keep history clean; use the PR title (following the spec) as the commit message when squashing
 - When introducing breaking changes, add `BREAKING CHANGE: ...` in the footer and describe the impact
 
@@ -116,7 +119,7 @@ Uses CSS custom properties with consistent naming:
 - **HTML whitespace**: Ignored in Vue templates (template whitespace rules are deliberately permissive)
 - **Tab width**: 2 spaces (enforced via `indent`; JSON/YAML files maintain 2 spaces)
 
-**Note**: Prettier has been removed from the project; formatting is now enforced via ESLint stylistic rules. Use `npm run fix` to auto-fix JS/TS/Vue and SCSS style issues.
+**Note**: Prettier has been removed from the project; formatting is now enforced via ESLint stylistic rules. Use `bun run fix` to auto-fix JS/TS/Vue and SCSS style issues.
 
 ### Stylelint Configuration
 
@@ -125,6 +128,29 @@ Uses CSS custom properties with consistent naming:
 - **Declaration order**: Custom properties first, then declarations
 - **SCSS support**: Full SCSS syntax support with `stylelint-scss` plugin
 - **Ignores**: `/public/` directory excluded
+
+## Player Architecture
+
+### Optimistic Updates
+
+Player controls update state immediately before the API call completes, then revert on failure. This eliminates visual latency.
+
+- `play()` / `pause()` / `next()`: set `playerState.paused` immediately
+- `seek()`: set `currentlyPlaying.progress_ms` and `playerState.position` before `await`
+- `toggleShuffle()` / `toggleRepeat()`: update state immediately, revert on API failure or `!ok`
+- Volume: `DeviceVolume.vue` sets `volume_percent` optimistically; `setVolume()` sets `volumeLockUntil = Date.now() + VOLUME_LOCK_DURATION_MS` to block the external polling from overwriting the value while the API call is in-flight
+
+### Loading Watchdog
+
+`PlayerIndex.vue` watches `playerState.track_window.current_track.id`. If it stays null for 5 seconds while no device switch is in progress (`!isSettingDevice`), it calls `getExternalPlayerState()` to force-recover from stuck loading states (e.g. SDK stall after device switch).
+
+### Device Heartbeat
+
+`startDeviceHeartbeat()` runs every 4 minutes to keep the active device alive. It pings the SDK, checks the device list, and calls `setDevice()` if the active device disappears. Consecutive failures increment `heartbeatFailureCount`; after 3 failures it notifies the user and attempts reconnection (with a 5-minute cooldown on repeat notifications).
+
+### Device Switching State Machine
+
+`setDevice()` queues requests via `lastRequestedDeviceId` — if a switch is already in progress (`isSettingDevice = true`), the new target is stored and picked up by `_finalizeDeviceSwitch()` when the current switch completes. `_executeDeviceSwitch()` resets `playerState` to `defaultPlaybackState` while switching, then the loading watchdog recovers if the SDK never fires.
 
 ## Spotify Integration
 
@@ -137,6 +163,12 @@ Uses CSS custom properties with consistent naming:
 ### Collections System
 
 The core feature: playlists with "#Collection" in the name are treated as album collections, providing functionality not available in the official Spotify client.
+
+## Static Assets
+
+Flag SVG files (`flag-icons` package) are served via:
+- **Dev**: Vite middleware in `vite.config.ts` serves `/flags/*.svg` from `node_modules/flag-icons/flags/4x3/`
+- **Prod**: `vite-plugin-static-copy` + explicit `cp` in `netlify.toml` build command copy files to `dist/flags/`
 
 ## Important Notes
 

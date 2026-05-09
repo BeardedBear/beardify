@@ -17,22 +17,16 @@ import {
   setRepeatState,
   setShuffleState,
 } from "@/helpers/player";
+import { sleep } from "@/helpers/sleep";
 import { createSpotifyPlayer } from "@/spotify";
 
-// Heartbeat interval in milliseconds (4 minutes)
 const HEARTBEAT_INTERVAL = 4 * 60 * 1000;
-
-// Device switching configuration
 const DEVICE_SWITCH_TIMEOUT_MS = 15_000;
 const ACTIVATION_DELAY_MS = 200;
 const RETRY_DELAY_MS = 300;
-
-// Heartbeat failure handling
-const HEARTBEAT_FAILURE_THRESHOLD = 3; // number of consecutive failures before notifying
-const HEARTBEAT_FAILURE_NOTIFY_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes cooldown between repeated notifications
-
-/** Helper function for async delays */
-const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+const HEARTBEAT_FAILURE_THRESHOLD = 3;
+const HEARTBEAT_FAILURE_NOTIFY_COOLDOWN_MS = 5 * 60 * 1000;
+const VOLUME_LOCK_DURATION_MS = 2000;
 
 export const usePlayer = defineStore("player", {
   actions: {
@@ -264,7 +258,7 @@ export const usePlayer = defineStore("player", {
     },
 
     async setVolume(volume: number): Promise<void> {
-      this.volumeLockUntil = Date.now() + 2000;
+      this.volumeLockUntil = Date.now() + VOLUME_LOCK_DURATION_MS;
       await instance().put(`me/player/volume?volume_percent=${Math.round(volume)}`);
       // Persist the volume for the current device so we can restore it later
       try {

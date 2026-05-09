@@ -1,12 +1,6 @@
-import { http } from "@/helpers/http";
+import { BEARDIFY_USER_AGENT, http } from "@/helpers/http";
 
-/**
- * Wikidata API configuration
- * No authentication required for read-only access, only User-Agent is required
- * See: https://www.wikidata.org/wiki/Wikidata:REST_API/Authentication
- */
 const WIKIDATA_ENTITY_URL = "https://www.wikidata.org/wiki/Special:EntityData/";
-const USER_AGENT = "Beardify/1.0.0 (https://github.com/BeardedBear/beardify)";
 
 /**
  * Wikidata property IDs for music-related data
@@ -297,7 +291,7 @@ function getLanguageDisplayName(code: string): string {
  */
 const wikidataClient = http.extend({
   headers: {
-    "User-Agent": USER_AGENT,
+    "User-Agent": BEARDIFY_USER_AGENT,
   },
   retry: {
     limit: 1,

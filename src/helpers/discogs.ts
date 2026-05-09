@@ -1,14 +1,11 @@
 import ky from "ky";
 
 import { DiscogsArtist, DiscogsArtistReleasesResponse, DiscogsRelease } from "@/@types/Artist";
+import { BEARDIFY_USER_AGENT } from "@/helpers/http";
 import { normalizeString } from "@/helpers/helper";
 
-/**
- * Discogs API configuration
- */
 const DISCOGS_API_URL = "https://api.discogs.com/";
 const DISCOGS_TOKEN = import.meta.env.VITE_DISCOGS_TOKEN || "";
-const USER_AGENT = "Beardify/1.0.0 (https://github.com/BeardedBear/beardify)";
 
 /**
  * Discogs markup parsing configuration
@@ -42,7 +39,7 @@ const discogsClient = ky.create({
   baseUrl: DISCOGS_API_URL,
   headers: {
     Authorization: `Discogs token=${DISCOGS_TOKEN}`,
-    "User-Agent": USER_AGENT,
+    "User-Agent": BEARDIFY_USER_AGENT,
   },
   retry: {
     limit: 1,

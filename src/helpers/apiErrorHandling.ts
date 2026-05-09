@@ -5,6 +5,7 @@ import { NotificationType } from "@/@types/Notification";
 import { instance } from "@/api";
 import { usePlayer } from "@/components/player/PlayerStore";
 import { notification } from "@/helpers/notifications";
+import { sleep } from "@/helpers/sleep";
 import { createSpotifyPlayer } from "@/spotify";
 
 // Define a type for API errors
@@ -41,8 +42,7 @@ export async function ensureActiveDevice(): Promise<null | string> {
     // If we have this device available, try to activate it
     if (playerStore.thisDeviceId) {
       await playerStore.setDevice(playerStore.thisDeviceId);
-      // Wait a moment for the device to activate if needed
-      await new Promise((resolve) => setTimeout(resolve, 250));
+      await sleep(250);
       return playerStore.thisDeviceId;
     }
 
@@ -50,8 +50,7 @@ export async function ensureActiveDevice(): Promise<null | string> {
     if (playerStore.devices.list.length > 0) {
       const firstDeviceId = playerStore.devices.list[0].id;
       await playerStore.setDevice(firstDeviceId);
-      // Wait a moment for the device to activate if needed
-      await new Promise((resolve) => setTimeout(resolve, 250));
+      await sleep(250);
       return firstDeviceId;
     }
   } catch {
@@ -96,7 +95,7 @@ export async function handlePlaybackApiError(
   if (isApiError(error) && error.response?.status === 404) {
     // Device might not be ready yet. Try a retry, and proactively attempt to connect the Web Playback SDK
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await sleep(1000);
 
       // First pass: try to find an active device
       let newDeviceId = await ensureActiveDevice();
@@ -109,8 +108,7 @@ export async function handlePlaybackApiError(
           // ignore any errors from SDK connect attempt
         }
 
-        // Wait a bit longer for SDK to register a device
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        await sleep(1500);
         newDeviceId = await ensureActiveDevice();
       }
 
