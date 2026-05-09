@@ -14,12 +14,12 @@ export interface Player {
   heartbeatInterval: null | number; // Interval ID for keeping the device active
   isSettingDevice?: boolean;
   lastRequestedDeviceId?: null | string;
-  volumeLockUntil?: number;
   panelOpened?: boolean;
   playerState: Spotify.PlaybackState;
   queue: Spotify.Track[];
   queueOpened: boolean;
   thisDeviceId: string;
+  volumeLockUntil?: number;
 }
 
 export type PlayerError

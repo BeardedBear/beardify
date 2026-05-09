@@ -446,11 +446,11 @@ export const usePlayer = defineStore("player", {
     heartbeatInterval: null,
     isSettingDevice: false,
     lastRequestedDeviceId: null,
-    volumeLockUntil: 0,
     panelOpened: false,
     playerState: defaultPlaybackState,
     queue: [],
     queueOpened: false,
     thisDeviceId: "",
+    volumeLockUntil: 0,
   }),
 });

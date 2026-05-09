@@ -20,7 +20,7 @@ const LOADING_WATCHDOG_MS = 5000;
 
 const playerStore = usePlayer();
 const interval = ref<number | undefined>(undefined);
-let loadingWatchdog: number | null = null;
+let loadingWatchdog: null | number = null;
 
 function watchExternalPlayerState(): void {
   const appFocused = document.visibilityState === "visible";
