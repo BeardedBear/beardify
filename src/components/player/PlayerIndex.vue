@@ -10,14 +10,17 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from "vue";
 
 import PlayerEpisode from "@/components/player/PlayerEpisode.vue";
 import PlayerSong from "@/components/player/PlayerSong.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 
+const LOADING_WATCHDOG_MS = 5000;
+
 const playerStore = usePlayer();
 const interval = ref<number | undefined>(undefined);
+let loadingWatchdog: number | null = null;
 
 function watchExternalPlayerState(): void {
   const appFocused = document.visibilityState === "visible";
@@ -32,6 +35,25 @@ function watchExternalPlayerState(): void {
   }
 }
 
+watchEffect(() => {
+  const hasTrack = !!playerStore.playerState.track_window?.current_track?.id;
+  const switching = !!playerStore.isSettingDevice;
+
+  if (!hasTrack && !switching) {
+    if (!loadingWatchdog) {
+      loadingWatchdog = window.setTimeout(() => {
+        loadingWatchdog = null;
+        if (!playerStore.playerState.track_window?.current_track?.id) {
+          playerStore.getExternalPlayerState().catch(() => {});
+        }
+      }, LOADING_WATCHDOG_MS);
+    }
+  } else if (loadingWatchdog) {
+    clearTimeout(loadingWatchdog);
+    loadingWatchdog = null;
+  }
+});
+
 onMounted(() => watchExternalPlayerState());
 
 watch(
@@ -44,6 +66,10 @@ onBeforeUnmount(() => {
   if (interval.value !== undefined) {
     window.clearInterval(interval.value);
     interval.value = undefined;
+  }
+  if (loadingWatchdog) {
+    clearTimeout(loadingWatchdog);
+    loadingWatchdog = null;
   }
 });
 </script>
