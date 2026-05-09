@@ -187,7 +187,9 @@ export const usePlayer = defineStore("player", {
       playerState.paused = !data.is_playing;
       playerState.shuffle = data.shuffle_state;
       playerState.duration = item.duration_ms;
-      activeDevice.volume_percent = data.device.volume_percent;
+      if (Date.now() >= this.volumeLockUntil) {
+        activeDevice.volume_percent = data.device.volume_percent;
+      }
     },
 
     async getQueue(): Promise<void> {
@@ -208,6 +210,7 @@ export const usePlayer = defineStore("player", {
     },
 
     next(): void {
+      this.playerState.paused = false;
       instance().post("me/player/next");
     },
 
@@ -231,20 +234,23 @@ export const usePlayer = defineStore("player", {
     },
 
     pause(): void {
+      this.playerState.paused = true;
       instance().put("me/player/pause", {
         device_id: this.devices.activeDevice?.id,
       });
     },
 
     play(): void {
+      this.playerState.paused = false;
       instance().put("me/player/play", {
         device_id: this.devices.activeDevice?.id,
       });
     },
 
     async seek(progress: number): Promise<void> {
-      await instance().put(`me/player/seek?position_ms=${Math.round(progress)}`);
       this.currentlyPlaying.progress_ms = progress;
+      this.playerState.position = progress;
+      await instance().put(`me/player/seek?position_ms=${Math.round(progress)}`);
     },
 
     async setDevice(deviceId: null | string, retries = 3): Promise<void> {
@@ -258,8 +264,8 @@ export const usePlayer = defineStore("player", {
     },
 
     async setVolume(volume: number): Promise<void> {
+      this.volumeLockUntil = Date.now() + 2000;
       await instance().put(`me/player/volume?volume_percent=${Math.round(volume)}`);
-      this.devices.activeDevice.volume_percent = volume;
       // Persist the volume for the current device so we can restore it later
       try {
         const { saveDeviceVolume } = await import("@/helpers/player");
@@ -387,21 +393,30 @@ export const usePlayer = defineStore("player", {
 
     async toggleRepeat(): Promise<void> {
       const nextState = this.currentlyPlaying.repeat_state === "off" ? "context" : "off";
+      const prevState = this.currentlyPlaying.repeat_state;
+      this.currentlyPlaying.repeat_state = nextState;
       try {
         const ok = await setRepeatState(nextState);
-        if (ok) this.currentlyPlaying.repeat_state = nextState;
+        if (!ok) this.currentlyPlaying.repeat_state = prevState;
       } catch {
-        // silent
+        this.currentlyPlaying.repeat_state = prevState;
       }
     },
 
     async toggleShuffle(): Promise<void> {
       const nextState = !this.currentlyPlaying.shuffle_state;
+      const prevState = this.currentlyPlaying.shuffle_state;
+      this.currentlyPlaying.shuffle_state = nextState;
+      this.playerState.shuffle = nextState;
       try {
         const ok = await setShuffleState(nextState);
-        if (ok) this.currentlyPlaying.shuffle_state = nextState;
+        if (!ok) {
+          this.currentlyPlaying.shuffle_state = prevState;
+          this.playerState.shuffle = prevState;
+        }
       } catch {
-        // silent
+        this.currentlyPlaying.shuffle_state = prevState;
+        this.playerState.shuffle = prevState;
       }
     },
 
@@ -431,6 +446,7 @@ export const usePlayer = defineStore("player", {
     heartbeatInterval: null,
     isSettingDevice: false,
     lastRequestedDeviceId: null,
+    volumeLockUntil: 0,
     panelOpened: false,
     playerState: defaultPlaybackState,
     queue: [],

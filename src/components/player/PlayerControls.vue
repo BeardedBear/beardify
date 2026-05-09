@@ -75,7 +75,9 @@ useIntervalFn(() => {
 
 watch(
   () => playerStore.playerState.position,
-  () => (currentTime.value = playerStore.playerState.position),
+  (newPos) => {
+    if (Math.abs(newPos - currentTime.value) > 1500) currentTime.value = newPos;
+  },
 );
 </script>
 

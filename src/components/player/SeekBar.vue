@@ -64,10 +64,11 @@ useIntervalFn(() => {
   if (!playerStore.playerState.paused) currentTime.value = currentTime.value + freq;
 }, freq);
 
-// Optimized: single watch on position instead of duplicate watchers
 watch(
   () => playerStore.playerState.position,
-  (newPosition) => (currentTime.value = newPosition),
+  (newPosition) => {
+    if (Math.abs(newPosition - currentTime.value) > 1500) currentTime.value = newPosition;
+  },
 );
 </script>
 
