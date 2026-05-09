@@ -1,4 +1,4 @@
-import ky, { Options } from "ky";
+import ky, { AfterResponseState, Options } from "ky";
 
 import { ApiResponse, SpotifyOptions } from "@/@types/Api";
 import { clearAuthData } from "@/helpers/authUtils";
@@ -114,14 +114,13 @@ function createKyInstance(): typeof ky {
   const authStore = useAuth();
 
   return http.extend({
-    baseUrl: api.url,
     headers: {
       Authorization: `Bearer ${authStore.accessToken}`,
       "Content-Type": "application/json",
     },
     hooks: {
       afterResponse: [
-        async ({ response }): Promise<void> => {
+        async ({ response }: AfterResponseState): Promise<void> => {
           if (response.status === 401 && !isRefreshing && refreshAttempts < MAX_REFRESH_ATTEMPTS) {
             isRefreshing = true;
             refreshAttempts++;
@@ -145,5 +144,6 @@ function createKyInstance(): typeof ky {
         },
       ],
     },
+    prefix: api.url,
   });
 }
