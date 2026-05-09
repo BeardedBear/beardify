@@ -1,5 +1,5 @@
 [build]
-  command = "bun run build"
+  command = "bun run build && cp -r node_modules/flag-icons/flags/4x3/. dist/flags"
   publish = "dist"
 
 [[redirects]]
