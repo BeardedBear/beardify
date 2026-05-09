@@ -1,8 +1,8 @@
 import ky from "ky";
 
 import { DiscogsArtist, DiscogsArtistReleasesResponse, DiscogsRelease } from "@/@types/Artist";
-import { BEARDIFY_USER_AGENT } from "@/helpers/http";
 import { normalizeString } from "@/helpers/helper";
+import { BEARDIFY_USER_AGENT } from "@/helpers/http";
 
 const DISCOGS_API_URL = "https://api.discogs.com/";
 const DISCOGS_TOKEN = import.meta.env.VITE_DISCOGS_TOKEN || "";
