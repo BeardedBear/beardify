@@ -8,9 +8,16 @@
     "lint": "vue-tsc --noEmit && eslint src/**/*.{vue,ts} && stylelint ./src/**/*.{vue,scss}",
     "build": "bun run lint && vite build",
     "fix": "eslint src/**/*.{vue,ts} --fix && stylelint ./src/**/*.{vue,scss} --fix",
-    "preview": "bun run build && vite preview"
+    "preview": "bun run build && vite preview",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "tauri:build:debug": "tauri build --debug",
+    "vite:dev-build": "vite build --mode development"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-deep-link": "^2.0.0",
     "@vueuse/motion": "^3.0.3",
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
@@ -28,6 +35,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@tauri-apps/cli": "^2.0.0",
     "@rushstack/eslint-patch": "^1.16.1",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/dompurify": "^3.2.0",

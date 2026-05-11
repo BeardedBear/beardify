@@ -8,6 +8,7 @@ import App from "@/App.vue";
 import { useConfig } from "@/components/config/ConfigStore";
 import { clearAuthData } from "@/helpers/authUtils";
 import { notification } from "@/helpers/notifications";
+import { initTauriBridge } from "@/helpers/tauriBootstrap";
 import router, { RouteName } from "@/router";
 import { useAuth } from "@/views/auth/AuthStore";
 
@@ -105,6 +106,7 @@ if (isAuthCallback) {
   useConfig().switchScheme(useConfig().schemeLabel);
   useConfig().switchTheme(useConfig().themeLabel);
   syncLS("beardify-config", JSON.stringify(useConfig().$state));
+  initTauriBridge();
 } else {
   // Normal flow: try to refresh token first
   (async (): Promise<void> => {
@@ -123,6 +125,8 @@ if (isAuthCallback) {
       clearAuthData();
       app.mount("#app");
       router.push(`${RouteName.Login}?ref=${window.location.pathname}`);
+    } finally {
+      initTauriBridge();
     }
   })();
 }

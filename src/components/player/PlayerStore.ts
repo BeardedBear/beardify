@@ -241,6 +241,11 @@ export const usePlayer = defineStore("player", {
       });
     },
 
+    previous(): void {
+      this.playerState.paused = false;
+      instance().post("me/player/previous");
+    },
+
     async seek(progress: number): Promise<void> {
       this.currentlyPlaying.progress_ms = progress;
       this.playerState.position = progress;

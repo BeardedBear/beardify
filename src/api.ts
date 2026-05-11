@@ -3,17 +3,27 @@ import ky, { AfterResponseState, Options } from "ky";
 import { ApiResponse, SpotifyOptions } from "@/@types/Api";
 import { clearAuthData } from "@/helpers/authUtils";
 import { http } from "@/helpers/http";
+import { isTauri } from "@/helpers/platform";
 import { useAuth } from "@/views/auth/AuthStore";
+
+// Resolved at call-time (getter):
+//   Tauri (dev or prod) → desktop deep-link (beardify://)
+//   DEV web             → local dev URI
+//   PROD web            → production URI
+function resolveRedirectUri(): string {
+  if (isTauri()) return import.meta.env.VITE_REDIRECT_URI_DESKTOP;
+  if (import.meta.env.DEV) return import.meta.env.VITE_REDIRECT_URI_DEV;
+  return import.meta.env.VITE_REDIRECT_URI_PROD;
+}
 
 /**
  * Spotify API configuration object
  */
 export const api = {
   clientId: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-  redirectUri:
-    import.meta.env.MODE !== "production"
-      ? import.meta.env.VITE_REDIRECT_URI_DEV
-      : import.meta.env.VITE_REDIRECT_URI_PROD,
+  get redirectUri(): string {
+    return resolveRedirectUri();
+  },
   scopes:
     "user-read-private,user-modify-playback-state,user-read-playback-state,user-read-currently-playing,playlist-read-private,playlist-read-collaborative,playlist-modify-private,playlist-modify-public,user-follow-modify,user-follow-read,streaming,user-read-email,user-top-read,user-library-read,user-library-modify,user-read-playback-position,user-read-recently-played",
   url: "https://api.spotify.com/v1/",

@@ -25,8 +25,9 @@
       </div>
       <div>
         <a
-          :href="`https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${challenge}`"
+          :href="spotifyAuthUrl"
           class="button button-primary"
+          @click.prevent="handleLogin"
         >
           <i class="icon icon-spotify" />
           Connect with Spotify (Premium)
@@ -37,15 +38,30 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import { api } from "@/api";
 import { clearAuthData } from "@/helpers/authUtils";
+import { isTauri } from "@/helpers/platform";
 import router, { RouteName } from "@/router";
 import { useAuth } from "@/views/auth/AuthStore";
 
 const authStore = useAuth();
 const challenge = ref<string | undefined>(undefined);
+
+const spotifyAuthUrl = computed(
+  () =>
+    `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${challenge.value}`,
+);
+
+async function handleLogin(): Promise<void> {
+  if (isTauri()) {
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke("open_spotify_auth", { url: spotifyAuthUrl.value });
+  } else {
+    window.location.href = spotifyAuthUrl.value;
+  }
+}
 
 (async () => {
   // If user already has a valid token, redirect to home
