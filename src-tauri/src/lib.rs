@@ -34,6 +34,7 @@ fn open_spotify_auth(_app: AppHandle, url: String) -> Result<(), String> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![set_play_state, open_spotify_auth])
         .setup(|app| {
             // Register beardify:// in the OS registry so the browser can open deep links.

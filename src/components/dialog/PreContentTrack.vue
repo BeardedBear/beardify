@@ -31,16 +31,13 @@ import { Track, TrackSimplified } from "@/@types/Track";
 import { usePlayer } from "@/components/player/PlayerStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
+import { openLink } from "@/helpers/openLink";
 
 const { addTrackToQueue } = usePlayer();
 
 defineProps<{
   track: Spotify.Track | Track | TrackSimplified;
 }>();
-
-function openLink(url: string): void {
-  window.open(url, "_blank");
-}
 </script>
 
 <style lang="scss" scoped>
