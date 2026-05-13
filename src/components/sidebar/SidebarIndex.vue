@@ -1,7 +1,20 @@
 <template>
   <div class="sidebar-backdrop" :class="{ 'is-visible': sidebarStore.isOpen }" @click="sidebarStore.close()" />
   <div
-    v-if="!sidebarStore.playlists.length && !sidebarStore.collections.length"
+    v-if="sidebarStore.loadFailed && !sidebarStore.playlists.length && !sidebarStore.collections.length"
+    class="sidebar loading"
+    :class="{ 'is-open': sidebarStore.isOpen }"
+  >
+    <div class="load-error">
+      <i class="icon-warning" />
+      <ButtonIndex variant="nude" @click="sidebarStore.refreshPlaylists()">
+        <i class="icon-refresh" />
+        Retry
+      </ButtonIndex>
+    </div>
+  </div>
+  <div
+    v-else-if="!sidebarStore.playlists.length && !sidebarStore.collections.length"
     class="sidebar loading"
     :class="{ 'is-open': sidebarStore.isOpen }"
   >
@@ -310,6 +323,14 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   &.loading {
     display: grid;
     place-content: center;
+  }
+
+  .load-error {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    opacity: 0.5;
   }
 }
 

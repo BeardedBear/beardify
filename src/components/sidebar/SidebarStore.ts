@@ -6,6 +6,7 @@ import { SimplifiedPlaylist } from "@/@types/Playlist";
 import { Sidebar } from "@/@types/Sidebar";
 import { instance } from "@/api";
 import { notification } from "@/helpers/notifications";
+import { sleep } from "@/helpers/sleep";
 import { cleanUrl } from "@/helpers/urls";
 import router from "@/router";
 import { useAuth } from "@/views/auth/AuthStore";
@@ -49,53 +50,53 @@ export const useSidebar = defineStore("sidebar", {
         return;
       }
 
-      let url = initialUrl;
-      let allPlaylistIds = new Set<string>();
-      let allCollectionIds = new Set<string>();
-      let tempPlaylists: SimplifiedPlaylist[] = [];
-      let tempCollections: SimplifiedPlaylist[] = [];
+      this.loadFailed = false;
+      const MAX_RETRIES = 3;
 
-      // Collect all existing playlists in sets to check for duplicates
-      this.playlists.forEach((p) => allPlaylistIds.add(p.id));
-      this.collections.forEach((c) => allCollectionIds.add(c.id));
+      for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+        if (attempt > 0) await sleep(1000 * attempt);
 
-      try {
-        // Loop until there are no more next pages
-        while (url) {
-          const cleanedUrl = cleanUrl(url);
-          const { data } = await instance().get<Paging<SimplifiedPlaylist>>(cleanedUrl);
+        let url = initialUrl;
+        const allPlaylistIds = new Set<string>();
+        const allCollectionIds = new Set<string>();
+        const tempPlaylists: SimplifiedPlaylist[] = [];
+        const tempCollections: SimplifiedPlaylist[] = [];
 
-          // Process each playlist
-          data.items.forEach((item) => {
-            if (isACollection(item)) {
-              // Add only if not already present
-              if (!allCollectionIds.has(item.id)) {
-                allCollectionIds.add(item.id);
-                tempCollections.push(item);
+        this.playlists.forEach((p) => allPlaylistIds.add(p.id));
+        this.collections.forEach((c) => allCollectionIds.add(c.id));
+
+        try {
+          while (url) {
+            const cleanedUrl = cleanUrl(url);
+            const { data } = await instance().get<Paging<SimplifiedPlaylist>>(cleanedUrl);
+
+            data.items.forEach((item) => {
+              if (isACollection(item)) {
+                if (!allCollectionIds.has(item.id)) {
+                  allCollectionIds.add(item.id);
+                  tempCollections.push(item);
+                }
+              } else {
+                if (!allPlaylistIds.has(item.id)) {
+                  allPlaylistIds.add(item.id);
+                  tempPlaylists.push(item);
+                }
               }
-            } else {
-              // Add only if not already present
-              if (!allPlaylistIds.has(item.id)) {
-                allPlaylistIds.add(item.id);
-                tempPlaylists.push(item);
-              }
-            }
-          });
+            });
 
-          // Move to next page or finish
-          url = data.next || "";
+            url = data.next || "";
+          }
+
+          this.playlists = [...this.playlists, ...tempPlaylists];
+          this.collections = [...this.collections, ...tempCollections];
+          return;
+        } catch (error) {
+          if (attempt === MAX_RETRIES - 1) {
+            this.loadFailed = true;
+            notification({ msg: "Error while fetching playlists", type: NotificationType.Error });
+            if (import.meta.env.DEV) console.error("Failed to fetch playlists:", error);
+          }
         }
-
-        // Update lists once all pages are loaded
-        this.playlists = [...this.playlists, ...tempPlaylists];
-        this.collections = [...this.collections, ...tempCollections];
-      } catch (error) {
-        notification({
-          msg: "Error while fetching playlists",
-          type: NotificationType.Error,
-        });
-
-        if (import.meta.env.DEV) console.error("Failed to fetch playlists:", error);
       }
     },
 
@@ -153,6 +154,7 @@ export const useSidebar = defineStore("sidebar", {
   state: (): Sidebar => ({
     collections: [],
     isOpen: false,
+    loadFailed: false,
     playlists: [],
   }),
 });
