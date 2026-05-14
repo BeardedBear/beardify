@@ -12,6 +12,9 @@
     "deep-link:default",
     "deep-link:allow-get-current",
     "opener:default",
-    "opener:allow-open-url"
+    "opener:allow-open-url",
+    "updater:default",
+    "updater:allow-check",
+    "updater:allow-download-and-install"
   ]
 }

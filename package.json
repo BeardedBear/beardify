@@ -13,12 +13,16 @@
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "tauri:build:debug": "tauri build --debug",
-    "vite:dev-build": "vite build --mode development"
+    "vite:dev-build": "vite build --mode development",
+    "build:ci": "vite build",
+    "build:app": "bun run tauri build && bun run scripts/package-release.ts",
+    "release": "bun run scripts/release.ts"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.11.0",
     "@tauri-apps/plugin-deep-link": "^2.4.9",
     "@tauri-apps/plugin-opener": "^2.5.4",
+    "@tauri-apps/plugin-updater": "^2.0.0",
     "@vueuse/motion": "^3.0.3",
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",

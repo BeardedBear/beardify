@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+          cache: true
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+          cache-on-failure: true
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
+          TAURI_CONFIG: '{"build":{"beforeBuildCommand":"bun run build:ci"}}'
+        run: bun run tauri build
+
+      - name: Package release & generate update manifest
+        run: bun run scripts/package-release.ts
+
+      - name: Get version
+        id: version
+        shell: bash
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            releases/${{ steps.version.outputs.version }}/beardify_${{ steps.version.outputs.version }}_setup.exe
+            releases/${{ steps.version.outputs.version }}/beardify_${{ steps.version.outputs.version }}_x64.msi
+            releases/${{ steps.version.outputs.version }}/beardify_${{ steps.version.outputs.version }}.exe
+            releases/${{ steps.version.outputs.version }}/beardify_${{ steps.version.outputs.version }}_x64-setup.nsis.zip
+            releases/${{ steps.version.outputs.version }}/beardify_${{ steps.version.outputs.version }}_x64-setup.nsis.zip.sig
+            releases/${{ steps.version.outputs.version }}/latest.json
