@@ -1,23 +1,28 @@
 import vue from "@vitejs/plugin-vue";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { copyFileSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
-import { viteStaticCopy } from "vite-plugin-static-copy";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   css: { devSourcemap: true },
   plugins: [
     vue(),
-    viteStaticCopy({
-      targets: [
-        {
-          dest: "flags",
-          src: "node_modules/flag-icons/flags/4x3/*.svg",
-        },
-      ],
-    }),
+    {
+      apply: "build",
+      name: "copy-flag-icons",
+      writeBundle(options): void {
+        const srcDir = join("node_modules", "flag-icons", "flags", "4x3");
+        const destDir = join(options.dir ?? "dist", "flags");
+        mkdirSync(destDir, { recursive: true });
+        for (const file of readdirSync(srcDir)) {
+          if (file.endsWith(".svg")) {
+            copyFileSync(join(srcDir, file), join(destDir, file));
+          }
+        }
+      },
+    },
     {
       configureServer(server): void {
         server.middlewares.use("/flags/", (req, res, next) => {
