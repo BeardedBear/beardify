@@ -42,30 +42,48 @@ Spotify web API does not allow non-premium users
 
 ## Dev
 
-### Project setup
-
-```
-npm install
-```
-
-#### Compiles and hot-reloads for development
-
-```
-npm run serve
+```bash
+bun install           # install dependencies
+bun run dev           # web dev server (port 3000)
+bun run tauri:dev     # desktop app with hot-reload
+bun run lint          # TypeScript + ESLint + Stylelint
+bun run fix           # auto-fix lint issues
+bun run build         # production web build (runs lint first)
+bun run tauri:build   # production desktop build
 ```
 
-#### Compiles and minifies for production
+## Releasing a new version
+
+Releases are automated via GitHub Actions. The workflow triggers on version tags and produces a signed Windows installer + `latest.json` for the in-app updater.
+
+### Prerequisites
+
+Two secrets must be set in the GitHub repository settings:
+
+| Secret | Description |
+|---|---|
+| `TAURI_SIGNING_PRIVATE_KEY` | Minisign private key used to sign update artifacts |
+| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Password for the private key (leave empty if none) |
+
+To generate a keypair: `bun run tauri signer generate -- -w tauri.key`
+
+### Create a release
+
+```bash
+bun run scripts/release.ts patch   # 0.1.2 → 0.1.3
+bun run scripts/release.ts minor   # 0.1.2 → 0.2.0
+bun run scripts/release.ts major   # 0.1.2 → 1.0.0
+bun run scripts/release.ts 1.2.3   # explicit version
+```
+
+The script bumps the version in `package.json` and `src-tauri/tauri.conf.json`, commits, tags, and pushes — which triggers the GitHub Actions release workflow. The workflow builds the app, signs the artifacts, and publishes a GitHub Release with a `latest.json` manifest.
+
+### In-app updater
+
+On startup (5-second delay), the desktop app checks:
 
 ```
-npm run build
+https://github.com/BeardedBear/beardify/releases/latest/download/latest.json
 ```
 
-#### Lints and fixes files
-
-```
-npm run lint
-```
-
-#### Customize configuration
-
-See [Configuration Reference](https://cli.vuejs.org/config/).
+If a newer version is available, a toast appears in the bottom-right corner. The update is cryptographically verified before installation. The updater only runs inside the Tauri desktop app, not in the browser.
