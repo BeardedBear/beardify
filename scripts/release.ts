@@ -15,10 +15,6 @@
 import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 
-function run(cmd: string): string {
-  return execSync(cmd, { encoding: "utf-8", stdio: ["pipe", "pipe", "inherit"] }).trim();
-}
-
 function bump(version: string, part: "major" | "minor" | "patch"): string {
   const [major, minor, patch] = version.split(".").map(Number);
   if (part === "major") return `${major + 1}.0.0`;
@@ -28,6 +24,10 @@ function bump(version: string, part: "major" | "minor" | "patch"): string {
 
 function readJson(path: string): Record<string, unknown> {
   return JSON.parse(readFileSync(path, "utf-8"));
+}
+
+function run(cmd: string): string {
+  return execSync(cmd, { encoding: "utf-8", stdio: ["pipe", "pipe", "inherit"] }).trim();
 }
 
 function writeJson(path: string, data: Record<string, unknown>): void {

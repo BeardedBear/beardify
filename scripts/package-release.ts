@@ -25,8 +25,8 @@ const artifacts: { dest: string; src: string }[] = [];
 
 // NSIS installer — used by the updater for the .nsis.zip
 const nsisDir = join(bundleDir, "nsis");
-let nsisZipName: string | null = null;
-let nsisSig: string | null = null;
+let nsisZipName: null | string = null;
+let nsisSig: null | string = null;
 
 if (existsSync(nsisDir)) {
   const nsisFiles = readdirSync(nsisDir).map((f) => ({ file: f, mtime: statSync(join(nsisDir, f)).mtimeMs }));
@@ -107,15 +107,15 @@ if (!isDebug && nsisZipName && nsisSig) {
   const downloadUrl = `https://github.com/${repo}/releases/download/v${version}/${nsisZipName}`;
 
   const manifest = {
-    version,
     notes: "",
-    pub_date: new Date().toISOString(),
     platforms: {
       "windows-x86_64": {
         signature: nsisSig,
         url: downloadUrl,
       },
     },
+    pub_date: new Date().toISOString(),
+    version,
   };
 
   const manifestPath = join(outDir, "latest.json");
