@@ -2,9 +2,10 @@ import { watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
 import { isTauri } from "@/helpers/platform";
+import { clamp } from "@/helpers/volume";
 import router, { RouteName } from "@/router";
 
-type ThumbarAction = "next" | "play-pause" | "previous";
+type ThumbarAction = "next" | "play-pause" | "previous" | "vol-down" | "vol-up";
 
 let initialized = false;
 
@@ -53,6 +54,8 @@ async function setupThumbarBridge(): Promise<void> {
     next: () => player.next(),
     "play-pause": () => (player.playerState.paused ? player.play() : player.pause()),
     previous: () => player.previous(),
+    "vol-down": () => player.setVolume(clamp((player.devices.activeDevice?.volume_percent ?? 50) - 2)),
+    "vol-up": () => player.setVolume(clamp((player.devices.activeDevice?.volume_percent ?? 50) + 2)),
   };
 
   await listen<ThumbarAction>("thumbar-action", ({ payload }) => {

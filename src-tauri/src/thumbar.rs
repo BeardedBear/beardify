@@ -40,6 +40,8 @@ use windows::Win32::UI::WindowsAndMessaging::{
 const ID_PREV: u32 = 1001;
 const ID_PLAY: u32 = 1002;
 const ID_NEXT: u32 = 1003;
+const ID_VOL_DOWN: u32 = 1004;
+const ID_VOL_UP: u32 = 1005;
 const THBN_CLICKED: u16 = 0x1800;
 const WM_UPDATE_THUMBAR: u32 = WM_APP + 1;
 const WM_TRY_INIT_THUMBAR: u32 = WM_APP + 2;
@@ -49,6 +51,8 @@ const GLYPH_PREV: u16 = 0xE892;
 const GLYPH_PLAY: u16 = 0xE768;
 const GLYPH_PAUSE: u16 = 0xE769;
 const GLYPH_NEXT: u16 = 0xE893;
+const GLYPH_VOL_DOWN: u16 = 0xE993;
+const GLYPH_VOL_UP: u16 = 0xE767;
 const ICON_SIZE: i32 = 20;
 const BK_TRANSPARENT: BACKGROUND_MODE = BACKGROUND_MODE(1);
 
@@ -62,6 +66,8 @@ struct Icons {
     pause: HICON,
     play: HICON,
     prev: HICON,
+    vol_down: HICON,
+    vol_up: HICON,
 }
 unsafe impl Send for Icons {}
 unsafe impl Sync for Icons {}
@@ -245,6 +251,8 @@ fn get_or_create_icons() -> &'static Icons {
             pause: glyph_to_hicon(GLYPH_PAUSE, font),
             play: glyph_to_hicon(GLYPH_PLAY, font),
             prev: glyph_to_hicon(GLYPH_PREV, font),
+            vol_down: glyph_to_hicon(GLYPH_VOL_DOWN, font),
+            vol_up: glyph_to_hicon(GLYPH_VOL_UP, font),
         };
         let _ = DeleteObject(HGDIOBJ(font.0));
         icons
@@ -266,7 +274,7 @@ fn make_button(id: u32, tooltip: &str, icon: HICON) -> THUMBBUTTON {
     btn
 }
 
-fn build_buttons() -> [THUMBBUTTON; 3] {
+fn build_buttons() -> [THUMBBUTTON; 5] {
     let icons = get_or_create_icons();
     let (play_icon, play_tip) = if get_is_playing() {
         (icons.pause, "Pause")
@@ -274,9 +282,11 @@ fn build_buttons() -> [THUMBBUTTON; 3] {
         (icons.play, "Play")
     };
     [
+        make_button(ID_VOL_DOWN, "Volume -2%", icons.vol_down),
         make_button(ID_PREV, "Previous", icons.prev),
         make_button(ID_PLAY, play_tip, play_icon),
         make_button(ID_NEXT, "Next", icons.next),
+        make_button(ID_VOL_UP, "Volume +2%", icons.vol_up),
     ]
 }
 
@@ -376,9 +386,11 @@ unsafe extern "system" fn wnd_proc(
         let lo = (wparam.0 & 0xFFFF) as u32;
         if hi == THBN_CLICKED {
             match lo {
+                ID_VOL_DOWN => emit_action("vol-down"),
                 ID_PREV => emit_action("previous"),
                 ID_PLAY => emit_action("play-pause"),
                 ID_NEXT => emit_action("next"),
+                ID_VOL_UP => emit_action("vol-up"),
                 _ => {}
             }
         }
