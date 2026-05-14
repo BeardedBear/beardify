@@ -69,7 +69,7 @@ if (existingTag) {
   process.exit(1);
 }
 
-console.log(`\n  ${currentVersion} → ${newVersion}\n`);
+// console.log(`\n  ${currentVersion} → ${newVersion}\n`);
 
 pkg.version = newVersion;
 writeJson(pkgPath, pkg);
@@ -84,5 +84,5 @@ run(`git tag v${newVersion}`);
 run("git push origin HEAD");
 run(`git push origin v${newVersion}`);
 
-console.log(`  v${newVersion} tagged and pushed — GitHub Actions will handle the rest.`);
-console.log(`  https://github.com/BeardedBear/beardify/actions\n`);
+// console.log(`  v${newVersion} tagged and pushed — GitHub Actions will handle the rest.`);
+// console.log(`  https://github.com/BeardedBear/beardify/actions\n`);
