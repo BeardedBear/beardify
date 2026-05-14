@@ -61,6 +61,8 @@ pub fn run() {
             #[cfg(windows)]
             if let Err(e) = thumbar::install(&window, handle) {
                 eprintln!("Thumbar install failed: {e}");
+            } else {
+                thumbar::schedule_fallback_init();
             }
 
             Ok(())
