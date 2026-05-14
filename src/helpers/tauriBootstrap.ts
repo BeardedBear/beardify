@@ -15,6 +15,7 @@ export async function initTauriBridge(): Promise<void> {
   try {
     await setupDeepLink();
     await setupThumbarBridge();
+    await setupWindowTitle();
   } catch (e) {
     if (import.meta.env.DEV) {
       console.warn("Tauri bridge init failed", e);
@@ -71,4 +72,22 @@ async function setupThumbarBridge(): Promise<void> {
     },
     { immediate: true },
   );
+}
+
+async function setupWindowTitle(): Promise<void> {
+  const { getCurrentWindow } = await import("@tauri-apps/api/window");
+  const win = getCurrentWindow();
+  const player = usePlayer();
+  let lastTitle = "";
+
+  const updateTitle = (): void => {
+    const track = player.playerState.track_window.current_track;
+    const title = track?.name ? `${track.artists.map((a) => a.name).join(", ")} — ${track.name}` : "Beardify";
+    if (title === lastTitle) return;
+    lastTitle = title;
+    win.setTitle(title).catch(() => undefined);
+  };
+
+  player.$subscribe(updateTitle);
+  updateTitle();
 }
