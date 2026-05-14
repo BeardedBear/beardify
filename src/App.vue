@@ -18,11 +18,12 @@
     <Notification />
     <Frame />
     <MinimizedWindows />
+    <UpdateToast />
   </template>
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUnmount } from "vue";
+import { onBeforeUnmount, onMounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
 
 import DialogList from "@/components/dialog/DialogList.vue";
@@ -35,13 +36,24 @@ import PlayerSlideUp from "@/components/player/PlayerSlideUp.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import MobileHeader from "@/components/sidebar/MobileHeader.vue";
 import Sidebar from "@/components/sidebar/SidebarIndex.vue";
+import UpdateToast from "@/components/ui/UpdateToast.vue";
+import { useUpdater } from "@/composables/useUpdater";
+import { isTauri } from "@/helpers/platform";
+import { sleep } from "@/helpers/sleep";
 import { useKeyboardEvents } from "@/helpers/useKeyboardEvents";
 import { useAuth } from "@/views/auth/AuthStore";
 
 useKeyboardEvents();
 
 const authStore = useAuth();
+const { checkForUpdate } = useUpdater();
 const dialog = useDialog();
+
+onMounted(() => {
+  if (isTauri()) {
+    setTimeout(() => checkForUpdate().catch(() => undefined), 5_000);
+  }
+});
 
 // Check Widevine support for Brave Browser
 if (!navigator.userAgent.includes("Macintosh")) {
@@ -89,7 +101,7 @@ const handleVisibilityChange = async (): Promise<void> => {
         } catch {
           retries--;
           if (retries > 0) {
-            await new Promise((resolve) => setTimeout(resolve, 2000 * (4 - retries)));
+            await sleep(2000 * (4 - retries));
           }
         }
       }

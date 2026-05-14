@@ -35,6 +35,7 @@ export default [
         ...globals.browser,
         ...globals.es2021,
         ...globals.node,
+        __APP_VERSION__: "readonly",
         Spotify: "readonly",
       },
     },

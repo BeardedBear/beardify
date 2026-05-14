@@ -34,6 +34,8 @@
       <div class="section-title">Colors</div>
       <Colors />
     </div>
+
+    <div class="version">v{{ appVersion }}</div>
   </div>
 </template>
 
@@ -48,6 +50,7 @@ import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { notification } from "@/helpers/notifications";
 import { useAuth } from "@/views/auth/AuthStore";
 
+const appVersion = __APP_VERSION__;
 const env = import.meta.env.MODE;
 const authStore = useAuth();
 const configStore = useConfig();
@@ -84,6 +87,13 @@ onClickOutside(domConfig, (): void => configStore.close());
   @include font-bold;
 
   margin-bottom: 1.2rem;
+}
+
+.version {
+  font-size: var(--font-size-xs);
+  margin-top: 0.8rem;
+  opacity: 0.3;
+  text-align: center;
 }
 
 .user-mail {

@@ -241,6 +241,11 @@ export const usePlayer = defineStore("player", {
       });
     },
 
+    previous(): void {
+      this.playerState.paused = false;
+      instance().post("me/player/previous");
+    },
+
     async seek(progress: number): Promise<void> {
       this.currentlyPlaying.progress_ms = progress;
       this.playerState.position = progress;
@@ -258,12 +263,16 @@ export const usePlayer = defineStore("player", {
     },
 
     async setVolume(volume: number): Promise<void> {
+      const rounded = Math.round(volume);
       this.volumeLockUntil = Date.now() + VOLUME_LOCK_DURATION_MS;
-      await instance().put(`me/player/volume?volume_percent=${Math.round(volume)}`);
+      if (this.devices.activeDevice && this.devices.activeDevice.volume_percent !== rounded) {
+        this.devices.activeDevice.volume_percent = rounded;
+      }
+      await instance().put(`me/player/volume?volume_percent=${rounded}`);
       // Persist the volume for the current device so we can restore it later
       try {
         const { saveDeviceVolume } = await import("@/helpers/player");
-        saveDeviceVolume(this.devices.activeDevice?.id, Math.round(volume));
+        saveDeviceVolume(this.devices.activeDevice?.id, rounded);
       } catch {
         // ignore
       }

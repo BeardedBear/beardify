@@ -45,12 +45,9 @@ import ArtistList from "@/components/artist/ArtistList.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 import { date, timecodeWithUnits } from "@/helpers/date";
+import { openLink } from "@/helpers/openLink";
 
 const props = defineProps<{ album: Album }>();
-
-function openLink(url: string): void {
-  window.open(url, "_blank");
-}
 
 function sumDuration(tracks: Track[] | TrackSimplified[]): number {
   return tracks.map((t: Track | TrackSimplified) => t.duration_ms).reduce((acc, value) => acc + value, 0);

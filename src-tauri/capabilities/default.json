@@ -1,0 +1,20 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capabilities granted to the main window",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-set-title",
+    "core:event:default",
+    "core:event:allow-listen",
+    "core:event:allow-emit",
+    "deep-link:default",
+    "deep-link:allow-get-current",
+    "opener:default",
+    "opener:allow-open-url",
+    "updater:default",
+    "updater:allow-check",
+    "updater:allow-download-and-install"
+  ]
+}

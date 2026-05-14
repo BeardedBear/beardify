@@ -17,12 +17,9 @@
 <script lang="ts" setup>
 import { Album } from "@/@types/Album";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { openLink } from "@/helpers/openLink";
 
 defineProps<{ album: Album }>();
-
-function openLink(url: string): void {
-  window.open(url, "_blank");
-}
 </script>
 
 <style lang="scss" scoped>

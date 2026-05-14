@@ -39,6 +39,7 @@ import { useFrame } from "@/components/frame/FrameStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Tooltip from "@/components/ui/Tooltip.vue";
 import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
+import { openLink } from "@/helpers/openLink";
 import { socialLinksFromDiscogs, socialLinksFromMusicBrainz, socialLinksFromWikidata } from "@/helpers/socialLinks";
 import { useArtist } from "@/views/artist/ArtistStore";
 
@@ -103,10 +104,6 @@ const rymUrl = computed(() => {
   }
   return `https://rateyourmusic.com/search?searchtype=a&searchterm=${artistNameNormalized.value}`;
 });
-
-function openLink(url: string): void {
-  window.open(url, "_blank");
-}
 
 function updateLinks(): void {
   artistNameNormalized.value = normalizeDiacritics(props.artistName).replaceAll("&", "and");
