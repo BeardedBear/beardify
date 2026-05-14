@@ -4,9 +4,14 @@ import { join, resolve } from "node:path";
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 
+const pkg = JSON.parse(readFileSync("package.json", "utf-8")) as { version: string };
+
 // https://vitejs.dev/config/
 export default defineConfig({
   css: { devSourcemap: true },
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
+  },
   plugins: [
     vue(),
     {
