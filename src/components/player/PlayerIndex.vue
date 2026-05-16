@@ -23,7 +23,6 @@ const interval = ref<number | undefined>(undefined);
 let loadingWatchdog: null | number = null;
 
 function watchExternalPlayerState(): void {
-  const appFocused = document.visibilityState === "visible";
   // Clear existing interval before setting a new one
   if (interval.value !== undefined) {
     window.clearInterval(interval.value);
@@ -31,7 +30,9 @@ function watchExternalPlayerState(): void {
   }
   // Only set interval if external device is active
   if (playerStore.isExternalDevice) {
-    interval.value = window.setInterval(() => appFocused && playerStore.getExternalPlayerState(), 2000);
+    interval.value = window.setInterval(() => {
+      if (document.visibilityState === "visible") playerStore.getExternalPlayerState();
+    }, 2000);
   }
 }
 

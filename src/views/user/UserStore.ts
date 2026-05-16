@@ -4,10 +4,7 @@ import { Paging } from "@/@types/Paging";
 import { SimplifiedPlaylist } from "@/@types/Playlist";
 import { User, UserStore } from "@/@types/User";
 import { instance } from "@/api";
-
-function isACollection(playlistName: SimplifiedPlaylist): boolean {
-  return playlistName.name.toLowerCase().includes("#collection");
-}
+import { isACollection } from "@/helpers/isCollection";
 
 export const useUserStore = defineStore("user", {
   actions: {
@@ -31,7 +28,7 @@ export const useUserStore = defineStore("user", {
         .concat(data.items)
         .filter((p) => isACollection(p) && p.public && p.owner.id === this.user?.id);
 
-      if (data.next) this.getUserPlaylists(data.next);
+      if (data.next) await this.getUserPlaylists(data.next);
     },
   },
 

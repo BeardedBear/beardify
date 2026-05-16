@@ -5,16 +5,13 @@ import { Paging } from "@/@types/Paging";
 import { SimplifiedPlaylist } from "@/@types/Playlist";
 import { Sidebar } from "@/@types/Sidebar";
 import { instance } from "@/api";
+import { isACollection } from "@/helpers/isCollection";
 import { notification } from "@/helpers/notifications";
 import { sleep } from "@/helpers/sleep";
 import { cleanUrl } from "@/helpers/urls";
 import router from "@/router";
 import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
-
-function isACollection(playlistName: SimplifiedPlaylist): boolean {
-  return playlistName.name.toLowerCase().includes("#collection");
-}
 
 export const useSidebar = defineStore("sidebar", {
   actions: {
