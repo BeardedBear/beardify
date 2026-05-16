@@ -1,5 +1,6 @@
-import { check, type Update } from "@tauri-apps/plugin-updater";
 import { type Ref, ref } from "vue";
+
+type DownloadEvent = { data: { chunkLength: number; contentLength?: number }; event: string };
 
 interface UpdaterState {
   checkForUpdate: () => Promise<void>;
@@ -18,7 +19,8 @@ const downloadProgress = ref(0);
 const errorMessage = ref<null | string>(null);
 const status = ref<UpdateStatus>("idle");
 const updateVersion = ref<null | string>(null);
-let pendingUpdate: null | Update = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let pendingUpdate: any = null;
 
 export function useUpdater(): UpdaterState {
   return {
@@ -36,6 +38,7 @@ async function checkForUpdate(): Promise<void> {
   status.value = "checking";
   dismissed.value = false;
   try {
+    const { check } = await import("@tauri-apps/plugin-updater");
     const update = await check();
     if (update) {
       pendingUpdate = update;
@@ -57,7 +60,7 @@ async function downloadAndInstall(): Promise<void> {
   let downloaded = 0;
   let total = 0;
   try {
-    await pendingUpdate.downloadAndInstall((event) => {
+    await pendingUpdate.downloadAndInstall((event: DownloadEvent) => {
       if (event.event === "Started") {
         total = event.data.contentLength ?? 0;
       } else if (event.event === "Progress") {

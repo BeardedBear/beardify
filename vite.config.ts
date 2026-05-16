@@ -12,6 +12,16 @@ export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
   },
+  optimizeDeps: {
+    include: [
+      "@tauri-apps/api/core",
+      "@tauri-apps/api/event",
+      "@tauri-apps/api/window",
+      "@tauri-apps/plugin-deep-link",
+      "@tauri-apps/plugin-opener",
+      "@tauri-apps/plugin-updater",
+    ],
+  },
   plugins: [
     vue(),
     {

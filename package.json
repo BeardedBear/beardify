@@ -40,11 +40,11 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@tauri-apps/cli": "^2.11.1",
     "@rushstack/eslint-patch": "^1.16.1",
     "@stylistic/eslint-plugin": "^5.10.0",
+    "@tauri-apps/cli": "^2.11.1",
     "@types/dompurify": "^3.2.0",
-    "@types/node": "^25.7.0",
+    "@types/node": "^25.8.0",
     "@typescript-eslint/eslint-plugin": "^8.59.3",
     "@typescript-eslint/parser": "^8.59.3",
     "@vitejs/plugin-vue": "^6.0.6",

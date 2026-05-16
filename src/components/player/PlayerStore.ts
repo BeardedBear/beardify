@@ -181,7 +181,7 @@ export const usePlayer = defineStore("player", {
       playerState.paused = !data.is_playing;
       playerState.shuffle = data.shuffle_state;
       playerState.duration = item.duration_ms;
-      if (Date.now() >= (this.volumeLockUntil ?? 0)) {
+      if (Date.now() >= (this.volumeLockUntil ?? 0) && data.device) {
         activeDevice.volume_percent = data.device.volume_percent;
       }
     },

@@ -9,14 +9,14 @@ export function isCompilation(album: Album | AlbumSimplified | CurrentlyPlayingA
   return album.album_type === "compilation";
 }
 
+const MIN_TRACKS_FOR_EP = 3;
+
 export function isEP(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
-  const minimumNumberOfTracks = 3;
-  return album.total_tracks >= minimumNumberOfTracks && album.album_type === "single";
+  return album.total_tracks >= MIN_TRACKS_FOR_EP && album.album_type === "single";
 }
 
 export function isSingle(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
-  const minimumNumberOfTracks = 3;
-  return album.total_tracks < minimumNumberOfTracks && album.album_type === "single";
+  return album.total_tracks < MIN_TRACKS_FOR_EP && album.album_type === "single";
 }
 
 // Keywords for live album detection

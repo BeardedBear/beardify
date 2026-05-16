@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 /**
  * Copy built Windows artifacts into releases/<version>/
  * and generate latest.json for the Tauri updater.
@@ -7,13 +9,21 @@
  *   bun run scripts/package-release.ts --debug
  */
 
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 
 const isDebug = process.argv.includes("--debug");
 const profile = isDebug ? "debug" : "release";
 
-const pkg = JSON.parse(await Bun.file("package.json").text());
+const pkg = JSON.parse(readFileSync("package.json", "utf-8"));
 const version: string = pkg.version;
 
 const bundleDir = join("src-tauri", "target", profile, "bundle");
@@ -29,7 +39,10 @@ let nsisZipName: null | string = null;
 let nsisSig: null | string = null;
 
 if (existsSync(nsisDir)) {
-  const nsisFiles = readdirSync(nsisDir).map((f) => ({ file: f, mtime: statSync(join(nsisDir, f)).mtimeMs }));
+  const nsisFiles = readdirSync(nsisDir).map((f) => ({
+    file: f,
+    mtime: statSync(join(nsisDir, f)).mtimeMs,
+  }));
 
   const nsisExes = nsisFiles
     .filter((f) => f.file.endsWith(".exe") && !f.file.endsWith(".nsis.zip"))

@@ -6,7 +6,6 @@ import { createApp } from "vue";
 import { NotificationType } from "@/@types/Notification";
 import App from "@/App.vue";
 import { useConfig } from "@/components/config/ConfigStore";
-import { clearAuthData } from "@/helpers/authUtils";
 import { notification } from "@/helpers/notifications";
 import { initTauriBridge } from "@/helpers/tauriBootstrap";
 import router, { RouteName } from "@/router";
@@ -122,7 +121,6 @@ if (isAuthCallback) {
         syncLS("beardify-auth", JSON.stringify(useAuth().$state));
       }
     } catch {
-      clearAuthData();
       app.mount("#app");
       router.push(`${RouteName.Login}?ref=${window.location.pathname}`);
     } finally {
