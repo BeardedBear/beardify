@@ -47,8 +47,10 @@ async function setupDeepLink(): Promise<void> {
 }
 
 async function setupThumbarBridge(): Promise<void> {
-  const { listen } = await import("@tauri-apps/api/event");
-  const { invoke } = await import("@tauri-apps/api/core");
+  const [{ listen }, { invoke }] = await Promise.all([
+    import("@tauri-apps/api/event"),
+    import("@tauri-apps/api/core"),
+  ]);
   const player = usePlayer();
 
   const actions: Record<ThumbarAction, () => void> = {
