@@ -34,6 +34,10 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
           TAURI_CONFIG: '{"build":{"beforeBuildCommand":"bun run build:ci"}}'
+          VITE_SPOTIFY_CLIENT_ID: ${{ secrets.VITE_SPOTIFY_CLIENT_ID }}
+          VITE_REDIRECT_URI_DEV: "http://127.0.0.1:3000/auth"
+          VITE_REDIRECT_URI_DESKTOP: "beardify://auth"
+          VITE_REDIRECT_URI_PROD: "https://beardify.netlify.app/auth"
         run: bun run tauri build
 
       - name: Package release & generate update manifest
