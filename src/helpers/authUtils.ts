@@ -1,6 +1,6 @@
 /**
- * Nettoie toutes les données d'authentification et d'état de l'application
- * du localStorage pour repartir sur des bases saines
+ * Remove all authentication and persisted app-state keys from localStorage and sessionStorage.
+ * Config, sidebar, and player keys are intentionally preserved across logouts.
  */
 export function clearAuthData(): void {
   const authKeys = [
@@ -16,12 +16,11 @@ export function clearAuthData(): void {
     localStorage.removeItem(key);
   });
 
-  // Nettoyer aussi le sessionStorage si nécessaire
   sessionStorage.removeItem("spotify_token_last_refresh");
 }
 
 /**
- * Effectue une déconnexion complète et redirige vers la page de login
+ * Clear all auth data and redirect the user to the login page.
  */
 export function logoutAndRedirect(): void {
   clearAuthData();

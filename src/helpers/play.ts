@@ -5,6 +5,11 @@ import { notification } from "@/helpers/notifications";
 
 // API error types moved to apiErrorHandling.ts helper
 
+/**
+ * Play a single track by URI on the active device.
+ * @param trackUri - Spotify track URI (e.g. "spotify:track:abc123")
+ * @param position - Optional playback start position in milliseconds
+ */
 export async function playSong(trackUri: string, position?: number): Promise<void> {
   const deviceId = await ensureActiveDevice();
 
@@ -22,6 +27,12 @@ export async function playSong(trackUri: string, position?: number): Promise<voi
   await executePlaybackApiCall(deviceId, payload);
 }
 
+/**
+ * Play a slice of a track list starting from a given index.
+ * Sends all URIs from sliceIndex onwards to Spotify so the queue is pre-populated.
+ * @param sliceIndex - Index of the track to start from
+ * @param tracks - Full list of tracks to play from
+ */
 export async function playSongs(sliceIndex: number, tracks: Track[] | TrackSimplified[]): Promise<void> {
   const deviceId = await ensureActiveDevice();
 

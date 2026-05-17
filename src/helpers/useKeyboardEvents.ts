@@ -3,6 +3,11 @@ import { watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
 
+/**
+ * Register global keyboard shortcuts for the player:
+ * - Shift+Up / Shift+Down: adjust volume by 2%
+ * - Space (on body): toggle play/pause
+ */
 export function useKeyboardEvents(): void {
   const playerStore = usePlayer();
   const { shift_down, shift_up } = useMagicKeys();

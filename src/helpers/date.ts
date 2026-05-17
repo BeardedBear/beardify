@@ -6,10 +6,20 @@ import { enUS } from "date-fns/locale";
 
 const options = { locale: enUS };
 
+/**
+ * Format a timestamp or date string as "d MMM y" (e.g. "17 May 2026").
+ * @param date - Unix timestamp (ms) or any date string accepted by `new Date()`
+ */
 export function date(date: number | string): string {
   return format(new Date(date), "d MMM y", options);
 }
 
+/**
+ * Format an ISO date string using the browser locale.
+ * Handles year-only strings ("1999"), full ISO dates, and invalid values gracefully.
+ * @param date - ISO 8601 date string or year string
+ * @returns Formatted date string, or the original value if parsing fails
+ */
 export function formatDate(date?: null | string): string {
   if (!date) return "";
   // If just a year (e.g. "1999") keep as-is
@@ -38,6 +48,11 @@ export function formatDate(date?: null | string): string {
   }
 }
 
+/**
+ * Format a duration in milliseconds as a compact timecode string ("m:ss" or "h:mm:ss").
+ * @param date - Duration in milliseconds
+ * @returns Timecode string, or empty string if date is falsy
+ */
 export function timecode(date: null | number | undefined): string {
   if (date) {
     const hours = new Date(date).getHours() - 1;
@@ -49,6 +64,10 @@ export function timecode(date: null | number | undefined): string {
   return "";
 }
 
+/**
+ * Format a duration in milliseconds as a human-readable string with units (e.g. "1 hour 23 minutes 45 seconds").
+ * @param date - Duration in milliseconds
+ */
 export function timecodeWithUnits(date: number): string {
   const hours = new Date(date).getHours() - 1;
   const minutes = new Date(date).getMinutes();
