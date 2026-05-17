@@ -9,6 +9,10 @@ type ThumbarAction = "next" | "play-pause" | "previous" | "vol-down" | "vol-up";
 
 let initialized = false;
 
+/**
+ * Initialize all Tauri-specific integrations (deep links, thumbar, window title).
+ * No-op when running in a browser. Guards against double-initialization with `initialized`.
+ */
 export async function initTauriBridge(): Promise<void> {
   if (!isTauri() || initialized) return;
   initialized = true;
@@ -23,6 +27,7 @@ export async function initTauriBridge(): Promise<void> {
   }
 }
 
+/** Parse an OAuth callback deep-link URL and redirect the router to the auth route with the code. */
 function handleAuthUrl(url: string): void {
   try {
     const parsed = new URL(url);
@@ -33,6 +38,7 @@ function handleAuthUrl(url: string): void {
   }
 }
 
+/** Register deep-link handlers for OAuth callbacks and single-instance URL forwarding. */
 async function setupDeepLink(): Promise<void> {
   const { getCurrent, onOpenUrl } = await import("@tauri-apps/plugin-deep-link");
   const { listen } = await import("@tauri-apps/api/event");
@@ -52,6 +58,7 @@ async function setupDeepLink(): Promise<void> {
   if (initial && initial.length > 0) handleAuthUrl(initial[0]);
 }
 
+/** Wire up Windows taskbar thumbnail toolbar buttons to player actions via Tauri events. */
 async function setupThumbarBridge(): Promise<void> {
   const [{ listen }, { invoke }] = await Promise.all([
     import("@tauri-apps/api/event"),
@@ -82,6 +89,7 @@ async function setupThumbarBridge(): Promise<void> {
   );
 }
 
+/** Keep the native window title in sync with the currently playing track. */
 async function setupWindowTitle(): Promise<void> {
   const { getCurrentWindow } = await import("@tauri-apps/api/window");
   const win = getCurrentWindow();

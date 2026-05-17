@@ -1,20 +1,37 @@
 import { Album, AlbumSimplified } from "@/@types/Album";
 import { CurrentlyPlayingAlbum } from "@/@types/CurrentlyPlaying";
 
+/**
+ * Returns true if the release is a full album (not a single, EP, or compilation).
+ * @param album - Album object from the Spotify API
+ */
 export function isAlbum(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
   return album.album_type === "album" || album.album_type === "ALBUM";
 }
 
+/**
+ * Returns true if the release is a compilation.
+ * @param album - Album object from the Spotify API
+ */
 export function isCompilation(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
   return album.album_type === "compilation";
 }
 
 const MIN_TRACKS_FOR_EP = 3;
 
+/**
+ * Returns true if the release is an EP.
+ * Spotify marks EPs as "single" type; we distinguish them by track count (>= MIN_TRACKS_FOR_EP).
+ * @param album - Album object from the Spotify API
+ */
 export function isEP(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
   return album.total_tracks >= MIN_TRACKS_FOR_EP && album.album_type === "single";
 }
 
+/**
+ * Returns true if the release is a single (fewer than MIN_TRACKS_FOR_EP tracks, type "single").
+ * @param album - Album object from the Spotify API
+ */
 export function isSingle(album: Album | AlbumSimplified | CurrentlyPlayingAlbum): boolean {
   return album.total_tracks < MIN_TRACKS_FOR_EP && album.album_type === "single";
 }
@@ -68,6 +85,11 @@ const LIVE_ALBUM_SPECIAL_PATTERNS = [
 // Cache compiled regex for live album detection
 const liveAlbumRegex = new RegExp(`(${[...LIVE_ALBUM_KEYWORDS, ...LIVE_ALBUM_SPECIAL_PATTERNS].join("|")})`);
 
+/**
+ * Heuristic check: returns true if the album name suggests it is a live recording.
+ * Matches against a curated list of keywords and special patterns (e.g. "Live at …", "In Concert").
+ * @param albumName - Album title to test
+ */
 export function useCheckLiveAlbum(albumName: string): boolean {
   const cleanedName = albumName.toLowerCase().trim();
   return liveAlbumRegex.test(cleanedName) || cleanedName.split(" ").pop() === "live)";
@@ -76,6 +98,10 @@ export function useCheckLiveAlbum(albumName: string): boolean {
 // Cache compiled regex for reissue album detection
 const reissueAlbumRegex = /(\(reissue)/;
 
+/**
+ * Heuristic check: returns true if the album name contains "(reissue)".
+ * @param albumName - Album title to test
+ */
 export function useCheckReissueAlbum(albumName: string): boolean {
   const cleanedName = albumName.toLowerCase().trim();
   return reissueAlbumRegex.test(cleanedName);

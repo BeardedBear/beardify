@@ -28,11 +28,22 @@
         </div>
       </div>
     </div>
-    <Actions />
+    <div class="right">
+      <input
+        v-if="withFilter"
+        ref="filterInput"
+        v-model="playlistStore.filter"
+        class="search"
+        placeholder="Filter..."
+        type="search"
+      />
+      <Actions />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 
 import { PlaylistTrack } from "@/@types/Playlist";
@@ -41,13 +52,19 @@ import Cover from "@/components/ui/AlbumCover.vue";
 import { timecodeWithUnits } from "@/helpers/date";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
-defineProps<{
+const props = defineProps<{
   noCover?: boolean;
   noDuration?: boolean;
   notFit?: boolean;
+  withFilter?: boolean;
 }>();
 
 const playlistStore = usePlaylist();
+const filterInput = ref<HTMLInputElement | null>(null);
+
+onMounted(() => {
+  if (props.withFilter) filterInput.value?.focus();
+});
 
 function sumDuration(tracks: PlaylistTrack[]): number {
   return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);

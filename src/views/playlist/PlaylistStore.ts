@@ -12,6 +12,7 @@ import { useAuth } from "@/views/auth/AuthStore";
 export const usePlaylist = defineStore("playlist", {
   actions: {
     async clean() {
+      this.filter = "";
       this.playlist = defaultPlaylist;
       this.tracks = [];
     },

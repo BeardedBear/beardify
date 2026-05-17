@@ -5,24 +5,36 @@
   <PageScroller v-else>
     <PageFit>
       <div class="collection">
-        <Header no-cover no-duration />
+        <Header no-cover no-duration with-filter />
         <div class="content">
-          <SlickList
-            v-model:list="albumList"
-            :press-delay="200"
-            axis="xy"
-            class="album-list"
-            @sort-end="syncNewPositions"
-          >
-            <SlickItem
-              v-for="(item, i) in albumListFiltered"
-              :key="item.id"
-              :disabled="playlistStore.playlist.owner.id !== authStore.me?.id"
-              :index="i"
+          <template v-if="playlistStore.filter === ''">
+            <SlickList
+              v-model:list="albumList"
+              :press-delay="200"
+              axis="xy"
+              class="album-list"
+              @sort-end="syncNewPositions"
             >
-              <Album :album="item" can-delete can-save with-artists />
-            </SlickItem>
-          </SlickList>
+              <SlickItem
+                v-for="(item, i) in albumList"
+                :key="item.id"
+                :disabled="playlistStore.playlist.owner.id !== authStore.me?.id"
+                :index="i"
+              >
+                <Album :album="item" can-delete can-save with-artists />
+              </SlickItem>
+            </SlickList>
+          </template>
+          <div v-else class="album-list">
+            <Album
+              v-for="item in albumListFiltered"
+              :key="item.id"
+              :album="item"
+              can-delete
+              can-save
+              with-artists
+            />
+          </div>
         </div>
       </div>
     </PageFit>
@@ -39,6 +51,7 @@ import Header from "@/components/playlist/PlaylistHeader.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
+import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -47,14 +60,13 @@ const playlistStore = usePlaylist();
 const albumList = ref<AlbumSimplified[]>([]);
 const authStore = useAuth();
 
-const albumListFiltered = computed<AlbumSimplified[]>(() => {
-  if (playlistStore.filter === "") return albumList.value;
-  return albumList.value.filter((album) => {
+const albumListFiltered = computed<AlbumSimplified[]>(() =>
+  albumList.value.filter((album) => {
     const matchedArtistName = album.artists[0].name.toLowerCase().includes(playlistStore.filter.toLowerCase());
     const matchedAlbumName = album.name.toLowerCase().includes(playlistStore.filter.toLowerCase());
     return matchedArtistName || matchedAlbumName;
-  });
-});
+  }),
+);
 
 function syncNewPositions(event: { newIndex: number; oldIndex: number }): void {
   playlistStore.updateCollectionPosition(event.oldIndex, event.newIndex);
@@ -62,7 +74,7 @@ function syncNewPositions(event: { newIndex: number; oldIndex: number }): void {
 
 watch(
   () => playlistStore.tracks,
-  () => (albumList.value = playlistStore.tracks.map((a) => a.track.album)),
+  () => (albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album))),
 );
 
 playlistStore.clean().finally(() => {

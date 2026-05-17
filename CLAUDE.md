@@ -53,7 +53,7 @@ We follow the Conventional Commits specification. Use the header format:
 Rules:
 - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `build`, `ci`, `revert`
 - Scope: optional but recommended (e.g. `player`, `auth`, `playlist`, `collection`, `api`, `styles`)
-- Summary: imperative mood, concise (<=50 chars), no trailing period
+- Summary: imperative mood, concise (<=50 chars), no trailing period; full header line hard cap 72 chars
 - Body (optional): explain the "what" and "why" (not "how"); wrap lines at ~72 chars; leave one blank line between header and body
 - Footer: reference issues (e.g. `Closes #123`) or breaking changes using `BREAKING CHANGE: description`
 
