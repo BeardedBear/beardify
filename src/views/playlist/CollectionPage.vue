@@ -60,14 +60,13 @@ const playlistStore = usePlaylist();
 const albumList = ref<AlbumSimplified[]>([]);
 const authStore = useAuth();
 
-const albumListFiltered = computed<AlbumSimplified[]>(() => {
-  const filtered = albumList.value.filter((album) => {
+const albumListFiltered = computed<AlbumSimplified[]>(() =>
+  albumList.value.filter((album) => {
     const matchedArtistName = album.artists[0].name.toLowerCase().includes(playlistStore.filter.toLowerCase());
     const matchedAlbumName = album.name.toLowerCase().includes(playlistStore.filter.toLowerCase());
     return matchedArtistName || matchedAlbumName;
-  });
-  return removeDuplicatesAlbums(filtered);
-});
+  }),
+);
 
 function syncNewPositions(event: { newIndex: number; oldIndex: number }): void {
   playlistStore.updateCollectionPosition(event.oldIndex, event.newIndex);
@@ -75,7 +74,7 @@ function syncNewPositions(event: { newIndex: number; oldIndex: number }): void {
 
 watch(
   () => playlistStore.tracks,
-  () => (albumList.value = playlistStore.tracks.map((a) => a.track.album)),
+  () => (albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album))),
 );
 
 playlistStore.clean().finally(() => {
