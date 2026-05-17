@@ -256,18 +256,18 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   .name {
     flex: 1;
     text-align: left;
-    transition: 0.2s;
+    transition: transform 0.2s;
   }
 
   &:hover {
     background-color: var(--bg-color);
 
-    .name {
-      padding-left: 0.2rem;
-    }
-
     .edit {
       opacity: 1;
+    }
+
+    .name {
+      transform: translateX(0.2rem);
     }
   }
 }
