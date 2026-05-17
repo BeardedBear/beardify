@@ -1,13 +1,6 @@
 import { AlbumSimplified } from "@/@types/Album";
 import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
 
-/**
- * Remove duplicate albums from an array, comparing by normalized name.
- * Normalization: trim, collapse internal spaces, strip diacritics, lowercase.
- * Keeps the first occurrence of each album name.
- * @param array - Array of albums potentially containing duplicates
- * @returns Deduplicated array preserving original order
- */
 export function removeDuplicatesAlbums(array: AlbumSimplified[]): AlbumSimplified[] {
   const seenIds = new Set<string>();
   const seenNames = new Set<string>();

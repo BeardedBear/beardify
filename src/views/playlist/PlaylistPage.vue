@@ -31,6 +31,7 @@ import Header from "@/components/playlist/PlaylistHeader.vue";
 import Tracks from "@/components/playlist/PlaylistTracks.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
+import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { isAlbum, isEP, isSingle, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -53,7 +54,7 @@ const categorizedTracks = computed(() => {
     }
   }
 
-  return { albums, eps, singles };
+  return { albums: removeDuplicatesAlbums(albums), eps: removeDuplicatesAlbums(eps), singles };
 });
 
 const albums = computed(() => categorizedTracks.value.albums);
@@ -61,7 +62,7 @@ const eps = computed(() => categorizedTracks.value.eps);
 const singles = computed(() => categorizedTracks.value.singles);
 
 const uniqueContributorIds = computed(() => {
-  const contributorIds = playlistStore.tracks.map((track) => track.added_by.id);
+  const contributorIds = playlistStore.tracks.map((track) => track.added_by.id).filter(Boolean);
   return [...new Set(contributorIds)];
 });
 
