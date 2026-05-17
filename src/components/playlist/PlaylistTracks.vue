@@ -43,6 +43,7 @@
       </div>
       <div class="contributor">
         <img
+          v-if="getContributorAvatar(track.added_by.id)"
           :title="getContributorDisplayName(track.added_by.id)"
           :src="getContributorAvatar(track.added_by.id)"
           alt=""
@@ -94,7 +95,8 @@ const { me } = useAuth();
 const currentTrack = computed(() => usePlayer().playerState?.track_window.current_track);
 
 const getContributorAvatar = (userId: string): string => {
-  return props.contributorsData?.[userId]?.images[1]?.url || userId;
+  const images = props.contributorsData?.[userId]?.images ?? [];
+  return images[1]?.url ?? images[0]?.url ?? "";
 };
 
 const getContributorDisplayName = (userId: string): string => {
