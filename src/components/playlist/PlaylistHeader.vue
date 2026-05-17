@@ -28,7 +28,10 @@
         </div>
       </div>
     </div>
-    <Actions />
+    <div class="right">
+      <input v-if="withFilter" v-model="playlistStore.filter" class="search" placeholder="Filter..." type="search" />
+      <Actions />
+    </div>
   </div>
 </template>
 
@@ -45,6 +48,7 @@ defineProps<{
   noCover?: boolean;
   noDuration?: boolean;
   notFit?: boolean;
+  withFilter?: boolean;
 }>();
 
 const playlistStore = usePlaylist();
