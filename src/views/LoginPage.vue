@@ -63,8 +63,9 @@ const spotifyAuthUrl = computed(
     `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${authStore.storage?.codeChallenge}`,
 );
 
-async function refreshChallenge(): Promise<void> {
-  await authStore.generateStorage(router.currentRoute.value.query.ref?.toString());
+async function cancelWaiting(): Promise<void> {
+  waiting.value = false;
+  await refreshChallenge();
 }
 
 async function handleLogin(): Promise<void> {
@@ -77,9 +78,8 @@ async function handleLogin(): Promise<void> {
   }
 }
 
-async function cancelWaiting(): Promise<void> {
-  waiting.value = false;
-  await refreshChallenge();
+async function refreshChallenge(): Promise<void> {
+  await authStore.generateStorage(router.currentRoute.value.query.ref?.toString());
 }
 
 (async () => {
