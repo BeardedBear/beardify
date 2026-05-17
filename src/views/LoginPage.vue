@@ -1,5 +1,15 @@
 <template>
   <div class="login">
+    <Transition name="fade">
+      <div v-if="waiting" class="waiting-overlay">
+        <div class="waiting-card">
+          <LoadingDots />
+          <p class="waiting-label">Waiting for Spotify authorization…</p>
+          <button class="button button-ghost" @click="cancelWaiting">Cancel</button>
+        </div>
+      </div>
+    </Transition>
+
     <div class="form">
       <img alt="" class="logo" src="/img/logo-long.svg" />
       <div class="pres">
@@ -23,16 +33,14 @@
           </li>
         </ul>
       </div>
-      <div>
-        <a
-          :href="spotifyAuthUrl"
-          class="button button-primary"
-          @click.prevent="handleLogin"
-        >
-          <i class="icon icon-spotify" />
-          Connect with Spotify (Premium)
-        </a>
-      </div>
+      <a
+        :href="spotifyAuthUrl"
+        class="button button-spotify"
+        @click.prevent="handleLogin"
+      >
+        <i class="icon icon-spotify" />
+        Connect with Spotify (Premium)
+      </a>
     </div>
   </div>
 </template>
@@ -41,49 +49,53 @@
 import { computed, ref } from "vue";
 
 import { api } from "@/api";
+import LoadingDots from "@/components/ui/LoadingDots.vue";
 import { clearAuthData } from "@/helpers/authUtils";
 import { isTauri } from "@/helpers/platform";
 import router, { RouteName } from "@/router";
 import { useAuth } from "@/views/auth/AuthStore";
 
 const authStore = useAuth();
-const challenge = ref<string | undefined>(undefined);
+const waiting = ref(false);
 
 const spotifyAuthUrl = computed(
   () =>
-    `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${challenge.value}`,
+    `https://accounts.spotify.com/authorize?response_type=code&client_id=${api.clientId}&redirect_uri=${api.redirectUri}&scope=${api.scopes}&code_challenge_method=S256&code_challenge=${authStore.storage?.codeChallenge}`,
 );
+
+async function refreshChallenge(): Promise<void> {
+  await authStore.generateStorage(router.currentRoute.value.query.ref?.toString());
+}
 
 async function handleLogin(): Promise<void> {
   if (isTauri()) {
     const { invoke } = await import("@tauri-apps/api/core");
     await invoke("open_spotify_auth", { url: spotifyAuthUrl.value });
+    waiting.value = true;
   } else {
     window.location.href = spotifyAuthUrl.value;
   }
 }
 
+async function cancelWaiting(): Promise<void> {
+  waiting.value = false;
+  await refreshChallenge();
+}
+
 (async () => {
-  // If user already has a valid token, redirect to home
   if (authStore.accessToken && authStore.storage?.refreshToken) {
     try {
-      // Try to refresh to check if token is still valid
       await authStore.refresh();
-      // If successful, redirect to home
       router.push(RouteName.Home);
       return;
     } catch {
-      // If refresh fails, continue with normal login flow
       clearAuthData();
     }
   }
 
-  // Only generate new storage if we don't have valid PKCE codes
-  // Don't call clearAuthData() here - it would wipe the codeVerifier needed after Spotify redirect
   if (!authStore.storage?.codeChallenge || !authStore.storage?.codeVerifier) {
-    await authStore.generateStorage(router.currentRoute.value.query.ref?.toString());
+    await refreshChallenge();
   }
-  challenge.value = authStore.storage?.codeChallenge;
 })();
 </script>
 
@@ -137,9 +149,45 @@ b {
 }
 
 .icon {
-  font-size: var(--font-size-xl);
-  margin-right: 0.3rem;
-  position: relative;
-  top: 0.2rem;
+  font-size: 1.2rem;
+}
+
+.waiting-overlay {
+  align-items: center;
+  background-color: rgb(0 0 0 / 70%);
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.waiting-card {
+  align-items: center;
+  background-color: var(--bg-color-dark);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2.5rem 3rem;
+}
+
+.waiting-label {
+  color: var(--font-color-light);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

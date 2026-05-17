@@ -35,11 +35,17 @@ function handleAuthUrl(url: string): void {
 
 async function setupDeepLink(): Promise<void> {
   const { getCurrent, onOpenUrl } = await import("@tauri-apps/plugin-deep-link");
+  const { listen } = await import("@tauri-apps/api/event");
 
   const [initial] = await Promise.all([
     getCurrent(),
     onOpenUrl((urls: string[]) => {
       if (urls.length > 0) handleAuthUrl(urls[0]);
+    }),
+    // deep-link plugin only fires onOpenUrl for new instances; this catches URLs forwarded
+    // by single-instance when the OS re-launches the app with a beardify:// argument
+    listen<string[]>("deep-link-urls", ({ payload }) => {
+      if (payload.length > 0) handleAuthUrl(payload[0]);
     }),
   ]);
 

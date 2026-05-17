@@ -124,6 +124,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss">
+@use "@/assets/scss/button";
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/font-size" as *;
 @use "@/assets/scss/responsive" as responsive;
