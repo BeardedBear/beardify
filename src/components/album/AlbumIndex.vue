@@ -366,8 +366,8 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 
 .artists {
   overflow: visible;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .date {
