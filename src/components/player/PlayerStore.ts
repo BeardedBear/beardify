@@ -7,7 +7,6 @@ import { NotificationType } from "@/@types/Notification";
 import { defaultPlaybackState, Player } from "@/@types/Player";
 import { Track } from "@/@types/Track";
 import { instance } from "@/api";
-import { useNotification } from "@/components/notification/NotificationStore";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
 import {
@@ -64,19 +63,41 @@ export const usePlayer = defineStore("player", {
       this.lastRequestedDeviceId = null;
       this.isSettingDevice = false;
 
-      // Handle pending device request
-      if (!hasTimedOut() && finalRequested && finalRequested !== this.devices.activeDevice?.id) {
+      // Honor a pending request ONLY if a *different* device was asked for while
+      // switching. Re-queueing the same target that just failed would loop
+      // forever on ghost/stale devices that can never become active.
+      if (
+        !hasTimedOut()
+        && finalRequested
+        && finalRequested !== targetDeviceId
+        && finalRequested !== this.devices.activeDevice?.id
+      ) {
         await this.setDevice(finalRequested, retries);
         return;
       }
 
-      // Notify if switch failed
-      if (!this._isDeviceAlreadyActive(targetDeviceId)) {
-        useNotification().addNotification({
-          msg: "Failed to switch device",
-          type: NotificationType.Error,
-        });
+      // Switch succeeded — nothing else to do.
+      if (this._isDeviceAlreadyActive(targetDeviceId)) return;
+
+      // Switch failed (e.g. ghost device still listed by Spotify but unreachable).
+      // Drop the dead device from the list so the user can't keep clicking it,
+      // and recover the player view that was blanked at the start of the switch.
+      try {
+        const { data } = await instance().get<DevicesResponse>("me/player/devices");
+        this.devices.list = data.devices.filter((device) => device.id !== targetDeviceId || device.is_active);
+      } catch {
+        // ignore refresh errors
       }
+      try {
+        await this.getExternalPlayerState();
+      } catch {
+        // ignore recovery errors
+      }
+
+      notification({
+        msg: "Failed to switch device. It may be offline — the device list has been refreshed.",
+        type: NotificationType.Error,
+      });
     },
 
     _isDeviceAlreadyActive(deviceId: string): boolean {
