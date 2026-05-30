@@ -40,6 +40,7 @@ export const usePlaylist = defineStore("playlist", {
         if (import.meta.env.DEV) console.error("Error fetching playlist:", error);
         this.playlist = defaultPlaylist;
         this.followed = false;
+        notification({ msg: "Unable to load this playlist.", type: NotificationType.Error });
       }
     },
 

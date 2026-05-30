@@ -1,8 +1,8 @@
 <template>
   <div v-if="notificationStore.notifications.length !== 0" class="notification-list">
     <div
-      v-for="(notif, index) in notificationStore.notifications"
-      :key="index"
+      v-for="notif in notificationStore.notifications"
+      :key="notif.id"
       :class="{ error: notif.type === NotificationType.Error }"
       class="notification"
     >

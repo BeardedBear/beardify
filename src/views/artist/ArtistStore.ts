@@ -8,6 +8,7 @@ import {
   RelatedArtists,
 } from "@/@types/Artist";
 import { defaultArtist } from "@/@types/Defaults";
+import { NotificationType } from "@/@types/Notification";
 import { Paging } from "@/@types/Paging";
 import { instance } from "@/api";
 import {
@@ -22,6 +23,7 @@ import {
   searchMusicBrainzArtistId,
   searchMusicBrainzBySpotifyId,
 } from "@/helpers/musicbrainz";
+import { notification } from "@/helpers/notifications";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { cleanUrl } from "@/helpers/urls";
 import { isEP, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
@@ -92,7 +94,8 @@ export const useArtist = defineStore("artist", {
           this.getWikidataArtist(this.wikidataId);
         }
       } catch {
-        // silent fail
+        this.artist = defaultArtist;
+        notification({ msg: "Unable to load this artist.", type: NotificationType.Error });
       }
     },
 

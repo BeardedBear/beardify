@@ -2,7 +2,9 @@ import { defineStore } from "pinia";
 
 import { Album, AlbumPage } from "@/@types/Album";
 import { defaultAlbum } from "@/@types/Defaults";
+import { NotificationType } from "@/@types/Notification";
 import { instance } from "@/api";
+import { notification } from "@/helpers/notifications";
 
 export const useAlbum = defineStore("album", {
   actions: {
@@ -15,7 +17,8 @@ export const useAlbum = defineStore("album", {
         const e = await instance().get<Album>(`albums/${albumId}`);
         this.album = e.data;
       } catch {
-        // silent fail
+        this.album = defaultAlbum;
+        notification({ msg: "Unable to load this album.", type: NotificationType.Error });
       }
     },
   },
