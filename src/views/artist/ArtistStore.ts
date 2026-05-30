@@ -265,13 +265,18 @@ export const useArtist = defineStore("artist", {
       }
     },
 
-    switchFollow(artistId: string) {
-      if (this.followStatus) {
-        instance().delete(`me/following?type=artist&ids=${artistId}`);
-        this.followStatus = false;
-      } else {
-        instance().put(`me/following?type=artist&ids=${artistId}`);
-        this.followStatus = true;
+    async switchFollow(artistId: string) {
+      // Optimistic update, reverted if the API call fails
+      const previousStatus = this.followStatus;
+      this.followStatus = !previousStatus;
+      try {
+        if (previousStatus) {
+          await instance().delete(`me/following?type=artist&ids=${artistId}`);
+        } else {
+          await instance().put(`me/following?type=artist&ids=${artistId}`);
+        }
+      } catch {
+        this.followStatus = previousStatus;
       }
     },
 

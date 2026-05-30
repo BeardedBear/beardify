@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
 
 import { defaultPlaylist } from "@/@types/Defaults";
+import { NotificationType } from "@/@types/Notification";
 import { Paging } from "@/@types/Paging";
 import { Playlist, PlaylistPage, PlaylistTrack } from "@/@types/Playlist";
 import { TrackToRemove } from "@/@types/Track";
 import { instance } from "@/api";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
+import { notification } from "@/helpers/notifications";
 import { cleanUrl } from "@/helpers/urls";
 import { useAuth } from "@/views/auth/AuthStore";
 
@@ -28,11 +30,17 @@ export const usePlaylist = defineStore("playlist", {
     },
 
     async getPlaylist(url: string) {
-      const cleanedUrl = cleanUrl(url);
-      this.playlist = (await instance().get<Playlist>(cleanedUrl)).data;
-      this.followed = (
-        await instance().get<boolean[]>(`playlists/${this.playlist.id}/followers/contains?ids=${useAuth().me?.id}`)
-      ).data.shift();
+      try {
+        const cleanedUrl = cleanUrl(url);
+        this.playlist = (await instance().get<Playlist>(cleanedUrl)).data;
+        this.followed = (
+          await instance().get<boolean[]>(`playlists/${this.playlist.id}/followers/contains?ids=${useAuth().me?.id}`)
+        ).data.shift();
+      } catch (error: unknown) {
+        if (import.meta.env.DEV) console.error("Error fetching playlist:", error);
+        this.playlist = defaultPlaylist;
+        this.followed = false;
+      }
     },
 
     async getTracks(url: string) {
@@ -66,11 +74,18 @@ export const usePlaylist = defineStore("playlist", {
       this.tracks = this.tracks.filter((track) => !urisToRemove.has(track.track.uri));
     },
 
-    updateCollectionPosition(oldIndex: number, newIndex: number) {
-      instance().put(`playlists/${this.playlist.id}/tracks`, {
-        insert_before: oldIndex < newIndex ? newIndex + 1 : newIndex,
-        range_start: oldIndex,
-      });
+    async updateCollectionPosition(oldIndex: number, newIndex: number) {
+      try {
+        await instance().put(`playlists/${this.playlist.id}/tracks`, {
+          insert_before: oldIndex < newIndex ? newIndex + 1 : newIndex,
+          range_start: oldIndex,
+        });
+      } catch {
+        notification({
+          msg: "Unable to reorder the playlist. Please try again.",
+          type: NotificationType.Error,
+        });
+      }
     },
   },
 

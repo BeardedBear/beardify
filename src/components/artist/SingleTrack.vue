@@ -21,12 +21,12 @@
 
 <script lang="ts" setup>
 import { AlbumSimplified } from "@/@types/Album";
-import { instance } from "@/api";
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import Cover from "@/components/ui/AlbumCover.vue";
 import { date } from "@/helpers/date";
 import { isCurrentTrack } from "@/helpers/helper";
+import { playAlbum } from "@/helpers/playAlbum";
 
 defineProps<{
   single: AlbumSimplified;
@@ -35,7 +35,7 @@ defineProps<{
 const playerStore = usePlayer();
 
 function playSingle(albumUri: string): void {
-  instance().put("me/player/play", { context_uri: albumUri });
+  playAlbum(albumUri);
 }
 </script>
 
