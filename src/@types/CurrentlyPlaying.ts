@@ -36,7 +36,7 @@ export interface CurrentlyPlayingContext {
   type: ContextType;
   uri: string;
 }
-export interface CurrentlyPlayingItem {
+interface CurrentlyPlayingItem {
   album: CurrentlyPlayingAlbum;
   artists: Artist[];
   available_markets: string[];
@@ -54,4 +54,4 @@ export interface CurrentlyPlayingItem {
   uri: string;
 }
 
-export type CurrentlyPlayingType = "ad" | "episode" | "track" | "unknown";
+type CurrentlyPlayingType = "ad" | "episode" | "track" | "unknown";

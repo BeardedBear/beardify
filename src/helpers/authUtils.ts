@@ -18,11 +18,3 @@ export function clearAuthData(): void {
 
   sessionStorage.removeItem("spotify_token_last_refresh");
 }
-
-/**
- * Clear all auth data and redirect the user to the login page.
- */
-export function logoutAndRedirect(): void {
-  clearAuthData();
-  window.location.href = "/login";
-}

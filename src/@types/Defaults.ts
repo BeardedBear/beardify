@@ -2,20 +2,12 @@ import { Album, AlbumSimplified } from "./Album";
 import { Artist } from "./Artist";
 import { CurrentlyPlaying, CurrentlyPlayingContext } from "./CurrentlyPlaying";
 import { Device } from "./Device";
-import { Image } from "./Image";
 import { ExternalUrls } from "./Misc";
-import { PlaylistTracksRef, SimplifiedPlaylist } from "./Playlist";
 import { PublicUser } from "./PublicUser";
-import { Track, TrackSimplified } from "./Track";
+import { Track } from "./Track";
 import { Followers } from "./User";
 
-export const defaultImage: Image = {
-  height: 0,
-  url: "",
-  width: 0,
-};
-
-export const defaultPaging = {
+const defaultPaging = {
   href: "",
   items: [],
   limit: 0,
@@ -25,11 +17,11 @@ export const defaultPaging = {
   total: 0,
 };
 
-export const defaultExternalUrls: ExternalUrls = {
+const defaultExternalUrls: ExternalUrls = {
   spotify: "",
 };
 
-export const defaultAlbumSimplified: AlbumSimplified = {
+const defaultAlbumSimplified: AlbumSimplified = {
   album_group: "album",
   album_type: "album",
   artists: [],
@@ -92,7 +84,7 @@ export const defaultCurrentlyPlaying: CurrentlyPlaying = {
   timestamp: 0,
 };
 
-export const defaultTrack: Track = {
+const defaultTrack: Track = {
   album: defaultAlbumSimplified,
   artists: [],
   available_markets: [],
@@ -106,24 +98,6 @@ export const defaultTrack: Track = {
   items: [],
   name: "",
   popularity: 0,
-  preview_url: "",
-  track_number: 0,
-  type: "",
-  uri: "",
-};
-export const defaultTrackSimplified: TrackSimplified = {
-  artists: [],
-  available_markets: [],
-  disc_number: 0,
-  duration_ms: 0,
-  explicit: false,
-  external_urls: {
-    spotify: "",
-  },
-  href: "",
-  id: "",
-  is_local: false,
-  name: "",
   preview_url: "",
   track_number: 0,
   type: "",
@@ -156,7 +130,7 @@ const defaultFollowers: Followers = {
   total: 0,
 };
 
-export const defaultPublicUser: PublicUser = {
+const defaultPublicUser: PublicUser = {
   display_name: "",
   external_urls: defaultExternalUrls,
   followers: defaultFollowers,
@@ -165,34 +139,6 @@ export const defaultPublicUser: PublicUser = {
   images: [],
   type: "",
   uri: "",
-};
-
-export const defaultPlaylistTracksRef: PlaylistTracksRef = {
-  href: "",
-  total: 0,
-};
-
-export const defaultSimplifiedPlaylist: SimplifiedPlaylist = {
-  collaborative: false,
-  description: "",
-  external_urls: defaultExternalUrls,
-  href: "",
-  id: "",
-  images: [],
-  name: "",
-  owner: defaultPublicUser,
-  public: false,
-  snapshot_id: "",
-  tracks: defaultPlaylistTracksRef,
-  type: "",
-  uri: "",
-};
-
-export const defaultPlaylistTrack = {
-  added_at: 0,
-  added_by: defaultPublicUser,
-  is_local: false,
-  track: defaultTrack,
 };
 
 export const defaultPlaylist = {

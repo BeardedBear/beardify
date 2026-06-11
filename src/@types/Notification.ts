@@ -3,10 +3,6 @@ export enum NotificationType {
   Success,
   Error,
 }
-export interface DisplayedNotification extends Notification {
-  id: number;
-}
-
 export interface Notification {
   msg: string;
   type: NotificationType;
@@ -14,4 +10,8 @@ export interface Notification {
 
 export interface NotificationStore {
   notifications: DisplayedNotification[];
+}
+
+interface DisplayedNotification extends Notification {
+  id: number;
 }

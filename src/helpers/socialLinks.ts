@@ -7,7 +7,7 @@ export interface SocialLink {
 /**
  * Social network patterns to identify URLs
  */
-export const SOCIAL_PATTERNS: Array<{ icon: string; name: string; pattern: RegExp }> = [
+const SOCIAL_PATTERNS: Array<{ icon: string; name: string; pattern: RegExp }> = [
   { icon: "icon-facebook", name: "Facebook", pattern: /facebook\.com/i },
   { icon: "icon-twitter", name: "Twitter / X", pattern: /twitter\.com|x\.com/i },
   { icon: "icon-instagram", name: "Instagram", pattern: /instagram\.com/i },
@@ -16,36 +16,6 @@ export const SOCIAL_PATTERNS: Array<{ icon: string; name: string; pattern: RegEx
   { icon: "icon-soundcloud", name: "SoundCloud", pattern: /soundcloud\.com/i },
   { icon: "icon-link", name: "Website", pattern: /.*/ }, // Fallback for unknown URLs
 ];
-
-/**
- * Extract and clean a URL from a string that might contain extra text
- */
-export function detectSocialLinkFromUrl(url: string): null | SocialLink {
-  for (const { icon, name, pattern } of SOCIAL_PATTERNS) {
-    if (pattern.test(url)) {
-      return { icon, name, url };
-    }
-  }
-  return null;
-}
-
-export function extractUrl(text?: null | string): null | string {
-  if (!text) return null;
-  const urlMatch = text.match(/https?:\/\/[^\s]+/i);
-  if (urlMatch) {
-    let url = urlMatch[0];
-    // Normalize to https (keep host and path)
-    url = url.replace(/^http:\/\//i, "https://");
-    url = url.replace(/[.,;:!?)]+$/, "");
-    return url;
-  }
-  const domainMatch = text.match(/(?:www\.)?([a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+)(?:\/[^\s]*)?/i);
-  if (domainMatch) {
-    const domain = domainMatch[0].replace(/^\.+/, "");
-    return `https://${domain}`;
-  }
-  return null;
-}
 
 export function socialLinksFromDiscogs(urls: string[] | undefined): SocialLink[] {
   const links: SocialLink[] = [];
@@ -137,4 +107,34 @@ export function socialLinksFromWikidata(
   }
 
   return links;
+}
+
+/**
+ * Extract and clean a URL from a string that might contain extra text
+ */
+function detectSocialLinkFromUrl(url: string): null | SocialLink {
+  for (const { icon, name, pattern } of SOCIAL_PATTERNS) {
+    if (pattern.test(url)) {
+      return { icon, name, url };
+    }
+  }
+  return null;
+}
+
+function extractUrl(text?: null | string): null | string {
+  if (!text) return null;
+  const urlMatch = text.match(/https?:\/\/[^\s]+/i);
+  if (urlMatch) {
+    let url = urlMatch[0];
+    // Normalize to https (keep host and path)
+    url = url.replace(/^http:\/\//i, "https://");
+    url = url.replace(/[.,;:!?)]+$/, "");
+    return url;
+  }
+  const domainMatch = text.match(/(?:www\.)?([a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+)(?:\/[^\s]*)?/i);
+  if (domainMatch) {
+    const domain = domainMatch[0].replace(/^\.+/, "");
+    return `https://${domain}`;
+  }
+  return null;
 }

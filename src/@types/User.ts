@@ -6,8 +6,6 @@ export interface Followers {
   href: null;
   total: number;
 }
-export type Product = "free" | "open" | "premium";
-
 export interface User {
   country: string;
   display_name: string;
@@ -27,3 +25,5 @@ export interface UserStore {
   playlists: SimplifiedPlaylist[];
   user: null | User;
 }
+
+type Product = "free" | "open" | "premium";

@@ -43,7 +43,7 @@ export interface WikidataArtist {
 /**
  * External identifiers available from Wikidata
  */
-export interface WikidataArtistIdentifiers {
+interface WikidataArtistIdentifiers {
   albumOfTheYearId: null | string;
   allMusicId: null | string;
   appleMusicId: null | string;
@@ -62,15 +62,6 @@ export interface WikidataArtistIdentifiers {
   spotifyId: null | string;
   twitterUsername: null | string;
   youtubeChannelId: null | string;
-}
-
-/**
- * Interface for available Wikipedia language
- */
-export interface WikipediaLanguage {
-  code: string;
-  name: string;
-  url: string;
 }
 
 /**
@@ -100,6 +91,15 @@ interface WikidataEntity {
   labels?: Record<string, { language: string; value: string }>;
   sitelinks?: Record<string, { badges: string[]; site: string; title: string }>;
   type: string;
+}
+
+/**
+ * Interface for available Wikipedia language
+ */
+interface WikipediaLanguage {
+  code: string;
+  name: string;
+  url: string;
 }
 
 /**

@@ -1,5 +1,5 @@
 /** Gamma correction exponent for the perceptual volume curve. */
-export const DEFAULT_GAMMA = 1.8;
+const DEFAULT_GAMMA = 1.8;
 
 /**
  * Clamps a number to [min, max].

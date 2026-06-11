@@ -1,8 +1,3 @@
-export interface Check {
-  createdAt: number;
-  id: string;
-}
-
 export interface MenuItem {
   name: string;
   slugs: string[];
@@ -32,4 +27,9 @@ export interface ReleasesPage {
   monthList: string[];
   releases: Release[];
   uid: null | number;
+}
+
+interface Check {
+  createdAt: number;
+  id: string;
 }

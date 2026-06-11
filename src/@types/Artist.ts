@@ -84,23 +84,6 @@ export interface DiscogsArtistReleasesResponse {
   releases: DiscogsRelease[];
 }
 
-export interface DiscogsImage {
-  height: number;
-  resource_url: string;
-  type: "primary" | "secondary";
-  uri: string;
-  uri150: string;
-  width: number;
-}
-
-export interface DiscogsMember {
-  active: boolean;
-  id: number;
-  name: string;
-  resource_url: string;
-  thumbnail_url: string;
-}
-
 export interface DiscogsRelease {
   artist: string;
   format: string;
@@ -119,10 +102,27 @@ export interface RelatedArtists {
   artists: Artist[];
 }
 
+interface DiscogsImage {
+  height: number;
+  resource_url: string;
+  type: "primary" | "secondary";
+  uri: string;
+  uri150: string;
+  width: number;
+}
+
+interface DiscogsMember {
+  active: boolean;
+  id: number;
+  name: string;
+  resource_url: string;
+  thumbnail_url: string;
+}
+
 /**
  * Wikidata artist data with all external identifiers
  */
-export interface WikidataArtist {
+interface WikidataArtist {
   description: null | string;
   id: string;
   identifiers: WikidataArtistIdentifiers;
@@ -135,7 +135,7 @@ export interface WikidataArtist {
 /**
  * External identifiers available from Wikidata
  */
-export interface WikidataArtistIdentifiers {
+interface WikidataArtistIdentifiers {
   albumOfTheYearId: null | string;
   allMusicId: null | string;
   appleMusicId: null | string;
@@ -159,7 +159,7 @@ export interface WikidataArtistIdentifiers {
 /**
  * Available Wikipedia language
  */
-export interface WikipediaLanguage {
+interface WikipediaLanguage {
   code: string;
   name: string;
   url: string;

@@ -9,7 +9,7 @@ import { sleep } from "@/helpers/sleep";
 import { createSpotifyPlayer } from "@/spotify";
 
 // Define a type for API errors
-export interface ApiError {
+interface ApiError {
   response?: {
     status: number;
   };
@@ -88,7 +88,7 @@ export async function executePlaybackApiCall(
  * @param error - The error that occurred during the API call
  * @param retry - Function to call for retrying the operation
  */
-export async function handlePlaybackApiError(
+async function handlePlaybackApiError(
   error: unknown,
   retry: (deviceId: string) => Promise<void>,
 ): Promise<void> {
@@ -154,7 +154,7 @@ export async function handlePlaybackApiError(
  * @param error - The error to check
  * @returns True if the error is an API error, false otherwise
  */
-export function isApiError(error: unknown): error is ApiError {
+function isApiError(error: unknown): error is ApiError {
   return (
     typeof error === "object"
     && error !== null

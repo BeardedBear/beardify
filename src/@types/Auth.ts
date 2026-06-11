@@ -15,7 +15,7 @@ export interface AuthAPIResponse {
   token_type: "Bearer";
 }
 
-export interface StorageAuth {
+interface StorageAuth {
   codeChallenge: string;
   codeVerifier: string;
   referer: string;

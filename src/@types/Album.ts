@@ -24,8 +24,6 @@ export interface Album {
   uri: string;
 }
 
-export type AlbumGroup = "album" | "appears_on" | "compilation" | "single";
-
 export interface AlbumPage {
   album: Album;
 }
@@ -46,9 +44,11 @@ export interface AlbumSimplified {
   type: string;
   uri: string;
 }
+
 export type AlbumType = "album" | "ALBUM" | "compilation" | "single" | "SINGLE";
 export interface Copyrights {
   text: string;
   type: string;
 }
 export type ReleaseDatePrecision = "day" | "month" | "year";
+type AlbumGroup = "album" | "appears_on" | "compilation" | "single";
