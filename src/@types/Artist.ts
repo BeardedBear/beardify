@@ -102,6 +102,30 @@ export interface RelatedArtists {
   artists: Artist[];
 }
 
+/**
+ * External identifiers available from Wikidata
+ */
+export interface WikidataArtistIdentifiers {
+  albumOfTheYearId: null | string;
+  allMusicId: null | string;
+  appleMusicId: null | string;
+  bandcampId: null | string;
+  deezerId: null | string;
+  discogsId: null | string;
+  facebookId: null | string;
+  geniusId: null | string;
+  instagramUsername: null | string;
+  musicbrainzId: null | string;
+  officialWebsite: null | string;
+  rateYourMusicId: null | string;
+  setlistfmId: null | string;
+  songkickId: null | string;
+  soundcloudId: null | string;
+  spotifyId: null | string;
+  twitterUsername: null | string;
+  youtubeChannelId: null | string;
+}
+
 interface DiscogsImage {
   height: number;
   resource_url: string;
@@ -130,30 +154,6 @@ interface WikidataArtist {
   label: null | string;
   wikipediaLanguages: WikipediaLanguage[];
   wikipediaUrl: null | string;
-}
-
-/**
- * External identifiers available from Wikidata
- */
-interface WikidataArtistIdentifiers {
-  albumOfTheYearId: null | string;
-  allMusicId: null | string;
-  appleMusicId: null | string;
-  bandcampId: null | string;
-  deezerId: null | string;
-  discogsId: null | string;
-  facebookId: null | string;
-  geniusId: null | string;
-  instagramUsername: null | string;
-  musicbrainzId: null | string;
-  officialWebsite: null | string;
-  rateYourMusicId: null | string;
-  setlistfmId: null | string;
-  songkickId: null | string;
-  soundcloudId: null | string;
-  spotifyId: null | string;
-  twitterUsername: null | string;
-  youtubeChannelId: null | string;
 }
 
 /**
