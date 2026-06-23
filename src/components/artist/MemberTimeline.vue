@@ -273,6 +273,18 @@ const ticks = computed<AxisTick[]>(() => {
     @include font-bold;
 
     color: var(--font-color-default);
+
+    &::after {
+      background-color: #2ecc71;
+      border-radius: 50%;
+      box-shadow: 0 0 5px rgb(46 204 113 / 80%);
+      content: "";
+      display: inline-block;
+      height: 7px;
+      margin-left: 0.4rem;
+      vertical-align: middle;
+      width: 7px;
+    }
   }
 }
 

@@ -87,8 +87,8 @@ const MIN_SEG_WIDTH = 0.4;
 const artistStore = useArtist();
 const timeline = computed(() => artistStore.wikiTimeline);
 
-function yearLabel(value: number, till: number): string {
-  return value >= till - 0.3 ? "present" : `${Math.floor(value)}`;
+function yearLabel(value: number, till: number, openEnded: boolean): string {
+  return openEnded || value >= till - 0.3 ? "present" : `${Math.floor(value)}`;
 }
 
 const rows = computed<TimelineRow[]>(() => {
@@ -110,14 +110,14 @@ const rows = computed<TimelineRow[]>(() => {
             color: role?.color ?? "#8a8a8a",
             height: seg.thin ? "0.28rem" : "0.7rem",
             left: ((seg.from - tl.from) / span) * 100,
-            title: `${label} · ${Math.floor(seg.from)}–${yearLabel(seg.till, tl.till)}`,
+            title: `${label} · ${Math.floor(seg.from)}–${yearLabel(seg.till, tl.till, seg.openEnded)}`,
             width: Math.max(((seg.till - seg.from) / span) * 100, MIN_SEG_WIDTH),
             z: seg.thin ? 2 + index : 1,
           };
         });
 
       return {
-        active: segments.some((seg) => seg.title.endsWith("present")),
+        active: tl.segments.filter((seg) => seg.barId === bar.id).some((seg) => seg.openEnded),
         id: bar.id,
         name: bar.name,
         segments,
@@ -243,6 +243,18 @@ const ticks = computed<AxisTick[]>(() => {
     @include font-bold;
 
     color: var(--font-color-default);
+
+    &::after {
+      background-color: #2ecc71;
+      border-radius: 50%;
+      box-shadow: 0 0 5px rgb(46 204 113 / 80%);
+      content: "";
+      display: inline-block;
+      height: 7px;
+      margin-left: 0.4rem;
+      vertical-align: middle;
+      width: 7px;
+    }
   }
 }
 

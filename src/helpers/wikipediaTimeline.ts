@@ -39,6 +39,8 @@ interface WikiTimelineSegment {
   barId: string;
   colorId: string;
   from: number;
+  /** true when the segment has no explicit end (member still active) */
+  openEnded: boolean;
   /** true for thin overlay stripes (secondary roles, EasyTimeline width < default) */
   thin: boolean;
   till: number;
@@ -184,11 +186,13 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
       const [, barId, from, till, colorId, width] = plotMatch;
       const fromYear = toFractionalYear(from, format, range);
       const tillYear = toFractionalYear(till, format, range);
+      const openEnded = till === "end" || till.includes("#time");
       if (fromYear !== null && tillYear !== null) {
         segments.push({
           barId,
           colorId,
           from: fromYear,
+          openEnded,
           thin: width !== undefined && parseInt(width, 10) < DEFAULT_BAR_WIDTH,
           till: tillYear,
         });
