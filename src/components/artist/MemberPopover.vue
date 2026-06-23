@@ -44,7 +44,9 @@
                   <span class="mp-section-title">Member of</span>
                   <ul class="mp-groups">
                     <li v-for="group in displayedGroups" :key="group.name" :class="{ former: !group.active }">
-                      <span class="mp-group-name">{{ group.name }}</span>
+                      <button class="mp-group-name" type="button" @click="searchGroup(group.name)">
+                        {{ group.name }}
+                      </button>
                       <span v-if="!group.active" class="mp-former">former</span>
                     </li>
                   </ul>
@@ -74,6 +76,8 @@ import { computed, nextTick, ref } from "vue";
 
 import type { MemberInfo } from "@/@types/Artist";
 
+import { useDialog } from "@/components/dialog/DialogStore";
+import { useSearch } from "@/components/search/SearchStore";
 import { getDiscogsMemberInfo } from "@/helpers/discogs";
 
 const props = defineProps<{
@@ -166,6 +170,14 @@ function scheduleClose(): void {
   closeTimer = setTimeout(() => {
     visible.value = false;
   }, CLOSE_DELAY);
+}
+
+function searchGroup(name: string): void {
+  visible.value = false;
+  const dialog = useDialog();
+  const search = useSearch();
+  search.updateQuery(name);
+  dialog.open({ type: "search" });
 }
 
 function updatePosition(): void {
@@ -291,7 +303,24 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 }
 
 .member-popover .mp-group-name {
+  appearance: none;
+  background: none;
+  border: none;
   color: var(--font-color-default);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--primary-color-light);
+    text-decoration: underline;
+  }
 }
 
 .member-popover .mp-former {
