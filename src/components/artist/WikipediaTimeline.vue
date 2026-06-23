@@ -24,7 +24,7 @@
 
       <template v-for="row in rows" :key="row.id">
         <div class="member-name" :class="{ 'is-active': row.active }">
-          {{ row.name }}
+          <MemberPopover :name="row.name">{{ row.name }}</MemberPopover>
         </div>
         <div class="member-track">
           <span
@@ -58,6 +58,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
+import MemberPopover from "@/components/artist/MemberPopover.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 interface AxisTick {

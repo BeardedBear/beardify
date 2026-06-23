@@ -13,45 +13,43 @@
     <div v-if="activeMembers.length || formerMembers.length" class="sidebar-section">
       <h3 class="sidebar-title">Members</h3>
       <div v-if="activeMembers.length" class="sidebar-members">
-        <a
+        <MemberPopover
           v-for="member in activeMembers"
           :key="member.id"
-          :href="member.url"
-          class="sidebar-member"
-          target="_blank"
-          rel="noopener noreferrer"
+          class="sidebar-member-pop"
+          :discogs-id="member.id"
+          :name="member.name"
+          :thumbnail="member.thumbnail"
         >
-          <img v-if="member.thumbnail" :src="member.thumbnail" :alt="member.name" class="member-thumbnail" />
-          <div v-else class="member-placeholder">
-            <i class="icon-user" />
-          </div>
-          <span class="member-name">{{ member.name }}</span>
-          <div v-if="member.thumbnail" class="member-popup">
-            <img :src="member.thumbnail" :alt="member.name" />
-          </div>
-        </a>
-      </div>
-
-      <template v-if="formerMembers.length">
-        <h4 class="sidebar-subtitle">Former</h4>
-        <div class="sidebar-members">
-          <a
-            v-for="member in formerMembers"
-            :key="member.id"
-            :href="member.url"
-            class="sidebar-member inactive"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a :href="member.url" class="sidebar-member" target="_blank" rel="noopener noreferrer">
             <img v-if="member.thumbnail" :src="member.thumbnail" :alt="member.name" class="member-thumbnail" />
             <div v-else class="member-placeholder">
               <i class="icon-user" />
             </div>
             <span class="member-name">{{ member.name }}</span>
-            <div v-if="member.thumbnail" class="member-popup">
-              <img :src="member.thumbnail" :alt="member.name" />
-            </div>
           </a>
+        </MemberPopover>
+      </div>
+
+      <template v-if="formerMembers.length">
+        <h4 class="sidebar-subtitle">Former</h4>
+        <div class="sidebar-members">
+          <MemberPopover
+            v-for="member in formerMembers"
+            :key="member.id"
+            class="sidebar-member-pop"
+            :discogs-id="member.id"
+            :name="member.name"
+            :thumbnail="member.thumbnail"
+          >
+            <a :href="member.url" class="sidebar-member inactive" target="_blank" rel="noopener noreferrer">
+              <img v-if="member.thumbnail" :src="member.thumbnail" :alt="member.name" class="member-thumbnail" />
+              <div v-else class="member-placeholder">
+                <i class="icon-user" />
+              </div>
+              <span class="member-name">{{ member.name }}</span>
+            </a>
+          </MemberPopover>
         </div>
       </template>
     </div>
@@ -78,6 +76,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
+import MemberPopover from "@/components/artist/MemberPopover.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 interface DetailItem {
@@ -290,29 +289,8 @@ $margin: 0.2rem;
   padding: 1rem;
 }
 
-.member-popup {
-  $size: 200px;
-
-  background-color: var(--bg-color-dark);
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 40%);
-  opacity: 0;
-  overflow: hidden;
-  pointer-events: none;
-  position: absolute;
-  right: calc(100% + 0.75rem);
-  top: 50%;
-  transform: translateX(10px) translateY(-50%);
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-  z-index: 100;
-
-  img {
-    display: block;
-    object-fit: cover;
-    width: $size;
-  }
+.sidebar-member-pop {
+  display: block;
 }
 
 .sidebar-member {
@@ -336,12 +314,6 @@ $margin: 0.2rem;
     background-color: var(--bg-color-light);
     color: var(--font-color-default);
     z-index: 10;
-
-    .member-popup {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateX(0) translateY(-50%);
-    }
   }
 
   &.inactive {

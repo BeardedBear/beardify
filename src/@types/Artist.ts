@@ -74,11 +74,13 @@ export interface BandMember {
 }
 export interface DiscogsArtist {
   data_quality: string;
+  groups?: DiscogsGroup[];
   id: number;
   images: DiscogsImage[];
   members: DiscogsMember[];
   name: string;
   profile: string;
+  realname?: string;
   releases_url: string;
   resource_url: string;
   uri: string;
@@ -98,6 +100,14 @@ export interface DiscogsArtistReleasesResponse {
     };
   };
   releases: DiscogsRelease[];
+}
+
+export interface DiscogsGroup {
+  active: boolean;
+  id: number;
+  name: string;
+  resource_url: string;
+  thumbnail_url?: string;
 }
 
 export interface DiscogsImage {
@@ -129,6 +139,17 @@ export interface DiscogsRelease {
   title: string;
   type: "master" | "release";
   year: number;
+}
+
+/**
+ * Condensed member info shown in the reusable member popover.
+ */
+export interface MemberInfo {
+  discogsId: null | number;
+  groups: { active: boolean; name: string }[];
+  image: null | string;
+  profileUrl: null | string;
+  realName: null | string;
 }
 
 export interface RelatedArtists {

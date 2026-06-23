@@ -1,8 +1,7 @@
 import ky from "ky";
 
-import { DiscogsArtist, DiscogsArtistReleasesResponse, DiscogsRelease } from "@/@types/Artist";
+import { DiscogsArtist, DiscogsArtistReleasesResponse, DiscogsRelease, MemberInfo } from "@/@types/Artist";
 import { normalizeString } from "@/helpers/helper";
-import { BEARDIFY_USER_AGENT } from "@/helpers/http";
 
 const DISCOGS_API_URL = "https://api.discogs.com/";
 const DISCOGS_TOKEN = import.meta.env.VITE_DISCOGS_TOKEN || "";
@@ -33,14 +32,15 @@ const TEXT_FORMATS: Array<{ pattern: RegExp; replacement: string }> = [
 ];
 
 /**
- * Creates a Discogs API client instance
+ * Creates a Discogs API client instance.
+ *
+ * Auth uses the `token` query param (added in `fetchFromDiscogs`) rather than an
+ * `Authorization` header: a custom header would trigger a CORS preflight that the
+ * Discogs API does not answer, blocking every browser request. The `User-Agent`
+ * header is likewise omitted because browsers forbid overriding it from fetch.
  */
 const discogsClient = ky.create({
   baseUrl: DISCOGS_API_URL,
-  headers: {
-    Authorization: `Discogs token=${DISCOGS_TOKEN}`,
-    "User-Agent": BEARDIFY_USER_AGENT,
-  },
   retry: {
     limit: 1,
     statusCodes: [429, 503],
@@ -56,6 +56,11 @@ const discogsClient = ky.create({
 export async function getDiscogsArtist(discogsId: string): Promise<DiscogsArtist | null> {
   return fetchFromDiscogs<DiscogsArtist>(`artists/${discogsId}`);
 }
+
+/**
+ * In-memory cache for member popover lookups (keyed by discogs id or normalized name)
+ */
+const memberInfoCache = new Map<string, MemberInfo | null>();
 
 /**
  * Get artist releases from Discogs
@@ -75,6 +80,47 @@ export async function getDiscogsArtistReleases(
     sort: "year",
     sort_order: "desc",
   });
+}
+
+/**
+ * Get condensed member info (image, real name, band history) for the member
+ * popover. Resolves by Discogs id when known, otherwise searches by name.
+ * Results are cached for the session.
+ * @param options - The member's Discogs id (preferred) and/or name
+ * @returns Promise resolving to MemberInfo or null when nothing is found
+ */
+export async function getDiscogsMemberInfo(options: {
+  discogsId?: null | number;
+  name: string;
+}): Promise<MemberInfo | null> {
+  const cacheKey = options.discogsId ? `id:${options.discogsId}` : `name:${normalizeString(options.name)}`;
+  const cached = memberInfoCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
+  const id = options.discogsId ?? (await searchDiscogsArtistId(options.name));
+  if (!id) {
+    memberInfoCache.set(cacheKey, null);
+    return null;
+  }
+
+  const artist = await getDiscogsArtist(id.toString());
+  if (!artist) {
+    memberInfoCache.set(cacheKey, null);
+    return null;
+  }
+
+  const info: MemberInfo = {
+    discogsId: id,
+    groups: (artist.groups ?? []).map((group) => ({
+      active: group.active,
+      name: cleanDiscogsName(group.name),
+    })),
+    image: artist.images?.[0]?.uri || artist.images?.[0]?.uri150 || null,
+    profileUrl: `https://www.discogs.com/artist/${id}`,
+    realName: artist.realname?.trim() || null,
+  };
+  memberInfoCache.set(cacheKey, info);
+  return info;
 }
 
 /**
@@ -115,10 +161,6 @@ export function parseDiscogsMarkup(text: string): string {
   return result;
 }
 
-/**
- * Processes Discogs releases to create a map of title -> release type (EP, Album)
- */
-
 export function processDiscogsReleases(releases: DiscogsRelease[]): Map<string, string> {
   const releaseMap = new Map<string, string>();
 
@@ -142,6 +184,36 @@ export function processDiscogsReleases(releases: DiscogsRelease[]): Map<string, 
   });
 
   return releaseMap;
+}
+
+/**
+ * Search Discogs for an artist by name and return the best matching id.
+ * @param name - The artist name to search for
+ * @returns Promise resolving to the Discogs artist id or null
+ */
+export async function searchDiscogsArtistId(name: string): Promise<null | number> {
+  const data = await fetchFromDiscogs<{ results: { id: number; title: string }[] }>("database/search", {
+    per_page: "5",
+    q: name,
+    type: "artist",
+  });
+
+  if (!data?.results?.length) return null;
+
+  const normalizedQuery = normalizeString(name);
+  const exact = data.results.find((result) => normalizeString(cleanDiscogsName(result.title)) === normalizedQuery);
+  return (exact ?? data.results[0]).id;
+}
+
+/**
+ * Processes Discogs releases to create a map of title -> release type (EP, Album)
+ */
+
+/**
+ * Strip the Discogs disambiguation suffix, e.g. "Exodus (6)" -> "Exodus".
+ */
+function cleanDiscogsName(name: string): string {
+  return name.replace(/\s*\(\d+\)$/, "");
 }
 
 /**
@@ -181,7 +253,9 @@ async function fetchFromDiscogs<T>(path: string, searchParams?: Record<string, s
   }
 
   try {
-    const response = await discogsClient.get(path, { searchParams });
+    const response = await discogsClient.get(path, {
+      searchParams: { ...searchParams, token: DISCOGS_TOKEN },
+    });
     return await response.json<T>();
   } catch {
     return null;
