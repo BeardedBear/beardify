@@ -107,9 +107,12 @@ export async function getWikipediaTimeline(wikipediaUrl: string): Promise<null |
     if (!wikitext) return null;
 
     const block = extractTimelineBlock(wikitext);
-    if (!block) return null;
+    if (block) {
+      const result = parseEasyTimeline(block);
+      if (result) return result;
+    }
 
-    return parseEasyTimeline(block);
+    return parseBandMembersSection(wikitext);
   } catch {
     return null;
   }
@@ -142,6 +145,89 @@ function extractTimelineBlock(wikitext: string): null | string {
     }
   }
   return wikitext.slice(contentStart, i - 2);
+}
+
+/**
+ * Fallback parser: extract member timelines from a Wikipedia "Band members" section
+ * when no EasyTimeline block is present. Handles lines like:
+ *   * [[Name|Display]] – instruments (2007–present)
+ *   * [[Name]] – guitar (2007–2022; died 2022)
+ */
+function parseBandMembersSection(wikitext: string): null | WikiTimeline {
+  const sectionStart = wikitext.search(/^==\s*(?:band\s+)?members?\s*==/im);
+  if (sectionStart === -1) return null;
+
+  const rest = wikitext.slice(sectionStart);
+  const nextSection = rest.match(/\n==(?!=)[^=]/);
+  const section = nextSection ? rest.slice(0, nextSection.index) : rest;
+
+  const COLOR_IDS = [
+    "blue", "green", "orange", "red", "purple", "teal", "coral", "yellow", "skyblue", "limegreen",
+  ] as const;
+
+  const bars: WikiTimelineBar[] = [];
+  const segments: WikiTimelineSegment[] = [];
+  const roleColorMap = new Map<string, string>();
+  let colorIdx = 0;
+  let minYear = Infinity;
+  let maxYear = -Infinity;
+
+  for (const rawLine of section.split("\n")) {
+    if (!rawLine.startsWith("*") || rawLine.startsWith("**")) continue;
+
+    const line = stripWikiMarkup(rawLine.slice(1).trim());
+
+    // Name – role (YYYY–YYYY) or (YYYY–present)
+    const dashIdx = line.search(/\s[–—-]\s/);
+    if (dashIdx === -1) continue;
+    const name = line.slice(0, dashIdx).trim();
+    const rest2 = line.slice(dashIdx + 1).trim();
+
+    const dateMatch = rest2.match(/\((\d{4})\s*[–—-]\s*(\d{4}|present)/i);
+    if (!dateMatch) continue;
+
+    const fromYear = parseInt(dateMatch[1]);
+    const openEnded = /present/i.test(dateMatch[2]);
+    const tillYear = openEnded ? todayFraction() : parseInt(dateMatch[2]);
+
+    if (isNaN(fromYear)) continue;
+
+    // Role: text between dash and opening paren, take primary instrument (before first comma)
+    const roleRaw = rest2.slice(0, rest2.indexOf("(")).trim();
+    const role = roleRaw.split(/[,(]/)[0].trim().toLowerCase() || "member";
+    const colorId = role.replace(/\W+/g, "_");
+
+    const barId = `m${bars.length}`;
+    const existing = bars.find((b) => b.name === name);
+    const actualBarId = existing ? existing.id : barId;
+    if (!existing) bars.push({ id: barId, name });
+
+    if (!roleColorMap.has(role)) {
+      roleColorMap.set(role, COLOR_IDS[colorIdx++ % COLOR_IDS.length]);
+    }
+
+    minYear = Math.min(minYear, fromYear);
+    maxYear = Math.max(maxYear, tillYear);
+
+    segments.push({ barId: actualBarId, colorId, from: fromYear, openEnded, thin: false, till: tillYear });
+  }
+
+  if (bars.length === 0 || segments.length === 0) return null;
+
+  const colors: Record<string, WikiTimelineColor> = {};
+  for (const [role, colorName] of roleColorMap) {
+    const colorId = role.replace(/\W+/g, "_");
+    colors[colorId] = { color: EASYTIMELINE_COLORS[colorName] ?? "#8a8a8a", legend: role };
+  }
+
+  return {
+    bars,
+    colors,
+    events: [],
+    from: Math.floor(minYear),
+    segments,
+    till: Math.ceil(maxYear),
+  };
 }
 
 /**
@@ -218,6 +304,20 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
 function resolveColor(token: string): string {
   const name = token.split("(")[0].toLowerCase();
   return EASYTIMELINE_COLORS[name] ?? "#8a8a8a";
+}
+
+/**
+ * Strip Wikipedia wikitext markup, leaving plain text.
+ */
+function stripWikiMarkup(text: string): string {
+  return text
+    .replace(/<ref[^>]*>[\s\S]*?<\/ref>/g, "")
+    .replace(/<ref[^/]*\/>/g, "")
+    .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, "$2")
+    .replace(/\[\[([^\]]+)\]\]/g, "$1")
+    .replace(/'{2,3}/g, "")
+    .replace(/{{[^}]*}}/g, "")
+    .trim();
 }
 
 /**
