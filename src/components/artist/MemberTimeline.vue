@@ -93,8 +93,6 @@ const OTHER_ROLE: Role = { color: "#8a8a8a", keywords: [], label: "Other" };
 const artistStore = useArtist();
 const currentYear = new Date().getFullYear();
 
-const members = computed(() => artistStore.bandMembers);
-
 /**
  * Resolve a member's primary role from their instruments, for bar coloring.
  */
@@ -125,7 +123,7 @@ const bounds = computed(() => {
   const starts: number[] = [];
   const ends: number[] = [];
 
-  members.value.forEach((member) => {
+  artistStore.bandMembers.forEach((member) => {
     const start = toYear(member.begin);
     if (start !== null) starts.push(start);
     const end = toYear(member.end) ?? (member.ended ? start : currentYear);
@@ -145,7 +143,7 @@ const rows = computed<TimelineRow[]>(() => {
 
   const span = b.max - b.min;
 
-  return members.value
+  return artistStore.bandMembers
     .map((member) => {
       const rawStart = toYear(member.begin);
       const start = rawStart ?? b.min;

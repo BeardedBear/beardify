@@ -1,5 +1,5 @@
 <template>
-  <div v-if="timeline && rows.length > 0" class="wiki-timeline">
+  <div v-if="artistStore.wikiTimeline && rows.length > 0" class="wiki-timeline">
     <h2 class="timeline-title">Members timeline</h2>
 
     <div class="timeline-legend">
@@ -85,23 +85,29 @@ interface TimelineRow {
 const MIN_SEG_WIDTH = 0.4;
 
 const artistStore = useArtist();
-const timeline = computed(() => artistStore.wikiTimeline);
 
 function yearLabel(value: number, till: number, openEnded: boolean): string {
   return openEnded || value >= till - 0.3 ? "present" : `${Math.floor(value)}`;
 }
 
 const rows = computed<TimelineRow[]>(() => {
-  const tl = timeline.value;
+  const tl = artistStore.wikiTimeline;
   if (!tl) return [];
 
   const span = tl.till - tl.from || 1;
 
+  const segsByBar = new Map<string, typeof tl.segments>();
+  for (const seg of tl.segments) {
+    const bucket = segsByBar.get(seg.barId);
+    if (bucket) bucket.push(seg);
+    else segsByBar.set(seg.barId, [seg]);
+  }
+
   return tl.bars
     .map((bar) => {
+      const barSegs = segsByBar.get(bar.id) ?? [];
       // Wide (main) segments first, thin overlays painted on top
-      const segments = tl.segments
-        .filter((seg) => seg.barId === bar.id)
+      const segments = barSegs
         .sort((a, b) => Number(a.thin) - Number(b.thin))
         .map((seg, index) => {
           const role = tl.colors[seg.colorId];
@@ -117,7 +123,7 @@ const rows = computed<TimelineRow[]>(() => {
         });
 
       return {
-        active: tl.segments.filter((seg) => seg.barId === bar.id).some((seg) => seg.openEnded),
+        active: barSegs.some((seg) => seg.openEnded),
         id: bar.id,
         name: bar.name,
         segments,
@@ -127,7 +133,7 @@ const rows = computed<TimelineRow[]>(() => {
 });
 
 const legend = computed(() => {
-  const tl = timeline.value;
+  const tl = artistStore.wikiTimeline;
   if (!tl) return [];
   const used = new Set([
     ...tl.segments.map((seg) => seg.colorId),
@@ -139,7 +145,7 @@ const legend = computed(() => {
 });
 
 const events = computed(() => {
-  const tl = timeline.value;
+  const tl = artistStore.wikiTimeline;
   if (!tl) return [];
   const span = tl.till - tl.from || 1;
   return tl.events.map((event) => ({
@@ -150,7 +156,7 @@ const events = computed(() => {
 });
 
 const ticks = computed<AxisTick[]>(() => {
-  const tl = timeline.value;
+  const tl = artistStore.wikiTimeline;
   if (!tl) return [];
 
   const span = tl.till - tl.from || 1;

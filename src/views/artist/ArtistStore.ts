@@ -253,34 +253,37 @@ export const useArtist = defineStore("artist", {
       if (!wikidataArtistId) return;
       try {
         const { getWikidataArtist, getWikidataBandMembers } = await import("@/helpers/wikidata");
-        this.wikidataArtist = await getWikidataArtist(wikidataArtistId);
-
-        // Merge Wikidata members (often more precise dates) with the MusicBrainz
-        // fallback already in `bandMembers` (often richer instruments/lineup)
-        const wikidataMembers = await getWikidataBandMembers(wikidataArtistId);
         const { mergeBandMembers } = await import("@/helpers/bandMembers");
+
+        // Artist info and member list are independent — fetch in parallel
+        const [wikidataArtist, wikidataMembers] = await Promise.all([
+          getWikidataArtist(wikidataArtistId),
+          getWikidataBandMembers(wikidataArtistId),
+        ]);
+        this.wikidataArtist = wikidataArtist;
         this.bandMembers = mergeBandMembers(wikidataMembers, this.bandMembers);
 
-        // When the Wikipedia article has an EasyTimeline graph, it is far richer
-        // (per-member, per-role dated segments) — use it as the primary render
         const wikipediaUrl = this.wikidataArtist?.wikipediaUrl;
-        if (wikipediaUrl) {
-          const { getWikipediaTimeline } = await import("@/helpers/wikipediaTimeline");
-          this.wikiTimeline = await getWikipediaTimeline(wikipediaUrl);
-        }
+        const languages = this.wikidataArtist?.wikipediaLanguages ?? [];
+        const browserLang = navigator.language.split("-")[0];
+        const selectedLang
+          = languages.find((l) => l.code === browserLang)
+            || languages.find((l) => l.code === "en")
+            || languages[0];
 
-        const languages = this.wikidataArtist?.wikipediaLanguages || [];
-        if (languages.length > 0) {
-          const browserLang = navigator.language.split("-")[0];
-          const selectedLang
-            = languages.find((l) => l.code === browserLang)
-              || languages.find((l) => l.code === "en")
-              || languages[0];
+        // Timeline and extract both depend on wikidataArtist but are independent of each other
+        const timelinePromise = wikipediaUrl
+          ? import("@/helpers/wikipediaTimeline").then(({ getWikipediaTimeline }) =>
+              getWikipediaTimeline(wikipediaUrl),
+            )
+          : Promise.resolve(null);
+        const extractPromise = selectedLang ? getWikipediaExtract(selectedLang.url) : Promise.resolve(null);
 
-          if (selectedLang) {
-            this.wikipediaLanguage = selectedLang.code;
-            this.wikipediaExtract = await getWikipediaExtract(selectedLang.url);
-          }
+        const [newTimeline, extract] = await Promise.all([timelinePromise, extractPromise]);
+        this.wikiTimeline = newTimeline;
+        if (selectedLang) {
+          this.wikipediaLanguage = selectedLang.code;
+          this.wikipediaExtract = extract;
         }
       } catch {
         this.wikidataArtist = null;

@@ -2,7 +2,7 @@
   <div class="artist-info">
     <div class="main-content">
       <WikipediaTimeline v-if="artistStore.wikiTimeline" />
-      <MemberTimeline v-else />
+      <MemberTimeline v-else-if="artistStore.bandMembers.length > 0" />
 
       <div v-if="hasBiography" class="info-section">
         <ArtistNavigation
