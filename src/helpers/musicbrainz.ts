@@ -1,5 +1,7 @@
 import ky from "ky";
 
+import type { BandMember } from "@/@types/Artist";
+
 /**
  * MusicBrainz API configuration
  */
@@ -42,9 +44,10 @@ interface MusicBrainzArea {
  * Interface for MusicBrainz artist relation
  */
 interface MusicBrainzArtistRelation {
+  artist?: MusicBrainzArtist;
   "attribute-ids": Record<string, string>;
   "attribute-values": Record<string, string>;
-  attributes: unknown[];
+  attributes: string[];
   begin: null | string;
   direction: string;
   end: null | string;
@@ -52,7 +55,7 @@ interface MusicBrainzArtistRelation {
   "source-credit": string;
   "target-credit": string;
   "target-type": string;
-  type: "allmusic" | "discogs" | "official homepage" | "wikidata" | string;
+  type: "allmusic" | "discogs" | "member of band" | "official homepage" | "wikidata" | string;
   "type-id": string;
   url?: {
     id: string;
@@ -114,6 +117,29 @@ const musicbrainzClient = ky.create({
 });
 
 /**
+ * Extracts band members (with active periods and instruments) from the
+ * "member of band" relations of a MusicBrainz group artist.
+ * @param artist - The full MusicBrainz artist (fetched with artist-rels)
+ * @returns Array of band members, empty when none
+ */
+export function extractBandMembers(artist: MusicBrainzArtist): BandMember[] {
+  if (!artist.relations) return [];
+
+  return artist.relations
+    .filter(
+      (rel) => rel.type === "member of band" && rel["target-type"] === "artist" && rel.artist,
+    )
+    .map((rel) => ({
+      begin: rel.begin,
+      end: rel.end,
+      ended: rel.ended,
+      id: rel.artist!.id,
+      instruments: Array.isArray(rel.attributes) ? rel.attributes : [],
+      name: rel.artist!.name,
+    }));
+}
+
+/**
  * Extracts external IDs (Discogs, Wikidata) from MusicBrainz relations
  */
 export function extractExternalIds(artistFull: MusicBrainzArtist): {
@@ -155,7 +181,7 @@ export function extractExternalIds(artistFull: MusicBrainzArtist): {
 }
 
 /**
- * Get Discogs ID and Wikidata ID from MusicBrainz artist
+ * Get Discogs ID, Wikidata ID and band members from MusicBrainz artist
  * @param musicbrainzId - The MusicBrainz ID of the artist
  * @returns Promise resolving to the MusicBrainzArtist object with relations, or null
  */
@@ -163,7 +189,7 @@ export async function getIdsFromMusicBrainz(
   musicbrainzId: string,
 ): Promise<MusicBrainzArtist | null> {
   return fetchFromMusicBrainz<MusicBrainzArtist>(`artist/${musicbrainzId}`, {
-    inc: "url-rels",
+    inc: "artist-rels+url-rels",
   });
 }
 

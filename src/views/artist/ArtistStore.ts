@@ -18,6 +18,7 @@ import {
 } from "@/helpers/discogs";
 import { normalizeString } from "@/helpers/helper";
 import {
+  extractBandMembers,
   extractExternalIds,
   getIdsFromMusicBrainz,
   searchMusicBrainzArtistId,
@@ -34,12 +35,14 @@ export const useArtist = defineStore("artist", {
     async clean() {
       this.activeTab = "discography";
       this.artist = defaultArtist;
+      this.bandMembers = [];
       this.discogsArtist = null;
       this.discogsId = null;
       this.discogsReleases = new Map();
       this.wikidataArtist = null;
       this.wikipediaExtract = null;
       this.wikipediaLanguage = "en";
+      this.wikiTimeline = null;
       this.topTracks = { tracks: [] };
       this.albums = [];
       this.albumsLive = [];
@@ -137,6 +140,7 @@ export const useArtist = defineStore("artist", {
 
     async getIds(artistName: string, spotifyId?: string) {
       this.musicbrainzArtist = null;
+      this.bandMembers = [];
       this.discogsId = null;
       this.wikidataId = null;
       this.wikidataArtist = null;
@@ -158,6 +162,7 @@ export const useArtist = defineStore("artist", {
         if (!artistFull) return;
 
         this.musicbrainzArtist = { ...artist, ...artistFull };
+        this.bandMembers = extractBandMembers(artistFull);
 
         const { discogsId, wikidataId } = extractExternalIds(artistFull);
 
@@ -247,21 +252,38 @@ export const useArtist = defineStore("artist", {
     async getWikidataArtist(wikidataArtistId: string): Promise<void> {
       if (!wikidataArtistId) return;
       try {
-        const { getWikidataArtist } = await import("@/helpers/wikidata");
-        this.wikidataArtist = await getWikidataArtist(wikidataArtistId);
+        const { getWikidataArtist, getWikidataBandMembers } = await import("@/helpers/wikidata");
+        const { mergeBandMembers } = await import("@/helpers/bandMembers");
 
-        const languages = this.wikidataArtist?.wikipediaLanguages || [];
-        if (languages.length > 0) {
-          const browserLang = navigator.language.split("-")[0];
-          const selectedLang
-            = languages.find((l) => l.code === browserLang)
-              || languages.find((l) => l.code === "en")
-              || languages[0];
+        // Artist info and member list are independent — fetch in parallel
+        const [wikidataArtist, wikidataMembers] = await Promise.all([
+          getWikidataArtist(wikidataArtistId),
+          getWikidataBandMembers(wikidataArtistId),
+        ]);
+        this.wikidataArtist = wikidataArtist;
+        this.bandMembers = mergeBandMembers(wikidataMembers, this.bandMembers);
 
-          if (selectedLang) {
-            this.wikipediaLanguage = selectedLang.code;
-            this.wikipediaExtract = await getWikipediaExtract(selectedLang.url);
-          }
+        const wikipediaUrl = this.wikidataArtist?.wikipediaUrl;
+        const languages = this.wikidataArtist?.wikipediaLanguages ?? [];
+        const browserLang = navigator.language.split("-")[0];
+        const selectedLang
+          = languages.find((l) => l.code === browserLang)
+            || languages.find((l) => l.code === "en")
+            || languages[0];
+
+        // Timeline and extract both depend on wikidataArtist but are independent of each other
+        const timelinePromise = wikipediaUrl
+          ? import("@/helpers/wikipediaTimeline").then(({ getWikipediaTimeline }) =>
+              getWikipediaTimeline(wikipediaUrl),
+            )
+          : Promise.resolve(null);
+        const extractPromise = selectedLang ? getWikipediaExtract(selectedLang.url) : Promise.resolve(null);
+
+        const [newTimeline, extract] = await Promise.all([timelinePromise, extractPromise]);
+        this.wikiTimeline = newTimeline;
+        if (selectedLang) {
+          this.wikipediaLanguage = selectedLang.code;
+          this.wikipediaExtract = extract;
         }
       } catch {
         this.wikidataArtist = null;
@@ -298,6 +320,7 @@ export const useArtist = defineStore("artist", {
     albums: [],
     albumsLive: [],
     artist: defaultArtist,
+    bandMembers: [],
     discogsArtist: null,
     discogsId: null,
     discogsReleases: new Map(),
@@ -312,5 +335,6 @@ export const useArtist = defineStore("artist", {
     wikidataId: null,
     wikipediaExtract: null,
     wikipediaLanguage: "en",
+    wikiTimeline: null,
   }),
 });

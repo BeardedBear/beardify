@@ -1,6 +1,26 @@
+import type { BandMember } from "@/@types/Artist";
+
 import { BEARDIFY_USER_AGENT, http } from "@/helpers/http";
 
 const WIKIDATA_ENTITY_URL = "https://www.wikidata.org/wiki/Special:EntityData/";
+const WIKIDATA_API_URL = "https://www.wikidata.org/w/api.php";
+
+/**
+ * Wikidata property/item IDs used to extract band members from "has part(s)" (P527)
+ */
+const MEMBER_PROPERTIES = {
+  END_TIME: "P582",
+  HAS_PART: "P527",
+  HUMAN: "Q5",
+  INSTANCE_OF: "P31",
+  INSTRUMENT: "P1303",
+  START_TIME: "P580",
+};
+
+/**
+ * Max entities resolvable in a single wbgetentities call
+ */
+const WBGETENTITIES_CHUNK = 50;
 
 /**
  * Wikidata property IDs for music-related data
@@ -77,15 +97,8 @@ export interface WikipediaLanguage {
  * Interface for Wikidata claim
  */
 interface WikidataClaim {
-  mainsnak: {
-    datatype: string;
-    datavalue?: {
-      type: string;
-      value: { "numeric-id": number } | { id: string } | string;
-    };
-    property: string;
-    snaktype: string;
-  };
+  mainsnak: WikidataSnak;
+  qualifiers?: Record<string, WikidataSnak[]>;
   rank: string;
   type: string;
 }
@@ -101,6 +114,28 @@ interface WikidataEntity {
   sitelinks?: Record<string, { badges: string[]; site: string; title: string }>;
   type: string;
 }
+
+/**
+ * Interface for a Wikidata snak (main value or qualifier)
+ */
+interface WikidataSnak {
+  datatype?: string;
+  datavalue?: {
+    type: string;
+    value: WikidataValue;
+  };
+  property: string;
+  snaktype: string;
+}
+
+/**
+ * Possible value shapes returned by Wikidata
+ */
+type WikidataValue
+  = | { "numeric-id": number }
+    | { id: string }
+    | { precision: number; time: string }
+    | string;
 
 /**
  * Sections to exclude from Wikipedia content (multilingual)
@@ -322,6 +357,80 @@ export async function getWikidataArtist(entityId: string): Promise<null | Wikida
 }
 
 /**
+ * Get band members (with active periods and instruments) from a Wikidata
+ * band entity, using the "has part(s)" (P527) statements and their
+ * start/end time qualifiers. Member names and instruments are resolved
+ * through batched wbgetentities calls (no WDQS / SPARQL dependency).
+ * @param entityId - The Wikidata entity ID of the band (e.g., Q15920)
+ * @returns Promise resolving to band members, empty array when none
+ */
+export async function getWikidataBandMembers(entityId: string): Promise<BandMember[]> {
+  try {
+    const response = await wikidataClient.get(`${WIKIDATA_ENTITY_URL}${entityId}.json`);
+    const data = await response.json<{ entities: Record<string, WikidataEntity> }>();
+    const statements = data.entities[entityId]?.claims?.[MEMBER_PROPERTIES.HAS_PART];
+    if (!statements?.length) return [];
+
+    // Extract member Q-ids and their start/end periods from the statements
+    const partials = statements
+      .map((statement) => {
+        const id = getSnakEntityId(statement.mainsnak);
+        if (!id) return null;
+        return {
+          begin: normalizeWikidataTime(getQualifierTime(statement, MEMBER_PROPERTIES.START_TIME)),
+          end: normalizeWikidataTime(getQualifierTime(statement, MEMBER_PROPERTIES.END_TIME)),
+          id,
+        };
+      })
+      .filter((part): part is { begin: null | string; end: null | string; id: string } => part !== null);
+
+    if (partials.length === 0) return [];
+
+    // Resolve member labels + instruments, dropping non-person parts (albums, logos…)
+    const memberEntities = await getWikidataEntities(
+      partials.map((part) => part.id),
+      "labels|claims",
+    );
+
+    const instrumentIds = new Set<string>();
+    const enriched = partials
+      .map((part) => {
+        const entity = memberEntities[part.id];
+        if (!entity || !isHumanOrUnknown(entity)) return null;
+        const instruments = getClaimEntityIds(entity, MEMBER_PROPERTIES.INSTRUMENT);
+        instruments.forEach((instrument) => instrumentIds.add(instrument));
+        return {
+          begin: part.begin,
+          end: part.end,
+          ended: part.end !== null,
+          id: part.id,
+          instrumentIds: instruments,
+          name: entity.labels?.en?.value || entity.labels?.fr?.value || part.id,
+        };
+      })
+      .filter((member) => member !== null);
+
+    if (enriched.length === 0) return [];
+
+    // Resolve instrument labels in a second batch
+    const instrumentLabels = await getWikidataEntities([...instrumentIds], "labels");
+
+    return enriched.map((member) => ({
+      begin: member.begin,
+      end: member.end,
+      ended: member.ended,
+      id: member.id,
+      instruments: member.instrumentIds
+        .map((instrument) => instrumentLabels[instrument]?.labels?.en?.value)
+        .filter((label): label is string => Boolean(label)),
+      name: member.name,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Get Wikipedia article content (extract) from a Wikipedia URL
  * @param wikipediaUrl - The full Wikipedia URL
  * @returns Promise resolving to the article extract HTML or null
@@ -436,6 +545,15 @@ function cleanWikipediaHtml(html: string): string {
 }
 
 /**
+ * Extract all entity Q-ids referenced by a given property on an entity
+ */
+function getClaimEntityIds(entity: WikidataEntity, property: string): string[] {
+  return (entity.claims?.[property] ?? [])
+    .map((claim) => getSnakEntityId(claim.mainsnak))
+    .filter((id): id is string => id !== null);
+}
+
+/**
  * Extract string value from a Wikidata claim
  * @param claims - The claims object
  * @param propertyId - The property ID to extract
@@ -453,6 +571,55 @@ function getClaimStringValue(claims: Record<string, WikidataClaim[]>, propertyId
   }
 
   return null;
+}
+
+/**
+ * Read a time qualifier value (e.g. P580/P582) from a claim
+ */
+function getQualifierTime(claim: WikidataClaim, property: string): string | undefined {
+  const value = claim.qualifiers?.[property]?.[0]?.datavalue?.value;
+  return value && typeof value === "object" && "time" in value ? value.time : undefined;
+}
+
+/**
+ * Extract the referenced entity Q-id from a snak, or null when not an entity value
+ */
+function getSnakEntityId(snak: WikidataSnak): null | string {
+  if (snak.snaktype !== "value") return null;
+  const value = snak.datavalue?.value;
+  return value && typeof value === "object" && "id" in value ? value.id : null;
+}
+
+/**
+ * Batch-resolve Wikidata entities via wbgetentities (max 50 ids per request)
+ * @param ids - Entity Q-ids to resolve
+ * @param props - Comma-separated props (e.g. "labels|claims")
+ */
+async function getWikidataEntities(
+  ids: string[],
+  props: string,
+): Promise<Record<string, WikidataEntity>> {
+  const result: Record<string, WikidataEntity> = {};
+
+  for (let i = 0; i < ids.length; i += WBGETENTITIES_CHUNK) {
+    const chunk = ids.slice(i, i + WBGETENTITIES_CHUNK);
+    if (chunk.length === 0) continue;
+
+    const params = new URLSearchParams({
+      action: "wbgetentities",
+      format: "json",
+      ids: chunk.join("|"),
+      languages: "en|fr",
+      origin: "*",
+      props,
+    });
+
+    const response = await wikidataClient.get(`${WIKIDATA_API_URL}?${params.toString()}`);
+    const data = await response.json<{ entities?: Record<string, WikidataEntity> }>();
+    if (data.entities) Object.assign(result, data.entities);
+  }
+
+  return result;
 }
 
 /**
@@ -534,6 +701,33 @@ function getWikipediaUrl(
   }
 
   return null;
+}
+
+/**
+ * Whether an entity is a human (P31=Q5) or has no explicit type.
+ * Used to drop non-person "has part" values such as albums or logos.
+ */
+function isHumanOrUnknown(entity: WikidataEntity): boolean {
+  const types = getClaimEntityIds(entity, MEMBER_PROPERTIES.INSTANCE_OF);
+  return types.length === 0 || types.includes(MEMBER_PROPERTIES.HUMAN);
+}
+
+/**
+ * Normalize a Wikidata time value (e.g. "+1981-10-28T00:00:00Z") to a partial
+ * date string (YYYY, YYYY-MM or YYYY-MM-DD), dropping unknown month/day "00".
+ */
+function normalizeWikidataTime(time: string | undefined): null | string {
+  if (!time) return null;
+  const match = time.match(/^[+-]?(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return null;
+
+  const [, year, month, day] = match;
+  let result = year;
+  if (month !== "00") {
+    result += `-${month}`;
+    if (day !== "00") result += `-${day}`;
+  }
+  return result;
 }
 
 /**

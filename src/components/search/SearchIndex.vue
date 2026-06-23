@@ -40,10 +40,10 @@ document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
   display: grid;
   font-size: var(--font-size-sm);
   gap: 2rem;
-  grid-template-columns: 0.6fr 1fr 0.8fr 0.8fr;
+  grid-template-columns: 0.9fr 1fr 0.8fr 0.8fr;
   justify-content: space-evenly;
   left: 0;
-  padding: 1rem;
+  padding: 0.5rem;
   right: 0;
   top: 100%;
   z-index: 999;
