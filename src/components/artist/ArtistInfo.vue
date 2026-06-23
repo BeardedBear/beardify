@@ -1,6 +1,9 @@
 <template>
   <div class="artist-info">
     <div class="main-content">
+      <WikipediaTimeline v-if="artistStore.wikiTimeline" />
+      <MemberTimeline v-else />
+
       <div v-if="hasBiography" class="info-section">
         <ArtistNavigation
           :sections="wikipediaSections"
@@ -41,6 +44,8 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
 
 import ArtistNavigation from "@/components/artist/ArtistNavigation.vue";
 import ArtistSidebar from "@/components/artist/ArtistSidebar.vue";
+import MemberTimeline from "@/components/artist/MemberTimeline.vue";
+import WikipediaTimeline from "@/components/artist/WikipediaTimeline.vue";
 import { type LanguageOption } from "@/components/ui/LanguageSelect.vue";
 import { parseDiscogsMarkup } from "@/helpers/discogs";
 import { useArtist } from "@/views/artist/ArtistStore";

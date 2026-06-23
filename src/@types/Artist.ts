@@ -1,4 +1,5 @@
 import type { MusicBrainzArtist } from "@/helpers/musicbrainz";
+import type { WikiTimeline } from "@/helpers/wikipediaTimeline";
 
 import { AlbumSimplified } from "./Album";
 import { Image } from "./Image";
@@ -28,6 +29,7 @@ export interface ArtistPage {
   albums: AlbumSimplified[];
   albumsLive: AlbumSimplified[];
   artist: Artist;
+  bandMembers: BandMember[];
   discogsArtist: DiscogsArtist | null;
   discogsId: null | string;
   discogsReleases: Map<string, string>;
@@ -42,6 +44,7 @@ export interface ArtistPage {
   wikidataId: null | string;
   wikipediaExtract: null | string;
   wikipediaLanguage: string;
+  wikiTimeline: null | WikiTimeline;
 }
 
 export interface ArtistSimplified {
@@ -55,6 +58,19 @@ export interface ArtistSimplified {
 
 export interface ArtistTopTracks {
   tracks: Track[];
+}
+
+/**
+ * A band member with active period and instruments, sourced from
+ * Wikidata (primary) or MusicBrainz (fallback).
+ */
+export interface BandMember {
+  begin: null | string;
+  end: null | string;
+  ended: boolean;
+  id: string;
+  instruments: string[];
+  name: string;
 }
 export interface DiscogsArtist {
   data_quality: string;

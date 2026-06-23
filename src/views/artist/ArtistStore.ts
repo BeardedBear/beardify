@@ -18,6 +18,7 @@ import {
 } from "@/helpers/discogs";
 import { normalizeString } from "@/helpers/helper";
 import {
+  extractBandMembers,
   extractExternalIds,
   getIdsFromMusicBrainz,
   searchMusicBrainzArtistId,
@@ -34,12 +35,14 @@ export const useArtist = defineStore("artist", {
     async clean() {
       this.activeTab = "discography";
       this.artist = defaultArtist;
+      this.bandMembers = [];
       this.discogsArtist = null;
       this.discogsId = null;
       this.discogsReleases = new Map();
       this.wikidataArtist = null;
       this.wikipediaExtract = null;
       this.wikipediaLanguage = "en";
+      this.wikiTimeline = null;
       this.topTracks = { tracks: [] };
       this.albums = [];
       this.albumsLive = [];
@@ -137,6 +140,7 @@ export const useArtist = defineStore("artist", {
 
     async getIds(artistName: string, spotifyId?: string) {
       this.musicbrainzArtist = null;
+      this.bandMembers = [];
       this.discogsId = null;
       this.wikidataId = null;
       this.wikidataArtist = null;
@@ -158,6 +162,7 @@ export const useArtist = defineStore("artist", {
         if (!artistFull) return;
 
         this.musicbrainzArtist = { ...artist, ...artistFull };
+        this.bandMembers = extractBandMembers(artistFull);
 
         const { discogsId, wikidataId } = extractExternalIds(artistFull);
 
@@ -247,8 +252,22 @@ export const useArtist = defineStore("artist", {
     async getWikidataArtist(wikidataArtistId: string): Promise<void> {
       if (!wikidataArtistId) return;
       try {
-        const { getWikidataArtist } = await import("@/helpers/wikidata");
+        const { getWikidataArtist, getWikidataBandMembers } = await import("@/helpers/wikidata");
         this.wikidataArtist = await getWikidataArtist(wikidataArtistId);
+
+        // Merge Wikidata members (often more precise dates) with the MusicBrainz
+        // fallback already in `bandMembers` (often richer instruments/lineup)
+        const wikidataMembers = await getWikidataBandMembers(wikidataArtistId);
+        const { mergeBandMembers } = await import("@/helpers/bandMembers");
+        this.bandMembers = mergeBandMembers(wikidataMembers, this.bandMembers);
+
+        // When the Wikipedia article has an EasyTimeline graph, it is far richer
+        // (per-member, per-role dated segments) — use it as the primary render
+        const wikipediaUrl = this.wikidataArtist?.wikipediaUrl;
+        if (wikipediaUrl) {
+          const { getWikipediaTimeline } = await import("@/helpers/wikipediaTimeline");
+          this.wikiTimeline = await getWikipediaTimeline(wikipediaUrl);
+        }
 
         const languages = this.wikidataArtist?.wikipediaLanguages || [];
         if (languages.length > 0) {
@@ -298,6 +317,7 @@ export const useArtist = defineStore("artist", {
     albums: [],
     albumsLive: [],
     artist: defaultArtist,
+    bandMembers: [],
     discogsArtist: null,
     discogsId: null,
     discogsReleases: new Map(),
@@ -312,5 +332,6 @@ export const useArtist = defineStore("artist", {
     wikidataId: null,
     wikipediaExtract: null,
     wikipediaLanguage: "en",
+    wikiTimeline: null,
   }),
 });
