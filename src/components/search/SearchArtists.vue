@@ -13,7 +13,12 @@
         @click="searchStore.reset()"
       >
         <Cover :images="artist.images" class="avatar" size="small" />
-        <div>{{ artist.name }}</div>
+        <div class="artist-name">
+          <div class="name">{{ artist.name }}</div>
+          <div v-if="artist.genres.length" class="genres">
+            <span v-for="genre in artist.genres" :key="genre" class="genre">{{ genre }}</span>
+          </div>
+        </div>
       </router-link>
     </template>
     <template v-else>No artist found</template>
@@ -70,6 +75,29 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
 
     @include search.search-item-hover;
 
+    .artist-name {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+
+    }
+
+    .genres {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-bottom: 0.15rem;
+
+      .genre {
+        background: var(--bg-color-lighter);
+        border-radius: 0.2rem;
+        color: var(--font-color-light);
+        font-size: 0.65rem;
+        padding: 0.1rem 0.35rem;
+        text-transform: capitalize;
+      }
+    }
+
     &.exact-search {
       background: var(--bg-color-lighter);
 
@@ -81,7 +109,6 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
         content: "";
         height: $size;
         left: 0;
-        position: "";
         position: absolute;
         top: 0;
         transform: translate(-20%, -20%);
