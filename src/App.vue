@@ -8,8 +8,10 @@
       <Sidebar />
       <div class="main-content">
         <MobileHeader />
-        <router-view :key="useRoute().fullPath" v-slot="{ Component }">
-          <component :is="Component" />
+        <router-view v-slot="{ Component, route }">
+          <keep-alive :max="20">
+            <component :is="Component" :key="route.fullPath" />
+          </keep-alive>
         </router-view>
       </div>
     </div>
