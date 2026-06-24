@@ -83,6 +83,7 @@ defineEmits<{
   opacity: 0.5;
   padding: 0.5rem 1.5rem;
 
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(svg) {
     height: 1rem;
     width: 1rem;
