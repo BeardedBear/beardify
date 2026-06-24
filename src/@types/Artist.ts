@@ -38,6 +38,7 @@ export interface ArtistPage {
   headerHeight: number;
   musicbrainzArtist: MusicBrainzArtist | null;
   relatedArtists: RelatedArtists;
+  scrolledDown: boolean;
   singles: AlbumSimplified[];
   timelineLoading: boolean;
   topTracks: ArtistTopTracks;

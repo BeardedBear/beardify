@@ -2,7 +2,7 @@
   <div v-if="artistStore.artist.name === ''" class="loader">
     <Loader />
   </div>
-  <div v-else ref="pageRef" class="artist-page" @scroll="onScroll">
+  <div v-else ref="pageRef" class="artist-page" @scroll="handleScroll">
     <ArtistHeader />
     <Transition name="tab-fade" mode="out-in">
       <div v-if="artistStore.activeTab === 'discography'" key="discography" class="content">
@@ -59,6 +59,16 @@ const route = useRoute();
 
 const pageRef = ref<HTMLElement | null>(null);
 const { onScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
+
+function handleScroll() {
+  onScroll();
+  const scrollTop = pageRef.value?.scrollTop ?? 0;
+  if (!artistStore.scrolledDown && scrollTop > 40) {
+    artistStore.scrolledDown = true;
+  } else if (artistStore.scrolledDown && scrollTop < 10) {
+    artistStore.scrolledDown = false;
+  }
+}
 
 artistStore.clean().finally(() => {
   const hashTab = location.hash.slice(1);

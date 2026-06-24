@@ -39,6 +39,7 @@ export const useArtist = defineStore("artist", {
       this.discogsArtist = null;
       this.discogsId = null;
       this.discogsReleases = new Map();
+      this.scrolledDown = false;
       this.timelineLoading = true;
       this.wikidataArtist = null;
       this.wikipediaExtract = null;
@@ -334,6 +335,7 @@ export const useArtist = defineStore("artist", {
     headerHeight: 0,
     musicbrainzArtist: null,
     relatedArtists: { artists: [] },
+    scrolledDown: false,
     singles: [],
     timelineLoading: false,
     topTracks: { tracks: [] },
