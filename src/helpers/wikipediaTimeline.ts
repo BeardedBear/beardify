@@ -220,16 +220,18 @@ function parseBandMembersSection(wikitext: string): null | WikiTimeline {
 
   // Group bars by role (like EasyTimeline), sort by role then by earliest start
   const roleOrder = [...new Set(bars.map((b) => barRoles.get(b.id) ?? "member"))];
+  const earliestStart = new Map<string, number>();
+  for (const s of segments) {
+    const current = earliestStart.get(s.barId);
+    if (current === undefined || s.from < current) earliestStart.set(s.barId, s.from);
+  }
   bars.sort((a, b) => {
     const roleA = barRoles.get(a.id) ?? "member";
     const roleB = barRoles.get(b.id) ?? "member";
     const idxA = roleOrder.indexOf(roleA);
     const idxB = roleOrder.indexOf(roleB);
     if (idxA !== idxB) return idxA - idxB;
-    const segsA = segments.filter((s) => s.barId === a.id);
-    const segsB = segments.filter((s) => s.barId === b.id);
-    return (segsA.length ? Math.min(...segsA.map((s) => s.from)) : 0)
-      - (segsB.length ? Math.min(...segsB.map((s) => s.from)) : 0);
+    return (earliestStart.get(a.id) ?? 0) - (earliestStart.get(b.id) ?? 0);
   });
 
   const colors: Record<string, WikiTimelineColor> = {};

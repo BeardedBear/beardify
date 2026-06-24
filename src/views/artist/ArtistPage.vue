@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onActivated, onDeactivated, onMounted, onUnmounted, ref } from "vue";
+import { ref } from "vue";
 import { useRoute } from "vue-router";
 
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
@@ -47,6 +47,7 @@ import BlockSingles from "@/components/artist/BlockSingles.vue";
 import RelatedArtists from "@/components/artist/RelatedArtists.vue";
 import TopTracks from "@/components/artist/TopTracks.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
+import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const props = defineProps<{ id: string }>();
@@ -54,50 +55,7 @@ const artistStore = useArtist();
 const route = useRoute();
 
 const pageRef = ref<HTMLElement | null>(null);
-const scrollKey = `scroll-${route.path}`;
-let lastScrollTop = 0;
-
-function onScroll(): void {
-  if (pageRef.value) lastScrollTop = pageRef.value.scrollTop;
-}
-
-function restoreScroll(): void {
-  const saved = sessionStorage.getItem(scrollKey);
-  if (!saved || !pageRef.value) return;
-  nextTick(() => {
-    if (!pageRef.value) return;
-    const prev = pageRef.value.style.scrollBehavior;
-    pageRef.value.style.scrollBehavior = "auto";
-    pageRef.value.scrollTop = parseInt(saved);
-    pageRef.value.style.scrollBehavior = prev;
-  });
-}
-
-function saveScroll(): void {
-  sessionStorage.setItem(scrollKey, String(lastScrollTop));
-}
-
-onDeactivated(saveScroll);
-onUnmounted(saveScroll);
-onMounted(restoreScroll);
-
-let skipFirstActivation = true;
-
-onActivated(() => {
-  restoreScroll();
-  if (skipFirstActivation) {
-    skipFirstActivation = false;
-    return;
-  }
-  artistStore.clean().finally(() => {
-    artistStore.getArtist(props.id);
-    artistStore.getTopTracks(props.id);
-    artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`);
-    artistStore.getRelatedArtists(props.id);
-    artistStore.getSingles(props.id);
-    artistStore.getFollowStatus(props.id);
-  });
-});
+const { onScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
 
 artistStore.clean().finally(() => {
   artistStore.getArtist(props.id);

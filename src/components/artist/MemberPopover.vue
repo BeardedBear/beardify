@@ -303,10 +303,6 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
     font-size: var(--font-size-sm);
     gap: 0.4rem;
     justify-content: space-between;
-
-    &.former {
-      /* opacity: 0.55; */
-    }
   }
 }
 

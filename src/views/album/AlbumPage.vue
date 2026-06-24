@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onActivated, onDeactivated, onMounted, onUnmounted, ref } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import Foot from "@/components/album/AlbumFoot.vue";
@@ -60,6 +60,7 @@ import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
+import { useScrollRestore } from "@/composables/useScrollRestore";
 import { timecode } from "@/helpers/date";
 import { isCurrentTrack } from "@/helpers/helper";
 import { playSongs } from "@/helpers/play";
@@ -74,43 +75,7 @@ const route = useRoute();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
 
 const pageRef = ref<HTMLElement | null>(null);
-const scrollKey = `scroll-${route.path}`;
-let lastScrollTop = 0;
-
-function onScroll(): void {
-  if (pageRef.value) lastScrollTop = pageRef.value.scrollTop;
-}
-
-function restoreScroll(): void {
-  const saved = sessionStorage.getItem(scrollKey);
-  if (!saved || !pageRef.value) return;
-  nextTick(() => {
-    if (!pageRef.value) return;
-    const prev = pageRef.value.style.scrollBehavior;
-    pageRef.value.style.scrollBehavior = "auto";
-    pageRef.value.scrollTop = parseInt(saved);
-    pageRef.value.style.scrollBehavior = prev;
-  });
-}
-
-function saveScroll(): void {
-  sessionStorage.setItem(scrollKey, String(lastScrollTop));
-}
-
-onDeactivated(saveScroll);
-onUnmounted(saveScroll);
-onMounted(restoreScroll);
-
-let skipFirstActivation = true;
-
-onActivated(() => {
-  restoreScroll();
-  if (skipFirstActivation) {
-    skipFirstActivation = false;
-    return;
-  }
-  albumStore.clean().finally(() => albumStore.getAlbum(props.id));
-});
+const { onScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
 
 albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 </script>
