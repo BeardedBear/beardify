@@ -36,7 +36,7 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
 import ArtistInfo from "@/components/artist/ArtistInfo.vue";
@@ -56,17 +56,14 @@ type TabId = (typeof VALID_TABS)[number];
 const props = defineProps<{ id: string }>();
 const artistStore = useArtist();
 const route = useRoute();
-const router = useRouter();
 
 const pageRef = ref<HTMLElement | null>(null);
 const { onScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
 
 artistStore.clean().finally(() => {
-  const queryTab = route.query.tab;
-  if (typeof queryTab === "string" && (VALID_TABS as readonly string[]).includes(queryTab)) {
-    artistStore.activeTab = queryTab as TabId;
-  } else {
-    router.replace({ query: { ...route.query, tab: artistStore.activeTab } });
+  const hashTab = location.hash.slice(1);
+  if ((VALID_TABS as readonly string[]).includes(hashTab)) {
+    artistStore.activeTab = hashTab as TabId;
   }
   artistStore.getArtist(props.id);
   artistStore.getTopTracks(props.id);
@@ -79,9 +76,7 @@ artistStore.clean().finally(() => {
 watch(
   () => artistStore.activeTab,
   (tab) => {
-    if (route.query.tab !== tab) {
-      router.replace({ query: { ...route.query, tab } });
-    }
+    history.replaceState(null, "", `${location.pathname}#${tab}`);
   },
 );
 </script>

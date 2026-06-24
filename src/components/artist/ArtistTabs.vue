@@ -9,6 +9,7 @@
           :disabled="tab.disabled"
           @click="!tab.disabled && $emit('update:modelValue', tab.id)"
         >
+          <component :is="tab.icon" :size="14" />
           <span>{{ tab.label }}</span>
         </button>
       </Tooltip>
@@ -21,6 +22,7 @@
         :disabled="tab.disabled"
         @click="!tab.disabled && $emit('update:modelValue', tab.id)"
       >
+        <component :is="tab.icon" :size="14" />
         <span>{{ tab.label }}</span>
       </button>
     </template>
@@ -28,9 +30,11 @@
 </template>
 
 <script lang="ts">
+import type { Component } from "vue";
+
 export interface Tab {
   disabled?: boolean;
-  icon: string;
+  icon: Component;
   id: string;
   label: string;
   tooltip?: string;

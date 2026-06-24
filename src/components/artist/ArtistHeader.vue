@@ -21,6 +21,7 @@
 </template>
 
 <script lang="ts" setup>
+import { Disc3, Info } from "@lucide/vue";
 import { useElementBounding } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
@@ -41,10 +42,10 @@ const infoAvailable = computed(() => {
 });
 
 const tabs = computed<Tab[]>(() => [
-  { icon: "icon-disc", id: "discography", label: "Discography" },
+  { icon: Disc3, id: "discography", label: "Discography" },
   {
     disabled: !infoAvailable.value,
-    icon: "icon-info",
+    icon: Info,
     id: "info",
     label: "Info",
     tooltip: !infoAvailable.value ? "No additional information available" : undefined,
