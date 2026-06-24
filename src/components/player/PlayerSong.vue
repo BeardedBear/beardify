@@ -63,7 +63,6 @@ function onSurfaceClick(event: MouseEvent): void {
 
   @include responsive.mobile {
     cursor: pointer; /* make it clear it's tappable on mobile */
-    gap: 0.5rem;
     grid-template-areas: "controls metas device";
     grid-template-columns: auto 1fr auto;
     padding: 0.8rem;

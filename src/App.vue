@@ -9,9 +9,7 @@
       <div class="main-content">
         <MobileHeader />
         <router-view v-slot="{ Component, route }">
-          <keep-alive :max="20">
-            <component :is="Component" :key="route.fullPath" />
-          </keep-alive>
+          <component :is="Component" :key="route.fullPath" />
         </router-view>
       </div>
     </div>
@@ -162,7 +160,7 @@ body {
     "ROND" var(--font-variation-rond),
     "wght" var(--font-variation-wght);
   overflow: hidden;
-  scrollbar-color: var(--primary-color-dark) var(--bg-color-dark);
+  scrollbar-color: var(--bg-color-light) var(--bg-color-dark);
   scrollbar-width: thin;
 
   /* Improve font rendering on many platforms */

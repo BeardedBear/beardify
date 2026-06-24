@@ -2,7 +2,7 @@
   <div v-if="playlistStore.playlist.name === ''" class="loader">
     <Loader />
   </div>
-  <PageScroller v-else>
+  <PageScroller v-else ref="scrollerRef">
     <PageFit>
       <div class="collection">
         <Header no-cover no-duration with-filter />
@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { SlickItem, SlickList } from "vue-slicksort";
 
 import { AlbumSimplified } from "@/@types/Album";
@@ -59,6 +59,12 @@ const props = defineProps<{ id: string }>();
 const playlistStore = usePlaylist();
 const albumList = ref<AlbumSimplified[]>([]);
 const authStore = useAuth();
+const scrollerRef = ref<InstanceType<typeof PageScroller>>();
+const syncAlbumList = (): void => {
+  albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album));
+};
+
+onMounted(syncAlbumList);
 
 const albumListFiltered = computed<AlbumSimplified[]>(() =>
   albumList.value.filter((album) => {
@@ -74,12 +80,17 @@ function syncNewPositions(event: { newIndex: number; oldIndex: number }): void {
 
 watch(
   () => playlistStore.tracks,
-  () => (albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album))),
+  syncAlbumList,
 );
 
 playlistStore.clean().finally(() => {
-  playlistStore.getPlaylist(`playlists/${props.id}`);
-  playlistStore.getTracks(`playlists/${props.id}/tracks`);
+  Promise.all([
+    playlistStore.getPlaylist(`playlists/${props.id}`),
+    playlistStore.getTracks(`playlists/${props.id}/tracks`),
+  ]).then(() => {
+    // Restore scroll after albums finished loading (height is now stable)
+    scrollerRef.value?.restoreScroll();
+  });
 });
 </script>
 

@@ -2,7 +2,7 @@
   <div v-if="!podcastsStore.list && !podcastsStore.myPodcasts.length" class="loader">
     <Loader />
   </div>
-  <div v-else class="podcasts">
+  <div v-else ref="scrollRef" class="podcasts" @scroll="onScroll">
     <PageFit>
       <div class="title">
         <div class="name">Podcasts</div>
@@ -23,12 +23,18 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from "vue";
+import { useRoute } from "vue-router";
+
 import PodcastCard from "@/components/podcast/PodcastCard.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
+import { useScrollRestore } from "@/composables/useScrollRestore";
 import { usePodcasts } from "@/views/podcasts/PodcastsStore";
 
 const podcastsStore = usePodcasts();
+const scrollRef = ref<HTMLElement | null>(null);
+const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, scrollRef);
 podcastsStore.clean().finally(() => {
   podcastsStore.getPodcasts();
   podcastsStore.getMyPodcasts("me/shows?limit=50");

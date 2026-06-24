@@ -60,6 +60,7 @@ const EASYTIMELINE_COLORS: Record<string, string> = {
   green: "#2e9e4f",
   grey: "#8a8a8a",
   lightorange: "#f3b96a",
+  lightpurple: "#b39ddb",
   limegreen: "#7ad13a",
   magenta: "#c0399b",
   oceanblue: "#2a6fb0",
@@ -168,6 +169,7 @@ function parseBandMembersSection(wikitext: string): null | WikiTimeline {
   const bars: WikiTimelineBar[] = [];
   const segments: WikiTimelineSegment[] = [];
   const roleColorMap = new Map<string, string>();
+  const barRoles = new Map<string, string>();
   let colorIdx = 0;
   let minYear = Infinity;
   let maxYear = -Infinity;
@@ -181,7 +183,7 @@ function parseBandMembersSection(wikitext: string): null | WikiTimeline {
     const dashIdx = line.search(/\s[–—-]\s/);
     if (dashIdx === -1) continue;
     const name = line.slice(0, dashIdx).trim();
-    const rest2 = line.slice(dashIdx + 1).trim();
+    const rest2 = line.slice(dashIdx + 1).replace(/^[–—-]\s*/, "").trim();
 
     const dateMatch = rest2.match(/\((\d{4})\s*[–—-]\s*(\d{4}|present)/i);
     if (!dateMatch) continue;
@@ -200,7 +202,10 @@ function parseBandMembersSection(wikitext: string): null | WikiTimeline {
     const barId = `m${bars.length}`;
     const existing = bars.find((b) => b.name === name);
     const actualBarId = existing ? existing.id : barId;
-    if (!existing) bars.push({ id: barId, name });
+    if (!existing) {
+      bars.push({ id: barId, name });
+      barRoles.set(barId, role);
+    }
 
     if (!roleColorMap.has(role)) {
       roleColorMap.set(role, COLOR_IDS[colorIdx++ % COLOR_IDS.length]);
@@ -213,6 +218,22 @@ function parseBandMembersSection(wikitext: string): null | WikiTimeline {
   }
 
   if (bars.length === 0 || segments.length === 0) return null;
+
+  // Group bars by role (like EasyTimeline), sort by role then by earliest start
+  const roleOrder = [...new Set(bars.map((b) => barRoles.get(b.id) ?? "member"))];
+  const earliestStart = new Map<string, number>();
+  for (const s of segments) {
+    const current = earliestStart.get(s.barId);
+    if (current === undefined || s.from < current) earliestStart.set(s.barId, s.from);
+  }
+  bars.sort((a, b) => {
+    const roleA = barRoles.get(a.id) ?? "member";
+    const roleB = barRoles.get(b.id) ?? "member";
+    const idxA = roleOrder.indexOf(roleA);
+    const idxB = roleOrder.indexOf(roleB);
+    if (idxA !== idxB) return idxA - idxB;
+    return (earliestStart.get(a.id) ?? 0) - (earliestStart.get(b.id) ?? 0);
+  });
 
   const colors: Record<string, WikiTimelineColor> = {};
   for (const [role, colorName] of roleColorMap) {
@@ -257,7 +278,8 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
     const colorMatch = line.match(/^id:(\S+)\s+value:(\S+(?:\([^)]*\))?)(?:\s+legend:(\S+))?/);
     if (colorMatch) {
       const [, id, value, legend] = colorMatch;
-      colors[id] = { color: resolveColor(value), legend: (legend ?? id).replace(/_/g, " ") };
+      // EasyTimeline color ids are case-insensitive; normalize so plot `color:` refs match
+      colors[id.toLowerCase()] = { color: resolveColor(value), legend: (legend ?? id).replace(/_/g, " ") };
       continue;
     }
 
@@ -276,7 +298,7 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
       if (fromYear !== null && tillYear !== null) {
         segments.push({
           barId,
-          colorId,
+          colorId: colorId.toLowerCase(),
           from: fromYear,
           openEnded,
           thin: width !== undefined && parseInt(width, 10) < DEFAULT_BAR_WIDTH,
@@ -289,7 +311,7 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
     const eventMatch = line.match(/^at:(\S+)\s+color:(\S+)/);
     if (eventMatch) {
       const date = toFractionalYear(eventMatch[1], format, range);
-      if (date !== null) events.push({ colorId: eventMatch[2], date });
+      if (date !== null) events.push({ colorId: eventMatch[2].toLowerCase(), date });
     }
   }
 
@@ -299,10 +321,25 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
 }
 
 /**
- * Resolve an EasyTimeline color token (e.g. "red", "gray(0.6)") to a CSS color.
+ * Resolve an EasyTimeline color token to a CSS color. Handles named colors
+ * (e.g. "red", "gray(0.6)") and explicit `rgb(r,g,b)` values, where EasyTimeline
+ * components are 0–1 floats (also tolerates 0–255 integers).
  */
 function resolveColor(token: string): string {
-  const name = token.split("(")[0].toLowerCase();
+  const lower = token.toLowerCase();
+
+  if (/^#[0-9a-f]{3,8}$/.test(lower)) return lower;
+
+  const rgbMatch = lower.match(/^rgb\(([^)]+)\)/);
+  if (rgbMatch) {
+    const parts = rgbMatch[1].split(",").map((p) => parseFloat(p.trim()));
+    if (parts.length === 3 && parts.every((n) => !isNaN(n))) {
+      const [r, g, b] = parts.map((n) => Math.min(255, Math.max(0, Math.round(n <= 1 ? n * 255 : n))));
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+  }
+
+  const name = lower.split("(")[0];
   return EASYTIMELINE_COLORS[name] ?? "#8a8a8a";
 }
 
@@ -313,6 +350,7 @@ function stripWikiMarkup(text: string): string {
   return text
     .replace(/<ref[^>]*>[\s\S]*?<\/ref>/g, "")
     .replace(/<ref[^/]*\/>/g, "")
+    .replace(/<[^>]+>/g, "")
     .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, "$2")
     .replace(/\[\[([^\]]+)\]\]/g, "$1")
     .replace(/'{2,3}/g, "")

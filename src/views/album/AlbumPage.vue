@@ -2,7 +2,7 @@
   <div v-if="albumStore.album.name === ''" class="loader">
     <Loader />
   </div>
-  <div v-else ref="albumpage" class="album-page">
+  <div v-else ref="pageRef" class="album-page" @scroll="onScroll">
     <div class="fit">
       <Head :album="albumStore.album" />
       <div class="content">
@@ -49,7 +49,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { useRoute } from "vue-router";
 
 import Foot from "@/components/album/AlbumFoot.vue";
 import Head from "@/components/album/AlbumHead.vue";
@@ -59,6 +60,7 @@ import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
+import { useScrollRestore } from "@/composables/useScrollRestore";
 import { timecode } from "@/helpers/date";
 import { isCurrentTrack } from "@/helpers/helper";
 import { playSongs } from "@/helpers/play";
@@ -68,8 +70,12 @@ const props = defineProps({ id: { default: "", type: String } });
 const albumStore = useAlbum();
 const playerStore = usePlayer();
 const dialogStore = useDialog();
+const route = useRoute();
 
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
+
+const pageRef = ref<HTMLElement | null>(null);
+const { onScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
 
 albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 </script>

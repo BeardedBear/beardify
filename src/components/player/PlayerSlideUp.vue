@@ -113,6 +113,20 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
       width: 100%;
     }
 
+    @include responsive.mobile {
+      .cover {
+        display: flex;
+        justify-content: center;
+      }
+
+      .cover img {
+        border-radius: 8px;
+        max-width: 300px;
+        object-fit: contain;
+        width: 100%;
+      }
+    }
+
     .metas {
       .meta-header {
         align-items: center;

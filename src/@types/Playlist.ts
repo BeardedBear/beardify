@@ -27,6 +27,7 @@ export interface PlaylistPage {
   followed: boolean | undefined;
   playlist: Playlist;
   tracks: PlaylistTrack[];
+  tracksVersion: number;
 }
 
 export interface PlaylistTrack {

@@ -2,7 +2,7 @@
   <div v-if="artistStore.artist.name === ''" class="loader">
     <Loader />
   </div>
-  <div v-else class="artist-page">
+  <div v-else ref="pageRef" class="artist-page" @scroll="handleScroll">
     <ArtistHeader />
     <Transition name="tab-fade" mode="out-in">
       <div v-if="artistStore.activeTab === 'discography'" key="discography" class="content">
@@ -35,6 +35,9 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
+
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
 import ArtistInfo from "@/components/artist/ArtistInfo.vue";
 import BlockAlbums from "@/components/artist/BlockAlbums.vue";
@@ -44,12 +47,34 @@ import BlockSingles from "@/components/artist/BlockSingles.vue";
 import RelatedArtists from "@/components/artist/RelatedArtists.vue";
 import TopTracks from "@/components/artist/TopTracks.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
+import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useArtist } from "@/views/artist/ArtistStore";
+
+const VALID_TABS = ["discography", "info"] as const;
+type TabId = (typeof VALID_TABS)[number];
 
 const props = defineProps<{ id: string }>();
 const artistStore = useArtist();
+const route = useRoute();
+
+const pageRef = ref<HTMLElement | null>(null);
+const { onScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
+
+function handleScroll() {
+  onScroll();
+  const scrollTop = pageRef.value?.scrollTop ?? 0;
+  if (!artistStore.scrolledDown && scrollTop > 40) {
+    artistStore.scrolledDown = true;
+  } else if (artistStore.scrolledDown && scrollTop < 10) {
+    artistStore.scrolledDown = false;
+  }
+}
 
 artistStore.clean().finally(() => {
+  const hashTab = location.hash.slice(1);
+  if ((VALID_TABS as readonly string[]).includes(hashTab)) {
+    artistStore.activeTab = hashTab as TabId;
+  }
   artistStore.getArtist(props.id);
   artistStore.getTopTracks(props.id);
   artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`);
@@ -57,6 +82,13 @@ artistStore.clean().finally(() => {
   artistStore.getSingles(props.id);
   artistStore.getFollowStatus(props.id);
 });
+
+watch(
+  () => artistStore.activeTab,
+  (tab) => {
+    history.replaceState(null, "", `${location.pathname}#${tab}`);
+  },
+);
 </script>
 
 <style lang="scss">

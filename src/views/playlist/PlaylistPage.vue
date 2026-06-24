@@ -2,7 +2,7 @@
   <div v-if="playlistStore.playlist.name === ''" class="loader">
     <Loader />
   </div>
-  <PageScroller v-else>
+  <PageScroller v-else ref="scrollerRef">
     <div class="playlist">
       <Header not-fit />
       <template
@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 
 import { PublicUser } from "@/@types/PublicUser";
 import { instance } from "@/api";
@@ -37,6 +37,7 @@ import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 const props = defineProps<{ id: string }>();
 const playlistStore = usePlaylist();
+const scrollerRef = ref<InstanceType<typeof PageScroller>>();
 
 // Optimized: single iteration through tracks array instead of three separate iterations
 const categorizedTracks = computed(() => {
@@ -67,47 +68,50 @@ const uniqueContributorIds = computed(() => {
 });
 
 const contributorsData = ref<Record<string, PublicUser>>({});
+const attemptedContributors = new Set<string>();
 
 const fetchContributorsData = async (): Promise<void> => {
+  const missing = uniqueContributorIds.value.filter((userId) => !attemptedContributors.has(userId));
+  if (missing.length === 0) return;
+
+  for (const id of missing) attemptedContributors.add(id);
+
   const api = instance();
   const newContributorsData: Record<string, PublicUser> = {};
 
-  // Optimized: parallelize API calls using Promise.allSettled to avoid N+1 problem
-  const promises = uniqueContributorIds.value.map(async (userId) => {
-    try {
-      const response = await api.get<PublicUser>(`users/${userId}`);
-      return { data: response.data, userId };
-    } catch (error) {
-      if (import.meta.env.DEV) console.error(`Error fetching data for user ${userId}:`, error);
-      return { data: null, userId };
-    }
-  });
+  const results = await Promise.allSettled(
+    missing.map(async (userId) => {
+      try {
+        const response = await api.get<PublicUser>(`users/${userId}`, {
+          signal: AbortSignal.timeout(3000),
+        });
+        return { data: response.data, userId };
+      } catch {
+        return { data: null, userId };
+      }
+    }),
+  );
 
-  const results = await Promise.allSettled(promises);
-
-  results.forEach((result) => {
+  for (const result of results) {
     if (result.status === "fulfilled" && result.value.data) {
       newContributorsData[result.value.userId] = result.value.data;
     }
-  });
+  }
 
-  contributorsData.value = newContributorsData;
+  if (Object.keys(newContributorsData).length > 0) {
+    contributorsData.value = { ...contributorsData.value, ...newContributorsData };
+  }
 };
 
-// Surveiller les changements dans uniqueContributorIds pour récupérer les nouvelles données
-watch(
-  uniqueContributorIds,
-  () => {
-    if (uniqueContributorIds.value.length > 0) {
-      fetchContributorsData();
-    }
-  },
-  { immediate: true },
-);
-
 playlistStore.clean().finally(() => {
-  playlistStore.getPlaylist(`playlists/${props.id}`);
-  playlistStore.getTracks(`playlists/${props.id}/tracks`);
+  Promise.all([
+    playlistStore.getPlaylist(`playlists/${props.id}`),
+    playlistStore.getTracks(`playlists/${props.id}/tracks`),
+  ]).then(() => {
+    fetchContributorsData();
+    // Restore scroll after tracks finished loading (height is now stable)
+    scrollerRef.value?.restoreScroll();
+  });
 });
 </script>
 

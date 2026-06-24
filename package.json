@@ -19,6 +19,7 @@
     "release": "bun run scripts/release.ts"
   },
   "dependencies": {
+    "@lucide/vue": "^1.21.0",
     "@tauri-apps/api": "^2.11.1",
     "@tauri-apps/plugin-deep-link": "^2.4.9",
     "@tauri-apps/plugin-opener": "^2.5.4",

@@ -1,5 +1,5 @@
 <template>
-  <div ref="domHeader" class="header">
+  <div ref="domHeader" class="header" :class="{ scrolled: artistStore.scrolledDown }">
     <div class="image-container">
       <img v-if="artistStore.artist.images.length" :src="artistStore.artist.images[0].url" alt="" class="img" />
       <img v-else class="img" src="/img/default.png" />
@@ -12,15 +12,18 @@
       </div>
       <Options class="desktop-options" />
       <ButtonIndex class="mobile-options" icon-only @click="dialogStore.open({ type: 'artistOptions' })">
-        <i class="icon-more-horizontal" />
+        <MoreHorizontal />
       </ButtonIndex>
     </div>
-    <ArtistProfile />
-    <ArtistTabs v-model="artistStore.activeTab" :tabs="tabs" />
+    <div class="collapsible">
+      <ArtistProfile />
+      <ArtistTabs v-model="artistStore.activeTab" :tabs="tabs" />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { Disc3, Info, MoreHorizontal } from "@lucide/vue";
 import { useElementBounding } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
@@ -41,10 +44,10 @@ const infoAvailable = computed(() => {
 });
 
 const tabs = computed<Tab[]>(() => [
-  { icon: "icon-disc", id: "discography", label: "Discography" },
+  { icon: Disc3, id: "discography", label: "Discography" },
   {
     disabled: !infoAvailable.value,
-    icon: "icon-info",
+    icon: Info,
     id: "info",
     label: "Info",
     tooltip: !infoAvailable.value ? "No additional information available" : undefined,
@@ -148,6 +151,27 @@ watch(infoAvailable, (available) => {
 
   @include responsive.mobile {
     display: flex;
+  }
+}
+
+.collapsible {
+  overflow: hidden;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.3s ease;
+
+  @include responsive.mobile {
+    max-height: 10rem;
+    opacity: 1;
+  }
+}
+
+.header.scrolled {
+  @include responsive.mobile {
+    .collapsible {
+      max-height: 0;
+      opacity: 0;
+    }
   }
 }
 </style>
