@@ -99,10 +99,12 @@ function saveScroll(): void {
 
 onDeactivated(saveScroll);
 onUnmounted(saveScroll);
-onActivated(restoreScroll);
 onMounted(restoreScroll);
 
-albumStore.clean().finally(() => albumStore.getAlbum(props.id));
+onActivated(() => {
+  restoreScroll();
+  albumStore.clean().finally(() => albumStore.getAlbum(props.id));
+});
 </script>
 
 <style lang="scss" scoped>

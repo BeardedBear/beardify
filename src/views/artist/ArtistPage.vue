@@ -79,16 +79,18 @@ function saveScroll(): void {
 
 onDeactivated(saveScroll);
 onUnmounted(saveScroll);
-onActivated(restoreScroll);
 onMounted(restoreScroll);
 
-artistStore.clean().finally(() => {
-  artistStore.getArtist(props.id);
-  artistStore.getTopTracks(props.id);
-  artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`);
-  artistStore.getRelatedArtists(props.id);
-  artistStore.getSingles(props.id);
-  artistStore.getFollowStatus(props.id);
+onActivated(() => {
+  restoreScroll();
+  artistStore.clean().finally(() => {
+    artistStore.getArtist(props.id);
+    artistStore.getTopTracks(props.id);
+    artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`);
+    artistStore.getRelatedArtists(props.id);
+    artistStore.getSingles(props.id);
+    artistStore.getFollowStatus(props.id);
+  });
 });
 </script>
 

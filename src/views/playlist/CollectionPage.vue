@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from "vue";
+import { computed, onActivated, ref, watch } from "vue";
 import { SlickItem, SlickList } from "vue-slicksort";
 
 import { AlbumSimplified } from "@/@types/Album";
@@ -77,9 +77,11 @@ watch(
   () => (albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album))),
 );
 
-playlistStore.clean().finally(() => {
-  playlistStore.getPlaylist(`playlists/${props.id}`);
-  playlistStore.getTracks(`playlists/${props.id}/tracks`);
+onActivated(() => {
+  playlistStore.clean().finally(() => {
+    playlistStore.getPlaylist(`playlists/${props.id}`);
+    playlistStore.getTracks(`playlists/${props.id}/tracks`);
+  });
 });
 </script>
 

@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from "vue";
+import { computed, onActivated, ref, watch } from "vue";
 
 import { PublicUser } from "@/@types/PublicUser";
 import { instance } from "@/api";
@@ -67,31 +67,39 @@ const uniqueContributorIds = computed(() => {
 });
 
 const contributorsData = ref<Record<string, PublicUser>>({});
+const attemptedContributors = new Set<string>();
 
 const fetchContributorsData = async (): Promise<void> => {
+  const missing = uniqueContributorIds.value.filter((userId) => !attemptedContributors.has(userId));
+  if (missing.length === 0) return;
+
+  for (const id of missing) attemptedContributors.add(id);
+
   const api = instance();
   const newContributorsData: Record<string, PublicUser> = {};
 
-  // Optimized: parallelize API calls using Promise.allSettled to avoid N+1 problem
-  const promises = uniqueContributorIds.value.map(async (userId) => {
-    try {
-      const response = await api.get<PublicUser>(`users/${userId}`);
-      return { data: response.data, userId };
-    } catch (error) {
-      if (import.meta.env.DEV) console.error(`Error fetching data for user ${userId}:`, error);
-      return { data: null, userId };
-    }
-  });
+  const results = await Promise.allSettled(
+    missing.map(async (userId) => {
+      try {
+        const response = await api.get<PublicUser>(`users/${userId}`, {
+          signal: AbortSignal.timeout(3000),
+        });
+        return { data: response.data, userId };
+      } catch {
+        return { data: null, userId };
+      }
+    }),
+  );
 
-  const results = await Promise.allSettled(promises);
-
-  results.forEach((result) => {
+  for (const result of results) {
     if (result.status === "fulfilled" && result.value.data) {
       newContributorsData[result.value.userId] = result.value.data;
     }
-  });
+  }
 
-  contributorsData.value = newContributorsData;
+  if (Object.keys(newContributorsData).length > 0) {
+    contributorsData.value = { ...contributorsData.value, ...newContributorsData };
+  }
 };
 
 // Surveiller les changements dans uniqueContributorIds pour récupérer les nouvelles données
@@ -105,9 +113,11 @@ watch(
   { immediate: true },
 );
 
-playlistStore.clean().finally(() => {
-  playlistStore.getPlaylist(`playlists/${props.id}`);
-  playlistStore.getTracks(`playlists/${props.id}/tracks`);
+onActivated(() => {
+  playlistStore.clean().finally(() => {
+    playlistStore.getPlaylist(`playlists/${props.id}`);
+    playlistStore.getTracks(`playlists/${props.id}/tracks`);
+  });
 });
 </script>
 
