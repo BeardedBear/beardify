@@ -9,9 +9,7 @@
       <div class="main-content">
         <MobileHeader />
         <router-view v-slot="{ Component, route }">
-          <keep-alive :max="20">
-            <component :is="Component" :key="route.fullPath" />
-          </keep-alive>
+          <component :is="Component" :key="route.fullPath" />
         </router-view>
       </div>
     </div>

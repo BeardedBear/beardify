@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onActivated, ref } from "vue";
+import { computed, ref } from "vue";
 
 import { PublicUser } from "@/@types/PublicUser";
 import { instance } from "@/api";
@@ -103,30 +103,15 @@ const fetchContributorsData = async (): Promise<void> => {
   }
 };
 
-let skipFirstActivation = true;
-
-onActivated(() => {
-  if (skipFirstActivation) {
-    skipFirstActivation = false;
-    return;
-  }
-  // Don't clean() — keep playlist.name so v-else keeps PageScroller alive (preserving scroll)
-  playlistStore.tracks = [];
-  playlistStore.filter = "";
+playlistStore.clean().finally(() => {
   Promise.all([
     playlistStore.getPlaylist(`playlists/${props.id}`),
     playlistStore.getTracks(`playlists/${props.id}/tracks`),
   ]).then(() => {
     fetchContributorsData();
+    // Restore scroll after tracks finished loading (height is now stable)
     scrollerRef.value?.restoreScroll();
   });
-});
-
-playlistStore.clean().finally(() => {
-  Promise.all([
-    playlistStore.getPlaylist(`playlists/${props.id}`),
-    playlistStore.getTracks(`playlists/${props.id}/tracks`),
-  ]).then(() => fetchContributorsData());
 });
 </script>
 
