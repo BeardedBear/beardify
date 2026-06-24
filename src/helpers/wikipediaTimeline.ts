@@ -60,6 +60,7 @@ const EASYTIMELINE_COLORS: Record<string, string> = {
   green: "#2e9e4f",
   grey: "#8a8a8a",
   lightorange: "#f3b96a",
+  lightpurple: "#b39ddb",
   limegreen: "#7ad13a",
   magenta: "#c0399b",
   oceanblue: "#2a6fb0",
@@ -277,7 +278,8 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
     const colorMatch = line.match(/^id:(\S+)\s+value:(\S+(?:\([^)]*\))?)(?:\s+legend:(\S+))?/);
     if (colorMatch) {
       const [, id, value, legend] = colorMatch;
-      colors[id] = { color: resolveColor(value), legend: (legend ?? id).replace(/_/g, " ") };
+      // EasyTimeline color ids are case-insensitive; normalize so plot `color:` refs match
+      colors[id.toLowerCase()] = { color: resolveColor(value), legend: (legend ?? id).replace(/_/g, " ") };
       continue;
     }
 
@@ -296,7 +298,7 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
       if (fromYear !== null && tillYear !== null) {
         segments.push({
           barId,
-          colorId,
+          colorId: colorId.toLowerCase(),
           from: fromYear,
           openEnded,
           thin: width !== undefined && parseInt(width, 10) < DEFAULT_BAR_WIDTH,
@@ -309,7 +311,7 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
     const eventMatch = line.match(/^at:(\S+)\s+color:(\S+)/);
     if (eventMatch) {
       const date = toFractionalYear(eventMatch[1], format, range);
-      if (date !== null) events.push({ colorId: eventMatch[2], date });
+      if (date !== null) events.push({ colorId: eventMatch[2].toLowerCase(), date });
     }
   }
 
@@ -319,10 +321,25 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
 }
 
 /**
- * Resolve an EasyTimeline color token (e.g. "red", "gray(0.6)") to a CSS color.
+ * Resolve an EasyTimeline color token to a CSS color. Handles named colors
+ * (e.g. "red", "gray(0.6)") and explicit `rgb(r,g,b)` values, where EasyTimeline
+ * components are 0–1 floats (also tolerates 0–255 integers).
  */
 function resolveColor(token: string): string {
-  const name = token.split("(")[0].toLowerCase();
+  const lower = token.toLowerCase();
+
+  if (/^#[0-9a-f]{3,8}$/.test(lower)) return lower;
+
+  const rgbMatch = lower.match(/^rgb\(([^)]+)\)/);
+  if (rgbMatch) {
+    const parts = rgbMatch[1].split(",").map((p) => parseFloat(p.trim()));
+    if (parts.length === 3 && parts.every((n) => !isNaN(n))) {
+      const [r, g, b] = parts.map((n) => Math.min(255, Math.max(0, Math.round(n <= 1 ? n * 255 : n))));
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+  }
+
+  const name = lower.split("(")[0];
   return EASYTIMELINE_COLORS[name] ?? "#8a8a8a";
 }
 
