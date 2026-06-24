@@ -162,7 +162,7 @@ body {
     "ROND" var(--font-variation-rond),
     "wght" var(--font-variation-wght);
   overflow: hidden;
-  scrollbar-color: var(--primary-color-dark) var(--bg-color-dark);
+  scrollbar-color: var(--bg-color-light) var(--bg-color-dark);
   scrollbar-width: thin;
 
   /* Improve font rendering on many platforms */

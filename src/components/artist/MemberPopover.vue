@@ -291,10 +291,10 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
   gap: 0.2rem;
   list-style: none;
   margin: 0;
+  margin-bottom: 1rem;
   max-height: 12rem;
   overflow-y: auto;
   padding: 0;
-  margin-bottom: 1rem;
 
   li {
     align-items: baseline;
