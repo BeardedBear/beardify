@@ -136,6 +136,7 @@ useResizeObserver([tooltipRef, wrapperRef], () => {
 .tooltip-wrapper {
   display: inline-block;
   position: relative;
+  width: 100%;
 }
 </style>
 
