@@ -2,7 +2,7 @@
   <div v-if="albumStore.album.name === ''" class="loader">
     <Loader />
   </div>
-  <div v-else ref="albumpage" class="album-page">
+  <div v-else ref="pageRef" class="album-page" @scroll="onScroll">
     <div class="fit">
       <Head :album="albumStore.album" />
       <div class="content">
@@ -49,7 +49,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, nextTick, onActivated, onDeactivated, onMounted, onUnmounted, ref } from "vue";
+import { useRoute } from "vue-router";
 
 import Foot from "@/components/album/AlbumFoot.vue";
 import Head from "@/components/album/AlbumHead.vue";
@@ -68,8 +69,38 @@ const props = defineProps({ id: { default: "", type: String } });
 const albumStore = useAlbum();
 const playerStore = usePlayer();
 const dialogStore = useDialog();
+const route = useRoute();
 
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
+
+const pageRef = ref<HTMLElement | null>(null);
+const scrollKey = `scroll-${route.path}`;
+let lastScrollTop = 0;
+
+function onScroll(): void {
+  if (pageRef.value) lastScrollTop = pageRef.value.scrollTop;
+}
+
+function restoreScroll(): void {
+  const saved = sessionStorage.getItem(scrollKey);
+  if (!saved || !pageRef.value) return;
+  nextTick(() => {
+    if (!pageRef.value) return;
+    const prev = pageRef.value.style.scrollBehavior;
+    pageRef.value.style.scrollBehavior = "auto";
+    pageRef.value.scrollTop = parseInt(saved);
+    pageRef.value.style.scrollBehavior = prev;
+  });
+}
+
+function saveScroll(): void {
+  sessionStorage.setItem(scrollKey, String(lastScrollTop));
+}
+
+onDeactivated(saveScroll);
+onUnmounted(saveScroll);
+onActivated(restoreScroll);
+onMounted(restoreScroll);
 
 albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 </script>

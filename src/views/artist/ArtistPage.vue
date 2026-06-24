@@ -2,7 +2,7 @@
   <div v-if="artistStore.artist.name === ''" class="loader">
     <Loader />
   </div>
-  <div v-else class="artist-page">
+  <div v-else ref="pageRef" class="artist-page" @scroll="onScroll">
     <ArtistHeader />
     <Transition name="tab-fade" mode="out-in">
       <div v-if="artistStore.activeTab === 'discography'" key="discography" class="content">
@@ -35,6 +35,9 @@
 </template>
 
 <script lang="ts" setup>
+import { nextTick, onActivated, onDeactivated, onMounted, onUnmounted, ref } from "vue";
+import { useRoute } from "vue-router";
+
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
 import ArtistInfo from "@/components/artist/ArtistInfo.vue";
 import BlockAlbums from "@/components/artist/BlockAlbums.vue";
@@ -48,6 +51,36 @@ import { useArtist } from "@/views/artist/ArtistStore";
 
 const props = defineProps<{ id: string }>();
 const artistStore = useArtist();
+const route = useRoute();
+
+const pageRef = ref<HTMLElement | null>(null);
+const scrollKey = `scroll-${route.path}`;
+let lastScrollTop = 0;
+
+function onScroll(): void {
+  if (pageRef.value) lastScrollTop = pageRef.value.scrollTop;
+}
+
+function restoreScroll(): void {
+  const saved = sessionStorage.getItem(scrollKey);
+  if (!saved || !pageRef.value) return;
+  nextTick(() => {
+    if (!pageRef.value) return;
+    const prev = pageRef.value.style.scrollBehavior;
+    pageRef.value.style.scrollBehavior = "auto";
+    pageRef.value.scrollTop = parseInt(saved);
+    pageRef.value.style.scrollBehavior = prev;
+  });
+}
+
+function saveScroll(): void {
+  sessionStorage.setItem(scrollKey, String(lastScrollTop));
+}
+
+onDeactivated(saveScroll);
+onUnmounted(saveScroll);
+onActivated(restoreScroll);
+onMounted(restoreScroll);
 
 artistStore.clean().finally(() => {
   artistStore.getArtist(props.id);
