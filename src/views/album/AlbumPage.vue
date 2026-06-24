@@ -101,10 +101,18 @@ onDeactivated(saveScroll);
 onUnmounted(saveScroll);
 onMounted(restoreScroll);
 
+let skipFirstActivation = true;
+
 onActivated(() => {
   restoreScroll();
+  if (skipFirstActivation) {
+    skipFirstActivation = false;
+    return;
+  }
   albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 });
+
+albumStore.clean().finally(() => albumStore.getAlbum(props.id));
 </script>
 
 <style lang="scss" scoped>

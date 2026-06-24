@@ -2,7 +2,7 @@
   <div v-if="playlistStore.playlist.name === ''" class="loader">
     <Loader />
   </div>
-  <PageScroller v-else>
+  <PageScroller v-else ref="scrollerRef">
     <PageFit>
       <div class="collection">
         <Header no-cover no-duration with-filter />
@@ -59,6 +59,7 @@ const props = defineProps<{ id: string }>();
 const playlistStore = usePlaylist();
 const albumList = ref<AlbumSimplified[]>([]);
 const authStore = useAuth();
+const scrollerRef = ref<InstanceType<typeof PageScroller>>();
 
 const albumListFiltered = computed<AlbumSimplified[]>(() =>
   albumList.value.filter((album) => {
@@ -77,11 +78,27 @@ watch(
   () => (albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album))),
 );
 
+let skipFirstActivation = true;
+
 onActivated(() => {
-  playlistStore.clean().finally(() => {
-    playlistStore.getPlaylist(`playlists/${props.id}`);
-    playlistStore.getTracks(`playlists/${props.id}/tracks`);
+  if (skipFirstActivation) {
+    skipFirstActivation = false;
+    return;
+  }
+  // Don't clean() — keep playlist.name so v-else keeps PageScroller alive (preserving scroll)
+  playlistStore.tracks = [];
+  playlistStore.filter = "";
+  Promise.all([
+    playlistStore.getPlaylist(`playlists/${props.id}`),
+    playlistStore.getTracks(`playlists/${props.id}/tracks`),
+  ]).then(() => {
+    scrollerRef.value?.restoreScroll();
   });
+});
+
+playlistStore.clean().finally(() => {
+  playlistStore.getPlaylist(`playlists/${props.id}`);
+  playlistStore.getTracks(`playlists/${props.id}/tracks`);
 });
 </script>
 

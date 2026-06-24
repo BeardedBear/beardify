@@ -20,7 +20,9 @@ import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 
 const page = ref<HTMLElement | null>(null);
-const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, page);
+const { onScroll, restoreScroll } = useScrollRestore(`scroll-${useRoute().path}`, page);
+
+defineExpose({ restoreScroll });
 
 function scrollToBottom(): void {
   if (page.value) page.value.scrollTop = page.value.scrollHeight;

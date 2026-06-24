@@ -2,7 +2,7 @@
   <div v-if="playlistStore.playlist.name === ''" class="loader">
     <Loader />
   </div>
-  <PageScroller v-else>
+  <PageScroller v-else ref="scrollerRef">
     <div class="playlist">
       <Header not-fit />
       <template
@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onActivated, ref, watch } from "vue";
+import { computed, onActivated, ref } from "vue";
 
 import { PublicUser } from "@/@types/PublicUser";
 import { instance } from "@/api";
@@ -37,6 +37,7 @@ import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 const props = defineProps<{ id: string }>();
 const playlistStore = usePlaylist();
+const scrollerRef = ref<InstanceType<typeof PageScroller>>();
 
 // Optimized: single iteration through tracks array instead of three separate iterations
 const categorizedTracks = computed(() => {
@@ -102,22 +103,30 @@ const fetchContributorsData = async (): Promise<void> => {
   }
 };
 
-// Surveiller les changements dans uniqueContributorIds pour récupérer les nouvelles données
-watch(
-  uniqueContributorIds,
-  () => {
-    if (uniqueContributorIds.value.length > 0) {
-      fetchContributorsData();
-    }
-  },
-  { immediate: true },
-);
+let skipFirstActivation = true;
 
 onActivated(() => {
-  playlistStore.clean().finally(() => {
-    playlistStore.getPlaylist(`playlists/${props.id}`);
-    playlistStore.getTracks(`playlists/${props.id}/tracks`);
+  if (skipFirstActivation) {
+    skipFirstActivation = false;
+    return;
+  }
+  // Don't clean() — keep playlist.name so v-else keeps PageScroller alive (preserving scroll)
+  playlistStore.tracks = [];
+  playlistStore.filter = "";
+  Promise.all([
+    playlistStore.getPlaylist(`playlists/${props.id}`),
+    playlistStore.getTracks(`playlists/${props.id}/tracks`),
+  ]).then(() => {
+    fetchContributorsData();
+    scrollerRef.value?.restoreScroll();
   });
+});
+
+playlistStore.clean().finally(() => {
+  Promise.all([
+    playlistStore.getPlaylist(`playlists/${props.id}`),
+    playlistStore.getTracks(`playlists/${props.id}/tracks`),
+  ]).then(() => fetchContributorsData());
 });
 </script>
 

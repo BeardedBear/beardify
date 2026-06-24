@@ -1,6 +1,9 @@
 import { nextTick, onActivated, onDeactivated, onMounted, onUnmounted, type Ref } from "vue";
 
-export function useScrollRestore(key: string, scrollRef: Ref<HTMLElement | null>): { onScroll: () => void } {
+export function useScrollRestore(
+  key: string,
+  scrollRef: Ref<HTMLElement | null>,
+): { onScroll: () => void; restoreScroll: () => void } {
   let lastScrollTop = 0;
 
   function onScroll(): void {
@@ -28,5 +31,5 @@ export function useScrollRestore(key: string, scrollRef: Ref<HTMLElement | null>
   onActivated(restoreScroll);
   onMounted(restoreScroll);
 
-  return { onScroll };
+  return { onScroll, restoreScroll };
 }

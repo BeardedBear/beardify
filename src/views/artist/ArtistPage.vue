@@ -81,8 +81,14 @@ onDeactivated(saveScroll);
 onUnmounted(saveScroll);
 onMounted(restoreScroll);
 
+let skipFirstActivation = true;
+
 onActivated(() => {
   restoreScroll();
+  if (skipFirstActivation) {
+    skipFirstActivation = false;
+    return;
+  }
   artistStore.clean().finally(() => {
     artistStore.getArtist(props.id);
     artistStore.getTopTracks(props.id);
@@ -91,6 +97,15 @@ onActivated(() => {
     artistStore.getSingles(props.id);
     artistStore.getFollowStatus(props.id);
   });
+});
+
+artistStore.clean().finally(() => {
+  artistStore.getArtist(props.id);
+  artistStore.getTopTracks(props.id);
+  artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`);
+  artistStore.getRelatedArtists(props.id);
+  artistStore.getSingles(props.id);
+  artistStore.getFollowStatus(props.id);
 });
 </script>
 
