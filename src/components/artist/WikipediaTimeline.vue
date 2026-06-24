@@ -26,7 +26,7 @@
         <div class="member-name" :class="{ 'is-active': row.active }">
           <MemberPopover :name="row.name">{{ row.name }}</MemberPopover>
         </div>
-        <div class="member-track">
+        <div class="member-track" :class="{ 'is-inactive': !row.active }">
           <span
             v-for="event in events"
             :key="`${row.id}-${event.left}`"
@@ -240,15 +240,14 @@ const ticks = computed<AxisTick[]>(() => {
 .member-name {
   color: var(--font-color-light);
   font-size: var(--font-size-sm);
+  opacity: 0.5;
   overflow: hidden;
   text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
 
   &.is-active {
-    @include font-bold;
-
-    color: var(--font-color-default);
+    opacity: 1;
 
     &::after {
       background-color: #2ecc71;
@@ -279,13 +278,25 @@ const ticks = computed<AxisTick[]>(() => {
 
 .segment {
   border-radius: 0.2rem;
+  opacity: 0.7;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  transition: filter 0.2s ease;
+  transition:
+    filter 0.2s ease,
+    opacity 0.2s ease;
 
   &:hover {
     filter: brightness(1.25);
+    opacity: 1;
+  }
+}
+
+.member-track.is-inactive .segment {
+  opacity: 0.35;
+
+  &:hover {
+    opacity: 0.7;
   }
 }
 

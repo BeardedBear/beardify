@@ -88,7 +88,7 @@ const props = defineProps<{
 
 const GAP = 12;
 const MARGIN = 8;
-const PANEL_WIDTH = 300;
+const PANEL_WIDTH = 350;
 const CLOSE_DELAY = 120;
 const MAX_GROUPS = 8;
 
@@ -227,7 +227,7 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 
 .member-popover .mp-photo-col {
   flex-shrink: 0;
-  width: 100px;
+  width: 150px;
 }
 
 .member-popover .mp-photo {
@@ -255,10 +255,15 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 
 .member-popover .mp-info-col {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 0.25rem;
   min-width: 0;
   padding: 0.75rem;
+}
+
+.member-popover .mp-section {
+  width: 100%;
 }
 
 .member-popover .mp-name {
@@ -275,6 +280,7 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
   display: block;
   font-size: var(--font-size-xs);
   margin-bottom: 0.3rem;
+  margin-top: 1rem;
   opacity: 0.5;
   text-transform: uppercase;
 }
@@ -285,19 +291,21 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
   gap: 0.2rem;
   list-style: none;
   margin: 0;
-  max-height: 11rem;
+  max-height: 12rem;
   overflow-y: auto;
   padding: 0;
+  margin-bottom: 1rem;
 
   li {
     align-items: baseline;
     display: flex;
+    flex: 1;
     font-size: var(--font-size-sm);
     gap: 0.4rem;
     justify-content: space-between;
 
     &.former {
-      opacity: 0.55;
+      /* opacity: 0.55; */
     }
   }
 }
@@ -308,9 +316,11 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
   border: none;
   color: var(--font-color-default);
   cursor: pointer;
+  flex: 1;
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
+  min-width: 0;
   overflow: hidden;
   padding: 0;
   text-align: left;
