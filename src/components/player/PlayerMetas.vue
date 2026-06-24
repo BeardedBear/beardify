@@ -148,8 +148,16 @@ const truncatedTrackName = computed(() => {
 
 .album {
   font-size: var(--font-size-sm);
+  opacity: 0.5;
 
   @include font-italic;
+
+  @include responsive.mobile {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
 
   .link {
     color: currentcolor;
@@ -158,7 +166,6 @@ const truncatedTrackName = computed(() => {
 
     @include font-italic;
 
-    opacity: 0.5;
     text-decoration: none;
 
     &:hover {
@@ -189,6 +196,12 @@ const truncatedTrackName = computed(() => {
 
   @include responsive.mobile {
     gap: 0.6rem;
+  }
+
+  .cover-wrap {
+    @include responsive.mobile {
+      display: none;
+    }
   }
 }
 

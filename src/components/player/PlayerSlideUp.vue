@@ -120,10 +120,10 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
       }
 
       .cover img {
-        object-fit: contain;
-        width: 100%;
         border-radius: 8px;
         max-width: 300px;
+        object-fit: contain;
+        width: 100%;
       }
     }
 
