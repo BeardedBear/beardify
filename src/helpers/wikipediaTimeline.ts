@@ -181,7 +181,7 @@ function parseBandMembersSection(wikitext: string): null | WikiTimeline {
     const dashIdx = line.search(/\s[–—-]\s/);
     if (dashIdx === -1) continue;
     const name = line.slice(0, dashIdx).trim();
-    const rest2 = line.slice(dashIdx + 1).trim();
+    const rest2 = line.slice(dashIdx + 1).replace(/^[–—-]\s*/, "").trim();
 
     const dateMatch = rest2.match(/\((\d{4})\s*[–—-]\s*(\d{4}|present)/i);
     if (!dateMatch) continue;
