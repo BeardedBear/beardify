@@ -82,6 +82,12 @@ defineEmits<{
   gap: 0.4rem;
   opacity: 0.5;
   padding: 0.5rem 1.5rem;
+
+  :deep(svg) {
+    height: 1rem;
+    width: 1rem;
+  }
+
   transition:
     background-color 0.2s ease,
     opacity 0.2s ease;
