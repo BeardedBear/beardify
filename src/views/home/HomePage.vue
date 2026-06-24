@@ -3,7 +3,7 @@
     <Loader />
   </div>
   <div v-else class="home">
-    <div class="home-content">
+    <div ref="scrollRef" class="home-content" @scroll="onScroll">
       <PageFit>
         <div class="title">
           <div class="name">Recommended albums</div>
@@ -19,17 +19,21 @@
 </template>
 
 <script lang="ts" setup>
-import { watch } from "vue";
+import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
 
 import AlbumGallery from "@/components/album/AlbumGallery.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
+import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useAuth } from "@/views/auth/AuthStore";
 import { useHome } from "@/views/home/HomeStore";
 
 const homeStore = useHome();
 const authStore = useAuth();
+const scrollRef = ref<HTMLElement | null>(null);
+const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, scrollRef);
 
 function getData(): void {
   homeStore.clean().finally(() => {

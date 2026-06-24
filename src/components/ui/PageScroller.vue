@@ -13,45 +13,14 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onActivated, onDeactivated, onMounted, onUnmounted, ref } from "vue";
+import { ref } from "vue";
 import { useRoute } from "vue-router";
 
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { useScrollRestore } from "@/composables/useScrollRestore";
 
 const page = ref<HTMLElement | null>(null);
-// Capture path at creation time — route.path changes before onDeactivated fires
-const scrollKey = `scroll-${useRoute().path}`;
-// Track scroll position continuously. keep-alive detaches the DOM on deactivate,
-// which resets scrollTop to 0, so reading it in the hook gives the wrong value.
-let lastScrollTop = 0;
-
-function onScroll(): void {
-  if (page.value) lastScrollTop = page.value.scrollTop;
-}
-
-function restoreScroll(): void {
-  const saved = sessionStorage.getItem(scrollKey);
-  if (!saved || !page.value) return;
-  const target = parseInt(saved);
-  // Wait for the kept-alive DOM to be reattached before setting scrollTop.
-  // Disable smooth scroll so the restore is instant (no visible animation).
-  nextTick(() => {
-    if (!page.value) return;
-    const previous = page.value.style.scrollBehavior;
-    page.value.style.scrollBehavior = "auto";
-    page.value.scrollTop = target;
-    page.value.style.scrollBehavior = previous;
-  });
-}
-
-function saveScroll(): void {
-  sessionStorage.setItem(scrollKey, String(lastScrollTop));
-}
-
-onUnmounted(saveScroll);
-onDeactivated(saveScroll);
-onMounted(restoreScroll);
-onActivated(restoreScroll);
+const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, page);
 
 function scrollToBottom(): void {
   if (page.value) page.value.scrollTop = page.value.scrollHeight;

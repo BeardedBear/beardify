@@ -2,7 +2,7 @@
   <div v-if="!userStore.user" class="loader">
     <LoadingDots />
   </div>
-  <div v-else class="user-page">
+  <div v-else ref="scrollRef" class="user-page" @scroll="onScroll">
     <div class="head">
       <img :src="userStore.user.images[0].url" alt="" class="avatar-bg" />
       <div class="inner">
@@ -53,14 +53,18 @@
 </template>
 
 <script lang="ts" setup>
-import { RouterLink } from "vue-router";
+import { ref } from "vue";
+import { RouterLink, useRoute } from "vue-router";
 
 import Cover from "@/components/ui/AlbumCover.vue";
 import LoadingDots from "@/components/ui/LoadingDots.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
+import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useUserStore } from "@/views/user/UserStore";
 
 const userStore = useUserStore();
+const scrollRef = ref<HTMLElement | null>(null);
+const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, scrollRef);
 const props = defineProps<{
   id: string;
 }>();

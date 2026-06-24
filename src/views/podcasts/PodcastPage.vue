@@ -2,7 +2,7 @@
   <div v-if="!podcastsStore.podcast" class="loader">
     <Loader />
   </div>
-  <div v-else class="podcast">
+  <div v-else ref="scrollRef" class="podcast" @scroll="onScroll">
     <PageFit>
       <div class="title">
         <div class="name">
@@ -20,14 +20,20 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from "vue";
+import { useRoute } from "vue-router";
+
 import PodcastEpisode from "@/components/podcast/PodcastEpisode.vue";
 import PodcastFollowButton from "@/components/podcast/PodcastFollowButton.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
+import { useScrollRestore } from "@/composables/useScrollRestore";
 import { usePodcasts } from "@/views/podcasts/PodcastsStore";
 
 const props = defineProps<{ id: string }>();
 const podcastsStore = usePodcasts();
+const scrollRef = ref<HTMLElement | null>(null);
+const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, scrollRef);
 
 podcastsStore.clean().finally(() => {
   podcastsStore.getPodcast(props.id);

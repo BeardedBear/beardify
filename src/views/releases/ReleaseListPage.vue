@@ -6,7 +6,7 @@
     <div class="side">
       <ReleaseSide />
     </div>
-    <div ref="listDOM" class="list">
+    <div ref="scrollRef" class="list" @scroll="onScroll">
       <ReleaseList />
     </div>
   </div>
@@ -14,20 +14,23 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
 
 import ReleaseList from "@/components/releases/ReleaseList.vue";
 import ReleaseSide from "@/components/releases/ReleaseSide.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
+import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useAuth } from "@/views/auth/AuthStore";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 const releasesStore = useReleases();
 const authStore = useAuth();
-const listDOM = ref<HTMLElement | null>(null);
+const scrollRef = ref<HTMLElement | null>(null);
+const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, scrollRef);
 
 watch(
   () => releasesStore.activeSlug,
-  () => listDOM.value?.scrollTo(0, 0),
+  () => scrollRef.value?.scrollTo(0, 0),
 );
 
 watch(
