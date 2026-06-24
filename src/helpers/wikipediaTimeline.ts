@@ -168,6 +168,7 @@ function parseBandMembersSection(wikitext: string): null | WikiTimeline {
   const bars: WikiTimelineBar[] = [];
   const segments: WikiTimelineSegment[] = [];
   const roleColorMap = new Map<string, string>();
+  const barRoles = new Map<string, string>();
   let colorIdx = 0;
   let minYear = Infinity;
   let maxYear = -Infinity;
@@ -200,7 +201,10 @@ function parseBandMembersSection(wikitext: string): null | WikiTimeline {
     const barId = `m${bars.length}`;
     const existing = bars.find((b) => b.name === name);
     const actualBarId = existing ? existing.id : barId;
-    if (!existing) bars.push({ id: barId, name });
+    if (!existing) {
+      bars.push({ id: barId, name });
+      barRoles.set(barId, role);
+    }
 
     if (!roleColorMap.has(role)) {
       roleColorMap.set(role, COLOR_IDS[colorIdx++ % COLOR_IDS.length]);
@@ -213,6 +217,20 @@ function parseBandMembersSection(wikitext: string): null | WikiTimeline {
   }
 
   if (bars.length === 0 || segments.length === 0) return null;
+
+  // Group bars by role (like EasyTimeline), sort by role then by earliest start
+  const roleOrder = [...new Set(bars.map((b) => barRoles.get(b.id) ?? "member"))];
+  bars.sort((a, b) => {
+    const roleA = barRoles.get(a.id) ?? "member";
+    const roleB = barRoles.get(b.id) ?? "member";
+    const idxA = roleOrder.indexOf(roleA);
+    const idxB = roleOrder.indexOf(roleB);
+    if (idxA !== idxB) return idxA - idxB;
+    const segsA = segments.filter((s) => s.barId === a.id);
+    const segsB = segments.filter((s) => s.barId === b.id);
+    return (segsA.length ? Math.min(...segsA.map((s) => s.from)) : 0)
+      - (segsB.length ? Math.min(...segsB.map((s) => s.from)) : 0);
+  });
 
   const colors: Record<string, WikiTimelineColor> = {};
   for (const [role, colorName] of roleColorMap) {
