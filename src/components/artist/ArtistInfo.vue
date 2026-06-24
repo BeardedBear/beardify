@@ -1,7 +1,10 @@
 <template>
   <div class="artist-info">
     <div class="main-content">
-      <WikipediaTimeline v-if="artistStore.wikiTimeline" />
+      <div v-if="artistStore.timelineLoading" class="timeline-loader">
+        <LoadingDots size="small" />
+      </div>
+      <WikipediaTimeline v-else-if="artistStore.wikiTimeline" />
       <MemberTimeline v-else-if="artistStore.bandMembers.length > 0" />
 
       <div v-if="hasBiography" class="info-section">
@@ -47,6 +50,7 @@ import ArtistSidebar from "@/components/artist/ArtistSidebar.vue";
 import MemberTimeline from "@/components/artist/MemberTimeline.vue";
 import WikipediaTimeline from "@/components/artist/WikipediaTimeline.vue";
 import { type LanguageOption } from "@/components/ui/LanguageSelect.vue";
+import LoadingDots from "@/components/ui/LoadingDots.vue";
 import { parseDiscogsMarkup } from "@/helpers/discogs";
 import { useArtist } from "@/views/artist/ArtistStore";
 
@@ -362,5 +366,12 @@ onMounted(() => {
 .no-info {
   color: var(--font-color-light);
   opacity: 0.6;
+}
+
+.timeline-loader {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+  padding: 2rem 0;
 }
 </style>

@@ -35,8 +35,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
 import ArtistInfo from "@/components/artist/ArtistInfo.vue";
@@ -50,14 +50,24 @@ import Loader from "@/components/ui/LoadingDots.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useArtist } from "@/views/artist/ArtistStore";
 
+const VALID_TABS = ["discography", "info"] as const;
+type TabId = (typeof VALID_TABS)[number];
+
 const props = defineProps<{ id: string }>();
 const artistStore = useArtist();
 const route = useRoute();
+const router = useRouter();
 
 const pageRef = ref<HTMLElement | null>(null);
 const { onScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
 
 artistStore.clean().finally(() => {
+  const queryTab = route.query.tab;
+  if (typeof queryTab === "string" && (VALID_TABS as readonly string[]).includes(queryTab)) {
+    artistStore.activeTab = queryTab as TabId;
+  } else {
+    router.replace({ query: { ...route.query, tab: artistStore.activeTab } });
+  }
   artistStore.getArtist(props.id);
   artistStore.getTopTracks(props.id);
   artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`);
@@ -65,6 +75,15 @@ artistStore.clean().finally(() => {
   artistStore.getSingles(props.id);
   artistStore.getFollowStatus(props.id);
 });
+
+watch(
+  () => artistStore.activeTab,
+  (tab) => {
+    if (route.query.tab !== tab) {
+      router.replace({ query: { ...route.query, tab } });
+    }
+  },
+);
 </script>
 
 <style lang="scss">

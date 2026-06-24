@@ -39,6 +39,7 @@ export interface ArtistPage {
   musicbrainzArtist: MusicBrainzArtist | null;
   relatedArtists: RelatedArtists;
   singles: AlbumSimplified[];
+  timelineLoading: boolean;
   topTracks: ArtistTopTracks;
   wikidataArtist: null | WikidataArtist;
   wikidataId: null | string;

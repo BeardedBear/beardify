@@ -39,6 +39,7 @@ export const useArtist = defineStore("artist", {
       this.discogsArtist = null;
       this.discogsId = null;
       this.discogsReleases = new Map();
+      this.timelineLoading = true;
       this.wikidataArtist = null;
       this.wikipediaExtract = null;
       this.wikipediaLanguage = "en";
@@ -182,10 +183,12 @@ export const useArtist = defineStore("artist", {
           this.wikidataId = null;
           this.wikidataArtist = null;
           this.wikipediaExtract = null;
+          this.timelineLoading = false;
         }
       } catch {
         this.discogsId = null;
         this.wikidataId = null;
+        this.timelineLoading = false;
       }
     },
 
@@ -287,6 +290,8 @@ export const useArtist = defineStore("artist", {
         }
       } catch {
         this.wikidataArtist = null;
+      } finally {
+        this.timelineLoading = false;
       }
     },
 
@@ -330,6 +335,7 @@ export const useArtist = defineStore("artist", {
     musicbrainzArtist: null,
     relatedArtists: { artists: [] },
     singles: [],
+    timelineLoading: false,
     topTracks: { tracks: [] },
     wikidataArtist: null,
     wikidataId: null,
