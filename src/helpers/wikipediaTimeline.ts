@@ -331,6 +331,7 @@ function stripWikiMarkup(text: string): string {
   return text
     .replace(/<ref[^>]*>[\s\S]*?<\/ref>/g, "")
     .replace(/<ref[^/]*\/>/g, "")
+    .replace(/<[^>]+>/g, "")
     .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, "$2")
     .replace(/\[\[([^\]]+)\]\]/g, "$1")
     .replace(/'{2,3}/g, "")
