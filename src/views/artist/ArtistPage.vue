@@ -166,8 +166,8 @@ watch(
   flex: 0 0 22rem;
 
   @include responsive.mobile {
-    order: -1;
     display: contents;
+    order: -1;
   }
 
   @include responsive.xl {

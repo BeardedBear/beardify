@@ -114,8 +114,8 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
     .cover img {
       border-radius: 8px;
       height: auto;
-      width: 100%;
       max-width: 250px;
+      width: 100%;
     }
 
     @include responsive.mobile {
@@ -144,6 +144,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
           align-items: flex-start;
           flex-direction: column;
         }
+
         @include responsive.tablet-up {
           align-items: flex-start;
           flex-direction: column;
