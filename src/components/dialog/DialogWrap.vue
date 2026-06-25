@@ -252,8 +252,8 @@ $radius: 2rem;
   &.big {
     height: 80dvh;
     max-height: 80dvh;
-    max-width: 90vw;
-    width: 70rem;
+    max-width: 80vw;
+    width: 80vw;
   }
 }
 </style>

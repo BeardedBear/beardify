@@ -79,9 +79,9 @@ defineEmits<{
 
   @include font-bold;
 
-  gap: 0.4rem;
+  gap: 0.5rem;
   opacity: 0.5;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1rem;
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(svg) {

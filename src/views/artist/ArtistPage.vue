@@ -124,6 +124,10 @@ watch(
 
 .list {
   flex: 1;
+
+  @include responsive.tablet-down {
+    display: contents;
+  }
 }
 
 .content {
@@ -161,8 +165,9 @@ watch(
 .top {
   flex: 0 0 22rem;
 
-  @include responsive.tablet-down {
+  @include responsive.mobile {
     order: -1;
+    display: contents;
   }
 
   @include responsive.xl {
@@ -173,8 +178,9 @@ watch(
 .top-item {
   margin-bottom: 2.5rem;
 
-  @include responsive.tablet-down {
+  @include responsive.mobile {
     margin-bottom: 1.5rem;
+    order: -1;
   }
 
   @include responsive.xl {
@@ -189,11 +195,11 @@ watch(
 
 .related-artists {
   @include responsive.tablet-down {
-    display: none;
+    order: 5;
   }
 
   @include responsive.xl {
-    display: none;
+    order: 5;
   }
 }
 
