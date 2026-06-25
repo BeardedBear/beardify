@@ -107,9 +107,14 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
     grid-template-columns: 1fr;
     padding-bottom: 2rem;
 
+    @include responsive.tablet-up {
+      grid-template-columns: auto 1fr;
+    }
+
     .cover img {
       border-radius: 8px;
       height: auto;
+      max-width: 250px;
       width: 100%;
     }
 
@@ -121,7 +126,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
 
       .cover img {
         border-radius: 8px;
-        max-width: 300px;
+        max-width: 250px;
         object-fit: contain;
         width: 100%;
       }
@@ -136,6 +141,11 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
         margin-bottom: 0.5rem;
 
         @include responsive.mobile {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        @include responsive.tablet-up {
           align-items: flex-start;
           flex-direction: column;
         }

@@ -15,7 +15,7 @@
         <MoreHorizontal />
       </ButtonIndex>
     </div>
-    <div class="collapsible">
+    <div class="collapsible" :class="{ collapsed: artistStore.scrolledDown }">
       <ArtistProfile />
       <ArtistTabs v-model="artistStore.activeTab" :tabs="tabs" />
     </div>
@@ -156,19 +156,13 @@ watch(infoAvailable, (available) => {
 
 .collapsible {
   overflow: hidden;
-  transition:
-    max-height 0.3s ease,
-    opacity 0.3s ease;
+  transition: max-height 0.25s ease, opacity 0.25s ease;
 
   @include responsive.mobile {
-    max-height: 10rem;
+    max-height: 30rem;
     opacity: 1;
-  }
-}
 
-.header.scrolled {
-  @include responsive.mobile {
-    .collapsible {
+    &.collapsed {
       max-height: 0;
       opacity: 0;
     }

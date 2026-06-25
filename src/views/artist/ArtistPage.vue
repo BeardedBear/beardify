@@ -60,13 +60,20 @@ const route = useRoute();
 const pageRef = ref<HTMLElement | null>(null);
 const { onScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
 
+let lastChangeTime = 0;
+
 function handleScroll() {
   onScroll();
+  const now = Date.now();
+  if (now - lastChangeTime < 300) return;
+
   const scrollTop = pageRef.value?.scrollTop ?? 0;
-  if (!artistStore.scrolledDown && scrollTop > 40) {
+  if (scrollTop > 40 && !artistStore.scrolledDown) {
     artistStore.scrolledDown = true;
-  } else if (artistStore.scrolledDown && scrollTop < 10) {
+    lastChangeTime = now;
+  } else if (scrollTop <= 0 && artistStore.scrolledDown) {
     artistStore.scrolledDown = false;
+    lastChangeTime = now;
   }
 }
 
@@ -117,6 +124,10 @@ watch(
 
 .list {
   flex: 1;
+
+  @include responsive.tablet-down {
+    display: contents;
+  }
 }
 
 .content {
@@ -154,7 +165,8 @@ watch(
 .top {
   flex: 0 0 22rem;
 
-  @include responsive.tablet-down {
+  @include responsive.mobile {
+    display: contents;
     order: -1;
   }
 
@@ -166,8 +178,9 @@ watch(
 .top-item {
   margin-bottom: 2.5rem;
 
-  @include responsive.tablet-down {
+  @include responsive.mobile {
     margin-bottom: 1.5rem;
+    order: -1;
   }
 
   @include responsive.xl {
@@ -178,16 +191,15 @@ watch(
 .artist-page {
   animation: pop-content 1s ease both;
   overflow-y: scroll;
-  scroll-behavior: smooth;
 }
 
 .related-artists {
   @include responsive.tablet-down {
-    display: none;
+    order: 5;
   }
 
   @include responsive.xl {
-    display: none;
+    order: 5;
   }
 }
 

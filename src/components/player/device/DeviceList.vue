@@ -1,6 +1,7 @@
 <template>
   <QueuedTracks />
-  <div ref="devicesRef" class="devices">
+  <div v-if="showList" class="dropdown-overlay" @click="showList = false" />
+  <div class="devices">
     <ButtonIndex
       variant="primary"
       align="left"
@@ -67,7 +68,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onClickOutside, useWindowSize } from "@vueuse/core";
+import { useWindowSize } from "@vueuse/core";
 import { computed, ref } from "vue";
 
 import type { Device } from "@/@types/Device";
@@ -110,22 +111,23 @@ function truncate(str: string, max: number) {
 }
 
 const showList = ref(false);
-const devicesRef = ref(null);
 
 function toggleList() {
   playerStore.getDeviceList();
   showList.value = !showList.value;
 }
-
-onClickOutside(devicesRef, () => {
-  showList.value = false;
-});
 </script>
 
 <style lang="scss" scoped>
 @use "@/assets/scss/mixins" as *;
 
 $gap-list: 10px;
+
+.dropdown-overlay {
+  inset: 0;
+  position: fixed;
+  z-index: 9998;
+}
 
 .available-device-list {
   align-items: center;
@@ -184,6 +186,7 @@ $gap-list: 10px;
   display: flex;
   gap: 10px;
   position: relative;
+  z-index: 10000;
 }
 
 .device-active {

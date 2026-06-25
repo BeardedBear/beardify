@@ -92,10 +92,6 @@ onBeforeUnmount(() => {
   background: var(--bg-color);
   position: relative;
 
-  @include responsive.mobile {
-    overflow: hidden;
-  }
-
   .player-bg {
     display: none;
 
