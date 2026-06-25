@@ -122,6 +122,15 @@ onMounted(() => updateLinks());
 onUpdated(() => updateLinks());
 </script>
 
+<style lang="scss">
+@use "@/assets/scss/responsive" as responsive;
+.links .tooltip-wrapper {
+  @include responsive.mobile {
+    width: 100%;
+  }
+}
+</style>
+
 <style lang="scss" scoped>
 @use "@/assets/scss/responsive" as responsive;
 @use "@/assets/scss/mixins" as *;
