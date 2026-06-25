@@ -124,6 +124,7 @@ onUpdated(() => updateLinks());
 
 <style lang="scss">
 @use "@/assets/scss/responsive" as responsive;
+
 .links .tooltip-wrapper {
   @include responsive.mobile {
     width: 100%;
