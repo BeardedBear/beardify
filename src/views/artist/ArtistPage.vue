@@ -12,13 +12,15 @@
               !artistStore.albums.length &&
               !artistStore.eps.length &&
               !artistStore.singles.length &&
-              !artistStore.albumsLive.length
+              !artistStore.albumsLive.length &&
+              !artistStore.albumsCompilation.length
             "
           >
             {{ artistStore.artist.name }} didn't release anything, it's a bit sad.
           </div>
           <BlockAlbums />
           <BlockAlbumsLive />
+          <BlockAlbumsCompilation />
           <BlockEps />
           <BlockSingles />
         </div>
@@ -41,6 +43,7 @@ import { useRoute } from "vue-router";
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
 import ArtistInfo from "@/components/artist/ArtistInfo.vue";
 import BlockAlbums from "@/components/artist/BlockAlbums.vue";
+import BlockAlbumsCompilation from "@/components/artist/BlockAlbumsCompilation.vue";
 import BlockAlbumsLive from "@/components/artist/BlockAlbumsLive.vue";
 import BlockEps from "@/components/artist/BlockEps.vue";
 import BlockSingles from "@/components/artist/BlockSingles.vue";
@@ -85,6 +88,7 @@ artistStore.clean().finally(() => {
   artistStore.getArtist(props.id);
   artistStore.getTopTracks(props.id);
   artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`);
+  artistStore.getCompilations(`artists/${props.id}/albums?include_groups=compilation&limit=50`);
   artistStore.getRelatedArtists(props.id);
   artistStore.getSingles(props.id);
   artistStore.getFollowStatus(props.id);

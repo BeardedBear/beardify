@@ -2,6 +2,8 @@ import ky from "ky";
 
 import type { BandMember } from "@/@types/Artist";
 
+import { normalizeString } from "@/helpers/helper";
+
 /**
  * MusicBrainz API configuration
  */
@@ -83,6 +85,26 @@ interface MusicBrainzLifeSpan {
 }
 
 /**
+ * Interface for a MusicBrainz release-group (an "album" in the abstract sense,
+ * grouping all its editions). Carries the reliable type metadata Spotify lacks.
+ */
+interface MusicBrainzReleaseGroup {
+  "first-release-date"?: string;
+  id: string;
+  "primary-type": null | string;
+  "secondary-types": string[];
+  title: string;
+}
+
+/**
+ * Interface for the release-group browse response
+ */
+interface MusicBrainzReleaseGroupBrowse {
+  "release-group-count": number;
+  "release-groups": MusicBrainzReleaseGroup[];
+}
+
+/**
  * Interface for MusicBrainz tag
  */
 interface MusicBrainzTag {
@@ -115,6 +137,36 @@ const musicbrainzClient = ky.create({
   },
   timeout: 10000,
 });
+
+/**
+ * Build a map of normalized release title -> type ("Live" | "Compilation" | "EP"
+ * | "Album") from MusicBrainz release-groups.
+ *
+ * MusicBrainz is the most reliable source for this: "Live" and "Compilation" are
+ * explicit secondary types, independent of the primary type, so a live album is
+ * tagged primary "Album" + secondary "Live" (unlike Spotify, which mislabels
+ * them, and unlike Discogs, whose master entries expose no format string).
+ * @param groups - Release-groups from {@link getMusicBrainzReleaseGroups}
+ */
+export function buildReleaseTypeMap(groups: MusicBrainzReleaseGroup[]): Map<string, string> {
+  const map = new Map<string, string>();
+
+  groups.forEach((group) => {
+    const secondary = group["secondary-types"] ?? [];
+    const primary = group["primary-type"];
+    let type: null | string = null;
+
+    // Secondary types win: a live or compilation album keeps primary "Album".
+    if (secondary.includes("Live")) type = "Live";
+    else if (secondary.includes("Compilation")) type = "Compilation";
+    else if (primary === "EP") type = "EP";
+    else if (primary === "Album") type = "Album";
+
+    if (type) map.set(normalizeString(group.title), type);
+  });
+
+  return map;
+}
 
 /**
  * Extracts band members (with active periods and instruments) from the
@@ -191,6 +243,37 @@ export async function getIdsFromMusicBrainz(
   return fetchFromMusicBrainz<MusicBrainzArtist>(`artist/${musicbrainzId}`, {
     inc: "artist-rels+url-rels",
   });
+}
+
+/**
+ * Browse all release-groups of a MusicBrainz artist (paginated, 100 per page).
+ * @param musicbrainzId - The MusicBrainz ID of the artist
+ * @returns Promise resolving to every release-group, or an empty array on failure
+ */
+export async function getMusicBrainzReleaseGroups(
+  musicbrainzId: string,
+): Promise<MusicBrainzReleaseGroup[]> {
+  const PAGE_SIZE = 100;
+  const all: MusicBrainzReleaseGroup[] = [];
+  let offset = 0;
+
+  // MusicBrainz caps page size at 100; loop until every group is fetched.
+  for (;;) {
+    const data = await fetchFromMusicBrainz<MusicBrainzReleaseGroupBrowse>("release-group", {
+      artist: musicbrainzId,
+      limit: PAGE_SIZE,
+      offset,
+    });
+
+    const groups = data?.["release-groups"];
+    if (!groups?.length) break;
+
+    all.push(...groups);
+    offset += groups.length;
+    if (offset >= (data?.["release-group-count"] ?? all.length)) break;
+  }
+
+  return all;
 }
 
 /**

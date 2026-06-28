@@ -161,6 +161,11 @@ export function parseDiscogsMarkup(text: string): string {
   return result;
 }
 
+/**
+ * Build a map of normalized release title -> type ("Live" | "Compilation" | "EP"
+ * | "Album") from Discogs master releases. Used to correct Spotify's unreliable
+ * grouping (it often files live records and EPs under plain albums).
+ */
 export function processDiscogsReleases(releases: DiscogsRelease[]): Map<string, string> {
   const releaseMap = new Map<string, string>();
 
@@ -170,7 +175,14 @@ export function processDiscogsReleases(releases: DiscogsRelease[]): Map<string, 
     if (release.type === "master" && release.format) {
       const format = release.format.toLowerCase();
 
-      if (format.includes("ep")) {
+      // Order matters: "Live"/"Compilation" are descriptors layered on top of an
+      // Album/EP format string (e.g. "CD, Album, Live"), so they must win over
+      // the generic Album/EP checks below.
+      if (format.includes("live")) {
+        releaseMap.set(normalizedTitle, "Live");
+      } else if (format.includes("compilation")) {
+        releaseMap.set(normalizedTitle, "Compilation");
+      } else if (format.includes("ep")) {
         releaseMap.set(normalizedTitle, "EP");
       } else if (
         format.includes("album")

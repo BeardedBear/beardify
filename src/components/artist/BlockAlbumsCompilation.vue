@@ -1,0 +1,36 @@
+<template>
+  <div v-if="artistStore.albumsCompilation.length" class="content-block">
+    <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
+      <i class="icon-album" />
+      Compilations
+    </div>
+    <div class="albums">
+      <div v-for="(group, index) in compilationGroups" :key="index">
+        <AlbumGroup :group="group" can-save />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { computed } from "vue";
+
+import AlbumGroup from "@/components/album/AlbumGroup.vue";
+import { groupAlbumVariants } from "@/helpers/groupAlbumVariants";
+import { useArtist } from "@/views/artist/ArtistStore";
+
+const artistStore = useArtist();
+
+const compilationGroups = computed(() => groupAlbumVariants(artistStore.albumsCompilation));
+</script>
+
+<style lang="scss" scoped>
+@use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/responsive" as responsive;
+
+.albums {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+}
+</style>

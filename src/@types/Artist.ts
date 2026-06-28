@@ -27,17 +27,18 @@ export interface Artist {
 export interface ArtistPage {
   activeTab: string;
   albums: AlbumSimplified[];
+  albumsCompilation: AlbumSimplified[];
   albumsLive: AlbumSimplified[];
   artist: Artist;
   bandMembers: BandMember[];
   discogsArtist: DiscogsArtist | null;
   discogsId: null | string;
-  discogsReleases: Map<string, string>;
   eps: AlbumSimplified[];
   followStatus: boolean | undefined;
   headerHeight: number;
   musicbrainzArtist: MusicBrainzArtist | null;
   relatedArtists: RelatedArtists;
+  releaseTypes: Map<string, string>;
   scrolledDown: boolean;
   singles: AlbumSimplified[];
   timelineLoading: boolean;

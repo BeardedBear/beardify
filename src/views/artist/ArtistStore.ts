@@ -18,9 +18,11 @@ import {
 } from "@/helpers/discogs";
 import { normalizeString } from "@/helpers/helper";
 import {
+  buildReleaseTypeMap,
   extractBandMembers,
   extractExternalIds,
   getIdsFromMusicBrainz,
+  getMusicBrainzReleaseGroups,
   searchMusicBrainzArtistId,
   searchMusicBrainzBySpotifyId,
 } from "@/helpers/musicbrainz";
@@ -38,7 +40,7 @@ export const useArtist = defineStore("artist", {
       this.bandMembers = [];
       this.discogsArtist = null;
       this.discogsId = null;
-      this.discogsReleases = new Map();
+      this.releaseTypes = new Map();
       this.scrolledDown = false;
       this.timelineLoading = true;
       this.wikidataArtist = null;
@@ -48,6 +50,7 @@ export const useArtist = defineStore("artist", {
       this.topTracks = { tracks: [] };
       this.albums = [];
       this.albumsLive = [];
+      this.albumsCompilation = [];
       this.eps = [];
       this.singles = [];
       this.relatedArtists = { artists: [] };
@@ -82,6 +85,10 @@ export const useArtist = defineStore("artist", {
         ]);
 
         if (data.next) await this.getAlbums(data.next);
+
+        // Spotify mis-files EPs and live records under the "album" group.
+        // Reclassify with external data (no-op until release types arrive).
+        this.reclassifyReleases();
       } catch {
         // silent fail
       }
@@ -104,6 +111,29 @@ export const useArtist = defineStore("artist", {
       }
     },
 
+    async getCompilations(url: string) {
+      try {
+        const cleanedUrl = cleanUrl(url);
+        const { data }
+          = await instance().get<Paging<AlbumSimplified>>(cleanedUrl);
+
+        const frenchMarketAlbums = data.items.filter((album) =>
+          album.available_markets.includes("FR"),
+        );
+
+        this.albumsCompilation = removeDuplicatesAlbums([
+          ...this.albumsCompilation,
+          ...frenchMarketAlbums,
+        ]);
+
+        if (data.next) await this.getCompilations(data.next);
+
+        this.reclassifyReleases();
+      } catch {
+        // silent fail
+      }
+    },
+
     async getDiscogsArtist(discogsId: string) {
       try {
         const artist = await getDiscogsArtist(discogsId);
@@ -122,7 +152,14 @@ export const useArtist = defineStore("artist", {
         const releasesData = await getDiscogsArtistReleases(discogsId);
 
         if (releasesData) {
-          this.discogsReleases = processDiscogsReleases(releasesData.releases);
+          // MusicBrainz is the primary source and must win, so Discogs only fills
+          // in keys MusicBrainz didn't provide (existing entries take precedence).
+          this.releaseTypes = new Map([
+            ...processDiscogsReleases(releasesData.releases),
+            ...this.releaseTypes,
+          ]);
+          // Data may land after albums/EPs were classified — re-run.
+          this.reclassifyReleases();
         }
       } catch {
         // silent fail
@@ -166,6 +203,9 @@ export const useArtist = defineStore("artist", {
         this.musicbrainzArtist = { ...artist, ...artistFull };
         this.bandMembers = extractBandMembers(artistFull);
 
+        // Primary source for Live/Compilation/EP classification.
+        this.getReleaseGroups(artist.id);
+
         const { discogsId, wikidataId } = extractExternalIds(artistFull);
 
         // Update discogs fields: set or clear and fetch when present
@@ -204,6 +244,22 @@ export const useArtist = defineStore("artist", {
       }
     },
 
+    async getReleaseGroups(musicbrainzId: string) {
+      try {
+        const groups = await getMusicBrainzReleaseGroups(musicbrainzId);
+        if (!groups.length) return;
+
+        // MusicBrainz wins over any Discogs data already present.
+        this.releaseTypes = new Map([
+          ...this.releaseTypes,
+          ...buildReleaseTypeMap(groups),
+        ]);
+        this.reclassifyReleases();
+      } catch {
+        // silent fail
+      }
+    },
+
     async getSingles(artistId: string) {
       try {
         const { data } = await instance().get<Paging<AlbumSimplified>>(
@@ -216,11 +272,11 @@ export const useArtist = defineStore("artist", {
 
         data.items.forEach((item) => {
           const normalizedName = normalizeString(item.name);
-          const discogsType = this.discogsReleases.get(normalizedName);
+          const externalType = this.releaseTypes.get(normalizedName);
 
-          if (discogsType === "EP") {
+          if (externalType === "EP") {
             onlyEps.push(item);
-          } else if (discogsType === "Album") {
+          } else if (externalType === "Album") {
             albumsToMove.push(item);
           } else if (isEP(item)) {
             onlyEps.push(item);
@@ -237,6 +293,8 @@ export const useArtist = defineStore("artist", {
             ...albumsToMove,
           ]);
         }
+
+        this.reclassifyReleases();
       } catch {
         // silent fail
       }
@@ -296,6 +354,66 @@ export const useArtist = defineStore("artist", {
       }
     },
 
+    /**
+     * Reconcile Spotify's grouping with external data (MusicBrainz release-groups
+     * first, Discogs as fallback — see {@link releaseTypes}).
+     *
+     * Spotify is unreliable: it routinely files real EPs and live records under
+     * the plain "album" group (where heuristics can't catch them since
+     * `album_type` is "album") and, more rarely, the reverse. When the external
+     * sources have an explicit type for a release we trust it and move the
+     * release to the right bucket: EP, Live, Compilation or Album.
+     *
+     * Lives already detected by the name heuristic (`useCheckLiveAlbum`) are
+     * never demoted back to albums — external data only adds coverage, it does
+     * not override a positive name match.
+     *
+     * Idempotent and a no-op until `releaseTypes` is populated, so it is safe to
+     * call from every loader regardless of which finishes first (the data is
+     * fetched concurrently and order is not guaranteed).
+     */
+    reclassifyReleases(): void {
+      if (this.releaseTypes.size === 0) return;
+
+      const externalType = (album: AlbumSimplified): string | undefined =>
+        this.releaseTypes.get(normalizeString(album.name));
+
+      const keptAlbums: AlbumSimplified[] = [];
+      const promotedToEps: AlbumSimplified[] = [];
+      const promotedToLive: AlbumSimplified[] = [];
+      const promotedToCompilation: AlbumSimplified[] = [];
+      this.albums.forEach((album) => {
+        switch (externalType(album)) {
+          case "Compilation":
+            promotedToCompilation.push(album);
+            break;
+          case "EP":
+            promotedToEps.push(album);
+            break;
+          case "Live":
+            promotedToLive.push(album);
+            break;
+          default:
+            keptAlbums.push(album);
+        }
+      });
+
+      const keptEps: AlbumSimplified[] = [];
+      const promotedToAlbums: AlbumSimplified[] = [];
+      this.eps.forEach((ep) => {
+        if (externalType(ep) === "Album") promotedToAlbums.push(ep);
+        else keptEps.push(ep);
+      });
+
+      this.albums = removeDuplicatesAlbums([...keptAlbums, ...promotedToAlbums]);
+      this.eps = removeDuplicatesAlbums([...keptEps, ...promotedToEps]);
+      this.albumsLive = removeDuplicatesAlbums([...this.albumsLive, ...promotedToLive]);
+      this.albumsCompilation = removeDuplicatesAlbums([
+        ...this.albumsCompilation,
+        ...promotedToCompilation,
+      ]);
+    },
+
     async switchFollow(artistId: string) {
       // Optimistic update, reverted if the API call fails
       const previousStatus = this.followStatus;
@@ -324,17 +442,18 @@ export const useArtist = defineStore("artist", {
   state: (): ArtistPage => ({
     activeTab: "discography",
     albums: [],
+    albumsCompilation: [],
     albumsLive: [],
     artist: defaultArtist,
     bandMembers: [],
     discogsArtist: null,
     discogsId: null,
-    discogsReleases: new Map(),
     eps: [],
     followStatus: false,
     headerHeight: 0,
     musicbrainzArtist: null,
     relatedArtists: { artists: [] },
+    releaseTypes: new Map(),
     scrolledDown: false,
     singles: [],
     timelineLoading: false,
