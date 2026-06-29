@@ -74,11 +74,16 @@ function lookupReleaseType(
   let r = releaseTypes.get(norm);
   if (r !== undefined) return r;
 
-  // 2. Strip trailing parentheticals: "Score (20th Anniversary)" → "Score"
-  const stripped = normalizeString(name.replace(/\s*[([][^)\]]*[)\]]\s*$/, ""));
-  if (stripped !== norm) {
-    r = releaseTypes.get(stripped);
-    if (r !== undefined) return r;
+  // 2. Strip trailing edition markers: "Score (20th Anniversary)" → "Score"
+  // Skip year-ranges like "(81-82-83-84)" — they distinguish live/studio variants of the same base title.
+  const trailingParen = /\s*[([]([^)\]]*)[)\]]\s*$/;
+  const parenMatch = name.match(trailingParen);
+  if (parenMatch && !/^[\d\s\-/·]+$/.test(parenMatch[1])) {
+    const stripped = normalizeString(name.replace(trailingParen, ""));
+    if (stripped !== norm) {
+      r = releaseTypes.get(stripped);
+      if (r !== undefined) return r;
+    }
   }
 
   // 3. Compact (no spaces): handles slash/dot encoded differently ("cl dotcom" vs "cldotcom")
@@ -95,22 +100,23 @@ function lookupReleaseType(
     if (r !== undefined) return r;
   }
 
-  // 6. Spotify title is more specific (e.g. "Distant Lights Leicester" vs MB "Distant Lights")
-  //    Find longest MB key that is a proper word-boundary prefix of the Spotify norm.
+  // 6. Spotify title is more specific (e.g. "Distant Lights Leicester" vs MB "Distant Lights" → Live)
+  //    Only match non-Album types: a short studio title (e.g. MB "New Gold Dream" → Album) must not
+  //    shadow a longer live variant (e.g. Spotify "New Gold Dream 81828384") — that is step 7's job.
   let fwdType: string | undefined;
   let fwdLen = 0;
   for (const [mbKey, mbType] of releaseTypes) {
-    if (mbKey.length > fwdLen && norm.startsWith(mbKey + " ")) {
+    if (mbType !== "Album" && mbKey.length > fwdLen && norm.startsWith(mbKey + " ")) {
       fwdType = mbType;
       fwdLen = mbKey.length;
     }
   }
   if (fwdType !== undefined) return fwdType;
 
-  // 7. MB title is more specific (e.g. Spotify "The Gold" vs MB "The Gold Best of Convention 2017")
-  //    Return on first MB key that starts with the Spotify norm.
+  // 7. MB title is more specific (e.g. Spotify "The Gold" vs MB "The Gold Best of Convention 2017" → Live)
+  //    Only match non-Album types for the same reason as step 6.
   for (const [mbKey, mbType] of releaseTypes) {
-    if (mbKey.startsWith(norm + " ")) return mbType;
+    if (mbType !== "Album" && mbKey.startsWith(norm + " ")) return mbType;
   }
 
   return undefined;
@@ -207,10 +213,18 @@ export const useArtist = defineStore("artist", {
           album.available_markets.includes("FR"),
         );
 
-        this.albumsCompilation = removeDuplicatesAlbums([
-          ...this.albumsCompilation,
-          ...frenchMarketAlbums,
-        ]);
+        const lives: AlbumSimplified[] = [];
+        const compilations: AlbumSimplified[] = [];
+        frenchMarketAlbums.forEach((album) => {
+          if (useCheckLiveAlbum(album.name)) {
+            lives.push(album);
+          } else {
+            compilations.push(album);
+          }
+        });
+
+        this.albumsCompilation = removeDuplicatesAlbums([...this.albumsCompilation, ...compilations]);
+        this.albumsLive = removeDuplicatesAlbums([...this.albumsLive, ...lives]);
 
         if (data.next) await this.getCompilations(data.next);
 
