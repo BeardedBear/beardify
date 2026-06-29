@@ -5,7 +5,7 @@
       Live albums
     </div>
     <div class="albums">
-      <div v-for="(group, index) in liveAlbumGroups" :key="index">
+      <div v-for="group in liveAlbumGroups" :key="group.baseAlbum.id">
         <AlbumGroup :group="group" can-save />
       </div>
     </div>

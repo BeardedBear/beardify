@@ -1,12 +1,12 @@
 <template>
-  <div v-if="artistStore.albums.length" class="content-block">
+  <div v-if="artistStore.albumsCompilation.length" class="content-block">
     <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
       <i class="icon-album" />
-      Albums
+      Compilations
     </div>
     <div class="albums">
-      <div v-for="group in albumGroups" :key="group.baseAlbum.id">
-        <AlbumGroup :group="group" can-save clean-name />
+      <div v-for="group in compilationGroups" :key="group.baseAlbum.id">
+        <AlbumGroup :group="group" can-save />
       </div>
     </div>
   </div>
@@ -21,7 +21,7 @@ import { useArtist } from "@/views/artist/ArtistStore";
 
 const artistStore = useArtist();
 
-const albumGroups = computed(() => groupAlbumVariants(artistStore.albums));
+const compilationGroups = computed(() => groupAlbumVariants(artistStore.albumsCompilation));
 </script>
 
 <style lang="scss" scoped>

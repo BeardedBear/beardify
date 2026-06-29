@@ -4,8 +4,8 @@
       <div v-if="artistStore.timelineLoading" class="timeline-loader">
         <LoadingDots size="small" />
       </div>
-      <WikipediaTimeline v-else-if="artistStore.wikiTimeline" />
-      <MemberTimeline v-else-if="artistStore.bandMembers.length > 0" />
+      <WikipediaTimeline v-else-if="artistStore.wikiTimeline && !isSoloArtist" />
+      <MemberTimeline v-else-if="artistStore.bandMembers.length > 0 && !isSoloArtist" />
 
       <div v-if="hasBiography" class="info-section">
         <ArtistNavigation
@@ -62,6 +62,8 @@ interface WikipediaSection {
 const artistStore = useArtist();
 const wikipediaContentRef = ref<HTMLElement | null>(null);
 const wikipediaSections = ref<WikipediaSection[]>([]);
+
+const isSoloArtist = computed(() => artistStore.musicbrainzArtist?.type === "Person");
 
 const sanitizedWikipediaExtract = computed(() => {
   if (!artistStore.wikipediaExtract) return "";

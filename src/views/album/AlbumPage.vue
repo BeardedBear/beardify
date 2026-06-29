@@ -75,9 +75,11 @@ const route = useRoute();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
 
 const pageRef = ref<HTMLElement | null>(null);
-const { onScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
+const { onScroll, restoreScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
 
-albumStore.clean().finally(() => albumStore.getAlbum(props.id));
+// No keep-alive: the page remounts on every navigation, so the scroll position
+// must be restored after the fresh content has loaded (height is stable then).
+albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => restoreScroll()));
 </script>
 
 <style lang="scss" scoped>

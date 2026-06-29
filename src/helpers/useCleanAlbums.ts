@@ -36,8 +36,52 @@ export function isSingle(album: Album | AlbumSimplified | CurrentlyPlayingAlbum)
   return album.total_tracks < MIN_TRACKS_FOR_EP && album.album_type === "single";
 }
 
+// Keywords for compilation album detection
+const COMPILATION_KEYWORDS = [
+  "anniversary collection",
+  "anthology",
+  "b-sides",
+  "b sides",
+  "best of",
+  "chronicles",
+  "complete recordings",
+  "definitive collection",
+  "greatest hits",
+  "masterpieces",
+  "rarities",
+  "retrospective",
+  "singles collection",
+  "the collection",
+  "the essential",
+  "the very best",
+  "very best of",
+  "(demos)",
+  "collection of",
+  "'s classic",
+  "happy holidays",
+  "remixed",
+  "from the original",
+];
+
+const COMPILATION_SPECIAL_PATTERNS = [
+  "mix\\]",
+  "mix\\)",
+];
+
+const compilationAlbumRegex = new RegExp(`(${[...COMPILATION_KEYWORDS, ...COMPILATION_SPECIAL_PATTERNS].join("|")})`);
+
+/**
+ * Heuristic check: returns true if the album name suggests it is a compilation.
+ * @param albumName - Album title to test
+ */
+export function useCheckCompilationAlbum(albumName: string): boolean {
+  return compilationAlbumRegex.test(albumName.toLowerCase().trim());
+}
+
 // Keywords for live album detection
 const LIVE_ALBUM_KEYWORDS = [
+  "lost not forgotten archives",
+  "chaos in motion",
   "live in",
   "live on",
   "live at",
@@ -67,6 +111,7 @@ const LIVE_ALBUM_KEYWORDS = [
 
 // Special patterns for live album detection
 const LIVE_ALBUM_SPECIAL_PATTERNS = [
+  "^live\\s",
   "\\(live",
   "\\[live",
   "\\- live",
@@ -92,7 +137,8 @@ const liveAlbumRegex = new RegExp(`(${[...LIVE_ALBUM_KEYWORDS, ...LIVE_ALBUM_SPE
  */
 export function useCheckLiveAlbum(albumName: string): boolean {
   const cleanedName = albumName.toLowerCase().trim();
-  return liveAlbumRegex.test(cleanedName) || cleanedName.split(" ").pop() === "live)";
+  const lastWord = cleanedName.split(" ").pop() ?? "";
+  return liveAlbumRegex.test(cleanedName) || lastWord === "live)" || lastWord === "live";
 }
 
 // Cache compiled regex for reissue album detection
