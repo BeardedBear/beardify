@@ -514,6 +514,16 @@ export const useArtist = defineStore("artist", {
       const promotedToLive: AlbumSimplified[] = [];
       const promotedToCompilation: AlbumSimplified[] = [];
       this.albums.forEach((album) => {
+        // Name heuristics take priority: they are curated and explicit.
+        // MB/Discogs is the fallback for albums the heuristic doesn't recognise.
+        if (useCheckLiveAlbum(album.name)) {
+          promotedToLive.push(album);
+          return;
+        }
+        if (useCheckCompilationAlbum(album.name)) {
+          promotedToCompilation.push(album);
+          return;
+        }
         switch (externalType(album)) {
           case "Compilation":
             promotedToCompilation.push(album);
@@ -532,8 +542,13 @@ export const useArtist = defineStore("artist", {
       const keptEps: AlbumSimplified[] = [];
       const promotedToAlbums: AlbumSimplified[] = [];
       this.eps.forEach((ep) => {
-        if (externalType(ep) === "Album") promotedToAlbums.push(ep);
-        else keptEps.push(ep);
+        if (useCheckLiveAlbum(ep.name)) {
+          promotedToLive.push(ep);
+        } else if (externalType(ep) === "Album") {
+          promotedToAlbums.push(ep);
+        } else {
+          keptEps.push(ep);
+        }
       });
 
       // Only reassign buckets that actually changed. This method runs after every

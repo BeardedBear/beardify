@@ -103,15 +103,24 @@ artistStore.clean().finally(async () => {
     return;
   }
 
+  // getArtist fetches Spotify info then drives MB/Discogs classification (slow pagination).
+  // Fire it in background so MB delays don't block the discography display.
+  // reclassifyReleases is called internally each time a classification source resolves.
+  const currentId = props.id;
+  void artistStore.getArtist(currentId).then(() => {
+    artistStore.reclassifyReleases();
+    if (artistStore.artist.id === currentId) {
+      artistStore.saveDiscographyCache(currentId);
+    }
+  });
+
   try {
     await Promise.all([
-      artistStore.getArtist(props.id),
       artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`),
       artistStore.getCompilations(`artists/${props.id}/albums?include_groups=compilation&limit=50`),
       artistStore.getSingles(props.id),
     ]);
     artistStore.reclassifyReleases();
-    artistStore.saveDiscographyCache(props.id);
   } finally {
     artistStore.discographyLoading = false;
     restoreScroll();
