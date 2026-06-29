@@ -108,14 +108,15 @@ artistStore.clean().finally(async () => {
   // reclassifyReleases is called internally each time a classification source resolves.
   const currentId = props.id;
   const albumsPromise = Promise.all([
-    artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`),
-    artistStore.getCompilations(`artists/${props.id}/albums?include_groups=compilation&limit=50`),
-    artistStore.getSingles(props.id),
+    artistStore.getAlbums(`artists/${currentId}/albums?include_groups=album&limit=50`),
+    artistStore.getCompilations(`artists/${currentId}/albums?include_groups=compilation&limit=50`),
+    artistStore.getSingles(currentId),
   ]);
 
   // Save cache only after both MB classification AND album data are loaded.
+  // reclassifyReleases is called internally by getReleaseGroups and getDiscogsReleases,
+  // so no explicit call needed here.
   void artistStore.getArtist(currentId).then(() => {
-    artistStore.reclassifyReleases();
     return albumsPromise;
   }).then(() => {
     if (artistStore.artist.id === currentId) {

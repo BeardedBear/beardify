@@ -232,10 +232,6 @@ export async function searchDiscogsArtistId(name: string): Promise<null | number
 }
 
 /**
- * Processes Discogs releases to create a map of title -> release type (EP, Album)
- */
-
-/**
  * Strip the Discogs disambiguation suffix, e.g. "Exodus (6)" -> "Exodus".
  */
 function cleanDiscogsName(name: string): string {

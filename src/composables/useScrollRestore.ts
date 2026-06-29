@@ -26,6 +26,7 @@ export function useScrollRestore(
   function stopRestore(): void {
     isRestoring = false;
     cancelAnimationFrame(rafId);
+    if (scrollRef.value) scrollRef.value.style.scrollBehavior = "";
     detachAbort?.();
     detachAbort = null;
   }
@@ -56,16 +57,17 @@ export function useScrollRestore(
     let lastHeight = -1;
     let stableFrames = 0;
 
+    // Disable smooth scrolling for the duration of the restore so every
+    // programmatic scrollTop write takes effect instantly. Restored in stopRestore.
+    if (scrollRef.value) scrollRef.value.style.scrollBehavior = "auto";
+
     // Content (albums, EPs, reclassified live/compilation lists…) keeps loading
     // and resizing the page after navigation. Pin the target every frame until
     // the height settles (layout stable) or we time out.
     const apply = (): void => {
       const el = scrollRef.value;
       if (el) {
-        const prev = el.style.scrollBehavior;
-        el.style.scrollBehavior = "auto";
         el.scrollTop = target;
-        el.style.scrollBehavior = prev;
 
         if (el.scrollHeight === lastHeight) {
           stableFrames += 1;

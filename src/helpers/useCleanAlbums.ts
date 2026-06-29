@@ -57,9 +57,18 @@ const COMPILATION_KEYWORDS = [
   "very best of",
   "(demos)",
   "collection of",
+  "'s classic",
+  "happy holidays",
+  "remixed",
+  "from the original",
 ];
 
-const compilationAlbumRegex = new RegExp(`(${COMPILATION_KEYWORDS.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`);
+const COMPILATION_SPECIAL_PATTERNS = [
+  "mix\\]",
+  "mix\\)",
+];
+
+const compilationAlbumRegex = new RegExp(`(${[...COMPILATION_KEYWORDS, ...COMPILATION_SPECIAL_PATTERNS].join("|")})`);
 
 /**
  * Heuristic check: returns true if the album name suggests it is a compilation.
