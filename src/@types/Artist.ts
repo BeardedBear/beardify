@@ -31,6 +31,7 @@ export interface ArtistPage {
   albumsLive: AlbumSimplified[];
   artist: Artist;
   bandMembers: BandMember[];
+  discographyLoading: boolean;
   discogsArtist: DiscogsArtist | null;
   discogsId: null | string;
   eps: AlbumSimplified[];
@@ -132,7 +133,7 @@ export interface DiscogsMember {
 
 export interface DiscogsRelease {
   artist: string;
-  format: string;
+  format: null | string;
   id: number;
   label: string;
   main_release: number;

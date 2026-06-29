@@ -5,7 +5,7 @@
       Compilations
     </div>
     <div class="albums">
-      <div v-for="(group, index) in compilationGroups" :key="index">
+      <div v-for="group in compilationGroups" :key="group.baseAlbum.id">
         <AlbumGroup :group="group" can-save />
       </div>
     </div>

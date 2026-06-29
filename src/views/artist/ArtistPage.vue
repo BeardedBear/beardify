@@ -7,22 +7,27 @@
     <Transition name="tab-fade" mode="out-in">
       <div v-if="artistStore.activeTab === 'discography'" key="discography" class="content">
         <div class="list">
-          <div
-            v-if="
-              !artistStore.albums.length &&
-              !artistStore.eps.length &&
-              !artistStore.singles.length &&
-              !artistStore.albumsLive.length &&
-              !artistStore.albumsCompilation.length
-            "
-          >
-            {{ artistStore.artist.name }} didn't release anything, it's a bit sad.
+          <div v-if="artistStore.discographyLoading" class="discography-loader">
+            <Loader />
           </div>
-          <BlockAlbums />
-          <BlockAlbumsLive />
-          <BlockAlbumsCompilation />
-          <BlockEps />
-          <BlockSingles />
+          <template v-else>
+            <div
+              v-if="
+                !artistStore.albums.length &&
+                !artistStore.eps.length &&
+                !artistStore.singles.length &&
+                !artistStore.albumsLive.length &&
+                !artistStore.albumsCompilation.length
+              "
+            >
+              {{ artistStore.artist.name }} didn't release anything, it's a bit sad.
+            </div>
+            <BlockAlbums />
+            <BlockAlbumsLive />
+            <BlockAlbumsCompilation />
+            <BlockEps />
+            <BlockSingles />
+          </template>
         </div>
         <div class="top">
           <TopTracks class="top-item" />
@@ -37,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { nextTick, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
@@ -61,7 +66,7 @@ const artistStore = useArtist();
 const route = useRoute();
 
 const pageRef = ref<HTMLElement | null>(null);
-const { onScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
+const { onScroll, restoreScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
 
 let lastChangeTime = 0;
 
@@ -80,18 +85,37 @@ function handleScroll() {
   }
 }
 
-artistStore.clean().finally(() => {
+artistStore.clean().finally(async () => {
   const hashTab = location.hash.slice(1);
   if ((VALID_TABS as readonly string[]).includes(hashTab)) {
     artistStore.activeTab = hashTab as TabId;
   }
-  artistStore.getArtist(props.id);
   artistStore.getTopTracks(props.id);
-  artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`);
-  artistStore.getCompilations(`artists/${props.id}/albums?include_groups=compilation&limit=50`);
   artistStore.getRelatedArtists(props.id);
-  artistStore.getSingles(props.id);
   artistStore.getFollowStatus(props.id);
+
+  if (artistStore.loadDiscographyCache(props.id)) {
+    // Lists ready immediately — fire getArtist in background for the info tab
+    // (wikidata, band members…) without blocking the discography display.
+    artistStore.getArtist(props.id);
+    await nextTick();
+    restoreScroll();
+    return;
+  }
+
+  try {
+    await Promise.all([
+      artistStore.getArtist(props.id),
+      artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`),
+      artistStore.getCompilations(`artists/${props.id}/albums?include_groups=compilation&limit=50`),
+      artistStore.getSingles(props.id),
+    ]);
+    artistStore.reclassifyReleases();
+    artistStore.saveDiscographyCache(props.id);
+  } finally {
+    artistStore.discographyLoading = false;
+    restoreScroll();
+  }
 });
 
 watch(
@@ -209,6 +233,12 @@ watch(
 
 .loader {
   display: grid;
+  place-content: center;
+}
+
+.discography-loader {
+  display: grid;
+  padding: 4rem 0;
   place-content: center;
 }
 

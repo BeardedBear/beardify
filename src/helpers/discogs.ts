@@ -161,36 +161,50 @@ export function parseDiscogsMarkup(text: string): string {
   return result;
 }
 
+// Priority for type upgrades: Live beats Compilation beats EP beats Album.
+// Multiple editions of the same release can have different formats; we keep
+// the most specific type (e.g. a CD and a Live-DVD entry for the same title
+// → the title is classified as "Live").
+const RELEASE_TYPE_PRIORITY: Record<string, number> = {
+  Album: 1,
+  Compilation: 2,
+  EP: 3,
+  Live: 4,
+};
+
 /**
  * Build a map of normalized release title -> type ("Live" | "Compilation" | "EP"
- * | "Album") from Discogs master releases. Used to correct Spotify's unreliable
- * grouping (it often files live records and EPs under plain albums).
+ * | "Album") from Discogs release entries.
+ *
+ * Important: Discogs **master** entries always have `format: null`. The format
+ * string (e.g. "CD, Album, Live") only exists on per-edition **release** entries.
+ * We therefore scan `type === "release"` rows and group by normalized title,
+ * keeping the highest-priority type when multiple editions of the same title
+ * carry conflicting formats.
  */
 export function processDiscogsReleases(releases: DiscogsRelease[]): Map<string, string> {
   const releaseMap = new Map<string, string>();
 
   releases.forEach((release) => {
+    if (release.type !== "release" || !release.format) return;
+
     const normalizedTitle = normalizeString(release.title);
+    const format = release.format.toLowerCase();
+    let type: null | string = null;
 
-    if (release.type === "master" && release.format) {
-      const format = release.format.toLowerCase();
+    // "Live"/"Compilation" are layered descriptors (e.g. "CD, Album, Live"),
+    // so they must win over the generic Album/EP checks below.
+    if (format.includes("live")) type = "Live";
+    else if (format.includes("compilation")) type = "Compilation";
+    else if (format.includes("ep")) type = "EP";
+    else if (format.includes("album") || format.includes("lp") || format.includes("vinyl") || format.includes("cd")) {
+      type = "Album";
+    }
 
-      // Order matters: "Live"/"Compilation" are descriptors layered on top of an
-      // Album/EP format string (e.g. "CD, Album, Live"), so they must win over
-      // the generic Album/EP checks below.
-      if (format.includes("live")) {
-        releaseMap.set(normalizedTitle, "Live");
-      } else if (format.includes("compilation")) {
-        releaseMap.set(normalizedTitle, "Compilation");
-      } else if (format.includes("ep")) {
-        releaseMap.set(normalizedTitle, "EP");
-      } else if (
-        format.includes("album")
-        || format.includes("lp")
-        || format.includes("vinyl")
-        || format.includes("cd")
-      ) {
-        releaseMap.set(normalizedTitle, "Album");
+    if (type) {
+      const existing = releaseMap.get(normalizedTitle);
+      if (!existing || (RELEASE_TYPE_PRIORITY[type] ?? 0) > (RELEASE_TYPE_PRIORITY[existing] ?? 0)) {
+        releaseMap.set(normalizedTitle, type);
       }
     }
   });

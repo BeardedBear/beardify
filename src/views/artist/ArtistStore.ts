@@ -32,12 +32,28 @@ import { cleanUrl } from "@/helpers/urls";
 import { isEP, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
 import { getWikipediaExtract } from "@/helpers/wikidata";
 
+interface DiscographySnapshot {
+  albums: AlbumSimplified[];
+  albumsCompilation: AlbumSimplified[];
+  albumsLive: AlbumSimplified[];
+  artist: Artist;
+  eps: AlbumSimplified[];
+  releaseTypes: Map<string, string>;
+  singles: AlbumSimplified[];
+  timestamp: number;
+}
+
+const CACHE_TTL_MS = 5 * 60 * 1000;
+const CACHE_MAX_ENTRIES = 10;
+const discographyCache = new Map<string, DiscographySnapshot>();
+
 export const useArtist = defineStore("artist", {
   actions: {
     async clean() {
       this.activeTab = "discography";
       this.artist = defaultArtist;
       this.bandMembers = [];
+      this.discographyLoading = true;
       this.discogsArtist = null;
       this.discogsId = null;
       this.releaseTypes = new Map();
@@ -140,7 +156,7 @@ export const useArtist = defineStore("artist", {
         this.discogsArtist = artist;
 
         if (artist) {
-          this.getDiscogsReleases(discogsId);
+          await this.getDiscogsReleases(discogsId);
         }
       } catch {
         this.discogsArtist = null;
@@ -149,18 +165,25 @@ export const useArtist = defineStore("artist", {
 
     async getDiscogsReleases(discogsId: string) {
       try {
-        const releasesData = await getDiscogsArtistReleases(discogsId);
+        const firstPage = await getDiscogsArtistReleases(discogsId);
+        if (!firstPage) return;
 
-        if (releasesData) {
-          // MusicBrainz is the primary source and must win, so Discogs only fills
-          // in keys MusicBrainz didn't provide (existing entries take precedence).
-          this.releaseTypes = new Map([
-            ...processDiscogsReleases(releasesData.releases),
-            ...this.releaseTypes,
-          ]);
-          // Data may land after albums/EPs were classified — re-run.
-          this.reclassifyReleases();
+        const allReleases = [...firstPage.releases];
+
+        // Fetch a second page if available (200 releases total) so older albums
+        // — whose release entries are sorted by year desc — are also covered.
+        if (firstPage.pagination.pages > 1) {
+          const secondPage = await getDiscogsArtistReleases(discogsId, 2);
+          if (secondPage?.releases) allReleases.push(...secondPage.releases);
         }
+
+        // MusicBrainz is the primary source and must win, so Discogs only fills
+        // in keys MusicBrainz didn't provide (existing entries take precedence).
+        this.releaseTypes = new Map([
+          ...processDiscogsReleases(allReleases),
+          ...this.releaseTypes,
+        ]);
+        this.reclassifyReleases();
       } catch {
         // silent fail
       }
@@ -203,15 +226,16 @@ export const useArtist = defineStore("artist", {
         this.musicbrainzArtist = { ...artist, ...artistFull };
         this.bandMembers = extractBandMembers(artistFull);
 
-        // Primary source for Live/Compilation/EP classification.
-        this.getReleaseGroups(artist.id);
-
         const { discogsId, wikidataId } = extractExternalIds(artistFull);
+
+        // Release classification sources (Live/Compilation/EP). Run in parallel
+        // and await them so the discography is fully classified before display.
+        const classification: Promise<void>[] = [this.getReleaseGroups(artist.id)];
 
         // Update discogs fields: set or clear and fetch when present
         if (discogsId) {
           this.discogsId = discogsId;
-          this.getDiscogsArtist(discogsId);
+          classification.push(this.getDiscogsArtist(discogsId));
         } else {
           this.discogsId = null;
           this.discogsArtist = null;
@@ -226,6 +250,8 @@ export const useArtist = defineStore("artist", {
           this.wikipediaExtract = null;
           this.timelineLoading = false;
         }
+
+        await Promise.all(classification);
       } catch {
         this.discogsId = null;
         this.wikidataId = null;
@@ -271,8 +297,12 @@ export const useArtist = defineStore("artist", {
         const albumsToMove: AlbumSimplified[] = [];
 
         data.items.forEach((item) => {
-          const normalizedName = normalizeString(item.name);
-          const externalType = this.releaseTypes.get(normalizedName);
+          const norm = normalizeString(item.name);
+          let externalType = this.releaseTypes.get(norm);
+          if (externalType === undefined) {
+            const stripped = normalizeString(item.name.replace(/\s*[([][^)\]]*[)\]]\s*$/, ""));
+            if (stripped !== norm) externalType = this.releaseTypes.get(stripped);
+          }
 
           if (externalType === "EP") {
             onlyEps.push(item);
@@ -354,6 +384,23 @@ export const useArtist = defineStore("artist", {
       }
     },
 
+    loadDiscographyCache(artistId: string): boolean {
+      const snap = discographyCache.get(artistId);
+      if (!snap || Date.now() - snap.timestamp > CACHE_TTL_MS) {
+        discographyCache.delete(artistId);
+        return false;
+      }
+      this.albums = snap.albums;
+      this.albumsCompilation = snap.albumsCompilation;
+      this.albumsLive = snap.albumsLive;
+      this.artist = snap.artist;
+      this.eps = snap.eps;
+      this.releaseTypes = new Map(snap.releaseTypes);
+      this.singles = snap.singles;
+      this.discographyLoading = false;
+      return true;
+    },
+
     /**
      * Reconcile Spotify's grouping with external data (MusicBrainz release-groups
      * first, Discogs as fallback — see {@link releaseTypes}).
@@ -375,8 +422,14 @@ export const useArtist = defineStore("artist", {
     reclassifyReleases(): void {
       if (this.releaseTypes.size === 0) return;
 
-      const externalType = (album: AlbumSimplified): string | undefined =>
-        this.releaseTypes.get(normalizeString(album.name));
+      const externalType = (album: AlbumSimplified): string | undefined => {
+        const norm = normalizeString(album.name);
+        const direct = this.releaseTypes.get(norm);
+        if (direct !== undefined) return direct;
+        // Strip trailing parentheticals and retry: "Score (20th Anniversary)" → "Score"
+        const stripped = normalizeString(album.name.replace(/\s*[([][^)\]]*[)\]]\s*$/, ""));
+        return stripped !== norm ? this.releaseTypes.get(stripped) : undefined;
+      };
 
       const keptAlbums: AlbumSimplified[] = [];
       const promotedToEps: AlbumSimplified[] = [];
@@ -405,13 +458,48 @@ export const useArtist = defineStore("artist", {
         else keptEps.push(ep);
       });
 
-      this.albums = removeDuplicatesAlbums([...keptAlbums, ...promotedToAlbums]);
-      this.eps = removeDuplicatesAlbums([...keptEps, ...promotedToEps]);
-      this.albumsLive = removeDuplicatesAlbums([...this.albumsLive, ...promotedToLive]);
-      this.albumsCompilation = removeDuplicatesAlbums([
-        ...this.albumsCompilation,
-        ...promotedToCompilation,
-      ]);
+      // Only reassign buckets that actually changed. This method runs after every
+      // loader (and external data lands at different times), so skipping no-op
+      // assignments avoids needless re-renders that make the lists flicker.
+      if (promotedToEps.length || promotedToLive.length || promotedToCompilation.length || promotedToAlbums.length) {
+        this.albums = removeDuplicatesAlbums([...keptAlbums, ...promotedToAlbums]);
+      }
+      if (promotedToEps.length || promotedToAlbums.length) {
+        this.eps = removeDuplicatesAlbums([...keptEps, ...promotedToEps]);
+      }
+      if (promotedToLive.length) {
+        this.albumsLive = removeDuplicatesAlbums([...this.albumsLive, ...promotedToLive]);
+      }
+      if (promotedToCompilation.length) {
+        this.albumsCompilation = removeDuplicatesAlbums([
+          ...this.albumsCompilation,
+          ...promotedToCompilation,
+        ]);
+      }
+    },
+
+    saveDiscographyCache(artistId: string): void {
+      if (discographyCache.size >= CACHE_MAX_ENTRIES) {
+        let oldestKey = "";
+        let oldestTime = Infinity;
+        discographyCache.forEach((v, k) => {
+          if (v.timestamp < oldestTime) {
+            oldestTime = v.timestamp;
+            oldestKey = k;
+          }
+        });
+        if (oldestKey) discographyCache.delete(oldestKey);
+      }
+      discographyCache.set(artistId, {
+        albums: [...this.albums],
+        albumsCompilation: [...this.albumsCompilation],
+        albumsLive: [...this.albumsLive],
+        artist: { ...this.artist },
+        eps: [...this.eps],
+        releaseTypes: new Map(this.releaseTypes),
+        singles: [...this.singles],
+        timestamp: Date.now(),
+      });
     },
 
     async switchFollow(artistId: string) {
@@ -446,6 +534,7 @@ export const useArtist = defineStore("artist", {
     albumsLive: [],
     artist: defaultArtist,
     bandMembers: [],
+    discographyLoading: true,
     discogsArtist: null,
     discogsId: null,
     eps: [],

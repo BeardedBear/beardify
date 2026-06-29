@@ -5,7 +5,7 @@
       EP's
     </div>
     <div class="eps">
-      <div v-for="(group, index) in epGroups" :key="index">
+      <div v-for="group in epGroups" :key="group.baseAlbum.id">
         <AlbumGroup :group="group" can-save />
       </div>
     </div>

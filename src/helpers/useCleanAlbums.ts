@@ -38,6 +38,8 @@ export function isSingle(album: Album | AlbumSimplified | CurrentlyPlayingAlbum)
 
 // Keywords for live album detection
 const LIVE_ALBUM_KEYWORDS = [
+  "lost not forgotten archives",
+  "chaos in motion",
   "live in",
   "live on",
   "live at",
@@ -67,6 +69,7 @@ const LIVE_ALBUM_KEYWORDS = [
 
 // Special patterns for live album detection
 const LIVE_ALBUM_SPECIAL_PATTERNS = [
+  "^live\\s",
   "\\(live",
   "\\[live",
   "\\- live",
@@ -92,7 +95,8 @@ const liveAlbumRegex = new RegExp(`(${[...LIVE_ALBUM_KEYWORDS, ...LIVE_ALBUM_SPE
  */
 export function useCheckLiveAlbum(albumName: string): boolean {
   const cleanedName = albumName.toLowerCase().trim();
-  return liveAlbumRegex.test(cleanedName) || cleanedName.split(" ").pop() === "live)";
+  const lastWord = cleanedName.split(" ").pop() ?? "";
+  return liveAlbumRegex.test(cleanedName) || lastWord === "live)" || lastWord === "live";
 }
 
 // Cache compiled regex for reissue album detection
