@@ -29,7 +29,7 @@ import {
 import { notification } from "@/helpers/notifications";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { cleanUrl } from "@/helpers/urls";
-import { isEP, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
+import { isEP, useCheckCompilationAlbum, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
 import { getWikipediaExtract } from "@/helpers/wikidata";
 
 interface DiscographySnapshot {
@@ -153,21 +153,22 @@ export const useArtist = defineStore("artist", {
         );
 
         const lives: AlbumSimplified[] = [];
+        const compilations: AlbumSimplified[] = [];
         const albums: AlbumSimplified[] = [];
 
         frenchMarketAlbums.forEach((album) => {
           if (useCheckLiveAlbum(album.name)) {
             lives.push(album);
+          } else if (useCheckCompilationAlbum(album.name)) {
+            compilations.push(album);
           } else {
             albums.push(album);
           }
         });
 
         this.albums = removeDuplicatesAlbums([...this.albums, ...albums]);
-        this.albumsLive = removeDuplicatesAlbums([
-          ...this.albumsLive,
-          ...lives,
-        ]);
+        this.albumsLive = removeDuplicatesAlbums([...this.albumsLive, ...lives]);
+        this.albumsCompilation = removeDuplicatesAlbums([...this.albumsCompilation, ...compilations]);
 
         if (data.next) await this.getAlbums(data.next);
 

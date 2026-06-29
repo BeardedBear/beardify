@@ -36,6 +36,39 @@ export function isSingle(album: Album | AlbumSimplified | CurrentlyPlayingAlbum)
   return album.total_tracks < MIN_TRACKS_FOR_EP && album.album_type === "single";
 }
 
+// Keywords for compilation album detection
+const COMPILATION_KEYWORDS = [
+  "anniversary collection",
+  "anthology",
+  "b-sides",
+  "b sides",
+  "best of",
+  "chronicles",
+  "complete recordings",
+  "definitive collection",
+  "greatest hits",
+  "masterpieces",
+  "rarities",
+  "retrospective",
+  "singles collection",
+  "the collection",
+  "the essential",
+  "the very best",
+  "very best of",
+  "(demos)",
+  "collection of",
+];
+
+const compilationAlbumRegex = new RegExp(`(${COMPILATION_KEYWORDS.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`);
+
+/**
+ * Heuristic check: returns true if the album name suggests it is a compilation.
+ * @param albumName - Album title to test
+ */
+export function useCheckCompilationAlbum(albumName: string): boolean {
+  return compilationAlbumRegex.test(albumName.toLowerCase().trim());
+}
+
 // Keywords for live album detection
 const LIVE_ALBUM_KEYWORDS = [
   "lost not forgotten archives",
