@@ -3,6 +3,7 @@ import ky from "ky";
 import type { BandMember } from "@/@types/Artist";
 
 import { normalizeString } from "@/helpers/helper";
+import { sleep } from "@/helpers/sleep";
 
 /**
  * MusicBrainz API configuration
@@ -254,23 +255,30 @@ export async function getMusicBrainzReleaseGroups(
   musicbrainzId: string,
 ): Promise<MusicBrainzReleaseGroup[]> {
   const PAGE_SIZE = 100;
+  // MB anonymous rate limit is ~1 req/s. Wait between pages to avoid 429s that
+  // would cause fetchFromMusicBrainz to return null and break the loop early.
+  const PAGE_DELAY_MS = 600;
   const all: MusicBrainzReleaseGroup[] = [];
   let offset = 0;
 
-  // MusicBrainz caps page size at 100; loop until every group is fetched.
   for (;;) {
+    if (offset > 0) await sleep(PAGE_DELAY_MS);
+
     const data = await fetchFromMusicBrainz<MusicBrainzReleaseGroupBrowse>("release-group", {
       artist: musicbrainzId,
       limit: PAGE_SIZE,
       offset,
     });
 
-    const groups = data?.["release-groups"];
+    // null means a fetch/network error — stop, don't confuse with an empty last page.
+    if (data === null) break;
+
+    const groups = data["release-groups"];
     if (!groups?.length) break;
 
     all.push(...groups);
     offset += groups.length;
-    if (offset >= (data?.["release-group-count"] ?? all.length)) break;
+    if (offset >= data["release-group-count"]) break;
   }
 
   return all;

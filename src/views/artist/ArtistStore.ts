@@ -47,6 +47,75 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
 const CACHE_MAX_ENTRIES = 10;
 const discographyCache = new Map<string, DiscographySnapshot>();
 
+interface ReleaseLookupMaps {
+  compact: Map<string, string>;
+  deArticled: Map<string, string>;
+}
+
+function buildReleaseLookupMaps(releaseTypes: Map<string, string>): ReleaseLookupMaps {
+  return {
+    compact: new Map([...releaseTypes.entries()].map(([k, v]) => [k.replace(/\s+/g, ""), v])),
+    deArticled: new Map(
+      [...releaseTypes.entries()]
+        .filter(([k]) => k.startsWith("the "))
+        .map(([k, v]) => [k.slice(4), v]),
+    ),
+  };
+}
+
+function lookupReleaseType(
+  name: string,
+  releaseTypes: Map<string, string>,
+  { compact, deArticled }: ReleaseLookupMaps,
+): string | undefined {
+  const norm = normalizeString(name);
+
+  // 1. Exact match
+  let r = releaseTypes.get(norm);
+  if (r !== undefined) return r;
+
+  // 2. Strip trailing parentheticals: "Score (20th Anniversary)" → "Score"
+  const stripped = normalizeString(name.replace(/\s*[([][^)\]]*[)\]]\s*$/, ""));
+  if (stripped !== norm) {
+    r = releaseTypes.get(stripped);
+    if (r !== undefined) return r;
+  }
+
+  // 3. Compact (no spaces): handles slash/dot encoded differently ("cl dotcom" vs "cldotcom")
+  r = compact.get(norm.replace(/\s+/g, ""));
+  if (r !== undefined) return r;
+
+  // 4. MB has "the", Spotify doesn't
+  r = deArticled.get(norm);
+  if (r !== undefined) return r;
+
+  // 5. Spotify has "the", MB doesn't
+  if (norm.startsWith("the ")) {
+    r = releaseTypes.get(norm.slice(4));
+    if (r !== undefined) return r;
+  }
+
+  // 6. Spotify title is more specific (e.g. "Distant Lights Leicester" vs MB "Distant Lights")
+  //    Find longest MB key that is a proper word-boundary prefix of the Spotify norm.
+  let fwdType: string | undefined;
+  let fwdLen = 0;
+  for (const [mbKey, mbType] of releaseTypes) {
+    if (mbKey.length > fwdLen && norm.startsWith(mbKey + " ")) {
+      fwdType = mbType;
+      fwdLen = mbKey.length;
+    }
+  }
+  if (fwdType !== undefined) return fwdType;
+
+  // 7. MB title is more specific (e.g. Spotify "The Gold" vs MB "The Gold Best of Convention 2017")
+  //    Return on first MB key that starts with the Spotify norm.
+  for (const [mbKey, mbType] of releaseTypes) {
+    if (mbKey.startsWith(norm + " ")) return mbType;
+  }
+
+  return undefined;
+}
+
 export const useArtist = defineStore("artist", {
   actions: {
     async clean() {
@@ -296,13 +365,12 @@ export const useArtist = defineStore("artist", {
         const onlyEps: AlbumSimplified[] = [];
         const albumsToMove: AlbumSimplified[] = [];
 
+        const maps = buildReleaseLookupMaps(this.releaseTypes);
+        const lookupType = (name: string): string | undefined =>
+          lookupReleaseType(name, this.releaseTypes, maps);
+
         data.items.forEach((item) => {
-          const norm = normalizeString(item.name);
-          let externalType = this.releaseTypes.get(norm);
-          if (externalType === undefined) {
-            const stripped = normalizeString(item.name.replace(/\s*[([][^)\]]*[)\]]\s*$/, ""));
-            if (stripped !== norm) externalType = this.releaseTypes.get(stripped);
-          }
+          const externalType = lookupType(item.name);
 
           if (externalType === "EP") {
             onlyEps.push(item);
@@ -422,14 +490,9 @@ export const useArtist = defineStore("artist", {
     reclassifyReleases(): void {
       if (this.releaseTypes.size === 0) return;
 
-      const externalType = (album: AlbumSimplified): string | undefined => {
-        const norm = normalizeString(album.name);
-        const direct = this.releaseTypes.get(norm);
-        if (direct !== undefined) return direct;
-        // Strip trailing parentheticals and retry: "Score (20th Anniversary)" → "Score"
-        const stripped = normalizeString(album.name.replace(/\s*[([][^)\]]*[)\]]\s*$/, ""));
-        return stripped !== norm ? this.releaseTypes.get(stripped) : undefined;
-      };
+      const maps = buildReleaseLookupMaps(this.releaseTypes);
+      const externalType = (album: AlbumSimplified): string | undefined =>
+        lookupReleaseType(album.name, this.releaseTypes, maps);
 
       const keptAlbums: AlbumSimplified[] = [];
       const promotedToEps: AlbumSimplified[] = [];
