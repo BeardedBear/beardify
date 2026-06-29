@@ -77,7 +77,7 @@ export function useScrollRestore(
         // Settled: height stable for a while and we managed to reach the target
         // (or the page is simply shorter than the target — nothing more to do).
         const reached = Math.abs(el.scrollTop - target) <= 1;
-        if (stableFrames >= SETTLE_FRAMES && (reached || el.scrollHeight <= lastHeight)) {
+        if (stableFrames >= SETTLE_FRAMES && (reached || el.scrollHeight <= target)) {
           stopRestore();
           return;
         }

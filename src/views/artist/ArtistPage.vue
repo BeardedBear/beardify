@@ -107,19 +107,24 @@ artistStore.clean().finally(async () => {
   // Fire it in background so MB delays don't block the discography display.
   // reclassifyReleases is called internally each time a classification source resolves.
   const currentId = props.id;
+  const albumsPromise = Promise.all([
+    artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`),
+    artistStore.getCompilations(`artists/${props.id}/albums?include_groups=compilation&limit=50`),
+    artistStore.getSingles(props.id),
+  ]);
+
+  // Save cache only after both MB classification AND album data are loaded.
   void artistStore.getArtist(currentId).then(() => {
     artistStore.reclassifyReleases();
+    return albumsPromise;
+  }).then(() => {
     if (artistStore.artist.id === currentId) {
       artistStore.saveDiscographyCache(currentId);
     }
   });
 
   try {
-    await Promise.all([
-      artistStore.getAlbums(`artists/${props.id}/albums?include_groups=album&limit=50`),
-      artistStore.getCompilations(`artists/${props.id}/albums?include_groups=compilation&limit=50`),
-      artistStore.getSingles(props.id),
-    ]);
+    await albumsPromise;
     artistStore.reclassifyReleases();
   } finally {
     artistStore.discographyLoading = false;

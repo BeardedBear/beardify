@@ -557,7 +557,7 @@ export const useArtist = defineStore("artist", {
       if (promotedToEps.length || promotedToLive.length || promotedToCompilation.length || promotedToAlbums.length) {
         this.albums = removeDuplicatesAlbums([...keptAlbums, ...promotedToAlbums]);
       }
-      if (promotedToEps.length || promotedToAlbums.length) {
+      if (promotedToEps.length || promotedToAlbums.length || promotedToLive.length) {
         this.eps = removeDuplicatesAlbums([...keptEps, ...promotedToEps]);
       }
       if (promotedToLive.length) {
