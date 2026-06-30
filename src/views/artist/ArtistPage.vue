@@ -42,7 +42,8 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, ref, watch } from "vue";
+import { useMediaQuery } from "@vueuse/core";
+import { nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
@@ -71,13 +72,15 @@ const { onScroll, restoreScroll } = useScrollRestore(`scroll-${route.path}`, pag
 let lastChangeTime = 0;
 let compensationAnimationId: null | number = null;
 
+// Keep in sync with the .collapsible `max-height` transition in ArtistHeader.vue (0.25s).
+const COLLAPSE_DURATION_MS = 250;
+
 function compensateCollapse(startScrollTop: number, collapsibleHeight: number): void {
-  const DURATION = 250;
   const startTime = performance.now();
 
   function step(now: number) {
     if (!pageRef.value) return;
-    const t = Math.min((now - startTime) / DURATION, 1);
+    const t = Math.min((now - startTime) / COLLAPSE_DURATION_MS, 1);
     pageRef.value.scrollTop = startScrollTop + collapsibleHeight * easeOut(t);
     if (t < 1) {
       compensationAnimationId = requestAnimationFrame(step);
@@ -86,20 +89,19 @@ function compensateCollapse(startScrollTop: number, collapsibleHeight: number): 
     }
   }
 
-  nextTick(() => {
-    compensationAnimationId = requestAnimationFrame(step);
-  });
+  compensationAnimationId = requestAnimationFrame(step);
 }
 
 function easeOut(t: number): number {
   return 1 - (1 - t) * (1 - t);
 }
 
-const isMobile = (): boolean => window.matchMedia("(max-width: 767px)").matches;
+// 767px mirrors $mobile-max in src/assets/scss/responsive.scss (drives the collapse CSS).
+const isMobile = useMediaQuery("(max-width: 767px)");
 
 function handleScroll() {
   onScroll();
-  if (!isMobile()) return;
+  if (!isMobile.value) return;
   const now = Date.now();
   if (now - lastChangeTime < 300) return;
 
@@ -176,6 +178,13 @@ watch(
     history.replaceState(null, "", `${location.pathname}#${tab}`);
   },
 );
+
+onBeforeUnmount(() => {
+  if (compensationAnimationId !== null) {
+    cancelAnimationFrame(compensationAnimationId);
+    compensationAnimationId = null;
+  }
+});
 </script>
 
 <style lang="scss">
