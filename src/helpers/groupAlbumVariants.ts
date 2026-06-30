@@ -1,4 +1,5 @@
 import { AlbumSimplified } from "@/@types/Album";
+import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
 
 export interface AlbumGroup {
   baseAlbum: AlbumSimplified;
@@ -262,9 +263,7 @@ function normalizeAlbumName(name: string): string {
   });
 
   // Normalize punctuation and capitalization
-  normalized = normalized
-    .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Decompose + strip diacritics: â→a, é→e, etc.
+  normalized = normalizeDiacritics(normalized.toLowerCase())
     .replace(/[\u2018\u2019]/g, "'") // Normalize curly apostrophes to straight apostrophe
     .replace(/[\u201C\u201D]/g, "\"") // Normalize curly quotes to straight quotes
     .replace(/\s*\.{2,}\s*/g, "...") // Normalize ellipsis and remove spaces around it

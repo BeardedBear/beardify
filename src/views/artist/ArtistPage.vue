@@ -75,6 +75,13 @@ let compensationAnimationId: null | number = null;
 // Keep in sync with the .collapsible `max-height` transition in ArtistHeader.vue (0.25s).
 const COLLAPSE_DURATION_MS = 250;
 
+function cancelCompensation(): void {
+  if (compensationAnimationId !== null) {
+    cancelAnimationFrame(compensationAnimationId);
+    compensationAnimationId = null;
+  }
+}
+
 function compensateCollapse(startScrollTop: number, collapsibleHeight: number): void {
   const startTime = performance.now();
 
@@ -115,10 +122,7 @@ function handleScroll() {
       compensateCollapse(scrollTop, collapsibleHeight);
     }
   } else if (scrollTop <= 0 && artistStore.scrolledDown) {
-    if (compensationAnimationId !== null) {
-      cancelAnimationFrame(compensationAnimationId);
-      compensationAnimationId = null;
-    }
+    cancelCompensation();
     artistStore.scrolledDown = false;
     lastChangeTime = now;
   }
@@ -180,10 +184,7 @@ watch(
 );
 
 onBeforeUnmount(() => {
-  if (compensationAnimationId !== null) {
-    cancelAnimationFrame(compensationAnimationId);
-    compensationAnimationId = null;
-  }
+  cancelCompensation();
 });
 </script>
 

@@ -353,7 +353,6 @@ export const useArtist = defineStore("artist", {
 
         this.reclassifying = true;
         await Promise.all(classification);
-        this.reclassifying = false;
       } catch {
         this.discogsId = null;
         this.wikidataId = null;

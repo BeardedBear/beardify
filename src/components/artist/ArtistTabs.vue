@@ -3,15 +3,7 @@
     <template v-for="tab in tabs" :key="tab.id">
       <Tooltip v-if="tab.disabled && tab.tooltip" :text="tab.tooltip">
         <button
-          :class="[
-            'tab',
-            {
-              active: modelValue === tab.id,
-              disabled: tab.disabled,
-              'tab-bar': tab.bar,
-              'tab-loading': tab.loading
-            },
-          ]"
+          :class="tabClass(tab)"
           :aria-disabled="tab.disabled ? 'true' : 'false'"
           :disabled="tab.disabled"
           @click="!tab.disabled && $emit('update:modelValue', tab.id)"
@@ -23,15 +15,7 @@
       <button
         v-else
         :key="tab.id + '-btn'"
-        :class="[
-          'tab',
-          {
-            active: modelValue === tab.id,
-            disabled: tab.disabled,
-            'tab-bar': tab.bar,
-            'tab-loading': tab.loading
-          },
-        ]"
+        :class="tabClass(tab)"
         :aria-disabled="tab.disabled ? 'true' : 'false'"
         :disabled="tab.disabled"
         @click="!tab.disabled && $emit('update:modelValue', tab.id)"
@@ -60,7 +44,7 @@ export interface Tab {
 <script lang="ts" setup>
 import Tooltip from "@/components/ui/Tooltip.vue";
 
-defineProps<{
+const props = defineProps<{
   modelValue: string;
   tabs: Tab[];
 }>();
@@ -68,6 +52,18 @@ defineProps<{
 defineEmits<{
   "update:modelValue": [value: string];
 }>();
+
+function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
+  return [
+    "tab",
+    {
+      active: props.modelValue === tab.id,
+      disabled: tab.disabled,
+      "tab-bar": tab.bar,
+      "tab-loading": tab.loading,
+    },
+  ];
+}
 </script>
 
 <style lang="scss" scoped>
