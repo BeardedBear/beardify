@@ -62,6 +62,7 @@ const COMPILATION_KEYWORDS = [
   "remixed",
   "from the original",
   "recordings",
+  "picture soundtrack",
 ];
 
 const COMPILATION_SPECIAL_PATTERNS = [

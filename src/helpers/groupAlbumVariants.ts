@@ -15,6 +15,8 @@ const VARIANT_KEYWORDS = [
   "édition de luxe",
   "remaster",
   "remastered",
+  "re-master",
+  "re-mastered",
   "expanded",
   "special edition",
   "anniversary edition",
@@ -63,19 +65,19 @@ const VARIANT_PATTERNS = [
   ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*${kw}\\s*(edition|version)?$`, "i")),
   // Complex parentheses with multiple info: (30th Anniversary Edition / Remastered 2022)
   /\s*\(\d+th\s+anniversary\s+edition(?:\s*\/\s*.+)?\)/i,
-  /\s*\([^)]*(?:remaster|deluxe|expanded|special|bonus|version|extra)[^)]*\)/i,
+  /\s*\([^)]*(?:re-?master|deluxe|expanded|special|bonus|version|extra)[^)]*\)/i,
   // Parentheses with "The Complete Sessions" and years: (The Complete Sessions 1998-1999)
   /\s*\(the\s+complete\s+sessions\s+\d{4}[-–]\d{4}\)/i,
-  // Parentheses with year and remaster: (2019 Remaster), (2023 Remastered)
-  /\s*\(\d{4}\s*remaster(?:ed)?\)/i,
+  // Parentheses with year and remaster: (2019 Remaster), (2023 Remastered), (2009 Re-Mastered)
+  /\s*\(\d{4}\s*re-?master(?:ed)?\)/i,
   // Parentheses with year and mix: (2025 Mix), (2023 Remix)
   /\s*\(\d{4}\s*(?:re)?mix\)/i,
   // Parentheses with anniversary: (20th Anniversary), (25th Anniversary Edition)
   /\s*\(\d+th\s+anniversary(?:\s+edition)?\)/i,
   // Anniversary with ordinal: 30th Anniversary, 25th Anniversary, 10th Anniversary Commentary
   /\s*\d+th\s+anniversary(?:\s+(?:edition|commentary|remaster|deluxe))?$/i,
-  // Year-based remaster: "2023 Remastered", "2020 Remaster"
-  /\s*\d{4}\s*remaster(ed)?$/i,
+  // Year-based remaster: "2023 Remastered", "2020 Remaster", "2009 Re-Mastered"
+  /\s*\d{4}\s*re-?master(?:ed)?$/i,
   // Plus sign combinations: "+ anything" or "anything +"
   /\s*\+\s*[^+]+$/i,
   /\s*[^+]+\+$/i,
@@ -192,6 +194,8 @@ function normalizeAlbumName(name: string): string {
   // Normalize punctuation and capitalization
   normalized = normalized
     .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'") // Normalize curly apostrophes to straight apostrophe
+    .replace(/[\u201C\u201D]/g, "\"") // Normalize curly quotes to straight quotes
     .replace(/\s*\.{2,}\s*/g, "...") // Normalize ellipsis and remove spaces around it
     .replace(/\bvol\.\s*/gi, "volume ") // Normalize "Vol." to "Volume"
     .replace(/[?!]+$/g, "") // Remove trailing question marks and exclamation points
