@@ -62,10 +62,12 @@ const COMPILATION_KEYWORDS = [
   "remixed",
   "from the original",
   "recordings",
+  "picture soundtrack",
 ];
 
 const COMPILATION_SPECIAL_PATTERNS = [
   "mix\\]",
+  "mixes\\)",
   // "mix\\)",
 ];
 
@@ -108,6 +110,8 @@ const LIVE_ALBUM_KEYWORDS = [
   "bbc",
   "live and",
   "live &",
+  "rooftop performance",
+  "from liverpool",
 ];
 
 // Special patterns for live album detection
@@ -128,10 +132,16 @@ const LIVE_ALBUM_SPECIAL_PATTERNS = [
   "\\: live",
   " - 19",
   "live:",
+  "home jam",
 ];
 
 // Cache compiled regex for live album detection
 const liveAlbumRegex = new RegExp(`(${[...LIVE_ALBUM_KEYWORDS, ...LIVE_ALBUM_SPECIAL_PATTERNS].join("|")})`);
+
+// Roman numeral suffix (year/edition) e.g. " - MMXXIV", " - XXV". Case-sensitive on the
+// original title so real numerals (uppercase) match but lowercase words like "civil" or
+// "mix" — whose letters all live in the roman alphabet — do not.
+const romanNumeralLiveRegex = / - [IVXLCDM]{3,}\b/;
 
 /**
  * Heuristic check: returns true if the album name suggests it is a live recording.
@@ -141,7 +151,12 @@ const liveAlbumRegex = new RegExp(`(${[...LIVE_ALBUM_KEYWORDS, ...LIVE_ALBUM_SPE
 export function useCheckLiveAlbum(albumName: string): boolean {
   const cleanedName = albumName.toLowerCase().trim();
   const lastWord = cleanedName.split(" ").pop() ?? "";
-  return liveAlbumRegex.test(cleanedName) || lastWord === "live)" || lastWord === "live";
+  return (
+    liveAlbumRegex.test(cleanedName)
+    || romanNumeralLiveRegex.test(albumName)
+    || lastWord === "live)"
+    || lastWord === "live"
+  );
 }
 
 // Cache compiled regex for reissue album detection

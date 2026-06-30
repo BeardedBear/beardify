@@ -35,12 +35,18 @@
             class="grid-line"
             :style="{ left: `${tick.left}%` }"
           />
-          <span
-            class="member-bar"
-            :class="{ 'is-active': !row.ended, 'is-undated': !row.dated }"
-            :style="{ backgroundColor: row.color, left: `${row.left}%`, width: `${row.width}%` }"
-            :title="row.tooltip"
-          />
+          <Tooltip
+            class="member-bar-wrapper"
+            follow-cursor
+            :style="{ left: `${row.left}%`, width: `${row.width}%` }"
+            :text="row.tooltip"
+          >
+            <span
+              class="member-bar"
+              :class="{ 'is-active': !row.ended, 'is-undated': !row.dated }"
+              :style="{ backgroundColor: row.color }"
+            />
+          </Tooltip>
         </div>
       </template>
     </div>
@@ -53,6 +59,7 @@
 import { computed } from "vue";
 
 import MemberPopover from "@/components/artist/MemberPopover.vue";
+import Tooltip from "@/components/ui/Tooltip.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 interface AxisTick {
@@ -300,18 +307,24 @@ const ticks = computed<AxisTick[]>(() => {
   width: 1px;
 }
 
-.member-bar {
-  border-radius: 0.55rem;
+.member-bar-wrapper {
   display: block;
   height: 0.7rem;
   min-width: 0.7rem;
-  opacity: 0.65;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.member-bar {
+  border-radius: 0.55rem;
+  display: block;
+  height: 100%;
+  opacity: 0.65;
   transition:
     filter 0.2s ease,
     opacity 0.2s ease;
+  width: 100%;
 
   &:hover {
     filter: brightness(1.2);

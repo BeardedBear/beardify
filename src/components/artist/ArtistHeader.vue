@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Disc3, Info, MoreHorizontal } from "@lucide/vue";
+import { Disc3, Info, Loader2, MoreHorizontal } from "@lucide/vue";
 import { useElementBounding } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
@@ -39,17 +39,28 @@ const artistStore = useArtist();
 const dialogStore = useDialog();
 const { height } = useElementBounding(domHeader);
 
+const loading = computed(() => {
+  return artistStore.discographyLoading || artistStore.reclassifying;
+});
+
 const infoAvailable = computed(() => {
   return Boolean(artistStore.wikidataArtist || artistStore.wikipediaExtract);
 });
 
 const tabs = computed<Tab[]>(() => [
-  { icon: Disc3, id: "discography", label: "Discography" },
+  {
+    bar: loading.value,
+    icon: loading.value ? Loader2 : Disc3,
+    id: "discography",
+    label: "Discography",
+    loading: loading.value,
+  },
   {
     disabled: !infoAvailable.value,
-    icon: Info,
+    icon: artistStore.timelineLoading ? Loader2 : Info,
     id: "info",
     label: "Info",
+    loading: artistStore.timelineLoading,
     tooltip: !infoAvailable.value ? "No additional information available" : undefined,
   },
 ]);
@@ -156,7 +167,7 @@ watch(infoAvailable, (available) => {
 
 .collapsible {
   overflow: hidden;
-  transition: max-height 0.25s ease, opacity 0.25s ease;
+  transition: max-height 0.25s ease-out, opacity 0.2s ease-out;
 
   @include responsive.mobile {
     max-height: 30rem;

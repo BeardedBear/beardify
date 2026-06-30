@@ -145,6 +145,7 @@ export const useArtist = defineStore("artist", {
       this.bandMembers = [];
       this.discographyLoading = true;
       this.discogsArtist = null;
+      this.reclassifying = false;
       this.discogsId = null;
       this.releaseTypes = new Map();
       this.scrolledDown = false;
@@ -350,11 +351,14 @@ export const useArtist = defineStore("artist", {
           this.timelineLoading = false;
         }
 
+        this.reclassifying = true;
         await Promise.all(classification);
       } catch {
         this.discogsId = null;
         this.wikidataId = null;
         this.timelineLoading = false;
+      } finally {
+        this.reclassifying = false;
       }
     },
 
@@ -655,6 +659,7 @@ export const useArtist = defineStore("artist", {
     followStatus: false,
     headerHeight: 0,
     musicbrainzArtist: null,
+    reclassifying: false,
     relatedArtists: { artists: [] },
     releaseBaseTitles: new Map(),
     releaseTypes: new Map(),

@@ -196,8 +196,10 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
 .album-page {
   animation: pop-content 1s ease both;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  overflow-y: scroll;
+  min-height: 0;
+  overflow-y: auto;
   padding: 2rem 2.2rem;
   scroll-behavior: smooth;
 
