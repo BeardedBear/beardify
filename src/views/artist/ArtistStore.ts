@@ -18,6 +18,7 @@ import {
 } from "@/helpers/discogs";
 import { normalizeString } from "@/helpers/helper";
 import {
+  buildBaseTitleMap,
   buildReleaseTypeMap,
   extractBandMembers,
   extractExternalIds,
@@ -38,6 +39,7 @@ interface DiscographySnapshot {
   albumsLive: AlbumSimplified[];
   artist: Artist;
   eps: AlbumSimplified[];
+  releaseBaseTitles: Map<string, string>;
   releaseTypes: Map<string, string>;
   singles: AlbumSimplified[];
   timestamp: number;
@@ -48,12 +50,14 @@ const CACHE_MAX_ENTRIES = 10;
 const discographyCache = new Map<string, DiscographySnapshot>();
 
 interface ReleaseLookupMaps {
+  baseTitles: Map<string, string>;
   compact: Map<string, string>;
   deArticled: Map<string, string>;
 }
 
-function buildReleaseLookupMaps(releaseTypes: Map<string, string>): ReleaseLookupMaps {
+function buildReleaseLookupMaps(releaseTypes: Map<string, string>, baseTitles: Map<string, string>): ReleaseLookupMaps {
   return {
+    baseTitles,
     compact: new Map([...releaseTypes.entries()].map(([k, v]) => [k.replace(/\s+/g, ""), v])),
     deArticled: new Map(
       [...releaseTypes.entries()]
@@ -66,7 +70,7 @@ function buildReleaseLookupMaps(releaseTypes: Map<string, string>): ReleaseLooku
 function lookupReleaseType(
   name: string,
   releaseTypes: Map<string, string>,
-  { compact, deArticled }: ReleaseLookupMaps,
+  { baseTitles, compact, deArticled }: ReleaseLookupMaps,
 ): string | undefined {
   const norm = normalizeString(name);
 
@@ -117,6 +121,17 @@ function lookupReleaseType(
   //    Only match non-Album types for the same reason as step 6.
   for (const [mbKey, mbType] of releaseTypes) {
     if (mbType !== "Album" && mbKey.startsWith(norm + " ")) return mbType;
+  }
+
+  // 8. Base-title exact match: Spotify title equals the MB title with subtitle stripped
+  //    e.g. Spotify "Moonage Daydream" vs MB "Moonage Daydream: A Film by Brett Morgen" → Compilation
+  r = baseTitles.get(norm);
+  if (r !== undefined) return r;
+
+  // 9. Base-title prefix: Spotify title extends MB base with a different subtitle
+  //    e.g. Spotify "Moonage Daydream – A Brett Morgen Film" starts with base "moonage daydream"
+  for (const [baseKey, baseType] of baseTitles) {
+    if (baseType !== "Album" && norm.startsWith(baseKey + " ")) return baseType;
   }
 
   return undefined;
@@ -364,6 +379,10 @@ export const useArtist = defineStore("artist", {
           ...this.releaseTypes,
           ...buildReleaseTypeMap(groups),
         ]);
+        this.releaseBaseTitles = new Map([
+          ...this.releaseBaseTitles,
+          ...buildBaseTitleMap(groups),
+        ]);
         this.reclassifyReleases();
       } catch {
         // silent fail
@@ -380,7 +399,7 @@ export const useArtist = defineStore("artist", {
         const onlyEps: AlbumSimplified[] = [];
         const albumsToMove: AlbumSimplified[] = [];
 
-        const maps = buildReleaseLookupMaps(this.releaseTypes);
+        const maps = buildReleaseLookupMaps(this.releaseTypes, this.releaseBaseTitles);
         const lookupType = (name: string): string | undefined =>
           lookupReleaseType(name, this.releaseTypes, maps);
 
@@ -478,6 +497,7 @@ export const useArtist = defineStore("artist", {
       this.albumsLive = snap.albumsLive;
       this.artist = snap.artist;
       this.eps = snap.eps;
+      this.releaseBaseTitles = new Map(snap.releaseBaseTitles);
       this.releaseTypes = new Map(snap.releaseTypes);
       this.singles = snap.singles;
       this.discographyLoading = false;
@@ -505,7 +525,7 @@ export const useArtist = defineStore("artist", {
     reclassifyReleases(): void {
       if (this.releaseTypes.size === 0) return;
 
-      const maps = buildReleaseLookupMaps(this.releaseTypes);
+      const maps = buildReleaseLookupMaps(this.releaseTypes, this.releaseBaseTitles);
       const externalType = (album: AlbumSimplified): string | undefined =>
         lookupReleaseType(album.name, this.releaseTypes, maps);
 
@@ -589,6 +609,7 @@ export const useArtist = defineStore("artist", {
         albumsLive: [...this.albumsLive],
         artist: { ...this.artist },
         eps: [...this.eps],
+        releaseBaseTitles: new Map(this.releaseBaseTitles),
         releaseTypes: new Map(this.releaseTypes),
         singles: [...this.singles],
         timestamp: Date.now(),
@@ -635,6 +656,7 @@ export const useArtist = defineStore("artist", {
     headerHeight: 0,
     musicbrainzArtist: null,
     relatedArtists: { artists: [] },
+    releaseBaseTitles: new Map(),
     releaseTypes: new Map(),
     scrolledDown: false,
     singles: [],

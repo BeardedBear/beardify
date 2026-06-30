@@ -39,6 +39,7 @@ export interface ArtistPage {
   headerHeight: number;
   musicbrainzArtist: MusicBrainzArtist | null;
   relatedArtists: RelatedArtists;
+  releaseBaseTitles: Map<string, string>;
   releaseTypes: Map<string, string>;
   scrolledDown: boolean;
   singles: AlbumSimplified[];
