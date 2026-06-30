@@ -38,6 +38,7 @@ export interface ArtistPage {
   followStatus: boolean | undefined;
   headerHeight: number;
   musicbrainzArtist: MusicBrainzArtist | null;
+  reclassifying: boolean;
   relatedArtists: RelatedArtists;
   releaseBaseTitles: Map<string, string>;
   releaseTypes: Map<string, string>;

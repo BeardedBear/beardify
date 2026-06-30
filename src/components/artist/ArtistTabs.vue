@@ -3,8 +3,10 @@
     <template v-for="tab in tabs" :key="tab.id">
       <Tooltip v-if="tab.disabled && tab.tooltip" :text="tab.tooltip">
         <button
-          :class="{ active: modelValue === tab.id, disabled: tab.disabled }"
-          class="tab"
+          :class="[
+            'tab',
+            { active: modelValue === tab.id, disabled: tab.disabled, 'tab-bar': tab.bar, 'tab-loading': tab.loading },
+          ]"
           :aria-disabled="tab.disabled ? 'true' : 'false'"
           :disabled="tab.disabled"
           @click="!tab.disabled && $emit('update:modelValue', tab.id)"
@@ -16,8 +18,10 @@
       <button
         v-else
         :key="tab.id + '-btn'"
-        :class="{ active: modelValue === tab.id, disabled: tab.disabled }"
-        class="tab"
+        :class="[
+          'tab',
+          { active: modelValue === tab.id, disabled: tab.disabled, 'tab-bar': tab.bar, 'tab-loading': tab.loading },
+        ]"
         :aria-disabled="tab.disabled ? 'true' : 'false'"
         :disabled="tab.disabled"
         @click="!tab.disabled && $emit('update:modelValue', tab.id)"
@@ -33,10 +37,12 @@
 import type { Component } from "vue";
 
 export interface Tab {
+  bar?: boolean;
   disabled?: boolean;
   icon: Component;
   id: string;
   label: string;
+  loading?: boolean;
   tooltip?: string;
 }
 </script>
@@ -58,6 +64,26 @@ defineEmits<{
 @use "@/assets/scss/responsive" as responsive;
 @use "@/assets/scss/mixins" as *;
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes gradient-slide {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 .tabs {
   display: flex;
   gap: 0.5rem;
@@ -67,7 +93,7 @@ defineEmits<{
 }
 
 .tab {
-  $radius: 0.5rem;
+  $radius: 0.2rem;
 
   align-items: center;
   background-color: transparent;
@@ -114,6 +140,35 @@ defineEmits<{
     &:hover {
       background-color: transparent;
       opacity: 0.45;
+    }
+  }
+
+  &.tab-loading {
+    /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+    :deep(svg) {
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  &.tab-bar {
+    position: relative;
+
+    &::before {
+      animation: gradient-slide 2s linear infinite;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--primary-color) 50%,
+        transparent 100%
+      );
+      background-size: 200% 100%;
+      border-radius: 0.5rem 0.5rem 0 0;
+      content: "";
+      height: 2px;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
     }
   }
 }

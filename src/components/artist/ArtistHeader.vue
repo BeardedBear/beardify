@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Disc3, Info, MoreHorizontal } from "@lucide/vue";
+import { Disc3, Info, Loader2, MoreHorizontal } from "@lucide/vue";
 import { useElementBounding } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
@@ -44,12 +44,19 @@ const infoAvailable = computed(() => {
 });
 
 const tabs = computed<Tab[]>(() => [
-  { icon: Disc3, id: "discography", label: "Discography" },
+  {
+    bar: artistStore.reclassifying,
+    icon: artistStore.reclassifying ? Loader2 : Disc3,
+    id: "discography",
+    label: "Discography",
+    loading: artistStore.reclassifying,
+  },
   {
     disabled: !infoAvailable.value,
-    icon: Info,
+    icon: artistStore.timelineLoading ? Loader2 : Info,
     id: "info",
     label: "Info",
+    loading: artistStore.timelineLoading,
     tooltip: !infoAvailable.value ? "No additional information available" : undefined,
   },
 ]);
