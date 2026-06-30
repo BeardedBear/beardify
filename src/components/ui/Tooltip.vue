@@ -92,7 +92,10 @@ function onMouseMove(event: MouseEvent): void {
 }
 
 function show(event: Event): void {
-  if (props.followCursor && event instanceof MouseEvent) cursorX.value = event.clientX;
+  // Keyboard focus has no cursor position: fall back to the wrapper center.
+  if (props.followCursor) {
+    cursorX.value = event instanceof MouseEvent ? event.clientX : wrapLeft.value + wrapWidth.value / 2;
+  }
   visible.value = true;
   currentPlacement.value = props.placement;
   nextTick(() => updatePosition());

@@ -273,5 +273,10 @@ function normalizeAlbumName(name: string): string {
     .replace(/\s+/g, " ") // Normalize multiple spaces to single space
     .trim();
 
+  // Guard: if stripping suffixes consumed the whole title (e.g. an album literally
+  // named "25", "Sessions" or "Complete"), fall back to the original name so distinct
+  // releases are not all collapsed into a single empty-key group.
+  if (normalized === "") return name.trim().toLowerCase();
+
   return normalized;
 }
