@@ -22,20 +22,37 @@
         </span>
       </div>
 
+      <!-- Release markers lane: dots sit on top of the vertical release lines below -->
+      <div class="axis-spacer" />
+      <div class="event-markers">
+        <ReleasePopover
+          v-for="event in events"
+          :key="event.left"
+          class="event-marker"
+          :color="event.color"
+          :cover="event.cover"
+          :meta="event.meta"
+          :name="event.name"
+          :style="{ left: `${event.left}%` }"
+        >
+          <span class="event-dot" :style="{ backgroundColor: event.color }" />
+        </ReleasePopover>
+      </div>
+
       <template v-for="row in rows" :key="row.id">
         <div class="member-name" :class="{ 'is-active': row.active }">
           <MemberPopover :name="row.name">{{ row.name }}</MemberPopover>
         </div>
         <div class="member-track" :class="{ 'is-inactive': !row.active }">
-          <Tooltip
+          <span
             v-for="event in events"
             :key="`${row.id}-${event.left}`"
-            class="event-line-wrapper"
-            :style="{ left: `${event.left}%` }"
-            :text="event.title"
-          >
-            <span class="event-line" :style="{ backgroundColor: event.color }" />
-          </Tooltip>
+            class="event-line"
+            :style="{
+              backgroundImage: `repeating-linear-gradient(to bottom, ${event.color} 0 3px, transparent 3px 6px)`,
+              left: `${event.left}%`,
+            }"
+          />
           <Tooltip
             v-for="(seg, index) in row.segments"
             :key="index"
@@ -62,7 +79,10 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
+import type { AlbumSimplified } from "@/@types/Album";
+
 import MemberPopover from "@/components/artist/MemberPopover.vue";
+import ReleasePopover from "@/components/artist/ReleasePopover.vue";
 import Tooltip from "@/components/ui/Tooltip.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
@@ -149,15 +169,95 @@ const legend = computed(() => {
     .map(([, role]) => role);
 });
 
+interface ReleaseMatch {
+  album: AlbumSimplified;
+  type: string;
+}
+
+/** Fractional year of a Spotify release_date ("YYYY", "YYYY-MM", "YYYY-MM-DD"). */
+function albumYear(album: AlbumSimplified): number {
+  const [y, m, d] = album.release_date.split("-").map((p) => parseInt(p, 10));
+  return y + (m ? (m - 1) / 12 : 0) + (d ? (d - 1) / 365 : 0);
+}
+
+/** Closest release to an event date, within a one-year window. */
+function matchAlbum(date: number, albums: AlbumSimplified[]): AlbumSimplified | null {
+  let best: AlbumSimplified | null = null;
+  let bestDiff = 1;
+  for (const album of albums) {
+    const diff = Math.abs(albumYear(album) - date);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = album;
+    }
+  }
+  return best;
+}
+
+/** Match an event date to a release, preferring studio albums over other types. */
+function matchRelease(date: number): null | ReleaseMatch {
+  const buckets: { list: AlbumSimplified[]; type: string }[] = [
+    { list: artistStore.albums, type: "Album" },
+    { list: artistStore.eps, type: "EP" },
+    { list: artistStore.albumsLive, type: "Live" },
+    { list: artistStore.albumsCompilation, type: "Compilation" },
+  ];
+  for (const { list, type } of buckets) {
+    const album = matchAlbum(date, list);
+    if (album) return { album, type };
+  }
+  return null;
+}
+
+// Two markers closer than this (% of timeline width) are treated as the same release
+const MIN_EVENT_GAP_PCT = 1.5;
+
+// Marker / line color per release type
+const TYPE_COLORS: Record<string, string> = {
+  Album: "#666666",
+  Compilation: "#e2a74c",
+  EP: "#4c9be2",
+  Live: "#e2574c",
+};
+const DEFAULT_TYPE_COLOR = TYPE_COLORS.Album;
+
 const events = computed(() => {
   const tl = artistStore.wikiTimeline;
   if (!tl) return [];
   const span = tl.till - tl.from || 1;
-  return tl.events.map((event) => ({
-    color: tl.colors[event.colorId]?.color ?? "#555",
-    left: ((event.date - tl.from) / span) * 100,
-    title: `${tl.colors[event.colorId]?.legend ?? "Release"} (${Math.floor(event.date)})`,
-  }));
+
+  const enriched = tl.events
+    .map((event) => {
+      const match = matchRelease(event.date);
+      const year = match ? match.album.release_date.slice(0, 4) : `${Math.floor(event.date)}`;
+      const type = match?.type ?? tl.colors[event.colorId]?.legend ?? "Release";
+      return {
+        albumId: match?.album.id ?? null,
+        color: TYPE_COLORS[type] ?? DEFAULT_TYPE_COLOR,
+        cover: match?.album.images[0]?.url ?? null,
+        left: ((event.date - tl.from) / span) * 100,
+        meta: `${type} · ${year}`,
+        name: match?.album.name ?? type,
+      };
+    })
+    .sort((a, b) => a.left - b.left);
+
+  // Collapse duplicate markers: same matched album, or two undated markers sitting
+  // on top of each other. Keep the one carrying an actual album cover.
+  const deduped: typeof enriched = [];
+  for (const ev of enriched) {
+    const prev = deduped.at(-1);
+    if (prev) {
+      if (ev.albumId !== null && ev.albumId === prev.albumId) continue;
+      if (ev.left - prev.left < MIN_EVENT_GAP_PCT && (!ev.albumId || !prev.albumId)) {
+        if (!prev.albumId && ev.albumId) deduped[deduped.length - 1] = ev;
+        continue;
+      }
+    }
+    deduped.push(ev);
+  }
+
+  return deduped;
 });
 
 const ticks = computed<AxisTick[]>(() => {
@@ -273,19 +373,36 @@ const ticks = computed<AxisTick[]>(() => {
   position: relative;
 }
 
-.event-line-wrapper {
-  bottom: 0;
-  display: block;
+.event-markers {
+  height: 0.7rem;
+  position: relative;
+}
+
+.event-marker {
   position: absolute;
   top: 0;
-  width: 1px;
+  transform: translateX(-50%);
+}
+
+.event-dot {
+  border-radius: 50%;
+  cursor: pointer;
+  display: block;
+  height: 0.7rem;
+  transition: transform 0.15s ease;
+  width: 0.7rem;
+
+  &:hover {
+    transform: scale(1.25);
+  }
 }
 
 .event-line {
-  display: block;
-  height: 100%;
-  opacity: 0.25;
-  width: 100%;
+  bottom: 0;
+  opacity: 0.5;
+  position: absolute;
+  top: 0;
+  width: 1px;
 }
 
 .segment-wrapper {
