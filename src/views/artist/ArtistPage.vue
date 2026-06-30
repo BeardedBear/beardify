@@ -23,9 +23,9 @@
               {{ artistStore.artist.name }} didn't release anything, it's a bit sad.
             </div>
             <BlockAlbums />
+            <BlockEps />
             <BlockAlbumsLive />
             <BlockAlbumsCompilation />
-            <BlockEps />
             <BlockSingles />
           </template>
         </div>
