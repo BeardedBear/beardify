@@ -95,8 +95,11 @@ function easeOut(t: number): number {
   return 1 - (1 - t) * (1 - t);
 }
 
+const isMobile = (): boolean => window.matchMedia("(max-width: 767px)").matches;
+
 function handleScroll() {
   onScroll();
+  if (!isMobile()) return;
   const now = Date.now();
   if (now - lastChangeTime < 300) return;
 
