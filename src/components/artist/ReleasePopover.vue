@@ -45,6 +45,8 @@ withDefaults(
 
 const GAP = 10;
 const MARGIN = 8;
+// Nudge the panel right so it clears the dot instead of sitting centered over it
+const SHIFT_X = 40;
 
 const OFFSCREEN: Record<string, string> = { left: "-9999px", top: "0" };
 
@@ -77,7 +79,7 @@ function updatePosition(): void {
   const panelW = panelWidth.value || 0;
   const panelH = panelHeight.value || 0;
 
-  const desiredLeft = wrapLeft.value + wrapWidth.value / 2 - panelW / 2;
+  const desiredLeft = wrapLeft.value + wrapWidth.value / 2 - panelW / 2 + SHIFT_X;
   const left = clamp(desiredLeft, MARGIN, Math.max(vpW - panelW - MARGIN, MARGIN));
 
   // Prefer above the dot, flip below when there is not enough room

@@ -35,7 +35,12 @@
           :name="event.name"
           :style="{ left: `${event.left}%` }"
         >
-          <span class="event-dot" :style="{ backgroundColor: event.color }" />
+          <span
+            class="event-dot"
+            :class="{ 'is-clickable': event.albumId }"
+            :style="{ backgroundColor: event.color }"
+            @click="goAlbum(event.albumId)"
+          />
         </ReleasePopover>
       </div>
 
@@ -78,6 +83,7 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
+import { useRouter } from "vue-router";
 
 import type { AlbumSimplified } from "@/@types/Album";
 
@@ -110,6 +116,11 @@ interface TimelineRow {
 const MIN_SEG_WIDTH = 0.4;
 
 const artistStore = useArtist();
+const router = useRouter();
+
+function goAlbum(albumId: null | string): void {
+  if (albumId) router.push(`/album/${albumId}`);
+}
 
 function yearLabel(value: number, till: number, openEnded: boolean): string {
   return openEnded || value >= till - 0.3 ? "present" : `${Math.floor(value)}`;
@@ -226,21 +237,37 @@ const events = computed(() => {
   if (!tl) return [];
   const span = tl.till - tl.from || 1;
 
-  const enriched = tl.events
-    .map((event) => {
-      const match = matchRelease(event.date);
-      const year = match ? match.album.release_date.slice(0, 4) : `${Math.floor(event.date)}`;
-      const type = match?.type ?? tl.colors[event.colorId]?.legend ?? "Release";
-      return {
-        albumId: match?.album.id ?? null,
-        color: TYPE_COLORS[type] ?? DEFAULT_TYPE_COLOR,
-        cover: match?.album.images[0]?.url ?? null,
-        left: ((event.date - tl.from) / span) * 100,
-        meta: `${type} · ${year}`,
-        name: match?.album.name ?? type,
-      };
-    })
-    .sort((a, b) => a.left - b.left);
+  const toEvent = (date: number, match: null | ReleaseMatch, colorId?: string): {
+    albumId: null | string;
+    color: string;
+    cover: null | string;
+    left: number;
+    meta: string;
+    name: string;
+  } => {
+    const year = match ? match.album.release_date.slice(0, 4) : `${Math.floor(date)}`;
+    const type = match?.type ?? (colorId ? tl.colors[colorId]?.legend : undefined) ?? "Release";
+    return {
+      albumId: match?.album.id ?? null,
+      color: TYPE_COLORS[type] ?? DEFAULT_TYPE_COLOR,
+      cover: match?.album.images[0]?.url ?? null,
+      left: ((date - tl.from) / span) * 100,
+      meta: `${type} · ${year}`,
+      name: match?.album.name ?? type,
+    };
+  };
+
+  // Wikipedia provides release markers; when it has none, synthesize them from the
+  // studio albums fetched on the discography page so the timeline still shows releases.
+  const enriched
+    = tl.events.length > 0
+      ? tl.events.map((event) => toEvent(event.date, matchRelease(event.date), event.colorId))
+      : artistStore.albums
+          .map((album) => albumYear(album))
+          .filter((date) => date >= tl.from - 0.5 && date <= tl.till + 0.5)
+          .map((date) => toEvent(date, matchRelease(date)));
+
+  enriched.sort((a, b) => a.left - b.left);
 
   // Collapse duplicate markers: same matched album, or two undated markers sitting
   // on top of each other. Keep the one carrying an actual album cover.
@@ -386,7 +413,6 @@ const ticks = computed<AxisTick[]>(() => {
 
 .event-dot {
   border-radius: 50%;
-  cursor: pointer;
   display: block;
   height: 0.7rem;
   transition: transform 0.15s ease;
@@ -394,6 +420,10 @@ const ticks = computed<AxisTick[]>(() => {
 
   &:hover {
     transform: scale(1.25);
+  }
+
+  &.is-clickable {
+    cursor: pointer;
   }
 }
 
