@@ -5,7 +5,12 @@
         <button
           :class="[
             'tab',
-            { active: modelValue === tab.id, disabled: tab.disabled, 'tab-bar': tab.bar, 'tab-loading': tab.loading },
+            {
+              active: modelValue === tab.id,
+              disabled: tab.disabled,
+              'tab-bar': tab.bar,
+              'tab-loading': tab.loading
+            },
           ]"
           :aria-disabled="tab.disabled ? 'true' : 'false'"
           :disabled="tab.disabled"
@@ -20,7 +25,12 @@
         :key="tab.id + '-btn'"
         :class="[
           'tab',
-          { active: modelValue === tab.id, disabled: tab.disabled, 'tab-bar': tab.bar, 'tab-loading': tab.loading },
+          {
+            active: modelValue === tab.id,
+            disabled: tab.disabled,
+            'tab-bar': tab.bar,
+            'tab-loading': tab.loading
+          },
         ]"
         :aria-disabled="tab.disabled ? 'true' : 'false'"
         :disabled="tab.disabled"

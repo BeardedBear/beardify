@@ -41,6 +41,16 @@ const VARIANT_KEYWORDS = [
   "pa",
   "remixes",
   "tour edition",
+  "imagined",
+  "sessions",
+  "edgar",
+  "archive edition",
+  "archive collection",
+  "legacy edition",
+  "collector's edition",
+  "complete",
+  "q&a",
+  "naked",
 ];
 
 /**
@@ -63,9 +73,21 @@ const VARIANT_PATTERNS = [
   ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*:\\s*${kw}$`, "i")),
   // Standalone suffix: keyword, keyword edition, keyword version
   ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*${kw}\\s*(edition|version)?$`, "i")),
+  // Dash with "Complete" + text: - Complete Kisses, - Complete Collection (broader than keyword-only match)
+  /\s*[-–—]\s*complete\s+.+$/i,
+  // Dash suffix with capitalized name(s): - Edgar, - Edgar Allan Poe, - John Smith
+  /\s*[-–—]\s*[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*$/i,
   // Complex parentheses with multiple info: (30th Anniversary Edition / Remastered 2022)
   /\s*\(\d+th\s+anniversary\s+edition(?:\s*\/\s*.+)?\)/i,
   /\s*\([^)]*(?:re-?master|deluxe|expanded|special|bonus|version|extra)[^)]*\)/i,
+  // Parentheses with "'s Edition": (Collector's Edition), (Explorer's Edition), etc.
+  /\s*\(\w+['\u2019]s\s+edition\)/i,
+  // Parentheses with "The" variant descriptor: (The Out-takes), (The Raw Studio Mixes), etc.
+  /\s*\(the\s+[^)]+\)$/i,
+  // Parentheses with location/city descriptor: (New York City - The Ultimate Mixes), (London - Live)
+  /\s*\([A-Z][a-zA-Z\s]*[-–—][^)]+\)$/i,
+  // Parentheses ending with "Jam": (Live Jam), (Home Jam), (Studio Jam)
+  /\s*\(\w+(?:\s+\w+)*\s+[Jj]am\)/i,
   // Parentheses with "The Complete Sessions" and years: (The Complete Sessions 1998-1999)
   /\s*\(the\s+complete\s+sessions\s+\d{4}[-–]\d{4}\)/i,
   // Parentheses with year and remaster: (2019 Remaster), (2023 Remastered), (2009 Re-Mastered)
@@ -76,6 +98,8 @@ const VARIANT_PATTERNS = [
   /\s*\(\d+th\s+anniversary(?:\s+edition)?\)/i,
   // Anniversary with ordinal: 30th Anniversary, 25th Anniversary, 10th Anniversary Commentary
   /\s*\d+th\s+anniversary(?:\s+(?:edition|commentary|remaster|deluxe))?$/i,
+  // Bare anniversary numbers: "50", "50th", "25th" at end (common anniversary years)
+  /\s*(?:25|30|40|45|50|55|60|75)(?:th)?$/i,
   // Year-based remaster: "2023 Remastered", "2020 Remaster", "2009 Re-Mastered"
   /\s*\d{4}\s*re-?master(?:ed)?$/i,
   // Plus sign combinations: "+ anything" or "anything +"
@@ -198,6 +222,7 @@ function normalizeAlbumName(name: string): string {
     .replace(/[\u201C\u201D]/g, "\"") // Normalize curly quotes to straight quotes
     .replace(/\s*\.{2,}\s*/g, "...") // Normalize ellipsis and remove spaces around it
     .replace(/\bvol\.\s*/gi, "volume ") // Normalize "Vol." to "Volume"
+    .replace(/\.{3,}$/g, "") // Remove trailing ellipsis
     .replace(/[?!]+$/g, "") // Remove trailing question marks and exclamation points
     .replace(/\s+/g, " ") // Normalize multiple spaces to single space
     .trim();

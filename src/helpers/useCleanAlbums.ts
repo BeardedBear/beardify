@@ -67,6 +67,7 @@ const COMPILATION_KEYWORDS = [
 
 const COMPILATION_SPECIAL_PATTERNS = [
   "mix\\]",
+  "mixes\\)",
   // "mix\\)",
 ];
 
@@ -109,6 +110,8 @@ const LIVE_ALBUM_KEYWORDS = [
   "bbc",
   "live and",
   "live &",
+  "rooftop performance",
+  "from liverpool",
 ];
 
 // Special patterns for live album detection
@@ -128,7 +131,9 @@ const LIVE_ALBUM_SPECIAL_PATTERNS = [
   "live\\;",
   "\\: live",
   " - 19",
+  " - [ivxlcdm]{3,}",
   "live:",
+  "home jam",
 ];
 
 // Cache compiled regex for live album detection

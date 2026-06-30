@@ -39,17 +39,21 @@ const artistStore = useArtist();
 const dialogStore = useDialog();
 const { height } = useElementBounding(domHeader);
 
+const loading = computed(() => {
+  return artistStore.discographyLoading || artistStore.reclassifying;
+});
+
 const infoAvailable = computed(() => {
   return Boolean(artistStore.wikidataArtist || artistStore.wikipediaExtract);
 });
 
 const tabs = computed<Tab[]>(() => [
   {
-    bar: artistStore.reclassifying,
-    icon: artistStore.reclassifying ? Loader2 : Disc3,
+    bar: loading.value,
+    icon: loading.value ? Loader2 : Disc3,
     id: "discography",
     label: "Discography",
-    loading: artistStore.reclassifying,
+    loading: loading.value,
   },
   {
     disabled: !infoAvailable.value,
