@@ -32,6 +32,7 @@ defineProps<{ album: Album }>();
 
 .link {
   cursor: pointer;
+  padding-left: 0;
 
   &:hover {
     color: var(--primary-color);
