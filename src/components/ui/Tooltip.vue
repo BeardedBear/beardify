@@ -24,15 +24,17 @@ import { nextTick, ref } from "vue";
 
 const props = withDefaults(
   defineProps<{
+    followCursor?: boolean;
     placement?: "bottom" | "top";
     text: string;
   }>(),
-  { placement: "top" },
+  { followCursor: false, placement: "top" },
 );
 
 const MARGIN = 8;
 
 const visible = ref(false);
+const cursorX = ref(0);
 const currentPlacement = ref<"bottom" | "top">(props.placement);
 const tooltipRef = ref<HTMLElement | null>(null);
 const wrapperRef = ref<HTMLElement | null>(null);
@@ -44,7 +46,8 @@ const { height: tipHeight, width: tipWidth } = useElementBounding(tooltipRef);
 
 function calculateHorizontalPosition(): number {
   const tipW = tipWidth.value || 0;
-  const desiredLeft = wrapLeft.value + (wrapWidth.value - tipW) / 2;
+  const center = props.followCursor ? cursorX.value : wrapLeft.value + wrapWidth.value / 2;
+  const desiredLeft = center - tipW / 2;
   const vpW = (viewportWidth.value ?? document.documentElement.clientWidth) || window.innerWidth;
 
   return clamp(desiredLeft, MARGIN, Math.max(vpW - tipW - MARGIN, MARGIN));
@@ -82,7 +85,14 @@ function hide(): void {
   currentPlacement.value = props.placement;
 }
 
-function show(): void {
+function onMouseMove(event: MouseEvent): void {
+  if (!props.followCursor) return;
+  cursorX.value = event.clientX;
+  if (visible.value) updatePosition();
+}
+
+function show(event: Event): void {
+  if (props.followCursor && event instanceof MouseEvent) cursorX.value = event.clientX;
   visible.value = true;
   currentPlacement.value = props.placement;
   nextTick(() => updatePosition());
@@ -113,6 +123,7 @@ function updatePosition(): void {
 
 useEventListener(wrapperRef, ["focusin", "mouseenter"], show);
 useEventListener(wrapperRef, ["focusout", "mouseleave"], hide);
+useEventListener(wrapperRef, "mousemove", onMouseMove);
 
 useEventListener(window, "resize", () => {
   if (visible.value) updatePosition();

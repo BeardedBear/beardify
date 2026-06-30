@@ -27,26 +27,30 @@
           <MemberPopover :name="row.name">{{ row.name }}</MemberPopover>
         </div>
         <div class="member-track" :class="{ 'is-inactive': !row.active }">
-          <span
+          <Tooltip
             v-for="event in events"
             :key="`${row.id}-${event.left}`"
-            class="event-line"
-            :style="{ backgroundColor: event.color, left: `${event.left}%` }"
-            :title="event.title"
-          />
-          <span
+            class="event-line-wrapper"
+            :style="{ left: `${event.left}%` }"
+            :text="event.title"
+          >
+            <span class="event-line" :style="{ backgroundColor: event.color }" />
+          </Tooltip>
+          <Tooltip
             v-for="(seg, index) in row.segments"
             :key="index"
-            class="segment"
+            class="segment-wrapper"
+            follow-cursor
             :style="{
-              backgroundColor: seg.color,
               height: seg.height,
               left: `${seg.left}%`,
               width: `${seg.width}%`,
               zIndex: seg.z,
             }"
-            :title="seg.title"
-          />
+            :text="seg.title"
+          >
+            <span class="segment" :style="{ backgroundColor: seg.color }" />
+          </Tooltip>
         </div>
       </template>
     </div>
@@ -59,6 +63,7 @@
 import { computed } from "vue";
 
 import MemberPopover from "@/components/artist/MemberPopover.vue";
+import Tooltip from "@/components/ui/Tooltip.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 interface AxisTick {
@@ -268,23 +273,37 @@ const ticks = computed<AxisTick[]>(() => {
   position: relative;
 }
 
-.event-line {
+.event-line-wrapper {
   bottom: 0;
-  opacity: 0.25;
+  display: block;
   position: absolute;
   top: 0;
   width: 1px;
 }
 
-.segment {
-  border-radius: 0.2rem;
-  opacity: 0.7;
+.event-line {
+  display: block;
+  height: 100%;
+  opacity: 0.25;
+  width: 100%;
+}
+
+.segment-wrapper {
+  display: block;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.segment {
+  border-radius: 0.2rem;
+  display: block;
+  height: 100%;
+  opacity: 0.7;
   transition:
     filter 0.2s ease,
     opacity 0.2s ease;
+  width: 100%;
 
   &:hover {
     filter: brightness(1.25);
