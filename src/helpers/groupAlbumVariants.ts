@@ -6,9 +6,28 @@ export interface AlbumGroup {
   variants: AlbumSimplified[];
 }
 
-/**
- * Common variant keywords and patterns
- */
+// ── Shared regex fragments ────────────────────────────────────────
+
+const D = "[-–—]"; // Dash char variants
+const REM = "re-?master(?:ed)?"; // Remaster/Remastered/Re-Mastered
+const ANNIV = "\\d+th\\s+anniversary"; // Ordinal anniversary
+
+// ── Pattern construction helpers ──────────────────────────────────
+
+/** Generate a parenthetical keyword pattern: (keyword), (keyword edition), (keyword version) */
+const kwParen = (kw: string): RegExp => new RegExp(`\\s*\\(${kw}\\s*(edition|version)?\\)`, "i");
+
+/** Generate a dash-suffix keyword pattern: - keyword, - keyword edition, - keyword version */
+const kwDash = (kw: string): RegExp => new RegExp(`\\s*-\\s*${kw}\\s*(edition|version)?$`, "i");
+
+/** Generate a colon-suffix keyword pattern: : keyword */
+const kwColon = (kw: string): RegExp => new RegExp(`\\s*:\\s*${kw}$`, "i");
+
+/** Generate a standalone keyword pattern: keyword, keyword edition, keyword version */
+const kwStandalone = (kw: string): RegExp => new RegExp(`\\s*${kw}\\s*(edition|version)?$`, "i");
+
+// ── Keywords ──────────────────────────────────────────────────────
+
 const VARIANT_KEYWORDS = [
   "deluxe",
   "edition de luxe",
@@ -53,65 +72,92 @@ const VARIANT_KEYWORDS = [
   "naked",
 ];
 
-/**
- * Generate regex patterns from keywords with different formats
- */
-const VARIANT_PATTERNS = [
-  // Parenthetical variants: (B-Sides and Rarities), (B-Sides), (Rarities), (Bonus Tracks), etc. (MUST BE FIRST)
+// ── Parenthetical variant patterns ────────────────────────────
+// Applied in order: specific parentheticals → keyword-based → catch-all
+
+const PAREN_PATTERNS: RegExp[] = [
+  // B-Sides, Rarities, Bonus Tracks, Bonus Disc… (long alternation, MUST BE FIRST)
   /\s*\((B[-\s]?Sides( and Rarities)?|Rarities|Bonus Tracks|Bonus Disc|Bonus CD|Bonus Edition|Bonus Material|Bonus Content|Bonus Songs|Bonus EP|Bonus Single|Bonus)\)/i, // eslint-disable-line @stylistic/max-len
-  // Parenthetical stereo/mono/surround/year-based mixes: (Stereo Mix), (Mono Mix), (2007 Stereo Mix), etc.
+  // Stereo / Mono / Surround Mix (with optional year)
   /\s*\((\d{4}\s*)?(Stereo|Mono|Surround)\s+Mix\)/i,
-  // Dash with anniversary and additional text: – 10th Anniversary Commentary (MUST BE EARLY)
-  /\s*[-–—]\s*\d+th\s+anniversary.*$/i,
-  // Dash with "The" + variant keyword: - The Remixes, - The Deluxe Edition (MUST BE BEFORE DASH KEYWORDS)
-  /\s*[-–—]\s*the\s+(?:remixes|remaster|deluxe|expanded|bonus)$/i,
-  // Parentheses format: (keyword), (keyword edition), (keyword version)
-  ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*\\(${kw}\\s*(edition|version)?\\)`, "i")),
-  // Dash suffix: - keyword, - keyword edition, - keyword version
-  ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*-\\s*${kw}\\s*(edition|version)?$`, "i")),
-  // Colon suffix: : keyword
-  ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*:\\s*${kw}$`, "i")),
-  // Standalone suffix: keyword, keyword edition, keyword version
-  ...VARIANT_KEYWORDS.map((kw) => new RegExp(`\\s*${kw}\\s*(edition|version)?$`, "i")),
-  // Dash with "Complete" + text: - Complete Kisses, - Complete Collection (broader than keyword-only match)
-  /\s*[-–—]\s*complete\s+.+$/i,
-  // Dash suffix with capitalized name(s): - Edgar, - Edgar Allan Poe, - John Smith
-  /\s*[-–—]\s*[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*$/i,
-  // Complex parentheses with multiple info: (30th Anniversary Edition / Remastered 2022)
-  /\s*\(\d+th\s+anniversary\s+edition(?:\s*\/\s*.+)?\)/i,
-  /\s*\([^)]*(?:re-?master|deluxe|expanded|special|bonus|version|extra)[^)]*\)/i,
-  // Parentheses with "'s Edition": (Collector's Edition), (Explorer's Edition), etc.
+  // "'s Edition" — (Collector's Edition), (Explorer's Edition)
   /\s*\(\w+['\u2019]s\s+edition\)/i,
-  // Parentheses with "The" variant descriptor: (The Out-takes), (The Raw Studio Mixes), etc.
-  /\s*\(the\s+[^)]+\)$/i,
-  // Parentheses with location/city descriptor: (New York City - The Ultimate Mixes), (London - Live)
-  /\s*\([A-Z][a-zA-Z\s]*[-–—][^)]+\)$/i,
-  // Parentheses ending with "Jam": (Live Jam), (Home Jam), (Studio Jam)
-  /\s*\(\w+(?:\s+\w+)*\s+[Jj]am\)/i,
-  // Parentheses with "The Complete Sessions" and years: (The Complete Sessions 1998-1999)
-  /\s*\(the\s+complete\s+sessions\s+\d{4}[-–]\d{4}\)/i,
-  // Parentheses with year and remaster: (2019 Remaster), (2023 Remastered), (2009 Re-Mastered)
-  /\s*\(\d{4}\s*re-?master(?:ed)?\)/i,
-  // Parentheses with year and mix: (2025 Mix), (2023 Remix)
+  // Year + remaster — (2019 Remaster), (2023 Remastered), (2009 Re-Mastered)
+  new RegExp(`\\s*\\(\\d{4}\\s*${REM}\\)`, "i"),
+  // Year + mix — (2025 Mix), (2023 Remix)
   /\s*\(\d{4}\s*(?:re)?mix\)/i,
-  // Parentheses with anniversary: (20th Anniversary), (25th Anniversary Edition)
-  /\s*\(\d+th\s+anniversary(?:\s+edition)?\)/i,
-  // Anniversary with ordinal: 30th Anniversary, 25th Anniversary, 10th Anniversary Commentary
-  /\s*\d+th\s+anniversary(?:\s+(?:edition|commentary|remaster|deluxe))?$/i,
-  // Bare anniversary numbers: "50", "50th", "25th" at end (common anniversary years)
+  // Ordinal anniversary — (20th Anniversary), (25th Anniversary Edition)
+  new RegExp(`\\s*\\(${ANNIV}(?:\\s+edition)?\\)`, "i"),
+  // Anniversary with divider — (30th Anniversary Edition / Remastered 2022)
+  new RegExp(`\\s*\\(${ANNIV}\\s+edition(?:\\s*\\/\\s*.+)?\\)`, "i"),
+  // "The Complete Sessions" with years — (The Complete Sessions 1998-1999)
+  /\s*\(the\s+complete\s+sessions\s+\d{4}[-–]\d{4}\)/i,
+  // "The" descriptor — (The Out-takes), (The Raw Studio Mixes)
+  /\s*\(the\s+[^)]+\)$/i,
+  // Location/city descriptor — (New York City - The Ultimate Mixes)
+  new RegExp(`\\s*\\([A-Z][a-zA-Z\\s]*${D}[^)]+\\)$`, "i"),
+  // "Jam" suffix — (Live Jam), (Home Jam), (Studio Jam)
+  /\s*\(\w+(?:\s+\w+)*\s+[Jj]am\)/i,
+  // Keyword-based: (keyword), (keyword edition), (keyword version)
+  ...VARIANT_KEYWORDS.map(kwParen),
+  // Catch-all: any variant keyword inside parentheses
+  new RegExp(`\\s*\\([^)]*(?:${REM}|deluxe|expanded|special|bonus|version|extra)[^)]*\\)`, "i"),
+  // Square brackets with variant info — [2021 Remaster], [Deluxe Edition]
+  /\s*\[[^\]]*(?:remaster|deluxe|expanded|special|bonus|edition|version|\d{4})[^\]]*\]/i,
+];
+
+// ── Dash suffix patterns ─────────────────────────────────────
+// Applied in order: anniversary → "The" → keyword → broad → phrase
+
+const DASH_PATTERNS: RegExp[] = [
+  // Anniversary — - 10th Anniversary … (MUST BE BEFORE other dash patterns)
+  new RegExp(`\\s*${D}\\s*${ANNIV}.*$`, "i"),
+  // "The" + variant — - The Remixes, - The Deluxe Edition (MUST BE BEFORE keyword dashes)
+  new RegExp(`\\s*${D}\\s*the\\s+(?:remixes|remaster|deluxe|expanded|bonus)$`, "i"),
+  // Keyword-based: - keyword, - keyword edition, - keyword version
+  ...VARIANT_KEYWORDS.map(kwDash),
+  // "Complete" + text — - Complete Kisses, - Complete Collection
+  new RegExp(`\\s*${D}\\s*complete\\s+.+$`, "i"),
+  // Capitalized name(s) — - Edgar, - Edgar Allan Poe, - John Smith
+  new RegExp(`\\s*${D}\\s+[A-Z][a-z]+(?:\\s+[A-Z][a-z]+)*$`, "i"),
+  // Track by Track Commentary
+  /\s*-\s*track\s+by\s+track(?:\s+commentary)?$/i,
+  // Behind the Scenes / Making Of
+  /\s*-\s*(?:behind\s+the\s+scenes|making\s+of|the\s+making\s+of)$/i,
+];
+
+// ── Standalone suffix patterns ───────────────────────────────
+
+const STANDALONE_PATTERNS: RegExp[] = [
+  // Keyword-based: keyword, keyword edition, keyword version
+  ...VARIANT_KEYWORDS.map(kwStandalone),
+  // Anniversary ordinal — 30th Anniversary, 25th Anniversary Edition
+  new RegExp(`\\s*${ANNIV}(?:\\s+(?:edition|commentary|${REM}|deluxe))?$`, "i"),
+  // Bare anniversary numbers — 50, 50th, 25th
   /\s*(?:25|30|40|45|50|55|60|75)(?:th)?$/i,
-  // Year-based remaster: "2023 Remastered", "2020 Remaster", "2009 Re-Mastered"
-  /\s*\d{4}\s*re-?master(?:ed)?$/i,
-  // Plus sign combinations: "+ anything" or "anything +"
+  // Year + remaster — 2023 Remastered, 2020 Remaster
+  new RegExp(`\\s*\\d{4}\\s*${REM}$`, "i"),
+];
+
+// ── Other format patterns ────────────────────────────────────
+
+const OTHER_PATTERNS = [
+  // Colon + keyword
+  ...VARIANT_KEYWORDS.map(kwColon),
+  // Colon + location/venue — : Location Name, : Venue MMXXIV
+  /\s*:\s*[A-Z][a-zA-Z\s]+(?:MMXX|MM[CDXLVI]+|\d{4})?\s*$/i,
+  // Plus combinations — + anything, anything +
   /\s*\+\s*[^+]+$/i,
   /\s*[^+]+\+$/i,
-  // Colon with location/venue info: ": Location Name" or ": Venue MMXXIV"
-  /\s*:\s*[A-Z][a-zA-Z\s]+(?:MMXX|MM[CDXLVI]+|\d{4})?\s*$/i,
-  // Square brackets with year and variant info: [2021 Remaster], [Deluxe Edition]
-  /\s*\[[^\]]*(?:remaster|deluxe|expanded|special|bonus|edition|version|\d{4})[^\]]*\]/i,
-  // Track by Track, Behind the Scenes, Making of, etc.
-  /\s*-\s*track\s+by\s+track(?:\s+commentary)?$/i,
-  /\s*-\s*(?:behind\s+the\s+scenes|making\s+of|the\s+making\s+of)$/i,
+];
+
+// ── Combined pattern list (applied in order) ─────────────────
+
+const VARIANT_PATTERNS = [
+  ...PAREN_PATTERNS,
+  ...DASH_PATTERNS,
+  ...STANDALONE_PATTERNS,
+  ...OTHER_PATTERNS,
 ];
 
 /**
@@ -218,6 +264,7 @@ function normalizeAlbumName(name: string): string {
   // Normalize punctuation and capitalization
   normalized = normalized
     .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Decompose + strip diacritics: â→a, é→e, etc.
     .replace(/[\u2018\u2019]/g, "'") // Normalize curly apostrophes to straight apostrophe
     .replace(/[\u201C\u201D]/g, "\"") // Normalize curly quotes to straight quotes
     .replace(/\s*\.{2,}\s*/g, "...") // Normalize ellipsis and remove spaces around it
