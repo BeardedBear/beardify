@@ -69,6 +69,31 @@ const pageRef = ref<HTMLElement | null>(null);
 const { onScroll, restoreScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
 
 let lastChangeTime = 0;
+let compensationAnimationId: null | number = null;
+
+function compensateCollapse(startScrollTop: number, collapsibleHeight: number): void {
+  const DURATION = 250;
+  const startTime = performance.now();
+
+  function step(now: number) {
+    if (!pageRef.value) return;
+    const t = Math.min((now - startTime) / DURATION, 1);
+    pageRef.value.scrollTop = startScrollTop + collapsibleHeight * easeOut(t);
+    if (t < 1) {
+      compensationAnimationId = requestAnimationFrame(step);
+    } else {
+      compensationAnimationId = null;
+    }
+  }
+
+  nextTick(() => {
+    compensationAnimationId = requestAnimationFrame(step);
+  });
+}
+
+function easeOut(t: number): number {
+  return 1 - (1 - t) * (1 - t);
+}
 
 function handleScroll() {
   onScroll();
@@ -77,9 +102,18 @@ function handleScroll() {
 
   const scrollTop = pageRef.value?.scrollTop ?? 0;
   if (scrollTop > 40 && !artistStore.scrolledDown) {
+    const collapsibleEl = pageRef.value?.querySelector(".collapsible") as HTMLElement | null;
+    const collapsibleHeight = collapsibleEl?.offsetHeight ?? 0;
     artistStore.scrolledDown = true;
     lastChangeTime = now;
+    if (collapsibleHeight > 0) {
+      compensateCollapse(scrollTop, collapsibleHeight);
+    }
   } else if (scrollTop <= 0 && artistStore.scrolledDown) {
+    if (compensationAnimationId !== null) {
+      cancelAnimationFrame(compensationAnimationId);
+      compensationAnimationId = null;
+    }
     artistStore.scrolledDown = false;
     lastChangeTime = now;
   }

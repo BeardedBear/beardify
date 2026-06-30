@@ -167,7 +167,7 @@ watch(infoAvailable, (available) => {
 
 .collapsible {
   overflow: hidden;
-  transition: max-height 0.25s ease, opacity 0.25s ease;
+  transition: max-height 0.25s ease-out, opacity 0.2s ease-out;
 
   @include responsive.mobile {
     max-height: 30rem;
