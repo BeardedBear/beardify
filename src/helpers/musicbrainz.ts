@@ -140,6 +140,50 @@ const musicbrainzClient = ky.create({
 });
 
 /**
+ * Build a map of normalized base title (before subtitle separator) -> type.
+ * Only includes entries where the base title differs from the full title,
+ * enabling fuzzy matching when MB and Spotify use different subtitle phrasings
+ * (e.g. MB "Moonage Daydream: A Film by Brett Morgen" vs
+ *       Spotify "Moonage Daydream – A Brett Morgen Film").
+ * Ambiguous bases (same base, different types) are excluded to avoid false positives.
+ */
+export function buildBaseTitleMap(groups: MusicBrainzReleaseGroup[]): Map<string, string> {
+  const map = new Map<string, string>();
+  const ambiguous = new Set<string>();
+
+  groups.forEach((group) => {
+    const secondary = group["secondary-types"] ?? [];
+    const primary = group["primary-type"];
+    let type: null | string = null;
+
+    if (secondary.includes("Live")) type = "Live";
+    else if (secondary.includes("Compilation") || secondary.includes("Soundtrack")) type = "Compilation";
+    else if (primary === "EP") type = "EP";
+    else if (primary === "Album") type = "Album";
+
+    if (!type) return;
+
+    const baseTitle = group.title.split(/:\s+|\s+[–-]\s+/)[0].trim();
+    const normalizedBase = normalizeString(baseTitle);
+    const normalizedFull = normalizeString(group.title);
+
+    if (normalizedBase === normalizedFull) return;
+
+    if (ambiguous.has(normalizedBase)) return;
+
+    const existing = map.get(normalizedBase);
+    if (existing && existing !== type) {
+      ambiguous.add(normalizedBase);
+      map.delete(normalizedBase);
+    } else if (!existing) {
+      map.set(normalizedBase, type);
+    }
+  });
+
+  return map;
+}
+
+/**
  * Build a map of normalized release title -> type ("Live" | "Compilation" | "EP"
  * | "Album") from MusicBrainz release-groups.
  *
@@ -151,6 +195,7 @@ const musicbrainzClient = ky.create({
  */
 export function buildReleaseTypeMap(groups: MusicBrainzReleaseGroup[]): Map<string, string> {
   const map = new Map<string, string>();
+  const ambiguous = new Set<string>();
 
   groups.forEach((group) => {
     const secondary = group["secondary-types"] ?? [];
@@ -159,11 +204,24 @@ export function buildReleaseTypeMap(groups: MusicBrainzReleaseGroup[]): Map<stri
 
     // Secondary types win: a live or compilation album keeps primary "Album".
     if (secondary.includes("Live")) type = "Live";
-    else if (secondary.includes("Compilation")) type = "Compilation";
+    else if (secondary.includes("Compilation") || secondary.includes("Soundtrack")) type = "Compilation";
     else if (primary === "EP") type = "EP";
     else if (primary === "Album") type = "Album";
 
-    if (type) map.set(normalizeString(group.title), type);
+    if (!type) return;
+
+    const key = normalizeString(group.title);
+    if (ambiguous.has(key)) return;
+
+    const existing = map.get(key);
+    if (existing && existing !== type) {
+      // Same normalized title, different types: we can't tell which Spotify release maps to which
+      // MB group, so leave it unclassified to avoid false positives.
+      ambiguous.add(key);
+      map.delete(key);
+    } else if (!existing) {
+      map.set(key, type);
+    }
   });
 
   return map;

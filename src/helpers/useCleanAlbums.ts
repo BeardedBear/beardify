@@ -61,11 +61,12 @@ const COMPILATION_KEYWORDS = [
   "happy holidays",
   "remixed",
   "from the original",
+  "recordings",
 ];
 
 const COMPILATION_SPECIAL_PATTERNS = [
   "mix\\]",
-  "mix\\)",
+  // "mix\\)",
 ];
 
 const compilationAlbumRegex = new RegExp(`(${[...COMPILATION_KEYWORDS, ...COMPILATION_SPECIAL_PATTERNS].join("|")})`);
@@ -125,6 +126,8 @@ const LIVE_ALBUM_SPECIAL_PATTERNS = [
   "\\.\\.\\.live",
   "live\\;",
   "\\: live",
+  " - 19",
+  "live:",
 ];
 
 // Cache compiled regex for live album detection
