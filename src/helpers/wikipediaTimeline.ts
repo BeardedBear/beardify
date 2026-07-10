@@ -80,6 +80,19 @@ const EASYTIMELINE_COLORS: Record<string, string> = {
 
 const DEFAULT_BAR_WIDTH = 13;
 
+/** "Members", in the languages Wikipedia most commonly uses for band-member sections/lists. */
+const MEMBERS_WORD = "members?|membres?|mitglieder|miembros|membri|membros";
+
+/** Template names (across languages) Wikipedia uses to point readers to a fuller article. */
+const MAIN_ARTICLE_TEMPLATES = [
+  "main", "main article", "further", "see also",
+  "article détaillé", "voir aussi",
+  "hauptartikel", "siehe auch",
+  "artículo principal", "véase también",
+  "voce principale", "vedi anche",
+  "artigo principal", "ver também",
+].join("|");
+
 /**
  * Fetch and parse a Wikipedia band article's EasyTimeline members graph.
  * @param wikipediaUrl - Full Wikipedia URL (any language; English usually has the graph)
@@ -93,24 +106,21 @@ export async function getWikipediaTimeline(wikipediaUrl: string): Promise<null |
     const [, lang, encodedTitle] = urlMatch;
     const title = decodeURIComponent(encodedTitle);
 
-    const params = new URLSearchParams({
-      action: "parse",
-      format: "json",
-      formatversion: "2",
-      origin: "*",
-      page: title,
-      prop: "wikitext",
-    });
-
-    const response = await http.get(`https://${lang}.wikipedia.org/w/api.php?${params.toString()}`);
-    const data = await response.json<{ parse?: { wikitext?: string } }>();
-    const wikitext = data.parse?.wikitext;
+    const wikitext = await fetchWikitext(lang, title);
     if (!wikitext) return null;
 
-    const block = extractTimelineBlock(wikitext);
-    if (block) {
-      const result = parseEasyTimeline(block);
-      if (result) return result;
+    const ownBlock = extractTimelineBlock(wikitext);
+    const ownBlockResult = ownBlock ? parseEasyTimeline(ownBlock) : null;
+    if (ownBlockResult) return ownBlockResult;
+
+    // Bands with a large lineup history (e.g. The Smashing Pumpkins) split members out to a
+    // dedicated "List of X band members" article; it holds the full timeline, while the main
+    // article only links to it and lists a short (often incomplete) members summary. Prefer it.
+    const dedicatedTitle = findDedicatedMembersPage(wikitext);
+    if (dedicatedTitle) {
+      const dedicatedWikitext = await fetchWikitext(lang, dedicatedTitle);
+      const dedicatedResult = dedicatedWikitext ? parseWikitextTimeline(dedicatedWikitext) : null;
+      if (dedicatedResult) return dedicatedResult;
     }
 
     return parseBandMembersSection(wikitext);
@@ -148,6 +158,51 @@ function extractTimelineBlock(wikitext: string): null | string {
   return wikitext.slice(contentStart, i - 2);
 }
 
+/** Fetch a Wikipedia article's raw wikitext via the parse API. */
+async function fetchWikitext(lang: string, title: string): Promise<null | string> {
+  const params = new URLSearchParams({
+    action: "parse",
+    format: "json",
+    formatversion: "2",
+    origin: "*",
+    page: title,
+    prop: "wikitext",
+  });
+
+  const response = await http.get(`https://${lang}.wikipedia.org/w/api.php?${params.toString()}`);
+  const data = await response.json<{ parse?: { wikitext?: string } }>();
+  return data.parse?.wikitext ?? null;
+}
+
+/**
+ * Find a linked dedicated members article (e.g. "List of X band members"). Checked, in
+ * order of confidence: a {{main}}/{{see also}}-style template (any common per-language
+ * alias) inside the members section, the same as plain "Main article:" prose, then any
+ * wikilink anywhere whose title reads like a members list (a few non-English title
+ * conventions included, since not every Wikipedia edition writes this in English).
+ */
+function findDedicatedMembersPage(wikitext: string): null | string {
+  const membersSection = sectionSlice(wikitext, `^==\\s*(?:band\\s+)?(?:${MEMBERS_WORD})\\s*==`) ?? wikitext;
+
+  const templateMatch = membersSection.match(
+    new RegExp(`\\{\\{\\s*(?:${MAIN_ARTICLE_TEMPLATES})\\s*\\|\\s*([^}|]+?)\\s*(?:\\||\\}\\})`, "i"),
+  );
+  if (templateMatch) return templateMatch[1].trim();
+
+  const proseMatch = membersSection.match(
+    /(?:main article|further information)\s*:?\s*\[\[\s*([^\]|]+?)\s*(?:\||\]\])/i,
+  );
+  if (proseMatch) return proseMatch[1].trim();
+
+  const linkMatch = wikitext.match(
+    new RegExp(
+      `\\[\\[\\s*((?:List of|Liste (?:de|des|du|der)|Anexo:|Lista d[ei])[^\\]|]*?(?:${MEMBERS_WORD}))\\s*(?:\\||\\]\\])`,
+      "i",
+    ),
+  );
+  return linkMatch ? linkMatch[1].trim() : null;
+}
+
 /**
  * Fallback parser: extract member timelines from a Wikipedia "Band members" section
  * when no EasyTimeline block is present. Handles lines like:
@@ -155,12 +210,8 @@ function extractTimelineBlock(wikitext: string): null | string {
  *   * [[Name]] – guitar (2007–2022; died 2022)
  */
 function parseBandMembersSection(wikitext: string): null | WikiTimeline {
-  const sectionStart = wikitext.search(/^==\s*(?:band\s+)?members?\s*==/im);
-  if (sectionStart === -1) return null;
-
-  const rest = wikitext.slice(sectionStart);
-  const nextSection = rest.match(/\n==(?!=)[^=]/);
-  const section = nextSection ? rest.slice(0, nextSection.index) : rest;
+  const section = sectionSlice(wikitext, `^==\\s*(?:band\\s+)?(?:${MEMBERS_WORD})\\s*==`);
+  if (!section) return null;
 
   const COLOR_IDS = [
     "blue", "green", "orange", "red", "purple", "teal", "coral", "yellow", "skyblue", "limegreen",
@@ -320,6 +371,16 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
   return { bars, colors, events, from: Math.floor(range.from), segments, till: Math.ceil(range.till) };
 }
 
+/** Try the EasyTimeline block, falling back to the "Band members" section list. */
+function parseWikitextTimeline(wikitext: string): null | WikiTimeline {
+  const block = extractTimelineBlock(wikitext);
+  if (block) {
+    const result = parseEasyTimeline(block);
+    if (result) return result;
+  }
+  return parseBandMembersSection(wikitext);
+}
+
 /**
  * Resolve an EasyTimeline color token to a CSS color. Handles named colors
  * (e.g. "red", "gray(0.6)") and explicit `rgb(r,g,b)` values, where EasyTimeline
@@ -343,6 +404,15 @@ function resolveColor(token: string): string {
   return EASYTIMELINE_COLORS[name] ?? "#8a8a8a";
 }
 
+/** Slice out a `==Heading==` section (up to the next same-or-higher-level heading). */
+function sectionSlice(wikitext: string, headingPattern: string): null | string {
+  const start = wikitext.search(new RegExp(headingPattern, "im"));
+  if (start === -1) return null;
+  const rest = wikitext.slice(start);
+  const nextSection = rest.match(/\n==(?!=)[^=]/);
+  return nextSection ? rest.slice(0, nextSection.index) : rest;
+}
+
 /**
  * Strip Wikipedia wikitext markup, leaving plain text.
  */
@@ -355,6 +425,7 @@ function stripWikiMarkup(text: string): string {
     .replace(/\[\[([^\]]+)\]\]/g, "$1")
     .replace(/'{2,3}/g, "")
     .replace(/{{[^}]*}}/g, "")
+    .replace(/&nbsp;/g, " ")
     .trim();
 }
 
