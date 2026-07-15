@@ -4,12 +4,12 @@
       <template v-if="artistTags && artistTags.length > 0">
         <span class="tag-list">
           <router-link
-            v-for="(value, index) in artistTags.slice(0, 5)"
-            :key="index"
-            :to="`/genre/${encodeURIComponent(typeof value === 'string' ? value : value.name)}`"
+            v-for="tag in artistTags.slice(0, 5)"
+            :key="tag"
+            :to="`/genre/${encodeURIComponent(tag)}`"
             class="tag"
           >
-            {{ typeof value === "string" ? value : value.name }}
+            {{ tag }}
           </router-link>
         </span>
       </template>
@@ -73,7 +73,7 @@ import { useArtist } from "@/views/artist/ArtistStore";
 const artistStore = useArtist();
 const artistMetas = computed(() => artistStore.musicbrainzArtist);
 const artistTags = computed(
-  () => artistMetas.value?.tags || artistStore.artist.genres,
+  () => (artistMetas.value?.tags || artistStore.artist.genres).map((tag) => (typeof tag === "string" ? tag : tag.name)),
 );
 const getCountry = computed(() => {
   const countryName = getCountryName(artistMetas.value?.country);

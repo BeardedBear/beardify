@@ -4,8 +4,8 @@ import { Artist } from "@/@types/Artist";
 import { Image } from "@/@types/Image";
 import { SearchFromAPI } from "@/@types/Search";
 import { instance } from "@/api";
-import { normalizeString } from "@/helpers/helper";
 import { getTopArtistsByTag } from "@/helpers/lastfm";
+import { resolveArtistByName } from "@/helpers/spotify";
 import { cleanUrl } from "@/helpers/urls";
 
 // Spotify id is unknown until the card is clicked: Last.fm gives names only,
@@ -72,39 +72,11 @@ async function getArtistsFromSpotifyGenreSearch(genre: string): Promise<GenreArt
 }
 
 function sortByPopularity(artists: Artist[]): Artist[] {
-  return [...artists].sort((a, b) => b.popularity - a.popularity);
+  return artists.sort((a, b) => b.popularity - a.popularity);
 }
 
 function toGenreArtist(artist: Artist): GenreArtist {
   return { id: artist.id, images: artist.images, name: artist.name };
-}
-
-// resolveArtist() can be triggered twice for the same artist in quick succession
-// (the scroll-into-view prefetch and a click landing before it resolves) — this
-// dedupes concurrent calls so only one Spotify request goes out per artist name.
-const pendingResolves = new Map<string, Promise<null | string>>();
-
-// Short-lived cache of name -> resolved Spotify artist, so browsing overlapping
-// genres (e.g. an artist tagged both "punk" and "horror punk") or navigating
-// back to a genre already visited doesn't re-hit Spotify search for names
-// already resolved in this session. Kept short (10min) rather than forever
-// since it's an in-memory workaround for Last.fm's missing images, not a
-// source of truth — a full reload always starts clean.
-const RESOLVED_ARTIST_CACHE_TTL_MS = 10 * 60 * 1000;
-const resolvedArtistCache = new Map<string, { expiresAt: number; id: string; images: Image[] }>();
-
-function getCachedArtist(name: string): { id: string; images: Image[] } | null {
-  const cached = resolvedArtistCache.get(normalizeString(name));
-  if (!cached) return null;
-  if (cached.expiresAt < Date.now()) {
-    resolvedArtistCache.delete(normalizeString(name));
-    return null;
-  }
-  return cached;
-}
-
-function setCachedArtist(name: string, id: string, images: Image[]): void {
-  resolvedArtistCache.set(normalizeString(name), { expiresAt: Date.now() + RESOLVED_ARTIST_CACHE_TTL_MS, id, images });
 }
 
 export const useGenre = defineStore("genre", {
@@ -113,7 +85,6 @@ export const useGenre = defineStore("genre", {
       this.genre = genre;
       this.artists = [];
       this.loading = true;
-      pendingResolves.clear();
       try {
         // Last.fm's tag data has no real per-artist photos to offer: every artist
         // returned by tag.gettopartists carries the identical placeholder image
@@ -136,47 +107,17 @@ export const useGenre = defineStore("genre", {
     },
 
     // Resolves a Last.fm-sourced entry to its Spotify artist on demand (scroll
-    // into view or click), caching the result in place so it only ever runs once
-    // per artist.
+    // into view or click). Caching and concurrent-call dedup live in
+    // resolveArtistByName; this just applies the result to the store item.
     async resolveArtist(item: GenreArtist): Promise<null | string> {
       if (item.id) return item.id;
 
-      const cached = getCachedArtist(item.name);
-      if (cached) {
-        item.id = cached.id;
-        item.images = cached.images;
-        return cached.id;
-      }
+      const resolved = await resolveArtistByName(item.name);
+      if (!resolved) return null;
 
-      const pending = pendingResolves.get(item.name);
-      if (pending) return pending;
-
-      const promise = (async (): Promise<null | string> => {
-        try {
-          const { data } = await instance().get<SearchFromAPI>(
-            `search?q=${encodeURIComponent(item.name)}&type=artist&limit=3`,
-          );
-          const normalizedName = normalizeString(item.name);
-          const match = data.artists.items.find((artist) => normalizeString(artist.name) === normalizedName)
-            ?? data.artists.items[0]
-            ?? null;
-          if (!match) return null;
-
-          setCachedArtist(item.name, match.id, match.images);
-          const stored = this.artists.find((artist) => artist === item);
-          if (stored) {
-            stored.id = match.id;
-            stored.images = match.images;
-          }
-          return match.id;
-        } catch {
-          return null;
-        } finally {
-          pendingResolves.delete(item.name);
-        }
-      })();
-      pendingResolves.set(item.name, promise);
-      return promise;
+      item.id = resolved.id;
+      item.images = resolved.images;
+      return resolved.id;
     },
   },
 
