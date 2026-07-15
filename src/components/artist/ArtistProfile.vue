@@ -3,13 +3,14 @@
     <div class="profile-wrapper" :class="{ visible: artistMetas }">
       <template v-if="artistTags && artistTags.length > 0">
         <span class="tag-list">
-          <span
+          <router-link
             v-for="(value, index) in artistTags.slice(0, 5)"
             :key="index"
+            :to="`/genre/${encodeURIComponent(typeof value === 'string' ? value : value.name)}`"
             class="tag"
           >
             {{ typeof value === "string" ? value : value.name }}
-          </span>
+          </router-link>
         </span>
       </template>
       <template v-else-if="artistMetas?.disambiguation">
@@ -62,6 +63,7 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
+import { RouterLink } from "vue-router";
 
 import Tooltip from "@/components/ui/Tooltip.vue";
 import { getCountryFlagUrl, getCountryName } from "@/helpers/country";
@@ -110,9 +112,25 @@ $transition-duration: 0.2s;
 .tag {
   background-color: rgb(255 255 255 / 10%);
   border-radius: 0.25rem;
+  color: currentcolor;
   display: inline-block;
   padding: 0.1rem 0.3rem;
+  text-decoration: none;
   text-transform: capitalize;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: rgb(255 255 255 / 20%);
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--primary-color);
+    outline-offset: 1px;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
 
   @include responsive.mobile {
     margin: 0 0.25rem 0.25rem 0;

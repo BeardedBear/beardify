@@ -3,6 +3,7 @@ import { createRouter, createWebHistory, LocationQueryValue, RouteLocation, Rout
 import AlbumPage from "@/views/album/AlbumPage.vue";
 import ArtistPage from "@/views/artist/ArtistPage.vue";
 import AuthPage from "@/views/auth/AuthPage.vue";
+import GenrePage from "@/views/genre/GenrePage.vue";
 import HomePage from "@/views/home/HomePage.vue";
 import LoginPage from "@/views/LoginPage.vue";
 import CollectionPage from "@/views/playlist/CollectionPage.vue";
@@ -17,6 +18,7 @@ export enum RouteName {
   Artist = "/artist/",
   Auth = "/auth/",
   Collection = "/collection/",
+  Genre = "/genre/",
   Home = "/",
   Login = "/login/",
   Playlist = "/playlist/",
@@ -66,6 +68,14 @@ const routes: Array<RouteRecordRaw> = [
     path: `${RouteName.Collection}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({
       id: route.params.id,
+    }),
+  },
+  {
+    component: GenrePage,
+    name: "Genre",
+    path: `${RouteName.Genre}:name`,
+    props: (route: RouteLocation): Record<string, string | string[]> => ({
+      name: route.params.name,
     }),
   },
   {
