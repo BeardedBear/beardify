@@ -179,7 +179,7 @@ artistStore.clean().finally(async () => {
 watch(
   () => artistStore.activeTab,
   (tab) => {
-    history.replaceState(null, "", `${location.pathname}#${tab}`);
+    history.replaceState(history.state, "", `${location.pathname}#${tab}`);
   },
 );
 
