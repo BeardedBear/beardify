@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Disc3, Info, Loader2, MoreHorizontal } from "@lucide/vue";
+import { CircleOff, Disc3, Info, Loader2, MoreHorizontal } from "@lucide/vue";
 import { useElementBounding } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
@@ -57,7 +57,7 @@ const tabs = computed<Tab[]>(() => [
   },
   {
     disabled: !infoAvailable.value,
-    icon: artistStore.timelineLoading ? Loader2 : Info,
+    icon: artistStore.timelineLoading ? Loader2 : !infoAvailable.value ? CircleOff : Info,
     id: "info",
     label: "Info",
     loading: artistStore.timelineLoading,
