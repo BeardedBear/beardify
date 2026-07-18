@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useUpdater } from "@/composables/useUpdater";
 
-const { dismissed, downloadAndInstall, downloadProgress, status, updateVersion } = useUpdater();
+const { dismissed, downloadAndInstall, downloadProgress, restart, status, updateVersion } = useUpdater();
 </script>
 
 <template>
@@ -25,6 +25,10 @@ const { dismissed, downloadAndInstall, downloadProgress, status, updateVersion }
 
         <button v-if="status === 'available'" class="toast-action" @click="downloadAndInstall">
           Install
+        </button>
+
+        <button v-if="status === 'ready'" class="toast-action" @click="restart">
+          Restart
         </button>
 
         <button v-if="status === 'available'" class="toast-dismiss" aria-label="Dismiss" @click="dismissed = true">

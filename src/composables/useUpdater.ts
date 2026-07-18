@@ -8,6 +8,7 @@ interface UpdaterState {
   downloadAndInstall: () => Promise<void>;
   downloadProgress: Ref<number>;
   errorMessage: Ref<null | string>;
+  restart: () => Promise<void>;
   status: Ref<UpdateStatus>;
   updateVersion: Ref<null | string>;
 }
@@ -29,6 +30,7 @@ export function useUpdater(): UpdaterState {
     downloadAndInstall,
     downloadProgress,
     errorMessage,
+    restart,
     status,
     updateVersion,
   };
@@ -75,6 +77,11 @@ async function downloadAndInstall(): Promise<void> {
     errorMessage.value = toMessage(e);
     status.value = "error";
   }
+}
+
+async function restart(): Promise<void> {
+  const { relaunch } = await import("@tauri-apps/plugin-process");
+  await relaunch();
 }
 
 function toMessage(e: unknown): string {

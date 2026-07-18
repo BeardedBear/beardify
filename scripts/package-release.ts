@@ -54,8 +54,18 @@ if (existsSync(nsisDir)) {
       src: join(nsisDir, nsisExes[0].file),
     });
   }
+}
 
-  const nsisZips = nsisFiles
+// Updater artifacts (.nsis.zip + .sig) — Tauri writes these to a separate
+// "nsis-updater" folder, not "nsis", when bundle.createUpdaterArtifacts is enabled.
+const nsisUpdaterDir = join(bundleDir, "nsis-updater");
+if (existsSync(nsisUpdaterDir)) {
+  const updaterFiles = readdirSync(nsisUpdaterDir).map((f) => ({
+    file: f,
+    mtime: statSync(join(nsisUpdaterDir, f)).mtimeMs,
+  }));
+
+  const nsisZips = updaterFiles
     .filter((f) => f.file.endsWith(".nsis.zip") && !f.file.endsWith(".sig"))
     .sort((a, b) => b.mtime - a.mtime);
 
@@ -63,10 +73,10 @@ if (existsSync(nsisDir)) {
     nsisZipName = `beardify_${version}_x64-setup.nsis.zip`;
     artifacts.push({
       dest: join(outDir, nsisZipName),
-      src: join(nsisDir, nsisZips[0].file),
+      src: join(nsisUpdaterDir, nsisZips[0].file),
     });
 
-    const sigFile = join(nsisDir, `${nsisZips[0].file}.sig`);
+    const sigFile = join(nsisUpdaterDir, `${nsisZips[0].file}.sig`);
     if (existsSync(sigFile)) {
       const sigDest = `${nsisZipName}.sig`;
       artifacts.push({
