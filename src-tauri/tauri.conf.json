@@ -34,7 +34,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRGOEExRTQ3MzAxOTc1OTcKUldTWGRSa3dSeDZLVDZuL1FzekFJV2lyek9lQ0NLTFNsbm9xN3I3SGtISWlsbklQVWVKd29NOE4K",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDNBMEVCMzUzQTREQ0RDOTAKUldTUTNOeWtVN01PT202dmExVVJuRFFIWGM3NS9SZ01MeDgzV3Arb21vYWtlcmN4bGFObUMwOFUK",
       "endpoints": [
         "https://github.com/BeardedBear/beardify/releases/latest/download/latest.json"
       ]
