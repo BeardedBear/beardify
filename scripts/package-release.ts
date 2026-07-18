@@ -33,9 +33,10 @@ mkdirSync(outDir, { recursive: true });
 
 const artifacts: { dest: string; src: string }[] = [];
 
-// NSIS installer — used by the updater for the .nsis.zip
+// NSIS installer — with bundle.createUpdaterArtifacts enabled, Tauri signs the
+// setup .exe directly (sibling .exe.sig), no separate .nsis.zip is produced.
 const nsisDir = join(bundleDir, "nsis");
-let nsisZipName: null | string = null;
+let nsisSetupName: null | string = null;
 let nsisSig: null | string = null;
 
 if (existsSync(nsisDir)) {
@@ -45,42 +46,20 @@ if (existsSync(nsisDir)) {
   }));
 
   const nsisExes = nsisFiles
-    .filter((f) => f.file.endsWith(".exe") && !f.file.endsWith(".nsis.zip"))
+    .filter((f) => f.file.endsWith(".exe"))
     .sort((a, b) => b.mtime - a.mtime);
 
   if (nsisExes.length > 0) {
+    nsisSetupName = `beardify_${version}_setup.exe`;
     artifacts.push({
-      dest: join(outDir, `beardify_${version}_setup.exe`),
+      dest: join(outDir, nsisSetupName),
       src: join(nsisDir, nsisExes[0].file),
     });
-  }
-}
 
-// Updater artifacts (.nsis.zip + .sig) — Tauri writes these to a separate
-// "nsis-updater" folder, not "nsis", when bundle.createUpdaterArtifacts is enabled.
-const nsisUpdaterDir = join(bundleDir, "nsis-updater");
-if (existsSync(nsisUpdaterDir)) {
-  const updaterFiles = readdirSync(nsisUpdaterDir).map((f) => ({
-    file: f,
-    mtime: statSync(join(nsisUpdaterDir, f)).mtimeMs,
-  }));
-
-  const nsisZips = updaterFiles
-    .filter((f) => f.file.endsWith(".nsis.zip") && !f.file.endsWith(".sig"))
-    .sort((a, b) => b.mtime - a.mtime);
-
-  if (nsisZips.length > 0) {
-    nsisZipName = `beardify_${version}_x64-setup.nsis.zip`;
-    artifacts.push({
-      dest: join(outDir, nsisZipName),
-      src: join(nsisUpdaterDir, nsisZips[0].file),
-    });
-
-    const sigFile = join(nsisUpdaterDir, `${nsisZips[0].file}.sig`);
+    const sigFile = join(nsisDir, `${nsisExes[0].file}.sig`);
     if (existsSync(sigFile)) {
-      const sigDest = `${nsisZipName}.sig`;
       artifacts.push({
-        dest: join(outDir, sigDest),
+        dest: join(outDir, `${nsisSetupName}.sig`),
         src: sigFile,
       });
       nsisSig = readFileSync(sigFile, "utf-8").trim();
@@ -125,9 +104,9 @@ for (const { dest, src } of artifacts) {
 }
 
 // Generate latest.json for the Tauri updater (NSIS only, skip for debug builds)
-if (!isDebug && nsisZipName && nsisSig) {
+if (!isDebug && nsisSetupName && nsisSig) {
   const repo = "BeardedBear/beardify";
-  const downloadUrl = `https://github.com/${repo}/releases/download/v${version}/${nsisZipName}`;
+  const downloadUrl = `https://github.com/${repo}/releases/download/v${version}/${nsisSetupName}`;
 
   const manifest = {
     notes: "",

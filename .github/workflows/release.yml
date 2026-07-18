@@ -55,8 +55,7 @@ jobs:
           generate_release_notes: true
           files: |
             releases/${{ steps.version.outputs.version }}/beardify_${{ steps.version.outputs.version }}_setup.exe
+            releases/${{ steps.version.outputs.version }}/beardify_${{ steps.version.outputs.version }}_setup.exe.sig
             releases/${{ steps.version.outputs.version }}/beardify_${{ steps.version.outputs.version }}_x64.msi
             releases/${{ steps.version.outputs.version }}/beardify_${{ steps.version.outputs.version }}.exe
-            releases/${{ steps.version.outputs.version }}/beardify_${{ steps.version.outputs.version }}_x64-setup.nsis.zip
-            releases/${{ steps.version.outputs.version }}/beardify_${{ steps.version.outputs.version }}_x64-setup.nsis.zip.sig
             releases/${{ steps.version.outputs.version }}/latest.json
