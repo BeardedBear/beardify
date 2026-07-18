@@ -1,14 +1,30 @@
 <script setup lang="ts">
+import { Download, Loader2, RefreshCw } from "@lucide/vue";
+
 import { useUpdater } from "@/composables/useUpdater";
 
-const { dismissed, downloadAndInstall, downloadProgress, restart, status, updateVersion } = useUpdater();
+const { devSimulateUpdate, dismissed, downloadAndInstall, downloadProgress, restart, status, updateVersion }
+  = useUpdater();
+
+const isDev = import.meta.env.DEV;
 </script>
 
 <template>
+  <button
+    v-if="isDev"
+    class="dev-trigger"
+    type="button"
+    title="Simulate update toast (dev only)"
+    @click="devSimulateUpdate"
+  >
+    🧪 Simulate update
+  </button>
+
   <Transition name="update-toast">
     <div
       v-if="!dismissed && (status === 'available' || status === 'downloading' || status === 'ready')"
       class="update-toast"
+      :class="{ pulse: status === 'available' }"
       role="status"
       aria-live="polite"
     >
@@ -17,6 +33,12 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
       </div>
 
       <div class="toast-body">
+        <span class="toast-icon">
+          <Download v-if="status === 'available'" :size="18" />
+          <Loader2 v-else-if="status === 'downloading'" :size="18" class="spin" />
+          <RefreshCw v-else-if="status === 'ready'" :size="18" />
+        </span>
+
         <span class="toast-content">
           <template v-if="status === 'available'">Update {{ updateVersion }} available</template>
           <template v-else-if="status === 'downloading'">Downloading... {{ downloadProgress }}%</template>
@@ -40,27 +62,73 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
 </template>
 
 <style scoped lang="scss">
-.update-toast {
-  background: var(--bg-color-light);
+@keyframes pulse-ring {
+  0% {
+    box-shadow:
+      0 6px 24px rgb(0 0 0 / 40%),
+      0 0 0 0 rgb(144 100 255 / 55%);
+  }
+
+  70% {
+    box-shadow:
+      0 6px 24px rgb(0 0 0 / 40%),
+      0 0 0 0.6rem rgb(144 100 255 / 0%);
+  }
+
+  100% {
+    box-shadow:
+      0 6px 24px rgb(0 0 0 / 40%),
+      0 0 0 0 rgb(144 100 255 / 0%);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.dev-trigger {
+  background: var(--bg-color-lighter);
   border: 1px solid var(--primary-color-dark);
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
+  bottom: 3rem;
+  color: var(--font-color-light);
+  cursor: pointer;
+  left: 3rem;
+  padding: 0.35rem 0.6rem;
+  position: fixed;
+  z-index: 9998;
+
+  &:hover {
+    background: var(--bg-color-light);
+  }
+}
+
+.update-toast {
+  background: linear-gradient(135deg, var(--primary-color-dark), var(--primary-color-darker));
+  border-radius: 0.6rem;
   bottom: 1.5rem;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 30%);
-  max-width: 360px;
-  min-width: 260px;
+  box-shadow: 0 6px 24px rgb(0 0 0 / 40%);
+  max-width: 400px;
+  min-width: 300px;
   overflow: hidden;
   position: fixed;
   right: 1.5rem;
   z-index: 9998;
+
+  &.pulse {
+    animation: pulse-ring 2s ease-out 2;
+  }
 }
 
 .toast-progress {
-  background: var(--bg-color-dark);
-  height: 2px;
+  background: rgb(0 0 0 / 25%);
+  height: 3px;
 }
 
 .toast-progress-bar {
-  background: var(--primary-color);
+  background: #fff;
   height: 100%;
   transition: width 0.3s ease;
 }
@@ -68,15 +136,25 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
 .toast-body {
   align-items: center;
   display: flex;
-  gap: 0.5rem;
-  padding: 0.65rem 1rem;
+  gap: 0.6rem;
+  padding: 1rem;
+}
+
+.toast-icon {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  flex-shrink: 0;
+
+  .spin {
+    animation: spin 1s linear infinite;
+  }
 }
 
 .toast-content {
-  color: var(--font-color-light);
+  color: #fff;
   flex: 1;
-  font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-weight: 700;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -84,20 +162,19 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
 }
 
 .toast-action {
-  background: var(--primary-color);
-  border: 1px solid var(--primary-color);
+  background: #fff;
+  border: 1px solid #fff;
   border-radius: 0.375rem;
-  color: white;
+  color: var(--primary-color-dark);
   cursor: pointer;
   flex-shrink: 0;
-  font-size: var(--font-size-xs);
-  padding: 0.25rem 0.6rem;
-  transition: background 0.15s;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  transition: opacity 0.15s;
   white-space: nowrap;
 
   &:hover {
-    background: var(--primary-color-light);
-    border-color: var(--primary-color-light);
+    opacity: 0.85;
   }
 }
 
@@ -106,7 +183,7 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
   background: transparent;
   border: none;
   border-radius: 0.375rem;
-  color: var(--font-color-dark);
+  color: rgb(255 255 255 / 70%);
   cursor: pointer;
   display: flex;
   flex-shrink: 0;
@@ -116,7 +193,8 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
   transition: background 0.15s;
 
   &:hover {
-    background: var(--bg-color-lighter);
+    background: rgb(255 255 255 / 15%);
+    color: #fff;
   }
 }
 

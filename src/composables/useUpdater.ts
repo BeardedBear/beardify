@@ -1,9 +1,12 @@
 import { type Ref, ref } from "vue";
 
+import { sleep } from "@/helpers/sleep";
+
 type DownloadEvent = { data: { chunkLength: number; contentLength?: number }; event: string };
 
 interface UpdaterState {
   checkForUpdate: () => Promise<void>;
+  devSimulateUpdate: () => Promise<void>;
   dismissed: Ref<boolean>;
   downloadAndInstall: () => Promise<void>;
   downloadProgress: Ref<number>;
@@ -26,6 +29,7 @@ let pendingUpdate: any = null;
 export function useUpdater(): UpdaterState {
   return {
     checkForUpdate,
+    devSimulateUpdate,
     dismissed,
     downloadAndInstall,
     downloadProgress,
@@ -53,6 +57,27 @@ async function checkForUpdate(): Promise<void> {
     errorMessage.value = toMessage(e);
     status.value = "error";
   }
+}
+
+// Dev-only: replay the available → downloading → ready sequence with fake data,
+// so the toast can be styled/tweaked without a real Tauri update to check against.
+async function devSimulateUpdate(): Promise<void> {
+  if (!import.meta.env.DEV) return;
+
+  dismissed.value = false;
+  errorMessage.value = null;
+  updateVersion.value = "9.9.9";
+  status.value = "available";
+  await sleep(1200);
+
+  status.value = "downloading";
+  downloadProgress.value = 0;
+  for (let progress = 0; progress <= 100; progress += 10) {
+    downloadProgress.value = progress;
+    await sleep(150);
+  }
+
+  status.value = "ready";
 }
 
 async function downloadAndInstall(): Promise<void> {
