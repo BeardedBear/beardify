@@ -173,13 +173,16 @@ export const usePlayer = defineStore("player", {
     async getDeviceList(): Promise<void> {
       const { data } = await instance().get<DevicesResponse>("me/player/devices");
       const activeDevice = data.devices.find((device): boolean => device.is_active);
+      const previousDeviceStillListed = data.devices.some((device) => device.id === this.devices.activeDevice?.id);
       this.devices.list = data.devices;
       if (!data.devices.length) createSpotifyPlayer().connect();
-      if (!this.playerState?.paused && activeDevice) {
+      if (activeDevice) {
         this.devices.activeDevice = activeDevice;
-      } else if (activeDevice?.is_active) {
-        this.devices.activeDevice = activeDevice;
-      } else if (this.thisDeviceId) {
+      } else if (!previousDeviceStillListed && this.thisDeviceId) {
+        // No device reports is_active AND the previously active device is gone from the
+        // list entirely — genuinely disconnected, fall back to this device. If it's merely
+        // missing the is_active flag (Spotify Connect propagation lag on reconnect), keep
+        // the current activeDevice instead of stealing playback onto this device.
         this.setDevice(this.thisDeviceId);
       }
       this.startDeviceHeartbeat();
@@ -345,9 +348,10 @@ export const usePlayer = defineStore("player", {
               const currentDevice = data.devices.find((device): boolean => device.id === this.devices.activeDevice.id);
               if (currentDevice && !currentDevice.is_active) {
                 this.setDevice(currentDevice.id);
-              } else if (!currentDevice && data.devices.length > 0) {
-                this.setDevice(data.devices[0].id);
               }
+              // If currentDevice vanished entirely from the list, don't guess a replacement
+              // (data.devices[0] could be any device, e.g. this computer) — let getDeviceList's
+              // "still listed" check handle a genuine disconnect on the next refresh.
 
               // Success: reset failure counters
               this.heartbeatFailureCount = 0;
