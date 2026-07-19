@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loading" class="loader">
+  <div v-if="loading" class="loading">
     <Loader />
   </div>
   <div v-else-if="error" class="error">
@@ -15,7 +15,7 @@
               {{ playlist.name.replace("#Collection ", "") }}
             </div>
             <div class="metas">{{ playlist.owner.display_name }} &nbsp;·&nbsp; {{ albumList.length }} albums</div>
-            <a class="badge" href="https://www.beardify.app" rel="noopener" target="_blank">Shared with Beardify</a>
+            <a class="badge" href="https://beardify.netlify.app/" rel="noopener" target="_blank">Shared with Beardify</a>
           </div>
         </header>
         <div class="album-list">
@@ -80,7 +80,7 @@ onMounted(async () => {
 <style lang="scss" scoped>
 @use "@/assets/scss/mixins" as *;
 
-.loader,
+.loading,
 .error {
   display: grid;
   height: 100vh;
