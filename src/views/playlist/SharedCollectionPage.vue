@@ -160,6 +160,7 @@ onMounted(async () => {
     @include responsive.mobile {
       width: 100%;
 
+      /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
       :deep(.button) {
         flex: 1;
       }
