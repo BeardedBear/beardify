@@ -89,6 +89,7 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 @use "@/assets/scss/mixins" as *;
+@use "@/assets/scss/responsive" as responsive;
 
 .loading,
 .error {
@@ -100,6 +101,10 @@ onMounted(async () => {
 
 .shared-collection {
   padding: 0 5rem 3rem;
+
+  @include responsive.mobile {
+    padding: 0 1rem 1.5rem;
+  }
 }
 
 .header {
@@ -112,6 +117,13 @@ onMounted(async () => {
   top: 0;
   z-index: 1;
 
+  @include responsive.mobile {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+
   .infos {
     align-items: center;
     display: flex;
@@ -122,6 +134,12 @@ onMounted(async () => {
     height: 4rem;
     margin-right: 2rem;
     width: 4rem;
+
+    @include responsive.mobile {
+      height: 3rem;
+      margin-right: 1rem;
+      width: 3rem;
+    }
   }
 
   .title {
@@ -138,6 +156,14 @@ onMounted(async () => {
   .links {
     display: flex;
     gap: 0.6rem;
+
+    @include responsive.mobile {
+      width: 100%;
+
+      :deep(.button) {
+        flex: 1;
+      }
+    }
   }
 }
 
@@ -145,6 +171,11 @@ onMounted(async () => {
   display: grid;
   gap: 2rem;
   grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+
+  @include responsive.mobile {
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .album {
