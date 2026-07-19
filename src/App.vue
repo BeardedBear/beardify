@@ -1,5 +1,5 @@
 <template>
-  <template v-if="useRoute().meta.chromeless">
+  <template v-if="route.meta.chromeless">
     <router-view />
   </template>
   <template v-else>
@@ -8,8 +8,8 @@
       <Sidebar />
       <div class="main-content">
         <MobileHeader />
-        <router-view v-slot="{ Component, route }">
-          <component :is="Component" :key="route.fullPath" />
+        <router-view v-slot="{ Component, route: currentRoute }">
+          <component :is="Component" :key="currentRoute.fullPath" />
         </router-view>
       </div>
     </div>
@@ -48,6 +48,7 @@ useKeyboardEvents();
 const authStore = useAuth();
 const { checkForUpdate } = useUpdater();
 const dialog = useDialog();
+const route = useRoute();
 
 onMounted(() => {
   if (isTauri()) {
@@ -77,7 +78,7 @@ if (!navigator.userAgent.includes("Macintosh")) {
 
 // Chromeless routes render without a Spotify session (see the branch above) —
 // polling for a device list or refreshing a token there would only waste requests.
-const hasNoSession = (): boolean => !!useRoute().meta.chromeless;
+const hasNoSession = (): boolean => !!route.meta.chromeless;
 
 // Keep device list fresh every 5 minutes
 const deviceRefreshInterval = setInterval(async () => {
