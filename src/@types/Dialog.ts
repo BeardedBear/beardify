@@ -23,6 +23,7 @@ export type DialogType
     | "editPlaylist"
     | "playlistOptions"
     | "search"
+    | "shareCollection"
     | "widevine"
     | null;
 

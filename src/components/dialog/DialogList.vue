@@ -9,6 +9,7 @@
   <WidevineWarning v-else-if="dialogStore.type === 'widevine'" />
   <ArtistOptionsDialog v-else-if="dialogStore.type === 'artistOptions'" />
   <SearchDialog v-else-if="dialogStore.type === 'search'" />
+  <ShareCollectionDialog v-else-if="dialogStore.type === 'shareCollection'" />
 </template>
 
 <script lang="ts" setup>
@@ -22,6 +23,7 @@ import { useDialog } from "@/components/dialog/DialogStore";
 import EditPlaylist from "@/components/dialog/EditPlaylist.vue";
 import PlaylistOptionsDialog from "@/components/dialog/PlaylistOptionsDialog.vue";
 import SearchDialog from "@/components/dialog/SearchDialog.vue";
+import ShareCollectionDialog from "@/components/dialog/ShareCollectionDialog.vue";
 import WidevineWarning from "@/components/dialog/WidevineWarning.vue";
 
 const dialogStore = useDialog();
