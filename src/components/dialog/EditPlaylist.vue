@@ -80,6 +80,10 @@
         <p>Share content</p>
         <ShareContent :beardify-url="$route.fullPath" :spotify-url="playlistStore.playlist.external_urls.spotify" />
       </div>
+      <div v-if="isCollection && values.public" class="bottom">
+        <p>Public read-only link (no Spotify account needed)</p>
+        <ButtonIndex @click="copyPublicLink()">Copy public link</ButtonIndex>
+      </div>
     </div>
   </Dialog>
 </template>
@@ -98,6 +102,7 @@ import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loading from "@/components/ui/LoadingDots.vue";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
+import { RouteName } from "@/router";
 import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -130,6 +135,12 @@ watchEffect(async () => {
     }
   }
 });
+
+function copyPublicLink(): void {
+  const url = `${window.location.origin}${RouteName.Share}${dialogStore.playlistId}`;
+  navigator.clipboard.writeText(url);
+  notification({ msg: "Public link copied", type: NotificationType.Success });
+}
 
 function remove(): void {
   if (dialogStore.playlistId) {

@@ -99,13 +99,22 @@ const isAuthCallback
     || window.location.pathname === RouteName.Auth.replace(/\/$/, "")
     || window.location.pathname.startsWith("/auth");
 
-if (isAuthCallback) {
-  // If we're on the auth page, just mount the app without trying to refresh
-  app.mount("#app");
-  useConfig().switchScheme(useConfig().schemeLabel);
-  useConfig().switchTheme(useConfig().themeLabel);
-  syncLS("beardify-config", JSON.stringify(useConfig().$state));
-  initTauriBridge();
+// Public read-only collection pages must load without a Spotify session.
+const isPublicShare = window.location.pathname.startsWith(RouteName.Share);
+
+if (isAuthCallback || isPublicShare) {
+  // If we're on the auth page or a public share page, just mount the app without trying to refresh
+  (async (): Promise<void> => {
+    // Wait for the router's initial navigation to resolve first, otherwise App.vue's
+    // route-based branch (Login/Share vs. full chrome) briefly renders the wrong one,
+    // mounting Sidebar/Player which then hit the API without a token.
+    await router.isReady();
+    app.mount("#app");
+    useConfig().switchScheme(useConfig().schemeLabel);
+    useConfig().switchTheme(useConfig().themeLabel);
+    syncLS("beardify-config", JSON.stringify(useConfig().$state));
+    initTauriBridge();
+  })();
 } else {
   // Normal flow: try to refresh token first
   (async (): Promise<void> => {
@@ -114,6 +123,7 @@ if (isAuthCallback) {
       if (done) {
         // Start auto-refresh after successful token refresh
         useAuth().startAutoRefresh();
+        await router.isReady();
         app.mount("#app");
         useConfig().switchScheme(useConfig().schemeLabel);
         useConfig().switchTheme(useConfig().themeLabel);
@@ -121,6 +131,7 @@ if (isAuthCallback) {
         syncLS("beardify-auth", JSON.stringify(useAuth().$state));
       }
     } catch {
+      await router.isReady();
       app.mount("#app");
       router.push(`${RouteName.Login}?ref=${window.location.pathname}`);
     } finally {

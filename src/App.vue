@@ -1,5 +1,5 @@
 <template>
-  <template v-if="useRoute().name === 'Login'">
+  <template v-if="useRoute().name === 'Login' || useRoute().name === 'Share'">
     <router-view />
   </template>
   <template v-else>

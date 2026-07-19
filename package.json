@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:functions": "netlify dev",
     "lint": "vue-tsc --noEmit && eslint src/**/*.{vue,ts} && stylelint ./src/**/*.{vue,scss}",
     "build": "bun run lint && vite build",
     "fix": "eslint src/**/*.{vue,ts} --fix && stylelint ./src/**/*.{vue,scss} --fix",
@@ -57,6 +58,7 @@
     "eslint-plugin-perfectionist": "^5.9.1",
     "eslint-plugin-vue": "^10.9.2",
     "globals": "^17.7.0",
+    "netlify-cli": "^26.2.0",
     "normalize.css": "^8.0.1",
     "postcss": "^8.5.15",
     "postcss-html": "^1.8.1",

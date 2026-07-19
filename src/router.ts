@@ -8,6 +8,7 @@ import HomePage from "@/views/home/HomePage.vue";
 import LoginPage from "@/views/LoginPage.vue";
 import CollectionPage from "@/views/playlist/CollectionPage.vue";
 import PlaylistPage from "@/views/playlist/PlaylistPage.vue";
+import SharedCollectionPage from "@/views/playlist/SharedCollectionPage.vue";
 import PodcastListPage from "@/views/podcasts/PodcastListPage.vue";
 import PodcastPage from "@/views/podcasts/PodcastPage.vue";
 import ReleaseListPage from "@/views/releases/ReleaseListPage.vue";
@@ -24,6 +25,7 @@ export enum RouteName {
   Playlist = "/playlist/",
   Podcasts = "/podcasts/",
   Releases = "/releases/",
+  Share = "/share/",
   User = "/user/",
 }
 
@@ -66,6 +68,14 @@ const routes: Array<RouteRecordRaw> = [
     component: CollectionPage,
     name: "Collection",
     path: `${RouteName.Collection}:id`,
+    props: (route: RouteLocation): Record<string, string | string[]> => ({
+      id: route.params.id,
+    }),
+  },
+  {
+    component: SharedCollectionPage,
+    name: "Share",
+    path: `${RouteName.Share}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({
       id: route.params.id,
     }),
