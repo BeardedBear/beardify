@@ -9,13 +9,20 @@
     <PageFit>
       <div class="shared-collection">
         <header class="header">
-          <Cover :images="playlist.images" class="cover" size="large" />
-          <div>
-            <div class="title">
-              {{ playlist.name.replace("#Collection ", "") }}
+          <div class="infos">
+            <Cover :images="playlist.images" class="cover" size="large" />
+            <div>
+              <div class="title">
+                {{ playlist.name.replace("#Collection ", "") }}
+              </div>
+              <div class="metas">{{ playlist.owner.display_name }} &nbsp;·&nbsp; {{ albumList.length }} albums</div>
             </div>
-            <div class="metas">{{ playlist.owner.display_name }} &nbsp;·&nbsp; {{ albumList.length }} albums</div>
-            <a class="badge" href="https://beardify.netlify.app/" rel="noopener" target="_blank">Shared with Beardify</a>
+          </div>
+          <div class="links">
+            <ButtonIndex :href="beardifyUrl" target="_blank" variant="primary">Open in Beardify</ButtonIndex>
+            <ButtonIndex :href="playlist.external_urls.spotify" target="_blank" variant="border">
+              Open in Spotify
+            </ButtonIndex>
           </div>
         </header>
         <div class="album-list">
@@ -45,11 +52,13 @@ import { defaultPlaylist } from "@/@types/Defaults";
 import { Paging } from "@/@types/Paging";
 import { Playlist, PlaylistTrack } from "@/@types/Playlist";
 import Cover from "@/components/ui/AlbumCover.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
 import { publicSpotifyGet } from "@/helpers/publicSpotify";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
+import { RouteName } from "@/router";
 
 const props = defineProps<{ id: string }>();
 
@@ -57,6 +66,7 @@ const loading = ref(true);
 const error = ref(false);
 const playlist = ref<Playlist>(defaultPlaylist);
 const albumList = ref<AlbumSimplified[]>([]);
+const beardifyUrl = `${window.location.origin}${RouteName.Collection}${props.id}`;
 
 async function loadTracks(url: string, tracks: PlaylistTrack[]): Promise<PlaylistTrack[]> {
   const page = await publicSpotifyGet<Paging<PlaylistTrack>>(url);
@@ -89,19 +99,29 @@ onMounted(async () => {
 }
 
 .shared-collection {
-  padding: 3rem 5rem;
+  padding: 0 5rem 3rem;
 }
 
 .header {
   align-items: center;
+  background-color: var(--bg-color-darker);
   display: flex;
-  margin-bottom: 3rem;
+  justify-content: space-between;
+  padding: 1.5rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+  .infos {
+    align-items: center;
+    display: flex;
+  }
 
   .cover {
     border-radius: 0.4rem;
-    height: 7rem;
+    height: 4rem;
     margin-right: 2rem;
-    width: 7rem;
+    width: 4rem;
   }
 
   .title {
@@ -115,11 +135,9 @@ onMounted(async () => {
     opacity: 0.6;
   }
 
-  .badge {
-    color: var(--primary-color);
-    display: inline-block;
-    margin-top: 0.5rem;
-    text-decoration: none;
+  .links {
+    display: flex;
+    gap: 0.6rem;
   }
 }
 
