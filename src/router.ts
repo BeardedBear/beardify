@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, LocationQueryValue, RouteLocation, RouteRecordRaw } from "vue-router";
 
+import { isTauri } from "@/helpers/platform";
 import AlbumPage from "@/views/album/AlbumPage.vue";
 import ArtistPage from "@/views/artist/ArtistPage.vue";
 import AuthPage from "@/views/auth/AuthPage.vue";
@@ -38,11 +39,17 @@ export enum RouteName {
   User = "/user/",
 }
 
+// The Tauri desktop app's webview runs on an internal `tauri://`/`http://tauri.localhost`
+// origin, which is meaningless to whoever opens a shared link — fall back to the real
+// web domain there instead of `window.location.origin`.
+const PROD_APP_URL = "https://beardify.netlify.app";
+
 /**
  * Builds an absolute, shareable URL for a route that takes an id (e.g. Collection, Share).
  */
 export function absoluteRouteUrl(routeName: RouteName, id: string): string {
-  return `${window.location.origin}${routeName}${id}`;
+  const origin = isTauri() ? PROD_APP_URL : window.location.origin;
+  return `${origin}${routeName}${id}`;
 }
 
 const routes: Array<RouteRecordRaw> = [
