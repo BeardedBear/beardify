@@ -8,10 +8,20 @@ import HomePage from "@/views/home/HomePage.vue";
 import LoginPage from "@/views/LoginPage.vue";
 import CollectionPage from "@/views/playlist/CollectionPage.vue";
 import PlaylistPage from "@/views/playlist/PlaylistPage.vue";
+import SharedCollectionPage from "@/views/playlist/SharedCollectionPage.vue";
 import PodcastListPage from "@/views/podcasts/PodcastListPage.vue";
 import PodcastPage from "@/views/podcasts/PodcastPage.vue";
 import ReleaseListPage from "@/views/releases/ReleaseListPage.vue";
 import UserPage from "@/views/user/UserPage.vue";
+
+declare module "vue-router" {
+  interface RouteMeta {
+    // No Sidebar/Player/DialogList shell — just the route's own component.
+    chromeless?: boolean;
+    // Skip the boot-time token refresh attempt (and its login redirect on failure) in main.ts.
+    skipBootAuth?: boolean;
+  }
+}
 
 export enum RouteName {
   Album = "/album/",
@@ -24,7 +34,15 @@ export enum RouteName {
   Playlist = "/playlist/",
   Podcasts = "/podcasts/",
   Releases = "/releases/",
+  Share = "/share/",
   User = "/user/",
+}
+
+/**
+ * Builds an absolute, shareable URL for a route that takes an id (e.g. Collection, Share).
+ */
+export function absoluteRouteUrl(routeName: RouteName, id: string): string {
+  return `${window.location.origin}${routeName}${id}`;
 }
 
 const routes: Array<RouteRecordRaw> = [
@@ -35,6 +53,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     component: LoginPage,
+    meta: { chromeless: true },
     name: "Login",
     path: RouteName.Login,
   },
@@ -71,6 +90,15 @@ const routes: Array<RouteRecordRaw> = [
     }),
   },
   {
+    component: SharedCollectionPage,
+    meta: { chromeless: true, skipBootAuth: true },
+    name: "Share",
+    path: `${RouteName.Share}:id`,
+    props: (route: RouteLocation): Record<string, string | string[]> => ({
+      id: route.params.id,
+    }),
+  },
+  {
     component: GenrePage,
     name: "Genre",
     path: `${RouteName.Genre}:name`,
@@ -80,6 +108,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     component: AuthPage,
+    meta: { skipBootAuth: true },
     name: "Auth",
     path: RouteName.Auth,
     props: (route: RouteLocation): Record<string, LocationQueryValue | LocationQueryValue[]> => ({

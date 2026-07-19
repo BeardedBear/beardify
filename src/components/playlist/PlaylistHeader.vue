@@ -37,19 +37,31 @@
         placeholder="Filter..."
         type="search"
       />
+      <ButtonIndex
+        v-if="canShare"
+        icon-only
+        title="Share this collection"
+        variant="nude"
+        @click="dialogStore.open({ playlistId: playlistStore.playlist.id, type: 'shareCollection' })"
+      >
+        <i class="icon-share" />
+      </ButtonIndex>
       <Actions />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
-import { RouterLink } from "vue-router";
+import { computed, onMounted, ref } from "vue";
+import { RouterLink, useRoute } from "vue-router";
 
 import { PlaylistTrack } from "@/@types/Playlist";
+import { useDialog } from "@/components/dialog/DialogStore";
 import Actions from "@/components/playlist/PlaylistActions.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { timecodeWithUnits } from "@/helpers/date";
+import { isPlaylistOwner } from "@/helpers/playlist";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 const props = defineProps<{
@@ -59,8 +71,17 @@ const props = defineProps<{
   withFilter?: boolean;
 }>();
 
+const dialogStore = useDialog();
 const playlistStore = usePlaylist();
+const route = useRoute();
 const filterInput = ref<HTMLInputElement | null>(null);
+
+const canShare = computed<boolean>(
+  () =>
+    route.name === "Collection"
+    && playlistStore.playlist.public
+    && isPlaylistOwner(playlistStore.playlist.owner),
+);
 
 onMounted(() => {
   if (props.withFilter) filterInput.value?.focus();

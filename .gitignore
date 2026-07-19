@@ -27,3 +27,6 @@ pnpm-debug.log*
 src-tauri/target
 src-tauri/gen
 src-tauri/Cargo.lock
+
+# Local Netlify folder
+.netlify

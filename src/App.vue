@@ -1,5 +1,5 @@
 <template>
-  <template v-if="useRoute().name === 'Login'">
+  <template v-if="useRoute().meta.chromeless">
     <router-view />
   </template>
   <template v-else>
@@ -75,8 +75,13 @@ if (!navigator.userAgent.includes("Macintosh")) {
 // Token auto-refresh is handled by AuthStore.startAutoRefresh() called in main.ts.
 // No duplicate interval here.
 
+// Chromeless routes render without a Spotify session (see the branch above) —
+// polling for a device list or refreshing a token there would only waste requests.
+const hasNoSession = (): boolean => !!useRoute().meta.chromeless;
+
 // Keep device list fresh every 5 minutes
 const deviceRefreshInterval = setInterval(async () => {
+  if (hasNoSession()) return;
   try {
     await usePlayer().getDeviceList();
   } catch {
@@ -87,7 +92,7 @@ const deviceRefreshInterval = setInterval(async () => {
 // Refresh token when the page becomes visible again after being hidden
 // This handles cases where the user closes the laptop, switches tabs for a long time, etc.
 const handleVisibilityChange = async (): Promise<void> => {
-  if (!document.hidden) {
+  if (!document.hidden && !hasNoSession()) {
     const lastRefresh = localStorage.getItem("spotify_token_last_refresh");
     const now = Date.now();
     const REFRESH_THRESHOLD = 15 * 60 * 1000; // 15 minutes

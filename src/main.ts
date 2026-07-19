@@ -92,23 +92,23 @@ function syncLS(key: string, value: string): void {
 // Initialize the Spotify SDK error handler
 handleSpotifySDKErrors();
 
-// Check if we're on the auth callback page
-// Handle both /auth and /auth/ (with or without trailing slash)
-const isAuthCallback
-  = window.location.pathname === RouteName.Auth
-    || window.location.pathname === RouteName.Auth.replace(/\/$/, "")
-    || window.location.pathname.startsWith("/auth");
+(async (): Promise<void> => {
+  // Wait for the router's initial navigation to resolve first, otherwise App.vue's
+  // route-based branch (chromeless vs. full chrome) briefly renders the wrong one,
+  // mounting Sidebar/Player which then hit the API without a token.
+  await router.isReady();
 
-if (isAuthCallback) {
-  // If we're on the auth page, just mount the app without trying to refresh
-  app.mount("#app");
-  useConfig().switchScheme(useConfig().schemeLabel);
-  useConfig().switchTheme(useConfig().themeLabel);
-  syncLS("beardify-config", JSON.stringify(useConfig().$state));
-  initTauriBridge();
-} else {
-  // Normal flow: try to refresh token first
-  (async (): Promise<void> => {
+  // Routes flagged `skipBootAuth` (Auth callback, public Share pages) must load
+  // without attempting a Spotify token refresh — see the route definitions in router.ts.
+  if (router.currentRoute.value.meta.skipBootAuth) {
+    // If we're on the auth page or a public share page, just mount the app without trying to refresh
+    app.mount("#app");
+    useConfig().switchScheme(useConfig().schemeLabel);
+    useConfig().switchTheme(useConfig().themeLabel);
+    syncLS("beardify-config", JSON.stringify(useConfig().$state));
+    initTauriBridge();
+  } else {
+    // Normal flow: try to refresh token first
     try {
       const done = await useAuth().refresh();
       if (done) {
@@ -126,5 +126,5 @@ if (isAuthCallback) {
     } finally {
       initTauriBridge();
     }
-  })();
-}
+  }
+})();
