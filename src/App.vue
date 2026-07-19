@@ -1,5 +1,5 @@
 <template>
-  <template v-if="useRoute().name === 'Login' || useRoute().name === 'Share'">
+  <template v-if="useRoute().meta.chromeless">
     <router-view />
   </template>
   <template v-else>
@@ -75,9 +75,9 @@ if (!navigator.userAgent.includes("Macintosh")) {
 // Token auto-refresh is handled by AuthStore.startAutoRefresh() called in main.ts.
 // No duplicate interval here.
 
-// Login/Share render without a Spotify session (see the chromeless branch above) —
+// Chromeless routes render without a Spotify session (see the branch above) —
 // polling for a device list or refreshing a token there would only waste requests.
-const hasNoSession = (): boolean => useRoute().name === "Login" || useRoute().name === "Share";
+const hasNoSession = (): boolean => !!useRoute().meta.chromeless;
 
 // Keep device list fresh every 5 minutes
 const deviceRefreshInterval = setInterval(async () => {
