@@ -2,15 +2,24 @@
 
 ## Features
 
-- Collections
-- Easier and faster search
-- UI more compact than official client
+- **Collections** — turn playlists into album collections via the `#Collection` naming convention
+- Easier and faster search (albums, artists, songs, podcasts) with a compact, distraction-free layout
+- UI more compact than the official client
+- Rich artist view: related artists, discography, members timeline, Wikipedia bio/timeline, concerts, external links
+- New releases feed for followed artists
+- Genre browsing
+- Podcast support
+- Multi-device playback control with live queue view
+- Playback history
+- Sharing (Spotify and Beardify links)
+- Light/dark themes with multiple color schemes
+- Desktop app (Tauri) with auto-update
 
 ## Roadmap
 
 - [x] Add songs to song playlists
 - [x] Sharing
-- [ ] Integrate my other client to check the new album releases
+- [x] Integrate my other client to check the new album releases
 
 ## Collections
 
