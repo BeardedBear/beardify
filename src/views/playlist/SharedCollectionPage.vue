@@ -58,7 +58,7 @@ import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
 import { publicSpotifyGet } from "@/helpers/publicSpotify";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
-import { RouteName } from "@/router";
+import { absoluteRouteUrl, RouteName } from "@/router";
 
 const props = defineProps<{ id: string }>();
 
@@ -66,7 +66,7 @@ const loading = ref(true);
 const error = ref(false);
 const playlist = ref<Playlist>(defaultPlaylist);
 const albumList = ref<AlbumSimplified[]>([]);
-const beardifyUrl = `${window.location.origin}${RouteName.Collection}${props.id}`;
+const beardifyUrl = absoluteRouteUrl(RouteName.Collection, props.id);
 
 async function loadTracks(url: string, tracks: PlaylistTrack[]): Promise<PlaylistTrack[]> {
   const page = await publicSpotifyGet<Paging<PlaylistTrack>>(url);
@@ -77,7 +77,11 @@ async function loadTracks(url: string, tracks: PlaylistTrack[]): Promise<Playlis
 onMounted(async () => {
   try {
     playlist.value = await publicSpotifyGet<Playlist>(`playlists/${props.id}`);
-    const tracks = await loadTracks(`playlists/${props.id}/tracks`, []);
+    // The playlist response already embeds the first page of tracks, no need to re-fetch it.
+    const firstPage = playlist.value.tracks;
+    const tracks = firstPage.next
+      ? await loadTracks(firstPage.next, firstPage.items.filter((item) => item.track))
+      : firstPage.items.filter((item) => item.track);
     albumList.value = removeDuplicatesAlbums(tracks.map((t) => t.track.album));
   } catch {
     error.value = true;

@@ -19,6 +19,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useClipboard } from "@vueuse/core";
 import { computed } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
@@ -28,19 +29,19 @@ import Cover from "@/components/ui/AlbumCover.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { notification } from "@/helpers/notifications";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
-import { RouteName } from "@/router";
+import { absoluteRouteUrl, RouteName } from "@/router";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
+const clipboard = useClipboard();
 
 const albumCount = computed<number>(
   () => removeDuplicatesAlbums(playlistStore.tracks.map((t) => t.track.album)).length,
 );
 
 function copyPublicLink(): void {
-  const url = `${window.location.origin}${RouteName.Share}${dialogStore.playlistId}`;
-  navigator.clipboard.writeText(url);
+  clipboard.copy(absoluteRouteUrl(RouteName.Share, dialogStore.playlistId ?? ""));
   notification({ msg: "Public link copied", type: NotificationType.Success });
 }
 </script>

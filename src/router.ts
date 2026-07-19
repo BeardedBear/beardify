@@ -29,6 +29,13 @@ export enum RouteName {
   User = "/user/",
 }
 
+/**
+ * Builds an absolute, shareable URL for a route that takes an id (e.g. Collection, Share).
+ */
+export function absoluteRouteUrl(routeName: RouteName, id: string): string {
+  return `${window.location.origin}${routeName}${id}`;
+}
+
 const routes: Array<RouteRecordRaw> = [
   {
     component: HomePage,

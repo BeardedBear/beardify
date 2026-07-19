@@ -1,7 +1,7 @@
+import { api } from "@/api";
 import { http } from "@/helpers/http";
 import { cleanUrl } from "@/helpers/urls";
 
-const SPOTIFY_API_URL = "https://api.spotify.com/v1/";
 const TOKEN_ENDPOINT = "/.netlify/functions/spotify-token";
 
 interface AppToken {
@@ -17,7 +17,7 @@ let cachedToken: { expiresAt: number; token: string } | null = null;
  */
 export async function publicSpotifyGet<T>(url: string): Promise<T> {
   const token = await getAppToken();
-  return http.get(`${SPOTIFY_API_URL}${cleanUrl(url)}`, { headers: { Authorization: `Bearer ${token}` } }).json<T>();
+  return http.get(`${api.url}${cleanUrl(url)}`, { headers: { Authorization: `Bearer ${token}` } }).json<T>();
 }
 
 async function getAppToken(): Promise<string> {
