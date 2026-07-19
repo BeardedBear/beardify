@@ -41,7 +41,11 @@ const albumCount = computed<number>(
 );
 
 function copyPublicLink(): void {
-  clipboard.copy(absoluteRouteUrl(RouteName.Share, dialogStore.playlistId ?? ""));
+  if (!dialogStore.playlistId) {
+    notification({ msg: "Unable to build the public link", type: NotificationType.Error });
+    return;
+  }
+  clipboard.copy(absoluteRouteUrl(RouteName.Share, dialogStore.playlistId));
   notification({ msg: "Public link copied", type: NotificationType.Success });
 }
 </script>

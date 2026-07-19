@@ -3,7 +3,7 @@
     <Loader />
   </div>
   <div v-else-if="error" class="error">
-    <p>This collection is unavailable. It may be private or no longer exist.</p>
+    <p>{{ error }}</p>
   </div>
   <PageScroller v-else>
     <PageFit>
@@ -45,6 +45,7 @@
 </template>
 
 <script lang="ts" setup>
+import { HTTPError } from "ky";
 import { onMounted, ref } from "vue";
 
 import { AlbumSimplified } from "@/@types/Album";
@@ -64,10 +65,17 @@ import { absoluteRouteUrl, RouteName } from "@/router";
 const props = defineProps<{ id: string }>();
 
 const loading = ref(true);
-const error = ref(false);
+const error = ref("");
 const playlist = ref<Playlist>(defaultPlaylist);
 const albumList = ref<AlbumSimplified[]>([]);
 const beardifyUrl = absoluteRouteUrl(RouteName.Collection, props.id);
+
+function errorMessage(err: unknown): string {
+  if (!(err instanceof HTTPError)) return "This collection is unavailable. Please try again later.";
+  if (err.response.status === 404) return "This collection doesn't exist.";
+  if (err.response.status === 403) return "This collection is private. Ask the owner to make it public.";
+  return "This collection is unavailable. Please try again later.";
+}
 
 onMounted(async () => {
   try {
@@ -79,8 +87,8 @@ onMounted(async () => {
       : [];
     const tracks = firstPage.items.concat(remaining).filter((item) => item.track);
     albumList.value = removeDuplicatesAlbums(tracks.map((t) => t.track.album));
-  } catch {
-    error.value = true;
+  } catch (err) {
+    error.value = errorMessage(err);
   } finally {
     loading.value = false;
   }

@@ -50,6 +50,7 @@ const componentProps = computed(() => {
   } else if (componentTag.value === "a") {
     baseProps.href = props.href;
     baseProps.target = props.target;
+    if (props.target === "_blank") baseProps.rel = "noopener";
   } else {
     baseProps.type = props.type;
     baseProps.disabled = props.disabled;
