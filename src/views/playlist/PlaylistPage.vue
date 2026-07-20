@@ -46,11 +46,11 @@ const categorizedTracks = computed(() => {
   const singles = [];
 
   for (const track of playlistStore.tracks) {
-    if (isAlbum(track.track.album) && !useCheckLiveAlbum(track.track.album.name)) {
-      albums.push(track.track.album);
-    } else if (isEP(track.track.album)) {
-      eps.push(track.track.album);
-    } else if (isSingle(track.track.album)) {
+    if (isAlbum(track.item.album) && !useCheckLiveAlbum(track.item.album.name)) {
+      albums.push(track.item.album);
+    } else if (isEP(track.item.album)) {
+      eps.push(track.item.album);
+    } else if (isSingle(track.item.album)) {
       singles.push(track);
     }
   }
@@ -106,7 +106,7 @@ const fetchContributorsData = async (): Promise<void> => {
 playlistStore.clean().finally(() => {
   Promise.all([
     playlistStore.getPlaylist(`playlists/${props.id}`),
-    playlistStore.getTracks(`playlists/${props.id}/tracks`),
+    playlistStore.getTracks(`playlists/${props.id}/items`),
   ]).then(() => {
     fetchContributorsData();
     // Restore scroll after tracks finished loading (height is now stable)

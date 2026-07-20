@@ -20,7 +20,7 @@ export const usePodcasts = defineStore("podcasts", {
 
     async followPodcast(podcastId: string) {
       try {
-        await instance().put(`me/shows?ids=${podcastId}`);
+        await instance().put(`me/library?uris=spotify:show:${podcastId}`);
         this.isFollowing = true;
         // Refresh my podcasts list to include the newly followed podcast
         this.myPodcasts = [];
@@ -40,7 +40,7 @@ export const usePodcasts = defineStore("podcasts", {
 
     async getFollowStatus(podcastId: string) {
       try {
-        const response = await instance().get<boolean[]>(`me/shows/contains?ids=${podcastId}`);
+        const response = await instance().get<boolean[]>(`me/library/contains?uris=spotify:show:${podcastId}`);
         this.isFollowing = response.data[0] || false;
       } catch (error) {
         if (import.meta.env.DEV) console.error("Error fetching podcast follow status:", error);
@@ -96,7 +96,7 @@ export const usePodcasts = defineStore("podcasts", {
 
     async unfollowPodcast(podcastId: string) {
       try {
-        await instance().delete(`me/shows?ids=${podcastId}`);
+        await instance().delete(`me/library?uris=spotify:show:${podcastId}`);
         this.isFollowing = false;
         // Remove from my podcasts list
         this.myPodcasts = this.myPodcasts.filter((podcast) => podcast.show.id !== podcastId);

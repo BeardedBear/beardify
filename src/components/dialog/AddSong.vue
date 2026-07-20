@@ -43,14 +43,14 @@ const sidebarStore = useSidebar();
 const filteredPlaylists = computed(() => sidebarStore.playlists.filter((playlist) => playlist.owner.id !== "spotify"));
 
 async function add(songUri: string, playlistId: string): Promise<void> {
-  if (await trackAllreadyExist(`playlists/${playlistId}/tracks?limit=50`, songUri)) {
+  if (await trackAllreadyExist(`playlists/${playlistId}/items?limit=50`, songUri)) {
     notification({
       msg: "This track already exists in this playlist",
       type: NotificationType.Error,
     });
   } else {
     try {
-      await instance().post(`playlists/${playlistId}/tracks?uris=${songUri}`);
+      await instance().post(`playlists/${playlistId}/items?uris=${songUri}`);
       dialogStore.close();
       notification({ msg: "Track added", type: NotificationType.Success });
     } catch (error: unknown) {

@@ -135,8 +135,8 @@ async function deleteAlbum(albumId: string): Promise<void> {
       return;
     }
     try {
-      await instance().delete(`playlists/${currentRouteId}/tracks`, {
-        data: { snapshot_id: playlistStore.playlist.snapshot_id, tracks: tracks },
+      await instance().delete(`playlists/${currentRouteId}/items`, {
+        data: { items: tracks, snapshot_id: playlistStore.playlist.snapshot_id },
       });
       playlistStore.removeTracks(tracks);
       notification({ msg: "Album successfully removed from playlist", type: NotificationType.Success });

@@ -31,7 +31,6 @@
         </div>
         <div class="top">
           <TopTracks class="top-item" />
-          <RelatedArtists class="top-item related-artists" />
         </div>
       </div>
       <div v-else-if="artistStore.activeTab === 'info'" key="info" class="content content--info">
@@ -53,7 +52,6 @@ import BlockAlbumsCompilation from "@/components/artist/BlockAlbumsCompilation.v
 import BlockAlbumsLive from "@/components/artist/BlockAlbumsLive.vue";
 import BlockEps from "@/components/artist/BlockEps.vue";
 import BlockSingles from "@/components/artist/BlockSingles.vue";
-import RelatedArtists from "@/components/artist/RelatedArtists.vue";
 import TopTracks from "@/components/artist/TopTracks.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
@@ -134,7 +132,6 @@ artistStore.clean().finally(async () => {
     artistStore.activeTab = hashTab as TabId;
   }
   artistStore.getTopTracks(props.id);
-  artistStore.getRelatedArtists(props.id);
   artistStore.getFollowStatus(props.id);
 
   if (artistStore.loadDiscographyCache(props.id)) {
@@ -281,16 +278,6 @@ onBeforeUnmount(() => {
 .artist-page {
   animation: pop-content 1s ease both;
   overflow-y: scroll;
-}
-
-.related-artists {
-  @include responsive.tablet-down {
-    order: 5;
-  }
-
-  @include responsive.xl {
-    order: 5;
-  }
 }
 
 .loader {

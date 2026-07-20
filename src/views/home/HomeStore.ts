@@ -4,12 +4,14 @@ import type { AlbumSimplified } from "@/@types/Album";
 import type { Artist } from "@/@types/Artist";
 import type { HomePage } from "@/@types/Home";
 import type { Paging } from "@/@types/Paging";
-import type { Track } from "@/@types/Track";
 
 import { instance } from "@/api";
-import { getRandomInt } from "@/helpers/random";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
-import { isAlbum } from "@/helpers/useCleanAlbums";
+
+// "Get Recommendations" has no official replacement (deprecated, Spotify
+// dropped the seed-based algorithm), so the home page instead surfaces
+// recent albums from the user's top artists.
+const TOP_ARTISTS_SAMPLE_SIZE = 5;
 
 export const useHome = defineStore("home", {
   actions: {
@@ -18,35 +20,33 @@ export const useHome = defineStore("home", {
     },
 
     async getRecommendedAlbums() {
-      interface Top {
-        seed: unknown;
-        tracks: Track[];
+      const { data } = await instance().get<Paging<Artist>>("me/top/artists?limit=10");
+
+      if (!data.items.length) {
+        this.recommendedAlbums = [];
+        return;
       }
 
-      const { data } = await instance().get<Paging<Artist>>("me/top/artists");
+      const sampledArtists = data.items.slice(0, TOP_ARTISTS_SAMPLE_SIZE);
 
-      if (data.items.length) {
-        const id1 = data.items[getRandomInt(0, 10)]?.id;
-        const id2 = data.items[getRandomInt(0, 10)]?.id;
-        const id3 = data.items[getRandomInt(0, 10)]?.id;
-        const id4 = data.items[getRandomInt(0, 10)]?.id;
-        const id5 = data.items[getRandomInt(0, 10)]?.id;
-        const artistsSeed = `${id1},${id2},${id3},${id4},${id5}`;
+      try {
+        const albumsByArtist = await Promise.all(
+          sampledArtists.map(async (artist) => {
+            const { data: albumsPage } = await instance().get<Paging<AlbumSimplified>>(
+              `artists/${artist.id}/albums?include_groups=album,single&limit=10`,
+            );
+            return albumsPage.items;
+          }),
+        );
 
-        try {
-          const f = await instance().get<Top>(`recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`);
-          // Combine map and filter for better performance
-          const albums: AlbumSimplified[] = [];
-          for (const track of f.data.tracks) {
-            if (isAlbum(track.album)) {
-              albums.push(track.album);
-            }
-          }
-          this.recommendedAlbums = removeDuplicatesAlbums(albums);
-        } catch {
-          // silent fail
-        }
-      } else if (!this.recommendedAlbums.length) this.getRecommendedAlbums();
+        const albums = albumsByArtist
+          .flat()
+          .sort((a, b) => (a.release_date < b.release_date ? 1 : -1));
+
+        this.recommendedAlbums = removeDuplicatesAlbums(albums);
+      } catch {
+        // silent fail
+      }
     },
   },
 

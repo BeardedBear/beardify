@@ -39,7 +39,7 @@ export async function albumAllreadyExist(
   tempAlbums = tempAlbums.concat(data.items);
   return data.next
     ? albumAllreadyExist(cleanUrl(data.next), albumId, false)
-    : tempAlbums.some((e) => e.track.album.id === albumId);
+    : tempAlbums.some((e) => e.item.album.id === albumId);
 }
 
 let tempTracks: PlaylistTrack[] = [];
@@ -68,5 +68,5 @@ export async function trackAllreadyExist(
   tempTracks = tempTracks.concat(data.items);
   return data.next
     ? trackAllreadyExist(cleanUrl(data.next), trackId, false)
-    : tempTracks.some((e) => e.track.uri === trackId);
+    : tempTracks.some((e) => e.item.uri === trackId);
 }

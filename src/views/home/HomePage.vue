@@ -6,7 +6,7 @@
     <div ref="scrollRef" class="home-content" @scroll="onScroll">
       <PageFit>
         <div class="title">
-          <div class="name">Recommended albums</div>
+          <div class="name">Latest from your top artists</div>
           <ButtonIndex @click="getData()">
             <i class="icon-refresh" />
             Refresh

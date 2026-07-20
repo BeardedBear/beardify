@@ -113,7 +113,7 @@ export const useSidebar = defineStore("sidebar", {
 
       // Check if the user is the owner of the playlist
       try {
-        await instance().delete(`playlists/${playlistId}/followers`);
+        await instance().delete(`me/library?uris=spotify:playlist:${playlistId}`);
         this.playlists = this.playlists.filter((playlist) => playlist.id !== playlistId);
         this.collections = this.collections.filter((collection) => collection.id !== playlistId);
         playlistStore.followed = false;

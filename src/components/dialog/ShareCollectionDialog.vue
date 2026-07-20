@@ -37,7 +37,7 @@ const playlistStore = usePlaylist();
 const clipboard = useClipboard();
 
 const albumCount = computed<number>(
-  () => removeDuplicatesAlbums(playlistStore.tracks.map((t) => t.track.album)).length,
+  () => removeDuplicatesAlbums(playlistStore.tracks.map((t) => t.item.album)).length,
 );
 
 function copyPublicLink(): void {

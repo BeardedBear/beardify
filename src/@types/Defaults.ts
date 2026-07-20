@@ -192,7 +192,7 @@ export const defaultPlaylistTrack = {
   added_at: 0,
   added_by: defaultPublicUser,
   is_local: false,
-  track: defaultTrack,
+  item: defaultTrack,
 };
 
 export const defaultPlaylist = {
