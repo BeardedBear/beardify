@@ -8,22 +8,19 @@
         <Header no-cover no-duration with-filter />
         <div class="content">
           <template v-if="playlistStore.filter === ''">
-            <SlickList
-              v-model:list="albumList"
-              :press-delay="200"
-              axis="xy"
+            <VueDraggable
+              v-model="albumList"
+              :animation="150"
+              :delay="200"
+              :disabled="playlistStore.playlist.owner.id !== authStore.me?.id"
+              :force-fallback="true"
+              :scroll-sensitivity="100"
+              :scroll-speed="15"
               class="album-list"
-              @sort-end="syncNewPositions"
+              @end="syncNewPositions"
             >
-              <SlickItem
-                v-for="(item, i) in albumList"
-                :key="item.id"
-                :disabled="playlistStore.playlist.owner.id !== authStore.me?.id"
-                :index="i"
-              >
-                <Album :album="item" can-delete can-save with-artists />
-              </SlickItem>
-            </SlickList>
+              <Album v-for="item in albumList" :key="item.id" :album="item" can-delete can-save with-artists />
+            </VueDraggable>
           </template>
           <div v-else class="album-list">
             <Album
@@ -43,7 +40,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from "vue";
-import { SlickItem, SlickList } from "vue-slicksort";
+import { VueDraggable } from "vue-draggable-plus";
 
 import { AlbumSimplified } from "@/@types/Album";
 import Album from "@/components/album/AlbumIndex.vue";
@@ -74,7 +71,8 @@ const albumListFiltered = computed<AlbumSimplified[]>(() =>
   }),
 );
 
-function syncNewPositions(event: { newIndex: number; oldIndex: number }): void {
+function syncNewPositions(event: { newIndex?: number; oldIndex?: number }): void {
+  if (event.oldIndex === undefined || event.newIndex === undefined) return;
   playlistStore.updateCollectionPosition(event.oldIndex, event.newIndex);
 }
 
