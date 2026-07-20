@@ -7,6 +7,7 @@ import { Playlist, PlaylistPage, PlaylistTrack } from "@/@types/Playlist";
 import { TrackToRemove } from "@/@types/Track";
 import { instance } from "@/api";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
+import { isInLibrary, saveToLibrary } from "@/helpers/library";
 import { notification } from "@/helpers/notifications";
 import { cleanUrl } from "@/helpers/urls";
 
@@ -21,7 +22,7 @@ export const usePlaylist = defineStore("playlist", {
 
     async followPlaylist(playlistId: string) {
       try {
-        await instance().put(`me/library?uris=spotify:playlist:${playlistId}`);
+        await saveToLibrary("playlist", playlistId);
         this.followed = true;
         useSidebar().refreshPlaylists();
       } catch {
@@ -33,9 +34,7 @@ export const usePlaylist = defineStore("playlist", {
       try {
         const cleanedUrl = cleanUrl(url);
         this.playlist = (await instance().get<Playlist>(cleanedUrl)).data;
-        this.followed = (
-          await instance().get<boolean[]>(`me/library/contains?uris=spotify:playlist:${this.playlist.id}`)
-        ).data.shift();
+        this.followed = await isInLibrary("playlist", this.playlist.id);
       } catch (error: unknown) {
         if (import.meta.env.DEV) console.error("Error fetching playlist:", error);
         this.playlist = defaultPlaylist;

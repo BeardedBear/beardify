@@ -5,6 +5,7 @@ import type { Episode, Podcast, PodcastItem, PodcastSaved, PodcastsPage } from "
 
 import { NotificationType } from "@/@types/Notification";
 import { instance } from "@/api";
+import { isInLibrary, removeFromLibrary, saveToLibrary } from "@/helpers/library";
 import { notification } from "@/helpers/notifications";
 import { cleanUrl } from "@/helpers/urls";
 
@@ -20,7 +21,7 @@ export const usePodcasts = defineStore("podcasts", {
 
     async followPodcast(podcastId: string) {
       try {
-        await instance().put(`me/library?uris=spotify:show:${podcastId}`);
+        await saveToLibrary("show", podcastId);
         this.isFollowing = true;
         // Refresh my podcasts list to include the newly followed podcast
         this.myPodcasts = [];
@@ -40,8 +41,7 @@ export const usePodcasts = defineStore("podcasts", {
 
     async getFollowStatus(podcastId: string) {
       try {
-        const response = await instance().get<boolean[]>(`me/library/contains?uris=spotify:show:${podcastId}`);
-        this.isFollowing = response.data[0] || false;
+        this.isFollowing = await isInLibrary("show", podcastId);
       } catch (error) {
         if (import.meta.env.DEV) console.error("Error fetching podcast follow status:", error);
         this.isFollowing = false;
@@ -96,7 +96,7 @@ export const usePodcasts = defineStore("podcasts", {
 
     async unfollowPodcast(podcastId: string) {
       try {
-        await instance().delete(`me/library?uris=spotify:show:${podcastId}`);
+        await removeFromLibrary("show", podcastId);
         this.isFollowing = false;
         // Remove from my podcasts list
         this.myPodcasts = this.myPodcasts.filter((podcast) => podcast.show.id !== podcastId);

@@ -1,11 +1,7 @@
 import { defineStore } from "pinia";
 
 import { AlbumSimplified } from "@/@types/Album";
-import {
-  Artist,
-  ArtistPage,
-  ArtistTopTracks,
-} from "@/@types/Artist";
+import { Artist, ArtistPage, ArtistTopTracks } from "@/@types/Artist";
 import { defaultArtist } from "@/@types/Defaults";
 import { NotificationType } from "@/@types/Notification";
 import { Paging } from "@/@types/Paging";
@@ -16,6 +12,7 @@ import {
   processDiscogsReleases,
 } from "@/helpers/discogs";
 import { normalizeString } from "@/helpers/helper";
+import { isInLibrary, removeFromLibrary, saveToLibrary } from "@/helpers/library";
 import {
   buildBaseTitleMap,
   buildReleaseTypeMap,
@@ -289,10 +286,7 @@ export const useArtist = defineStore("artist", {
 
     async getFollowStatus(artistId: string) {
       try {
-        const { data } = await instance().get<boolean[]>(
-          `me/library/contains?uris=spotify:artist:${artistId}`,
-        );
-        this.followStatus = data[0] ?? false;
+        this.followStatus = await isInLibrary("artist", artistId);
       } catch {
         // silent fail
       }
@@ -613,9 +607,9 @@ export const useArtist = defineStore("artist", {
       this.followStatus = !previousStatus;
       try {
         if (previousStatus) {
-          await instance().delete(`me/library?uris=spotify:artist:${artistId}`);
+          await removeFromLibrary("artist", artistId);
         } else {
-          await instance().put(`me/library?uris=spotify:artist:${artistId}`);
+          await saveToLibrary("artist", artistId);
         }
       } catch {
         this.followStatus = previousStatus;

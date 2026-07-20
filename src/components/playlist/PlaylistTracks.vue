@@ -70,7 +70,6 @@ import { computed } from "vue";
 import { NotificationType } from "@/@types/Notification";
 import { PlaylistTrack } from "@/@types/Playlist";
 import { PublicUser } from "@/@types/PublicUser";
-import { instance } from "@/api";
 import AlbumLink from "@/components/album/AlbumLink.vue";
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
@@ -80,6 +79,7 @@ import { date, timecode } from "@/helpers/date";
 import { isCurrentTrack } from "@/helpers/helper";
 import { notification } from "@/helpers/notifications";
 import { playSongs } from "@/helpers/play";
+import { removePlaylistItems } from "@/helpers/playlist";
 import { isAlbum, isCompilation, isEP, isSingle } from "@/helpers/useCleanAlbums";
 import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
@@ -105,12 +105,7 @@ const getContributorDisplayName = (userId: string): string => {
 
 async function deleteSong(songId: string): Promise<void> {
   try {
-    await instance().delete(`playlists/${playlist.id}/items`, {
-      data: {
-        items: [{ uri: songId }],
-        snapshot_id: playlist.snapshot_id,
-      },
-    });
+    await removePlaylistItems(playlist.id, [{ uri: songId }], playlist.snapshot_id);
     removeSong(songId);
     notification({ msg: "Track deleted", type: NotificationType.Success });
   } catch (error: any) {
