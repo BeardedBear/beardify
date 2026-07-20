@@ -38,8 +38,8 @@
     "pinia-plugin-persistedstate": "^4.7.1",
     "pkce-challenge": "^6.0.0",
     "vue": "^3.5.38",
-    "vue-router": "^5.1.0",
-    "vue-slicksort": "^2.0.5"
+    "vue-draggable-plus": "^0.6.1",
+    "vue-router": "^5.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
