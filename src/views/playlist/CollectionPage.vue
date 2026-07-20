@@ -58,7 +58,7 @@ const albumList = ref<AlbumSimplified[]>([]);
 const authStore = useAuth();
 const scrollerRef = ref<InstanceType<typeof PageScroller>>();
 const syncAlbumList = (): void => {
-  albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.track.album));
+  albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.item.album));
 };
 
 onMounted(syncAlbumList);
@@ -84,7 +84,7 @@ watch(
 playlistStore.clean().finally(() => {
   Promise.all([
     playlistStore.getPlaylist(`playlists/${props.id}`),
-    playlistStore.getTracks(`playlists/${props.id}/tracks`),
+    playlistStore.getTracks(`playlists/${props.id}/items`),
   ]).then(() => {
     // Restore scroll after albums finished loading (height is now stable)
     scrollerRef.value?.restoreScroll();

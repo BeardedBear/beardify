@@ -1,6 +1,7 @@
 import { Paging } from "@/@types/Paging";
 import { PlaylistTrack } from "@/@types/Playlist";
 import { PublicUser } from "@/@types/PublicUser";
+import { TrackToRemove } from "@/@types/Track";
 import { instance } from "@/api";
 import { cleanUrl } from "@/helpers/urls";
 import { useAuth } from "@/views/auth/AuthStore";
@@ -11,6 +12,22 @@ import { useAuth } from "@/views/auth/AuthStore";
  */
 export function isPlaylistOwner(owner: PublicUser): boolean {
   return owner.id === useAuth().me?.id;
+}
+
+/**
+ * Remove one or more items from a playlist.
+ * @param playlistId - The Spotify playlist ID
+ * @param items - Track/episode URIs to remove
+ * @param snapshotId - The playlist's current snapshot ID
+ */
+export async function removePlaylistItems(
+  playlistId: string,
+  items: TrackToRemove[],
+  snapshotId: string,
+): Promise<void> {
+  await instance().delete(`playlists/${playlistId}/items`, {
+    data: { items, snapshot_id: snapshotId },
+  });
 }
 
 let tempAlbums: PlaylistTrack[] = [];
@@ -39,7 +56,7 @@ export async function albumAllreadyExist(
   tempAlbums = tempAlbums.concat(data.items);
   return data.next
     ? albumAllreadyExist(cleanUrl(data.next), albumId, false)
-    : tempAlbums.some((e) => e.track.album.id === albumId);
+    : tempAlbums.some((e) => e.item.album.id === albumId);
 }
 
 let tempTracks: PlaylistTrack[] = [];
@@ -68,5 +85,5 @@ export async function trackAllreadyExist(
   tempTracks = tempTracks.concat(data.items);
   return data.next
     ? trackAllreadyExist(cleanUrl(data.next), trackId, false)
-    : tempTracks.some((e) => e.track.uri === trackId);
+    : tempTracks.some((e) => e.item.uri === trackId);
 }

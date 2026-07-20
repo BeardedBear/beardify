@@ -40,7 +40,7 @@ const sidebarStore = useSidebar();
 const authStore = useAuth();
 
 async function add(albumId: string, playlistId: string): Promise<void> {
-  if (await albumAllreadyExist(`playlists/${playlistId}/tracks?limit=50`, albumId)) {
+  if (await albumAllreadyExist(`playlists/${playlistId}/items?limit=50`, albumId)) {
     notification({
       msg: "This album allready exists in this collection",
       type: NotificationType.Error,
@@ -52,7 +52,7 @@ async function add(albumId: string, playlistId: string): Promise<void> {
         notification({ msg: "Album has no tracks", type: NotificationType.Error });
         return;
       }
-      await instance().post(`playlists/${playlistId}/tracks?uris=${albumTracksResponse.data.items[0].uri}`);
+      await instance().post(`playlists/${playlistId}/items?uris=${albumTracksResponse.data.items[0].uri}`);
       dialogStore.close();
       notification({
         msg: "Album added",

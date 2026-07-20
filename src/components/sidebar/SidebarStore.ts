@@ -6,6 +6,7 @@ import { SimplifiedPlaylist } from "@/@types/Playlist";
 import { Sidebar } from "@/@types/Sidebar";
 import { instance } from "@/api";
 import { isACollection } from "@/helpers/isCollection";
+import { removeFromLibrary } from "@/helpers/library";
 import { notification } from "@/helpers/notifications";
 import { sleep } from "@/helpers/sleep";
 import { cleanUrl } from "@/helpers/urls";
@@ -113,7 +114,7 @@ export const useSidebar = defineStore("sidebar", {
 
       // Check if the user is the owner of the playlist
       try {
-        await instance().delete(`playlists/${playlistId}/followers`);
+        await removeFromLibrary("playlist", playlistId);
         this.playlists = this.playlists.filter((playlist) => playlist.id !== playlistId);
         this.collections = this.collections.filter((collection) => collection.id !== playlistId);
         playlistStore.followed = false;

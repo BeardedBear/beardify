@@ -88,7 +88,7 @@ onMounted(() => {
 });
 
 function sumDuration(tracks: PlaylistTrack[]): number {
-  return tracks.map((t: PlaylistTrack) => (t.track ? t.track.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
+  return tracks.map((t: PlaylistTrack) => (t.item ? t.item.duration_ms : 0)).reduce((acc, value) => acc + value, 0);
 }
 </script>
 

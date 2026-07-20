@@ -85,8 +85,8 @@ onMounted(async () => {
     const remaining = firstPage.next
       ? await fetchAllPages<PlaylistTrack>((u) => publicSpotifyGet<Paging<PlaylistTrack>>(u), firstPage.next)
       : [];
-    const tracks = firstPage.items.concat(remaining).filter((item) => item.track);
-    albumList.value = removeDuplicatesAlbums(tracks.map((t) => t.track.album));
+    const tracks = firstPage.items.concat(remaining).filter((item) => item.item);
+    albumList.value = removeDuplicatesAlbums(tracks.map((t) => t.item.album));
   } catch (err) {
     error.value = errorMessage(err);
   } finally {

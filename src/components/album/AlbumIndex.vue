@@ -69,6 +69,7 @@ import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
 import { playAlbum } from "@/helpers/playAlbum"; // Import the playAlbum helper
+import { removePlaylistItems } from "@/helpers/playlist";
 import router from "@/router";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -135,9 +136,7 @@ async function deleteAlbum(albumId: string): Promise<void> {
       return;
     }
     try {
-      await instance().delete(`playlists/${currentRouteId}/tracks`, {
-        data: { snapshot_id: playlistStore.playlist.snapshot_id, tracks: tracks },
-      });
+      await removePlaylistItems(`${currentRouteId}`, tracks, playlistStore.playlist.snapshot_id);
       playlistStore.removeTracks(tracks);
       notification({ msg: "Album successfully removed from playlist", type: NotificationType.Success });
     } catch (error: any) {

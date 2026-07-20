@@ -1,12 +1,7 @@
 import { defineStore } from "pinia";
 
 import { AlbumSimplified } from "@/@types/Album";
-import {
-  Artist,
-  ArtistPage,
-  ArtistTopTracks,
-  RelatedArtists,
-} from "@/@types/Artist";
+import { Artist, ArtistPage, ArtistTopTracks } from "@/@types/Artist";
 import { defaultArtist } from "@/@types/Defaults";
 import { NotificationType } from "@/@types/Notification";
 import { Paging } from "@/@types/Paging";
@@ -17,6 +12,7 @@ import {
   processDiscogsReleases,
 } from "@/helpers/discogs";
 import { normalizeString } from "@/helpers/helper";
+import { isInLibrary, removeFromLibrary, saveToLibrary } from "@/helpers/library";
 import {
   buildBaseTitleMap,
   buildReleaseTypeMap,
@@ -160,7 +156,6 @@ export const useArtist = defineStore("artist", {
       this.albumsCompilation = [];
       this.eps = [];
       this.singles = [];
-      this.relatedArtists = { artists: [] };
       this.followStatus = false;
     },
 
@@ -291,10 +286,7 @@ export const useArtist = defineStore("artist", {
 
     async getFollowStatus(artistId: string) {
       try {
-        const { data } = await instance().get<boolean[]>(
-          `me/following/contains?type=artist&ids=${artistId}`,
-        );
-        this.followStatus = data[0] ?? false;
+        this.followStatus = await isInLibrary("artist", artistId);
       } catch {
         // silent fail
       }
@@ -359,17 +351,6 @@ export const useArtist = defineStore("artist", {
         this.timelineLoading = false;
       } finally {
         this.reclassifying = false;
-      }
-    },
-
-    async getRelatedArtists(artistId: string) {
-      try {
-        const { data } = await instance().get<RelatedArtists>(
-          `artists/${artistId}/related-artists`,
-        );
-        this.relatedArtists.artists = data.artists.slice(0, 15);
-      } catch {
-        // silent fail
       }
     },
 
@@ -626,9 +607,9 @@ export const useArtist = defineStore("artist", {
       this.followStatus = !previousStatus;
       try {
         if (previousStatus) {
-          await instance().delete(`me/following?type=artist&ids=${artistId}`);
+          await removeFromLibrary("artist", artistId);
         } else {
-          await instance().put(`me/following?type=artist&ids=${artistId}`);
+          await saveToLibrary("artist", artistId);
         }
       } catch {
         this.followStatus = previousStatus;
@@ -660,7 +641,6 @@ export const useArtist = defineStore("artist", {
     headerHeight: 0,
     musicbrainzArtist: null,
     reclassifying: false,
-    relatedArtists: { artists: [] },
     releaseBaseTitles: new Map(),
     releaseTypes: new Map(),
     scrolledDown: false,

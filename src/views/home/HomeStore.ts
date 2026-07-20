@@ -17,6 +17,9 @@ export const useHome = defineStore("home", {
       this.recommendedAlbums = [];
     },
 
+    // Uses the deprecated /recommendations endpoint on purpose: Beardify's client ID
+    // predates Spotify's Nov 27, 2024 cutoff and keeps extended quota access. Self-hosted
+    // forks registering their own client ID after that date will get a 403 here.
     async getRecommendedAlbums() {
       interface Top {
         seed: unknown;

@@ -7,9 +7,9 @@ import { Playlist, PlaylistPage, PlaylistTrack } from "@/@types/Playlist";
 import { TrackToRemove } from "@/@types/Track";
 import { instance } from "@/api";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
+import { isInLibrary, saveToLibrary } from "@/helpers/library";
 import { notification } from "@/helpers/notifications";
 import { cleanUrl } from "@/helpers/urls";
-import { useAuth } from "@/views/auth/AuthStore";
 
 export const usePlaylist = defineStore("playlist", {
   actions: {
@@ -22,7 +22,7 @@ export const usePlaylist = defineStore("playlist", {
 
     async followPlaylist(playlistId: string) {
       try {
-        await instance().put(`playlists/${playlistId}/followers`);
+        await saveToLibrary("playlist", playlistId);
         this.followed = true;
         useSidebar().refreshPlaylists();
       } catch {
@@ -34,9 +34,7 @@ export const usePlaylist = defineStore("playlist", {
       try {
         const cleanedUrl = cleanUrl(url);
         this.playlist = (await instance().get<Playlist>(cleanedUrl)).data;
-        this.followed = (
-          await instance().get<boolean[]>(`playlists/${this.playlist.id}/followers/contains?ids=${useAuth().me?.id}`)
-        ).data.shift();
+        this.followed = await isInLibrary("playlist", this.playlist.id);
       } catch (error: unknown) {
         if (import.meta.env.DEV) console.error("Error fetching playlist:", error);
         this.playlist = defaultPlaylist;
@@ -52,7 +50,7 @@ export const usePlaylist = defineStore("playlist", {
         const e = await instance().get<Paging<PlaylistTrack>>(cleanedUrl);
         // If tracks were reset by a newer navigation, abandon this pagination chain
         if (this.tracksVersion !== v) return;
-        this.tracks = this.tracks.concat(e.data.items.filter((item: PlaylistTrack) => item.track));
+        this.tracks = this.tracks.concat(e.data.items.filter((item: PlaylistTrack) => item.item));
         if (e.data.next) await this.getTracks(e.data.next, v);
       } catch (error: unknown) {
         if (import.meta.env.DEV) console.error("Error fetching playlist tracks:", error);
@@ -70,13 +68,13 @@ export const usePlaylist = defineStore("playlist", {
     },
 
     removeSong(songUri: string) {
-      this.tracks = this.tracks.filter((t) => t.track.uri !== songUri);
+      this.tracks = this.tracks.filter((t) => t.item.uri !== songUri);
     },
 
     removeTracks(tracks: TrackToRemove[]) {
       // Use Set for O(1) lookup instead of array.includes() which is O(n)
       const urisToRemove = new Set(tracks.map((track) => track.uri));
-      this.tracks = this.tracks.filter((track) => !urisToRemove.has(track.track.uri));
+      this.tracks = this.tracks.filter((track) => !urisToRemove.has(track.item.uri));
     },
 
     async resetTracks() {
@@ -87,7 +85,7 @@ export const usePlaylist = defineStore("playlist", {
 
     async updateCollectionPosition(oldIndex: number, newIndex: number) {
       try {
-        await instance().put(`playlists/${this.playlist.id}/tracks`, {
+        await instance().put(`playlists/${this.playlist.id}/items`, {
           insert_before: oldIndex < newIndex ? newIndex + 1 : newIndex,
           range_start: oldIndex,
         });

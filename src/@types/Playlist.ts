@@ -34,7 +34,7 @@ export interface PlaylistTrack {
   added_at: number;
   added_by: PublicUser;
   is_local: boolean;
-  track: Track;
+  item: Track;
 }
 export interface PlaylistTracksRef {
   href: string;
