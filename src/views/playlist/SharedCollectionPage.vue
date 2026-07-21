@@ -27,38 +27,13 @@
         </header>
         <template v-if="topTiers">
           <div class="tier-section">
-            <template v-if="topTierGroups[0].length">
-              <div class="tier-heading">{{ getTierLabel(0, topTiers) }}</div>
-              <div class="tier-grid tier-grid-0">
-                <SharedAlbumCard
-                  v-for="album in topTierGroups[0]"
-                  :key="album.id"
-                  :album="album"
-                  :rank="rankOf(album.id)"
-                />
-              </div>
-            </template>
-            <template v-if="topTierGroups[1].length">
-              <div class="tier-heading">{{ getTierLabel(1, topTiers) }}</div>
-              <div class="tier-grid tier-grid-1">
-                <SharedAlbumCard
-                  v-for="album in topTierGroups[1]"
-                  :key="album.id"
-                  :album="album"
-                  :rank="rankOf(album.id)"
-                />
-              </div>
-            </template>
-            <template v-if="topTierGroups[2].length">
-              <div class="tier-heading">{{ getTierLabel(2, topTiers) }}</div>
-              <div class="tier-grid tier-grid-2">
-                <SharedAlbumCard
-                  v-for="album in topTierGroups[2]"
-                  :key="album.id"
-                  :album="album"
-                  :rank="rankOf(album.id)"
-                />
-              </div>
+            <template v-for="(group, i) in topTierGroups" :key="i">
+              <template v-if="group.length">
+                <div class="tier-heading">{{ getTierLabel(i, topTiers) }}</div>
+                <div :class="['tier-grid', `tier-grid-${i}`]">
+                  <SharedAlbumCard v-for="album in group" :key="album.id" :album="album" :rank="rankOf(album.id)" />
+                </div>
+              </template>
             </template>
           </div>
         </template>
@@ -129,18 +104,8 @@ import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
-import {
-  buildRankIndex,
-  displayTierLabel,
-  getTierColor,
-  getTierLabel,
-  groupByTierList,
-  parseCollectionRankingMode,
-  splitTopTiers,
-  TierList,
-  TopTiers,
-  UNSORTED_TIER_LABEL,
-} from "@/helpers/collectionOptions";
+import { useCollectionRanking } from "@/composables/useCollectionRanking";
+import { displayTierLabel, getTierColor, getTierLabel, groupByTierList, splitTopTiers, UNSORTED_TIER_LABEL } from "@/helpers/collectionOptions";
 import { fetchAllPages } from "@/helpers/pagination";
 import { publicSpotifyGet } from "@/helpers/publicSpotify";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
@@ -154,13 +119,8 @@ const error = ref("");
 const playlist = ref<Playlist>(defaultPlaylist);
 const albumList = ref<AlbumSimplified[]>([]);
 const beardifyUrl = absoluteRouteUrl(RouteName.Collection, props.id);
-const rankingMode = computed(() => parseCollectionRankingMode(playlist.value.description));
-const topTiers = computed<null | TopTiers>(() => (rankingMode.value.type === "top" ? rankingMode.value.tiers : null));
-const tierList = computed<null | TierList>(() =>
-  rankingMode.value.type === "tierlist" ? rankingMode.value.tiers : null,
-);
-
-const rankIndex = computed(() => buildRankIndex(albumList.value));
+const description = computed(() => playlist.value.description);
+const { rankOf, tierList, topTiers } = useCollectionRanking(description, albumList);
 
 const topTierGroups = computed<[AlbumSimplified[], AlbumSimplified[], AlbumSimplified[]]>(() =>
   topTiers.value ? splitTopTiers(albumList.value, topTiers.value) : [[], [], []],
@@ -175,10 +135,6 @@ function errorMessage(err: unknown): string {
   if (err.response.status === 404) return "This collection doesn't exist.";
   if (err.response.status === 403) return "This collection is private. Ask the owner to make it public.";
   return "This collection is unavailable. Please try again later.";
-}
-
-function rankOf(id: string): number {
-  return (rankIndex.value.get(id) ?? -1) + 1;
 }
 
 onMounted(async () => {

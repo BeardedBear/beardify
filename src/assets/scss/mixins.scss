@@ -48,6 +48,91 @@
     "wght" var(--font-variation-wght-bold);
 }
 
+// Collapses .metas to zero height by default and pins the card's own box to
+// a fixed square: aspect-ratio + align-self: start prevents grid/flex
+// stretch from growing the whole row to match .visual's revealed height
+// once it pops out (see hover-metas-reveal). Shared by AlbumIndex.vue and
+// SharedAlbumCard.vue — pass the cover element's own class since it differs
+// between them (.cover vs .album-cover).
+@mixin hover-metas-base($cover-selector) {
+  align-self: start;
+  aspect-ratio: 1 / 1;
+
+  .visual {
+    display: flex;
+    flex-direction: column;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  #{$cover-selector} {
+    margin-bottom: 0;
+  }
+
+  .metas {
+    margin-top: 0;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      margin-top ease 0.2s,
+      max-height ease 0.2s,
+      opacity ease 0.15s;
+  }
+}
+
+// The revealed state: .visual pops a background card outside the item's own
+// box (no `bottom`, so it grows downward over whatever's below instead of
+// pushing it) and .metas becomes visible. Include inside whatever trigger
+// selector applies (:hover, .actions-open, ...).
+@mixin hover-metas-reveal {
+  .visual {
+    background-color: var(--bg-color-light);
+    border-radius: 0.6rem;
+    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 40%);
+    padding: 0.6rem;
+    z-index: 5;
+  }
+
+  .metas {
+    margin-top: 0.6rem;
+    max-height: 10rem;
+    opacity: 1;
+  }
+}
+
+// Overlays the info on top of the cover (top edge) instead of growing the
+// card past its own box. Used where downward growth would get clipped by an
+// ancestor's overflow (e.g. a horizontally scrolling row — overflow-x: auto
+// forces overflow-y: auto too, so anything popping outside gets clipped
+// regardless of direction; staying within the card's own square avoids it).
+@mixin hover-metas-above-base {
+  .metas {
+    background: linear-gradient(rgb(0 0 0 / 85%) 40%, rgb(0 0 0 / 0%));
+    border-radius: 0.6rem 0.6rem 0 0;
+    color: #fff;
+    left: 0;
+    margin: 0;
+    padding: 0.6rem;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: opacity ease 0.15s;
+    z-index: 3;
+  }
+}
+
+@mixin hover-metas-above-reveal {
+  .metas {
+    margin: 0;
+    max-height: none;
+    opacity: 1;
+  }
+}
+
 @keyframes pop-content {
   from {
     opacity: 0;

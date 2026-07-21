@@ -101,7 +101,7 @@ export function getTierColor(index: number, total: number): string {
   return `hsl(${hue} 70% 40% / 50%)`;
 }
 
-export function getTierLabel(tierIndex: 0 | 1 | 2, tiers: TopTiers): string {
+export function getTierLabel(tierIndex: number, tiers: TopTiers): string {
   if (tierIndex === 0) return `Top ${tiers[0]}`;
   if (tierIndex === 1) return `${tiers[0] + 1}–${tiers[0] + tiers[1]}`;
   return `${tiers[0] + tiers[1] + 1}+`;

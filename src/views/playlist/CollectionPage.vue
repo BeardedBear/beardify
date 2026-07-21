@@ -14,62 +14,26 @@
           </template>
           <template v-else-if="topTiers">
             <div class="tier-section">
-              <template v-if="tier0.length">
-                <div class="tier-heading">{{ getTierLabel(0, topTiers) }}</div>
-                <VueDraggable
-                  v-model="tier0"
-                  v-bind="dragOptions"
-                  :class="['tier-grid', 'tier-grid-0', { 'draggable-grid': !dragOptions.disabled }]"
-                  @end="handleTopTierEnd"
-                >
-                  <Album
-                    v-for="item in tier0"
-                    :key="item.id"
-                    :album="item"
-                    :rank="rankOf(item.id)"
-                    can-delete
-                    can-save
-                    with-artists
-                  />
-                </VueDraggable>
-              </template>
-              <template v-if="tier1.length">
-                <div class="tier-heading">{{ getTierLabel(1, topTiers) }}</div>
-                <VueDraggable
-                  v-model="tier1"
-                  v-bind="dragOptions"
-                  :class="['tier-grid', 'tier-grid-1', { 'draggable-grid': !dragOptions.disabled }]"
-                  @end="handleTopTierEnd"
-                >
-                  <Album
-                    v-for="item in tier1"
-                    :key="item.id"
-                    :album="item"
-                    :rank="rankOf(item.id)"
-                    can-delete
-                    can-save
-                    with-artists
-                  />
-                </VueDraggable>
-              </template>
-              <template v-if="tier2.length">
-                <div class="tier-heading">{{ getTierLabel(2, topTiers) }}</div>
-                <VueDraggable
-                  v-model="tier2"
-                  v-bind="dragOptions"
-                  :class="['tier-grid', 'tier-grid-2', { 'draggable-grid': !dragOptions.disabled }]"
-                  @end="handleTopTierEnd"
-                >
-                  <Album
-                    v-for="item in tier2"
-                    :key="item.id"
-                    :album="item"
-                    :rank="rankOf(item.id)"
-                    can-delete
-                    can-save
-                    with-artists
-                  />
-                </VueDraggable>
+              <template v-for="(group, i) in topTierGroups" :key="i">
+                <template v-if="group.length">
+                  <div class="tier-heading">{{ getTierLabel(i, topTiers) }}</div>
+                  <VueDraggable
+                    v-model="topTierGroups[i]"
+                    v-bind="dragOptions"
+                    :class="['tier-grid', `tier-grid-${i}`, { 'draggable-grid': !dragOptions.disabled }]"
+                    @end="handleTopTierEnd"
+                  >
+                    <Album
+                      v-for="item in group"
+                      :key="item.id"
+                      :album="item"
+                      :rank="rankOf(item.id)"
+                      can-delete
+                      can-save
+                      with-artists
+                    />
+                  </VueDraggable>
+                </template>
               </template>
             </div>
           </template>
@@ -189,18 +153,16 @@ import { useSidebar } from "@/components/sidebar/SidebarStore";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
+import { useCollectionRanking } from "@/composables/useCollectionRanking";
 import {
   buildCollectionDescription,
-  buildRankIndex,
   displayTierLabel,
   getTierColor,
   getTierLabel,
   groupByTierList,
-  parseCollectionRankingMode,
   splitTopTiers,
   stripCollectionTags,
   TierList,
-  TopTiers,
   UNSORTED_TIER_LABEL,
 } from "@/helpers/collectionOptions";
 import { notification } from "@/helpers/notifications";
@@ -215,10 +177,8 @@ const albumList = ref<AlbumSimplified[]>([]);
 const authStore = useAuth();
 const isDragging = ref(false);
 const scrollerRef = ref<InstanceType<typeof PageScroller>>();
-const tier0 = ref<AlbumSimplified[]>([]);
-const tier1 = ref<AlbumSimplified[]>([]);
-const tier2 = ref<AlbumSimplified[]>([]);
 const tierGroups = ref<AlbumSimplified[][]>([]);
+const topTierGroups = ref<AlbumSimplified[][]>([[], [], []]);
 const unsortedCanScrollLeft = ref(false);
 const unsortedCanScrollRight = ref(false);
 const unsortedScrollRef = ref<HTMLElement | null>(null);
@@ -236,14 +196,8 @@ const albumListFiltered = computed<AlbumSimplified[]>(() =>
   }),
 );
 
-const rankIndex = computed(() => buildRankIndex(albumList.value));
-const rankingMode = computed(() => parseCollectionRankingMode(playlistStore.playlist.description));
-const topTiers = computed<null | TopTiers>(() =>
-  rankingMode.value.type === "top" ? rankingMode.value.tiers : null,
-);
-const tierList = computed<null | TierList>(() =>
-  rankingMode.value.type === "tierlist" ? rankingMode.value.tiers : null,
-);
+const description = computed(() => playlistStore.playlist.description);
+const { rankOf, tierList, topTiers } = useCollectionRanking(description, albumList);
 
 const AUTO_SCROLL_SENSITIVITY = 150;
 const AUTO_SCROLL_MAX_SPEED = 100;
@@ -309,11 +263,7 @@ function handleTierListEnd(): void {
 }
 
 function handleTopTierEnd(): void {
-  applyReorder([...tier0.value, ...tier1.value, ...tier2.value]);
-}
-
-function rankOf(id: string): number {
-  return (rankIndex.value.get(id) ?? -1) + 1;
+  applyReorder(topTierGroups.value.flat());
 }
 
 function scrollUnsorted(direction: -1 | 1): void {
@@ -330,11 +280,16 @@ function scrollUnsorted(direction: -1 | 1): void {
  * shrinking — it always absorbs whatever remains.
  */
 function shrinkTiersForRemovedAlbums(list: TierList, removedIds: string[]): null | TierList {
+  const tierIndexByAlbumId = new Map<string, number>();
+  tierGroups.value.forEach((group, tierIndex) => {
+    group.forEach((album) => tierIndexByAlbumId.set(album.id, tierIndex));
+  });
+
   const decrements = new Array<number>(list.length).fill(0);
   let matched = false;
   removedIds.forEach((id) => {
-    const tierIndex = tierGroups.value.findIndex((group) => group.some((album) => album.id === id));
-    if (tierIndex === -1 || tierIndex >= list.length) return;
+    const tierIndex = tierIndexByAlbumId.get(id);
+    if (tierIndex === undefined || tierIndex >= list.length) return;
     decrements[tierIndex]++;
     matched = true;
   });
@@ -399,13 +354,7 @@ function syncTierSizesToDescription(): void {
 }
 
 function syncTopTiers(): void {
-  if (!topTiers.value) {
-    tier0.value = [];
-    tier1.value = [];
-    tier2.value = [];
-    return;
-  }
-  [tier0.value, tier1.value, tier2.value] = splitTopTiers(albumList.value, topTiers.value);
+  topTierGroups.value = topTiers.value ? splitTopTiers(albumList.value, topTiers.value) : [[], [], []];
 }
 
 function updateUnsortedScrollState(): void {

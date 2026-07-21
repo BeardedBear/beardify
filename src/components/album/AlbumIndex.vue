@@ -336,108 +336,31 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   gap: 0.8rem;
 }
 
-// aspect-ratio pins .album's own box to the cover's square size regardless of
-// .visual's revealed content. align-self: start is required too — the grid
-// and flex containers here default to `stretch`, which otherwise grows the
-// item (and the whole row, flickering the layout) to match .visual once it
-// pops out on hover. .visual is always absolutely positioned inside that
-// fixed box (no `bottom`, so it's free to extend past it downward on reveal,
-// over any content below, instead of pushing it).
 .album.hover-metas {
-  align-self: start;
-  aspect-ratio: 1 / 1;
-
-  .visual {
-    display: flex;
-    flex-direction: column;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-
-  .cover {
-    margin-bottom: 0;
-  }
-
-  .metas {
-    margin-top: 0;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition:
-      margin-top ease 0.2s,
-      max-height ease 0.2s,
-      opacity ease 0.15s;
-  }
+  @include hover-metas-base(".cover");
 
   // .dragging suppresses the reveal (any card the pointer passes over while
   // dragging another one would otherwise pop its info open mid-drag).
-  &.actions-open:not(.dragging) .visual {
-    background-color: var(--bg-color-light);
-    border-radius: 0.6rem;
-    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 40%);
-    padding: 0.6rem;
-    z-index: 5;
-  }
-
-  &.actions-open:not(.dragging) .metas {
-    margin-top: 0.6rem;
-    max-height: 10rem;
-    opacity: 1;
+  &.actions-open:not(.dragging) {
+    @include hover-metas-reveal;
   }
 }
 
-// Overlays the info on top of the cover (top edge) instead of growing the
-// card past its own box. The regular .hover-metas grow-outside mechanic
-// needs its ancestor's overflow to stay visible, which the horizontally
-// scrolling Unsorted row can't do — overflow-x: auto forces overflow-y:
-// auto too (an element can't scroll one axis and stay clip-free on the
-// other), so anything popping outside .unsorted-scroll's box gets clipped
-// regardless of direction. Staying within the card's own square avoids that
-// entirely.
 .album.hover-metas.metas-above {
-  .metas {
-    background: linear-gradient(rgb(0 0 0 / 85%) 40%, rgb(0 0 0 / 0%));
-    border-radius: 0.6rem 0.6rem 0 0;
-    color: #fff;
-    left: 0;
-    margin: 0;
-    padding: 0.6rem;
-    pointer-events: none;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: opacity ease 0.15s;
-    z-index: 3;
-  }
+  @include hover-metas-above-base;
 
-  &.actions-open:not(.dragging) .metas {
-    margin: 0;
-    max-height: none;
-    opacity: 1;
+  &.actions-open:not(.dragging) {
+    @include hover-metas-above-reveal;
   }
 }
 
 @media (hover: hover) {
-  .album.hover-metas:hover:not(.dragging) .visual {
-    background-color: var(--bg-color-light);
-    border-radius: 0.6rem;
-    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 40%);
-    padding: 0.6rem;
-    z-index: 5;
+  .album.hover-metas:hover:not(.dragging) {
+    @include hover-metas-reveal;
   }
 
-  .album.hover-metas:hover:not(.dragging) .metas {
-    margin-top: 0.6rem;
-    max-height: 10rem;
-    opacity: 1;
-  }
-
-  .album.hover-metas.metas-above:hover:not(.dragging) .metas {
-    margin: 0;
-    max-height: none;
-    opacity: 1;
+  .album.hover-metas.metas-above:hover:not(.dragging) {
+    @include hover-metas-above-reveal;
   }
 }
 

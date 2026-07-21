@@ -51,53 +51,13 @@ defineProps<{
   gap: 0.8rem;
 }
 
-// aspect-ratio pins .album's own box to the cover's square size regardless of
-// .visual's revealed content. align-self: start is required too — the grid
-// and flex containers here default to `stretch`, which otherwise grows the
-// item (and the whole row, flickering the layout) to match .visual once it
-// pops out on hover. .visual is always absolutely positioned inside that
-// fixed box (no `bottom`, so it's free to extend past it downward on reveal,
-// over any content below, instead of pushing it).
 .album.hover-metas {
-  align-self: start;
-  aspect-ratio: 1 / 1;
-
-  .visual {
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-
-  .album-cover {
-    margin-bottom: 0;
-  }
-
-  .metas {
-    margin-top: 0;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition:
-      margin-top ease 0.2s,
-      max-height ease 0.2s,
-      opacity ease 0.15s;
-  }
+  @include hover-metas-base(".album-cover");
 }
 
 @media (hover: hover) {
-  .album.hover-metas:hover .visual {
-    background-color: var(--bg-color-light);
-    border-radius: 0.6rem;
-    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 40%);
-    padding: 0.6rem;
-    z-index: 5;
-  }
-
-  .album.hover-metas:hover .metas {
-    margin-top: 0.6rem;
-    max-height: 10rem;
-    opacity: 1;
+  .album.hover-metas:hover {
+    @include hover-metas-reveal;
   }
 }
 
