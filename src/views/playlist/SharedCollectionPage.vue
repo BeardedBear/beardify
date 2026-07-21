@@ -47,6 +47,23 @@
             </template>
           </div>
         </template>
+        <template v-else-if="tierList">
+          <div class="tier-section">
+            <template v-for="(tier, i) in tierList" :key="i">
+              <template v-if="tierGroups[i]?.length">
+                <div
+                  class="tier-heading tier-heading-colored"
+                  :style="{ backgroundColor: getTierColor(i, tierList.length) }"
+                >
+                  {{ displayTierLabel(tier.label) }}
+                </div>
+                <div class="tier-grid tier-grid-dynamic">
+                  <SharedAlbumCard v-for="album in tierGroups[i]" :key="album.id" :album="album" />
+                </div>
+              </template>
+            </template>
+          </div>
+        </template>
         <div v-else class="album-list">
           <SharedAlbumCard v-for="album in albumList" :key="album.id" :album="album" />
         </div>
@@ -69,7 +86,14 @@ import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
-import { getTierLabel, parseTopTiers, TopTiers } from "@/helpers/collectionOptions";
+import {
+  displayTierLabel,
+  getTierColor,
+  getTierLabel,
+  parseCollectionRankingMode,
+  TierList,
+  TopTiers,
+} from "@/helpers/collectionOptions";
 import { fetchAllPages } from "@/helpers/pagination";
 import { publicSpotifyGet } from "@/helpers/publicSpotify";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
@@ -82,7 +106,11 @@ const error = ref("");
 const playlist = ref<Playlist>(defaultPlaylist);
 const albumList = ref<AlbumSimplified[]>([]);
 const beardifyUrl = absoluteRouteUrl(RouteName.Collection, props.id);
-const topTiers = computed<null | TopTiers>(() => parseTopTiers(playlist.value.description));
+const rankingMode = computed(() => parseCollectionRankingMode(playlist.value.description));
+const topTiers = computed<null | TopTiers>(() => (rankingMode.value.type === "top" ? rankingMode.value.tiers : null));
+const tierList = computed<null | TierList>(() =>
+  rankingMode.value.type === "tierlist" ? rankingMode.value.tiers : null,
+);
 
 const tier0 = computed<AlbumSimplified[]>(() => (topTiers.value ? albumList.value.slice(0, topTiers.value[0]) : []));
 const tier1 = computed<AlbumSimplified[]>(() =>
@@ -91,6 +119,19 @@ const tier1 = computed<AlbumSimplified[]>(() =>
 const tier2 = computed<AlbumSimplified[]>(() =>
   topTiers.value ? albumList.value.slice(topTiers.value[0] + topTiers.value[1]) : [],
 );
+
+const tierGroups = computed<AlbumSimplified[][]>(() => {
+  const list = tierList.value;
+  if (!list) return [];
+  let offset = 0;
+  return list.map((tier, index) => {
+    if (index === list.length - 1) return albumList.value.slice(offset);
+    const size = tier.size ?? 0;
+    const group = albumList.value.slice(offset, offset + size);
+    offset += size;
+    return group;
+  });
+});
 
 function errorMessage(err: unknown): string {
   if (!(err instanceof HTTPError)) return "This collection is unavailable. Please try again later.";
@@ -232,6 +273,11 @@ onMounted(async () => {
   }
 }
 
+.tier-heading-colored {
+  color: #fff;
+  text-shadow: 0 0.1rem 0.2rem rgb(0 0 0 / 40%);
+}
+
 .tier-grid {
   display: grid;
   gap: 2rem;
@@ -253,4 +299,7 @@ onMounted(async () => {
   grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
 }
 
+.tier-grid-dynamic {
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+}
 </style>

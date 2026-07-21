@@ -66,6 +66,7 @@
           <div class="name">
             {{ playlist.displayName }}
             <span v-if="playlist.isTop" class="top-badge" title="Top ranking enabled">TOP</span>
+            <span v-if="playlist.isTierList" class="tier-badge" title="Tier list enabled">TIER</span>
           </div>
           <VisibilityIcon :playlist="playlist" />
           <ButtonIndex
@@ -150,7 +151,7 @@ import { useSidebar } from "@/components/sidebar/SidebarStore";
 import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
-import { parseTopTiers } from "@/helpers/collectionOptions";
+import { parseTierList, parseTopTiers } from "@/helpers/collectionOptions";
 import { useAuth } from "@/views/auth/AuthStore";
 
 const dialogStore = useDialog();
@@ -179,6 +180,7 @@ const filteredCollections = computed(() => {
     .map((playlist) => ({
       ...playlist,
       displayName: playlist.name.replace("#Collection ", "").replace("#collection ", ""),
+      isTierList: parseTierList(playlist.description) !== null,
       isTop: parseTopTiers(playlist.description) !== null,
       lowerName: playlist.name.toLowerCase(),
     }))
@@ -262,8 +264,8 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
     transition: transform 0.2s;
   }
 
+  .tier-badge,
   .top-badge {
-    background-color: var(--primary-color);
     border-radius: 0.3rem;
     color: white;
     font-size: 0.6rem;
@@ -271,6 +273,14 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
     margin-left: 0.4rem;
     padding: 0.1rem 0.3rem;
     vertical-align: middle;
+  }
+
+  .top-badge {
+    background-color: var(--primary-color);
+  }
+
+  .tier-badge {
+    background: linear-gradient(90deg, hsl(0deg 70% 40%), hsl(120deg 70% 40%));
   }
 
   &:hover {

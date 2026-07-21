@@ -65,47 +65,18 @@
             </div>
           </div>
         </div>
-        <div v-if="isEditable && isCollection" class="option-list section">
-          <div class="option">
-            <label for="topRanking">Top ranking</label>
-            <div class="buttons">
-              <ButtonIndex :variant="!topEnabled ? 'primary' : 'default'" @click="topEnabled = false">
-                Off
-              </ButtonIndex>
-              <ButtonIndex :variant="topEnabled ? 'primary' : 'default'" @click="topEnabled = true">
-                On
-              </ButtonIndex>
-            </div>
-          </div>
-        </div>
-        <div v-if="isEditable && isCollection && topEnabled" class="option-list section">
-          <div class="option">
-            <label for="topPreset">Preset</label>
-            <div class="buttons">
-              <ButtonIndex
-                v-for="preset in TOP_PRESETS"
-                :key="preset.id"
-                :variant="isSelectedPreset(preset) ? 'primary' : 'default'"
-                @click="selectedTiers = preset.tiers"
-              >
-                {{ preset.label }}
-              </ButtonIndex>
-            </div>
-          </div>
-        </div>
+        <RankingModeEditor
+          v-if="isEditable && isCollection"
+          v-model="values.rankingMode"
+          :description-text="values.description"
+        />
       </div>
       <div class="actions">
         <ButtonIndex @click="remove()">Delete {{ isCollection ? "collection" : "playlist" }}</ButtonIndex>
         <ButtonIndex
           v-if="isEditable"
           variant="primary"
-          @click="
-            dialogStore.updatePlaylist(
-              { ...values, topTiers: topEnabled ? selectedTiers : null },
-              dialogStore.playlistId,
-              isCollection,
-            )
-          "
+          @click="dialogStore.updatePlaylist(values, dialogStore.playlistId, isCollection)"
         >
           Confirm
         </ButtonIndex>
@@ -127,10 +98,11 @@ import { Playlist } from "@/@types/Playlist";
 import { instance } from "@/api";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Dialog from "@/components/dialog/DialogWrap.vue";
+import RankingModeEditor from "@/components/dialog/RankingModeEditor.vue";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loading from "@/components/ui/LoadingDots.vue";
-import { parseTopTiers, stripCollectionTags, TOP_PRESETS, TopPreset, TopTiers } from "@/helpers/collectionOptions";
+import { parseCollectionRankingMode, stripCollectionTags } from "@/helpers/collectionOptions";
 import { isACollection } from "@/helpers/isCollection";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
@@ -147,16 +119,10 @@ const values: UpdatePlaylistValues = reactive({
   description: "",
   name: "",
   public: false,
-  topTiers: null,
+  rankingMode: { type: "off" },
 });
 const isCollection = ref<boolean>(false);
 const isEditable = ref<boolean>(false);
-const topEnabled = ref<boolean>(false);
-const selectedTiers = ref<TopTiers>(TOP_PRESETS[1].tiers);
-
-function isSelectedPreset(preset: TopPreset): boolean {
-  return preset.tiers.join("-") === selectedTiers.value.join("-");
-}
 
 watchEffect(async () => {
   if (dialogStore.show && dialogStore.type === "editPlaylist") {
@@ -169,9 +135,7 @@ watchEffect(async () => {
       values.description = cleanDescription === "No description" ? "" : cleanDescription;
       values.public = data.public;
       values.collaborative = data.collaborative;
-      const tiers = parseTopTiers(data.description);
-      topEnabled.value = tiers !== null;
-      selectedTiers.value = tiers ?? TOP_PRESETS[1].tiers;
+      values.rankingMode = parseCollectionRankingMode(data.description);
     } catch {
       notification({ msg: "Unable to load playlist details", type: NotificationType.Error });
     }

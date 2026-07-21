@@ -16,7 +16,12 @@
             <div class="tier-section">
               <template v-if="tier0.length">
                 <div class="tier-heading">{{ getTierLabel(0, topTiers) }}</div>
-                <VueDraggable v-model="tier0" v-bind="dragOptions" class="tier-grid tier-grid-0" @end="handleTierEnd">
+                <VueDraggable
+                  v-model="tier0"
+                  v-bind="dragOptions"
+                  class="tier-grid tier-grid-0"
+                  @end="handleTopTierEnd"
+                >
                   <Album
                     v-for="item in tier0"
                     :key="item.id"
@@ -30,7 +35,12 @@
               </template>
               <template v-if="tier1.length">
                 <div class="tier-heading">{{ getTierLabel(1, topTiers) }}</div>
-                <VueDraggable v-model="tier1" v-bind="dragOptions" class="tier-grid tier-grid-1" @end="handleTierEnd">
+                <VueDraggable
+                  v-model="tier1"
+                  v-bind="dragOptions"
+                  class="tier-grid tier-grid-1"
+                  @end="handleTopTierEnd"
+                >
                   <Album
                     v-for="item in tier1"
                     :key="item.id"
@@ -44,12 +54,44 @@
               </template>
               <template v-if="tier2.length">
                 <div class="tier-heading">{{ getTierLabel(2, topTiers) }}</div>
-                <VueDraggable v-model="tier2" v-bind="dragOptions" class="tier-grid tier-grid-2" @end="handleTierEnd">
+                <VueDraggable
+                  v-model="tier2"
+                  v-bind="dragOptions"
+                  class="tier-grid tier-grid-2"
+                  @end="handleTopTierEnd"
+                >
                   <Album
                     v-for="item in tier2"
                     :key="item.id"
                     :album="item"
                     :rank="rankOf(item.id)"
+                    can-delete
+                    can-save
+                    with-artists
+                  />
+                </VueDraggable>
+              </template>
+            </div>
+          </template>
+          <template v-else-if="tierList">
+            <div class="tier-section">
+              <template v-for="(tier, i) in tierList" :key="i">
+                <div
+                  class="tier-heading tier-heading-colored"
+                  :style="{ backgroundColor: getTierColor(i, tierList.length) }"
+                >
+                  {{ displayTierLabel(tier.label) }}
+                </div>
+                <VueDraggable
+                  v-model="tierGroups[i]"
+                  v-bind="dragOptions"
+                  class="tier-grid tier-grid-dynamic"
+                  @end="handleTierListEnd"
+                >
+                  <Album
+                    v-for="item in tierGroups[i]"
+                    :key="item.id"
+                    :album="item"
                     can-delete
                     can-save
                     with-artists
@@ -72,12 +114,24 @@ import { computed, onMounted, ref, watch } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 
 import { AlbumSimplified } from "@/@types/Album";
+import { NotificationType } from "@/@types/Notification";
+import { instance } from "@/api";
 import Album from "@/components/album/AlbumIndex.vue";
 import Header from "@/components/playlist/PlaylistHeader.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
-import { getTierLabel, parseTopTiers, TopTiers } from "@/helpers/collectionOptions";
+import {
+  buildCollectionDescription,
+  displayTierLabel,
+  getTierColor,
+  getTierLabel,
+  parseCollectionRankingMode,
+  stripCollectionTags,
+  TierList,
+  TopTiers,
+} from "@/helpers/collectionOptions";
+import { notification } from "@/helpers/notifications";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
@@ -90,6 +144,7 @@ const scrollerRef = ref<InstanceType<typeof PageScroller>>();
 const tier0 = ref<AlbumSimplified[]>([]);
 const tier1 = ref<AlbumSimplified[]>([]);
 const tier2 = ref<AlbumSimplified[]>([]);
+const tierGroups = ref<AlbumSimplified[][]>([]);
 const syncAlbumList = (): void => {
   albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.item.album));
 };
@@ -104,7 +159,13 @@ const albumListFiltered = computed<AlbumSimplified[]>(() =>
   }),
 );
 
-const topTiers = computed<null | TopTiers>(() => parseTopTiers(playlistStore.playlist.description));
+const rankingMode = computed(() => parseCollectionRankingMode(playlistStore.playlist.description));
+const topTiers = computed<null | TopTiers>(() =>
+  rankingMode.value.type === "top" ? rankingMode.value.tiers : null,
+);
+const tierList = computed<null | TierList>(() =>
+  rankingMode.value.type === "tierlist" ? rankingMode.value.tiers : null,
+);
 
 const AUTO_SCROLL_SENSITIVITY = 150;
 const AUTO_SCROLL_MAX_SPEED = 100;
@@ -145,6 +206,12 @@ const dragOptions = computed(() => ({
   scrollSpeed: AUTO_SCROLL_MAX_SPEED,
 }));
 
+function applyReorder(nextOrder: AlbumSimplified[]): void {
+  const move = findMove(albumList.value, nextOrder);
+  if (move) playlistStore.updateCollectionPosition(move.oldIndex, move.newIndex);
+  albumList.value = nextOrder;
+}
+
 /**
  * Finds the single item that moved between two otherwise-identical lists by
  * locating the first index where they diverge and tracing that item's prior
@@ -157,11 +224,13 @@ function findMove(previous: AlbumSimplified[], next: AlbumSimplified[]): { newIn
   return { newIndex, oldIndex };
 }
 
-function handleTierEnd(): void {
-  const nextOrder = [...tier0.value, ...tier1.value, ...tier2.value];
-  const move = findMove(albumList.value, nextOrder);
-  if (move) playlistStore.updateCollectionPosition(move.oldIndex, move.newIndex);
-  albumList.value = nextOrder;
+function handleTierListEnd(): void {
+  applyReorder(tierGroups.value.flat());
+  syncTierSizesToDescription();
+}
+
+function handleTopTierEnd(): void {
+  applyReorder([...tier0.value, ...tier1.value, ...tier2.value]);
 }
 
 function indexOfAlbum(id: string): number {
@@ -177,7 +246,51 @@ function syncNewPositions(event: { newIndex?: number; oldIndex?: number }): void
   playlistStore.updateCollectionPosition(event.oldIndex, event.newIndex);
 }
 
-function syncTiers(): void {
+function syncTierGroups(): void {
+  const list = tierList.value;
+  if (!list) {
+    tierGroups.value = [];
+    return;
+  }
+  let offset = 0;
+  tierGroups.value = list.map((tier, index) => {
+    if (index === list.length - 1) return albumList.value.slice(offset);
+    const size = tier.size ?? 0;
+    const group = albumList.value.slice(offset, offset + size);
+    offset += size;
+    return group;
+  });
+}
+
+/**
+ * Tier sizes are counts, not membership: after a cross-tier drag the item
+ * counts per bucket have changed, so the stored `#Tier:` sizes must be
+ * updated to match — otherwise the next recompute re-slices the flat album
+ * order by the old (now stale) counts and snaps the dragged item back.
+ * Updates the description synchronously (optimistic) so the recompute
+ * triggered by the position change already sees the new sizes.
+ */
+function syncTierSizesToDescription(): void {
+  const list = tierList.value;
+  if (!list) return;
+  const updatedList: TierList = list.map((tier, index) =>
+    index === list.length - 1 ? tier : { ...tier, size: tierGroups.value[index]?.length ?? tier.size },
+  );
+  const freeText = stripCollectionTags(playlistStore.playlist.description);
+  const newDescription = buildCollectionDescription(freeText, true, { tiers: updatedList, type: "tierlist" });
+  if (newDescription === playlistStore.playlist.description) return;
+
+  const previousDescription = playlistStore.playlist.description;
+  playlistStore.playlist.description = newDescription;
+  instance()
+    .put(`playlists/${playlistStore.playlist.id}`, { description: newDescription })
+    .catch(() => {
+      playlistStore.playlist.description = previousDescription;
+      notification({ msg: "Unable to update the tier list. Please try again.", type: NotificationType.Error });
+    });
+}
+
+function syncTopTiers(): void {
   if (!topTiers.value) {
     tier0.value = [];
     tier1.value = [];
@@ -190,7 +303,8 @@ function syncTiers(): void {
   tier2.value = albumList.value.slice(big + medium);
 }
 
-watch([albumList, topTiers], syncTiers, { immediate: true });
+watch([albumList, topTiers], syncTopTiers, { immediate: true });
+watch([albumList, tierList], syncTierGroups, { immediate: true });
 
 watch(
   () => playlistStore.tracks,
@@ -308,6 +422,11 @@ playlistStore.clean().finally(() => {
   }
 }
 
+.tier-heading-colored {
+  color: #fff;
+  text-shadow: 0 0.1rem 0.2rem rgb(0 0 0 / 40%);
+}
+
 .tier-grid {
   display: grid;
   gap: 2rem;
@@ -327,5 +446,10 @@ playlistStore.clean().finally(() => {
 
 .tier-grid-2 {
   grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+}
+
+.tier-grid-dynamic {
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  min-height: 6rem;
 }
 </style>

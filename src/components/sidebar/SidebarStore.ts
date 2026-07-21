@@ -5,7 +5,7 @@ import { Paging } from "@/@types/Paging";
 import { SimplifiedPlaylist } from "@/@types/Playlist";
 import { Sidebar } from "@/@types/Sidebar";
 import { instance } from "@/api";
-import { buildCollectionDescription, TopTiers } from "@/helpers/collectionOptions";
+import { buildCollectionDescription, CollectionRankingMode, MAX_DESCRIPTION_LENGTH } from "@/helpers/collectionOptions";
 import { isACollection } from "@/helpers/isCollection";
 import { removeFromLibrary } from "@/helpers/library";
 import { notification } from "@/helpers/notifications";
@@ -17,11 +17,19 @@ import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 export const useSidebar = defineStore("sidebar", {
   actions: {
-    async addCollection(name: string, topTiers: null | TopTiers = null) {
+    async addCollection(name: string, mode: CollectionRankingMode = { type: "off" }) {
+      const description = buildCollectionDescription("", true, mode);
+      if (description.length > MAX_DESCRIPTION_LENGTH) {
+        notification({
+          msg: `Description too long (${description.length}/${MAX_DESCRIPTION_LENGTH} characters). Shorten the tier list.`,
+          type: NotificationType.Error,
+        });
+        return;
+      }
       try {
         const authStore = useAuth();
         const { data } = await instance().post<SimplifiedPlaylist>(`users/${authStore.me?.id}/playlists`, {
-          description: buildCollectionDescription("", true, topTiers),
+          description,
           name,
         });
         this.collections = [data satisfies SimplifiedPlaylist, ...this.collections];
