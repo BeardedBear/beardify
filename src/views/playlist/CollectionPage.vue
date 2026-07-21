@@ -16,12 +16,7 @@
             <div class="tier-section">
               <template v-if="tier0.length">
                 <div class="tier-heading">{{ getTierLabel(0, topTiers) }}</div>
-                <VueDraggable
-                  v-model="tier0"
-                  v-bind="dragOptions"
-                  class="tier-grid tier-grid-0"
-                  @end="(event) => handleTierEnd(0, event)"
-                >
+                <VueDraggable v-model="tier0" v-bind="dragOptions" class="tier-grid tier-grid-0" @end="handleTierEnd">
                   <Album
                     v-for="item in tier0"
                     :key="item.id"
@@ -35,12 +30,7 @@
               </template>
               <template v-if="tier1.length">
                 <div class="tier-heading">{{ getTierLabel(1, topTiers) }}</div>
-                <VueDraggable
-                  v-model="tier1"
-                  v-bind="dragOptions"
-                  class="tier-grid tier-grid-1"
-                  @end="(event) => handleTierEnd(1, event)"
-                >
+                <VueDraggable v-model="tier1" v-bind="dragOptions" class="tier-grid tier-grid-1" @end="handleTierEnd">
                   <Album
                     v-for="item in tier1"
                     :key="item.id"
@@ -54,12 +44,7 @@
               </template>
               <template v-if="tier2.length">
                 <div class="tier-heading">{{ getTierLabel(2, topTiers) }}</div>
-                <VueDraggable
-                  v-model="tier2"
-                  v-bind="dragOptions"
-                  class="tier-grid tier-grid-2"
-                  @end="(event) => handleTierEnd(2, event)"
-                >
+                <VueDraggable v-model="tier2" v-bind="dragOptions" class="tier-grid tier-grid-2" @end="handleTierEnd">
                   <Album
                     v-for="item in tier2"
                     :key="item.id"
@@ -121,20 +106,62 @@ const albumListFiltered = computed<AlbumSimplified[]>(() =>
 
 const topTiers = computed<null | TopTiers>(() => parseTopTiers(playlistStore.playlist.description));
 
+const AUTO_SCROLL_SENSITIVITY = 150;
+const AUTO_SCROLL_MAX_SPEED = 100;
+
+function handleAutoScroll(
+  _offsetX: number,
+  _offsetY: number,
+  originalEvent: Event,
+  touchEvt: TouchEvent,
+  hoverTargetEl: HTMLElement,
+): "continue" | void {
+  const pointerEvent = touchEvt?.touches?.length ? touchEvt.touches[0] : (originalEvent as MouseEvent);
+  const rect = hoverTargetEl.getBoundingClientRect();
+  const distanceFromTop = pointerEvent.clientY - rect.top;
+  const distanceFromBottom = rect.bottom - pointerEvent.clientY;
+
+  if (distanceFromTop >= 0 && distanceFromTop < AUTO_SCROLL_SENSITIVITY) {
+    const ratio = 1 - distanceFromTop / AUTO_SCROLL_SENSITIVITY;
+    hoverTargetEl.scrollTop -= Math.ceil(AUTO_SCROLL_MAX_SPEED * ratio);
+    return;
+  }
+  if (distanceFromBottom >= 0 && distanceFromBottom < AUTO_SCROLL_SENSITIVITY) {
+    const ratio = 1 - distanceFromBottom / AUTO_SCROLL_SENSITIVITY;
+    hoverTargetEl.scrollTop += Math.ceil(AUTO_SCROLL_MAX_SPEED * ratio);
+    return;
+  }
+  return "continue";
+}
+
 const dragOptions = computed(() => ({
   animation: 150,
   delay: 200,
   disabled: playlistStore.playlist.owner.id !== authStore.me?.id,
   forceFallback: true,
-  scrollSensitivity: 100,
-  scrollSpeed: 15,
+  group: "collection-tiers",
+  scrollFn: handleAutoScroll,
+  scrollSensitivity: AUTO_SCROLL_SENSITIVITY,
+  scrollSpeed: AUTO_SCROLL_MAX_SPEED,
 }));
 
-function handleTierEnd(tierIndex: 0 | 1 | 2, event: { newIndex?: number; oldIndex?: number }): void {
-  if (event.oldIndex === undefined || event.newIndex === undefined) return;
-  const offset = tierOffset(tierIndex);
-  playlistStore.updateCollectionPosition(offset + event.oldIndex, offset + event.newIndex);
-  albumList.value = [...tier0.value, ...tier1.value, ...tier2.value];
+/**
+ * Finds the single item that moved between two otherwise-identical lists by
+ * locating the first index where they diverge and tracing that item's prior
+ * position via its id.
+ */
+function findMove(previous: AlbumSimplified[], next: AlbumSimplified[]): { newIndex: number; oldIndex: number } | null {
+  const newIndex = previous.findIndex((album, i) => album.id !== next[i]?.id);
+  if (newIndex === -1) return null;
+  const oldIndex = previous.findIndex((album) => album.id === next[newIndex].id);
+  return { newIndex, oldIndex };
+}
+
+function handleTierEnd(): void {
+  const nextOrder = [...tier0.value, ...tier1.value, ...tier2.value];
+  const move = findMove(albumList.value, nextOrder);
+  if (move) playlistStore.updateCollectionPosition(move.oldIndex, move.newIndex);
+  albumList.value = nextOrder;
 }
 
 function indexOfAlbum(id: string): number {
@@ -161,13 +188,6 @@ function syncTiers(): void {
   tier0.value = albumList.value.slice(0, big);
   tier1.value = albumList.value.slice(big, big + medium);
   tier2.value = albumList.value.slice(big + medium);
-}
-
-function tierOffset(tierIndex: 0 | 1 | 2): number {
-  if (!topTiers.value) return 0;
-  if (tierIndex === 0) return 0;
-  if (tierIndex === 1) return topTiers.value[0];
-  return topTiers.value[0] + topTiers.value[1];
 }
 
 watch([albumList, topTiers], syncTiers, { immediate: true });
