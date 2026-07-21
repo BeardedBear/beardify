@@ -7,44 +7,75 @@
       <div class="collection">
         <Header no-cover no-duration with-filter />
         <div class="content">
-          <template v-if="playlistStore.filter === ''">
-            <VueDraggable
-              v-model="albumList"
-              :animation="150"
-              :delay="200"
-              :disabled="playlistStore.playlist.owner.id !== authStore.me?.id"
-              :force-fallback="true"
-              :scroll-sensitivity="100"
-              :scroll-speed="15"
-              class="album-list"
-              @end="syncNewPositions"
-            >
-              <Album
-                v-for="item in albumList"
-                :key="item.id"
-                :album="item"
-                :class="topTiers ? tierClassFor(item.id) : undefined"
-                :data-tier-label="topTiers && isTierStart(item.id) ? tierLabelFor(item.id) : undefined"
-                :rank="topTiers ? rankOf(item.id) : undefined"
-                can-delete
-                can-save
-                with-artists
-              />
-            </VueDraggable>
+          <template v-if="playlistStore.filter !== ''">
+            <div class="album-list">
+              <Album v-for="item in albumListFiltered" :key="item.id" :album="item" can-delete can-save with-artists />
+            </div>
           </template>
-          <div v-else class="album-list">
-            <Album
-              v-for="item in albumListFiltered"
-              :key="item.id"
-              :album="item"
-              :class="topTiers ? tierClassFor(item.id) : undefined"
-              :data-tier-label="topTiers && isTierStart(item.id) ? tierLabelFor(item.id) : undefined"
-              :rank="topTiers ? rankOf(item.id) : undefined"
-              can-delete
-              can-save
-              with-artists
-            />
-          </div>
+          <template v-else-if="topTiers">
+            <div class="tier-section">
+              <template v-if="tier0.length">
+                <div class="tier-heading">{{ getTierLabel(0, topTiers) }}</div>
+                <VueDraggable
+                  v-model="tier0"
+                  v-bind="dragOptions"
+                  class="tier-grid tier-grid-0"
+                  @end="(event) => handleTierEnd(0, event)"
+                >
+                  <Album
+                    v-for="item in tier0"
+                    :key="item.id"
+                    :album="item"
+                    :rank="rankOf(item.id)"
+                    can-delete
+                    can-save
+                    with-artists
+                  />
+                </VueDraggable>
+              </template>
+              <template v-if="tier1.length">
+                <div class="tier-heading">{{ getTierLabel(1, topTiers) }}</div>
+                <VueDraggable
+                  v-model="tier1"
+                  v-bind="dragOptions"
+                  class="tier-grid tier-grid-1"
+                  @end="(event) => handleTierEnd(1, event)"
+                >
+                  <Album
+                    v-for="item in tier1"
+                    :key="item.id"
+                    :album="item"
+                    :rank="rankOf(item.id)"
+                    can-delete
+                    can-save
+                    with-artists
+                  />
+                </VueDraggable>
+              </template>
+              <template v-if="tier2.length">
+                <div class="tier-heading">{{ getTierLabel(2, topTiers) }}</div>
+                <VueDraggable
+                  v-model="tier2"
+                  v-bind="dragOptions"
+                  class="tier-grid tier-grid-2"
+                  @end="(event) => handleTierEnd(2, event)"
+                >
+                  <Album
+                    v-for="item in tier2"
+                    :key="item.id"
+                    :album="item"
+                    :rank="rankOf(item.id)"
+                    can-delete
+                    can-save
+                    with-artists
+                  />
+                </VueDraggable>
+              </template>
+            </div>
+          </template>
+          <VueDraggable v-else v-model="albumList" v-bind="dragOptions" class="album-list" @end="syncNewPositions">
+            <Album v-for="item in albumList" :key="item.id" :album="item" can-delete can-save with-artists />
+          </VueDraggable>
         </div>
       </div>
     </PageFit>
@@ -61,7 +92,7 @@ import Header from "@/components/playlist/PlaylistHeader.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
-import { getTierForIndex, getTierLabel, parseTopTiers, TopTiers } from "@/helpers/collectionOptions";
+import { getTierLabel, parseTopTiers, TopTiers } from "@/helpers/collectionOptions";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
@@ -71,6 +102,9 @@ const playlistStore = usePlaylist();
 const albumList = ref<AlbumSimplified[]>([]);
 const authStore = useAuth();
 const scrollerRef = ref<InstanceType<typeof PageScroller>>();
+const tier0 = ref<AlbumSimplified[]>([]);
+const tier1 = ref<AlbumSimplified[]>([]);
+const tier2 = ref<AlbumSimplified[]>([]);
 const syncAlbumList = (): void => {
   albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.item.album));
 };
@@ -87,15 +121,24 @@ const albumListFiltered = computed<AlbumSimplified[]>(() =>
 
 const topTiers = computed<null | TopTiers>(() => parseTopTiers(playlistStore.playlist.description));
 
-function indexOfAlbum(id: string): number {
-  return albumList.value.findIndex((album) => album.id === id);
+const dragOptions = computed(() => ({
+  animation: 150,
+  delay: 200,
+  disabled: playlistStore.playlist.owner.id !== authStore.me?.id,
+  forceFallback: true,
+  scrollSensitivity: 100,
+  scrollSpeed: 15,
+}));
+
+function handleTierEnd(tierIndex: 0 | 1 | 2, event: { newIndex?: number; oldIndex?: number }): void {
+  if (event.oldIndex === undefined || event.newIndex === undefined) return;
+  const offset = tierOffset(tierIndex);
+  playlistStore.updateCollectionPosition(offset + event.oldIndex, offset + event.newIndex);
+  albumList.value = [...tier0.value, ...tier1.value, ...tier2.value];
 }
 
-function isTierStart(id: string): boolean {
-  if (!topTiers.value) return false;
-  const index = indexOfAlbum(id);
-  if (index === 0) return true;
-  return getTierForIndex(index, topTiers.value) !== getTierForIndex(index - 1, topTiers.value);
+function indexOfAlbum(id: string): number {
+  return albumList.value.findIndex((album) => album.id === id);
 }
 
 function rankOf(id: string): number {
@@ -107,20 +150,27 @@ function syncNewPositions(event: { newIndex?: number; oldIndex?: number }): void
   playlistStore.updateCollectionPosition(event.oldIndex, event.newIndex);
 }
 
-function tierClassFor(id: string): string {
-  const tier = tierOf(id);
-  return tier === null ? "" : `tier-${tier}`;
+function syncTiers(): void {
+  if (!topTiers.value) {
+    tier0.value = [];
+    tier1.value = [];
+    tier2.value = [];
+    return;
+  }
+  const [big, medium] = topTiers.value;
+  tier0.value = albumList.value.slice(0, big);
+  tier1.value = albumList.value.slice(big, big + medium);
+  tier2.value = albumList.value.slice(big + medium);
 }
 
-function tierLabelFor(id: string): string {
-  const tier = tierOf(id);
-  return tier === null || !topTiers.value ? "" : getTierLabel(tier, topTiers.value);
+function tierOffset(tierIndex: 0 | 1 | 2): number {
+  if (!topTiers.value) return 0;
+  if (tierIndex === 0) return 0;
+  if (tierIndex === 1) return topTiers.value[0];
+  return topTiers.value[0] + topTiers.value[1];
 }
 
-function tierOf(id: string): 0 | 1 | 2 | null {
-  if (!topTiers.value) return null;
-  return getTierForIndex(indexOfAlbum(id), topTiers.value);
-}
+watch([albumList, topTiers], syncTiers, { immediate: true });
 
 watch(
   () => playlistStore.tracks,
@@ -157,7 +207,6 @@ playlistStore.clean().finally(() => {
 
   display: grid;
   gap: 2rem;
-  grid-auto-flow: dense;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   padding: 2rem 5rem;
   padding-left: $padd;
@@ -212,28 +261,51 @@ playlistStore.clean().finally(() => {
   place-content: center;
 }
 
-/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-:deep(.tier-0) {
-  grid-column: span 2;
-  grid-row: span 2;
+.tier-section {
+  padding: 1rem 5rem 2rem;
+
+  @include responsive.tablet {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+
+  @include responsive.mobile {
+    padding: 1rem;
+  }
 }
 
-/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-:deep(.tier-2) {
-  transform: scale(0.85);
-  transform-origin: top left;
-}
-
-/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-:deep(.tier-start)::before {
-  content: attr(data-tier-label);
-  display: block;
+.tier-heading {
+  background-color: var(--bg-color);
+  border-radius: 0.4rem;
 
   @include font-bold;
 
-  font-size: var(--font-size-sm);
-  opacity: 0.5;
-  position: absolute;
-  top: -1.8rem;
+  font-size: var(--font-size-lg);
+  margin: 2rem 0 1rem;
+  padding: 0.7rem 1.2rem;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.tier-grid {
+  display: grid;
+  gap: 2rem;
+
+  @include responsive.mobile {
+    gap: 1rem;
+  }
+}
+
+.tier-grid-0 {
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
+
+.tier-grid-1 {
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+}
+
+.tier-grid-2 {
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
 }
 </style>

@@ -4,7 +4,6 @@
       <i class="icon-volume-2" />
     </div>
     <div :class="{ 'is-playing': isPlaying }" class="cover">
-      <div v-if="rank" class="rank-badge">{{ rank }}</div>
       <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" class="img" @click="handleCoverClick" />
       <ButtonIndex no-default-class class="play" type="button" @click.stop="handlePlayAlbum(album.uri)">
         <i class="icon-play" />
@@ -38,15 +37,18 @@
         </div>
       </div>
     </div>
-    <div v-if="!withoutMetas">
-      <div class="name">
-        {{ album.name }}
-      </div>
-      <div v-if="withArtists" class="artists">
-        <ArtistList :artist-list="album.artists" feat />
-      </div>
-      <div v-if="album.release_date && !withoutReleaseDate" class="date">
-        {{ album.release_date.split("-").shift() }}
+    <div v-if="!withoutMetas" class="metas">
+      <div v-if="rank" class="rank-number">{{ rank }}</div>
+      <div class="infos">
+        <div class="name">
+          {{ album.name }}
+        </div>
+        <div v-if="withArtists" class="artists">
+          <ArtistList :artist-list="album.artists" feat />
+        </div>
+        <div v-if="album.release_date && !withoutReleaseDate" class="date">
+          {{ album.release_date.split("-").shift() }}
+        </div>
       </div>
     </div>
   </div>
@@ -313,22 +315,22 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   }
 }
 
-.rank-badge {
-  $size: 2.2rem;
-
+.metas {
   align-items: center;
-  background: var(--bg-color-darker);
-  border-radius: 100%;
-  box-shadow: 0 0.1rem 0.4rem rgb(0 0 0 / 40%);
   display: flex;
-  font-size: var(--font-size-sm);
-  height: $size;
-  justify-content: center;
-  left: 0.5rem;
-  position: absolute;
-  top: 0.5rem;
-  width: $size;
-  z-index: 1;
+  gap: 0.8rem;
+}
+
+.infos {
+  flex: 1;
+  min-width: 0;
+}
+
+.rank-number {
+  color: var(--font-color-light);
+  flex-shrink: 0;
+  font-size: 2.4rem;
+  line-height: 1;
 
   @include font-bold;
 }
