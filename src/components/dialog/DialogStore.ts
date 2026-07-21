@@ -1,9 +1,12 @@
 import { defineStore } from "pinia";
 
 import { Dialog, DialogType, UpdatePlaylistValues } from "@/@types/Dialog";
+import { NotificationType } from "@/@types/Notification";
 import { Track, TrackSimplified } from "@/@types/Track";
 import { instance } from "@/api";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
+import { buildCollectionDescription, MAX_DESCRIPTION_LENGTH } from "@/helpers/collectionOptions";
+import { notification } from "@/helpers/notifications";
 import router from "@/router";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -43,10 +46,18 @@ export const useDialog = defineStore("dialog", {
     },
 
     async updatePlaylist(value: UpdatePlaylistValues, playlistId: string | undefined, isCollection: boolean) {
+      const builtDescription = buildCollectionDescription(value.description, isCollection, value.rankingMode);
+      if (builtDescription.length > MAX_DESCRIPTION_LENGTH) {
+        notification({
+          msg: `Description too long (${builtDescription.length}/${MAX_DESCRIPTION_LENGTH} characters). Shorten the text or the tier list.`,
+          type: NotificationType.Error,
+        });
+        return;
+      }
       const data = {
         collaborative: value.collaborative,
-        description: value.description === "" ? "No description" : value.description,
-        name: isCollection ? `#Collection ${value.name}` : value.name,
+        description: builtDescription === "" ? "No description" : builtDescription,
+        name: value.name,
         public: value.public,
       };
 
@@ -69,7 +80,7 @@ export const useDialog = defineStore("dialog", {
       }
     },
 
-    updatePlaylistCurrentPage(value: UpdatePlaylistValues, playlistId: string | undefined) {
+    updatePlaylistCurrentPage(value: Omit<UpdatePlaylistValues, "rankingMode">, playlistId: string | undefined) {
       const playlistStore = usePlaylist();
       if (router.currentRoute.value.params.id === playlistId) {
         playlistStore.playlist.description = value.description;

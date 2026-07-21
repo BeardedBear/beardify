@@ -59,6 +59,7 @@ bun run lint          # TypeScript + ESLint + Stylelint
 bun run fix           # auto-fix lint issues
 bun run build         # production web build (runs lint first)
 bun run tauri:build   # production desktop build
+bunx netlify functions:serve # serve Netlify functions locally (testing share)
 ```
 
 ## Releasing a new version

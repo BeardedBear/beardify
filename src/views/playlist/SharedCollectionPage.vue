@@ -25,19 +25,50 @@
             </ButtonIndex>
           </div>
         </header>
-        <div class="album-list">
-          <a
-            v-for="album in albumList"
-            :key="album.id"
-            class="album"
-            :href="album.external_urls.spotify"
-            rel="noopener"
-            target="_blank"
-          >
-            <Cover :images="album.images" class="album-cover" size="medium" />
-            <div class="name">{{ album.name }}</div>
-            <div class="artists">{{ album.artists.map((a) => a.name).join(", ") }}</div>
-          </a>
+        <template v-if="topTiers">
+          <div class="tier-section">
+            <template v-for="(group, i) in topTierGroups" :key="i">
+              <TierRow v-if="group.length" :label="getTierLabel(i, topTiers)">
+                <div :class="['tier-grid', `tier-grid-${i}`]">
+                  <SharedAlbumCard v-for="album in group" :key="album.id" :album="album" :rank="rankOf(album.id)" />
+                </div>
+              </TierRow>
+            </template>
+          </div>
+        </template>
+        <template v-else-if="tierList">
+          <div class="tier-section">
+            <template v-for="(tier, i) in tierList" :key="i">
+              <TierRow
+                v-if="tierGroups[i]?.length"
+                :color="getTierColor(i, tierList.length)"
+                :label="displayTierLabel(tier.label)"
+                :side-layout="configStore.tierListSideLabels"
+              >
+                <div :class="configStore.tierListSideLabels ? 'tier-grid-side' : 'tier-grid-dynamic'" class="tier-grid">
+                  <SharedAlbumCard v-for="album in tierGroups[i]" :key="album.id" :album="album" hover-metas />
+                </div>
+              </TierRow>
+            </template>
+            <TierRow
+              v-if="tierGroups[tierList.length]?.length"
+              :label="UNSORTED_TIER_LABEL"
+              :side-layout="configStore.tierListSideLabels"
+              unsorted
+            >
+              <div :class="configStore.tierListSideLabels ? 'tier-grid-side' : 'tier-grid-dynamic'" class="tier-grid">
+                <SharedAlbumCard
+                  v-for="album in tierGroups[tierList.length]"
+                  :key="album.id"
+                  :album="album"
+                  hover-metas
+                />
+              </div>
+            </TierRow>
+          </div>
+        </template>
+        <div v-else class="album-list">
+          <SharedAlbumCard v-for="album in albumList" :key="album.id" :album="album" />
         </div>
       </div>
     </PageFit>
@@ -46,29 +77,45 @@
 
 <script lang="ts" setup>
 import { HTTPError } from "ky";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 import { AlbumSimplified } from "@/@types/Album";
 import { defaultPlaylist } from "@/@types/Defaults";
 import { Paging } from "@/@types/Paging";
 import { Playlist, PlaylistTrack } from "@/@types/Playlist";
+import SharedAlbumCard from "@/components/album/SharedAlbumCard.vue";
+import { useConfig } from "@/components/config/ConfigStore";
+import TierRow from "@/components/playlist/TierRow.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
+import { useCollectionRanking } from "@/composables/useCollectionRanking";
+import { displayTierLabel, getTierColor, getTierLabel, groupByTierList, splitTopTiers, UNSORTED_TIER_LABEL } from "@/helpers/collectionOptions";
 import { fetchAllPages } from "@/helpers/pagination";
 import { publicSpotifyGet } from "@/helpers/publicSpotify";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { absoluteRouteUrl, RouteName } from "@/router";
 
 const props = defineProps<{ id: string }>();
+const configStore = useConfig();
 
 const loading = ref(true);
 const error = ref("");
 const playlist = ref<Playlist>(defaultPlaylist);
 const albumList = ref<AlbumSimplified[]>([]);
 const beardifyUrl = absoluteRouteUrl(RouteName.Collection, props.id);
+const description = computed(() => playlist.value.description);
+const { rankOf, tierList, topTiers } = useCollectionRanking(description, albumList);
+
+const topTierGroups = computed<[AlbumSimplified[], AlbumSimplified[], AlbumSimplified[]]>(() =>
+  topTiers.value ? splitTopTiers(albumList.value, topTiers.value) : [[], [], []],
+);
+
+const tierGroups = computed<AlbumSimplified[][]>(() =>
+  tierList.value ? groupByTierList(albumList.value, tierList.value) : [],
+);
 
 function errorMessage(err: unknown): string {
   if (!(err instanceof HTTPError)) return "This collection is unavailable. Please try again later.";
@@ -187,22 +234,49 @@ onMounted(async () => {
   }
 }
 
-.album {
-  color: inherit;
-  text-decoration: none;
+.tier-section {
+  padding-top: 1rem;
+}
 
-  .album-cover {
-    border-radius: 0.4rem;
-    margin-bottom: 0.5rem;
-    width: 100%;
+.tier-grid {
+  display: grid;
+  gap: 2rem;
+
+  @include responsive.mobile {
+    gap: 1rem;
   }
+}
 
-  .name {
-    @include font-bold;
-  }
+.tier-grid-0 {
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
 
-  .artists {
-    opacity: 0.6;
+.tier-grid-1 {
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+}
+
+.tier-grid-2 {
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+}
+
+.tier-grid-dynamic {
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+}
+
+.tier-grid-side {
+  background-color: var(--bg-color);
+  border-radius: 0 0.4rem 0.4rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1rem;
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(.album) {
+    width: 8rem;
+
+    @include responsive.mobile {
+      width: 6rem;
+    }
   }
 }
 </style>

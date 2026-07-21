@@ -1,9 +1,10 @@
 <template>
   <Dialog title="Create a collection" with-title>
-    <div class="wrap">
+    <form class="wrap" @submit.prevent="create()">
       <input v-model="collectionName" class="input" placeholder="Collection's name" type="text" />
-      <ButtonIndex variant="primary" @click="create()">Create</ButtonIndex>
-    </div>
+      <RankingModeEditor v-model="rankingMode" />
+      <ButtonIndex type="submit" variant="primary">Create</ButtonIndex>
+    </form>
   </Dialog>
 </template>
 
@@ -13,17 +14,21 @@ import { ref } from "vue";
 import { NotificationType } from "@/@types/Notification";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Dialog from "@/components/dialog/DialogWrap.vue";
+import RankingModeEditor from "@/components/dialog/RankingModeEditor.vue";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { CollectionRankingMode } from "@/helpers/collectionOptions";
 import { notification } from "@/helpers/notifications";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const collectionName = ref("");
+const rankingMode = ref<CollectionRankingMode>({ type: "off" });
 
 async function create(): Promise<void> {
+  if (!collectionName.value.trim()) return;
   try {
-    await sidebarStore.addCollection(collectionName.value);
+    await sidebarStore.addCollection(collectionName.value, rankingMode.value);
     dialogStore.close();
     notification({ msg: `Collection ${collectionName.value} created`, type: NotificationType.Success });
   } catch {

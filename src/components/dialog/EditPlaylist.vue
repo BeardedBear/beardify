@@ -65,6 +65,11 @@
             </div>
           </div>
         </div>
+        <RankingModeEditor
+          v-if="isEditable && isCollection"
+          v-model="values.rankingMode"
+          :description-text="values.description"
+        />
       </div>
       <div class="actions">
         <ButtonIndex @click="remove()">Delete {{ isCollection ? "collection" : "playlist" }}</ButtonIndex>
@@ -93,9 +98,12 @@ import { Playlist } from "@/@types/Playlist";
 import { instance } from "@/api";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Dialog from "@/components/dialog/DialogWrap.vue";
+import RankingModeEditor from "@/components/dialog/RankingModeEditor.vue";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loading from "@/components/ui/LoadingDots.vue";
+import { parseCollectionRankingMode, stripCollectionTags } from "@/helpers/collectionOptions";
+import { isACollection } from "@/helpers/isCollection";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
 import { useAuth } from "@/views/auth/AuthStore";
@@ -111,6 +119,7 @@ const values: UpdatePlaylistValues = reactive({
   description: "",
   name: "",
   public: false,
+  rankingMode: { type: "off" },
 });
 const isCollection = ref<boolean>(false);
 const isEditable = ref<boolean>(false);
@@ -120,11 +129,13 @@ watchEffect(async () => {
     try {
       const { data } = await instance().get<Playlist>(`playlists/${dialogStore.playlistId}`);
       isEditable.value = data.owner.id === useAuth().me?.id;
-      isCollection.value = data.name.toLowerCase().startsWith("#collection");
-      values.name = data.name.replaceAll("#Collection ", "");
-      values.description = data.description === "" || data.description === "No description" ? "" : data.description;
+      isCollection.value = isACollection(data);
+      values.name = data.name;
+      const cleanDescription = stripCollectionTags(data.description);
+      values.description = cleanDescription === "No description" ? "" : cleanDescription;
       values.public = data.public;
       values.collaborative = data.collaborative;
+      values.rankingMode = parseCollectionRankingMode(data.description);
     } catch {
       notification({ msg: "Unable to load playlist details", type: NotificationType.Error });
     }

@@ -1,3 +1,4 @@
+import { CollectionRankingMode } from "@/helpers/collectionOptions";
 import { AlbumGroup } from "@/helpers/groupAlbumVariants";
 
 import { Track, TrackSimplified } from "./Track";
@@ -32,4 +33,5 @@ export interface UpdatePlaylistValues {
   description: string;
   name: string;
   public: boolean;
+  rankingMode: CollectionRankingMode;
 }

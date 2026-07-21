@@ -7,9 +7,11 @@ import { Playlist, PlaylistPage, PlaylistTrack } from "@/@types/Playlist";
 import { TrackToRemove } from "@/@types/Track";
 import { instance } from "@/api";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
+import { buildCollectionDescription, parseCollectionRankingMode, stripCollectionTags } from "@/helpers/collectionOptions";
 import { isInLibrary, saveToLibrary } from "@/helpers/library";
 import { notification } from "@/helpers/notifications";
 import { cleanUrl } from "@/helpers/urls";
+import router from "@/router";
 
 export const usePlaylist = defineStore("playlist", {
   actions: {
@@ -64,6 +66,25 @@ export const usePlaylist = defineStore("playlist", {
             await this.getTracks(fixedUrl);
           }
         }
+      }
+    },
+
+    async migrateLegacyCollectionTag() {
+      const cleanName = stripCollectionTags(this.playlist.name);
+      const rawDescription = stripCollectionTags(this.playlist.description);
+      const cleanDescription = rawDescription === "No description" ? "" : rawDescription;
+      const rankingMode = parseCollectionRankingMode(this.playlist.description);
+      const newDescription = buildCollectionDescription(cleanDescription, true, rankingMode);
+
+      try {
+        await instance().put(`playlists/${this.playlist.id}`, { description: newDescription, name: cleanName });
+        this.playlist.name = cleanName;
+        this.playlist.description = newDescription;
+        useSidebar().refreshPlaylists();
+        notification({ msg: "Collection converted to the new format", type: NotificationType.Success });
+        router.push(`/collection/${this.playlist.id}`);
+      } catch {
+        notification({ msg: "Unable to convert this collection. Please try again.", type: NotificationType.Error });
       }
     },
 

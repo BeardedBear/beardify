@@ -1,51 +1,66 @@
 <template>
-  <div ref="albumRef" :class="{ 'exact-search': exactSearch, 'actions-open': actionsOpen }" class="album">
+  <div
+    ref="albumRef"
+    :class="{
+      'exact-search': exactSearch,
+      'actions-open': actionsOpen,
+      dragging,
+      'hover-metas': hoverMetas,
+      'metas-above': metasAbove,
+    }"
+    class="album"
+  >
     <div v-if="isPlaying" class="current">
       <i class="icon-volume-2" />
     </div>
-    <div :class="{ 'is-playing': isPlaying }" class="cover">
-      <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" class="img" @click="handleCoverClick" />
-      <ButtonIndex no-default-class class="play" type="button" @click.stop="handlePlayAlbum(album.uri)">
-        <i class="icon-play" />
-      </ButtonIndex>
-      <ButtonIndex
-        v-if="canSave"
-        no-default-class
-        class="button-action add"
-        type="button"
-        @click.stop="dialogStore.open({ type: 'addalbum', albumId: album.id })"
-      >
-        <i class="icon-plus" />
-      </ButtonIndex>
-      <ButtonIndex
-        v-if="canDelete"
-        no-default-class
-        class="button-action delete"
-        type="button"
-        @click.stop="deleteAlbum(album.id)"
-      >
-        <i class="icon-trash-2" />
-      </ButtonIndex>
-      <div
-        v-if="variantCount && variantCount > 0"
-        class="album-group-stack-indicator"
-        @click.stop="variantClick && variantClick()"
-      >
-        <div class="album-group-stack-layer album-group-stack-layer-1" />
-        <div class="album-group-stack-layer album-group-stack-layer-2">
-          {{ variantCount }}
+    <div class="visual">
+      <div :class="{ 'is-playing': isPlaying }" class="cover">
+        <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" class="img" @click="handleCoverClick" />
+        <ButtonIndex no-default-class class="play" type="button" @click.stop="handlePlayAlbum(album.uri)">
+          <i class="icon-play" />
+        </ButtonIndex>
+        <ButtonIndex
+          v-if="canSave"
+          no-default-class
+          class="button-action add"
+          type="button"
+          @click.stop="dialogStore.open({ type: 'addalbum', albumId: album.id })"
+        >
+          <i class="icon-plus" />
+        </ButtonIndex>
+        <ButtonIndex
+          v-if="canDelete"
+          no-default-class
+          class="button-action delete"
+          type="button"
+          @click.stop="deleteAlbum(album.id)"
+        >
+          <i class="icon-trash-2" />
+        </ButtonIndex>
+        <div
+          v-if="variantCount && variantCount > 0"
+          class="album-group-stack-indicator"
+          @click.stop="variantClick && variantClick()"
+        >
+          <div class="album-group-stack-layer album-group-stack-layer-1" />
+          <div class="album-group-stack-layer album-group-stack-layer-2">
+            {{ variantCount }}
+          </div>
         </div>
       </div>
-    </div>
-    <div v-if="!withoutMetas">
-      <div class="name">
-        {{ album.name }}
-      </div>
-      <div v-if="withArtists" class="artists">
-        <ArtistList :artist-list="album.artists" feat />
-      </div>
-      <div v-if="album.release_date && !withoutReleaseDate" class="date">
-        {{ album.release_date.split("-").shift() }}
+      <div v-if="!withoutMetas" class="metas">
+        <div v-if="rank" class="rank-number">{{ rank }}</div>
+        <div class="infos">
+          <div class="name">
+            {{ album.name }}
+          </div>
+          <div v-if="withArtists" class="artists">
+            <ArtistList :artist-list="album.artists" feat />
+          </div>
+          <div v-if="album.release_date && !withoutReleaseDate" class="date">
+            {{ album.release_date.split("-").shift() }}
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -78,7 +93,11 @@ const props = defineProps<{
   canDelete?: boolean;
   canSave?: boolean;
   coverSize?: ImageSize | undefined;
+  dragging?: boolean;
   exactSearch?: boolean;
+  hoverMetas?: boolean;
+  metasAbove?: boolean;
+  rank?: number;
   variantClick?: (() => void) | undefined;
   variantCount?: number;
   withArtists?: boolean;
@@ -309,6 +328,54 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
     bottom: 1rem;
     right: 1rem;
   }
+}
+
+.metas {
+  align-items: center;
+  display: flex;
+  gap: 0.8rem;
+}
+
+.album.hover-metas {
+  @include hover-metas-base(".cover");
+
+  // .dragging suppresses the reveal (any card the pointer passes over while
+  // dragging another one would otherwise pop its info open mid-drag).
+  &.actions-open:not(.dragging) {
+    @include hover-metas-reveal;
+  }
+}
+
+.album.hover-metas.metas-above {
+  @include hover-metas-above-base;
+
+  &.actions-open:not(.dragging) {
+    @include hover-metas-above-reveal;
+  }
+}
+
+@media (hover: hover) {
+  .album.hover-metas:hover:not(.dragging) {
+    @include hover-metas-reveal;
+  }
+
+  .album.hover-metas.metas-above:hover:not(.dragging) {
+    @include hover-metas-above-reveal;
+  }
+}
+
+.infos {
+  flex: 1;
+  min-width: 0;
+}
+
+.rank-number {
+  color: var(--font-color-light);
+  flex-shrink: 0;
+  font-size: 2.4rem;
+  line-height: 1;
+
+  @include font-bold;
 }
 
 .current {

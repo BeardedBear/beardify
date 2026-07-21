@@ -1,22 +1,22 @@
 <template>
   <i
-    v-if="authStore.me?.id === playlist.owner.id && !playlist.name.includes('#Collection')"
+    v-if="authStore.me?.id === playlist.owner.id && !isACollection(playlist)"
     class="type-icon icon-music"
   />
   <i
     v-if="
       authStore.me?.id !== playlist.owner.id &&
       playlist.owner.display_name !== 'Spotify' &&
-      !playlist.name.includes('#Collection')
+      !isACollection(playlist)
     "
     class="type-icon others icon-music"
   />
   <i
-    v-if="authStore.me?.id === playlist.owner.id && playlist.name.includes('#Collection')"
+    v-if="authStore.me?.id === playlist.owner.id && isACollection(playlist)"
     class="type-icon icon-folder"
   />
   <i
-    v-if="authStore.me?.id !== playlist.owner.id && playlist.name.includes('#Collection')"
+    v-if="authStore.me?.id !== playlist.owner.id && isACollection(playlist)"
     class="type-icon others icon-folder"
   />
   <i v-if="playlist.owner.display_name === 'Spotify'" class="type-icon icon-spotify" />
@@ -24,6 +24,7 @@
 
 <script lang="ts" setup>
 import { SimplifiedPlaylist } from "@/@types/Playlist";
+import { isACollection } from "@/helpers/isCollection";
 import { useAuth } from "@/views/auth/AuthStore";
 
 defineProps<{

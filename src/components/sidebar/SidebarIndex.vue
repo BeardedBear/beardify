@@ -52,8 +52,8 @@
         />
       </div>
       <div v-if="!sidebarStore.collections.length" class="empty">
-        Oh well, you don't have a collection ! To create one, you just have to create one with + button or rename a
-        classic playlist but start with "#Collection". Magical, isn't it?
+        Oh well, you don't have a collection ! To create one, you just have to create one with + button or add
+        "#Collection" to a classic playlist's description. Magical, isn't it?
       </div>
       <div v-for="(playlist, index) in filteredCollections" v-else :key="index">
         <router-link
@@ -65,6 +65,8 @@
           <PlaylistIcon :playlist="playlist" />
           <div class="name">
             {{ playlist.displayName }}
+            <span v-if="playlist.isTop" class="top-badge" title="Top ranking enabled">TOP</span>
+            <span v-if="playlist.isTierList" class="tier-badge" title="Tier list enabled">TIER</span>
           </div>
           <VisibilityIcon :playlist="playlist" />
           <ButtonIndex
@@ -149,6 +151,7 @@ import { useSidebar } from "@/components/sidebar/SidebarStore";
 import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
+import { parseCollectionRankingMode } from "@/helpers/collectionOptions";
 import { useAuth } from "@/views/auth/AuthStore";
 
 const dialogStore = useDialog();
@@ -169,17 +172,24 @@ onClickOutside(collectionSearchInput, () => {
 
 watch(collectionSearchInput, () => collectionSearchInput.value && collectionSearchInput.value.focus());
 
-// Optimized: pre-computed filtered collections with memoized toLowerCase and displayName
-const filteredCollections = computed(() => {
-  const searchQuery = collectionSearchQuery.value.toLowerCase();
-
-  return sidebarStore.collections
-    .map((playlist) => ({
+// Parsed once per collections change, independent of the search query, so typing
+// in the filter box doesn't re-parse every description on each keystroke.
+const enrichedCollections = computed(() =>
+  sidebarStore.collections.map((playlist) => {
+    const mode = parseCollectionRankingMode(playlist.description);
+    return {
       ...playlist,
       displayName: playlist.name.replace("#Collection ", "").replace("#collection ", ""),
+      isTierList: mode.type === "tierlist",
+      isTop: mode.type === "top",
       lowerName: playlist.name.toLowerCase(),
-    }))
-    .filter((playlist) => playlist.lowerName.includes(searchQuery));
+    };
+  }),
+);
+
+const filteredCollections = computed(() => {
+  const searchQuery = collectionSearchQuery.value.toLowerCase();
+  return enrichedCollections.value.filter((playlist) => playlist.lowerName.includes(searchQuery));
 });
 
 // Playlist search
@@ -257,6 +267,25 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
     flex: 1;
     text-align: left;
     transition: transform 0.2s;
+  }
+
+  .tier-badge,
+  .top-badge {
+    border-radius: 0.3rem;
+    color: white;
+    font-size: 0.6rem;
+    letter-spacing: 0.03rem;
+    margin-left: 0.4rem;
+    padding: 0.1rem 0.3rem;
+    vertical-align: middle;
+  }
+
+  .top-badge {
+    background-color: var(--primary-color);
+  }
+
+  .tier-badge {
+    background: linear-gradient(90deg, hsl(0deg 70% 40%), hsl(120deg 70% 40%));
   }
 
   &:hover {
