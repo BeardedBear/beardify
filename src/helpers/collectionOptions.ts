@@ -174,9 +174,11 @@ export function remainingDescriptionBudget(description: string): number {
  * Strips characters that would break the `#Tier:` tag encoding out of a
  * user-entered label. The tag body cannot contain whitespace (see
  * TIER_TAG_REGEX), so spaces become underscores rather than being dropped.
+ * `#` is stripped too so a label can't accidentally read back as a new
+ * `#Top:`/`#Tier:`/`#Collection` tag when the description is re-parsed.
  */
 export function sanitizeTierLabel(label: string): string {
-  return label.replace(/[,=\s]+/g, "_").replace(/^_+|_+$/g, "");
+  return label.replace(/[,=#\s]+/g, "_").replace(/^_+|_+$/g, "");
 }
 
 /** Splits items into the 3 fixed "Top" buckets (big / medium / rest) by count. */

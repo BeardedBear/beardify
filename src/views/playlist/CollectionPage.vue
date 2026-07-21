@@ -159,6 +159,7 @@ import { instance } from "@/api";
 import Album from "@/components/album/AlbumIndex.vue";
 import { useConfig } from "@/components/config/ConfigStore";
 import Header from "@/components/playlist/PlaylistHeader.vue";
+import { useSidebar } from "@/components/sidebar/SidebarStore";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
@@ -315,32 +316,32 @@ function syncNewPositions(event: { newIndex?: number; oldIndex?: number }): void
  * reflected in the stored sizes causes the fixed-size recompute to pull an
  * item up from the next tier to fill the gap. Deletions don't go through
  * handleTierListEnd (they're triggered from the Album component itself), so
- * this watcher detects a shrunk albumList, finds which tier the removed
- * album belonged to (from the last known grouping), and shrinks that tier's
- * stored size to match before the normal slice-based recompute runs.
+ * this watcher diffs against the last known album ids on every change (not
+ * just when the list shrinks — an add and a remove can land in the same
+ * tick and leave the length unchanged) to find which tier lost an album,
+ * and shrinks that tier's stored size to match before the normal
+ * slice-based recompute runs.
  */
-let previousTierAlbumList: AlbumSimplified[] = [];
+let previousTierAlbumIds: Set<string> = new Set();
 
 function syncTierGroups(): void {
   const list = tierList.value;
   if (!list) {
     tierGroups.value = [];
-    previousTierAlbumList = [];
+    previousTierAlbumIds = new Set();
     return;
   }
 
-  if (albumList.value.length < previousTierAlbumList.length) {
-    const remainingIds = new Set(albumList.value.map((album) => album.id));
-    const removedIds = previousTierAlbumList.filter((album) => !remainingIds.has(album.id)).map((album) => album.id);
-    const adjustedList = shrinkTiersForRemovedAlbums(list, removedIds);
-    if (adjustedList) {
-      previousTierAlbumList = albumList.value;
-      writeTierListDescription(adjustedList);
-      return;
-    }
+  const currentIds = new Set(albumList.value.map((album) => album.id));
+  const removedIds = [...previousTierAlbumIds].filter((id) => !currentIds.has(id));
+  const adjustedList = removedIds.length ? shrinkTiersForRemovedAlbums(list, removedIds) : null;
+  if (adjustedList) {
+    previousTierAlbumIds = currentIds;
+    writeTierListDescription(adjustedList);
+    return;
   }
 
-  previousTierAlbumList = albumList.value;
+  previousTierAlbumIds = currentIds;
   tierGroups.value = groupByTierList(albumList.value, list);
 }
 
@@ -377,11 +378,14 @@ function writeTierListDescription(updatedList: TierList): void {
   if (newDescription === playlistStore.playlist.description) return;
 
   const previousDescription = playlistStore.playlist.description;
+  const sidebarCollection = useSidebar().collections.find((collection) => collection.id === playlistStore.playlist.id);
   playlistStore.playlist.description = newDescription;
+  if (sidebarCollection) sidebarCollection.description = newDescription;
   instance()
     .put(`playlists/${playlistStore.playlist.id}`, { description: newDescription })
     .catch(() => {
       playlistStore.playlist.description = previousDescription;
+      if (sidebarCollection) sidebarCollection.description = previousDescription;
       notification({ msg: "Unable to update the tier list. Please try again.", type: NotificationType.Error });
     });
 }

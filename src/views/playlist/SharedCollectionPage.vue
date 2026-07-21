@@ -303,12 +303,12 @@ onMounted(async () => {
 .tier-heading {
   background-color: var(--bg-color);
   border-radius: 0.4rem;
-
-  @include font-bold;
-
   font-size: var(--font-size-lg);
+  line-break: anywhere;
   margin: 2rem 0 1rem;
   padding: 0.7rem 1.2rem;
+
+  @include font-bold;
 
   &:first-child {
     margin-top: 0;
@@ -334,7 +334,6 @@ onMounted(async () => {
   display: flex;
   flex-shrink: 0;
   justify-content: center;
-  line-break: anywhere;
   margin: 0;
   text-align: center;
   width: 8rem;
