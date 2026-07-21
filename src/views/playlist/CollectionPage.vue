@@ -69,6 +69,7 @@
                 </TierRow>
               </template>
               <TierRow
+                v-if="tierGroups[tierList.length]?.length"
                 :label="UNSORTED_TIER_LABEL"
                 scrollable
                 :side-layout="configStore.tierListSideLabels"
