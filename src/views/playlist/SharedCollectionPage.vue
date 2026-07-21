@@ -78,7 +78,7 @@
                     class="tier-grid"
                     :class="configStore.tierListSideLabels ? 'tier-grid-side' : 'tier-grid-dynamic'"
                   >
-                    <SharedAlbumCard v-for="album in tierGroups[i]" :key="album.id" :album="album" />
+                    <SharedAlbumCard v-for="album in tierGroups[i]" :key="album.id" :album="album" hover-metas />
                   </div>
                 </div>
               </template>
@@ -95,7 +95,12 @@
                   class="tier-grid"
                   :class="configStore.tierListSideLabels ? 'tier-grid-side' : 'tier-grid-dynamic'"
                 >
-                  <SharedAlbumCard v-for="album in tierGroups[tierList.length]" :key="album.id" :album="album" />
+                  <SharedAlbumCard
+                    v-for="album in tierGroups[tierList.length]"
+                    :key="album.id"
+                    :album="album"
+                    hover-metas
+                  />
                 </div>
               </div>
             </template>

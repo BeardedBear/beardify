@@ -93,6 +93,7 @@
                       { 'draggable-grid': !dragOptions.disabled },
                     ]"
                     @end="handleTierListEnd"
+                    @start="isDragging = true"
                   >
                     <Album
                       v-for="item in tierGroups[i]"
@@ -100,37 +101,62 @@
                       :album="item"
                       can-delete
                       can-save
+                      :dragging="isDragging"
+                      hover-metas
                       with-artists
                     />
                   </VueDraggable>
                 </div>
               </template>
-              <div class="tier-row" :class="{ 'tier-row-side': configStore.tierListSideLabels }">
+              <div class="tier-row-unsorted" :class="{ 'tier-row-side': configStore.tierListSideLabels }">
                 <div
                   class="tier-heading tier-heading-unsorted"
                   :class="{ 'tier-heading-side': configStore.tierListSideLabels }"
                 >
                   {{ UNSORTED_TIER_LABEL }}
                 </div>
-                <VueDraggable
-                  v-model="tierGroups[tierList.length]"
-                  v-bind="dragOptions"
-                  class="tier-grid"
-                  :class="[
-                    configStore.tierListSideLabels ? 'tier-grid-side' : 'tier-grid-dynamic',
-                    { 'draggable-grid': !dragOptions.disabled },
-                  ]"
-                  @end="handleTierListEnd"
-                >
-                  <Album
-                    v-for="item in tierGroups[tierList.length]"
-                    :key="item.id"
-                    :album="item"
-                    can-delete
-                    can-save
-                    with-artists
-                  />
-                </VueDraggable>
+                <div class="unsorted-scroll-wrap">
+                  <button
+                    class="scroll-arrow"
+                    :disabled="!unsortedCanScrollLeft"
+                    title="Scroll left"
+                    type="button"
+                    @click="scrollUnsorted(-1)"
+                  >
+                    <i class="icon-arrow-left" />
+                  </button>
+                  <div ref="unsortedScrollRef" class="unsorted-scroll" @scroll="updateUnsortedScrollState">
+                    <VueDraggable
+                      v-model="tierGroups[tierList.length]"
+                      v-bind="dragOptions"
+                      class="tier-grid tier-grid-unsorted"
+                      :class="{ 'draggable-grid': !dragOptions.disabled }"
+                      @end="handleTierListEnd"
+                      @start="isDragging = true"
+                    >
+                      <Album
+                        v-for="item in tierGroups[tierList.length]"
+                        :key="item.id"
+                        :album="item"
+                        can-delete
+                        can-save
+                        :dragging="isDragging"
+                        hover-metas
+                        metas-above
+                        with-artists
+                      />
+                    </VueDraggable>
+                  </div>
+                  <button
+                    class="scroll-arrow"
+                    :disabled="!unsortedCanScrollRight"
+                    title="Scroll right"
+                    type="button"
+                    @click="scrollUnsorted(1)"
+                  >
+                    <i class="icon-arrow-right" />
+                  </button>
+                </div>
               </div>
             </div>
           </template>
@@ -187,11 +213,15 @@ const configStore = useConfig();
 const playlistStore = usePlaylist();
 const albumList = ref<AlbumSimplified[]>([]);
 const authStore = useAuth();
+const isDragging = ref(false);
 const scrollerRef = ref<InstanceType<typeof PageScroller>>();
 const tier0 = ref<AlbumSimplified[]>([]);
 const tier1 = ref<AlbumSimplified[]>([]);
 const tier2 = ref<AlbumSimplified[]>([]);
 const tierGroups = ref<AlbumSimplified[][]>([]);
+const unsortedCanScrollLeft = ref(false);
+const unsortedCanScrollRight = ref(false);
+const unsortedScrollRef = ref<HTMLElement | null>(null);
 const syncAlbumList = (): void => {
   albumList.value = removeDuplicatesAlbums(playlistStore.tracks.map((a) => a.item.album));
 };
@@ -273,6 +303,7 @@ function findMove(previous: AlbumSimplified[], next: AlbumSimplified[]): { newIn
 }
 
 function handleTierListEnd(): void {
+  isDragging.value = false;
   applyReorder(tierGroups.value.flat());
   syncTierSizesToDescription();
 }
@@ -283,6 +314,12 @@ function handleTopTierEnd(): void {
 
 function rankOf(id: string): number {
   return (rankIndex.value.get(id) ?? -1) + 1;
+}
+
+function scrollUnsorted(direction: -1 | 1): void {
+  const el = unsortedScrollRef.value;
+  if (!el) return;
+  el.scrollBy({ behavior: "smooth", left: direction * el.clientWidth * 0.9 });
 }
 
 /**
@@ -371,6 +408,13 @@ function syncTopTiers(): void {
   [tier0.value, tier1.value, tier2.value] = splitTopTiers(albumList.value, topTiers.value);
 }
 
+function updateUnsortedScrollState(): void {
+  const el = unsortedScrollRef.value;
+  if (!el) return;
+  unsortedCanScrollLeft.value = el.scrollLeft > 0;
+  unsortedCanScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+}
+
 /** Writes an updated tier list to the description (optimistic, background PUT, rolls back on failure). */
 function writeTierListDescription(updatedList: TierList): void {
   const freeText = stripCollectionTags(playlistStore.playlist.description);
@@ -392,6 +436,7 @@ function writeTierListDescription(updatedList: TierList): void {
 
 watch([albumList, topTiers], syncTopTiers, { immediate: true });
 watch([albumList, tierList], syncTierGroups, { immediate: true });
+watch(tierGroups, updateUnsortedScrollState, { flush: "post" });
 
 watch(
   () => playlistStore.tracks,
@@ -483,6 +528,11 @@ playlistStore.clean().finally(() => {
 }
 
 .tier-section {
+  // .content is display: contents, so .tier-section is a direct grid item of
+  // .collection — its default min-width: auto lets the Unsorted row's
+  // intrinsic content width (before overflow-x clips it) push the whole grid,
+  // and so the page, wider. min-width: 0 opts it out of that contribution.
+  min-width: 0;
   padding: 1rem 5rem 2rem;
 
   @include responsive.tablet {
@@ -502,6 +552,35 @@ playlistStore.clean().finally(() => {
   align-items: stretch;
   display: flex;
   margin-bottom: 1.5rem;
+}
+
+// Sticky requires an actual box (display: contents, used by .tier-row, opts an
+// element out of sticky positioning entirely), so the Unsorted row gets its own
+// always-boxed variant instead of reusing .tier-row.
+.tier-row-unsorted {
+  background-color: var(--bg-color-darker);
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding-bottom: 1rem;
+  position: sticky;
+  z-index: 2;
+
+  &.tier-row-side {
+    flex-direction: row;
+  }
+
+  &::before {
+    background-image: linear-gradient(to top, var(--bg-color-darker) 0%, transparent 100%);
+    bottom: 100%;
+    content: '';
+    height: 20px;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+  }
 }
 
 .tier-heading {
@@ -601,6 +680,78 @@ playlistStore.clean().finally(() => {
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(.sortable-chosen) {
     cursor: grabbing;
+  }
+}
+
+.unsorted-scroll-wrap {
+  align-items: center;
+  background-color: var(--bg-color);
+  border-radius: 0 0.4rem 0.4rem 0;
+  display: flex;
+  flex: 1;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0 1rem;
+}
+
+// Fixed to a single row (grid-template-rows) with new columns created as
+// needed (grid-auto-flow: column) instead of wrapping — the Unsorted bucket
+// can grow unbounded, so it scrolls sideways within .unsorted-scroll rather
+// than pushing the page taller. flex + min-width: 0 are required for that:
+// flex items default to min-width: auto, which without this would let the
+// grid's intrinsic content width blow out the container instead of
+// scrolling inside it.
+.unsorted-scroll {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.tier-grid-unsorted {
+  background-color: var(--bg-color);
+  border-radius: 0.4rem;
+  display: grid;
+  gap: 1rem;
+  grid-auto-columns: 7rem;
+  grid-auto-flow: column;
+  grid-template-rows: 7rem;
+  padding: 1rem;
+  width: max-content;
+
+  @include responsive.mobile {
+    gap: 1rem;
+    grid-auto-columns: 6rem;
+    grid-template-rows: 6rem;
+  }
+}
+
+.scroll-arrow {
+  align-items: center;
+  background-color: var(--bg-color-light);
+  border: 0;
+  border-radius: 50%;
+  color: currentcolor;
+  cursor: pointer;
+  display: flex;
+  flex-shrink: 0;
+  font-size: var(--font-size-lg);
+  height: 2.4rem;
+  justify-content: center;
+  width: 2.4rem;
+
+  &:hover:not(:disabled) {
+    background-color: var(--bg-color-lighter);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.3;
   }
 }
 </style>
