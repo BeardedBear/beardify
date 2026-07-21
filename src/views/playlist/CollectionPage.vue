@@ -5,7 +5,7 @@
   <PageScroller v-else ref="scrollerRef">
     <PageFit>
       <div class="collection">
-        <Header no-cover no-duration with-filter />
+        <Header no-duration with-filter />
         <div class="content">
           <template v-if="playlistStore.filter !== ''">
             <div class="album-list">
