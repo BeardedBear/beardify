@@ -5,6 +5,7 @@ export interface Config {
   show: boolean;
   theme: ThemeColor[];
   themeLabel: ThemeLabel;
+  tierListSideLabels: boolean;
 }
 
 export type SchemeLabel = "apple" | "blue" | "crimson" | "default" | "orange";

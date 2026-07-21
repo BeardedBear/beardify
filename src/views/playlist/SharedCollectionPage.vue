@@ -51,16 +51,38 @@
           <div class="tier-section">
             <template v-for="(tier, i) in tierList" :key="i">
               <template v-if="tierGroups[i]?.length">
-                <div
-                  class="tier-heading tier-heading-colored"
-                  :style="{ backgroundColor: getTierColor(i, tierList.length) }"
-                >
-                  {{ displayTierLabel(tier.label) }}
-                </div>
-                <div class="tier-grid tier-grid-dynamic">
-                  <SharedAlbumCard v-for="album in tierGroups[i]" :key="album.id" :album="album" />
+                <div class="tier-row" :class="{ 'tier-row-side': configStore.tierListSideLabels }">
+                  <div
+                    class="tier-heading tier-heading-colored"
+                    :class="{ 'tier-heading-side': configStore.tierListSideLabels }"
+                    :style="{ backgroundColor: getTierColor(i, tierList.length) }"
+                  >
+                    {{ displayTierLabel(tier.label) }}
+                  </div>
+                  <div
+                    class="tier-grid"
+                    :class="configStore.tierListSideLabels ? 'tier-grid-side' : 'tier-grid-dynamic'"
+                  >
+                    <SharedAlbumCard v-for="album in tierGroups[i]" :key="album.id" :album="album" />
+                  </div>
                 </div>
               </template>
+            </template>
+            <template v-if="unsortedGroup.length">
+              <div class="tier-row" :class="{ 'tier-row-side': configStore.tierListSideLabels }">
+                <div
+                  class="tier-heading tier-heading-unsorted"
+                  :class="{ 'tier-heading-side': configStore.tierListSideLabels }"
+                >
+                  {{ UNSORTED_TIER_LABEL }}
+                </div>
+                <div
+                  class="tier-grid"
+                  :class="configStore.tierListSideLabels ? 'tier-grid-side' : 'tier-grid-dynamic'"
+                >
+                  <SharedAlbumCard v-for="album in unsortedGroup" :key="album.id" :album="album" />
+                </div>
+              </div>
             </template>
           </div>
         </template>
@@ -81,6 +103,7 @@ import { defaultPlaylist } from "@/@types/Defaults";
 import { Paging } from "@/@types/Paging";
 import { Playlist, PlaylistTrack } from "@/@types/Playlist";
 import SharedAlbumCard from "@/components/album/SharedAlbumCard.vue";
+import { useConfig } from "@/components/config/ConfigStore";
 import Cover from "@/components/ui/AlbumCover.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
@@ -93,6 +116,7 @@ import {
   parseCollectionRankingMode,
   TierList,
   TopTiers,
+  UNSORTED_TIER_LABEL,
 } from "@/helpers/collectionOptions";
 import { fetchAllPages } from "@/helpers/pagination";
 import { publicSpotifyGet } from "@/helpers/publicSpotify";
@@ -100,6 +124,7 @@ import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { absoluteRouteUrl, RouteName } from "@/router";
 
 const props = defineProps<{ id: string }>();
+const configStore = useConfig();
 
 const loading = ref(true);
 const error = ref("");
@@ -124,13 +149,19 @@ const tierGroups = computed<AlbumSimplified[][]>(() => {
   const list = tierList.value;
   if (!list) return [];
   let offset = 0;
-  return list.map((tier, index) => {
-    if (index === list.length - 1) return albumList.value.slice(offset);
+  return list.map((tier) => {
     const size = tier.size ?? 0;
     const group = albumList.value.slice(offset, offset + size);
     offset += size;
     return group;
   });
+});
+
+const unsortedGroup = computed<AlbumSimplified[]>(() => {
+  const list = tierList.value;
+  if (!list) return [];
+  const sortedCount = list.reduce((total, tier) => total + (tier.size ?? 0), 0);
+  return albumList.value.slice(sortedCount);
 });
 
 function errorMessage(err: unknown): string {
@@ -258,6 +289,16 @@ onMounted(async () => {
   padding-top: 1rem;
 }
 
+.tier-row {
+  display: contents;
+}
+
+.tier-row-side {
+  align-items: stretch;
+  display: flex;
+  margin-bottom: 1.5rem;
+}
+
 .tier-heading {
   background-color: var(--bg-color);
   border-radius: 0.4rem;
@@ -276,6 +317,30 @@ onMounted(async () => {
 .tier-heading-colored {
   color: #fff;
   text-shadow: 0 0.1rem 0.2rem rgb(0 0 0 / 40%);
+}
+
+.tier-heading-unsorted {
+  background-color: transparent;
+  border: 0.1rem dashed var(--bg-color-lighter);
+  color: var(--font-color-dark);
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.tier-heading-side {
+  align-items: center;
+  border-radius: 0.4rem 0 0 0.4rem;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  line-break: anywhere;
+  margin: 0;
+  text-align: center;
+  width: 8rem;
+
+  @include responsive.mobile {
+    width: 5rem;
+  }
 }
 
 .tier-grid {
@@ -301,5 +366,22 @@ onMounted(async () => {
 
 .tier-grid-dynamic {
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+}
+
+.tier-grid-side {
+  background-color: var(--bg-color);
+  border-radius: 0 0.4rem 0.4rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1rem;
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :deep(.album) {
+    width: 8rem;
+
+    @include responsive.mobile {
+      width: 6rem;
+    }
+  }
 }
 </style>

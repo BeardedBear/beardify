@@ -35,6 +35,27 @@
       <Colors />
     </div>
 
+    <div class="section">
+      <div class="section-title">Tier list</div>
+      <div class="option">
+        <div class="option-label">Side labels</div>
+        <div class="buttons">
+          <ButtonIndex
+            :variant="!configStore.tierListSideLabels ? 'primary' : 'default'"
+            @click="configStore.toggleTierListSideLabels(false)"
+          >
+            Off
+          </ButtonIndex>
+          <ButtonIndex
+            :variant="configStore.tierListSideLabels ? 'primary' : 'default'"
+            @click="configStore.toggleTierListSideLabels(true)"
+          >
+            On
+          </ButtonIndex>
+        </div>
+      </div>
+    </div>
+
     <div class="version">v{{ appVersion }}</div>
   </div>
 </template>
@@ -81,6 +102,17 @@ onClickOutside(domConfig, (): void => configStore.close());
   font-size: var(--font-size-sm);
   opacity: 0.5;
   text-transform: uppercase;
+}
+
+.option-label {
+  font-style: italic;
+  margin-bottom: 0.3rem;
+  opacity: 0.6;
+}
+
+.buttons {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .user {

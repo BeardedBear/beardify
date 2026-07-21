@@ -51,7 +51,7 @@ function defaultTierList(): TierList {
   return [
     { label: "S", size: 0 },
     { label: "A", size: 0 },
-    { label: "B", size: null },
+    { label: "B", size: 0 },
   ];
 }
 

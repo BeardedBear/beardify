@@ -50,6 +50,10 @@ export const useConfig = defineStore("config", {
       this.theme = themeLabel === "light" ? themeLight : themeDark;
       this.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
     },
+
+    toggleTierListSideLabels(value: boolean) {
+      this.tierListSideLabels = value;
+    },
   },
 
   persist: {
@@ -62,5 +66,6 @@ export const useConfig = defineStore("config", {
     show: false,
     theme: themeDark,
     themeLabel: "dark",
+    tierListSideLabels: true,
   }),
 });

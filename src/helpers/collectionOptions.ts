@@ -5,6 +5,13 @@ const TIER_TAG_REGEX = /#tier:(\S+)/i;
 export const MAX_DESCRIPTION_LENGTH = 300;
 
 /**
+ * Label for the synthetic catch-all bucket newly added albums land in. It is
+ * not one of the user's editable categories and is never written to the
+ * `#Tier:` tag — it is always whatever comes after all stored tier sizes.
+ */
+export const UNSORTED_TIER_LABEL = "Unsorted";
+
+/**
  * A collection's ranking is either off, the fixed 3-tier "Top" mode (counts
  * only, auto-generated labels), or the free-form "Tier list" mode (custom
  * labels, arbitrary category count). The two modes are mutually exclusive —
@@ -56,12 +63,12 @@ export function buildCollectionDescription(
 
 /**
  * Encodes a tier list into the compact `#Tier:label=size,label=size,...` tag.
- * The last tier's size is always encoded as `*` (open-ended, takes the rest).
+ * Every category has an explicit, drag-managed size — none of them is an
+ * open catch-all. The catch-all is the separate, non-stored "Unsorted"
+ * bucket that newly added albums land in (see UNSORTED_TIER_LABEL).
  */
 export function buildTierTag(tiers: TierList): string {
-  const body = tiers
-    .map((tier, index) => `${sanitizeTierLabel(tier.label)}=${index === tiers.length - 1 ? "*" : tier.size}`)
-    .join(",");
+  const body = tiers.map((tier) => `${sanitizeTierLabel(tier.label)}=${tier.size ?? 0}`).join(",");
   return `#Tier:${body}`;
 }
 
@@ -86,7 +93,7 @@ export function displayTierLabel(label: string): string {
  */
 export function getTierColor(index: number, total: number): string {
   const hue = (index / Math.max(total - 1, 1)) * 120;
-  return `hsl(${hue} 70% 40%)`;
+  return `hsl(${hue} 70% 40% / 50%)`;
 }
 
 /**

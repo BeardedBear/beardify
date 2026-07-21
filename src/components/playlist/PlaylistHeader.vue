@@ -159,7 +159,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 .playlist-header {
-  $padd: 10rem;
+  $padd: 5rem;
 
   display: flex;
   justify-content: space-between;
