@@ -20,7 +20,8 @@ export const useSidebar = defineStore("sidebar", {
       try {
         const authStore = useAuth();
         const { data } = await instance().post<SimplifiedPlaylist>(`users/${authStore.me?.id}/playlists`, {
-          name: `#Collection ${name}`,
+          description: "#Collection",
+          name,
         });
         this.collections = [data satisfies SimplifiedPlaylist, ...this.collections];
       } catch {

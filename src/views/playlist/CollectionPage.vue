@@ -19,7 +19,17 @@
               class="album-list"
               @end="syncNewPositions"
             >
-              <Album v-for="item in albumList" :key="item.id" :album="item" can-delete can-save with-artists />
+              <Album
+                v-for="item in albumList"
+                :key="item.id"
+                :album="item"
+                :class="topTiers ? tierClassFor(item.id) : undefined"
+                :data-tier-label="topTiers && isTierStart(item.id) ? tierLabelFor(item.id) : undefined"
+                :rank="topTiers ? rankOf(item.id) : undefined"
+                can-delete
+                can-save
+                with-artists
+              />
             </VueDraggable>
           </template>
           <div v-else class="album-list">
@@ -27,6 +37,9 @@
               v-for="item in albumListFiltered"
               :key="item.id"
               :album="item"
+              :class="topTiers ? tierClassFor(item.id) : undefined"
+              :data-tier-label="topTiers && isTierStart(item.id) ? tierLabelFor(item.id) : undefined"
+              :rank="topTiers ? rankOf(item.id) : undefined"
               can-delete
               can-save
               with-artists
@@ -48,6 +61,7 @@ import Header from "@/components/playlist/PlaylistHeader.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
+import { getTierForIndex, getTierLabel, parseTopTiers, TopTiers } from "@/helpers/collectionOptions";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
@@ -71,9 +85,41 @@ const albumListFiltered = computed<AlbumSimplified[]>(() =>
   }),
 );
 
+const topTiers = computed<null | TopTiers>(() => parseTopTiers(playlistStore.playlist.description));
+
+function indexOfAlbum(id: string): number {
+  return albumList.value.findIndex((album) => album.id === id);
+}
+
+function isTierStart(id: string): boolean {
+  if (!topTiers.value) return false;
+  const index = indexOfAlbum(id);
+  if (index === 0) return true;
+  return getTierForIndex(index, topTiers.value) !== getTierForIndex(index - 1, topTiers.value);
+}
+
+function rankOf(id: string): number {
+  return indexOfAlbum(id) + 1;
+}
+
 function syncNewPositions(event: { newIndex?: number; oldIndex?: number }): void {
   if (event.oldIndex === undefined || event.newIndex === undefined) return;
   playlistStore.updateCollectionPosition(event.oldIndex, event.newIndex);
+}
+
+function tierClassFor(id: string): string {
+  const tier = tierOf(id);
+  return tier === null ? "" : `tier-${tier}`;
+}
+
+function tierLabelFor(id: string): string {
+  const tier = tierOf(id);
+  return tier === null || !topTiers.value ? "" : getTierLabel(tier, topTiers.value);
+}
+
+function tierOf(id: string): 0 | 1 | 2 | null {
+  if (!topTiers.value) return null;
+  return getTierForIndex(indexOfAlbum(id), topTiers.value);
 }
 
 watch(
@@ -94,6 +140,7 @@ playlistStore.clean().finally(() => {
 
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
+@use "@/assets/scss/mixins" as *;
 @use "@/assets/scss/responsive" as responsive;
 
 .collection {
@@ -110,6 +157,7 @@ playlistStore.clean().finally(() => {
 
   display: grid;
   gap: 2rem;
+  grid-auto-flow: dense;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   padding: 2rem 5rem;
   padding-left: $padd;
@@ -162,5 +210,30 @@ playlistStore.clean().finally(() => {
 .loader {
   display: grid;
   place-content: center;
+}
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+:deep(.tier-0) {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+:deep(.tier-2) {
+  transform: scale(0.85);
+  transform-origin: top left;
+}
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+:deep(.tier-start)::before {
+  content: attr(data-tier-label);
+  display: block;
+
+  @include font-bold;
+
+  font-size: var(--font-size-sm);
+  opacity: 0.5;
+  position: absolute;
+  top: -1.8rem;
 }
 </style>

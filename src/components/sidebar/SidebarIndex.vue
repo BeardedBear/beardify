@@ -52,8 +52,8 @@
         />
       </div>
       <div v-if="!sidebarStore.collections.length" class="empty">
-        Oh well, you don't have a collection ! To create one, you just have to create one with + button or rename a
-        classic playlist but start with "#Collection". Magical, isn't it?
+        Oh well, you don't have a collection ! To create one, you just have to create one with + button or add
+        "#Collection" to a classic playlist's description. Magical, isn't it?
       </div>
       <div v-for="(playlist, index) in filteredCollections" v-else :key="index">
         <router-link
@@ -65,6 +65,7 @@
           <PlaylistIcon :playlist="playlist" />
           <div class="name">
             {{ playlist.displayName }}
+            <span v-if="playlist.isTop" class="top-badge" title="Top ranking enabled">TOP</span>
           </div>
           <VisibilityIcon :playlist="playlist" />
           <ButtonIndex
@@ -149,6 +150,7 @@ import { useSidebar } from "@/components/sidebar/SidebarStore";
 import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
+import { parseTopTiers } from "@/helpers/collectionOptions";
 import { useAuth } from "@/views/auth/AuthStore";
 
 const dialogStore = useDialog();
@@ -177,6 +179,7 @@ const filteredCollections = computed(() => {
     .map((playlist) => ({
       ...playlist,
       displayName: playlist.name.replace("#Collection ", "").replace("#collection ", ""),
+      isTop: parseTopTiers(playlist.description) !== null,
       lowerName: playlist.name.toLowerCase(),
     }))
     .filter((playlist) => playlist.lowerName.includes(searchQuery));
@@ -257,6 +260,17 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
     flex: 1;
     text-align: left;
     transition: transform 0.2s;
+  }
+
+  .top-badge {
+    background-color: var(--primary-color);
+    border-radius: 0.3rem;
+    color: white;
+    font-size: 0.6rem;
+    letter-spacing: 0.03rem;
+    margin-left: 0.4rem;
+    padding: 0.1rem 0.3rem;
+    vertical-align: middle;
   }
 
   &:hover {

@@ -4,6 +4,7 @@
       <i class="icon-volume-2" />
     </div>
     <div :class="{ 'is-playing': isPlaying }" class="cover">
+      <div v-if="rank" class="rank-badge">{{ rank }}</div>
       <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" class="img" @click="handleCoverClick" />
       <ButtonIndex no-default-class class="play" type="button" @click.stop="handlePlayAlbum(album.uri)">
         <i class="icon-play" />
@@ -79,6 +80,7 @@ const props = defineProps<{
   canSave?: boolean;
   coverSize?: ImageSize | undefined;
   exactSearch?: boolean;
+  rank?: number;
   variantClick?: (() => void) | undefined;
   variantCount?: number;
   withArtists?: boolean;
@@ -309,6 +311,26 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
     bottom: 1rem;
     right: 1rem;
   }
+}
+
+.rank-badge {
+  $size: 2.2rem;
+
+  align-items: center;
+  background: var(--bg-color-darker);
+  border-radius: 100%;
+  box-shadow: 0 0.1rem 0.4rem rgb(0 0 0 / 40%);
+  display: flex;
+  font-size: var(--font-size-sm);
+  height: $size;
+  justify-content: center;
+  left: 0.5rem;
+  position: absolute;
+  top: 0.5rem;
+  width: $size;
+  z-index: 1;
+
+  @include font-bold;
 }
 
 .current {

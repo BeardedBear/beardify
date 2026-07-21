@@ -27,14 +27,19 @@
         </header>
         <div class="album-list">
           <a
-            v-for="album in albumList"
+            v-for="(album, index) in albumList"
             :key="album.id"
+            :class="tierClassFor(index)"
             class="album"
+            :data-tier-label="tierLabelFor(index)"
             :href="album.external_urls.spotify"
             rel="noopener"
             target="_blank"
           >
-            <Cover :images="album.images" class="album-cover" size="medium" />
+            <div class="cover-wrap">
+              <div v-if="topTiers" class="rank-badge">{{ index + 1 }}</div>
+              <Cover :images="album.images" class="album-cover" size="medium" />
+            </div>
             <div class="name">{{ album.name }}</div>
             <div class="artists">{{ album.artists.map((a) => a.name).join(", ") }}</div>
           </a>
@@ -46,7 +51,7 @@
 
 <script lang="ts" setup>
 import { HTTPError } from "ky";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 import { AlbumSimplified } from "@/@types/Album";
 import { defaultPlaylist } from "@/@types/Defaults";
@@ -57,6 +62,7 @@ import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
+import { getTierForIndex, getTierLabel, parseTopTiers, TopTiers } from "@/helpers/collectionOptions";
 import { fetchAllPages } from "@/helpers/pagination";
 import { publicSpotifyGet } from "@/helpers/publicSpotify";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
@@ -69,12 +75,29 @@ const error = ref("");
 const playlist = ref<Playlist>(defaultPlaylist);
 const albumList = ref<AlbumSimplified[]>([]);
 const beardifyUrl = absoluteRouteUrl(RouteName.Collection, props.id);
+const topTiers = computed<null | TopTiers>(() => parseTopTiers(playlist.value.description));
 
 function errorMessage(err: unknown): string {
   if (!(err instanceof HTTPError)) return "This collection is unavailable. Please try again later.";
   if (err.response.status === 404) return "This collection doesn't exist.";
   if (err.response.status === 403) return "This collection is private. Ask the owner to make it public.";
   return "This collection is unavailable. Please try again later.";
+}
+
+function isTierStart(index: number): boolean {
+  if (!topTiers.value) return false;
+  if (index === 0) return true;
+  return getTierForIndex(index, topTiers.value) !== getTierForIndex(index - 1, topTiers.value);
+}
+
+function tierClassFor(index: number): string {
+  if (!topTiers.value) return "";
+  return `tier-${getTierForIndex(index, topTiers.value)}`;
+}
+
+function tierLabelFor(index: number): string | undefined {
+  if (!topTiers.value || !isTierStart(index)) return undefined;
+  return getTierLabel(getTierForIndex(index, topTiers.value), topTiers.value);
 }
 
 onMounted(async () => {
@@ -179,6 +202,7 @@ onMounted(async () => {
 .album-list {
   display: grid;
   gap: 2rem;
+  grid-auto-flow: dense;
   grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
 
   @include responsive.mobile {
@@ -189,7 +213,51 @@ onMounted(async () => {
 
 .album {
   color: inherit;
+  position: relative;
   text-decoration: none;
+
+  &.tier-0 {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  &.tier-2 {
+    transform: scale(0.85);
+    transform-origin: top left;
+  }
+
+  &[data-tier-label]::before {
+    content: attr(data-tier-label);
+    display: block;
+
+    @include font-bold;
+
+    font-size: var(--font-size-sm);
+    margin-bottom: 0.3rem;
+    opacity: 0.5;
+  }
+
+  .cover-wrap {
+    position: relative;
+  }
+
+  .rank-badge {
+    align-items: center;
+    background: var(--bg-color-darker);
+    border-radius: 100%;
+    box-shadow: 0 0.1rem 0.4rem rgb(0 0 0 / 40%);
+    display: flex;
+    font-size: var(--font-size-sm);
+    height: 2.2rem;
+    justify-content: center;
+    left: 0.5rem;
+    position: absolute;
+    top: 0.5rem;
+    width: 2.2rem;
+    z-index: 1;
+
+    @include font-bold;
+  }
 
   .album-cover {
     border-radius: 0.4rem;

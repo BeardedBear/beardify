@@ -18,13 +18,8 @@
           <span>&nbsp;·&nbsp;{{ playlistStore.playlist.tracks.total }} items</span>
           <span v-if="!noDuration">&nbsp;·&nbsp;{{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
         </div>
-        <div
-          v-if="
-            playlistStore.playlist.description !== 'null' && playlistStore.playlist.description !== 'No description'
-          "
-          class="description"
-        >
-          {{ playlistStore.playlist.description }}
+        <div v-if="showDescription" class="description">
+          {{ visibleDescription }}
         </div>
       </div>
     </div>
@@ -37,6 +32,15 @@
         placeholder="Filter..."
         type="search"
       />
+      <ButtonIndex
+        v-if="showMigrateButton"
+        :title="migrateButtonTooltip"
+        variant="border"
+        @click="playlistStore.migrateLegacyCollectionTag()"
+      >
+        <i class="icon-folder" />
+        Convert to new collection format
+      </ButtonIndex>
       <ButtonIndex
         v-if="canShare"
         icon-only
@@ -60,7 +64,9 @@ import { useDialog } from "@/components/dialog/DialogStore";
 import Actions from "@/components/playlist/PlaylistActions.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { stripCollectionTags } from "@/helpers/collectionOptions";
 import { timecodeWithUnits } from "@/helpers/date";
+import { isLegacyCollectionName } from "@/helpers/isCollection";
 import { isPlaylistOwner } from "@/helpers/playlist";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -81,6 +87,19 @@ const canShare = computed<boolean>(
     route.name === "Collection"
     && playlistStore.playlist.public
     && isPlaylistOwner(playlistStore.playlist.owner),
+);
+const showMigrateButton = computed<boolean>(
+  () => isPlaylistOwner(playlistStore.playlist.owner) && isLegacyCollectionName(playlistStore.playlist),
+);
+const migrateButtonTooltip
+  = "This collection still uses the old #Collection tag in its name. Beardify now reads it from the description "
+    + "instead — click to convert it automatically.";
+const visibleDescription = computed<string>(() => stripCollectionTags(playlistStore.playlist.description));
+const showDescription = computed<boolean>(
+  () =>
+    visibleDescription.value !== ""
+    && visibleDescription.value !== "null"
+    && visibleDescription.value !== "No description",
 );
 
 onMounted(() => {
