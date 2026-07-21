@@ -151,7 +151,7 @@ import { useSidebar } from "@/components/sidebar/SidebarStore";
 import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
-import { parseTierList, parseTopTiers } from "@/helpers/collectionOptions";
+import { parseCollectionRankingMode } from "@/helpers/collectionOptions";
 import { useAuth } from "@/views/auth/AuthStore";
 
 const dialogStore = useDialog();
@@ -172,19 +172,24 @@ onClickOutside(collectionSearchInput, () => {
 
 watch(collectionSearchInput, () => collectionSearchInput.value && collectionSearchInput.value.focus());
 
-// Optimized: pre-computed filtered collections with memoized toLowerCase and displayName
-const filteredCollections = computed(() => {
-  const searchQuery = collectionSearchQuery.value.toLowerCase();
-
-  return sidebarStore.collections
-    .map((playlist) => ({
+// Parsed once per collections change, independent of the search query, so typing
+// in the filter box doesn't re-parse every description on each keystroke.
+const enrichedCollections = computed(() =>
+  sidebarStore.collections.map((playlist) => {
+    const mode = parseCollectionRankingMode(playlist.description);
+    return {
       ...playlist,
       displayName: playlist.name.replace("#Collection ", "").replace("#collection ", ""),
-      isTierList: parseTierList(playlist.description) !== null,
-      isTop: parseTopTiers(playlist.description) !== null,
+      isTierList: mode.type === "tierlist",
+      isTop: mode.type === "top",
       lowerName: playlist.name.toLowerCase(),
-    }))
-    .filter((playlist) => playlist.lowerName.includes(searchQuery));
+    };
+  }),
+);
+
+const filteredCollections = computed(() => {
+  const searchQuery = collectionSearchQuery.value.toLowerCase();
+  return enrichedCollections.value.filter((playlist) => playlist.lowerName.includes(searchQuery));
 });
 
 // Playlist search

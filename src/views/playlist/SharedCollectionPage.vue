@@ -27,22 +27,37 @@
         </header>
         <template v-if="topTiers">
           <div class="tier-section">
-            <template v-if="tier0.length">
+            <template v-if="topTierGroups[0].length">
               <div class="tier-heading">{{ getTierLabel(0, topTiers) }}</div>
               <div class="tier-grid tier-grid-0">
-                <SharedAlbumCard v-for="album in tier0" :key="album.id" :album="album" :rank="rankOf(album.id)" />
+                <SharedAlbumCard
+                  v-for="album in topTierGroups[0]"
+                  :key="album.id"
+                  :album="album"
+                  :rank="rankOf(album.id)"
+                />
               </div>
             </template>
-            <template v-if="tier1.length">
+            <template v-if="topTierGroups[1].length">
               <div class="tier-heading">{{ getTierLabel(1, topTiers) }}</div>
               <div class="tier-grid tier-grid-1">
-                <SharedAlbumCard v-for="album in tier1" :key="album.id" :album="album" :rank="rankOf(album.id)" />
+                <SharedAlbumCard
+                  v-for="album in topTierGroups[1]"
+                  :key="album.id"
+                  :album="album"
+                  :rank="rankOf(album.id)"
+                />
               </div>
             </template>
-            <template v-if="tier2.length">
+            <template v-if="topTierGroups[2].length">
               <div class="tier-heading">{{ getTierLabel(2, topTiers) }}</div>
               <div class="tier-grid tier-grid-2">
-                <SharedAlbumCard v-for="album in tier2" :key="album.id" :album="album" :rank="rankOf(album.id)" />
+                <SharedAlbumCard
+                  v-for="album in topTierGroups[2]"
+                  :key="album.id"
+                  :album="album"
+                  :rank="rankOf(album.id)"
+                />
               </div>
             </template>
           </div>
@@ -68,7 +83,7 @@
                 </div>
               </template>
             </template>
-            <template v-if="unsortedGroup.length">
+            <template v-if="tierGroups[tierList.length]?.length">
               <div class="tier-row" :class="{ 'tier-row-side': configStore.tierListSideLabels }">
                 <div
                   class="tier-heading tier-heading-unsorted"
@@ -80,7 +95,7 @@
                   class="tier-grid"
                   :class="configStore.tierListSideLabels ? 'tier-grid-side' : 'tier-grid-dynamic'"
                 >
-                  <SharedAlbumCard v-for="album in unsortedGroup" :key="album.id" :album="album" />
+                  <SharedAlbumCard v-for="album in tierGroups[tierList.length]" :key="album.id" :album="album" />
                 </div>
               </div>
             </template>
@@ -110,10 +125,13 @@ import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
 import {
+  buildRankIndex,
   displayTierLabel,
   getTierColor,
   getTierLabel,
+  groupByTierList,
   parseCollectionRankingMode,
+  splitTopTiers,
   TierList,
   TopTiers,
   UNSORTED_TIER_LABEL,
@@ -137,32 +155,15 @@ const tierList = computed<null | TierList>(() =>
   rankingMode.value.type === "tierlist" ? rankingMode.value.tiers : null,
 );
 
-const tier0 = computed<AlbumSimplified[]>(() => (topTiers.value ? albumList.value.slice(0, topTiers.value[0]) : []));
-const tier1 = computed<AlbumSimplified[]>(() =>
-  topTiers.value ? albumList.value.slice(topTiers.value[0], topTiers.value[0] + topTiers.value[1]) : [],
-);
-const tier2 = computed<AlbumSimplified[]>(() =>
-  topTiers.value ? albumList.value.slice(topTiers.value[0] + topTiers.value[1]) : [],
+const rankIndex = computed(() => buildRankIndex(albumList.value));
+
+const topTierGroups = computed<[AlbumSimplified[], AlbumSimplified[], AlbumSimplified[]]>(() =>
+  topTiers.value ? splitTopTiers(albumList.value, topTiers.value) : [[], [], []],
 );
 
-const tierGroups = computed<AlbumSimplified[][]>(() => {
-  const list = tierList.value;
-  if (!list) return [];
-  let offset = 0;
-  return list.map((tier) => {
-    const size = tier.size ?? 0;
-    const group = albumList.value.slice(offset, offset + size);
-    offset += size;
-    return group;
-  });
-});
-
-const unsortedGroup = computed<AlbumSimplified[]>(() => {
-  const list = tierList.value;
-  if (!list) return [];
-  const sortedCount = list.reduce((total, tier) => total + (tier.size ?? 0), 0);
-  return albumList.value.slice(sortedCount);
-});
+const tierGroups = computed<AlbumSimplified[][]>(() =>
+  tierList.value ? groupByTierList(albumList.value, tierList.value) : [],
+);
 
 function errorMessage(err: unknown): string {
   if (!(err instanceof HTTPError)) return "This collection is unavailable. Please try again later.";
@@ -172,7 +173,7 @@ function errorMessage(err: unknown): string {
 }
 
 function rankOf(id: string): number {
-  return albumList.value.findIndex((album) => album.id === id) + 1;
+  return (rankIndex.value.get(id) ?? -1) + 1;
 }
 
 onMounted(async () => {

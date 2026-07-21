@@ -25,10 +25,10 @@ export type CollectionRankingMode
 
 export interface TierDefinition {
   label: string;
-  size: null | number;
+  size: number;
 }
 
-/** Ordered list of tiers; only the last entry may have `size: null` (open-ended, takes the remainder). */
+/** Ordered list of tiers, each with an explicit, drag-managed size. */
 export type TierList = TierDefinition[];
 
 export interface TopPreset {
@@ -61,6 +61,11 @@ export function buildCollectionDescription(
   return [tags, cleanText].filter(Boolean).join(" ").trim();
 }
 
+/** Builds an id → position lookup for O(1) rank lookups instead of repeated `findIndex` scans. */
+export function buildRankIndex<T extends { id: string }>(items: T[]): Map<string, number> {
+  return new Map(items.map((item, index) => [item.id, index]));
+}
+
 /**
  * Encodes a tier list into the compact `#Tier:label=size,label=size,...` tag.
  * Every category has an explicit, drag-managed size — none of them is an
@@ -68,7 +73,7 @@ export function buildCollectionDescription(
  * bucket that newly added albums land in (see UNSORTED_TIER_LABEL).
  */
 export function buildTierTag(tiers: TierList): string {
-  const body = tiers.map((tier) => `${sanitizeTierLabel(tier.label)}=${tier.size ?? 0}`).join(",");
+  const body = tiers.map((tier) => `${sanitizeTierLabel(tier.label)}=${tier.size}`).join(",");
   return `#Tier:${body}`;
 }
 
@@ -96,20 +101,26 @@ export function getTierColor(index: number, total: number): string {
   return `hsl(${hue} 70% 40% / 50%)`;
 }
 
-/**
- * Tier index (0 = biggest) for a given 0-based rank position in "Top" mode.
- * Any position beyond the last tier's boundary stays in the last tier.
- */
-export function getTierForIndex(index: number, tiers: TopTiers): 0 | 1 | 2 {
-  if (index < tiers[0]) return 0;
-  if (index < tiers[0] + tiers[1]) return 1;
-  return 2;
-}
-
 export function getTierLabel(tierIndex: 0 | 1 | 2, tiers: TopTiers): string {
   if (tierIndex === 0) return `Top ${tiers[0]}`;
   if (tierIndex === 1) return `${tiers[0] + 1}–${tiers[0] + tiers[1]}`;
   return `${tiers[0] + tiers[1] + 1}+`;
+}
+
+/**
+ * Splits items into one bucket per tier (by stored size) plus a trailing
+ * "Unsorted" bucket (whatever's left over). Shared by the editable and
+ * read-only collection pages so the grouping math only lives in one place.
+ */
+export function groupByTierList<T>(items: T[], tierList: TierList): T[][] {
+  let offset = 0;
+  const groups = tierList.map((tier) => {
+    const group = items.slice(offset, offset + tier.size);
+    offset += tier.size;
+    return group;
+  });
+  groups.push(items.slice(offset));
+  return groups;
 }
 
 export function isDescriptionCollection(description: string): boolean {
@@ -138,8 +149,10 @@ export function parseTierList(description: string): null | TierList {
     .map((entry) => {
       const [label, sizeRaw] = entry.split("=");
       if (!label || !sizeRaw) return null;
-      const size = sizeRaw === "*" ? null : Number(sizeRaw);
-      if (size !== null && !Number.isFinite(size)) return null;
+      // "*" is a legacy sentinel from before the Unsorted bucket existed, when the
+      // last tier absorbed the remainder itself; treat it as empty (0) on read.
+      const size = sizeRaw === "*" ? 0 : Number(sizeRaw);
+      if (!Number.isFinite(size)) return null;
       return { label: decodeHtmlEntities(label), size };
     })
     .filter((tier): tier is TierDefinition => tier !== null);
@@ -164,6 +177,12 @@ export function remainingDescriptionBudget(description: string): number {
  */
 export function sanitizeTierLabel(label: string): string {
   return label.replace(/[,=\s]+/g, "_").replace(/^_+|_+$/g, "");
+}
+
+/** Splits items into the 3 fixed "Top" buckets (big / medium / rest) by count. */
+export function splitTopTiers<T>(items: T[], tiers: TopTiers): [T[], T[], T[]] {
+  const [big, medium] = tiers;
+  return [items.slice(0, big), items.slice(big, big + medium), items.slice(big + medium)];
 }
 
 /**

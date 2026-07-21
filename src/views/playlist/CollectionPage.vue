@@ -164,10 +164,13 @@ import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
 import {
   buildCollectionDescription,
+  buildRankIndex,
   displayTierLabel,
   getTierColor,
   getTierLabel,
+  groupByTierList,
   parseCollectionRankingMode,
+  splitTopTiers,
   stripCollectionTags,
   TierList,
   TopTiers,
@@ -202,6 +205,7 @@ const albumListFiltered = computed<AlbumSimplified[]>(() =>
   }),
 );
 
+const rankIndex = computed(() => buildRankIndex(albumList.value));
 const rankingMode = computed(() => parseCollectionRankingMode(playlistStore.playlist.description));
 const topTiers = computed<null | TopTiers>(() =>
   rankingMode.value.type === "top" ? rankingMode.value.tiers : null,
@@ -276,12 +280,8 @@ function handleTopTierEnd(): void {
   applyReorder([...tier0.value, ...tier1.value, ...tier2.value]);
 }
 
-function indexOfAlbum(id: string): number {
-  return albumList.value.findIndex((album) => album.id === id);
-}
-
 function rankOf(id: string): number {
-  return indexOfAlbum(id) + 1;
+  return (rankIndex.value.get(id) ?? -1) + 1;
 }
 
 /**
@@ -301,7 +301,7 @@ function shrinkTiersForRemovedAlbums(list: TierList, removedIds: string[]): null
     matched = true;
   });
   if (!matched) return null;
-  return list.map((tier, index) => ({ ...tier, size: Math.max((tier.size ?? 0) - decrements[index], 0) }));
+  return list.map((tier, index) => ({ ...tier, size: Math.max(tier.size - decrements[index], 0) }));
 }
 
 function syncNewPositions(event: { newIndex?: number; oldIndex?: number }): void {
@@ -341,15 +341,7 @@ function syncTierGroups(): void {
   }
 
   previousTierAlbumList = albumList.value;
-  let offset = 0;
-  const groups = list.map((tier) => {
-    const size = tier.size ?? 0;
-    const group = albumList.value.slice(offset, offset + size);
-    offset += size;
-    return group;
-  });
-  groups.push(albumList.value.slice(offset));
-  tierGroups.value = groups;
+  tierGroups.value = groupByTierList(albumList.value, list);
 }
 
 /**
@@ -375,10 +367,7 @@ function syncTopTiers(): void {
     tier2.value = [];
     return;
   }
-  const [big, medium] = topTiers.value;
-  tier0.value = albumList.value.slice(0, big);
-  tier1.value = albumList.value.slice(big, big + medium);
-  tier2.value = albumList.value.slice(big + medium);
+  [tier0.value, tier1.value, tier2.value] = splitTopTiers(albumList.value, topTiers.value);
 }
 
 /** Writes an updated tier list to the description (optimistic, background PUT, rolls back on failure). */
