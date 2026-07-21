@@ -65,6 +65,7 @@
     position: absolute;
     right: 0;
     top: 0;
+    transition: padding 0.15s ease;
   }
 
   #{$cover-selector} {
@@ -130,6 +131,10 @@
     margin: 0;
     max-height: none;
     opacity: 1;
+  }
+
+  .visual {
+    padding: 0;
   }
 }
 

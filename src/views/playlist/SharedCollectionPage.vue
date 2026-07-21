@@ -28,57 +28,43 @@
         <template v-if="topTiers">
           <div class="tier-section">
             <template v-for="(group, i) in topTierGroups" :key="i">
-              <template v-if="group.length">
-                <div class="tier-heading">{{ getTierLabel(i, topTiers) }}</div>
+              <TierRow v-if="group.length" :label="getTierLabel(i, topTiers)">
                 <div :class="['tier-grid', `tier-grid-${i}`]">
                   <SharedAlbumCard v-for="album in group" :key="album.id" :album="album" :rank="rankOf(album.id)" />
                 </div>
-              </template>
+              </TierRow>
             </template>
           </div>
         </template>
         <template v-else-if="tierList">
           <div class="tier-section">
             <template v-for="(tier, i) in tierList" :key="i">
-              <template v-if="tierGroups[i]?.length">
-                <div class="tier-row" :class="{ 'tier-row-side': configStore.tierListSideLabels }">
-                  <div
-                    class="tier-heading tier-heading-colored"
-                    :class="{ 'tier-heading-side': configStore.tierListSideLabels }"
-                    :style="{ backgroundColor: getTierColor(i, tierList.length) }"
-                  >
-                    {{ displayTierLabel(tier.label) }}
-                  </div>
-                  <div
-                    class="tier-grid"
-                    :class="configStore.tierListSideLabels ? 'tier-grid-side' : 'tier-grid-dynamic'"
-                  >
-                    <SharedAlbumCard v-for="album in tierGroups[i]" :key="album.id" :album="album" hover-metas />
-                  </div>
+              <TierRow
+                v-if="tierGroups[i]?.length"
+                :color="getTierColor(i, tierList.length)"
+                :label="displayTierLabel(tier.label)"
+                :side-layout="configStore.tierListSideLabels"
+              >
+                <div :class="configStore.tierListSideLabels ? 'tier-grid-side' : 'tier-grid-dynamic'" class="tier-grid">
+                  <SharedAlbumCard v-for="album in tierGroups[i]" :key="album.id" :album="album" hover-metas />
                 </div>
-              </template>
+              </TierRow>
             </template>
-            <template v-if="tierGroups[tierList.length]?.length">
-              <div class="tier-row" :class="{ 'tier-row-side': configStore.tierListSideLabels }">
-                <div
-                  class="tier-heading tier-heading-unsorted"
-                  :class="{ 'tier-heading-side': configStore.tierListSideLabels }"
-                >
-                  {{ UNSORTED_TIER_LABEL }}
-                </div>
-                <div
-                  class="tier-grid"
-                  :class="configStore.tierListSideLabels ? 'tier-grid-side' : 'tier-grid-dynamic'"
-                >
-                  <SharedAlbumCard
-                    v-for="album in tierGroups[tierList.length]"
-                    :key="album.id"
-                    :album="album"
-                    hover-metas
-                  />
-                </div>
+            <TierRow
+              v-if="tierGroups[tierList.length]?.length"
+              :label="UNSORTED_TIER_LABEL"
+              :side-layout="configStore.tierListSideLabels"
+              unsorted
+            >
+              <div :class="configStore.tierListSideLabels ? 'tier-grid-side' : 'tier-grid-dynamic'" class="tier-grid">
+                <SharedAlbumCard
+                  v-for="album in tierGroups[tierList.length]"
+                  :key="album.id"
+                  :album="album"
+                  hover-metas
+                />
               </div>
-            </template>
+            </TierRow>
           </div>
         </template>
         <div v-else class="album-list">
@@ -99,6 +85,7 @@ import { Paging } from "@/@types/Paging";
 import { Playlist, PlaylistTrack } from "@/@types/Playlist";
 import SharedAlbumCard from "@/components/album/SharedAlbumCard.vue";
 import { useConfig } from "@/components/config/ConfigStore";
+import TierRow from "@/components/playlist/TierRow.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
@@ -249,59 +236,6 @@ onMounted(async () => {
 
 .tier-section {
   padding-top: 1rem;
-}
-
-.tier-row {
-  display: contents;
-}
-
-.tier-row-side {
-  align-items: stretch;
-  display: flex;
-  margin-bottom: 1.5rem;
-}
-
-.tier-heading {
-  background-color: var(--bg-color);
-  border-radius: 0.4rem;
-  font-size: var(--font-size-lg);
-  line-break: anywhere;
-  margin: 2rem 0 1rem;
-  padding: 0.7rem 1.2rem;
-
-  @include font-bold;
-
-  &:first-child {
-    margin-top: 0;
-  }
-}
-
-.tier-heading-colored {
-  color: #fff;
-  text-shadow: 0 0.1rem 0.2rem rgb(0 0 0 / 40%);
-}
-
-.tier-heading-unsorted {
-  background-color: transparent;
-  border: 0.1rem dashed var(--bg-color-lighter);
-  color: var(--font-color-dark);
-  font-style: italic;
-  opacity: 0.7;
-}
-
-.tier-heading-side {
-  align-items: center;
-  border-radius: 0.4rem 0 0 0.4rem;
-  display: flex;
-  flex-shrink: 0;
-  justify-content: center;
-  margin: 0;
-  text-align: center;
-  width: 8rem;
-
-  @include responsive.mobile {
-    width: 5rem;
-  }
 }
 
 .tier-grid {

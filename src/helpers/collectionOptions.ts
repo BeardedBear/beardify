@@ -181,6 +181,36 @@ export function sanitizeTierLabel(label: string): string {
   return label.replace(/[,=#\s]+/g, "_").replace(/^_+|_+$/g, "");
 }
 
+/**
+ * Given the tiers a set of now-deleted items used to belong to (looked up
+ * from their last known grouping), decrements each affected tier's stored
+ * size by how many of its items were removed. The last group in `groups` is
+ * the Unsorted bucket (see groupByTierList) — it's one entry longer than
+ * `list`, and never needs shrinking since it always absorbs whatever
+ * remains. Returns null if none of the removed ids belonged to a stored tier.
+ */
+export function shrinkTiersForRemovedAlbums<T extends { id: string }>(
+  list: TierList,
+  groups: T[][],
+  removedIds: string[],
+): null | TierList {
+  const tierIndexById = new Map<string, number>();
+  groups.forEach((group, tierIndex) => {
+    group.forEach((item) => tierIndexById.set(item.id, tierIndex));
+  });
+
+  const decrements = new Array<number>(list.length).fill(0);
+  let matched = false;
+  removedIds.forEach((id) => {
+    const tierIndex = tierIndexById.get(id);
+    if (tierIndex === undefined || tierIndex >= list.length) return;
+    decrements[tierIndex]++;
+    matched = true;
+  });
+  if (!matched) return null;
+  return list.map((tier, index) => ({ ...tier, size: Math.max(tier.size - decrements[index], 0) }));
+}
+
 /** Splits items into the 3 fixed "Top" buckets (big / medium / rest) by count. */
 export function splitTopTiers<T>(items: T[], tiers: TopTiers): [T[], T[], T[]] {
   const [big, medium] = tiers;
