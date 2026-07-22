@@ -102,6 +102,7 @@ watch(
 <style lang="scss" scoped>
 @use "@/assets/scss/colors" as colors;
 @use "@/assets/scss/mixins" as *;
+@use "@/assets/scss/responsive" as responsive;
 
 $radius: 2rem;
 
@@ -254,6 +255,11 @@ $radius: 2rem;
     max-height: 80dvh;
     max-width: 80vw;
     width: 80vw;
+
+    @include responsive.mobile {
+      height: 95dvh;
+      max-height: 95dvh;
+    }
   }
 }
 </style>
