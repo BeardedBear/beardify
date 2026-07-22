@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 import { AlbumSimplified } from "@/@types/Album";
-import { Artist, ArtistPage, ArtistTopTracks } from "@/@types/Artist";
+import { Artist, ArtistPage, ArtistTopTracks, RelatedArtists } from "@/@types/Artist";
 import { defaultArtist } from "@/@types/Defaults";
 import { NotificationType } from "@/@types/Notification";
 import { Paging } from "@/@types/Paging";
@@ -143,6 +143,7 @@ export const useArtist = defineStore("artist", {
       this.discogsArtist = null;
       this.reclassifying = false;
       this.discogsId = null;
+      this.relatedArtists = { artists: [] };
       this.releaseTypes = new Map();
       this.scrolledDown = false;
       this.timelineLoading = true;
@@ -351,6 +352,17 @@ export const useArtist = defineStore("artist", {
         this.timelineLoading = false;
       } finally {
         this.reclassifying = false;
+      }
+    },
+
+    async getRelatedArtists(artistId: string) {
+      try {
+        const { data } = await instance().get<RelatedArtists>(
+          `artists/${artistId}/related-artists`,
+        );
+        this.relatedArtists.artists = data.artists.slice(0, 15);
+      } catch {
+        // silent fail
       }
     },
 
@@ -641,6 +653,7 @@ export const useArtist = defineStore("artist", {
     headerHeight: 0,
     musicbrainzArtist: null,
     reclassifying: false,
+    relatedArtists: { artists: [] },
     releaseBaseTitles: new Map(),
     releaseTypes: new Map(),
     scrolledDown: false,

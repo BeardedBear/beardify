@@ -39,6 +39,7 @@ export interface ArtistPage {
   headerHeight: number;
   musicbrainzArtist: MusicBrainzArtist | null;
   reclassifying: boolean;
+  relatedArtists: RelatedArtists;
   releaseBaseTitles: Map<string, string>;
   releaseTypes: Map<string, string>;
   scrolledDown: boolean;
@@ -155,6 +156,10 @@ export interface MemberInfo {
   image: null | string;
   profileUrl: null | string;
   realName: null | string;
+}
+
+export interface RelatedArtists {
+  artists: Artist[];
 }
 
 /**
