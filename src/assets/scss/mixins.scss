@@ -88,9 +88,9 @@
 @mixin hover-metas-reveal {
   .visual {
     background-color: var(--bg-color-light);
-    border-radius: 0.6rem;
+    border-radius: 0.5rem;
     box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 40%);
-    padding: 0.6rem;
+    padding: 0.5rem;
     z-index: 5;
   }
 
