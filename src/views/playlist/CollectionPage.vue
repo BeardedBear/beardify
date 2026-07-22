@@ -402,10 +402,10 @@ playlistStore.clean().finally(() => {
   // intrinsic content width (before overflow-x clips it) push the whole grid,
   // and so the page, wider. min-width: 0 opts it out of that contribution.
   min-width: 0;
-  padding: 1rem 5rem 2rem;
+  padding: 1rem 5rem 10rem;
 
   @include responsive.tablet {
-    padding: 1rem 1.5rem 1.5rem;
+    padding: 1rem 1.5rem 7rem;
   }
 
   @include responsive.mobile {
@@ -415,11 +415,7 @@ playlistStore.clean().finally(() => {
 
 .tier-grid {
   display: grid;
-  gap: 2rem;
-
-  @include responsive.mobile {
-    gap: 1rem;
-  }
+  gap: 1rem;
 }
 
 .tier-grid-0 {

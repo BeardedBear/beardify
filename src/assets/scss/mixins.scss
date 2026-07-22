@@ -6,7 +6,6 @@
 @mixin font-bold {
   font-variation-settings:
     "slnt" var(--font-variation-slnt),
-    "wdth" var(--font-variation-wdth),
     "GRAD" var(--font-variation-grad),
     "ROND" var(--font-variation-rond),
     "wght" var(--font-variation-wght-bold);
@@ -25,7 +24,6 @@
 
   font-variation-settings:
     "slnt" var(--font-variation-slnt-italic),
-    "wdth" var(--font-variation-wdth),
     "GRAD" var(--font-variation-grad),
     "ROND" var(--font-variation-rond),
     "wght" var(--font-variation-wght);
@@ -42,7 +40,6 @@
   font-style: normal;
   font-variation-settings:
     "slnt" var(--font-variation-slnt-italic),
-    "wdth" var(--font-variation-wdth),
     "GRAD" var(--font-variation-grad),
     "ROND" var(--font-variation-rond),
     "wght" var(--font-variation-wght-bold);
@@ -91,9 +88,9 @@
 @mixin hover-metas-reveal {
   .visual {
     background-color: var(--bg-color-light);
-    border-radius: 0.6rem;
+    border-radius: 0.5rem;
     box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 40%);
-    padding: 0.6rem;
+    padding: 0.5rem;
     z-index: 5;
   }
 

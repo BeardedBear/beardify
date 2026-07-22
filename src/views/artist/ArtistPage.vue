@@ -31,6 +31,7 @@
         </div>
         <div class="top">
           <TopTracks class="top-item" />
+          <RelatedArtists class="top-item related-artists" />
         </div>
       </div>
       <div v-else-if="artistStore.activeTab === 'info'" key="info" class="content content--info">
@@ -42,7 +43,7 @@
 
 <script lang="ts" setup>
 import { useMediaQuery } from "@vueuse/core";
-import { nextTick, onBeforeUnmount, ref, watch } from "vue";
+import { nextTick, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
@@ -52,6 +53,7 @@ import BlockAlbumsCompilation from "@/components/artist/BlockAlbumsCompilation.v
 import BlockAlbumsLive from "@/components/artist/BlockAlbumsLive.vue";
 import BlockEps from "@/components/artist/BlockEps.vue";
 import BlockSingles from "@/components/artist/BlockSingles.vue";
+import RelatedArtists from "@/components/artist/RelatedArtists.vue";
 import TopTracks from "@/components/artist/TopTracks.vue";
 import Loader from "@/components/ui/LoadingDots.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
@@ -68,38 +70,6 @@ const pageRef = ref<HTMLElement | null>(null);
 const { onScroll, restoreScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
 
 let lastChangeTime = 0;
-let compensationAnimationId: null | number = null;
-
-// Keep in sync with the .collapsible `max-height` transition in ArtistHeader.vue (0.25s).
-const COLLAPSE_DURATION_MS = 250;
-
-function cancelCompensation(): void {
-  if (compensationAnimationId !== null) {
-    cancelAnimationFrame(compensationAnimationId);
-    compensationAnimationId = null;
-  }
-}
-
-function compensateCollapse(startScrollTop: number, collapsibleHeight: number): void {
-  const startTime = performance.now();
-
-  function step(now: number) {
-    if (!pageRef.value) return;
-    const t = Math.min((now - startTime) / COLLAPSE_DURATION_MS, 1);
-    pageRef.value.scrollTop = startScrollTop + collapsibleHeight * easeOut(t);
-    if (t < 1) {
-      compensationAnimationId = requestAnimationFrame(step);
-    } else {
-      compensationAnimationId = null;
-    }
-  }
-
-  compensationAnimationId = requestAnimationFrame(step);
-}
-
-function easeOut(t: number): number {
-  return 1 - (1 - t) * (1 - t);
-}
 
 // 767px mirrors $mobile-max in src/assets/scss/responsive.scss (drives the collapse CSS).
 const isMobile = useMediaQuery("(max-width: 767px)");
@@ -112,15 +82,9 @@ function handleScroll() {
 
   const scrollTop = pageRef.value?.scrollTop ?? 0;
   if (scrollTop > 40 && !artistStore.scrolledDown) {
-    const collapsibleEl = pageRef.value?.querySelector(".collapsible") as HTMLElement | null;
-    const collapsibleHeight = collapsibleEl?.offsetHeight ?? 0;
     artistStore.scrolledDown = true;
     lastChangeTime = now;
-    if (collapsibleHeight > 0) {
-      compensateCollapse(scrollTop, collapsibleHeight);
-    }
   } else if (scrollTop <= 0 && artistStore.scrolledDown) {
-    cancelCompensation();
     artistStore.scrolledDown = false;
     lastChangeTime = now;
   }
@@ -132,6 +96,7 @@ artistStore.clean().finally(async () => {
     artistStore.activeTab = hashTab as TabId;
   }
   artistStore.getTopTracks(props.id);
+  artistStore.getRelatedArtists(props.id);
   artistStore.getFollowStatus(props.id);
 
   if (artistStore.loadDiscographyCache(props.id)) {
@@ -180,9 +145,6 @@ watch(
   },
 );
 
-onBeforeUnmount(() => {
-  cancelCompensation();
-});
 </script>
 
 <style lang="scss">
@@ -278,6 +240,16 @@ onBeforeUnmount(() => {
 .artist-page {
   animation: pop-content 1s ease both;
   overflow-y: scroll;
+}
+
+.related-artists {
+  @include responsive.tablet-down {
+    order: 5;
+  }
+
+  @include responsive.xl {
+    order: 5;
+  }
 }
 
 .loader {

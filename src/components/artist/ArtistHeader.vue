@@ -17,8 +17,8 @@
     </div>
     <div class="collapsible" :class="{ collapsed: artistStore.scrolledDown }">
       <ArtistProfile />
-      <ArtistTabs v-model="artistStore.activeTab" :tabs="tabs" />
     </div>
+    <ArtistTabs v-model="artistStore.activeTab" :tabs="tabs" />
   </div>
 </template>
 
@@ -166,15 +166,21 @@ watch(infoAvailable, (available) => {
 }
 
 .collapsible {
-  overflow: hidden;
-  transition: max-height 0.25s ease-out, opacity 0.2s ease-out;
-
   @include responsive.mobile {
-    max-height: 30rem;
+    display: grid;
+    grid-template-rows: 1fr;
     opacity: 1;
+    transition: grid-template-rows 0.25s ease-out, opacity 0.2s ease-out;
+
+    // grid-template-rows shrinks proportionally to the row's real content size, unlike
+    // max-height (which needs an oversized guess and then snaps late in the transition).
+    > * {
+      min-height: 0;
+      overflow: hidden;
+    }
 
     &.collapsed {
-      max-height: 0;
+      grid-template-rows: 0fr;
       opacity: 0;
     }
   }

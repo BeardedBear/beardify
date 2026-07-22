@@ -159,9 +159,9 @@ body {
   font-family: var(--font-family-base);
   -webkit-font-smoothing: subpixel-antialiased;
   -webkit-font-smoothing: antialiased;
+  font-stretch: var(--font-stretch-base);
   font-variation-settings:
     "slnt" var(--font-variation-slnt),
-    "wdth" var(--font-variation-wdth),
     "GRAD" var(--font-variation-grad),
     "ROND" var(--font-variation-rond),
     "wght" var(--font-variation-wght);
@@ -172,9 +172,6 @@ body {
   /* Improve font rendering on many platforms */
   text-rendering: optimizelegibility;
 
-  @include responsive.tablet-up {
-    --font-variation-wdth: 70;
-  }
 }
 
 ::selection {

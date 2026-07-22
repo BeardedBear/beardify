@@ -132,10 +132,6 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   padding: 0.7rem 1.2rem;
 
   @include font-bold;
-
-  &:first-child {
-    margin-top: 0;
-  }
 }
 
 .tier-heading-colored {
