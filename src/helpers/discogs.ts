@@ -253,7 +253,9 @@ function createDiscogsLinkById(type: string, id: string): string {
 function createDiscogsSearchLink(type: string, name: string): string {
   const entity = DISCOGS_ENTITIES[type.toLowerCase()];
   if (!entity) return `[${type}=${name}]`;
-  return `<a href="${DISCOGS_BASE_URL}/search/?q=${encodeURIComponent(name)}&type=${entity.searchType}" ${LINK_ATTRS}>${name}</a>`;
+  // name arrives already HTML-escaped (parseDiscogsMarkup escapes upfront); decode it
+  // before encoding into the query, otherwise "Guns N' Roses" searches "Guns N&#39; Roses".
+  return `<a href="${DISCOGS_BASE_URL}/search/?q=${encodeURIComponent(unescapeHtml(name))}&type=${entity.searchType}" ${LINK_ATTRS}>${name}</a>`;
 }
 
 /**
@@ -267,6 +269,14 @@ function escapeHtml(text: string): string {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
+
+const HTML_ENTITIES: Record<string, string> = {
+  "&#39;": "'",
+  "&amp;": "&",
+  "&gt;": ">",
+  "&lt;": "<",
+  "&quot;": "\"",
+};
 
 /**
  * Generic fetch function for Discogs API
@@ -287,4 +297,11 @@ async function fetchFromDiscogs<T>(path: string, searchParams?: Record<string, s
   } catch {
     return null;
   }
+}
+
+/**
+ * Reverse of escapeHtml, for text that must go back into a URL query
+ */
+function unescapeHtml(text: string): string {
+  return text.replace(/&(?:amp|lt|gt|quot|#39);/g, (entity) => HTML_ENTITIES[entity]);
 }

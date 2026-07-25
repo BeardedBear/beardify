@@ -33,10 +33,13 @@ export async function getTicketmasterEvents(artistName: string): Promise<Ticketm
       .json<TicketmasterSearchResponse>();
 
     const normalizedName = normalizeString(artistName);
-    const events = (data._embedded?.events ?? []).filter((event) =>
-      event._embedded?.attractions?.some(
-        (attraction) => normalizeString(attraction.name) === normalizedName,
-      ),
+    const events = (data._embedded?.events ?? []).filter(
+      (event) =>
+        // event.url lands in an <a href> in ArtistConcerts.vue, so keep http(s) only
+        /^https?:\/\//i.test(event.url)
+        && event._embedded?.attractions?.some(
+          (attraction) => normalizeString(attraction.name) === normalizedName,
+        ),
     );
 
     eventsCache.set(artistName, events);

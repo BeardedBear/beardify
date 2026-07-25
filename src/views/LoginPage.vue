@@ -48,9 +48,11 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 
+import { NotificationType } from "@/@types/Notification";
 import { api } from "@/api";
 import LoadingDots from "@/components/ui/LoadingDots.vue";
 import { clearAuthData } from "@/helpers/authUtils";
+import { notification } from "@/helpers/notifications";
 import { isTauri } from "@/helpers/platform";
 import router, { RouteName } from "@/router";
 import { useAuth } from "@/views/auth/AuthStore";
@@ -71,7 +73,12 @@ async function cancelWaiting(): Promise<void> {
 async function handleLogin(): Promise<void> {
   if (isTauri()) {
     const { invoke } = await import("@tauri-apps/api/core");
-    await invoke("open_spotify_auth", { url: spotifyAuthUrl.value });
+    try {
+      await invoke("open_spotify_auth", { url: spotifyAuthUrl.value });
+    } catch {
+      notification({ msg: "Could not open the Spotify login page", type: NotificationType.Error });
+      return;
+    }
     waiting.value = true;
   } else {
     window.location.href = spotifyAuthUrl.value;
