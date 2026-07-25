@@ -64,7 +64,7 @@ const classes = computed(() => {
 
   // Add default 'button' class unless noDefaultClass is true
   if (!props.noDefaultClass) {
-    classList.push("button");
+    classList.push("button", "font-bold", "squircle");
   }
 
   // Add variant classes
@@ -118,13 +118,9 @@ const classes = computed(() => {
   </component>
 </template>
 
-<style scoped lang="scss">
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .button {
-  @include squircle;
-  @include font-bold;
-
   align-items: center;
   appearance: none;
   background-color: var(--bg-color-light);
@@ -156,84 +152,91 @@ const classes = computed(() => {
     background-color: var(--bg-color-lighter);
   }
 
-  &-primary {
-    background-color: var(--primary-color);
+}
+
+/* Modifiers: kept after .button so equal specificity resolves in their favour. */
+.button-primary {
+  background-color: var(--primary-color);
+  color: white;
+
+  &:hover:not(:disabled) {
+    background-color: var(--primary-color-light);
     color: white;
-
-    &:hover:not(:disabled) {
-      background-color: var(--primary-color-light);
-      color: white;
-    }
-
-    &:active:not(:disabled) {
-      background-color: var(--primary-color-lighter);
-      color: white;
-    }
   }
 
-  &-nude {
+  &:active:not(:disabled) {
+    background-color: var(--primary-color-lighter);
+    color: white;
+  }
+}
+
+.button-nude {
+  background-color: transparent;
+  border: 0;
+  color: var(--font-color);
+  cursor: pointer;
+  opacity: 0.5;
+  padding: 0.5rem 0.6rem;
+
+  &:hover:not(:disabled) {
     background-color: transparent;
-    border: 0;
-    color: var(--font-color);
-    cursor: pointer;
-    opacity: 0.5;
+    opacity: 1;
+  }
+}
+
+.button-big {
+  font-size: var(--font-size-base);
+  padding: 0.75rem 1.2rem;
+}
+
+.button-small {
+  font-size: var(--font-size-sm);
+  padding: 0.5rem 0.6rem;
+}
+
+.button-x-small {
+  font-size: var(--font-size-sm);
+  padding: 0.1rem 0.5rem;
+}
+
+.button-icon-only {
+  &.button-small {
     padding: 0.5rem 0.6rem;
-
-    &:hover:not(:disabled) {
-      background-color: transparent;
-      opacity: 1;
-    }
   }
 
-  &-big {
-    font-size: var(--font-size-base);
-    padding: 0.75rem 1.2rem;
+  &.button-x-small {
+    padding: 0.25rem 0.5rem;
   }
+}
 
-  &-small {
-    font-size: var(--font-size-sm);
-    padding: 0.5rem 0.6rem;
-  }
+.button-full {
+  text-align: left;
+  width: 100%;
+}
 
-  &-x-small {
-    font-size: var(--font-size-sm);
-    padding: 0.1rem 0.5rem;
-  }
+.button-with-border {
+  border: 1px solid var(--bg-color-lighter);
+}
 
-  &-icon-only {
-    &.button-small {
-      padding: 0.5rem 0.6rem;
-    }
+.button-align-left {
+  place-content: flex-start;
+}
 
-    &.button-x-small {
-      padding: 0.25rem 0.5rem;
-    }
-  }
+.button-align-center {
+  place-content: center;
+}
 
-  &-full {
-    text-align: left;
-    width: 100%;
-  }
+.button-align-right {
+  /* "right" is not a valid align-content value, so browsers drop this whole
+     declaration and the modifier is a no-op today. Kept verbatim rather than
+     "corrected" here, since fixing it would change how right-aligned buttons
+     render — a separate call from this CSS migration. */
+  /* stylelint-disable-next-line declaration-property-value-no-unknown */
+  place-content: right;
+}
 
-  &-with-border {
-    border: 1px solid var(--bg-color-lighter);
-  }
-
-  &-align-left {
-    place-content: flex-start;
-  }
-
-  &-align-center {
-    place-content: center;
-  }
-
-  &-align-right {
-    place-content: right;
-  }
-
-  &-align-justify {
-    display: flex;
-    place-content: space-between;
-  }
+.button-align-justify {
+  display: flex;
+  place-content: space-between;
 }
 </style>

@@ -42,7 +42,7 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .wrap {
   display: flex;
   flex-direction: column;

@@ -95,14 +95,14 @@ useEventListener(window, "scroll", () => visible.value && updatePosition(), { ca
 useEventListener(window, "resize", () => visible.value && updatePosition());
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .release-popover-wrapper {
   display: inline-block;
   outline: none;
 }
 </style>
 
-<style lang="scss">
+<style>
 /* Unscoped: the popover is teleported to <body> */
 .release-popover {
   align-items: center;

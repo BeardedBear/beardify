@@ -128,16 +128,14 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .artist-info {
   display: grid;
   gap: 2rem;
   grid-template-columns: 1fr 18rem;
 
-  @include responsive.tablet-down {
+  @media (width <= 1024px) {
     grid-template-columns: 1fr;
   }
 }
@@ -185,11 +183,11 @@ onMounted(() => {
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(h2) {
-    @include font-bold;
-
     border-bottom: 1px solid var(--bg-color-light);
     color: var(--font-color-default);
     font-size: var(--font-size-xl);
+    font-variation-settings: var(--font-variation-settings-bold);
+    font-weight: var(--font-weight-bold);
     margin-bottom: 0.8rem;
     margin-top: 1.5rem;
     padding-bottom: 0.4rem;
@@ -197,19 +195,19 @@ onMounted(() => {
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(h3) {
-    @include font-bold;
-
     color: var(--font-color-default);
     font-size: var(--font-size-base);
+    font-variation-settings: var(--font-variation-settings-bold);
+    font-weight: var(--font-weight-bold);
     margin-bottom: 0.6rem;
     margin-top: 1.2rem;
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(h4) {
-    @include font-bold;
-
     color: var(--font-color-default);
+    font-variation-settings: var(--font-variation-settings-bold);
+    font-weight: var(--font-weight-bold);
     margin-bottom: 0.5rem;
     margin-top: 1rem;
   }
@@ -241,14 +239,17 @@ onMounted(() => {
   :deep(b),
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(strong) {
-    @include font-bold;
+    font-variation-settings: var(--font-variation-settings-bold);
+    font-weight: var(--font-weight-bold);
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(i),
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(em) {
-    @include font-bold-italic;
+    font-style: var(--font-style-bold-italic);
+    font-variation-settings: var(--font-variation-settings-bold-italic);
+    font-weight: var(--font-weight-bold);
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -269,9 +270,9 @@ onMounted(() => {
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(th) {
-    @include font-bold;
-
     background-color: var(--bg-color-dark);
+    font-variation-settings: var(--font-variation-settings-bold);
+    font-weight: var(--font-weight-bold);
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -288,12 +289,14 @@ onMounted(() => {
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(em) {
-    @include font-italic;
+    font-style: var(--font-style-italic);
+    font-variation-settings: var(--font-variation-settings-italic);
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :deep(strong) {
-    @include font-bold;
+    font-variation-settings: var(--font-variation-settings-bold);
+    font-weight: var(--font-weight-bold);
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */

@@ -22,7 +22,7 @@
         <ButtonIndex
           no-default-class
           :class="{ current: configStore.themeLabel === 'light' }"
-          class="radio-item"
+          class="radio-item squircle"
           @click="configStore.switchTheme('light')"
         >
           <i class="icon-sun" />
@@ -30,7 +30,7 @@
         <ButtonIndex
           no-default-class
           :class="{ current: configStore.themeLabel === 'dark' }"
-          class="radio-item"
+          class="radio-item squircle"
           @click="configStore.switchTheme('dark')"
         >
           <i class="icon-moon" />
@@ -71,8 +71,7 @@ const textColors: TextColors[] = [
 ];
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .schemes {
   display: flex;
@@ -80,31 +79,31 @@ const textColors: TextColors[] = [
 }
 
 .scheme-item {
-  $s: 1rem;
+  --scheme-size: 1rem;
 
   border: 0;
   cursor: pointer;
   flex: 1;
-  height: $s;
+  height: var(--scheme-size);
   padding: 0;
   position: relative;
   transition: all ease 0.2s;
 
   &:first-of-type {
-    border-radius: $s 0 0 $s;
+    border-radius: var(--scheme-size) 0 0 var(--scheme-size);
   }
 
   &:last-of-type {
-    border-radius: 0 $s $s 0;
+    border-radius: 0 var(--scheme-size) var(--scheme-size) 0;
   }
 
   &::after {
-    $o: 0.3rem;
+    --inset-offset: 0.3rem;
 
     background-color: white;
-    border-radius: $s;
+    border-radius: var(--scheme-size);
     content: "";
-    inset: $o $o * 2 $o $o * 2;
+    inset: var(--inset-offset) calc(var(--inset-offset) * 2) var(--inset-offset) calc(var(--inset-offset) * 2);
     position: absolute;
     transform: scaleX(0);
     transition: all ease 0.2s;
@@ -140,9 +139,7 @@ const textColors: TextColors[] = [
 }
 
 .radio-item {
-  $radius: 1rem;
-
-  @include squircle;
+  --radio-radius: 1rem;
 
   background-color: var(--bg-color);
   border: 0;
@@ -153,11 +150,11 @@ const textColors: TextColors[] = [
   width: 100%;
 
   &:first-of-type {
-    border-radius: $radius 0 0 $radius;
+    border-radius: var(--radio-radius) 0 0 var(--radio-radius);
   }
 
   &:last-of-type {
-    border-radius: 0 $radius $radius 0;
+    border-radius: 0 var(--radio-radius) var(--radio-radius) 0;
   }
 
   &.current {

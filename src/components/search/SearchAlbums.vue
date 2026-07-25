@@ -33,34 +33,33 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/search-item" as search;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .album {
   border-radius: 1rem;
   padding: 0.8rem;
   transition: 0.2s;
 
-  @include search.search-item-hover;
+  &:hover {
+    background-color: var(--bg-color-light);
+    transform: scale(1.03);
+  }
 
   &.exact-search {
     background: var(--bg-color-lighter);
 
     &::after {
-      $size: 0.8rem;
+      --dot-size: 0.8rem;
 
       background-color: var(--primary-color);
-      border-radius: $size;
+      border-radius: var(--dot-size);
       content: "";
-      height: $size;
+      height: var(--dot-size);
       left: 0;
-      position: "";
       position: absolute;
       top: 0;
       transform: translate(-20%, -20%);
-      width: $size;
+      width: var(--dot-size);
     }
   }
 }
@@ -70,7 +69,7 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
   }
 }

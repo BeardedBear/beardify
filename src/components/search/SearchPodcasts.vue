@@ -11,7 +11,7 @@
       >
         <img :src="podcast.images?.[1]?.url || podcast.images?.[0]?.url" class="cover" />
         <div class="content">
-          <div class="name">
+          <div class="name font-bold">
             {{ podcast.name }}
           </div>
           <div v-if="podcast.publisher" class="publisher">
@@ -33,16 +33,28 @@ import SearchTitle from "@/components/search/SearchTitle.vue";
 const searchStore = useSearch();
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/search-item" as search;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .podcast-list {
   padding: 0 1rem;
 
   .podcast {
-    @include search.search-item-base;
+    align-items: center;
+    background-color: var(--bg-color);
+    border-radius: 0.5rem;
+    color: currentcolor;
+    cursor: pointer;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    padding: 0.8rem;
+    text-decoration: none;
+    transition: 0.2s;
+
+    &:hover {
+      background-color: var(--bg-color-light);
+      transform: scale(1.03);
+    }
   }
 }
 
@@ -58,9 +70,6 @@ const searchStore = useSearch();
 
 .name {
   font-size: var(--font-size-sm);
-
-  @include font-bold;
-
   margin-bottom: 0.2rem;
 }
 

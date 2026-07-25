@@ -9,7 +9,7 @@
           'exact-search': exactArtistSearched === artist.name.toLowerCase(),
         }"
         :to="`/artist/${artist.id}`"
-        class="artist"
+        class="artist font-bold"
         @click="searchStore.reset()"
       >
         <Cover :images="artist.images" class="avatar" size="small" />
@@ -40,21 +40,18 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/search-item" as search;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .artist-list {
   padding: 0 1rem;
 
   .avatar {
-    $size: 2.5rem;
+    --avatar-size: 2.5rem;
 
-    border-radius: $size;
+    border-radius: var(--avatar-size);
     display: block;
-    height: $size;
-    width: $size;
+    height: var(--avatar-size);
+    width: var(--avatar-size);
   }
 
   .artist {
@@ -63,9 +60,6 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
     color: currentcolor;
     display: flex;
     font-size: var(--font-size-sm);
-
-    @include font-bold;
-
     gap: 1rem;
     margin-bottom: 0.4rem;
     padding: 0.5rem;
@@ -73,7 +67,10 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
     text-decoration: none;
     transition: 0.2s;
 
-    @include search.search-item-hover;
+    &:hover {
+      background-color: var(--bg-color-light);
+      transform: scale(1.03);
+    }
 
     .artist-name {
       display: flex;
@@ -102,17 +99,17 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
       background: var(--bg-color-lighter);
 
       &::after {
-        $size: 0.8rem;
+        --dot-size: 0.8rem;
 
         background-color: var(--primary-color);
-        border-radius: $size;
+        border-radius: var(--dot-size);
         content: "";
-        height: $size;
+        height: var(--dot-size);
         left: 0;
         position: absolute;
         top: 0;
         transform: translate(-20%, -20%);
-        width: $size;
+        width: var(--dot-size);
       }
     }
   }

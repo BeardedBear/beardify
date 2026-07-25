@@ -9,7 +9,7 @@
         <div class="metas">
           <img :src="userStore.user.images[0].url" alt="" class="avatar" />
           <div>
-            <div class="name">
+            <div class="name font-bold">
               {{ userStore.user?.display_name }}
             </div>
             <div class="followers">{{ userStore.user?.followers.total }} followers</div>
@@ -27,7 +27,7 @@
             v-for="collection in userStore.collections"
             :key="collection.id"
             :to="`/collection/${collection.id}`"
-            class="playlist"
+            class="playlist font-bold"
           >
             <Cover :images="collection.images" :size="'large'" class="playlist-cover" />
             <div>{{ collection.name.replaceAll("#Collection ", "") }}</div>
@@ -41,7 +41,7 @@
             v-for="playlist in userStore.playlists"
             :key="playlist.id"
             :to="`/playlist/${playlist.id}`"
-            class="playlist"
+            class="playlist font-bold"
           >
             <Cover :images="playlist.images" :size="'large'" class="playlist-cover" />
             <div>{{ playlist.name }}</div>
@@ -75,22 +75,18 @@ userStore.clean().finally(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .head {
   overflow: hidden;
   padding: 2rem 5rem;
   position: relative;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     padding: 1rem;
   }
 
-  @include responsive.tablet {
+  @media (width >= 768px) and (width <= 1024px) {
     padding: 1.5rem 2rem;
   }
 
@@ -112,17 +108,15 @@ userStore.clean().finally(() => {
   }
 
   .avatar {
-    $size: 4rem;
+    --avatar-size: 4rem;
 
     border-radius: 100%;
-    height: $size;
-    width: $size;
+    height: var(--avatar-size);
+    width: var(--avatar-size);
   }
 
   .name {
     font-size: var(--font-size-xl);
-
-    @include font-bold;
   }
 
   .avatar-bg {
@@ -145,11 +139,11 @@ userStore.clean().finally(() => {
   max-width: 100rem;
   padding: 2rem 4rem;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     padding: 1rem;
   }
 
-  @include responsive.tablet {
+  @media (width >= 768px) and (width <= 1024px) {
     padding: 1.5rem 2rem;
   }
 
@@ -173,8 +167,6 @@ userStore.clean().finally(() => {
     transition:
       background-color 0.2s ease,
       transform 0.2s ease;
-
-    @include font-bold;
 
     &:hover {
       background-color: var(--bg-color-light);

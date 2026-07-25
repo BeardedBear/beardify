@@ -4,7 +4,7 @@
   </div>
   <div v-else ref="scrollRef" class="genre" @scroll="onScroll">
     <div class="content">
-      <div class="title">{{ genreStore.genre }}</div>
+      <div class="title font-bold">{{ genreStore.genre }}</div>
       <div v-if="genreStore.artists.length" class="gallery">
         <GenreArtistCard
           v-for="artist in genreStore.artists"
@@ -38,9 +38,7 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .loader {
   display: grid;
@@ -57,11 +55,11 @@ watch(
   max-width: 100rem;
   padding: 2rem 4rem;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     padding: 1rem;
   }
 
-  @include responsive.tablet {
+  @media (width >= 768px) and (width <= 1024px) {
     padding: 1.5rem 2rem;
   }
 }
@@ -70,8 +68,6 @@ watch(
   font-size: var(--font-size-xl);
   margin-bottom: 2rem;
   text-transform: capitalize;
-
-  @include font-bold;
 }
 
 .gallery {

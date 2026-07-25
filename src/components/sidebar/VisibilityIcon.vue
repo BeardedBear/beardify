@@ -11,7 +11,7 @@ defineProps<{
 }>();
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .visibility-icon {
   font-size: var(--font-size-sm);
   margin-left: 1rem;

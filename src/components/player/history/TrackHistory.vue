@@ -25,7 +25,7 @@ defineProps<{
 }>();
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .track {
   align-items: center;
   display: flex;
@@ -33,8 +33,6 @@ defineProps<{
   padding: 7px 10px;
 
   &.current {
-    $o: 10px;
-
     background-color: var(--bg-color);
     border: 1px solid var(--bg-color-light);
     border-radius: 10px;
@@ -42,11 +40,11 @@ defineProps<{
   }
 
   .cover {
-    $s: 35px;
+    --cover-size: 35px;
 
     border-radius: 5px;
-    height: $s;
-    width: $s;
+    height: var(--cover-size);
+    width: var(--cover-size);
   }
 }
 

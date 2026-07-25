@@ -42,7 +42,7 @@ authStore.me && !releasesStore.checks && releasesStore.createReleasesCheckEntry(
 !releasesStore.releases.length && releasesStore.getReleases();
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .releases {
   animation: pop-content 1s ease both;
   display: flex;

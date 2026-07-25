@@ -9,7 +9,7 @@
         'is-playing': playerStore.currentlyPlaying.item?.artists[0].name.toLowerCase() === release.artist.toLowerCase(),
         checked: releasesStore.checks?.find((r) => r.id === release.id),
       }"
-      class="release"
+      class="release font-bold"
       @click="search(release.artist, release.album)"
     >
       <div>{{ release.artist }}</div>
@@ -51,8 +51,7 @@ function search(artist: string, album: string): void {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .release-wrap {
   display: flex;
@@ -82,9 +81,6 @@ function search(artist: string, album: string): void {
   display: grid;
   flex: 1;
   font-size: var(--font-size-sm);
-
-  @include font-bold;
-
   grid-template-columns: 0.6fr 0.6fr 1fr;
   justify-content: space-between;
   margin-bottom: 0.3rem;

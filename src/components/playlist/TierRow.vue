@@ -1,7 +1,7 @@
 <template>
   <div class="tier-row" :class="{ 'tier-row-side': sideLayout, 'tier-row-unsorted': scrollable }">
     <div
-      class="tier-heading"
+      class="tier-heading font-bold"
       :class="{ 'tier-heading-colored': !!color, 'tier-heading-unsorted': unsorted, 'tier-heading-side': sideLayout }"
       :style="color ? { backgroundColor: color } : undefined"
     >
@@ -80,9 +80,7 @@ onMounted(() => {
 onBeforeUnmount(() => resizeObserver?.disconnect());
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .tier-row {
   display: contents;
@@ -94,9 +92,11 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   margin-bottom: 1.5rem;
 }
 
-// Sticky requires an actual box (display: contents, used by .tier-row, opts an
-// element out of sticky positioning entirely), so the scrollable row gets its
-// own always-boxed variant instead of reusing .tier-row.
+/* Sticky requires an actual box (display: contents, used by .tier-row, opts an */
+
+/* element out of sticky positioning entirely), so the scrollable row gets its */
+
+/* own always-boxed variant instead of reusing .tier-row. */
 .tier-row-unsorted {
   background-color: var(--bg-color-darker);
   bottom: 0;
@@ -130,8 +130,6 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   line-break: anywhere;
   margin: 2rem 0 1rem;
   padding: 0.7rem 1.2rem;
-
-  @include font-bold;
 }
 
 .tier-heading-colored {
@@ -157,7 +155,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   text-align: center;
   width: 8rem;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     width: 5rem;
   }
 }
@@ -173,9 +171,11 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   padding: 0 1rem;
 }
 
-// flex + min-width: 0 are required here: flex items default to min-width:
-// auto, which without this would let the grid's intrinsic content width blow
-// out the container instead of scrolling inside it.
+/* flex + min-width: 0 are required here: flex items default to min-width: */
+
+/* auto, which without this would let the grid's intrinsic content width blow */
+
+/* out the container instead of scrolling inside it. */
 .unsorted-scroll {
   flex: 1;
   min-width: 0;
@@ -202,13 +202,13 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   justify-content: center;
   width: 2.4rem;
 
-  &:hover:not(:disabled) {
-    background-color: var(--bg-color-lighter);
-  }
-
   &:disabled {
     cursor: default;
     opacity: 0.3;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--bg-color-lighter);
   }
 }
 </style>

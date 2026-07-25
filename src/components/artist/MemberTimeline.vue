@@ -1,6 +1,6 @@
 <template>
   <div v-if="rows.length > 0" class="member-timeline">
-    <h2 class="timeline-title">Members timeline</h2>
+    <h2 class="timeline-title font-bold">Members timeline</h2>
 
     <div class="timeline-legend">
       <span v-for="role in usedRoles" :key="role.label" class="legend-item">
@@ -202,16 +202,13 @@ const ticks = computed<AxisTick[]>(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .member-timeline {
   margin-bottom: 2.5rem;
 }
 
 .timeline-title {
-  @include font-bold;
-
   border-bottom: 1px solid var(--bg-color-light);
   color: var(--font-color-default);
   font-size: var(--font-size-xl);
@@ -275,9 +272,9 @@ const ticks = computed<AxisTick[]>(() => {
   white-space: nowrap;
 
   &.is-active {
-    @include font-bold;
-
     color: var(--font-color-default);
+    font-variation-settings: var(--font-variation-settings-bold);
+    font-weight: var(--font-weight-bold);
 
     &::after {
       background-color: #2ecc71;

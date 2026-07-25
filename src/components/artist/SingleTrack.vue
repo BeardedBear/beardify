@@ -7,7 +7,7 @@
     <div class="what">
       <Cover :images="single.images" :size="'small'" class="cover" />
       <div>
-        <div class="name">
+        <div class="name font-bold">
           {{ single.name }}
         </div>
         <ArtistList :artist-list="single.artists" feat />
@@ -39,8 +39,7 @@ function playSingle(albumUri: string): void {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .single {
   align-items: center;
@@ -72,10 +71,6 @@ function playSingle(albumUri: string): void {
   font-size: var(--font-size-sm);
   font-style: italic;
   opacity: 0.5;
-}
-
-.name {
-  @include font-bold;
 }
 
 .cover {

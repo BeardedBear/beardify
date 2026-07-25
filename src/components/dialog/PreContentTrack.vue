@@ -3,7 +3,7 @@
     <div class="meta">
       <i class="icon-note note" />
       <div>
-        <div class="name">
+        <div class="name font-bold">
           {{ track?.name }}
         </div>
         <div class="artist">
@@ -40,9 +40,7 @@ defineProps<{
 }>();
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .track {
   align-items: center;
@@ -69,10 +67,6 @@ defineProps<{
   color: var(--text-color-light);
   font-size: var(--font-size-sm);
   opacity: 0.5;
-}
-
-.name {
-  @include font-bold;
 }
 
 .options {

@@ -12,7 +12,7 @@
       <div v-for="(tier, index) in tiers" :key="index" class="tier-row">
         <i class="icon-menu tier-drag-handle" title="Drag to reorder" />
         <span class="tier-color" :style="{ backgroundColor: getTierColor(index, tiers.length) }" />
-        <input v-model="tier.label" class="input tier-label" placeholder="Name" type="text" @input="commit" />
+        <input v-model="tier.label" class="input tier-label font-bold" placeholder="Name" type="text" @input="commit" />
         <button
           class="remove"
           :disabled="tiers.length <= 1"
@@ -78,8 +78,7 @@ function removeTier(index: number): void {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .tier-editor {
   display: flex;
@@ -118,8 +117,6 @@ function removeTier(index: number): void {
 }
 
 .input {
-  @include font-bold;
-
   background-color: var(--bg-color-light);
   border: 0;
   border-radius: 0.3rem;
@@ -143,14 +140,14 @@ function removeTier(index: number): void {
   opacity: 0.6;
   padding: 0.4rem 0.6rem;
 
-  &:hover:not(:disabled) {
-    background-color: var(--bg-color-light);
-    opacity: 1;
-  }
-
   &:disabled {
     cursor: default;
     opacity: 0.2;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--bg-color-light);
+    opacity: 1;
   }
 }
 

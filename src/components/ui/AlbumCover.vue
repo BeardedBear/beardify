@@ -14,7 +14,7 @@ defineProps<{
 }>();
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .img {
   aspect-ratio: 1 / 1;
   border-radius: 0.4rem;

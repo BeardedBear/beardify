@@ -12,7 +12,7 @@ Beardify is a custom Spotify web client built with Vue 3 + TypeScript that enhan
 - **TypeScript** (strict mode)
 - **Vite 8** for build/dev server
 - **Pinia** for state management with persistence
-- **SCSS** with CSS custom properties for theming
+- **Native CSS** (nesting + custom properties) for styling and theming — no preprocessor
 - **ky v2** for HTTP requests (via `instance()` helper)
 - **Spotify Web API + Web Playback SDK**
 
@@ -76,7 +76,7 @@ Best practices:
 - `src/views/` - Route-level components, each with corresponding Pinia store
 - `src/helpers/` - Utility functions
 - `src/@types/` - TypeScript type definitions
-- `src/assets/scss/` - Global SCSS with theming system
+- `src/assets/css/` - Global CSS with theming system (imported once via `App.vue`)
 
 ### State Management (Pinia)
 
@@ -84,11 +84,36 @@ Each feature has its own store: `AuthStore`, `PlayerStore`, `PlaylistStore`, `Se
 
 ### Styling System
 
-Uses CSS custom properties with consistent naming:
+Plain CSS — no preprocessor. Use native nesting (`&`) and custom properties.
+
+Custom properties follow consistent naming:
 
 - `--bg-color-*` (darker, dark, default, light, lighter)
 - `--font-color-*` (dark, default, light)
 - `--primary-color-*` (darker, dark, default, light, lighter)
+
+Global stylesheets live in `src/assets/css/` and are pulled in once by `App.vue`
+(`@import "@/assets/css/index.css"`). Component styles are scoped and stand alone —
+there is nothing to import at the top of a `<style>` block.
+
+Two conventions replace the former Sass mixins:
+
+- **Font weights/styles**: instead of `@include font-bold`, use
+  `font-variation-settings: var(--font-variation-settings-bold);` together with
+  `font-weight: var(--font-weight-bold);`. Italic and bold-italic have matching
+  `--font-variation-settings-italic` / `-bold-italic` and
+  `--font-style-italic` / `--font-style-bold-italic` pairs. The paired declaration
+  carries the `@supports not font-tech(variations)` fallback, so do not drop it.
+- **Breakpoints**: write media queries literally. The values in use are
+  `max-width: 767px` (mobile), `min-width: 768px` (tablet and up),
+  `max-width: 1024px` (tablet and down), `min-width: 768px) and (max-width: 1024px`
+  (tablet only), `min-width: 1025px` (desktop), `min-width: 1930px`,
+  `min-width: 2000px`, and `min-width: 2560px`.
+
+Component-local values that used to be Sass variables are namespaced custom
+properties declared on the rule that owns them (e.g. `--loader-size` on `.loader`).
+Namespace them — custom properties inherit into child components, so a bare
+`--size` would leak.
 
 ## Code Conventions
 
@@ -119,14 +144,13 @@ Uses CSS custom properties with consistent naming:
 - **HTML whitespace**: Ignored in Vue templates (template whitespace rules are deliberately permissive)
 - **Tab width**: 2 spaces (enforced via `indent`; JSON/YAML files maintain 2 spaces)
 
-**Note**: Prettier has been removed from the project; formatting is now enforced via ESLint stylistic rules. Use `bun run fix` to auto-fix JS/TS/Vue and SCSS style issues.
+**Note**: Prettier has been removed from the project; formatting is now enforced via ESLint stylistic rules. Use `bun run fix` to auto-fix JS/TS/Vue and CSS style issues.
 
 ### Stylelint Configuration
 
-- **Extends**: `stylelint-config-standard-scss` + Vue/HTML support
+- **Extends**: `stylelint-config-standard` + Vue/HTML support
 - **Property ordering**: Alphabetical order enforced
 - **Declaration order**: Custom properties first, then declarations
-- **SCSS support**: Full SCSS syntax support with `stylelint-scss` plugin
 - **Ignores**: `/public/` directory excluded
 
 ## Player Architecture

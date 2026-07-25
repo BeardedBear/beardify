@@ -15,7 +15,7 @@
       >
         <i class="track-icon icon-music" />
         <div>
-          <div class="track-name">
+          <div class="track-name font-bold">
             {{ track.name }}
           </div>
           <div>
@@ -37,10 +37,7 @@ import { playSong } from "@/helpers/play";
 const searchStore = useSearch();
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/search-item" as search;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .song-list {
   padding: 0 1rem;
@@ -55,7 +52,10 @@ const searchStore = useSearch();
   padding: 0.8rem;
   transition: 0.2s;
 
-  @include search.search-item-hover;
+  &:hover {
+    background-color: var(--bg-color-light);
+    transform: scale(1.03);
+  }
 }
 
 .track-icon {
@@ -65,7 +65,5 @@ const searchStore = useSearch();
 
 .track-name {
   font-size: var(--font-size-sm);
-
-  @include font-bold;
 }
 </style>

@@ -18,7 +18,7 @@
         <i class="track-icon-item save icon-plus" @click.prevent.stop="open({ type: 'addSong', track: track.item })" />
       </div>
       <div>
-        <div class="track-name">
+        <div class="track-name font-bold">
           {{ track.item.name }}
         </div>
         <ArtistList :artist-list="track.item.artists" feat />
@@ -52,7 +52,7 @@
       <div class="date">
         {{ date(track.added_at) }}
       </div>
-      <div class="duration">
+      <div class="duration font-bold">
         {{ timecode(track.item.duration_ms) }}
       </div>
       <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
@@ -117,14 +117,38 @@ async function deleteSong(songId: string): Promise<void> {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
-.track-name {
-  @include font-bold;
+.track-icon {
+  .save {
+    cursor: pointer;
+    display: none;
+  }
+
+  &:hover {
+    .music {
+      display: none;
+    }
+
+    .save {
+      display: block;
+      opacity: 0.8;
+    }
+  }
+}
+
+.track-icon-item {
+  font-size: var(--font-size-xl);
+  opacity: 0.1;
+}
+
+.adder-button {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  display: none;
+  opacity: 1;
 }
 
 .track {
@@ -140,38 +164,15 @@ async function deleteSong(songId: string): Promise<void> {
   &.deletable {
     grid-template-columns: 2.2rem 1fr 0.9fr auto 0.3fr 2.8rem auto;
 
-    @include responsive.mobile {
+    @media (width <= 767px) {
       grid-template-columns: 2.2rem 1fr auto auto;
     }
   }
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     gap: 0.5rem;
     grid-template-columns: 2.2rem 1fr auto;
     padding: 0.5rem;
-  }
-
-  &-icon {
-    &-item {
-      font-size: var(--font-size-xl);
-      opacity: 0.1;
-    }
-
-    .save {
-      cursor: pointer;
-      display: none;
-    }
-
-    &:hover {
-      .music {
-        display: none;
-      }
-
-      .save {
-        display: block;
-        opacity: 0.8;
-      }
-    }
   }
 
   .delete {
@@ -187,24 +188,23 @@ async function deleteSong(songId: string): Promise<void> {
   .owner {
     color: currentcolor;
     font-size: var(--font-size-sm);
-
-    @include font-italic;
-
+    font-style: var(--font-style-italic);
+    font-variation-settings: var(--font-variation-settings-italic);
     opacity: 0.5;
     text-decoration: none;
   }
 
   .contributor {
-    $size: 1.5rem;
+    --contributor-size: 1.5rem;
 
     img {
       border-radius: 50%;
       display: block;
-      height: $size;
-      width: $size;
+      height: var(--contributor-size);
+      width: var(--contributor-size);
     }
 
-    @include responsive.mobile {
+    @media (width <= 767px) {
       display: none;
     }
   }
@@ -212,7 +212,7 @@ async function deleteSong(songId: string): Promise<void> {
   .date {
     text-align: right;
 
-    @include responsive.mobile {
+    @media (width <= 767px) {
       display: none;
     }
   }
@@ -233,15 +233,6 @@ async function deleteSong(songId: string): Promise<void> {
   }
 
   .adder {
-    &-button {
-      background: none;
-      border: none;
-      color: var(--primary-color);
-      cursor: pointer;
-      display: none;
-      opacity: 1;
-    }
-
     &:hover {
       .adder-button {
         display: block;
@@ -257,9 +248,6 @@ async function deleteSong(songId: string): Promise<void> {
 .duration {
   font-size: var(--font-size-sm);
   font-variant: tabular-nums;
-
-  @include font-bold;
-
   padding-right: 0.5rem;
   text-align: right;
 }
@@ -270,7 +258,7 @@ async function deleteSong(songId: string): Promise<void> {
   font-size: var(--font-size-sm);
   text-align: left;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     display: none;
   }
 

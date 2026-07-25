@@ -1,6 +1,6 @@
 <template>
   <div :class="['volume-wrapper', { 'force-visible': forceMobile }]">
-    <div ref="refVolume" class="volume" @click="onClick" @mousemove="onMove" @mouseleave="onLeave">
+    <div ref="refVolume" class="volume font-bold" @click="onClick" @mousemove="onMove" @mouseleave="onLeave">
       <div :style="{ width: currentSliderPercent + '%' }" class="cursor" />
       <div :style="{ width: sliderPercent + '%' }" class="hover">
         <div class="perc">
@@ -125,16 +125,14 @@ async function toggleMute(): Promise<void> {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .volume-wrapper {
   align-items: center;
   display: flex;
   gap: 1rem;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     display: none;
 
     &.force-visible {
@@ -148,14 +146,11 @@ async function toggleMute(): Promise<void> {
   cursor: pointer;
   display: inline-block;
   font-size: var(--font-size-sm);
-
-  @include font-bold;
-
   height: 1.7rem;
   position: relative;
   width: 6rem;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     width: 10rem;
   }
 

@@ -42,9 +42,7 @@ function onSurfaceClick(event: MouseEvent): void {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .meta {
   align-items: center;
@@ -55,7 +53,7 @@ function onSurfaceClick(event: MouseEvent): void {
 }
 
 .surface {
-  @include responsive.mobile {
+  @media (width <= 767px) {
     cursor: pointer;
   }
 }

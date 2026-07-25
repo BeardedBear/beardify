@@ -6,7 +6,7 @@
         v-for="(artist, index) in artistStore.relatedArtists.artists"
         :key="index"
         :to="`/artist/${artist.id}`"
-        class="item"
+        class="item font-bold"
       >
         <Cover :images="artist.images" class="image" size="small" />
         <div class="name">
@@ -26,23 +26,18 @@ import { useArtist } from "@/views/artist/ArtistStore";
 const artistStore = useArtist();
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .image {
-  $size: 3rem;
+  --image-size: 3rem;
 
-  border-radius: $size;
-  height: $size;
+  border-radius: var(--image-size);
+  height: var(--image-size);
   margin-bottom: 0.4rem;
-  width: $size;
+  width: var(--image-size);
 }
 
 .item {
-  @include font-bold;
-
   border-radius: 0.3rem;
   color: currentcolor;
   cursor: pointer;

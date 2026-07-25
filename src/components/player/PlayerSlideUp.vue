@@ -58,9 +58,7 @@ const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window?.current_track);
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .player-slide-up {
   inset: 0;
@@ -91,7 +89,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
     z-index: 1000;
 
     /* Tablet+ layout */
-    @include responsive.tablet-up {
+    @media (width >= 768px) {
       border-radius: 12px;
       bottom: 2rem;
       left: 0;
@@ -107,7 +105,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
     grid-template-columns: 1fr;
     padding-bottom: 2rem;
 
-    @include responsive.tablet-up {
+    @media (width >= 768px) {
       grid-template-columns: auto 1fr;
     }
 
@@ -118,7 +116,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
       width: 100%;
     }
 
-    @include responsive.mobile {
+    @media (width <= 767px) {
       .cover {
         display: flex;
         justify-content: center;
@@ -140,12 +138,12 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
         justify-content: space-between;
         margin-bottom: 0.5rem;
 
-        @include responsive.mobile {
+        @media (width <= 767px) {
           align-items: flex-start;
           flex-direction: column;
         }
 
-        @include responsive.tablet-up {
+        @media (width >= 768px) {
           align-items: flex-start;
           flex-direction: column;
         }
@@ -184,7 +182,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
         justify-content: flex-end;
         min-width: 130px;
 
-        @include responsive.mobile {
+        @media (width <= 767px) {
           justify-content: center;
           margin-top: 0.5rem;
           width: 100%;

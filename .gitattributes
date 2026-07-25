@@ -7,7 +7,6 @@
 *.tsx text eol=lf
 *.vue text eol=lf
 *.json text eol=lf
-*.scss text eol=lf
 *.css text eol=lf
 *.html text eol=lf
 *.md text eol=lf

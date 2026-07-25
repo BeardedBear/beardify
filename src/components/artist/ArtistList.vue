@@ -41,9 +41,7 @@ function goArtist(artistUri: string): void {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .separator {
   opacity: 0.2;
@@ -62,12 +60,12 @@ function goArtist(artistUri: string): void {
 }
 
 .options {
-  $height: 0.5rem;
+  --options-gap: 0.5rem;
 
   animation: pop-options 0.2s ease 0.75s both;
   background-color: var(--bg-color-light);
   border-radius: 5px;
-  bottom: calc(100% + $height);
+  bottom: calc(100% + var(--options-gap));
   box-shadow: 0 0.5rem 0.5rem rgb(0 0 0 / 20%);
   display: none;
   left: 50%;
@@ -78,7 +76,7 @@ function goArtist(artistUri: string): void {
 
   &::after {
     content: "";
-    height: $height;
+    height: var(--options-gap);
     left: 0;
     position: absolute;
     right: 0;
@@ -94,9 +92,8 @@ function goArtist(artistUri: string): void {
 
   &.feat {
     font-size: var(--font-size-sm);
-
-    @include font-italic;
-
+    font-style: var(--font-style-italic);
+    font-variation-settings: var(--font-variation-settings-italic);
     opacity: 0.5;
   }
 

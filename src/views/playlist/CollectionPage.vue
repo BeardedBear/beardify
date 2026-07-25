@@ -323,10 +323,7 @@ playlistStore.clean().finally(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .collection {
   display: grid;
@@ -338,53 +335,47 @@ playlistStore.clean().finally(() => {
 }
 
 .album-list {
-  $padd: 10rem;
+  --album-list-padd: 10rem;
 
   display: grid;
   gap: 2rem;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   padding: 2rem 5rem;
-  padding-left: $padd;
-  padding-right: $padd;
+  padding-left: var(--album-list-padd);
+  padding-right: var(--album-list-padd);
   transition:
     padding-right ease 0.2s,
     padding-left ease 0.2s;
 
   @media (width <= 1200px) {
-    $padd: 2rem;
+    --album-list-padd: 2rem;
 
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    padding-left: $padd;
-    padding-right: $padd;
   }
 
-  @include responsive.l {
-    $padd: 2rem;
+  @media (width >= 1930px) {
+    --album-list-padd: 2rem;
 
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    padding-left: $padd;
-    padding-right: $padd;
   }
 
-  @include responsive.l {
-    $padd: 2rem;
+  @media (width >= 1930px) {
+    --album-list-padd: 2rem;
 
     grid-template-columns: repeat(8, minmax(0, 1fr));
-    padding-left: $padd;
-    padding-right: $padd;
   }
 
-  @include responsive.hdpi {
+  @media (width >= 2560px) {
     grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 
-  @include responsive.tablet {
+  @media (width >= 768px) and (width <= 1024px) {
     gap: 1.5rem;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     padding: 1.5rem;
   }
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     gap: 1rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: 1rem;
@@ -397,18 +388,21 @@ playlistStore.clean().finally(() => {
 }
 
 .tier-section {
-  // .content is display: contents, so .tier-section is a direct grid item of
-  // .collection — its default min-width: auto lets the Unsorted row's
-  // intrinsic content width (before overflow-x clips it) push the whole grid,
-  // and so the page, wider. min-width: 0 opts it out of that contribution.
+  /* .content is display: contents, so .tier-section is a direct grid item of */
+
+  /* .collection — its default min-width: auto lets the Unsorted row's */
+
+  /* intrinsic content width (before overflow-x clips it) push the whole grid, */
+
+  /* and so the page, wider. min-width: 0 opts it out of that contribution. */
   min-width: 0;
   padding: 1rem 5rem 10rem;
 
-  @include responsive.tablet {
+  @media (width >= 768px) and (width <= 1024px) {
     padding: 1rem 1.5rem 7rem;
   }
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     padding: 1rem;
   }
 }
@@ -448,7 +442,7 @@ playlistStore.clean().finally(() => {
   :deep(.album) {
     width: 8rem;
 
-    @include responsive.mobile {
+    @media (width <= 767px) {
       width: 6rem;
     }
   }
@@ -466,11 +460,15 @@ playlistStore.clean().finally(() => {
   }
 }
 
-// Fixed to a single row (grid-template-rows) with new columns created as
-// needed (grid-auto-flow: column) instead of wrapping — the Unsorted bucket
-// can grow unbounded, so it scrolls sideways within TierRow's .unsorted-scroll
-// (which handles the container-level overflow/min-width containment) rather
-// than pushing the page taller.
+/* Fixed to a single row (grid-template-rows) with new columns created as */
+
+/* needed (grid-auto-flow: column) instead of wrapping — the Unsorted bucket */
+
+/* can grow unbounded, so it scrolls sideways within TierRow's .unsorted-scroll */
+
+/* (which handles the container-level overflow/min-width containment) rather */
+
+/* than pushing the page taller. */
 .tier-grid-unsorted {
   background-color: var(--bg-color);
   border-radius: 0.4rem;
@@ -482,7 +480,7 @@ playlistStore.clean().finally(() => {
   padding: 1rem;
   width: max-content;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     gap: 1rem;
     grid-auto-columns: 6rem;
     grid-template-rows: 6rem;

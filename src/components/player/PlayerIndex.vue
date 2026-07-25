@@ -84,9 +84,7 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .player {
   background: var(--bg-color);
@@ -95,7 +93,7 @@ onBeforeUnmount(() => {
   .player-bg {
     display: none;
 
-    @include responsive.mobile {
+    @media (width <= 767px) {
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;

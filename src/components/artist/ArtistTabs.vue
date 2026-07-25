@@ -56,6 +56,7 @@ defineEmits<{
 function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
   return [
     "tab",
+    "font-bold",
     {
       active: props.modelValue === tab.id,
       disabled: tab.disabled,
@@ -66,9 +67,7 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 @keyframes spin {
   from {
@@ -99,18 +98,15 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
 }
 
 .tab {
-  $radius: 0.2rem;
+  --tab-radius: 0.2rem;
 
   align-items: center;
   background-color: transparent;
   border: none;
-  border-radius: $radius $radius 0 0;
+  border-radius: var(--tab-radius) var(--tab-radius) 0 0;
   color: var(--font-color-light);
   cursor: pointer;
   display: flex;
-
-  @include font-bold;
-
   gap: 0.5rem;
   opacity: 0.5;
   padding: 0.5rem 1rem;
@@ -125,7 +121,7 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
     background-color 0.2s ease,
     opacity 0.2s ease;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     padding: 0.5rem 0.8rem;
   }
 

@@ -8,7 +8,7 @@
           class="bar"
         />
         <div :style="`width:${perc}%`" class="seek">
-          <div class="time">
+          <div class="time font-bold">
             {{ time }}
           </div>
         </div>
@@ -72,11 +72,7 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 @keyframes pop-seek {
   from {
@@ -95,7 +91,7 @@ watch(
     pointer-events: none;
   }
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     padding: 0 0.8rem;
   }
 }
@@ -109,7 +105,7 @@ watch(
 
   .seek {
     animation: pop-seek 0.5s ease 0s both;
-    background-color: color.change(white, $alpha: 0.2);
+    background-color: rgb(255 255 255 / 20%);
     border-radius: 1rem;
     bottom: 0;
     display: none;
@@ -123,11 +119,8 @@ watch(
       background: var(--primary-color);
       border-radius: 0.3rem;
       bottom: calc(100% + 0.4rem);
-      color: color.change(white, $alpha: 0.8);
+      color: rgb(255 255 255 / 80%);
       font-size: var(--font-size-sm);
-
-      @include font-bold;
-
       padding: 0.1rem 0.4rem;
       pointer-events: none;
       position: absolute;

@@ -5,7 +5,7 @@
       v-for="(trackItem, index) in artistStore.topTracks.tracks"
       :key="index"
       :class="{ active: isCurrentTrack(trackItem, playerStore.playerState?.track_window.current_track) }"
-      class="item"
+      class="item font-bold"
       @click="playSongs(index, artistStore.topTracks.tracks)"
     >
       <div class="cover-wrap">
@@ -38,10 +38,7 @@ const playerStore = usePlayer();
 const dialogStore = useDialog();
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .cover-wrap {
   position: relative;
@@ -58,7 +55,7 @@ const dialogStore = useDialog();
 
   .hover {
     align-items: center;
-    background-color: color.change(black, $alpha: 0.8);
+    background-color: rgb(0 0 0 / 80%);
     border-radius: 0.3rem;
     cursor: pointer;
     display: flex;
@@ -81,9 +78,6 @@ const dialogStore = useDialog();
   border-radius: 0.3rem;
   cursor: pointer;
   display: flex;
-
-  @include font-bold;
-
   gap: 1rem;
   margin-bottom: 0.5rem;
   padding-right: 0.8rem;

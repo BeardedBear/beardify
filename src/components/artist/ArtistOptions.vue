@@ -28,7 +28,7 @@ function switchFollow(artistId: string): void {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .options {
   align-items: center;
   display: flex;

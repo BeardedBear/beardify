@@ -11,7 +11,7 @@ import ArtistOptions from "@/components/artist/ArtistOptions.vue";
 import Dialog from "@/components/dialog/DialogWrap.vue";
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .wrap {
   display: flex;
   justify-content: center;

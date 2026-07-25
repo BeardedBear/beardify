@@ -1,15 +1,12 @@
-// Module colors pour être utilisé avec @use
-// Compatibilité avec Dart Sass 3.0.0
-
 :root {
-  // Primary
+  /* Primary */
   --primary-color-darker: #402d6e;
   --primary-color-dark: #543a97;
   --primary-color: #9064ff;
   --primary-color-light: #7a50e4;
   --primary-color-lighter: #9064ff;
 
-  // Bg
+  /* Bg */
   --bg-color-darker: #15181d;
   --bg-color-dark: #181b21;
   --bg-color: #1b1e26;

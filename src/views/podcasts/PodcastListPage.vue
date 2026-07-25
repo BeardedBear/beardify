@@ -5,7 +5,7 @@
   <div v-else ref="scrollRef" class="podcasts" @scroll="onScroll">
     <PageFit>
       <div class="title">
-        <div class="name">Podcasts</div>
+        <div class="name font-bold">Podcasts</div>
       </div>
       <div v-if="!podcastsStore.myPodcasts.length">
         <Loader />
@@ -40,10 +40,7 @@ podcastsStore.clean().finally(() => {
   podcastsStore.getMyPodcasts("me/shows?limit=50");
 });
 </script>
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .loader {
   display: grid;
@@ -72,8 +69,6 @@ podcastsStore.clean().finally(() => {
   .name {
     flex: 1;
     font-size: var(--font-size-xl);
-
-    @include font-bold;
   }
 }
 </style>

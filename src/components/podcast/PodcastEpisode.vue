@@ -6,10 +6,10 @@
     <div class="episode">
       <img :src="episode.images?.[1]?.url || episode.images?.[0]?.url" class="cover" />
       <div class="content">
-        <div class="name">
+        <div class="name font-bold">
           {{ episode.name }}
         </div>
-        <div v-if="episode.description" class="description">
+        <div v-if="episode.description" class="description font-italic">
           {{ `${episode.description.slice(0, 200)}...` }}
         </div>
       </div>
@@ -34,7 +34,7 @@
       />
     </div>
     <div class="infos">
-      <div class="metas">
+      <div class="metas font-bold">
         <div>{{ date(episode.release_date) }}</div>
         /
         <div>{{ timecodeWithUnits(episode.duration_ms) }}</div>
@@ -89,8 +89,7 @@ defineProps<{
 }>();
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .progress {
   background-color: var(--bg-color-dark);
@@ -132,9 +131,6 @@ defineProps<{
   .metas {
     display: flex;
     font-size: var(--font-size-sm);
-
-    @include font-bold;
-
     gap: 0.5rem;
     opacity: 0.5;
   }
@@ -152,17 +148,17 @@ defineProps<{
 }
 
 .played {
-  $size: 3rem;
+  --played-size: 3rem;
 
   background-color: var(--primary-color);
   border-radius: 0 1rem 0 0;
   clip-path: polygon(100% 0, 0 0, 100% 100%);
   content: "";
-  height: $size;
+  height: var(--played-size);
   position: absolute;
   right: 0;
   top: 0;
-  width: $size;
+  width: var(--played-size);
 
   .icon {
     color: #fff;
@@ -178,16 +174,12 @@ defineProps<{
 }
 
 .description {
-  @include font-italic;
-
   margin-top: 0.5rem;
   opacity: 0.3;
 }
 
 .name {
   font-size: var(--font-size-base);
-
-  @include font-bold;
 }
 
 .content {

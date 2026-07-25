@@ -5,7 +5,7 @@
   <div v-else ref="scrollRef" class="podcast" @scroll="onScroll">
     <PageFit>
       <div class="title">
-        <div class="name">
+        <div class="name font-bold">
           {{ podcastsStore.podcast?.name }}
         </div>
         <PodcastFollowButton v-if="podcastsStore.podcast" :podcast-id="props.id" />
@@ -42,8 +42,7 @@ podcastsStore.clean().finally(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .loader {
   display: grid;
@@ -65,8 +64,6 @@ podcastsStore.clean().finally(() => {
   .name {
     flex: 1;
     font-size: var(--font-size-xl);
-
-    @include font-bold;
   }
 }
 </style>

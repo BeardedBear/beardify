@@ -1,5 +1,5 @@
 <template>
-  <div class="profile-container">
+  <div class="profile-container font-bold">
     <div class="profile-wrapper" :class="{ visible: artistMetas }">
       <template v-if="artistTags && artistTags.length > 0">
         <span class="tag-list">
@@ -83,17 +83,10 @@ const getCountry = computed(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
-
-$transition-duration: 0.2s;
+<style scoped>
 
 .profile-container {
   font-size: var(--font-size-sm);
-
-  @include font-bold;
-
   margin-top: 0.5rem;
   min-height: 1.5rem;
 }
@@ -103,7 +96,7 @@ $transition-duration: 0.2s;
   flex-wrap: wrap;
   gap: 0.25rem;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     display: block;
     margin-bottom: 0.5rem;
   }
@@ -132,7 +125,7 @@ $transition-duration: 0.2s;
     outline: none;
   }
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     margin: 0 0.25rem 0.25rem 0;
   }
 }
@@ -144,18 +137,20 @@ $transition-duration: 0.2s;
 .dot {
   margin: 0 1rem;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     margin: 0 0.5rem;
   }
 
   &.desktop-only {
-    @include responsive.mobile {
+    @media (width <= 767px) {
       display: none;
     }
   }
 }
 
 .profile-wrapper {
+  --profile-transition-duration: 0.2s;
+
   align-items: center;
   display: flex;
   max-width: 60rem;
@@ -164,8 +159,8 @@ $transition-duration: 0.2s;
   position: relative;
   transform: translateY(-5px);
   transition:
-    opacity $transition-duration ease,
-    transform $transition-duration ease;
+    opacity var(--profile-transition-duration) ease,
+    transform var(--profile-transition-duration) ease;
   z-index: 1;
 
   &.visible {
@@ -173,7 +168,7 @@ $transition-duration: 0.2s;
     transform: translateY(0);
   }
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     display: block;
   }
 }

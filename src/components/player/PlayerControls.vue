@@ -5,7 +5,7 @@
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         no-default-class
         :class="{ active: playerStore.currentlyPlaying?.shuffle_state }"
-        class="control-button shuffle"
+        class="control-button shuffle squircle"
         :size="props.forceMobile ? 'big' : 'default'"
         @click="playerStore.toggleShuffle()"
       >
@@ -15,7 +15,7 @@
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         no-default-class
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
-        class="control-button repeat"
+        class="control-button repeat squircle"
         @click="playerStore.toggleRepeat()"
       >
         <i class="icon-repeat" />
@@ -23,7 +23,7 @@
       <ButtonIndex
         v-if="playerStore.playerState?.paused"
         no-default-class
-        class="control-button play"
+        class="control-button play squircle"
         :size="props.forceMobile ? 'big' : 'default'"
         @click="playerStore.play()"
       >
@@ -32,7 +32,7 @@
       <ButtonIndex
         v-else
         no-default-class
-        class="control-button play"
+        class="control-button play squircle"
         :size="props.forceMobile ? 'big' : 'default'"
         @click="playerStore.pause()"
       >
@@ -41,14 +41,14 @@
       <ButtonIndex
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         no-default-class
-        class="control-button next"
+        class="control-button next squircle"
         :size="props.forceMobile ? 'big' : 'default'"
         @click="playerStore.next()"
       >
         <i class="icon-skip-forward" />
       </ButtonIndex>
     </div>
-    <div class="time">
+    <div class="time font-bold">
       {{ timecode(currentTime) || "00:00" }} /
       {{ timecode(duration) || "00:00" }}
     </div>
@@ -81,10 +81,7 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .btns {
   align-items: center;
@@ -96,9 +93,7 @@ watch(
   font-size: var(--font-size-sm);
   font-variant: tabular-nums;
 
-  @include font-bold;
-
-  @include responsive.mobile {
+  @media (width <= 767px) {
     display: none;
   }
 }
@@ -121,8 +116,6 @@ watch(
   line-height: 0;
   opacity: 0.5;
   padding: 0.4rem 0.5rem;
-
-  @include squircle;
 
   &.active {
     opacity: 1;
@@ -160,19 +153,19 @@ watch(
   }
 
   &.repeat {
-    @include responsive.mobile {
+    @media (width <= 767px) {
       display: none;
     }
   }
 
   &.shuffle {
-    @include responsive.mobile {
+    @media (width <= 767px) {
       display: none;
     }
   }
 
   &.next {
-    @include responsive.mobile {
+    @media (width <= 767px) {
       display: none;
     }
   }

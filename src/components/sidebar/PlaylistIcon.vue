@@ -34,7 +34,7 @@ defineProps<{
 const authStore = useAuth();
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .type-icon {
   margin-right: 1rem;
   opacity: 0.3;
@@ -42,16 +42,16 @@ const authStore = useAuth();
 
   &.others {
     &::after {
-      $size: 0.2rem;
+      --dot-size: 0.2rem;
 
       background-color: currentcolor;
       border-radius: 100%;
       content: "";
-      height: $size;
+      height: var(--dot-size);
       position: absolute;
       right: -0.2rem;
       top: -0.2rem;
-      width: $size;
+      width: var(--dot-size);
     }
   }
 }

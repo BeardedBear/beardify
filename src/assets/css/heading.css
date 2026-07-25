@@ -1,9 +1,7 @@
-@use "@/assets/scss/mixins" as *;
-
 .heading {
-  @include font-bold;
-
   color: var(--primary-color);
+  font-variation-settings: var(--font-variation-settings-bold);
+  font-weight: var(--font-weight-bold);
   padding: 0.8rem 0;
   text-transform: uppercase;
 

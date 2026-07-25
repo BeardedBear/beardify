@@ -6,7 +6,7 @@
     </div>
     <div class="inner">
       <div class="title">
-        <div class="name">
+        <div class="name font-bold">
           {{ artistStore.artist.name }}
         </div>
       </div>
@@ -79,10 +79,7 @@ watch(infoAvailable, (available) => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .image-container {
   inset: 0;
@@ -121,8 +118,6 @@ watch(infoAvailable, (available) => {
 .name {
   font-size: var(--font-size-xl);
 
-  @include font-bold;
-
   &.scrolled {
     font-size: var(--font-size-lg);
   }
@@ -138,7 +133,7 @@ watch(infoAvailable, (available) => {
     padding 0.3s ease;
   z-index: 20;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     padding: 0.5rem 1rem 0;
   }
 }
@@ -152,7 +147,7 @@ watch(infoAvailable, (available) => {
 }
 
 .desktop-options {
-  @include responsive.mobile {
+  @media (width <= 767px) {
     display: none;
   }
 }
@@ -160,20 +155,21 @@ watch(infoAvailable, (available) => {
 .mobile-options {
   display: none;
 
-  @include responsive.mobile {
+  @media (width <= 767px) {
     display: flex;
   }
 }
 
 .collapsible {
-  @include responsive.mobile {
+  @media (width <= 767px) {
     display: grid;
     grid-template-rows: 1fr;
     opacity: 1;
     transition: grid-template-rows 0.25s ease-out, opacity 0.2s ease-out;
 
-    // grid-template-rows shrinks proportionally to the row's real content size, unlike
-    // max-height (which needs an oversized guess and then snaps late in the transition).
+    /* grid-template-rows shrinks proportionally to the row's real content size, unlike */
+
+    /* max-height (which needs an oversized guess and then snaps late in the transition). */
     > * {
       min-height: 0;
       overflow: hidden;
