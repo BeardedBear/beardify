@@ -208,11 +208,11 @@ body {
   overflow: hidden;
   position: relative;
 
-  @media (width >= 2560px) {
+  @media (--hdpi) {
     grid-template-columns: 25rem 1fr;
   }
 
-  @media (width <= 1024px) {
+  @media (--tablet-down) {
     grid-template-columns: 1fr;
   }
 }

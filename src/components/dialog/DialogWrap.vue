@@ -249,7 +249,7 @@ watch(
     max-width: 80vw;
     width: 80vw;
 
-    @media (width <= 767px) {
+    @media (--mobile) {
       height: 95dvh;
       max-height: 95dvh;
     }

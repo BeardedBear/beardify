@@ -152,7 +152,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
     padding-right ease 0.2s,
     padding-left ease 0.2s;
 
-  @media (width <= 1200px) {
+  @media (--narrow-desktop-down) {
     --header-padd: 2rem;
   }
 
@@ -160,11 +160,11 @@ function sumDuration(tracks: PlaylistTrack[]): number {
     padding: 0 0 2rem;
   }
 
-  @media (width >= 2560px) {
+  @media (--hdpi) {
     --header-padd: 50rem;
   }
 
-  @media (width >= 2000px) {
+  @media (--xl) {
     --header-padd: 2rem;
   }
 
@@ -184,7 +184,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   font-size: var(--font-size-lg);
   gap: 0.5rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     background: var(--bg-color-dark);
     border-radius: 1rem;
     display: none;
@@ -212,7 +212,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   display: none;
   font-size: var(--font-size-xl);
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: block;
   }
 }
@@ -224,7 +224,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   right: 1rem;
   top: 1rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: block;
   }
 }
@@ -236,7 +236,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   position: fixed;
   z-index: 999;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: block;
   }
 }
@@ -246,7 +246,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   height: 7rem;
   width: 7rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: none;
   }
 }

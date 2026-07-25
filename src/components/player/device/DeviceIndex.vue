@@ -29,7 +29,7 @@ const forceMobile = props.forceMobile ?? false;
   flex: 1;
   justify-content: end;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     justify-content: center;
   }
 }

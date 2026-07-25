@@ -133,7 +133,7 @@ watch(infoAvailable, (available) => {
     padding 0.3s ease;
   z-index: 20;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     padding: 0.5rem 1rem 0;
   }
 }
@@ -147,7 +147,7 @@ watch(infoAvailable, (available) => {
 }
 
 .desktop-options {
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: none;
   }
 }
@@ -155,13 +155,13 @@ watch(infoAvailable, (available) => {
 .mobile-options {
   display: none;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: flex;
   }
 }
 
 .collapsible {
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: grid;
     grid-template-rows: 1fr;
     opacity: 1;

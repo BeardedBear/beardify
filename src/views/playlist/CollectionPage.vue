@@ -347,35 +347,35 @@ playlistStore.clean().finally(() => {
     padding-right ease 0.2s,
     padding-left ease 0.2s;
 
-  @media (width <= 1200px) {
+  @media (--narrow-desktop-down) {
     --album-list-padd: 2rem;
 
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  @media (width >= 1930px) {
+  @media (--l) {
     --album-list-padd: 2rem;
 
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  @media (width >= 1930px) {
+  @media (--l) {
     --album-list-padd: 2rem;
 
     grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 
-  @media (width >= 2560px) {
+  @media (--hdpi) {
     grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 
-  @media (width >= 768px) and (width <= 1024px) {
+  @media (--tablet) {
     gap: 1.5rem;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     padding: 1.5rem;
   }
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     gap: 1rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: 1rem;
@@ -398,11 +398,11 @@ playlistStore.clean().finally(() => {
   min-width: 0;
   padding: 1rem 5rem 10rem;
 
-  @media (width >= 768px) and (width <= 1024px) {
+  @media (--tablet) {
     padding: 1rem 1.5rem 7rem;
   }
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     padding: 1rem;
   }
 }
@@ -442,7 +442,7 @@ playlistStore.clean().finally(() => {
   :deep(.album) {
     width: 8rem;
 
-    @media (width <= 767px) {
+    @media (--mobile) {
       width: 6rem;
     }
   }
@@ -480,7 +480,7 @@ playlistStore.clean().finally(() => {
   padding: 1rem;
   width: max-content;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     gap: 1rem;
     grid-auto-columns: 6rem;
     grid-template-rows: 6rem;

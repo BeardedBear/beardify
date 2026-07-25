@@ -135,7 +135,7 @@ onMounted(() => {
   gap: 2rem;
   grid-template-columns: 1fr 18rem;
 
-  @media (width <= 1024px) {
+  @media (--tablet-down) {
     grid-template-columns: 1fr;
   }
 }

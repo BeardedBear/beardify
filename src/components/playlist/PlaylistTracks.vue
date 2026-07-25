@@ -164,12 +164,12 @@ async function deleteSong(songId: string): Promise<void> {
   &.deletable {
     grid-template-columns: 2.2rem 1fr 0.9fr auto 0.3fr 2.8rem auto;
 
-    @media (width <= 767px) {
+    @media (--mobile) {
       grid-template-columns: 2.2rem 1fr auto auto;
     }
   }
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     gap: 0.5rem;
     grid-template-columns: 2.2rem 1fr auto;
     padding: 0.5rem;
@@ -204,7 +204,7 @@ async function deleteSong(songId: string): Promise<void> {
       width: var(--contributor-size);
     }
 
-    @media (width <= 767px) {
+    @media (--mobile) {
       display: none;
     }
   }
@@ -212,7 +212,7 @@ async function deleteSong(songId: string): Promise<void> {
   .date {
     text-align: right;
 
-    @media (width <= 767px) {
+    @media (--mobile) {
       display: none;
     }
   }
@@ -258,7 +258,7 @@ async function deleteSong(songId: string): Promise<void> {
   font-size: var(--font-size-sm);
   text-align: left;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: none;
   }
 

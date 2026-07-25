@@ -59,7 +59,7 @@ function onSurfaceClick(event: MouseEvent): void {
   grid-template-columns: 1fr auto 1fr;
   padding: 0.9rem 1.2rem 0.5rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     cursor: pointer; /* make it clear it's tappable on mobile */
     grid-template-areas: "controls metas device";
     grid-template-columns: auto 1fr auto;
@@ -68,7 +68,7 @@ function onSurfaceClick(event: MouseEvent): void {
 }
 
 .surface {
-  @media (width <= 767px) {
+  @media (--mobile) {
     cursor: pointer;
   }
 }

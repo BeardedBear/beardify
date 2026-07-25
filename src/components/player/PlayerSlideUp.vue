@@ -89,7 +89,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
     z-index: 1000;
 
     /* Tablet+ layout */
-    @media (width >= 768px) {
+    @media (--tablet-up) {
       border-radius: 12px;
       bottom: 2rem;
       left: 0;
@@ -105,7 +105,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
     grid-template-columns: 1fr;
     padding-bottom: 2rem;
 
-    @media (width >= 768px) {
+    @media (--tablet-up) {
       grid-template-columns: auto 1fr;
     }
 
@@ -116,7 +116,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
       width: 100%;
     }
 
-    @media (width <= 767px) {
+    @media (--mobile) {
       .cover {
         display: flex;
         justify-content: center;
@@ -138,12 +138,12 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
         justify-content: space-between;
         margin-bottom: 0.5rem;
 
-        @media (width <= 767px) {
+        @media (--mobile) {
           align-items: flex-start;
           flex-direction: column;
         }
 
-        @media (width >= 768px) {
+        @media (--tablet-up) {
           align-items: flex-start;
           flex-direction: column;
         }
@@ -182,7 +182,7 @@ const currentTrack = computed(() => playerStore.playerState?.track_window?.curre
         justify-content: flex-end;
         min-width: 130px;
 
-        @media (width <= 767px) {
+        @media (--mobile) {
           justify-content: center;
           margin-top: 0.5rem;
           width: 100%;

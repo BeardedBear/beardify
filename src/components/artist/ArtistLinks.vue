@@ -125,7 +125,7 @@ onUpdated(() => updateLinks());
 <style>
 
 .links .tooltip-wrapper {
-  @media (width <= 767px) {
+  @media (--mobile) {
     width: 100%;
   }
 }
@@ -160,7 +160,7 @@ onUpdated(() => updateLinks());
 }
 
 /* Mobile: vertical list, show names next to icons */
-@media (width <= 767px) {
+@media (--mobile) {
   .links {
     align-items: flex-start;
     flex-direction: column;

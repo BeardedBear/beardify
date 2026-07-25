@@ -82,11 +82,11 @@ userStore.clean().finally(() => {
   padding: 2rem 5rem;
   position: relative;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     padding: 1rem;
   }
 
-  @media (width >= 768px) and (width <= 1024px) {
+  @media (--tablet) {
     padding: 1.5rem 2rem;
   }
 
@@ -139,11 +139,11 @@ userStore.clean().finally(() => {
   max-width: 100rem;
   padding: 2rem 4rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     padding: 1rem;
   }
 
-  @media (width >= 768px) and (width <= 1024px) {
+  @media (--tablet) {
     padding: 1.5rem 2rem;
   }
 

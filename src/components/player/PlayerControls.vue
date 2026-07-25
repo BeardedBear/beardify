@@ -93,7 +93,7 @@ watch(
   font-size: var(--font-size-sm);
   font-variant: tabular-nums;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: none;
   }
 }
@@ -153,19 +153,19 @@ watch(
   }
 
   &.repeat {
-    @media (width <= 767px) {
+    @media (--mobile) {
       display: none;
     }
   }
 
   &.shuffle {
-    @media (width <= 767px) {
+    @media (--mobile) {
       display: none;
     }
   }
 
   &.next {
-    @media (width <= 767px) {
+    @media (--mobile) {
       display: none;
     }
   }

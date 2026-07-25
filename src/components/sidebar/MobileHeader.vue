@@ -32,7 +32,7 @@ const dialogStore = useDialog();
   justify-content: space-between;
   padding: 0.5rem 0.8rem;
 
-  @media (width <= 1024px) {
+  @media (--tablet-down) {
     display: flex;
   }
 }

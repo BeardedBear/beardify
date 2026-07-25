@@ -96,7 +96,7 @@ const getCountry = computed(() => {
   flex-wrap: wrap;
   gap: 0.25rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: block;
     margin-bottom: 0.5rem;
   }
@@ -125,7 +125,7 @@ const getCountry = computed(() => {
     outline: none;
   }
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     margin: 0 0.25rem 0.25rem 0;
   }
 }
@@ -137,12 +137,12 @@ const getCountry = computed(() => {
 .dot {
   margin: 0 1rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     margin: 0 0.5rem;
   }
 
   &.desktop-only {
-    @media (width <= 767px) {
+    @media (--mobile) {
       display: none;
     }
   }
@@ -168,7 +168,7 @@ const getCountry = computed(() => {
     transform: translateY(0);
   }
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: block;
   }
 }

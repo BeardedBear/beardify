@@ -64,7 +64,7 @@ textarea {
   font-variation-settings: var(--font-variation-settings-base);
 }
 
-@media (width <= 767px) {
+@media (--mobile) {
   html {
     font-size: clamp(14px, calc(1rem + 0.8vw), 16px);
   }

@@ -60,7 +60,7 @@ function sumDuration(tracks: Track[] | TrackSimplified[]): number {
   display: flex;
   justify-content: space-between;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     flex-direction: column;
     gap: 1rem;
   }

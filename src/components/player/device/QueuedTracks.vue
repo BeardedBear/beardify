@@ -63,7 +63,7 @@ onClickOutside(popup, () => playerStore.closeQueue());
   position: relative;
   text-align: left;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: none;
   }
 }

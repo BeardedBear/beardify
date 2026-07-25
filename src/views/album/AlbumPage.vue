@@ -93,7 +93,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   max-width: 57rem;
   width: 100%;
 
-  @media (width >= 2560px) {
+  @media (--hdpi) {
     max-width: 100rem;
   }
 }
@@ -157,12 +157,12 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   gap: 3rem;
   justify-content: center;
 
-  @media (width <= 1024px) {
+  @media (--tablet-down) {
     flex-direction: column;
     gap: 2rem;
   }
 
-  @media (width >= 1930px) {
+  @media (--l) {
     flex-direction: column;
   }
 }
@@ -170,7 +170,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
 .content-cover {
   width: 18rem;
 
-  @media (width <= 1024px) {
+  @media (--tablet-down) {
     margin: 0 auto;
     width: 12rem;
   }
@@ -180,7 +180,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   flex: 1;
   font-size: var(--font-size-base);
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     font-size: var(--font-size-sm);
   }
 }
@@ -195,11 +195,11 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   padding: 2rem 2.2rem;
   scroll-behavior: smooth;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     padding: 1rem;
   }
 
-  @media (width >= 768px) and (width <= 1024px) {
+  @media (--tablet) {
     padding: 1.5rem;
   }
 }

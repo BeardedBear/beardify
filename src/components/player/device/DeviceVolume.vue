@@ -132,7 +132,7 @@ async function toggleMute(): Promise<void> {
   display: flex;
   gap: 1rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: none;
 
     &.force-visible {
@@ -150,7 +150,7 @@ async function toggleMute(): Promise<void> {
   position: relative;
   width: 6rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     width: 10rem;
   }
 

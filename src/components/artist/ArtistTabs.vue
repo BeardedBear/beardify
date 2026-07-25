@@ -121,7 +121,7 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
     background-color 0.2s ease,
     opacity 0.2s ease;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     padding: 0.5rem 0.8rem;
   }
 

@@ -101,7 +101,7 @@ const truncatedTrackName = computed(() => {
     overflow: visible;
   }
 
-  @media (width <= 1024px) {
+  @media (--tablet-down) {
     display: flex;
     flex-direction: column;
     white-space: normal;
@@ -109,7 +109,7 @@ const truncatedTrackName = computed(() => {
 }
 
 .trackname {
-  @media (width <= 767px) {
+  @media (--mobile) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -118,13 +118,13 @@ const truncatedTrackName = computed(() => {
 }
 
 .separator {
-  @media (width <= 1024px) {
+  @media (--tablet-down) {
     display: none;
   }
 }
 
 .artists {
-  @media (width <= 767px) {
+  @media (--mobile) {
     font-size: var(--font-size-sm);
     opacity: 0.8;
     overflow: hidden;
@@ -145,7 +145,7 @@ const truncatedTrackName = computed(() => {
   font-size: var(--font-size-sm);
   opacity: 0.5;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -172,24 +172,24 @@ const truncatedTrackName = computed(() => {
   gap: 1rem;
   min-width: 0;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     pointer-events: none;
   }
 
   img {
     height: 3rem;
 
-    @media (width <= 767px) {
+    @media (--mobile) {
       height: 2.5rem;
     }
   }
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     gap: 0.6rem;
   }
 
   .cover-wrap {
-    @media (width <= 767px) {
+    @media (--mobile) {
       display: none;
     }
   }

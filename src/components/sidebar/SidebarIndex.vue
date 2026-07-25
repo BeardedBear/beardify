@@ -322,7 +322,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   grid-template-rows: auto auto auto;
   overflow: hidden;
 
-  @media (width <= 1024px) {
+  @media (--tablet-down) {
     bottom: 0;
     left: 0;
     max-width: 20rem;

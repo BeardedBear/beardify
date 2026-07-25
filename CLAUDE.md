@@ -96,19 +96,26 @@ Global stylesheets live in `src/assets/css/` and are pulled in once by `App.vue`
 (`@import "@/assets/css/index.css"`). Component styles are scoped and stand alone —
 there is nothing to import at the top of a `<style>` block.
 
-Two conventions replace the former Sass mixins:
+Conventions that replace the former Sass mixins:
 
-- **Font weights/styles**: instead of `@include font-bold`, use
-  `font-variation-settings: var(--font-variation-settings-bold);` together with
-  `font-weight: var(--font-weight-bold);`. Italic and bold-italic have matching
-  `--font-variation-settings-italic` / `-bold-italic` and
-  `--font-style-italic` / `--font-style-bold-italic` pairs. The paired declaration
-  carries the `@supports not font-tech(variations)` fallback, so do not drop it.
-- **Breakpoints**: write media queries literally. The values in use are
-  `max-width: 767px` (mobile), `min-width: 768px` (tablet and up),
-  `max-width: 1024px` (tablet and down), `min-width: 768px) and (max-width: 1024px`
-  (tablet only), `min-width: 1025px` (desktop), `min-width: 1930px`,
-  `min-width: 2000px`, and `min-width: 2560px`.
+- **Font weights/styles**: instead of `@include font-bold`, add the `font-bold`
+  utility class (see `src/assets/css/utilities.css`) in the template — it bundles
+  `font-variation-settings: var(--font-variation-settings-bold);` with
+  `font-weight: var(--font-weight-bold);`, including the
+  `@supports not font-tech(variations)` fallback. Matching `font-italic` and
+  `font-bold-italic` classes exist too. Only write the raw declarations directly
+  in a component's `<style>` when the styling is conditional (inside `:hover`,
+  `::before`/`::after`, or a media query) — a static class can't express that, so
+  those cases stay local. Same pattern for `squircle` (`corner-shape: squircle;`).
+- **Breakpoints**: reference the shared custom media queries defined once in
+  `src/assets/css/breakpoints.css` — `@media (--mobile) { ... }`,
+  `(--tablet-up)`, `(--tablet-down)`, `(--tablet)`, `(--narrow-desktop-down)`,
+  `(--l)`, `(--xl)`, `(--hdpi)`. Native CSS media conditions can't take a
+  `var()` (`@media (max-width: var(--x))` is invalid everywhere), so this relies
+  on `postcss-custom-media` (resolved at build time via `postcss.config.js`) —
+  no per-file import needed, `@csstools/postcss-global-data` makes the
+  definitions available to every scoped `<style>` block automatically. Don't add
+  a new literal pixel breakpoint inline; add it to `breakpoints.css` instead.
 
 Component-local values that used to be Sass variables are namespaced custom
 properties declared on the rule that owns them (e.g. `--loader-size` on `.loader`).

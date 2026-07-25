@@ -69,7 +69,7 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
   }
 }

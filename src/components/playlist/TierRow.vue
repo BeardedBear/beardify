@@ -155,7 +155,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   text-align: center;
   width: 8rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     width: 5rem;
   }
 }

@@ -18,7 +18,7 @@ defineProps<{
   margin: 0 0 1rem;
   text-transform: uppercase;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     padding: 0 0 0.5rem;
   }
 }

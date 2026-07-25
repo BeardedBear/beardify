@@ -91,7 +91,7 @@ watch(
     pointer-events: none;
   }
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     padding: 0 0.8rem;
   }
 }

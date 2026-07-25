@@ -172,7 +172,7 @@ watch(
 .list {
   flex: 1;
 
-  @media (width <= 1024px) {
+  @media (--tablet-down) {
     display: contents;
   }
 }
@@ -186,13 +186,13 @@ watch(
   padding: 2rem 2.5rem;
   position: relative;
 
-  @media (width <= 1024px) {
+  @media (--tablet-down) {
     gap: 1.5rem;
     grid-template-columns: 1fr;
     padding: 1rem;
   }
 
-  @media (width >= 2000px) {
+  @media (--xl) {
     grid-template-columns: 1fr;
   }
 }
@@ -205,7 +205,7 @@ watch(
 .content-block {
   margin-bottom: 3rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     margin-bottom: 2rem;
   }
 }
@@ -213,12 +213,12 @@ watch(
 .top {
   flex: 0 0 22rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     display: contents;
     order: -1;
   }
 
-  @media (width >= 2000px) {
+  @media (--xl) {
     order: -1;
   }
 }
@@ -226,12 +226,12 @@ watch(
 .top-item {
   margin-bottom: 2.5rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     margin-bottom: 1.5rem;
     order: -1;
   }
 
-  @media (width >= 2000px) {
+  @media (--xl) {
     margin-bottom: 0;
   }
 }
@@ -242,11 +242,11 @@ watch(
 }
 
 .related-artists {
-  @media (width <= 1024px) {
+  @media (--tablet-down) {
     order: 5;
   }
 
-  @media (width >= 2000px) {
+  @media (--xl) {
     order: 5;
   }
 }

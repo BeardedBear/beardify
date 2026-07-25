@@ -93,7 +93,7 @@ onBeforeUnmount(() => {
   .player-bg {
     display: none;
 
-    @media (width <= 767px) {
+    @media (--mobile) {
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;

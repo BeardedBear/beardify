@@ -155,7 +155,7 @@ onMounted(async () => {
 .shared-collection {
   padding: 0 5rem 3rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     padding: 0 1rem 1.5rem;
   }
 }
@@ -170,7 +170,7 @@ onMounted(async () => {
   top: 0;
   z-index: 1;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     align-items: flex-start;
     flex-direction: column;
     gap: 1rem;
@@ -188,7 +188,7 @@ onMounted(async () => {
     margin-right: 2rem;
     width: 4rem;
 
-    @media (width <= 767px) {
+    @media (--mobile) {
       height: 3rem;
       margin-right: 1rem;
       width: 3rem;
@@ -208,7 +208,7 @@ onMounted(async () => {
     display: flex;
     gap: 0.6rem;
 
-    @media (width <= 767px) {
+    @media (--mobile) {
       width: 100%;
 
       /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -224,7 +224,7 @@ onMounted(async () => {
   gap: 2rem;
   grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     gap: 1rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -238,7 +238,7 @@ onMounted(async () => {
   display: grid;
   gap: 2rem;
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     gap: 1rem;
   }
 }
@@ -270,7 +270,7 @@ onMounted(async () => {
   :deep(.album) {
     width: 8rem;
 
-    @media (width <= 767px) {
+    @media (--mobile) {
       width: 6rem;
     }
   }

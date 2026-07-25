@@ -198,7 +198,7 @@ onBeforeUnmount(() => {
     border-radius: 0 0 0.5rem 0.5rem;
   }
 
-  @media (width <= 767px) {
+  @media (--mobile) {
     position: relative;
     top: 0 !important;
   }

@@ -53,7 +53,7 @@ function onSurfaceClick(event: MouseEvent): void {
 }
 
 .surface {
-  @media (width <= 767px) {
+  @media (--mobile) {
     cursor: pointer;
   }
 }
