@@ -110,13 +110,6 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
   gap: 0.5rem;
   opacity: 0.5;
   padding: 0.5rem 1rem;
-
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(svg) {
-    height: 1rem;
-    width: 1rem;
-  }
-
   transition:
     background-color 0.2s ease,
     opacity 0.2s ease;
@@ -145,13 +138,6 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
     }
   }
 
-  &.tab-loading {
-    /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-    :deep(svg) {
-      animation: spin 1s linear infinite;
-    }
-  }
-
   &.tab-bar {
     position: relative;
 
@@ -173,5 +159,17 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
       top: 0;
     }
   }
+}
+
+/* See the comment in ArtistInfo.vue: :deep() must stay top-level, never nested. */
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.tab :deep(svg) {
+  height: 1rem;
+  width: 1rem;
+}
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.tab.tab-loading :deep(svg) {
+  animation: spin 1s linear infinite;
 }
 </style>

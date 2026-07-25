@@ -210,12 +210,17 @@ onMounted(async () => {
 
     @media (--mobile) {
       width: 100%;
-
-      /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-      :deep(.button) {
-        flex: 1;
-      }
     }
+  }
+}
+
+@media (--mobile) {
+  /* See the comment above .wikipedia-content in ArtistInfo.vue: :deep() must
+     stay top-level (outside any selector ancestor, at-rules are fine), never
+     nested under a class selector — Vue's scoped-CSS compiler mishandles it. */
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  .header .links :deep(.button) {
+    flex: 1;
   }
 }
 
@@ -265,14 +270,17 @@ onMounted(async () => {
   display: flex;
   flex-wrap: wrap;
   padding: 1rem;
+}
 
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.tier-grid-side :deep(.album) {
+  width: 8rem;
+}
+
+@media (--mobile) {
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(.album) {
-    width: 8rem;
-
-    @media (--mobile) {
-      width: 6rem;
-    }
+  .tier-grid-side :deep(.album) {
+    width: 6rem;
   }
 }
 </style>

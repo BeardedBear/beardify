@@ -437,27 +437,28 @@ playlistStore.clean().finally(() => {
   flex-wrap: wrap;
   min-height: 8rem;
   padding: 1rem;
+}
 
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.tier-grid-side :deep(.album) {
+  width: 8rem;
+}
+
+@media (--mobile) {
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(.album) {
-    width: 8rem;
-
-    @media (--mobile) {
-      width: 6rem;
-    }
+  .tier-grid-side :deep(.album) {
+    width: 6rem;
   }
 }
 
-.draggable-grid {
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(.album) {
-    cursor: grab;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.draggable-grid :deep(.album) {
+  cursor: grab;
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(.sortable-chosen) {
-    cursor: grabbing;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.draggable-grid :deep(.sortable-chosen) {
+  cursor: grabbing;
 }
 
 /* Fixed to a single row (grid-template-rows) with new columns created as */
