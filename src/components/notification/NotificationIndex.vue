@@ -4,7 +4,7 @@
       v-for="notif in notificationStore.notifications"
       :key="notif.id"
       :class="{ error: notif.type === NotificationType.Error }"
-      class="notification"
+      class="notification font-bold"
     >
       {{ notif.msg }}
     </div>
@@ -18,8 +18,7 @@ import { useNotification } from "@/components/notification/NotificationStore";
 const notificationStore = useNotification();
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 @keyframes pop-notif {
   0%,
@@ -36,12 +35,12 @@ const notificationStore = useNotification();
 }
 
 .notification-list {
-  $offset: 4rem;
+  --list-offset: 4rem;
 
-  bottom: $offset + 4rem;
+  bottom: calc(var(--list-offset) + 4rem);
   isolation: isolate;
   position: absolute;
-  right: $offset + 1rem;
+  right: calc(var(--list-offset) + 1rem);
   z-index: 999;
 }
 
@@ -51,9 +50,6 @@ const notificationStore = useNotification();
   border-radius: 0.3rem;
   color: #fff;
   font-size: var(--font-size-sm);
-
-  @include font-bold;
-
   margin-top: 0.8rem;
   padding: 0.4rem 1rem;
   position: relative;

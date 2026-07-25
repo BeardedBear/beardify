@@ -25,7 +25,7 @@
 import Dialog from "@/components/dialog/DialogWrap.vue";
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .wrap {
   padding: 1.2rem;
   text-align: center;

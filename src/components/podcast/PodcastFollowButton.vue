@@ -49,7 +49,7 @@ async function toggleFollow(): Promise<void> {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .follow-button {
   align-items: center;
   display: flex;

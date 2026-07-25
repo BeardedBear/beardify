@@ -3,10 +3,10 @@
     <div class="playlist-header-left">
       <Cover v-if="!noCover" :images="playlistStore.playlist.images" class="cover" size="large" />
       <div>
-        <div class="title">
+        <div class="title font-bold">
           {{ playlistStore.playlist.name.replace("#Collection ", "") }}
         </div>
-        <div class="metas">
+        <div class="metas font-bold">
           <router-link
             v-if="playlistStore.playlist.owner.display_name !== 'Spotify'"
             :to="`/user/${playlistStore.playlist.owner.id}`"
@@ -18,7 +18,7 @@
           <span>&nbsp;·&nbsp;{{ playlistStore.playlist.tracks.total }} items</span>
           <span v-if="!noDuration">&nbsp;·&nbsp;{{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
         </div>
-        <div v-if="showDescription" class="description">
+        <div v-if="showDescription" class="description font-italic">
           {{ visibleDescription }}
         </div>
       </div>
@@ -28,7 +28,7 @@
         v-if="withFilter"
         ref="filterInput"
         v-model="playlistStore.filter"
-        class="search"
+        class="search font-bold squircle"
         placeholder="Filter..."
         type="search"
       />
@@ -111,38 +111,25 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .search {
   background: var(--bg-color);
   border: none;
   border-radius: 1rem;
   color: var(--font);
-
-  @include font-bold;
-
   outline: none;
   padding: 0.6rem 1rem;
   width: 10rem;
-
-  @include squircle;
 }
 
 .description {
-  @include font-italic;
-
   margin-top: 0.5rem;
   max-width: 80%;
   opacity: 0.5;
 }
 
 .metas {
-  @include font-bold;
-
   .owner {
     color: var(--primary-color);
     text-decoration: none;
@@ -151,43 +138,34 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 
 .title {
   font-size: var(--font-size-xl);
-
-  @include font-bold;
-
   line-height: 1;
   margin-bottom: 0.5rem;
 }
 
 .playlist-header {
-  $padd: 5rem;
+  --header-padd: 5rem;
 
   display: flex;
   justify-content: space-between;
-  padding: 2rem $padd 1rem;
+  padding: 2rem var(--header-padd) 1rem;
   transition:
     padding-right ease 0.2s,
     padding-left ease 0.2s;
 
-  @media (width <= 1200px) {
-    $padd: 2rem;
-
-    padding: 2rem $padd 1rem;
+  @media (--narrow-desktop-down) {
+    --header-padd: 2rem;
   }
 
   &.not-fit {
     padding: 0 0 2rem;
   }
 
-  @include responsive.hdpi {
-    $padd: 50rem;
-
-    padding: 2rem $padd 1rem;
+  @media (--hdpi) {
+    --header-padd: 50rem;
   }
 
-  @include responsive.xl {
-    $padd: 2rem;
-
-    padding: 2rem $padd 1rem;
+  @media (--xl) {
+    --header-padd: 2rem;
   }
 
   img {
@@ -206,7 +184,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   font-size: var(--font-size-lg);
   gap: 0.5rem;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     background: var(--bg-color-dark);
     border-radius: 1rem;
     display: none;
@@ -234,7 +212,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   display: none;
   font-size: var(--font-size-xl);
 
-  @include responsive.mobile {
+  @media (--mobile) {
     display: block;
   }
 }
@@ -246,7 +224,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   right: 1rem;
   top: 1rem;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     display: block;
   }
 }
@@ -258,7 +236,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   position: fixed;
   z-index: 999;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     display: block;
   }
 }
@@ -268,7 +246,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   height: 7rem;
   width: 7rem;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     display: none;
   }
 }

@@ -4,7 +4,7 @@
       <div class="recap">
         <Cover :images="playlistStore.playlist.images" class="cover" size="large" />
         <div>
-          <div class="name">{{ playlistStore.playlist.name.replace("#Collection ", "") }}</div>
+          <div class="name font-bold">{{ playlistStore.playlist.name.replace("#Collection ", "") }}</div>
           <div class="count">{{ albumCount }} albums</div>
         </div>
       </div>
@@ -50,8 +50,7 @@ function copyPublicLink(): void {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .wrap {
   display: flex;
@@ -71,10 +70,6 @@ function copyPublicLink(): void {
   border-radius: 0.4rem;
   height: 5rem;
   width: 5rem;
-}
-
-.name {
-  @include font-bold;
 }
 
 .count {

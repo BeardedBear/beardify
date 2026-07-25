@@ -1,7 +1,7 @@
 <template>
   <router-link :to="`/podcasts/${id}`" class="podcast">
     <img :src="covers[1].url" class="cover" />
-    <div v-if="name" class="name">
+    <div v-if="name" class="name font-bold">
       {{ name }}
     </div>
   </router-link>
@@ -19,8 +19,7 @@ defineProps<{
 }>();
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .podcast {
   background-color: var(--bg-color);
@@ -44,8 +43,6 @@ defineProps<{
 }
 
 .name {
-  @include font-bold;
-
   margin-top: 1rem;
 }
 </style>

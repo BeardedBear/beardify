@@ -48,7 +48,7 @@ const gridClass = computed(() => {
 });
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .album-variants-grid {
   display: grid;
   gap: 2rem;

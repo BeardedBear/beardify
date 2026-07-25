@@ -1,0 +1,16 @@
+/*
+ * Single source of truth for responsive breakpoints, resolved at build time by
+ * postcss-custom-media (see postcss.config.js). Browsers can't put a custom
+ * property inside a media condition (`@media (max-width: var(--x))` is invalid
+ * everywhere), so this is the closest native-CSS equivalent: define once here,
+ * reference everywhere as `@media (--mobile) { ... }`.
+ */
+
+@custom-media --mobile (width <= 767px);
+@custom-media --tablet-up (width >= 768px);
+@custom-media --tablet-down (width <= 1024px);
+@custom-media --tablet (width >= 768px) and (width <= 1024px);
+@custom-media --narrow-desktop-down (width <= 1200px);
+@custom-media --l (width >= 1930px);
+@custom-media --xl (width >= 2000px);
+@custom-media --hdpi (width >= 2560px);

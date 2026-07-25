@@ -122,19 +122,16 @@ onMounted(() => updateLinks());
 onUpdated(() => updateLinks());
 </script>
 
-<style lang="scss">
-@use "@/assets/scss/responsive" as responsive;
+<style>
 
 .links .tooltip-wrapper {
-  @include responsive.mobile {
+  @media (--mobile) {
     width: 100%;
   }
 }
 </style>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .links {
   align-items: center;
@@ -154,16 +151,16 @@ onUpdated(() => updateLinks());
   }
 
   .link-name {
-    @include font-bold;
-
     color: var(--font-color);
     display: none; /* hidden on desktop */
+    font-variation-settings: var(--font-variation-settings-bold);
+    font-weight: var(--font-weight-bold);
     white-space: nowrap;
   }
 }
 
 /* Mobile: vertical list, show names next to icons */
-@include responsive.mobile {
+@media (--mobile) {
   .links {
     align-items: flex-start;
     flex-direction: column;

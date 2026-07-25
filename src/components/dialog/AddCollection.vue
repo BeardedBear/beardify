@@ -1,7 +1,7 @@
 <template>
   <Dialog title="Create a collection" with-title>
     <form class="wrap" @submit.prevent="create()">
-      <input v-model="collectionName" class="input" placeholder="Collection's name" type="text" />
+      <input v-model="collectionName" class="input font-bold" placeholder="Collection's name" type="text" />
       <RankingModeEditor v-model="rankingMode" />
       <ButtonIndex type="submit" variant="primary">Create</ButtonIndex>
     </form>
@@ -37,8 +37,7 @@ async function create(): Promise<void> {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .wrap {
   padding: 1.3rem;
@@ -46,8 +45,6 @@ async function create(): Promise<void> {
 }
 
 .input {
-  @include font-bold;
-
   background-color: var(--bg-color-light);
   border: 0;
   border-radius: 0.3rem;

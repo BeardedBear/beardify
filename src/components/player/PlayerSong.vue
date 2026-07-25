@@ -49,9 +49,7 @@ function onSurfaceClick(event: MouseEvent): void {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .meta {
   align-items: center;
@@ -61,7 +59,7 @@ function onSurfaceClick(event: MouseEvent): void {
   grid-template-columns: 1fr auto 1fr;
   padding: 0.9rem 1.2rem 0.5rem;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     cursor: pointer; /* make it clear it's tappable on mobile */
     grid-template-areas: "controls metas device";
     grid-template-columns: auto 1fr auto;
@@ -70,7 +68,7 @@ function onSurfaceClick(event: MouseEvent): void {
 }
 
 .surface {
-  @include responsive.mobile {
+  @media (--mobile) {
     cursor: pointer;
   }
 }

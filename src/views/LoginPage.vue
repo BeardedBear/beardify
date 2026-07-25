@@ -106,8 +106,7 @@ async function refreshChallenge(): Promise<void> {
 })();
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
+<style scoped>
 
 @keyframes pop-login {
   from {

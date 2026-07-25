@@ -16,13 +16,13 @@
     <div class="visual">
       <div :class="{ 'is-playing': isPlaying }" class="cover">
         <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" class="img" @click="handleCoverClick" />
-        <ButtonIndex no-default-class class="play" type="button" @click.stop="handlePlayAlbum(album.uri)">
+        <ButtonIndex no-default-class class="play squircle" type="button" @click.stop="handlePlayAlbum(album.uri)">
           <i class="icon-play" />
         </ButtonIndex>
         <ButtonIndex
           v-if="canSave"
           no-default-class
-          class="button-action add"
+          class="button-action add squircle"
           type="button"
           @click.stop="dialogStore.open({ type: 'addalbum', albumId: album.id })"
         >
@@ -31,7 +31,7 @@
         <ButtonIndex
           v-if="canDelete"
           no-default-class
-          class="button-action delete"
+          class="button-action delete squircle"
           type="button"
           @click.stop="deleteAlbum(album.id)"
         >
@@ -42,22 +42,22 @@
           class="album-group-stack-indicator"
           @click.stop="variantClick && variantClick()"
         >
-          <div class="album-group-stack-layer album-group-stack-layer-1" />
-          <div class="album-group-stack-layer album-group-stack-layer-2">
+          <div class="album-group-stack-layer album-group-stack-layer-1 font-bold" />
+          <div class="album-group-stack-layer album-group-stack-layer-2 font-bold">
             {{ variantCount }}
           </div>
         </div>
       </div>
       <div v-if="!withoutMetas" class="metas">
-        <div v-if="rank" class="rank-number">{{ rank }}</div>
+        <div v-if="rank" class="rank-number font-bold">{{ rank }}</div>
         <div class="infos">
-          <div class="name">
+          <div class="name font-bold">
             {{ album.name }}
           </div>
           <div v-if="withArtists" class="artists">
             <ArtistList :artist-list="album.artists" feat />
           </div>
-          <div v-if="album.release_date && !withoutReleaseDate" class="date">
+          <div v-if="album.release_date && !withoutReleaseDate" class="date font-italic">
             {{ album.release_date.split("-").shift() }}
           </div>
         </div>
@@ -191,32 +191,27 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .play {
-  $offset: 1rem;
-  $size: 2.5rem;
-
-  @include squircle;
+  --play-offset: 1rem;
+  --play-size: 2.5rem;
 
   animation: pop-play-button 0.2s ease both;
   background: var(--primary-color);
   border: 0;
-  border-radius: $size;
-  bottom: $offset;
-  color: color.change(white, $alpha: 0.8);
+  border-radius: var(--play-size);
+  bottom: var(--play-offset);
+  color: rgb(255 255 255 / 80%);
   cursor: pointer;
   display: none;
   font-size: var(--font-size-lg);
-  height: $size;
-  left: $offset;
+  height: var(--play-size);
+  left: var(--play-offset);
   line-height: 0;
   position: absolute;
   transition: transform ease 0.1s;
-  width: $size;
+  width: var(--play-size);
   will-change: transform;
 
   &:hover {
@@ -312,10 +307,8 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   transition: transform ease 0.1s;
   will-change: transform;
 
-  @include squircle;
-
   &:hover {
-    background-color: color.change(black, $alpha: 0.5);
+    background-color: rgb(0 0 0 / 50%);
     color: currentcolor;
   }
 
@@ -336,72 +329,6 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   gap: 0.8rem;
 }
 
-.album.hover-metas {
-  @include hover-metas-base(".cover");
-
-  // .dragging suppresses the reveal (any card the pointer passes over while
-  // dragging another one would otherwise pop its info open mid-drag).
-  &.actions-open:not(.dragging) {
-    @include hover-metas-reveal;
-  }
-}
-
-.album.hover-metas.metas-above {
-  @include hover-metas-above-base;
-
-  &.actions-open:not(.dragging) {
-    @include hover-metas-above-reveal;
-  }
-}
-
-@media (hover: hover) {
-  .album.hover-metas:hover:not(.dragging) {
-    @include hover-metas-reveal;
-  }
-
-  .album.hover-metas.metas-above:hover:not(.dragging) {
-    @include hover-metas-above-reveal;
-  }
-}
-
-.infos {
-  flex: 1;
-  min-width: 0;
-}
-
-.rank-number {
-  color: var(--font-color-light);
-  flex-shrink: 0;
-  font-size: 2.4rem;
-  line-height: 1;
-
-  @include font-bold;
-}
-
-.current {
-  $size: 3rem;
-
-  background: var(--primary-color);
-  border-radius: 0 0.4rem 0 0;
-  clip-path: polygon(100% 0, 0 0, 100% 100%);
-  height: $size;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transition: all ease 0.2s;
-  width: $size;
-  z-index: 1;
-
-  i {
-    animation: bounce 0.5s cubic-bezier(1, 0, 1, 0) 0s infinite alternate;
-    color: white;
-    font-size: var(--font-size-lg);
-    position: absolute;
-    right: 0.3rem;
-    top: 0.3rem;
-  }
-}
-
 .cover {
   border-radius: 0.4rem;
   margin-bottom: 0.8rem;
@@ -415,12 +342,170 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   }
 }
 
+/*
+ * Collapses .metas to zero height by default and pins the card's own box to a
+ * fixed square: aspect-ratio + align-self: start prevents grid/flex stretch
+ * from growing the whole row to match .visual's revealed height once it pops
+ * out.
+ */
+.album.hover-metas {
+  align-self: start;
+  aspect-ratio: 1 / 1;
+
+  .visual {
+    display: flex;
+    flex-direction: column;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: padding 0.15s ease;
+  }
+
+  .cover {
+    margin-bottom: 0;
+  }
+
+  .metas {
+    margin-top: 0;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      margin-top ease 0.2s,
+      max-height ease 0.2s,
+      opacity ease 0.15s;
+  }
+
+}
+
+/*
+ * Overlays the info on top of the cover (top edge) instead of growing the card
+ * past its own box. Used where downward growth would get clipped by an
+ * ancestor's overflow (e.g. a horizontally scrolling row — overflow-x: auto
+ * forces overflow-y: auto too, so anything popping outside gets clipped
+ * regardless of direction; staying within the card's own square avoids it).
+ */
+.album.hover-metas.metas-above {
+  .metas {
+    background: linear-gradient(rgb(0 0 0 / 85%) 40%, rgb(0 0 0 / 0%));
+    border-radius: 0.6rem 0.6rem 0 0;
+    color: #fff;
+    left: 0;
+    margin: 0;
+    padding: 0.6rem;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: opacity ease 0.15s;
+    z-index: 3;
+  }
+}
+
+/*
+ * The revealed state. .dragging suppresses it (any card the pointer passes over
+ * while dragging another one would otherwise pop its info open mid-drag).
+ * These blocks are ordered by ascending specificity, which is also the order
+ * they must win in.
+ */
+.album.hover-metas.actions-open:not(.dragging) {
+  .visual {
+    background-color: var(--bg-color-light);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 40%);
+    padding: 0.5rem;
+    z-index: 5;
+  }
+
+  .metas {
+    margin-top: 0.6rem;
+    max-height: 10rem;
+    opacity: 1;
+  }
+}
+
+.album.hover-metas.metas-above.actions-open:not(.dragging) {
+  .metas {
+    margin: 0;
+    max-height: none;
+    opacity: 1;
+  }
+
+  .visual {
+    padding: 0;
+  }
+}
+
+@media (hover: hover) {
+  .album.hover-metas:hover:not(.dragging) {
+    .visual {
+      background-color: var(--bg-color-light);
+      border-radius: 0.5rem;
+      box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 40%);
+      padding: 0.5rem;
+      z-index: 5;
+    }
+
+    .metas {
+      margin-top: 0.6rem;
+      max-height: 10rem;
+      opacity: 1;
+    }
+  }
+
+  .album.hover-metas.metas-above:hover:not(.dragging) {
+    .metas {
+      margin: 0;
+      max-height: none;
+      opacity: 1;
+    }
+
+    .visual {
+      padding: 0;
+    }
+  }
+}
+
+.infos {
+  flex: 1;
+  min-width: 0;
+}
+
+.rank-number {
+  color: var(--font-color-light);
+  flex-shrink: 0;
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.current {
+  --current-size: 3rem;
+
+  background: var(--primary-color);
+  border-radius: 0 0.4rem 0 0;
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  height: var(--current-size);
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: all ease 0.2s;
+  width: var(--current-size);
+  z-index: 1;
+
+  i {
+    animation: bounce 0.5s cubic-bezier(1, 0, 1, 0) 0s infinite alternate;
+    color: white;
+    font-size: var(--font-size-lg);
+    position: absolute;
+    right: 0.3rem;
+    top: 0.3rem;
+  }
+}
+
 .name {
   -webkit-box-orient: vertical;
   display: -webkit-box;
-
-  @include font-bold;
-
   line-break: auto;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -438,66 +523,59 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 
 .date {
   font-size: var(--font-size-sm);
-
-  @include font-italic;
-
   opacity: 0.3;
 }
 
+.album-group-stack-layer {
+  background: var(--bg-color-light);
+  border: 0.1rem solid var(--bg-color-lighter);
+  border-radius: 0.3rem;
+  box-shadow: 0 0.2rem 0.4rem rgb(0 0 0 / 30%);
+  font-size: var(--font-size-sm);
+  height: 1.5rem;
+  position: absolute;
+  transition:
+    left 0.15s ease,
+    top 0.15s ease;
+  width: 1.5rem;
+}
+
+.album-group-stack-layer-1 {
+  left: calc(var(--indicator-offset) - 0.3rem);
+  top: calc(var(--indicator-offset) - 0.3rem);
+}
+
+.album-group-stack-layer-2 {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  left: calc(var(--indicator-offset) - 0.3rem);
+  top: calc(var(--indicator-offset) - 0.3rem);
+}
+
 /* Album group stack indicator styles (part of Album component to avoid !important) */
-.album-group-stack {
-  $indicator-offset: 0.5rem;
-  $size: 1.5rem;
+.album-group-stack-indicator {
+  /* The layers below live inside this element, so they inherit the offset. */
+  --indicator-offset: 0.5rem;
+  --indicator-size: 1.5rem;
 
-  &-layer {
-    background: var(--bg-color-light);
-    border: 0.1rem solid var(--bg-color-lighter);
-    border-radius: 0.3rem;
-    box-shadow: 0 0.2rem 0.4rem rgb(0 0 0 / 30%);
-    font-size: var(--font-size-sm);
+  cursor: pointer;
+  height: var(--indicator-size);
+  left: var(--indicator-offset);
+  opacity: 0;
+  position: absolute;
+  top: var(--indicator-offset);
+  transform: translateY(-0.15rem) scale(0.97);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+  visibility: hidden;
+  width: var(--indicator-size);
+  z-index: 10;
 
-    @include font-bold;
-
-    height: 1.5rem;
-    position: absolute;
-    transition:
-      left 0.15s ease,
-      top 0.15s ease;
-    width: 1.5rem;
-
-    &-1 {
-      left: calc($indicator-offset - 0.3rem);
-      top: calc($indicator-offset - 0.3rem);
-    }
-
-    &-2 {
-      align-items: center;
-      display: flex;
-      justify-content: center;
-      left: calc($indicator-offset - 0.3rem);
-      top: calc($indicator-offset - 0.3rem);
-    }
-  }
-
-  &-indicator {
-    cursor: pointer;
-    height: $size;
-    left: $indicator-offset;
-    opacity: 0;
-    position: absolute;
-    top: $indicator-offset;
-    transform: translateY(-0.15rem) scale(0.97);
-    transition:
-      opacity 0.18s ease,
-      transform 0.18s ease;
-    visibility: hidden;
-    width: $size;
-    z-index: 10;
-
-    &:hover .album-group-stack-layer-1 {
-      left: calc($indicator-offset - -0.05rem);
-      top: calc($indicator-offset - -0.05rem);
-    }
+  &:hover .album-group-stack-layer-1 {
+    left: calc(var(--indicator-offset) - -0.05rem);
+    top: calc(var(--indicator-offset) - -0.05rem);
   }
 }
 

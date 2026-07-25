@@ -128,16 +128,14 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .artist-info {
   display: grid;
   gap: 2rem;
   grid-template-columns: 1fr 18rem;
 
-  @include responsive.tablet-down {
+  @media (--tablet-down) {
     grid-template-columns: 1fr;
   }
 }
@@ -168,145 +166,166 @@ onMounted(() => {
 .wikipedia-content {
   color: var(--font-color-light);
   line-height: 1.7;
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(section) {
-    margin-bottom: 1.5rem;
-  }
+/*
+ * :deep() rules below are intentionally NOT nested inside .wikipedia-content /
+ * .biography: Vue's scoped-CSS compiler mishandles :deep() when it's nested
+ * via native CSS nesting — it emits ".wikipedia-content [data-v-x] p" (scope
+ * attribute floating as its own descendant segment) instead of
+ * ".wikipedia-content[data-v-x] p", which never matches anything in the real
+ * DOM. Writing the full selector at the top level sidesteps the bug (this is
+ * also how Sass used to emit it, since Sass flattened nesting before Vue's
+ * scoped compiler ever ran).
+ */
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(p) {
-    margin-bottom: 1rem;
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(section) {
+  margin-bottom: 1.5rem;
+}
 
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(p) {
+  margin-bottom: 1rem;
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(h2) {
-    @include font-bold;
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(p):last-child {
+  margin-bottom: 0;
+}
 
-    border-bottom: 1px solid var(--bg-color-light);
-    color: var(--font-color-default);
-    font-size: var(--font-size-xl);
-    margin-bottom: 0.8rem;
-    margin-top: 1.5rem;
-    padding-bottom: 0.4rem;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(h2) {
+  border-bottom: 1px solid var(--bg-color-light);
+  color: var(--font-color-default);
+  font-size: var(--font-size-xl);
+  font-variation-settings: var(--font-variation-settings-bold);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 0.8rem;
+  margin-top: 1.5rem;
+  padding-bottom: 0.4rem;
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(h3) {
-    @include font-bold;
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(h3) {
+  color: var(--font-color-default);
+  font-size: var(--font-size-base);
+  font-variation-settings: var(--font-variation-settings-bold);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 0.6rem;
+  margin-top: 1.2rem;
+}
 
-    color: var(--font-color-default);
-    font-size: var(--font-size-base);
-    margin-bottom: 0.6rem;
-    margin-top: 1.2rem;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(h4) {
+  color: var(--font-color-default);
+  font-variation-settings: var(--font-variation-settings-bold);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(h4) {
-    @include font-bold;
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(ul),
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(ol) {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
 
-    color: var(--font-color-default);
-    margin-bottom: 0.5rem;
-    margin-top: 1rem;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(li) {
+  margin-bottom: 0.3rem;
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(ul),
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(ol) {
-    margin-bottom: 1rem;
-    padding-left: 1.5rem;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(a) {
+  color: var(--primary-color-light);
+  text-decoration: none;
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(li) {
-    margin-bottom: 0.3rem;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(a):hover {
+  text-decoration: underline;
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(a) {
-    color: var(--primary-color-light);
-    text-decoration: none;
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(b),
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(strong) {
+  font-variation-settings: var(--font-variation-settings-bold);
+  font-weight: var(--font-weight-bold);
+}
 
-    &:hover {
-      text-decoration: underline;
-    }
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(i),
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(em) {
+  font-style: var(--font-style-bold-italic);
+  font-variation-settings: var(--font-variation-settings-bold-italic);
+  font-weight: var(--font-weight-bold);
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(b),
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(strong) {
-    @include font-bold;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(table) {
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  width: 100%;
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(i),
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(em) {
-    @include font-bold-italic;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(th),
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(td) {
+  border: 1px solid var(--bg-color-light);
+  padding: 0.5rem;
+  text-align: left;
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(table) {
-    border-collapse: collapse;
-    margin-bottom: 1rem;
-    width: 100%;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(th) {
+  background-color: var(--bg-color-dark);
+  font-variation-settings: var(--font-variation-settings-bold);
+  font-weight: var(--font-weight-bold);
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(th),
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(td) {
-    border: 1px solid var(--bg-color-light);
-    padding: 0.5rem;
-    text-align: left;
-  }
-
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(th) {
-    @include font-bold;
-
-    background-color: var(--bg-color-dark);
-  }
-
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(blockquote) {
-    border-left: 3px solid var(--primary-color-default);
-    margin: 1rem 0;
-    padding-left: 1rem;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(blockquote) {
+  border-left: 3px solid var(--primary-color-default);
+  margin: 1rem 0;
+  padding-left: 1rem;
 }
 
 .biography {
   color: var(--font-color-light);
   line-height: 1.7;
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(em) {
-    @include font-italic;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.biography :deep(em) {
+  font-style: var(--font-style-italic);
+  font-variation-settings: var(--font-variation-settings-italic);
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(strong) {
-    @include font-bold;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.biography :deep(strong) {
+  font-variation-settings: var(--font-variation-settings-bold);
+  font-weight: var(--font-weight-bold);
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(.discogs-link),
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(a) {
-    color: var(--primary-color-light);
-    text-decoration: none;
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.biography :deep(.discogs-link),
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.biography :deep(a) {
+  color: var(--primary-color-light);
+  text-decoration: none;
+}
 
-    &:hover {
-      text-decoration: underline;
-    }
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.biography :deep(.discogs-link):hover,
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.biography :deep(a):hover {
+  text-decoration: underline;
 }
 
 .details-grid {

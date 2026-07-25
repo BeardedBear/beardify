@@ -18,7 +18,7 @@ const props = defineProps<{ type?: DeviceType | null }>();
 const normalizedType = computed(() => (props.type ?? "unknown").replace(/_/g, "-").toLowerCase());
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .device-type {
   background-position: center;
   background-repeat: no-repeat;

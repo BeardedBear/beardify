@@ -34,7 +34,7 @@
           <RelatedArtists class="top-item related-artists" />
         </div>
       </div>
-      <div v-else-if="artistStore.activeTab === 'info'" key="info" class="content content--info">
+      <div v-else-if="artistStore.activeTab === 'info'" key="info" class="content content-info">
         <ArtistInfo />
       </div>
     </Transition>
@@ -71,7 +71,7 @@ const { onScroll, restoreScroll } = useScrollRestore(`scroll-${route.path}`, pag
 
 let lastChangeTime = 0;
 
-// 767px mirrors $mobile-max in src/assets/scss/responsive.scss (drives the collapse CSS).
+// 767px mirrors the mobile breakpoint used in the stylesheets (drives the collapse CSS).
 const isMobile = useMediaQuery("(max-width: 767px)");
 
 function handleScroll() {
@@ -147,7 +147,7 @@ watch(
 
 </script>
 
-<style lang="scss">
+<style>
 .sticky-heading {
   background-color: var(--bg-color-darker);
   margin-bottom: 0.8rem;
@@ -167,14 +167,12 @@ watch(
 }
 </style>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .list {
   flex: 1;
 
-  @include responsive.tablet-down {
+  @media (--tablet-down) {
     display: contents;
   }
 }
@@ -188,25 +186,26 @@ watch(
   padding: 2rem 2.5rem;
   position: relative;
 
-  @include responsive.tablet-down {
+  @media (--tablet-down) {
     gap: 1.5rem;
     grid-template-columns: 1fr;
     padding: 1rem;
   }
 
-  @include responsive.xl {
+  @media (--xl) {
     grid-template-columns: 1fr;
   }
+}
 
-  &--info {
-    grid-template-columns: 1fr;
-  }
+/* Kept right after .content: same specificity, so source order decides. */
+.content-info {
+  grid-template-columns: 1fr;
 }
 
 .content-block {
   margin-bottom: 3rem;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     margin-bottom: 2rem;
   }
 }
@@ -214,12 +213,12 @@ watch(
 .top {
   flex: 0 0 22rem;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     display: contents;
     order: -1;
   }
 
-  @include responsive.xl {
+  @media (--xl) {
     order: -1;
   }
 }
@@ -227,12 +226,12 @@ watch(
 .top-item {
   margin-bottom: 2.5rem;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     margin-bottom: 1.5rem;
     order: -1;
   }
 
-  @include responsive.xl {
+  @media (--xl) {
     margin-bottom: 0;
   }
 }
@@ -243,11 +242,11 @@ watch(
 }
 
 .related-artists {
-  @include responsive.tablet-down {
+  @media (--tablet-down) {
     order: 5;
   }
 
-  @include responsive.xl {
+  @media (--xl) {
     order: 5;
   }
 }

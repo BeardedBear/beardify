@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <div v-for="(month, index) in releasesStore.monthList" :key="index">
-      <div class="month">
+      <div class="month font-bold">
         {{ month }}
       </div>
       <template v-for="release in releasesStore.releases" :key="release.id">
@@ -23,15 +23,11 @@ import { useReleases } from "@/views/releases/ReleasesStore";
 const releasesStore = useReleases();
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .month {
   background-color: var(--bg-color-darker);
   color: var(--primary-color);
-
-  @include font-bold;
-
   padding: 1rem 0.5rem;
   position: sticky;
   text-transform: uppercase;

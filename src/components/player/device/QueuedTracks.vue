@@ -6,14 +6,14 @@
       </div>
       <div class="body">
         <div class="queue-list">
-          <div class="section-title">Now</div>
+          <div class="section-title font-bold">Now</div>
           <TrackHistory v-if="currentTrack" :cover-url="currentTrack.album.images[1].url" :track="currentTrack" />
-          <div class="section-title">Next</div>
+          <div class="section-title font-bold">Next</div>
           <div v-for="(track, key) in playerStore.queue" :key="key">
             <TrackHistory :cover-url="track.album.images[2].url" :index="key" :track="track" />
           </div>
           <div v-if="playerStore.queue.length === 0" class="empty-queue">
-            <div class="empty-message">
+            <div class="empty-message font-italic">
               {{ isPlayingPodcast ? "Queue not available for podcast episodes" : "No tracks in queue" }}
             </div>
           </div>
@@ -55,9 +55,7 @@ watch(currentTrack, (track) => {
 onClickOutside(popup, () => playerStore.closeQueue());
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .wrap {
   display: flex;
@@ -65,7 +63,7 @@ onClickOutside(popup, () => playerStore.closeQueue());
   position: relative;
   text-align: left;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     display: none;
   }
 }
@@ -105,9 +103,6 @@ onClickOutside(popup, () => playerStore.closeQueue());
 
 .section-title {
   font-size: var(--font-size-xs);
-
-  @include font-bold;
-
   margin-top: 10px;
   opacity: 0.5;
   padding: 0 10px;
@@ -127,9 +122,6 @@ onClickOutside(popup, () => playerStore.closeQueue());
 .empty-message {
   color: var(--font-color);
   font-size: var(--font-size-sm);
-
-  @include font-italic;
-
   opacity: 0.6;
 }
 </style>

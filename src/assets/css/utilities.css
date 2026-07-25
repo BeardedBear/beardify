@@ -1,0 +1,27 @@
+/*
+ * Utility classes for declaration bundles that used to be Sass mixins
+ * (@include font-bold, font-italic, font-bold-italic, squircle). Apply them
+ * directly in a template's class attribute instead of repeating the
+ * declarations in every component's scoped \3c style> block.
+ */
+
+.font-bold {
+  font-variation-settings: var(--font-variation-settings-bold);
+  font-weight: var(--font-weight-bold);
+}
+
+.font-italic {
+  font-style: var(--font-style-italic);
+  font-variation-settings: var(--font-variation-settings-italic);
+}
+
+.font-bold-italic {
+  font-style: var(--font-style-bold-italic);
+  font-variation-settings: var(--font-variation-settings-bold-italic);
+  font-weight: var(--font-weight-bold);
+}
+
+.squircle {
+  /* stylelint-disable-next-line property-no-unknown */
+  corner-shape: squircle;
+}

@@ -23,8 +23,7 @@ const sidebarStore = useSidebar();
 const dialogStore = useDialog();
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .mobile-header {
   align-items: center;
@@ -33,7 +32,7 @@ const dialogStore = useDialog();
   justify-content: space-between;
   padding: 0.5rem 0.8rem;
 
-  @include responsive.tablet-down {
+  @media (--tablet-down) {
     display: flex;
   }
 }

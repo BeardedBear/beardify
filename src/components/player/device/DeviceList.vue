@@ -44,7 +44,11 @@
         <span :title="`Device ID: ${device.id}`" class="device-label">
           <DeviceTypeIcon :type="device.type" />
           <span class="device-name">{{ formatName(device) }}</span>
-          <span v-if="device.id === playerStore.thisDeviceId" class="device-badge local" title="Périphérique local">
+          <span
+            v-if="device.id === playerStore.thisDeviceId"
+            class="device-badge local font-bold"
+            title="Périphérique local"
+          >
             Here
           </span>
           <i
@@ -118,10 +122,7 @@ function toggleList() {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
-
-$gap-list: 10px;
+<style scoped>
 
 .dropdown-overlay {
   inset: 0;
@@ -130,10 +131,12 @@ $gap-list: 10px;
 }
 
 .available-device-list {
+  --gap-list: 10px;
+
   align-items: center;
   background-color: var(--bg-color-light);
   border-radius: 5px;
-  bottom: calc(100% + #{$gap-list});
+  bottom: calc(100% + var(--gap-list));
   display: flex;
   flex-wrap: wrap;
   gap: 3px;
@@ -160,7 +163,7 @@ $gap-list: 10px;
 
   &::after {
     content: "";
-    height: $gap-list;
+    height: var(--gap-list);
     left: 0;
     position: absolute;
     right: 0;
@@ -211,9 +214,6 @@ $gap-list: 10px;
   color: var(--font-color-default);
   display: inline-block;
   font-size: var(--font-size-xs);
-
-  @include font-bold;
-
   justify-content: center;
   min-width: 32px;
   padding: 0.15rem 0.4rem;

@@ -6,7 +6,7 @@
     <div ref="scrollRef" class="home-content" @scroll="onScroll">
       <PageFit>
         <div class="title">
-          <div class="name">Recommended albums</div>
+          <div class="name font-bold">Recommended albums</div>
           <ButtonIndex @click="getData()">
             <i class="icon-refresh" />
             Refresh
@@ -52,9 +52,7 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .title {
   align-items: center;
@@ -62,7 +60,7 @@ watch(
   justify-content: space-between;
   margin-bottom: 3rem;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     flex-direction: column;
     gap: 1rem;
     margin-bottom: 2rem;
@@ -72,9 +70,7 @@ watch(
     flex: 1;
     font-size: var(--font-size-xl);
 
-    @include font-bold;
-
-    @include responsive.mobile {
+    @media (--mobile) {
       font-size: var(--font-size-lg);
     }
   }
@@ -92,15 +88,15 @@ watch(
   padding: 1rem 5rem;
   transition: padding ease 0.2s;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     padding: 1rem;
   }
 
-  @include responsive.tablet {
+  @media (--tablet) {
     padding: 1rem 2rem;
   }
 
-  @media (width <= 1200px) {
+  @media (--narrow-desktop-down) {
     padding: 1rem 3rem;
   }
 }

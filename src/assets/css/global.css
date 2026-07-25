@@ -1,0 +1,28 @@
+/*
+ * Global rules that used to ride along with the Sass mixins module. They are
+ * defined once here instead of being re-emitted into every component that
+ * pulled the module in.
+ */
+
+@keyframes pop-content {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.active {
+  background-color: var(--bg-color);
+  color: var(--primary-color) !important;
+
+  &:hover {
+    color: var(--primary-color) !important;
+  }
+
+  i {
+    opacity: 1 !important;
+  }
+}

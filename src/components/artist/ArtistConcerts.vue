@@ -13,9 +13,9 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        <div class="concert-date">{{ date(event.dates.start.localDate) }}</div>
+        <div class="concert-date font-bold">{{ date(event.dates.start.localDate) }}</div>
         <div class="concert-info">
-          <div class="concert-venue">{{ venue(event).name }}</div>
+          <div class="concert-venue font-bold">{{ venue(event).name }}</div>
           <div class="concert-location">{{ location(event) }}</div>
         </div>
         <ExternalLink class="concert-link-icon" />
@@ -57,8 +57,7 @@ watch(() => artistStore.artist.name, loadEvents);
 onMounted(loadEvents);
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .concerts-loader {
   display: flex;
@@ -94,8 +93,6 @@ onMounted(loadEvents);
 }
 
 .concert-date {
-  @include font-bold;
-
   color: var(--primary-color-light);
   flex: 0 0 7rem;
 }
@@ -103,10 +100,6 @@ onMounted(loadEvents);
 .concert-info {
   flex: 1;
   min-width: 0;
-}
-
-.concert-venue {
-  @include font-bold;
 }
 
 .concert-location {

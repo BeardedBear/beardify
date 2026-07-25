@@ -12,7 +12,7 @@ Beardify is a custom Spotify web client built with Vue 3 + TypeScript that enhan
 - **TypeScript** (strict mode)
 - **Vite 8** for build/dev server
 - **Pinia** for state management with persistence
-- **SCSS** with CSS custom properties for theming
+- **Native CSS** (nesting + custom properties) for styling and theming — no preprocessor
 - **ky v2** for HTTP requests (via `instance()` helper)
 - **Spotify Web API + Web Playback SDK**
 
@@ -76,7 +76,7 @@ Best practices:
 - `src/views/` - Route-level components, each with corresponding Pinia store
 - `src/helpers/` - Utility functions
 - `src/@types/` - TypeScript type definitions
-- `src/assets/scss/` - Global SCSS with theming system
+- `src/assets/css/` - Global CSS with theming system (imported once via `App.vue`)
 
 ### State Management (Pinia)
 
@@ -84,11 +84,43 @@ Each feature has its own store: `AuthStore`, `PlayerStore`, `PlaylistStore`, `Se
 
 ### Styling System
 
-Uses CSS custom properties with consistent naming:
+Plain CSS — no preprocessor. Use native nesting (`&`) and custom properties.
+
+Custom properties follow consistent naming:
 
 - `--bg-color-*` (darker, dark, default, light, lighter)
 - `--font-color-*` (dark, default, light)
 - `--primary-color-*` (darker, dark, default, light, lighter)
+
+Global stylesheets live in `src/assets/css/` and are pulled in once by `App.vue`
+(`@import "@/assets/css/index.css"`). Component styles are scoped and stand alone —
+there is nothing to import at the top of a `<style>` block.
+
+Conventions that replace the former Sass mixins:
+
+- **Font weights/styles**: instead of `@include font-bold`, add the `font-bold`
+  utility class (see `src/assets/css/utilities.css`) in the template — it bundles
+  `font-variation-settings: var(--font-variation-settings-bold);` with
+  `font-weight: var(--font-weight-bold);`, including the
+  `@supports not font-tech(variations)` fallback. Matching `font-italic` and
+  `font-bold-italic` classes exist too. Only write the raw declarations directly
+  in a component's `<style>` when the styling is conditional (inside `:hover`,
+  `::before`/`::after`, or a media query) — a static class can't express that, so
+  those cases stay local. Same pattern for `squircle` (`corner-shape: squircle;`).
+- **Breakpoints**: reference the shared custom media queries defined once in
+  `src/assets/css/breakpoints.css` — `@media (--mobile) { ... }`,
+  `(--tablet-up)`, `(--tablet-down)`, `(--tablet)`, `(--narrow-desktop-down)`,
+  `(--l)`, `(--xl)`, `(--hdpi)`. Native CSS media conditions can't take a
+  `var()` (`@media (max-width: var(--x))` is invalid everywhere), so this relies
+  on `postcss-custom-media` (resolved at build time via `postcss.config.js`) —
+  no per-file import needed, `@csstools/postcss-global-data` makes the
+  definitions available to every scoped `<style>` block automatically. Don't add
+  a new literal pixel breakpoint inline; add it to `breakpoints.css` instead.
+
+Component-local values that used to be Sass variables are namespaced custom
+properties declared on the rule that owns them (e.g. `--loader-size` on `.loader`).
+Namespace them — custom properties inherit into child components, so a bare
+`--size` would leak.
 
 ## Code Conventions
 
@@ -119,14 +151,13 @@ Uses CSS custom properties with consistent naming:
 - **HTML whitespace**: Ignored in Vue templates (template whitespace rules are deliberately permissive)
 - **Tab width**: 2 spaces (enforced via `indent`; JSON/YAML files maintain 2 spaces)
 
-**Note**: Prettier has been removed from the project; formatting is now enforced via ESLint stylistic rules. Use `bun run fix` to auto-fix JS/TS/Vue and SCSS style issues.
+**Note**: Prettier has been removed from the project; formatting is now enforced via ESLint stylistic rules. Use `bun run fix` to auto-fix JS/TS/Vue and CSS style issues.
 
 ### Stylelint Configuration
 
-- **Extends**: `stylelint-config-standard-scss` + Vue/HTML support
+- **Extends**: `stylelint-config-standard` + Vue/HTML support
 - **Property ordering**: Alphabetical order enforced
 - **Declaration order**: Custom properties first, then declarations
-- **SCSS support**: Full SCSS syntax support with `stylelint-scss` plugin
 - **Ignores**: `/public/` directory excluded
 
 ## Player Architecture

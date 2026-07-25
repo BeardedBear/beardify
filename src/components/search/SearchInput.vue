@@ -3,7 +3,7 @@
     <input
       ref="input"
       v-model="query"
-      class="input"
+      class="input font-bold squircle"
       placeholder="Recherche..."
       type="text"
       @input="searchStore.updateQuery(query)"
@@ -38,36 +38,29 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
-
-$radius: 1rem;
+<style scoped>
 
 .search {
+  --search-radius: 1rem;
+
   padding: 1rem;
   position: relative;
 }
 
 .input {
-  @include font-bold;
-
   background-color: var(--bg-color-light);
   border: 0;
-  border-radius: $radius;
+  border-radius: var(--search-radius);
   color: currentcolor;
   outline: 0;
   padding: 0.8rem 1.2rem;
   width: 100%;
-
-  @include squircle;
 }
 
 .reset {
   background-color: var(--bg-color-lighter);
   border: 0;
-  border-radius: $radius;
+  border-radius: var(--search-radius);
   color: currentcolor;
   cursor: pointer;
   font-size: var(--font-size-base);

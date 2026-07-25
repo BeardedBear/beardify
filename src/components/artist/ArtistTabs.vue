@@ -56,6 +56,7 @@ defineEmits<{
 function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
   return [
     "tab",
+    "font-bold",
     {
       active: props.modelValue === tab.id,
       disabled: tab.disabled,
@@ -66,9 +67,7 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 @keyframes spin {
   from {
@@ -99,33 +98,23 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
 }
 
 .tab {
-  $radius: 0.2rem;
+  --tab-radius: 0.2rem;
 
   align-items: center;
   background-color: transparent;
   border: none;
-  border-radius: $radius $radius 0 0;
+  border-radius: var(--tab-radius) var(--tab-radius) 0 0;
   color: var(--font-color-light);
   cursor: pointer;
   display: flex;
-
-  @include font-bold;
-
   gap: 0.5rem;
   opacity: 0.5;
   padding: 0.5rem 1rem;
-
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(svg) {
-    height: 1rem;
-    width: 1rem;
-  }
-
   transition:
     background-color 0.2s ease,
     opacity 0.2s ease;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     padding: 0.5rem 0.8rem;
   }
 
@@ -146,13 +135,6 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
     &:hover {
       background-color: transparent;
       opacity: 0.45;
-    }
-  }
-
-  &.tab-loading {
-    /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-    :deep(svg) {
-      animation: spin 1s linear infinite;
     }
   }
 
@@ -177,5 +159,17 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
       top: 0;
     }
   }
+}
+
+/* See the comment in ArtistInfo.vue: :deep() must stay top-level, never nested. */
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.tab :deep(svg) {
+  height: 1rem;
+  width: 1rem;
+}
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.tab.tab-loading :deep(svg) {
+  animation: spin 1s linear infinite;
 }
 </style>

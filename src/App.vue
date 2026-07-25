@@ -129,15 +129,9 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss">
-@use "@/assets/scss/button";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/font-size" as *;
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/heading" as heading;
-@use "@/assets/scss/mixins" as *;
-@use "@/assets/scss/typography" as typography;
-@import "../node_modules/normalize.css/normalize.css";
+<style>
+@import url("../node_modules/normalize.css/normalize.css");
+@import url("@/assets/css/index.css");
 
 *,
 *::before,
@@ -147,10 +141,10 @@ onBeforeUnmount(() => {
 
 input {
   &::placeholder {
-    @include font-italic;
-
     color: var(--font-color);
     font-size: var(--font-size-base);
+    font-style: var(--font-style-italic);
+    font-variation-settings: var(--font-variation-settings-italic);
     opacity: 0.3;
   }
 }
@@ -160,11 +154,7 @@ body {
   -webkit-font-smoothing: subpixel-antialiased;
   -webkit-font-smoothing: antialiased;
   font-stretch: var(--font-stretch-base);
-  font-variation-settings:
-    "slnt" var(--font-variation-slnt),
-    "GRAD" var(--font-variation-grad),
-    "ROND" var(--font-variation-rond),
-    "wght" var(--font-variation-wght);
+  font-variation-settings: var(--font-variation-settings-base);
   overflow: hidden;
   scrollbar-color: var(--bg-color-light) var(--bg-color-dark);
   scrollbar-width: thin;
@@ -218,11 +208,11 @@ body {
   overflow: hidden;
   position: relative;
 
-  @include responsive.hdpi {
+  @media (--hdpi) {
     grid-template-columns: 25rem 1fr;
   }
 
-  @include responsive.tablet-down {
+  @media (--tablet-down) {
     grid-template-columns: 1fr;
   }
 }

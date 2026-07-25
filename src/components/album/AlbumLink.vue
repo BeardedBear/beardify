@@ -6,7 +6,7 @@
       'icon-compilation': isCompilation(album),
     }"
   />
-  <span class="artist" @click.prevent.stop="goAlbum(`/album/${album.id}`)">{{ album.name }}</span>
+  <span class="artist font-italic" @click.prevent.stop="goAlbum(`/album/${album.id}`)">{{ album.name }}</span>
 </template>
 
 <script lang="ts" setup>
@@ -24,9 +24,7 @@ function goAlbum(albumId: string): void {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .separator {
   opacity: 0.2;
@@ -36,9 +34,6 @@ function goAlbum(albumId: string): void {
   color: currentcolor;
   cursor: pointer;
   font-size: var(--font-size-sm);
-
-  @include font-italic;
-
   opacity: 0.5;
 
   &:hover {

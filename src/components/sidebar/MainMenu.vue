@@ -3,7 +3,7 @@
     <ButtonIndex
       :class="{ 'active-route': $route.path.includes('/podcasts') }"
       :to="`/podcasts`"
-      class="link"
+      class="link font-bold squircle"
       no-default-class
     >
       <i class="icon icon-podcast" />
@@ -12,7 +12,7 @@
     <ButtonIndex
       :class="{ 'active-route': $route.path.includes('/releases') }"
       :to="`/releases`"
-      class="link disabled"
+      class="link disabled font-bold squircle"
       no-default-class
     >
       <i class="icon icon-album" />
@@ -25,10 +25,7 @@
 import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .menu {
   display: flex;
@@ -43,13 +40,8 @@ import ButtonIndex from "@/components/ui/ButtonIndex.vue";
   display: block;
   flex: 1;
   font-size: var(--font-size-base);
-
-  @include font-bold;
-
   padding: 0.4rem 0.8rem;
   text-decoration: none;
-
-  @include squircle;
 
   &.disabled {
     cursor: not-allowed;

@@ -1,7 +1,7 @@
 <template>
   <a
     ref="itemRef"
-    class="item"
+    class="item font-bold"
     :class="{ resolving }"
     href="#"
     @click.prevent="goToArtist"
@@ -53,8 +53,25 @@ async function goToArtist(): Promise<void> {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
+
+/* Declared before .item so the higher-specificity overrides nested in it come later. */
+.cover {
+  aspect-ratio: 1;
+  border-radius: 100%;
+  margin-bottom: 0.7rem;
+  object-fit: cover;
+  transition: opacity 0.2s ease;
+  width: 100%;
+}
+
+.name {
+  font-size: var(--font-size-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
 
 .item {
   border-radius: 0.5rem;
@@ -67,8 +84,6 @@ async function goToArtist(): Promise<void> {
   transition:
     background-color 0.2s ease,
     transform 0.2s ease;
-
-  @include font-bold;
 
   &:hover {
     background-color: var(--bg-color-light);
@@ -84,27 +99,10 @@ async function goToArtist(): Promise<void> {
   }
 }
 
-.cover {
-  aspect-ratio: 1;
-  border-radius: 100%;
-  margin-bottom: 0.7rem;
-  object-fit: cover;
-  transition: opacity 0.2s ease;
-  width: 100%;
-}
-
 .spinner {
   left: 50%;
   position: absolute;
   top: calc(50% - 0.8rem);
   transform: translate(-50%, -50%);
-}
-
-.name {
-  font-size: var(--font-size-sm);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color 0.2s ease;
-  white-space: nowrap;
 }
 </style>

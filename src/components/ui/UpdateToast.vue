@@ -61,7 +61,7 @@ const isDev = import.meta.env.DEV;
   </Transition>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 @keyframes pulse-ring {
   0% {
     box-shadow:

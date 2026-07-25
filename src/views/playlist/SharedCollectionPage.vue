@@ -12,7 +12,7 @@
           <div class="infos">
             <Cover :images="playlist.images" class="cover" size="large" />
             <div>
-              <div class="title">
+              <div class="title font-bold">
                 {{ playlist.name.replace("#Collection ", "") }}
               </div>
               <div class="metas">{{ playlist.owner.display_name }} &nbsp;·&nbsp; {{ albumList.length }} albums</div>
@@ -142,9 +142,7 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .loading,
 .error {
@@ -157,7 +155,7 @@ onMounted(async () => {
 .shared-collection {
   padding: 0 5rem 3rem;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     padding: 0 1rem 1.5rem;
   }
 }
@@ -172,7 +170,7 @@ onMounted(async () => {
   top: 0;
   z-index: 1;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     align-items: flex-start;
     flex-direction: column;
     gap: 1rem;
@@ -190,7 +188,7 @@ onMounted(async () => {
     margin-right: 2rem;
     width: 4rem;
 
-    @include responsive.mobile {
+    @media (--mobile) {
       height: 3rem;
       margin-right: 1rem;
       width: 3rem;
@@ -199,8 +197,6 @@ onMounted(async () => {
 
   .title {
     font-size: var(--font-size-xl);
-
-    @include font-bold;
   }
 
   .metas {
@@ -212,14 +208,19 @@ onMounted(async () => {
     display: flex;
     gap: 0.6rem;
 
-    @include responsive.mobile {
+    @media (--mobile) {
       width: 100%;
-
-      /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-      :deep(.button) {
-        flex: 1;
-      }
     }
+  }
+}
+
+@media (--mobile) {
+  /* See the comment above .wikipedia-content in ArtistInfo.vue: :deep() must
+     stay top-level (outside any selector ancestor, at-rules are fine), never
+     nested under a class selector — Vue's scoped-CSS compiler mishandles it. */
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  .header .links :deep(.button) {
+    flex: 1;
   }
 }
 
@@ -228,7 +229,7 @@ onMounted(async () => {
   gap: 2rem;
   grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
 
-  @include responsive.mobile {
+  @media (--mobile) {
     gap: 1rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -242,7 +243,7 @@ onMounted(async () => {
   display: grid;
   gap: 2rem;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     gap: 1rem;
   }
 }
@@ -269,14 +270,17 @@ onMounted(async () => {
   display: flex;
   flex-wrap: wrap;
   padding: 1rem;
+}
 
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.tier-grid-side :deep(.album) {
+  width: 8rem;
+}
+
+@media (--mobile) {
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep(.album) {
-    width: 8rem;
-
-    @include responsive.mobile {
-      width: 6rem;
-    }
+  .tier-grid-side :deep(.album) {
+    width: 6rem;
   }
 }
 </style>

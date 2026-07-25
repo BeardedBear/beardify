@@ -167,8 +167,7 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .nav-container {
   position: relative;
@@ -199,7 +198,7 @@ onBeforeUnmount(() => {
     border-radius: 0 0 0.5rem 0.5rem;
   }
 
-  @include responsive.mobile {
+  @media (--mobile) {
     position: relative;
     top: 0 !important;
   }

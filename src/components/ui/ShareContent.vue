@@ -1,10 +1,10 @@
 <template>
-  <div class="sharing">
-    <div class="title">
+  <div class="sharing squircle">
+    <div class="title squircle">
       <i class="share-icon icon-share" />
     </div>
-    <span v-if="clipboardSpotify.copied.value" class="copied">Spotify URL copied</span>
-    <span v-if="clipboardBeardify.copied.value" class="copied">Beardify URL copied</span>
+    <span v-if="clipboardSpotify.copied.value" class="copied font-bold">Spotify URL copied</span>
+    <span v-if="clipboardBeardify.copied.value" class="copied font-bold">Beardify URL copied</span>
     <div class="content">
       <ButtonIndex no-default-class class="copy" @click="clipboardSpotify.copy()">
         <i class="icon-spotify" />
@@ -31,29 +31,24 @@ const clipboardBeardify = useClipboard({
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
-
-$radius: 1rem;
+<style scoped>
 
 .sharing {
+  --sharing-radius: 1rem;
+
   background-color: var(--bg-color);
   border: 0.05rem solid var(--bg-color-light);
-  border-radius: $radius;
+  border-radius: var(--sharing-radius);
   display: flex;
   height: 2.25rem;
   position: relative;
-
-  @include squircle;
 }
 
 .title {
   align-items: center;
   background-color: var(--bg-color-light);
-  border-radius: $radius 0 0 $radius;
+  border-radius: var(--sharing-radius) 0 0 var(--sharing-radius);
   display: flex;
-
-  @include squircle;
 }
 
 .share-icon {
@@ -103,9 +98,6 @@ $radius: 1rem;
 .copied {
   animation: pop 0.2s ease both;
   font-size: var(--font-size-sm);
-
-  @include font-bold;
-
   left: 50%;
   margin-right: 0.8rem;
   opacity: 0.5;

@@ -7,10 +7,10 @@
       <div
         v-for="(playlist, index) in filteredPlaylists"
         :key="index"
-        class="collection"
+        class="collection font-bold"
         @click="add(dialogStore.track?.uri ? dialogStore.track?.uri : '', playlist.id)"
       >
-        <div class="playlist">
+        <div class="playlist font-bold">
           <div>
             <PlaylistIcon :playlist="playlist" />
             {{ playlist.name }}
@@ -66,9 +66,7 @@ async function add(songUri: string, playlistId: string): Promise<void> {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .content {
   padding: 0.5rem;
@@ -77,9 +75,6 @@ async function add(songUri: string, playlistId: string): Promise<void> {
 .playlist {
   align-items: center;
   display: flex;
-
-  @include font-bold;
-
   justify-content: space-between;
 
   i {
@@ -91,9 +86,6 @@ async function add(songUri: string, playlistId: string): Promise<void> {
 .collection {
   border-radius: 0.3rem;
   cursor: pointer;
-
-  @include font-bold;
-
   opacity: 0.7;
   padding: 0.5rem 1rem;
   transition: 0.1s;

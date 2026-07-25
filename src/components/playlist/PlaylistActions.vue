@@ -43,7 +43,7 @@ function edit(playlistId: string): void {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .followed {
   color: var(--primary-color);
 }

@@ -21,9 +21,7 @@ const playerStore = usePlayer();
 const forceMobile = props.forceMobile ?? false;
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .wrap {
   align-items: center;
@@ -31,7 +29,7 @@ const forceMobile = props.forceMobile ?? false;
   flex: 1;
   justify-content: end;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     justify-content: center;
   }
 }

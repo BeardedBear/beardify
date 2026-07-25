@@ -1,0 +1,71 @@
+:root {
+  --font-family-base:
+    "Bricolage Grotesque", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen, ubuntu, cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
+  --font-stretch-base: 90%;
+  --font-variation-slnt: 0;
+  --font-variation-slnt-italic: -10;
+  --font-variation-grad: 0;
+  --font-variation-rond: 0;
+  --font-variation-wght: 500;
+  --font-variation-wght-bold: 600;
+
+  /*
+   * Replaces the former font-bold / font-italic / font-bold-italic Sass mixins.
+   * Apply with `font-variation-settings: var(--font-variation-settings-bold);`
+   * plus the matching fallback declaration below.
+   */
+  --font-variation-settings-base:
+    "slnt" var(--font-variation-slnt), "GRAD" var(--font-variation-grad), "ROND" var(--font-variation-rond),
+    "wght" var(--font-variation-wght);
+  --font-variation-settings-bold:
+    "slnt" var(--font-variation-slnt), "GRAD" var(--font-variation-grad), "ROND" var(--font-variation-rond),
+    "wght" var(--font-variation-wght-bold);
+  --font-variation-settings-italic:
+    "slnt" var(--font-variation-slnt-italic), "GRAD" var(--font-variation-grad), "ROND" var(--font-variation-rond),
+    "wght" var(--font-variation-wght);
+  --font-variation-settings-bold-italic:
+    "slnt" var(--font-variation-slnt-italic), "GRAD" var(--font-variation-grad), "ROND" var(--font-variation-rond),
+    "wght" var(--font-variation-wght-bold);
+
+  /*
+   * Fallbacks used when the variable font axes are unavailable: `revert` leaves
+   * the UA/inherited value untouched, which is what the mixins did by only
+   * emitting these inside `@supports not font-tech(variations)`.
+   */
+  --font-weight-bold: revert;
+  --font-style-italic: revert;
+  --font-style-bold-italic: normal;
+}
+
+@supports not font-tech(variations) {
+  :root {
+    --font-weight-bold: 700;
+    --font-style-italic: italic;
+    --font-style-bold-italic: italic;
+  }
+}
+
+html {
+  /* stylelint-disable property-no-vendor-prefix */
+  font-size: clamp(14px, calc(0.9rem + 0.6vw), 14px);
+  line-height: 1.4;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  /* stylelint-enable property-no-vendor-prefix */
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-family-base);
+  font-stretch: var(--font-stretch-base);
+  font-variation-settings: var(--font-variation-settings-base);
+}
+
+@media (--mobile) {
+  html {
+    font-size: clamp(14px, calc(1rem + 0.8vw), 16px);
+  }
+}

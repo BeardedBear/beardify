@@ -94,7 +94,7 @@ function setMode(mode: CollectionRankingMode["type"]): void {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .option-list {
   display: flex;
   justify-content: space-between;

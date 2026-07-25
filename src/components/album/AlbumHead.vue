@@ -1,7 +1,7 @@
 <template>
   <div class="album-header">
     <div>
-      <div class="title">
+      <div class="title font-bold">
         {{ album.name }}
       </div>
       <div class="infos">
@@ -54,16 +54,13 @@ function sumDuration(tracks: Track[] | TrackSimplified[]): number {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .album-header {
   display: flex;
   justify-content: space-between;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     flex-direction: column;
     gap: 1rem;
   }
@@ -72,14 +69,11 @@ function sumDuration(tracks: Track[] | TrackSimplified[]): number {
 .infos {
   color: var(--font-color-darker);
 
-  // opacity: 0.4;
+  /* opacity: 0.4; */
 }
 
 .title {
   font-size: var(--font-size-xl);
-
-  @include font-bold;
-
   margin-bottom: 0.4rem;
 }
 
@@ -93,6 +87,6 @@ function sumDuration(tracks: Track[] | TrackSimplified[]): number {
   align-items: center;
   display: flex;
 
-  // gap: 0.5rem;
+  /* gap: 0.5rem; */
 }
 </style>

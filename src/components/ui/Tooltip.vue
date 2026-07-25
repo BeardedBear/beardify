@@ -146,14 +146,14 @@ useResizeObserver([tooltipRef, wrapperRef], () => {
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .tooltip-wrapper {
   display: inline-block;
   position: relative;
 }
 </style>
 
-<style lang="scss">
+<style>
 /* Tooltip styles - unscoped because tooltip is teleported to body */
 .tooltip {
   --tooltip-duration: 0.32s;

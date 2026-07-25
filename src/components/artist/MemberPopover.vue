@@ -206,7 +206,7 @@ useEventListener(window, "scroll", () => visible.value && updatePosition(), { ca
 useEventListener(window, "resize", () => visible.value && updatePosition());
 </script>
 
-<style lang="scss">
+<style>
 /* Unscoped: the popover is teleported to <body> */
 .member-popover {
   background: var(--bg-color-dark);

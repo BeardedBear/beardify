@@ -33,7 +33,7 @@ function scrollToTop(): void {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .page {
   animation: pop-content 1s ease both;
   display: grid;

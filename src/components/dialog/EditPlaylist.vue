@@ -161,8 +161,7 @@ function remove(): void {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .loading {
   display: grid;
@@ -185,8 +184,8 @@ function remove(): void {
   margin-top: 1rem;
 
   p {
-    @include font-bold;
-
+    font-variation-settings: var(--font-variation-settings-bold);
+    font-weight: var(--font-weight-bold);
     margin-bottom: 0.5rem;
   }
 }
@@ -239,9 +238,8 @@ label {
   border: none;
   border-radius: 0.4rem;
   color: var(--font-color);
-
-  @include font-bold;
-
+  font-variation-settings: var(--font-variation-settings-bold);
+  font-weight: var(--font-weight-bold);
   outline: 0;
   padding: 0.8rem 1rem;
   transition: 0.2s;

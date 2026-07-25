@@ -1,14 +1,14 @@
 <template>
-  <div v-if="configStore.show" ref="domConfig" :class="{ bye: configStore.bye }" class="config">
-    <div class="user">
+  <div v-if="configStore.show" ref="domConfig" :class="{ bye: configStore.bye }" class="config squircle">
+    <div class="user font-bold">
       <div>{{ authStore.me?.display_name }}</div>
-      <div class="user-mail">
+      <div class="user-mail font-italic">
         {{ authStore.me?.email }}
       </div>
     </div>
 
-    <div v-if="env !== 'production'" class="section">
-      <div class="section-title">Debug</div>
+    <div v-if="env !== 'production'" class="section squircle">
+      <div class="section-title font-bold">Debug</div>
       <ButtonIndex to="/login" variant="full">Login</ButtonIndex>
       <ButtonIndex variant="full" @click="authStore.refresh()">Refresh token</ButtonIndex>
       <ButtonIndex
@@ -24,19 +24,19 @@
       </ButtonIndex>
     </div>
 
-    <div class="section">
-      <div class="section-title">Account</div>
+    <div class="section squircle">
+      <div class="section-title font-bold">Account</div>
       <ButtonIndex :to="`/user/${authStore.me?.id}`" variant="full">My profile</ButtonIndex>
       <ButtonIndex variant="full" @click="authStore.logout()">Logout</ButtonIndex>
     </div>
 
-    <div class="section">
-      <div class="section-title">Colors</div>
+    <div class="section squircle">
+      <div class="section-title font-bold">Colors</div>
       <Colors />
     </div>
 
-    <div class="section">
-      <div class="section-title">Tier list</div>
+    <div class="section squircle">
+      <div class="section-title font-bold">Tier list</div>
       <div class="option">
         <div class="option-label">Side labels</div>
         <div class="buttons">
@@ -80,9 +80,7 @@ const domConfig = ref<HTMLElement | null>(null);
 onClickOutside(domConfig, (): void => configStore.close());
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .section {
   background: var(--bg-color);
@@ -92,13 +90,9 @@ onClickOutside(domConfig, (): void => configStore.close());
   gap: 0.8rem;
   margin-top: 1rem;
   padding: 0.8rem;
-
-  @include squircle;
 }
 
 .section-title {
-  @include font-bold;
-
   font-size: var(--font-size-sm);
   opacity: 0.5;
   text-transform: uppercase;
@@ -116,8 +110,6 @@ onClickOutside(domConfig, (): void => configStore.close());
 }
 
 .user {
-  @include font-bold;
-
   margin-bottom: 1.2rem;
 }
 
@@ -129,8 +121,6 @@ onClickOutside(domConfig, (): void => configStore.close());
 }
 
 .user-mail {
-  @include font-italic;
-
   font-size: var(--font-size-sm);
   margin-top: 0.1rem;
   opacity: 0.5;
@@ -171,8 +161,6 @@ onClickOutside(domConfig, (): void => configStore.close());
   top: calc(100% - 0.3rem);
   width: 15rem;
   z-index: 999;
-
-  @include squircle;
 
   &.bye {
     animation: bye-config ease 0.2s both;

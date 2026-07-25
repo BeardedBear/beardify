@@ -83,7 +83,7 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 @keyframes pop-bg {
   from {
     opacity: 0;

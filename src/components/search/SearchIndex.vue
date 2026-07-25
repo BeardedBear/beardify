@@ -25,10 +25,7 @@ document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .search {
   flex: 1;
@@ -48,13 +45,13 @@ document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
   top: 100%;
   z-index: 999;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     gap: 1.5rem;
     grid-template-columns: 1fr;
     padding: 0.5rem;
   }
 
-  @include responsive.tablet {
+  @media (--tablet) {
     gap: 1.5rem;
     grid-template-columns: repeat(2, 1fr);
     padding: 0.8rem;

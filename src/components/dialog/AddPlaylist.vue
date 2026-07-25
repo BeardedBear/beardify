@@ -1,7 +1,7 @@
 <template>
   <Dialog title="Create a playlist" with-title>
     <div class="wrap">
-      <input v-model="playlistName" class="input" placeholder="Playlist's name" type="text" />
+      <input v-model="playlistName" class="input font-bold" placeholder="Playlist's name" type="text" />
       <ButtonIndex variant="primary" @click="create()">Create</ButtonIndex>
     </div>
   </Dialog>
@@ -32,8 +32,7 @@ async function create(): Promise<void> {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .wrap {
   padding: 1.2rem;
@@ -41,8 +40,6 @@ async function create(): Promise<void> {
 }
 
 .input {
-  @include font-bold;
-
   background-color: var(--bg-color-light);
   border: 0;
   border-radius: 0.3rem;

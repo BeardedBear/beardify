@@ -17,7 +17,7 @@
               active: isCurrentTrack(track, currentTrack),
               unavailable: !track.available_markets.length,
             }"
-            class="track"
+            class="track font-bold"
             @click="playSongs(index, albumStore.album.tracks.items)"
           >
             <ButtonIndex
@@ -27,7 +27,7 @@
             >
               <i class="icon-plus" />
             </ButtonIndex>
-            <span class="track-number">{{ track.track_number }}.</span>
+            <span class="track-number font-italic">{{ track.track_number }}.</span>
             <div>
               <div>{{ track.name }}</div>
               <div v-if="albumStore.album.artists.length">
@@ -82,11 +82,7 @@ const { onScroll, restoreScroll } = useScrollRestore(`scroll-${route.path}`, pag
 albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => restoreScroll()));
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .fit {
   display: flex;
@@ -97,7 +93,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   max-width: 57rem;
   width: 100%;
 
-  @include responsive.hdpi {
+  @media (--hdpi) {
     max-width: 100rem;
   }
 }
@@ -119,8 +115,6 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
 }
 
 .track {
-  @include font-bold;
-
   border-radius: 0.4rem;
   cursor: pointer;
   display: grid;
@@ -153,8 +147,6 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
 }
 
 .track-number {
-  @include font-italic;
-
   font-variant: tabular-nums;
   opacity: 0.5;
 }
@@ -165,12 +157,12 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   gap: 3rem;
   justify-content: center;
 
-  @include responsive.tablet-down {
+  @media (--tablet-down) {
     flex-direction: column;
     gap: 2rem;
   }
 
-  @include responsive.l {
+  @media (--l) {
     flex-direction: column;
   }
 }
@@ -178,7 +170,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
 .content-cover {
   width: 18rem;
 
-  @include responsive.tablet-down {
+  @media (--tablet-down) {
     margin: 0 auto;
     width: 12rem;
   }
@@ -188,7 +180,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   flex: 1;
   font-size: var(--font-size-base);
 
-  @include responsive.mobile {
+  @media (--mobile) {
     font-size: var(--font-size-sm);
   }
 }
@@ -203,11 +195,11 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   padding: 2rem 2.2rem;
   scroll-behavior: smooth;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     padding: 1rem;
   }
 
-  @include responsive.tablet {
+  @media (--tablet) {
     padding: 1.5rem;
   }
 }

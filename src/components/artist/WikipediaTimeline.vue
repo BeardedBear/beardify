@@ -1,6 +1,6 @@
 <template>
   <div v-if="artistStore.wikiTimeline && rows.length > 0" class="wiki-timeline">
-    <h2 class="timeline-title">Members timeline</h2>
+    <h2 class="timeline-title font-bold">Members timeline</h2>
 
     <div class="timeline-legend">
       <span v-for="role in legend" :key="role.legend" class="legend-item">
@@ -305,16 +305,13 @@ const ticks = computed<AxisTick[]>(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .wiki-timeline {
   margin-bottom: 2.5rem;
 }
 
 .timeline-title {
-  @include font-bold;
-
   border-bottom: 1px solid var(--bg-color-light);
   color: var(--font-color-default);
   font-size: var(--font-size-xl);

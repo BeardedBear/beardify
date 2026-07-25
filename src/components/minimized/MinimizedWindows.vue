@@ -11,7 +11,7 @@
         transition: { type: 'spring', stiffness: 260, damping: 20 },
       }"
       :leave="{ scale: 0, opacity: 0, x: -50, transition: { duration: 200 } }"
-      class="minimized-window"
+      class="minimized-window squircle"
     >
       <div class="window-content" @click="dialogStore.restore()">
         <i class="icon-message-square" />
@@ -37,7 +37,7 @@
         transition: { type: 'spring', stiffness: 260, damping: 20 },
       }"
       :leave="{ scale: 0, opacity: 0, x: -50, transition: { duration: 200 } }"
-      class="minimized-window"
+      class="minimized-window squircle"
     >
       <div class="window-content" @click="frameStore.restore()">
         <i class="icon-external-link" />
@@ -83,8 +83,7 @@ const getDialogTitle = (): string => {
 };
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .minimized-windows {
   bottom: 7rem;
@@ -107,8 +106,6 @@ const getDialogTitle = (): string => {
   padding: 0.5rem;
   pointer-events: all;
   transition: all 0.1s ease;
-
-  @include squircle;
 }
 
 .window-content {
@@ -124,10 +121,10 @@ const getDialogTitle = (): string => {
   }
 
   span {
-    @include font-bold;
-
     color: var(--font-color);
     font-size: var(--font-size-sm);
+    font-variation-settings: var(--font-variation-settings-bold);
+    font-weight: var(--font-weight-bold);
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;

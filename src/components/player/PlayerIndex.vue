@@ -84,9 +84,7 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .player {
   background: var(--bg-color);
@@ -95,7 +93,7 @@ onBeforeUnmount(() => {
   .player-bg {
     display: none;
 
-    @include responsive.mobile {
+    @media (--mobile) {
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
@@ -111,9 +109,15 @@ onBeforeUnmount(() => {
     }
   }
 
-  > :not(.player-bg) {
-    position: relative;
-    z-index: 1;
-  }
+}
+
+/*
+ * Kept top-level rather than nested: Vue's scoped-CSS compiler mishandles a
+ * nested selector that starts with a combinator (same floating-scope-attribute
+ * bug as :deep() nesting — see the comment in ArtistInfo.vue).
+ */
+.player > :not(.player-bg) {
+  position: relative;
+  z-index: 1;
 }
 </style>

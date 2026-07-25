@@ -6,7 +6,7 @@
           (playlist) => playlist.collaborative || playlist.owner.id === authStore.me?.id,
         )"
         :key="index"
-        class="collection"
+        class="collection font-bold"
         @click="add(dialogStore.albumId ? dialogStore.albumId : '', playlist.id)"
       >
         <div class="album">
@@ -66,9 +66,7 @@ async function add(albumId: string, playlistId: string): Promise<void> {
 }
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .content {
   padding: 0.5rem;
@@ -89,9 +87,6 @@ async function add(albumId: string, playlistId: string): Promise<void> {
   border-radius: 0.3rem;
   cursor: pointer;
   font-size: var(--font-size-sm);
-
-  @include font-bold;
-
   opacity: 0.7;
   padding: 0.5rem 1rem;
   transition: 0.1s;

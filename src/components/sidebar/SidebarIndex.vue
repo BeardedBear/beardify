@@ -46,7 +46,7 @@
         <input
           ref="collectionSearchInput"
           v-model="collectionSearchQuery"
-          class="search"
+          class="search font-bold"
           placeholder="Search collection"
           type="text"
         />
@@ -60,7 +60,7 @@
           v-if="playlist.id"
           :class="{ active: $route.params.id === playlist.id }"
           :to="`/collection/${playlist.id}`"
-          class="playlist-item"
+          class="playlist-item font-bold"
         >
           <PlaylistIcon :playlist="playlist" />
           <div class="name">
@@ -103,7 +103,7 @@
         <input
           ref="playlistSearchInput"
           v-model="playlistSearchQuery"
-          class="search"
+          class="search font-bold"
           placeholder="Search playlist"
           type="text"
         />
@@ -113,7 +113,7 @@
           v-if="playlist.id && playlist.name !== ''"
           :class="{ active: $route.params.id === playlist.id }"
           :to="`/playlist/${playlist.id}`"
-          class="playlist-item"
+          class="playlist-item font-bold"
         >
           <PlaylistIcon :playlist="playlist" />
           <div class="name">
@@ -222,11 +222,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   sidebarStore.getPlaylists("me/playlists?limit=50");
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .empty {
   font-style: italic;
@@ -238,9 +234,6 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   align-items: center;
   color: currentcolor;
   display: flex;
-
-  @include font-bold;
-
   justify-content: space-between;
   padding: 0.3rem 1.2rem 0.3rem 1rem;
   text-decoration: none;
@@ -329,7 +322,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   grid-template-rows: auto auto auto;
   overflow: hidden;
 
-  @include responsive.tablet-down {
+  @media (--tablet-down) {
     bottom: 0;
     left: 0;
     max-width: 20rem;
@@ -395,9 +388,6 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   border: none;
   border-radius: 0.2rem;
   color: var(--font-color);
-
-  @include font-bold;
-
   padding: 0.2rem 0.5rem;
   width: 100%;
 

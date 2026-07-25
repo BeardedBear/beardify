@@ -42,17 +42,17 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .wrap {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   justify-content: center;
   padding: 1.5rem;
+}
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  :deep() .search {
-    width: 100%;
-  }
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wrap :deep(.search) {
+  width: 100%;
 }
 </style>

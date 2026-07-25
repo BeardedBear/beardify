@@ -7,7 +7,7 @@
       </span>
     </div>
 
-    <button type="button" class="select-trigger" @click="toggle">
+    <button type="button" class="select-trigger font-bold" @click="toggle">
       <span class="select-value">{{ displayValue }}</span>
       <i class="icon-chevron-down" />
     </button>
@@ -81,8 +81,7 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .language-select {
   display: inline-flex;
@@ -106,8 +105,6 @@ onBeforeUnmount(() => {
 }
 
 .select-trigger {
-  @include font-bold;
-
   align-items: center;
   background-color: var(--bg-color-lighter);
   border: none;

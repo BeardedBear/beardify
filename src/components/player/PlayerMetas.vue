@@ -9,11 +9,11 @@
     <div class="text-content">
       <div class="track-details">
         <template v-if="!isTrackNameLong">
-          <span class="trackname">{{ currentTrack.name }}</span>
+          <span class="trackname font-bold">{{ currentTrack.name }}</span>
         </template>
         <template v-else>
           <Tooltip :text="currentTrack.name">
-            <span class="trackname">{{ truncatedTrackName }}</span>
+            <span class="trackname font-bold">{{ truncatedTrackName }}</span>
           </Tooltip>
         </template>
         <span class="separator">&nbsp;·&nbsp;</span>
@@ -21,8 +21,8 @@
           <ArtistList :artist-list="currentTrack.artists" feat />
         </span>
       </div>
-      <div class="album">
-        <router-link :to="`/album/${transformUriToid(currentTrack.album.uri)}`" class="link">
+      <div class="album font-italic">
+        <router-link :to="`/album/${transformUriToid(currentTrack.album.uri)}`" class="link font-italic">
           {{ currentTrack.album.name }}
         </router-link>
       </div>
@@ -53,10 +53,7 @@ const truncatedTrackName = computed(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "sass:color";
-@use "@/assets/scss/responsive" as responsive;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .cover {
   border-radius: 0.3rem;
@@ -78,7 +75,7 @@ const truncatedTrackName = computed(() => {
 
   .hover {
     align-items: center;
-    background-color: color.change(black, $alpha: 0.8);
+    background-color: rgb(0 0 0 / 80%);
     border-radius: 0.3rem;
     cursor: pointer;
     display: flex;
@@ -104,7 +101,7 @@ const truncatedTrackName = computed(() => {
     overflow: visible;
   }
 
-  @include responsive.tablet-down {
+  @media (--tablet-down) {
     display: flex;
     flex-direction: column;
     white-space: normal;
@@ -112,9 +109,7 @@ const truncatedTrackName = computed(() => {
 }
 
 .trackname {
-  @include font-bold;
-
-  @include responsive.mobile {
+  @media (--mobile) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -123,13 +118,13 @@ const truncatedTrackName = computed(() => {
 }
 
 .separator {
-  @include responsive.tablet-down {
+  @media (--tablet-down) {
     display: none;
   }
 }
 
 .artists {
-  @include responsive.mobile {
+  @media (--mobile) {
     font-size: var(--font-size-sm);
     opacity: 0.8;
     overflow: hidden;
@@ -140,9 +135,9 @@ const truncatedTrackName = computed(() => {
 }
 
 .artistname {
-  @include font-bold;
-
   color: currentcolor;
+  font-variation-settings: var(--font-variation-settings-bold);
+  font-weight: var(--font-weight-bold);
   text-decoration: none;
 }
 
@@ -150,9 +145,7 @@ const truncatedTrackName = computed(() => {
   font-size: var(--font-size-sm);
   opacity: 0.5;
 
-  @include font-italic;
-
-  @include responsive.mobile {
+  @media (--mobile) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -163,9 +156,6 @@ const truncatedTrackName = computed(() => {
     color: currentcolor;
     cursor: pointer;
     font-size: var(--font-size-sm);
-
-    @include font-italic;
-
     text-decoration: none;
 
     &:hover {
@@ -182,24 +172,24 @@ const truncatedTrackName = computed(() => {
   gap: 1rem;
   min-width: 0;
 
-  @include responsive.mobile {
+  @media (--mobile) {
     pointer-events: none;
   }
 
   img {
     height: 3rem;
 
-    @include responsive.mobile {
+    @media (--mobile) {
       height: 2.5rem;
     }
   }
 
-  @include responsive.mobile {
+  @media (--mobile) {
     gap: 0.6rem;
   }
 
   .cover-wrap {
-    @include responsive.mobile {
+    @media (--mobile) {
       display: none;
     }
   }

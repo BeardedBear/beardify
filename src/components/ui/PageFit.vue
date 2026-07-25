@@ -4,8 +4,7 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .fit {
   margin: 0 auto;

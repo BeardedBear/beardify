@@ -1,17 +1,17 @@
 <template>
   <aside v-if="hasContent" class="sidebar">
     <div v-if="details.length" class="sidebar-section">
-      <h3 class="sidebar-title">Details</h3>
+      <h3 class="sidebar-title font-bold">Details</h3>
       <div class="sidebar-list">
         <div v-for="item in details" :key="item.label" class="sidebar-item">
-          <span class="sidebar-label">{{ item.label }}</span>
+          <span class="sidebar-label font-bold">{{ item.label }}</span>
           <span class="sidebar-value">{{ item.value }}</span>
         </div>
       </div>
     </div>
 
     <div v-if="activeMembers.length || formerMembers.length" class="sidebar-section">
-      <h3 class="sidebar-title">Members</h3>
+      <h3 class="sidebar-title font-bold">Members</h3>
       <div v-if="activeMembers.length" class="sidebar-members">
         <MemberPopover
           v-for="member in activeMembers"
@@ -21,7 +21,7 @@
           :name="member.name"
           :thumbnail="member.thumbnail"
         >
-          <a :href="member.url" class="sidebar-member" target="_blank" rel="noopener noreferrer">
+          <a :href="member.url" class="sidebar-member font-bold" target="_blank" rel="noopener noreferrer">
             <img v-if="member.thumbnail" :src="member.thumbnail" :alt="member.name" class="member-thumbnail" />
             <div v-else class="member-placeholder">
               <i class="icon-user" />
@@ -32,7 +32,7 @@
       </div>
 
       <template v-if="formerMembers.length">
-        <h4 class="sidebar-subtitle">Former</h4>
+        <h4 class="sidebar-subtitle font-bold">Former</h4>
         <div class="sidebar-members">
           <MemberPopover
             v-for="member in formerMembers"
@@ -42,7 +42,7 @@
             :name="member.name"
             :thumbnail="member.thumbnail"
           >
-            <a :href="member.url" class="sidebar-member inactive" target="_blank" rel="noopener noreferrer">
+            <a :href="member.url" class="sidebar-member inactive font-bold" target="_blank" rel="noopener noreferrer">
               <img v-if="member.thumbnail" :src="member.thumbnail" :alt="member.name" class="member-thumbnail" />
               <div v-else class="member-placeholder">
                 <i class="icon-user" />
@@ -55,7 +55,7 @@
     </div>
 
     <div v-if="externalLinks.length" class="sidebar-section">
-      <h3 class="sidebar-title">External Links</h3>
+      <h3 class="sidebar-title font-bold">External Links</h3>
       <div class="sidebar-links">
         <a
           v-for="link in externalLinks"
@@ -183,13 +183,12 @@ const hasContent = computed(
 );
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
-
-$radius: 0.5rem;
-$margin: 0.2rem;
+<style scoped>
 
 .sidebar {
+  --sidebar-radius: 0.5rem;
+  --sidebar-margin: 0.2rem;
+
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -197,23 +196,19 @@ $margin: 0.2rem;
 
 .sidebar-section {
   background: var(--bg-color);
-  border-radius: calc($radius + $margin);
+  border-radius: calc(var(--sidebar-radius) + var(--sidebar-margin));
 }
 
 .sidebar-title {
-  @include font-bold;
-
   background-color: var(--bg-color-light);
-  border-radius: $radius $radius 0 0;
+  border-radius: var(--sidebar-radius) var(--sidebar-radius) 0 0;
   font-size: var(--font-size-base);
-  margin: $margin;
+  margin: var(--sidebar-margin);
   padding: 0.5rem 1rem;
   text-transform: uppercase;
 }
 
 .sidebar-subtitle {
-  @include font-bold;
-
   border-top: 1px solid var(--bg-color-light);
   margin: 0 1rem;
   opacity: 0.6;
@@ -236,9 +231,6 @@ $margin: 0.2rem;
 
 .sidebar-label {
   font-size: var(--font-size-sm);
-
-  @include font-bold;
-
   opacity: 0.6;
   text-transform: uppercase;
 }
@@ -298,9 +290,6 @@ $margin: 0.2rem;
   border-radius: 0.25rem;
   color: var(--font-color-light);
   display: flex;
-
-  @include font-bold;
-
   gap: 0.5rem;
   padding: 0.4rem 0.5rem;
   position: relative;

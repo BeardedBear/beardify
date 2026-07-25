@@ -17,8 +17,8 @@
     <div>
       <div v-if="authStore.me !== null">
         <div class="avatar" @click="configStore.open()">
-          <Cover :images="authStore.me?.images" class="avatar-image" size="large" />
-          <i class="icon icon-chevron-down" />
+          <Cover :images="authStore.me?.images" class="avatar-image squircle" size="large" />
+          <i class="icon icon-chevron-down font-bold" />
         </div>
         <Config />
       </div>
@@ -42,9 +42,7 @@ const configStore = useConfig();
 const dialogStore = useDialog();
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .topbar {
   align-items: center;
@@ -56,7 +54,7 @@ const dialogStore = useDialog();
 }
 
 .navigation {
-  $radius: 1rem;
+  --navigation-radius: 1rem;
 
   display: flex;
   margin-left: 1rem;
@@ -65,11 +63,11 @@ const dialogStore = useDialog();
 
   button {
     &:first-of-type {
-      border-radius: $radius 0 0 $radius;
+      border-radius: var(--navigation-radius) 0 0 var(--navigation-radius);
     }
 
     &:last-of-type {
-      border-radius: 0 $radius $radius 0;
+      border-radius: 0 var(--navigation-radius) var(--navigation-radius) 0;
     }
   }
 }
@@ -85,32 +83,27 @@ const dialogStore = useDialog();
     transform: scale(1.15);
   }
 
-  &-image {
-    $size: 2rem;
-
-    border-radius: $size;
-    display: block;
-    height: $size;
-    width: $size;
-
-    @include squircle;
-  }
-
   .icon {
-    $offset: -0.3rem;
+    --icon-offset: -0.3rem;
 
     background-color: var(--font-color);
     border: 0.2rem solid var(--bg-color);
     border-radius: 2rem;
-    bottom: $offset;
+    bottom: var(--icon-offset);
     color: var(--bg-color);
     font-size: var(--font-size-xs);
-
-    @include font-bold;
-
     position: absolute;
-    right: $offset;
+    right: var(--icon-offset);
   }
+}
+
+.avatar-image {
+  --avatar-image-size: 2rem;
+
+  border-radius: var(--avatar-image-size);
+  display: block;
+  height: var(--avatar-image-size);
+  width: var(--avatar-image-size);
 }
 
 .logo {
@@ -129,8 +122,8 @@ const dialogStore = useDialog();
 
   a {
     color: var(--bg-color-light);
-
-    @include font-bold;
+    font-variation-settings: var(--font-variation-settings-bold);
+    font-weight: var(--font-weight-bold);
 
     &.router-link-exact-active {
       color: var(--primary-color);

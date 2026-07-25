@@ -24,9 +24,7 @@ const artistStore = useArtist();
 const compilationGroups = computed(() => groupAlbumVariants(artistStore.albumsCompilation));
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/responsive" as responsive;
+<style scoped>
 
 .albums {
   display: grid;

@@ -12,8 +12,8 @@ ref="wrapperRef" v-motion :initial="{ scale: 0.8, opacity: 0, y: 30 }"
       <div v-if="preContent" class="pre-content">
         <slot name="pre-content" />
       </div>
-      <div class="dialog-content">
-        <div v-if="withTitle" class="head">
+      <div class="dialog-content squircle">
+        <div v-if="withTitle" class="head font-bold squircle">
           <div>{{ title }}</div>
           <div class="head-buttons">
             <ButtonIndex v-if="withMinimize" no-default-class class="minimize" @click="handleMinimize">
@@ -99,12 +99,7 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/colors" as colors;
-@use "@/assets/scss/mixins" as *;
-@use "@/assets/scss/responsive" as responsive;
-
-$radius: 2rem;
+<style scoped>
 
 .head-buttons {
   display: flex;
@@ -121,11 +116,12 @@ $radius: 2rem;
   border: 0;
   border-radius: 1rem;
   color: currentcolor;
+
+  /* stylelint-disable-next-line property-no-unknown */
+  corner-shape: squircle;
   cursor: pointer;
   font-size: var(--font-size-base);
   padding: 0.4rem 0.5rem;
-
-  @include squircle;
 
   &:hover {
     background-color: var(--bg-color);
@@ -176,11 +172,8 @@ $radius: 2rem;
 }
 
 .head {
-  @include font-bold;
-  @include squircle;
-
   background-color: var(--bg-color-light);
-  border-radius: $radius $radius 0 0;
+  border-radius: var(--dialog-radius) var(--dialog-radius) 0 0;
   font-size: var(--font-size-base);
   padding: 1rem 1.5rem;
   position: relative;
@@ -235,14 +228,14 @@ $radius: 2rem;
 }
 
 .dialog-content {
+  --dialog-radius: 2rem;
+
   background: var(--bg-color);
-  border-radius: $radius;
+  border-radius: var(--dialog-radius);
   box-shadow: 0 1rem 1rem rgb(0 0 0 / 10%);
   display: grid;
   grid-template-rows: auto 1fr;
   position: relative;
-
-  @include squircle;
 }
 
 .content {
@@ -256,7 +249,7 @@ $radius: 2rem;
     max-width: 80vw;
     width: 80vw;
 
-    @include responsive.mobile {
+    @media (--mobile) {
       height: 95dvh;
       max-height: 95dvh;
     }

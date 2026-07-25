@@ -1,5 +1,5 @@
 <template>
-  <div ref="selectRef" class="custom-select" :class="{ open: isOpen, disabled }">
+  <div ref="selectRef" class="custom-select font-bold" :class="{ open: isOpen, disabled }">
     <!-- Hidden sizer to determine minimum width based on longest option -->
     <div class="select-sizer" aria-hidden="true">
       <span v-for="option in options" :key="option.value" class="sizer-option">
@@ -8,7 +8,7 @@
       <span class="sizer-option">{{ placeholder }}</span>
     </div>
 
-    <button type="button" class="select-trigger" :disabled="disabled" @click="toggle">
+    <button type="button" class="select-trigger font-bold" :disabled="disabled" @click="toggle">
       <span class="select-value">{{ displayValue }}</span>
       <i class="icon-chevron-down" />
     </button>
@@ -93,12 +93,9 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-@use "@/assets/scss/mixins" as *;
+<style scoped>
 
 .custom-select {
-  @include font-bold;
-
   display: inline-flex;
   flex-direction: column;
   max-width: 60%;
@@ -126,8 +123,6 @@ onBeforeUnmount(() => {
 }
 
 .select-trigger {
-  @include font-bold;
-
   align-items: center;
   background-color: var(--bg-color-lighter);
   border: none;
