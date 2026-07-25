@@ -51,7 +51,7 @@ export function socialLinksFromDiscogs(urls: string[] | undefined): SocialLink[]
   const links: SocialLink[] = [];
   if (!urls) return links;
   for (const rawUrl of urls) {
-    const url = extractUrl(rawUrl) || rawUrl;
+    const url = extractUrl(rawUrl);
     if (!url) continue;
     if (url.includes("discogs.com")) continue;
     const detected = detectSocialLinkFromUrl(url);
@@ -70,7 +70,7 @@ export function socialLinksFromMusicBrainz(
   for (const rel of relations) {
     const resource = rel?.url?.resource;
     if (!resource) continue;
-    const url = extractUrl(resource) || resource;
+    const url = extractUrl(resource);
     if (!url) continue;
     if (url.includes("musicbrainz.org")) continue;
     const detected = detectSocialLinkFromUrl(url);

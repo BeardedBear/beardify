@@ -28,7 +28,7 @@ export const useSearch = defineStore("search", {
     async search() {
       try {
         const searchResults = await instance().get<SearchFromAPI>(
-          `search?q=${this.query}&type=artist%2Calbum%2Ctrack%2Cshow`,
+          `search?q=${encodeURIComponent(this.query)}&type=artist%2Calbum%2Ctrack%2Cshow`,
         );
         this.artists = searchResults.data.artists.items.slice(0, 6);
         this.albums = searchResults.data.albums.items.filter((album: Album) => !isSingle(album)).slice(0, 6);

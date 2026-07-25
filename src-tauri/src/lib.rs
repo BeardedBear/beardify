@@ -18,6 +18,12 @@ fn set_play_state(_app: AppHandle, is_playing: bool) -> Result<(), String> {
 // intercepts and forwards to the Vue router via setupDeepLink in tauriBootstrap.ts.
 #[tauri::command]
 fn open_spotify_auth(_app: AppHandle, url: String) -> Result<(), String> {
+    // ShellExecuteW("open", ...) launches executables, .lnk and UNC paths, not just URLs,
+    // and custom commands bypass the opener plugin's URL scope. Only the auth page is allowed.
+    if !url.starts_with("https://accounts.spotify.com/authorize?") {
+        return Err("refused: not a Spotify authorization URL".into());
+    }
+
     #[cfg(windows)]
     {
         use windows::Win32::UI::Shell::ShellExecuteW;

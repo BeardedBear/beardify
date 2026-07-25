@@ -1,6 +1,6 @@
 import vue from "@vitejs/plugin-vue";
 import { copyFileSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { basename, join } from "node:path";
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 
@@ -42,7 +42,9 @@ export default defineConfig({
       configureServer(server): void {
         server.middlewares.use("/flags/", (req, res, next) => {
           try {
-            const file = resolve("node_modules/flag-icons/flags/4x3", req.url?.slice(1) ?? "");
+            // basename() keeps the lookup inside the flat flags dir: resolve() would have
+            // let an absolute request path ("/flags//etc/passwd") escape the base entirely.
+            const file = join("node_modules/flag-icons/flags/4x3", basename(req.url ?? ""));
             const content = readFileSync(file);
             res.setHeader("Content-Type", "image/svg+xml");
             res.end(content);
