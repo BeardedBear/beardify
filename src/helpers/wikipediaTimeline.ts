@@ -204,6 +204,20 @@ function findDedicatedMembersPage(wikitext: string): null | string {
 }
 
 /**
+ * Split an EasyTimeline line into its `key:value` attributes (quoted values kept whole).
+ */
+function parseAttrs(line: string): Record<string, string> {
+  const attrs: Record<string, string> = {};
+  const re = /(\w+):("[^"]*"|\S+)/g;
+  let match: null | RegExpExecArray;
+  while ((match = re.exec(line)) !== null) {
+    const key = match[1].toLowerCase();
+    if (!(key in attrs)) attrs[key] = match[2].replace(/^"|"$/g, "");
+  }
+  return attrs;
+}
+
+/**
  * Fallback parser: extract member timelines from a Wikipedia "Band members" section
  * when no EasyTimeline block is present. Handles lines like:
  *   * [[Name|Display]] – instruments (2007–present)
@@ -320,11 +334,27 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
 
   const colors: Record<string, WikiTimelineColor> = {};
   const bars: WikiTimelineBar[] = [];
-  const segments: WikiTimelineSegment[] = [];
   const events: WikiTimelineEvent[] = [];
+  // Raw widths kept aside: "thin" is relative to the widest plotted bar, which the DSL
+  // only makes known once every line has been read.
+  const plotted: { seg: WikiTimelineSegment; width: number }[] = [];
+
+  // EasyTimeline is stateful: inside PlotData / LineData a line carrying only `color:` or
+  // `width:` sets the default for every following entry that omits them.
+  let section = "";
+  let defaultColor = "";
+  let defaultWidth = DEFAULT_BAR_WIDTH;
 
   for (const rawLine of lines) {
     const line = rawLine.trim();
+
+    const sectionMatch = line.match(/^(\w+)\s*=/);
+    if (sectionMatch) {
+      section = sectionMatch[1].toLowerCase();
+      defaultColor = "";
+      defaultWidth = DEFAULT_BAR_WIDTH;
+      continue;
+    }
 
     const colorMatch = line.match(/^id:(\S+)\s+value:(\S+(?:\([^)]*\))?)(?:\s+legend:(\S+))?/);
     if (colorMatch) {
@@ -340,31 +370,45 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
       continue;
     }
 
-    const plotMatch = line.match(/^bar:(\S+)\s+from:(\S+)\s+till:(\S+)\s+color:(\S+)(?:\s+width:(\d+))?/);
-    if (plotMatch) {
-      const [, barId, from, till, colorId, width] = plotMatch;
-      const fromYear = toFractionalYear(from, format, range);
-      const tillYear = toFractionalYear(till, format, range);
-      const openEnded = till === "end" || till.includes("#time");
-      if (fromYear !== null && tillYear !== null) {
-        segments.push({
-          barId,
-          colorId: colorId.toLowerCase(),
-          from: fromYear,
-          openEnded,
-          thin: width !== undefined && parseInt(width, 10) < DEFAULT_BAR_WIDTH,
-          till: tillYear,
-        });
-      }
+    if (section !== "plotdata" && section !== "linedata") continue;
+
+    const attrs = parseAttrs(line);
+
+    // No entry key on the line: it only carries defaults for the entries below it.
+    if (attrs.bar === undefined && attrs.at === undefined) {
+      if (attrs.color) defaultColor = attrs.color.toLowerCase();
+      if (attrs.width) defaultWidth = parseInt(attrs.width, 10);
       continue;
     }
 
-    const eventMatch = line.match(/^at:(\S+)\s+color:(\S+)/);
-    if (eventMatch) {
-      const date = toFractionalYear(eventMatch[1], format, range);
-      if (date !== null) events.push({ colorId: eventMatch[2].toLowerCase(), date });
+    const colorId = (attrs.color ?? defaultColor).toLowerCase();
+
+    if (attrs.at !== undefined) {
+      const date = toFractionalYear(attrs.at, format, range);
+      if (date !== null && colorId) events.push({ colorId, date });
+      continue;
     }
+
+    if (attrs.from === undefined || attrs.till === undefined) continue;
+    const fromYear = toFractionalYear(attrs.from, format, range);
+    const tillYear = toFractionalYear(attrs.till, format, range);
+    if (fromYear === null || tillYear === null) continue;
+
+    plotted.push({
+      seg: {
+        barId: attrs.bar,
+        colorId,
+        from: fromYear,
+        openEnded: attrs.till === "end" || attrs.till.includes("#time"),
+        thin: false,
+        till: tillYear,
+      },
+      width: attrs.width ? parseInt(attrs.width, 10) : defaultWidth,
+    });
   }
+
+  const maxWidth = Math.max(...plotted.map((p) => p.width), 0);
+  const segments = plotted.map(({ seg, width }) => ({ ...seg, thin: width < maxWidth }));
 
   if (bars.length === 0 || segments.length === 0) return null;
 
