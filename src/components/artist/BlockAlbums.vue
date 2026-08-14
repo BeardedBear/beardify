@@ -1,11 +1,21 @@
 <template>
   <div v-if="artistStore.albums.length" class="content-block">
-    <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
+    <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading album-heading">
       <i class="icon-album" />
       Albums
+      <ButtonIndex
+        v-if="canSortByPlays"
+        class="sort-button"
+        size="x-small"
+        variant="nude"
+        @click="sortByPlays = !sortByPlays"
+      >
+        {{ sortByPlays ? "Most played" : "Release date" }}
+        <i class="icon-arrow-down" />
+      </ButtonIndex>
     </div>
     <div class="albums">
-      <div v-for="group in albumGroups" :key="group.baseAlbum.id" class="album-slot">
+      <div v-for="group in sortedGroups" :key="group.baseAlbum.id" class="album-slot">
         <Tooltip v-if="rank(group)" :text="tooltipText(group)" class="rank-badge">
           <span class="rank-badge-bubble font-bold">{{ rank(group) }}</span>
         </Tooltip>
@@ -16,9 +26,10 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 import AlbumGroup from "@/components/album/AlbumGroup.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import Tooltip from "@/components/ui/Tooltip.vue";
 import { AlbumGroup as AlbumGroupType, getDisplayName, groupAlbumVariants } from "@/helpers/groupAlbumVariants";
 import { normalizeString } from "@/helpers/helper";
@@ -34,7 +45,32 @@ const MIN_HIGHLIGHTS = 3;
 
 const artistStore = useArtist();
 
+/** false = release date (default, newest first), true = Last.fm plays, most first. */
+const sortByPlays = ref(false);
+
 const albumGroups = computed(() => groupAlbumVariants(artistStore.albums));
+
+/** Same normalization as the Last.fm side, so both keys are built identically. */
+function lastfmRank(group: AlbumGroupType): number | undefined {
+  return artistStore.topAlbumRanks.get(normalizeString(getDisplayName(group.baseAlbum.name)));
+}
+
+const canSortByPlays = computed(() => artistStore.topAlbumRanks.size > 0);
+
+/**
+ * `groupAlbumVariants` already returns newest-first, so the default mode reuses
+ * that order untouched. Albums Last.fm doesn't rank keep their date order at the
+ * bottom: an unknown play count is not a low one, and sinking them beats
+ * interleaving them arbitrarily.
+ */
+const sortedGroups = computed(() => {
+  if (!sortByPlays.value) return albumGroups.value;
+
+  const ranked = albumGroups.value.filter((group) => lastfmRank(group) !== undefined);
+  const unranked = albumGroups.value.filter((group) => lastfmRank(group) === undefined);
+
+  return [...ranked.sort((a, b) => (lastfmRank(a) as number) - (lastfmRank(b) as number)), ...unranked];
+});
 
 const highlightCount = computed(() =>
   Math.max(MIN_HIGHLIGHTS, Math.round(albumGroups.value.length / ALBUMS_PER_HIGHLIGHT)),
@@ -46,12 +82,7 @@ const highlightCount = computed(() =>
  * live in their own blocks, so raw ranks would leave gaps (a lone #2 and #5).
  */
 const highlights = computed(() => {
-  const ranks = artistStore.topAlbumRanks;
-  if (!ranks.size) return new Map<string, number>();
-
-  // Same normalization as the Last.fm side, so both keys are built identically.
-  const lastfmRank = (group: AlbumGroupType): number | undefined =>
-    ranks.get(normalizeString(getDisplayName(group.baseAlbum.name)));
+  if (!canSortByPlays.value) return new Map<string, number>();
 
   return new Map(
     albumGroups.value
@@ -72,6 +103,17 @@ const tooltipText = (group: AlbumGroupType): string =>
 </script>
 
 <style scoped>
+
+.album-heading {
+  align-items: center;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.sort-button {
+  margin-left: auto;
+  text-transform: none;
+}
 
 .albums {
   display: grid;
