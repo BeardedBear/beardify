@@ -12,6 +12,7 @@ import {
   processDiscogsReleases,
 } from "@/helpers/discogs";
 import { normalizeString } from "@/helpers/helper";
+import { getTopAlbumRanks } from "@/helpers/lastfm";
 import { isInLibrary, removeFromLibrary, saveToLibrary } from "@/helpers/library";
 import {
   buildBaseTitleMap,
@@ -168,6 +169,7 @@ export const useArtist = defineStore("artist", {
       this.wikipediaLanguage = "en";
       this.wikiTimeline = null;
       this.topTracks = { tracks: [] };
+      this.topAlbumRanks = new Map();
       this.albums = [];
       this.albumsLive = [];
       this.albumsCompilation = [];
@@ -222,6 +224,14 @@ export const useArtist = defineStore("artist", {
         const { data } = await instance().get<Artist>(`artists/${artistId}`, { signal });
         if (signal.aborted) return;
         this.artist = data;
+
+        // Last.fm popularity ranking — independent of the MB/Wikidata chain below,
+        // so it must not delay it (nor be delayed by it).
+        // 30, not the ~3 badges shown: the list also holds compilations and live
+        // records (filed in their own blocks), and long careers badge more albums.
+        void getTopAlbumRanks(data.name, 30, signal).then((ranks) => {
+          if (!signal.aborted) this.topAlbumRanks = ranks;
+        });
 
         // Fetch external IDs and data (Spotify ID used for exact MusicBrainz match).
         // `getIds` starts the Wikidata chain itself, as soon as the id is known.
@@ -715,6 +725,7 @@ export const useArtist = defineStore("artist", {
     scrolledDown: false,
     singles: [],
     timelineLoading: false,
+    topAlbumRanks: new Map(),
     topTracks: { tracks: [] },
     wikidataArtist: null,
     wikidataId: null,
