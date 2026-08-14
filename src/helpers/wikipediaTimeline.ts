@@ -96,9 +96,13 @@ const MAIN_ARTICLE_TEMPLATES = [
 /**
  * Fetch and parse a Wikipedia band article's EasyTimeline members graph.
  * @param wikipediaUrl - Full Wikipedia URL (any language; English usually has the graph)
+ * @param signal - Aborts the requests when the caller moves on (e.g. artist navigation)
  * @returns The parsed timeline, or null when the article has no timeline block
  */
-export async function getWikipediaTimeline(wikipediaUrl: string): Promise<null | WikiTimeline> {
+export async function getWikipediaTimeline(
+  wikipediaUrl: string,
+  signal?: AbortSignal,
+): Promise<null | WikiTimeline> {
   try {
     const urlMatch = wikipediaUrl.match(/https?:\/\/(\w+)\.wikipedia\.org\/wiki\/(.+)/);
     if (!urlMatch) return null;
@@ -106,7 +110,7 @@ export async function getWikipediaTimeline(wikipediaUrl: string): Promise<null |
     const [, lang, encodedTitle] = urlMatch;
     const title = decodeURIComponent(encodedTitle);
 
-    const wikitext = await fetchWikitext(lang, title);
+    const wikitext = await fetchWikitext(lang, title, signal);
     if (!wikitext) return null;
 
     const ownBlock = extractTimelineBlock(wikitext);
@@ -118,7 +122,7 @@ export async function getWikipediaTimeline(wikipediaUrl: string): Promise<null |
     // article only links to it and lists a short (often incomplete) members summary. Prefer it.
     const dedicatedTitle = findDedicatedMembersPage(wikitext);
     if (dedicatedTitle) {
-      const dedicatedWikitext = await fetchWikitext(lang, dedicatedTitle);
+      const dedicatedWikitext = await fetchWikitext(lang, dedicatedTitle, signal);
       const dedicatedResult = dedicatedWikitext ? parseWikitextTimeline(dedicatedWikitext) : null;
       if (dedicatedResult) return dedicatedResult;
     }
@@ -159,7 +163,7 @@ function extractTimelineBlock(wikitext: string): null | string {
 }
 
 /** Fetch a Wikipedia article's raw wikitext via the parse API. */
-async function fetchWikitext(lang: string, title: string): Promise<null | string> {
+async function fetchWikitext(lang: string, title: string, signal?: AbortSignal): Promise<null | string> {
   const params = new URLSearchParams({
     action: "parse",
     format: "json",
@@ -169,7 +173,7 @@ async function fetchWikitext(lang: string, title: string): Promise<null | string
     prop: "wikitext",
   });
 
-  const response = await http.get(`https://${lang}.wikipedia.org/w/api.php?${params.toString()}`);
+  const response = await http.get(`https://${lang}.wikipedia.org/w/api.php?${params.toString()}`, { signal });
   const data = await response.json<{ parse?: { wikitext?: string } }>();
   return data.parse?.wikitext ?? null;
 }
@@ -211,8 +215,7 @@ function parseAttrs(line: string): Record<string, string> {
   const re = /(\w+):("[^"]*"|\S+)/g;
   let match: null | RegExpExecArray;
   while ((match = re.exec(line)) !== null) {
-    const key = match[1].toLowerCase();
-    if (!(key in attrs)) attrs[key] = match[2].replace(/^"|"$/g, "");
+    attrs[match[1].toLowerCase()] = match[2].replace(/^"|"$/g, "");
   }
   return attrs;
 }
@@ -337,7 +340,7 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
   const events: WikiTimelineEvent[] = [];
   // Raw widths kept aside: "thin" is relative to the widest plotted bar, which the DSL
   // only makes known once every line has been read.
-  const plotted: { seg: WikiTimelineSegment; width: number }[] = [];
+  const plotted: { seg: Omit<WikiTimelineSegment, "thin">; width: number }[] = [];
 
   // EasyTimeline is stateful: inside PlotData / LineData a line carrying only `color:` or
   // `width:` sets the default for every following entry that omits them.
@@ -400,7 +403,6 @@ function parseEasyTimeline(block: string): null | WikiTimeline {
         colorId,
         from: fromYear,
         openEnded: attrs.till === "end" || attrs.till.includes("#time"),
-        thin: false,
         till: tillYear,
       },
       width: attrs.width ? parseInt(attrs.width, 10) : defaultWidth,

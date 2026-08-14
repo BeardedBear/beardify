@@ -336,16 +336,31 @@ const wikidataClient = http.extend({
 });
 
 /**
+ * Entity requests currently in flight, keyed by entity id.
+ *
+ * `getWikidataArtist` and `getWikidataBandMembers` are called together for the same band and
+ * read the same document, which Wikidata serves as `must-revalidate, max-age=0` — so without
+ * this the payload (several hundred KB for a large band) is downloaded and parsed twice on
+ * every artist page. Entries clear as soon as the request settles: this shares concurrent
+ * callers, it is not a cache. Callers are expected to share one abort signal, since the first
+ * one's signal is the one the shared request carries.
+ */
+const inFlightEntities = new Map<string, Promise<Record<string, WikidataEntity>>>();
+
+/**
  * Get artist data from Wikidata by entity ID
  * @param entityId - The Wikidata entity ID (e.g., Q483)
+ * @param signal - Aborts the request when the caller moves on (e.g. artist navigation)
  * @returns Promise resolving to WikidataArtist or null
  */
-export async function getWikidataArtist(entityId: string): Promise<null | WikidataArtist> {
+export async function getWikidataArtist(
+  entityId: string,
+  signal?: AbortSignal,
+): Promise<null | WikidataArtist> {
   try {
-    const response = await wikidataClient.get(`${WIKIDATA_ENTITY_URL}${entityId}.json`);
-    const data = await response.json<{ entities: Record<string, WikidataEntity> }>();
+    const entities = await fetchWikidataEntities(entityId, signal);
 
-    const entity = data.entities[entityId];
+    const entity = entities[entityId];
     if (!entity) {
       return null;
     }
@@ -362,13 +377,16 @@ export async function getWikidataArtist(entityId: string): Promise<null | Wikida
  * start/end time qualifiers. Member names and instruments are resolved
  * through batched wbgetentities calls (no WDQS / SPARQL dependency).
  * @param entityId - The Wikidata entity ID of the band (e.g., Q15920)
+ * @param signal - Aborts the requests when the caller moves on (e.g. artist navigation)
  * @returns Promise resolving to band members, empty array when none
  */
-export async function getWikidataBandMembers(entityId: string): Promise<BandMember[]> {
+export async function getWikidataBandMembers(
+  entityId: string,
+  signal?: AbortSignal,
+): Promise<BandMember[]> {
   try {
-    const response = await wikidataClient.get(`${WIKIDATA_ENTITY_URL}${entityId}.json`);
-    const data = await response.json<{ entities: Record<string, WikidataEntity> }>();
-    const statements = data.entities[entityId]?.claims?.[MEMBER_PROPERTIES.HAS_PART];
+    const entities = await fetchWikidataEntities(entityId, signal);
+    const statements = entities[entityId]?.claims?.[MEMBER_PROPERTIES.HAS_PART];
     if (!statements?.length) return [];
 
     // Extract member Q-ids and their start/end periods from the statements
@@ -390,6 +408,7 @@ export async function getWikidataBandMembers(entityId: string): Promise<BandMemb
     const memberEntities = await getWikidataEntities(
       partials.map((part) => part.id),
       "labels|claims",
+      signal,
     );
 
     const instrumentIds = new Set<string>();
@@ -413,7 +432,7 @@ export async function getWikidataBandMembers(entityId: string): Promise<BandMemb
     if (enriched.length === 0) return [];
 
     // Resolve instrument labels in a second batch
-    const instrumentLabels = await getWikidataEntities([...instrumentIds], "labels");
+    const instrumentLabels = await getWikidataEntities([...instrumentIds], "labels", signal);
 
     return enriched.map((member) => ({
       begin: member.begin,
@@ -433,9 +452,13 @@ export async function getWikidataBandMembers(entityId: string): Promise<BandMemb
 /**
  * Get Wikipedia article content (extract) from a Wikipedia URL
  * @param wikipediaUrl - The full Wikipedia URL
+ * @param signal - Aborts the request when the caller moves on (e.g. artist navigation)
  * @returns Promise resolving to the article extract HTML or null
  */
-export async function getWikipediaExtract(wikipediaUrl: string): Promise<null | string> {
+export async function getWikipediaExtract(
+  wikipediaUrl: string,
+  signal?: AbortSignal,
+): Promise<null | string> {
   try {
     // Extract language and title from URL
     // e.g., "https://en.wikipedia.org/wiki/Radiohead" -> lang: "en", title: "Radiohead"
@@ -456,7 +479,7 @@ export async function getWikipediaExtract(wikipediaUrl: string): Promise<null | 
       titles: title,
     });
 
-    const response = await http.get(`https://${lang}.wikipedia.org/w/api.php?${params.toString()}`);
+    const response = await http.get(`https://${lang}.wikipedia.org/w/api.php?${params.toString()}`, { signal });
     const data = (await response.json()) as {
       query?: {
         pages: Record<
@@ -545,6 +568,28 @@ function cleanWikipediaHtml(html: string): string {
 }
 
 /**
+ * Fetch a Wikidata entity document, joining a request already in flight for the same id.
+ * @param entityId - The Wikidata entity ID (e.g., Q483)
+ * @param signal - Aborts the request when the caller moves on (e.g. artist navigation)
+ */
+function fetchWikidataEntities(
+  entityId: string,
+  signal?: AbortSignal,
+): Promise<Record<string, WikidataEntity>> {
+  const pending = inFlightEntities.get(entityId);
+  if (pending) return pending;
+
+  const request = wikidataClient
+    .get(`${WIKIDATA_ENTITY_URL}${entityId}.json`, { signal })
+    .json<{ entities: Record<string, WikidataEntity> }>()
+    .then((data) => data.entities)
+    .finally(() => inFlightEntities.delete(entityId));
+
+  inFlightEntities.set(entityId, request);
+  return request;
+}
+
+/**
  * Extract all entity Q-ids referenced by a given property on an entity
  */
 function getClaimEntityIds(entity: WikidataEntity, property: string): string[] {
@@ -594,14 +639,17 @@ function getSnakEntityId(snak: WikidataSnak): null | string {
  * Batch-resolve Wikidata entities via wbgetentities (max 50 ids per request)
  * @param ids - Entity Q-ids to resolve
  * @param props - Comma-separated props (e.g. "labels|claims")
+ * @param signal - Aborts the requests when the caller moves on (e.g. artist navigation)
  */
 async function getWikidataEntities(
   ids: string[],
   props: string,
+  signal?: AbortSignal,
 ): Promise<Record<string, WikidataEntity>> {
   const result: Record<string, WikidataEntity> = {};
 
   for (let i = 0; i < ids.length; i += WBGETENTITIES_CHUNK) {
+    if (signal?.aborted) break;
     const chunk = ids.slice(i, i + WBGETENTITIES_CHUNK);
     if (chunk.length === 0) continue;
 
@@ -614,7 +662,7 @@ async function getWikidataEntities(
       props,
     });
 
-    const response = await wikidataClient.get(`${WIKIDATA_API_URL}?${params.toString()}`);
+    const response = await wikidataClient.get(`${WIKIDATA_API_URL}?${params.toString()}`, { signal });
     const data = await response.json<{ entities?: Record<string, WikidataEntity> }>();
     if (data.entities) Object.assign(result, data.entities);
   }

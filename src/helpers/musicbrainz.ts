@@ -132,12 +132,23 @@ interface MusicBrainzUrlLookup {
  */
 const musicbrainzClient = ky.create({
   baseUrl: MUSICBRAINZ_API_URL,
-  retry: {
-    limit: 1,
-    statusCodes: [429, 503],
-  },
+  // No client retry: ky retries inside the already-granted queue slot, unpaced, so a 429/503
+  // was re-fired within the very second the queue exists to protect. The queue below is the
+  // single owner of rate-limit policy; a failed request returns null and the caller moves on.
+  retry: { limit: 0 },
   timeout: 10000,
 });
+
+/**
+ * MusicBrainz allows ~1 request/s per IP for anonymous clients and answers 503 as soon as
+ * the rate is exceeded. Callers otherwise fire concurrently — artist search, id lookup and
+ * the paginated release-group browse all overlap, and a fast artist-to-artist navigation
+ * stacks several such chains — so every request goes through one queue that serializes and
+ * spaces them instead of each caller racing the limit on its own.
+ */
+const MIN_REQUEST_INTERVAL_MS = 1100;
+let requestQueue: Promise<unknown> = Promise.resolve();
+let lastRequestAt = 0;
 
 /**
  * Build a map of normalized base title (before subtitle separator) -> type.
@@ -294,39 +305,40 @@ export function extractExternalIds(artistFull: MusicBrainzArtist): {
 /**
  * Get Discogs ID, Wikidata ID and band members from MusicBrainz artist
  * @param musicbrainzId - The MusicBrainz ID of the artist
+ * @param signal - Aborts the request when the caller moves on (e.g. artist navigation)
  * @returns Promise resolving to the MusicBrainzArtist object with relations, or null
  */
 export async function getIdsFromMusicBrainz(
   musicbrainzId: string,
+  signal?: AbortSignal,
 ): Promise<MusicBrainzArtist | null> {
   return fetchFromMusicBrainz<MusicBrainzArtist>(`artist/${musicbrainzId}`, {
     inc: "artist-rels+url-rels",
-  });
+  }, signal);
 }
 
 /**
  * Browse all release-groups of a MusicBrainz artist (paginated, 100 per page).
  * @param musicbrainzId - The MusicBrainz ID of the artist
+ * @param signal - Aborts the request when the caller moves on (e.g. artist navigation)
  * @returns Promise resolving to every release-group, or an empty array on failure
  */
 export async function getMusicBrainzReleaseGroups(
   musicbrainzId: string,
+  signal?: AbortSignal,
 ): Promise<MusicBrainzReleaseGroup[]> {
   const PAGE_SIZE = 100;
-  // MB anonymous rate limit is ~1 req/s. Wait between pages to avoid 429s that
-  // would cause fetchFromMusicBrainz to return null and break the loop early.
-  const PAGE_DELAY_MS = 600;
   const all: MusicBrainzReleaseGroup[] = [];
   let offset = 0;
 
   for (;;) {
-    if (offset > 0) await sleep(PAGE_DELAY_MS);
-
+    // Page spacing and abort handling both live in the shared request queue: an aborted
+    // browse gets null back immediately and falls out through the check below.
     const data = await fetchFromMusicBrainz<MusicBrainzReleaseGroupBrowse>("release-group", {
       artist: musicbrainzId,
       limit: PAGE_SIZE,
       offset,
-    });
+    }, signal);
 
     // null means a fetch/network error — stop, don't confuse with an empty last page.
     if (data === null) break;
@@ -345,15 +357,17 @@ export async function getMusicBrainzReleaseGroups(
 /**
  * Search for artists by name in MusicBrainz
  * @param artistName - The name of the artist to search for
+ * @param signal - Aborts the request when the caller moves on (e.g. artist navigation)
  * @returns Promise resolving to all matching MusicBrainzArtist with the same name, or empty array
  */
 export async function searchMusicBrainzArtistId(
   artistName: string,
+  signal?: AbortSignal,
 ): Promise<MusicBrainzArtist[]> {
   const data = await fetchFromMusicBrainz<MusicBrainzArtistSearch>("artist", {
     limit: 10,
     query: `artist:"${artistName}"`,
-  });
+  }, signal);
 
   if (data && data.artists && data.artists.length > 0) {
     const normalizedSearchName = normalizeName(artistName);
@@ -369,15 +383,17 @@ export async function searchMusicBrainzArtistId(
  * Search for an artist by Spotify ID via MusicBrainz URL lookup.
  * This avoids homonym issues by matching the exact Spotify URL relationship.
  * @param spotifyId - The Spotify artist ID
+ * @param signal - Aborts the request when the caller moves on (e.g. artist navigation)
  * @returns Promise resolving to the MusicBrainzArtist or null
  */
 export async function searchMusicBrainzBySpotifyId(
   spotifyId: string,
+  signal?: AbortSignal,
 ): Promise<MusicBrainzArtist | null> {
   const data = await fetchFromMusicBrainz<MusicBrainzUrlLookup>("url", {
     inc: "artist-rels",
     resource: `https://open.spotify.com/artist/${spotifyId}`,
-  });
+  }, signal);
 
   if (data?.relations?.length) {
     const artistRel = data.relations.find(
@@ -390,6 +406,29 @@ export async function searchMusicBrainzBySpotifyId(
 }
 
 /**
+ * Run a MusicBrainz request once the queue reaches it and the spacing has elapsed.
+ * @param task - The request to run
+ * @param signal - Skips the slot entirely when the caller has already moved on
+ */
+function enqueue<T>(task: () => Promise<T>, signal?: AbortSignal): Promise<null | T> {
+  const scheduled = requestQueue.then(async (): Promise<null | T> => {
+    // Checked before waiting: an abandoned request must not hold the queue for a second.
+    if (signal?.aborted) return null;
+
+    const wait = lastRequestAt + MIN_REQUEST_INTERVAL_MS - Date.now();
+    if (wait > 0) await sleep(wait);
+    if (signal?.aborted) return null;
+
+    lastRequestAt = Date.now();
+    return task();
+  });
+
+  // The chain must survive a failed request, otherwise one rejection blocks every later one.
+  requestQueue = scheduled.then(() => undefined, () => undefined);
+  return scheduled;
+}
+
+/**
  * Generic fetch function for MusicBrainz API
  * @param path - API endpoint path
  * @param searchParams - Query parameters
@@ -398,16 +437,20 @@ export async function searchMusicBrainzBySpotifyId(
 async function fetchFromMusicBrainz<T>(
   path: string,
   searchParams: Record<string, number | string> = {},
+  signal?: AbortSignal,
 ): Promise<null | T> {
   try {
-    const response = await musicbrainzClient.get(path, {
-      searchParams: {
-        fmt: "json",
-        ...searchParams,
-      },
-    });
+    return await enqueue(async () => {
+      const response = await musicbrainzClient.get(path, {
+        searchParams: {
+          fmt: "json",
+          ...searchParams,
+        },
+        signal,
+      });
 
-    return await response.json<T>();
+      return await response.json<T>();
+    }, signal);
   } catch {
     return null;
   }

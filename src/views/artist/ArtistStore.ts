@@ -27,7 +27,7 @@ import { notification } from "@/helpers/notifications";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { cleanUrl } from "@/helpers/urls";
 import { isEP, useCheckCompilationAlbum, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
-import { getWikipediaExtract } from "@/helpers/wikidata";
+import { getWikidataArtist, getWikidataBandMembers, getWikipediaExtract } from "@/helpers/wikidata";
 
 interface DiscographySnapshot {
   albums: AlbumSimplified[];
@@ -44,6 +44,20 @@ interface DiscographySnapshot {
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const CACHE_MAX_ENTRIES = 10;
 const discographyCache = new Map<string, DiscographySnapshot>();
+
+/**
+ * Replaced (after `abort()`) by `clean()`, i.e. once per artist-page navigation.
+ *
+ * The external sources (MusicBrainz, Wikidata, Wikipedia, Discogs) are slow and
+ * rate-limited, so a response for the previous artist routinely lands after the next
+ * page has started loading. Aborting cuts those requests in flight — MusicBrainz allows
+ * ~1 req/s per IP, and a stale paginated browse otherwise eats the new artist's budget.
+ *
+ * Each action captures the signal on entry, hands it to its fetches, and re-checks
+ * `signal.aborted` after every await: a promise that already resolved still runs its
+ * continuation, so aborting alone does not prevent a stale write.
+ */
+let navigationController = new AbortController();
 
 interface ReleaseLookupMaps {
   baseTitles: Map<string, string>;
@@ -136,6 +150,8 @@ function lookupReleaseType(
 export const useArtist = defineStore("artist", {
   actions: {
     async clean() {
+      navigationController.abort();
+      navigationController = new AbortController();
       this.activeTab = "discography";
       this.artist = defaultArtist;
       this.bandMembers = [];
@@ -161,10 +177,12 @@ export const useArtist = defineStore("artist", {
     },
 
     async getAlbums(url: string) {
+      const { signal } = navigationController;
       try {
         const cleanedUrl = cleanUrl(url);
         const { data }
-          = await instance().get<Paging<AlbumSimplified>>(cleanedUrl);
+          = await instance().get<Paging<AlbumSimplified>>(cleanedUrl, { signal });
+        if (signal.aborted) return;
 
         const frenchMarketAlbums = data.items.filter((album) =>
           album.available_markets.includes("FR"),
@@ -199,27 +217,37 @@ export const useArtist = defineStore("artist", {
     },
 
     async getArtist(artistId: string) {
+      const { signal } = navigationController;
       try {
-        const { data } = await instance().get<Artist>(`artists/${artistId}`);
+        const { data } = await instance().get<Artist>(`artists/${artistId}`, { signal });
+        if (signal.aborted) return;
         this.artist = data;
 
-        // Fetch external IDs and data (Spotify ID used for exact MusicBrainz match)
+        // Fetch external IDs and data (Spotify ID used for exact MusicBrainz match).
+        // `getIds` starts the Wikidata chain itself, as soon as the id is known.
         await this.getIds(data.name, data.id);
+        if (signal.aborted) return;
 
-        if (this.wikidataId) {
-          this.getWikidataArtist(this.wikidataId);
-        }
+        // Single owner of the info-tab spinner: `getWikidataArtist` clears it in its own
+        // `finally` — so a Wikidata id means it is already running and owns the flag. Every
+        // other outcome (no Wikidata id, no MusicBrainz match, request failure) clears it
+        // here, otherwise the loader spins forever.
+        if (!this.wikidataId) this.timelineLoading = false;
       } catch {
+        if (signal.aborted) return;
         this.artist = defaultArtist;
+        this.timelineLoading = false;
         notification({ msg: "Unable to load this artist.", type: NotificationType.Error });
       }
     },
 
     async getCompilations(url: string) {
+      const { signal } = navigationController;
       try {
         const cleanedUrl = cleanUrl(url);
         const { data }
-          = await instance().get<Paging<AlbumSimplified>>(cleanedUrl);
+          = await instance().get<Paging<AlbumSimplified>>(cleanedUrl, { signal });
+        if (signal.aborted) return;
 
         const frenchMarketAlbums = data.items.filter((album) =>
           album.available_markets.includes("FR"),
@@ -247,31 +275,36 @@ export const useArtist = defineStore("artist", {
     },
 
     async getDiscogsArtist(discogsId: string) {
+      const { signal } = navigationController;
       try {
-        const artist = await getDiscogsArtist(discogsId);
+        const artist = await getDiscogsArtist(discogsId, signal);
+        if (signal.aborted) return;
         this.discogsArtist = artist;
 
         if (artist) {
           await this.getDiscogsReleases(discogsId);
         }
       } catch {
-        this.discogsArtist = null;
+        if (!signal.aborted) this.discogsArtist = null;
       }
     },
 
     async getDiscogsReleases(discogsId: string) {
+      const { signal } = navigationController;
       try {
-        const firstPage = await getDiscogsArtistReleases(discogsId);
-        if (!firstPage) return;
+        const firstPage = await getDiscogsArtistReleases(discogsId, 1, signal);
+        if (!firstPage || signal.aborted) return;
 
         const allReleases = [...firstPage.releases];
 
         // Fetch a second page if available (200 releases total) so older albums
         // — whose release entries are sorted by year desc — are also covered.
         if (firstPage.pagination.pages > 1) {
-          const secondPage = await getDiscogsArtistReleases(discogsId, 2);
+          const secondPage = await getDiscogsArtistReleases(discogsId, 2, signal);
           if (secondPage?.releases) allReleases.push(...secondPage.releases);
         }
+
+        if (signal.aborted) return;
 
         // MusicBrainz is the primary source and must win, so Discogs only fills
         // in keys MusicBrainz didn't provide (existing entries take precedence).
@@ -286,14 +319,17 @@ export const useArtist = defineStore("artist", {
     },
 
     async getFollowStatus(artistId: string) {
+      const { signal } = navigationController;
       try {
-        this.followStatus = await isInLibrary("artist", artistId);
+        const status = await isInLibrary("artist", artistId);
+        if (!signal.aborted) this.followStatus = status;
       } catch {
         // silent fail
       }
     },
 
     async getIds(artistName: string, spotifyId?: string) {
+      const { signal } = navigationController;
       this.musicbrainzArtist = null;
       this.bandMembers = [];
       this.discogsId = null;
@@ -303,18 +339,18 @@ export const useArtist = defineStore("artist", {
       try {
         // Search by name first; if multiple homonyms found and Spotify ID available,
         // use Spotify URL lookup for exact match
-        const nameResults = await searchMusicBrainzArtistId(artistName);
+        const nameResults = await searchMusicBrainzArtistId(artistName, signal);
         const artist
           = nameResults.length === 1
             ? nameResults[0]
             : nameResults.length > 1 && spotifyId
-              ? ((await searchMusicBrainzBySpotifyId(spotifyId)) ?? nameResults[0])
+              ? ((await searchMusicBrainzBySpotifyId(spotifyId, signal)) ?? nameResults[0])
               : nameResults[0] ?? null;
 
         if (!artist?.id) return;
 
-        const artistFull = await getIdsFromMusicBrainz(artist.id);
-        if (!artistFull) return;
+        const artistFull = await getIdsFromMusicBrainz(artist.id, signal);
+        if (!artistFull || signal.aborted) return;
 
         this.musicbrainzArtist = { ...artist, ...artistFull };
         this.bandMembers = extractBandMembers(artistFull);
@@ -334,32 +370,39 @@ export const useArtist = defineStore("artist", {
           this.discogsArtist = null;
         }
 
-        // Update wikidata fields: set or clear; clear related data when absent
+        // Update wikidata fields: set or clear; clear related data when absent.
+        // Started here rather than after `getIds` returns: Wikidata and Wikipedia are
+        // unrelated hosts, so making the info tab wait on the MusicBrainz release-group
+        // pagination (now paced at ~1.1s per page) below buys nothing. Not awaited — the
+        // discography must not block on it, and it owns `timelineLoading` on its own.
         if (wikidataId) {
           this.wikidataId = wikidataId;
+          void this.getWikidataArtist(wikidataId);
         } else {
           this.wikidataId = null;
           this.wikidataArtist = null;
           this.wikipediaExtract = null;
-          this.timelineLoading = false;
         }
 
         this.reclassifying = true;
         await Promise.all(classification);
       } catch {
+        if (signal.aborted) return;
         this.discogsId = null;
         this.wikidataId = null;
-        this.timelineLoading = false;
       } finally {
-        this.reclassifying = false;
+        if (!signal.aborted) this.reclassifying = false;
       }
     },
 
     async getRelatedArtists(artistId: string) {
+      const { signal } = navigationController;
       try {
         const { data } = await instance().get<RelatedArtists>(
           `artists/${artistId}/related-artists`,
+          { signal },
         );
+        if (signal.aborted) return;
         this.relatedArtists.artists = data.artists.slice(0, 15);
       } catch {
         // silent fail
@@ -367,9 +410,10 @@ export const useArtist = defineStore("artist", {
     },
 
     async getReleaseGroups(musicbrainzId: string) {
+      const { signal } = navigationController;
       try {
-        const groups = await getMusicBrainzReleaseGroups(musicbrainzId);
-        if (!groups.length) return;
+        const groups = await getMusicBrainzReleaseGroups(musicbrainzId, signal);
+        if (!groups.length || signal.aborted) return;
 
         // MusicBrainz wins over any Discogs data already present.
         this.releaseTypes = new Map([
@@ -387,10 +431,13 @@ export const useArtist = defineStore("artist", {
     },
 
     async getSingles(artistId: string) {
+      const { signal } = navigationController;
       try {
         const { data } = await instance().get<Paging<AlbumSimplified>>(
           `artists/${artistId}/albums?market=FR&include_groups=single&limit=50`,
+          { signal },
         );
+        if (signal.aborted) return;
 
         const onlySingles: AlbumSimplified[] = [];
         const onlyEps: AlbumSimplified[] = [];
@@ -430,10 +477,13 @@ export const useArtist = defineStore("artist", {
     },
 
     async getTopTracks(artistId: string) {
+      const { signal } = navigationController;
       try {
         const { data } = await instance().get<ArtistTopTracks>(
           `artists/${artistId}/top-tracks?market=FR`,
+          { signal },
         );
+        if (signal.aborted) return;
         this.topTracks = data;
       } catch {
         // silent fail
@@ -442,15 +492,16 @@ export const useArtist = defineStore("artist", {
 
     async getWikidataArtist(wikidataArtistId: string): Promise<void> {
       if (!wikidataArtistId) return;
+      const { signal } = navigationController;
       try {
-        const { getWikidataArtist, getWikidataBandMembers } = await import("@/helpers/wikidata");
         const { mergeBandMembers } = await import("@/helpers/bandMembers");
 
         // Artist info and member list are independent — fetch in parallel
         const [wikidataArtist, wikidataMembers] = await Promise.all([
-          getWikidataArtist(wikidataArtistId),
-          getWikidataBandMembers(wikidataArtistId),
+          getWikidataArtist(wikidataArtistId, signal),
+          getWikidataBandMembers(wikidataArtistId, signal),
         ]);
+        if (signal.aborted) return;
         this.wikidataArtist = wikidataArtist;
         this.bandMembers = mergeBandMembers(wikidataMembers, this.bandMembers);
 
@@ -465,21 +516,24 @@ export const useArtist = defineStore("artist", {
         // Timeline and extract both depend on wikidataArtist but are independent of each other
         const timelinePromise = wikipediaUrl
           ? import("@/helpers/wikipediaTimeline").then(({ getWikipediaTimeline }) =>
-              getWikipediaTimeline(wikipediaUrl),
+              getWikipediaTimeline(wikipediaUrl, signal),
             )
           : Promise.resolve(null);
-        const extractPromise = selectedLang ? getWikipediaExtract(selectedLang.url) : Promise.resolve(null);
+        const extractPromise = selectedLang
+          ? getWikipediaExtract(selectedLang.url, signal)
+          : Promise.resolve(null);
 
         const [newTimeline, extract] = await Promise.all([timelinePromise, extractPromise]);
+        if (signal.aborted) return;
         this.wikiTimeline = newTimeline;
         if (selectedLang) {
           this.wikipediaLanguage = selectedLang.code;
           this.wikipediaExtract = extract;
         }
       } catch {
-        this.wikidataArtist = null;
+        if (!signal.aborted) this.wikidataArtist = null;
       } finally {
-        this.timelineLoading = false;
+        if (!signal.aborted) this.timelineLoading = false;
       }
     },
 
@@ -629,8 +683,10 @@ export const useArtist = defineStore("artist", {
     },
 
     async switchWikipediaLanguage(url: string, languageCode: string) {
+      const { signal } = navigationController;
       this.wikipediaLanguage = languageCode;
-      this.wikipediaExtract = await getWikipediaExtract(url);
+      const extract = await getWikipediaExtract(url, signal);
+      if (!signal.aborted) this.wikipediaExtract = extract;
     },
 
     updateHeaderHeight(height: number) {

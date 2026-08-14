@@ -51,10 +51,14 @@ const discogsClient = ky.create({
 /**
  * Get artist data from Discogs
  * @param discogsId - The Discogs ID of the artist
+ * @param signal - Aborts the request when the caller moves on (e.g. artist navigation)
  * @returns Promise resolving to the full DiscogsArtist object or null
  */
-export async function getDiscogsArtist(discogsId: string): Promise<DiscogsArtist | null> {
-  return fetchFromDiscogs<DiscogsArtist>(`artists/${discogsId}`);
+export async function getDiscogsArtist(
+  discogsId: string,
+  signal?: AbortSignal,
+): Promise<DiscogsArtist | null> {
+  return fetchFromDiscogs<DiscogsArtist>(`artists/${discogsId}`, undefined, signal);
 }
 
 /**
@@ -66,20 +70,21 @@ const memberInfoCache = new Map<string, MemberInfo | null>();
  * Get artist releases from Discogs
  * @param discogsId - The Discogs ID of the artist
  * @param page - Page number (default: 1)
- * @param perPage - Results per page (default: 100, max: 100)
+ * @param signal - Aborts the request when the caller moves on (e.g. artist navigation)
  * @returns Promise resolving to DiscogsArtistReleasesResponse or null
  */
 export async function getDiscogsArtistReleases(
   discogsId: string,
   page = 1,
-  perPage = 100,
+  signal?: AbortSignal,
 ): Promise<DiscogsArtistReleasesResponse | null> {
   return fetchFromDiscogs<DiscogsArtistReleasesResponse>(`artists/${discogsId}/releases`, {
     page: page.toString(),
-    per_page: perPage.toString(),
+    // 100 is both the Discogs maximum and the only value this app ever wants
+    per_page: "100",
     sort: "year",
     sort_order: "desc",
-  });
+  }, signal);
 }
 
 /**
@@ -284,7 +289,11 @@ const HTML_ENTITIES: Record<string, string> = {
  * @param searchParams - Query parameters
  * @returns Promise resolving to the requested data type or null
  */
-async function fetchFromDiscogs<T>(path: string, searchParams?: Record<string, string>): Promise<null | T> {
+async function fetchFromDiscogs<T>(
+  path: string,
+  searchParams?: Record<string, string>,
+  signal?: AbortSignal,
+): Promise<null | T> {
   if (!DISCOGS_TOKEN) {
     return null;
   }
@@ -292,6 +301,7 @@ async function fetchFromDiscogs<T>(path: string, searchParams?: Record<string, s
   try {
     const response = await discogsClient.get(path, {
       searchParams: { ...searchParams, token: DISCOGS_TOKEN },
+      signal,
     });
     return await response.json<T>();
   } catch {
