@@ -45,6 +45,8 @@ export interface ArtistPage {
   scrolledDown: boolean;
   singles: AlbumSimplified[];
   timelineLoading: boolean;
+  /** Normalized album name → Last.fm playcount rank (1 = most played). */
+  topAlbumRanks: Map<string, number>;
   topTracks: ArtistTopTracks;
   wikidataArtist: null | WikidataArtist;
   wikidataId: null | string;
