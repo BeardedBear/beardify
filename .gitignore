@@ -30,3 +30,6 @@ src-tauri/Cargo.lock
 
 # Local Netlify folder
 .netlify
+
+# graphify knowledge graph output (local, machine-specific paths)
+graphify-out/

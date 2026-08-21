@@ -1,17 +1,20 @@
 // ponytail: one self-check for the path guard — the only branch here with a security
-// consequence. Run with `bun netlify/functions/musicbrainz.check.mts`.
+// consequence. Run with `bun scripts/musicbrainz-relay.check.ts`.
+//
+// Lives here, not beside the function: Netlify bundles every *.mts under netlify/functions
+// as a deployable function, and esbuild's cjs output rejects the top-level awaits below.
 import assert from "node:assert/strict";
 
-import handler from "./musicbrainz.mts";
+import handler from "../netlify/functions/musicbrainz.mjs";
 
 const BASE = "https://beardify.test/.netlify/functions/musicbrainz";
 const call = (path: string, init?: RequestInit): Promise<Response> =>
   handler(new Request(`${BASE}${path}`, init)) as Promise<Response>;
 
 let lastUpstream = "";
-globalThis.fetch = (async (input: URL | string): Promise<Response> => {
+globalThis.fetch = (async (input: string | URL): Promise<Response> => {
   lastUpstream = input.toString();
-  return new Response('{"id":"ok"}', { headers: { "content-type": "application/json" }, status: 200 });
+  return new Response("{\"id\":\"ok\"}", { headers: { "content-type": "application/json" }, status: 200 });
 }) as typeof fetch;
 
 // Rejected: a protocol-relative path would otherwise resolve against another host.
