@@ -37,4 +37,4 @@ assert.equal(failed.status, 503);
 assert.equal(failed.headers.get("cache-control"), "no-store");
 assert.equal(failed.headers.get("netlify-cdn-cache-control"), null);
 
-console.log("musicbrainz relay: all checks passed");
+console.warn("musicbrainz relay: all checks passed");
