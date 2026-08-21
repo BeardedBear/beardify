@@ -8,8 +8,7 @@ import assert from "node:assert/strict";
 import handler from "../netlify/functions/musicbrainz.mjs";
 
 const BASE = "https://beardify.test/.netlify/functions/musicbrainz";
-const call = (path: string, init?: RequestInit): Promise<Response> =>
-  handler(new Request(`${BASE}${path}`, init)) as Promise<Response>;
+const call = (path: string): Promise<Response> => handler(new Request(`${BASE}${path}`)) as Promise<Response>;
 
 let lastUpstream = "";
 globalThis.fetch = (async (input: string | URL): Promise<Response> => {
@@ -21,7 +20,7 @@ globalThis.fetch = (async (input: string | URL): Promise<Response> => {
 assert.equal((await call("//evil.example/x?fmt=json")).status, 400);
 assert.equal((await call("/artist/../../etc/passwd")).status, 400);
 assert.equal((await call("/artist/not-an-mbid")).status, 400);
-assert.equal((await call("/artist/x", { method: "POST" })).status, 405);
+assert.equal((await handler(new Request(`${BASE}/artist/x`, { method: "POST" }))).status, 405);
 
 // Accepted: the two shapes the app actually sends.
 const detail = await call("/artist/deaddf4e-1209-4d93-bb75-f53780d1c0c4?fmt=json&inc=artist-rels");
