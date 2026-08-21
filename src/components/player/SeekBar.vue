@@ -61,7 +61,10 @@ onUnmounted(() => {
 const freq = 200;
 useIntervalFn(() => {
   if (!playerStore.playerState) return;
-  if (!playerStore.playerState.paused) currentTime.value = currentTime.value + freq;
+  // ponytail: clamp so a stale "playing" state can't run the timer past the track length
+  if (!playerStore.playerState.paused) {
+    currentTime.value = Math.min(currentTime.value + freq, playerStore.playerState.duration);
+  }
 }, freq);
 
 watch(

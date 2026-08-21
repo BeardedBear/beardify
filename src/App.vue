@@ -114,7 +114,10 @@ const handleVisibilityChange = async (): Promise<void> => {
     }
 
     try {
-      await usePlayer().getDeviceList();
+      const player = usePlayer();
+      await player.getDeviceList();
+      // Resync playback: after a long sleep the SDK state is stale (still "playing")
+      await player.getExternalPlayerState();
     } catch {
       // silent
     }
@@ -123,8 +126,22 @@ const handleVisibilityChange = async (): Promise<void> => {
 
 document.addEventListener("visibilitychange", handleVisibilityChange);
 
+// Suspend detection: a sleeping machine freezes timers without ever hiding the tab, so
+// visibilitychange never fires and the SDK state stays stale ("playing" forever).
+// A wall-clock gap much larger than the tick means we just came back from a suspend.
+const SUSPEND_TICK_MS = 5000;
+const SUSPEND_GAP_MS = 15_000;
+let lastTick = Date.now();
+const suspendCheckInterval = setInterval(() => {
+  const now = Date.now();
+  const gap = now - lastTick;
+  lastTick = now;
+  if (gap > SUSPEND_GAP_MS) handleVisibilityChange();
+}, SUSPEND_TICK_MS);
+
 onBeforeUnmount(() => {
   clearInterval(deviceRefreshInterval);
+  clearInterval(suspendCheckInterval);
   document.removeEventListener("visibilitychange", handleVisibilityChange);
 });
 </script>
