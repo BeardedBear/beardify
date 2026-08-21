@@ -3,12 +3,20 @@ import ky, { HTTPError } from "ky";
 import type { BandMember } from "@/@types/Artist";
 
 import { normalizeString } from "@/helpers/helper";
+import { isTauri } from "@/helpers/platform";
 import { sleep } from "@/helpers/sleep";
 
 /**
- * MusicBrainz API configuration
+ * MusicBrainz API configuration.
+ *
+ * The web build goes through the Netlify relay: browsers forbid setting a User-Agent from
+ * fetch, and MusicBrainz throttles anonymous clients with 503s that leave the artist header
+ * blank. Tauri has no function host, so the desktop build keeps calling MusicBrainz directly
+ * — unchanged behaviour, and `location.origin` there is `tauri://localhost` anyway.
  */
-const MUSICBRAINZ_API_URL = "https://musicbrainz.org/ws/2/";
+const MUSICBRAINZ_API_URL = isTauri()
+  ? "https://musicbrainz.org/ws/2/"
+  : `${location.origin}/.netlify/functions/musicbrainz/`;
 
 /**
  * Interface for MusicBrainz artist
