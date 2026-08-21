@@ -1,4 +1,4 @@
-import ky from "ky";
+import ky, { HTTPError } from "ky";
 
 import type { BandMember } from "@/@types/Artist";
 
@@ -439,20 +439,31 @@ async function fetchFromMusicBrainz<T>(
   searchParams: Record<string, number | string> = {},
   signal?: AbortSignal,
 ): Promise<null | T> {
-  try {
-    return await enqueue(async () => {
-      const response = await musicbrainzClient.get(path, {
-        searchParams: {
-          fmt: "json",
-          ...searchParams,
-        },
-        signal,
-      });
+  const request = async (): Promise<null | T> => enqueue(async () => {
+    const response = await musicbrainzClient.get(path, {
+      searchParams: {
+        fmt: "json",
+        ...searchParams,
+      },
+      signal,
+    });
 
-      return await response.json<T>();
-    }, signal);
-  } catch {
-    return null;
+    return await response.json<T>();
+  }, signal);
+
+  try {
+    return await request();
+  } catch (error) {
+    // MusicBrainz answers 503 whenever its throttle trips, even at the paced rate. Retrying once
+    // through the queue puts the second try at least MIN_REQUEST_INTERVAL_MS later, which is what
+    // the service asks for. Any other failure (404, timeout, abort) is final.
+    if (!(error instanceof HTTPError) || error.response.status !== 503) return null;
+
+    try {
+      return await request();
+    } catch {
+      return null;
+    }
   }
 }
 
