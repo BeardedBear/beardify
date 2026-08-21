@@ -347,22 +347,24 @@ export const useArtist = defineStore("artist", {
       this.wikidataArtist = null;
       this.wikipediaExtract = null;
       try {
-        // Search by name first; if multiple homonyms found and Spotify ID available,
-        // use Spotify URL lookup for exact match
-        const nameResults = await searchMusicBrainzArtistId(artistName, signal);
-        const artist
-          = nameResults.length === 1
-            ? nameResults[0]
-            : nameResults.length > 1 && spotifyId
-              ? ((await searchMusicBrainzBySpotifyId(spotifyId, signal)) ?? nameResults[0])
-              : nameResults[0] ?? null;
+        // Spotify link first, name search only as fallback. MusicBrainz serves its search
+        // index (`/artist?query=`) from a "global" rate-limit zone that answers 503 about
+        // half the time — measured, with the per-IP quota untouched — while the /url lookup
+        // is a plain index read that answers reliably. It is also the exact match, so the
+        // homonym tie-break the name search needed disappears with it.
+        const linked = spotifyId ? await searchMusicBrainzBySpotifyId(spotifyId, signal) : null;
+        if (signal.aborted) return;
+
+        // No Spotify link on the MusicBrainz side (404 there is common for small artists).
+        const artist = linked ?? (await searchMusicBrainzArtistId(artistName, signal))[0] ?? null;
 
         if (!artist?.id || signal.aborted) return;
 
-        // The search document already carries everything the profile header shows (country,
-        // area, life-span, tags, disambiguation); the lookup below only adds relations
-        // (members, Discogs/Wikidata ids). Publish it now so a MusicBrainz failure on that
-        // lookup — 503 is routine there — leaves the header filled instead of blank.
+        // Publish what the resolver returned before the lookup below: a MusicBrainz failure
+        // on that request then leaves the header partly filled instead of blank. The search
+        // document carries the whole header (country, area, life-span, tags, disambiguation);
+        // the URL-lookup stub carries only country and disambiguation, and the lookup fills
+        // the rest in.
         this.musicbrainzArtist = artist;
 
         const artistFull = await getIdsFromMusicBrainz(artist.id, signal);

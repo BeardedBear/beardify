@@ -1,6 +1,6 @@
 <template>
   <div class="profile-container font-bold">
-    <div class="profile-wrapper" :class="{ visible: artistMetas }">
+    <div class="profile-wrapper" :class="{ visible: artistMetas || artistTags.length > 0 }">
       <template v-if="artistTags && artistTags.length > 0">
         <span class="tag-list">
           <router-link
