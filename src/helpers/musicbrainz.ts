@@ -1,4 +1,4 @@
-import ky, { HTTPError } from "ky";
+import ky, { HTTPError, TimeoutError } from "ky";
 
 import type { BandMember } from "@/@types/Artist";
 
@@ -329,8 +329,10 @@ export async function getIdsFromMusicBrainz(
   musicbrainzId: string,
   signal?: AbortSignal,
 ): Promise<MusicBrainzArtist | null> {
+  // `tags` rides along on this one request: callers can reach the artist through the Spotify
+  // URL lookup, whose embedded stub carries no tags, so the header would lose its genre links.
   return fetchFromMusicBrainz<MusicBrainzArtist>(`artist/${musicbrainzId}`, {
-    inc: "artist-rels+url-rels",
+    inc: "artist-rels+url-rels+tags",
   }, signal);
 }
 
@@ -475,6 +477,10 @@ async function fetchFromMusicBrainz<T>(
     try {
       return await request();
     } catch (error) {
+      // Timeouts join the retryable set: MusicBrainz occasionally stalls well past the 10s
+      // client timeout, and the next try normally lands in under a second.
+      if (error instanceof TimeoutError) continue;
+
       const status = error instanceof HTTPError ? error.response.status : 0;
       if (status !== 502 && status !== 503) return null;
     }
