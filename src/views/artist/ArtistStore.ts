@@ -357,7 +357,13 @@ export const useArtist = defineStore("artist", {
               ? ((await searchMusicBrainzBySpotifyId(spotifyId, signal)) ?? nameResults[0])
               : nameResults[0] ?? null;
 
-        if (!artist?.id) return;
+        if (!artist?.id || signal.aborted) return;
+
+        // The search document already carries everything the profile header shows (country,
+        // area, life-span, tags, disambiguation); the lookup below only adds relations
+        // (members, Discogs/Wikidata ids). Publish it now so a MusicBrainz failure on that
+        // lookup — 503 is routine there — leaves the header filled instead of blank.
+        this.musicbrainzArtist = artist;
 
         const artistFull = await getIdsFromMusicBrainz(artist.id, signal);
         if (!artistFull || signal.aborted) return;
