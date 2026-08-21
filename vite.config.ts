@@ -72,19 +72,21 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 3000,
     proxy: {
-      "/.netlify/functions": {
-        changeOrigin: true,
-        target: "http://localhost:9999",
-      },
-      // Ahead of the generic entry below (first match wins): plain `bun run dev` has no
-      // function host, and MusicBrainz is the one relay the app can't work without. Node
-      // can set the User-Agent the browser refuses to, so dev gets the same treatment as
-      // the deployed function.
+      // Plain `bun run dev` has no function host, and MusicBrainz is the one relay the app
+      // can't work without. Node can set the User-Agent the browser refuses to, so dev gets
+      // the same treatment as the deployed function.
       "/.netlify/functions/musicbrainz": {
         changeOrigin: true,
         headers: { "User-Agent": "Beardify/1.0.0 (https://github.com/BeardedBear/beardify)" },
         rewrite: (path): string => path.replace("/.netlify/functions/musicbrainz", "/ws/2"),
         target: "https://musicbrainz.org",
+      },
+      // Regex, not a plain prefix: Vite tries every proxy context and this one would
+      // swallow the MusicBrainz path whatever the key order, sending it to a function
+      // host that plain `bun run dev` never starts (ECONNREFUSED -> 502).
+      "^/[.]netlify/functions/(?!musicbrainz)": {
+        changeOrigin: true,
+        target: "http://localhost:9999",
       },
     },
   },
