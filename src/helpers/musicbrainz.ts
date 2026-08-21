@@ -155,6 +155,15 @@ const musicbrainzClient = ky.create({
  * spaces them instead of each caller racing the limit on its own.
  */
 const MIN_REQUEST_INTERVAL_MS = 1100;
+
+/**
+ * Total tries per request, not extra ones. Two sources of transient failure make a single
+ * try unreliable: MusicBrainz serves 503 from its global "server busy" zone even when the
+ * per-IP quota is untouched (`x-ratelimit-remaining` stays high, `retry-after` is 0), and it
+ * answers `Connection: close`, so a reused keep-alive socket can die mid-request and surface
+ * as a 502 from the dev proxy. Both clear on a later try, and each try costs one queue slot.
+ */
+const MAX_ATTEMPTS = 3;
 let requestQueue: Promise<unknown> = Promise.resolve();
 let lastRequestAt = 0;
 
@@ -459,20 +468,19 @@ async function fetchFromMusicBrainz<T>(
     return await response.json<T>();
   }, signal);
 
-  try {
-    return await request();
-  } catch (error) {
-    // MusicBrainz answers 503 whenever its throttle trips, even at the paced rate. Retrying once
-    // through the queue puts the second try at least MIN_REQUEST_INTERVAL_MS later, which is what
-    // the service asks for. Any other failure (404, timeout, abort) is final.
-    if (!(error instanceof HTTPError) || error.response.status !== 503) return null;
-
+  // Every retry goes back through the queue, so tries land at least MIN_REQUEST_INTERVAL_MS
+  // apart — the pacing MusicBrainz asks for. Only the transient statuses are retried; anything
+  // else (404, timeout, abort) is final and returns null on the spot.
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
       return await request();
-    } catch {
-      return null;
+    } catch (error) {
+      const status = error instanceof HTTPError ? error.response.status : 0;
+      if (status !== 502 && status !== 503) return null;
     }
   }
+
+  return null;
 }
 
 /**
