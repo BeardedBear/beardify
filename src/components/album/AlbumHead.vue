@@ -18,18 +18,20 @@
       <div class="options">
         <div class="links">
           <BdButton
+label="Search this album on Google"
             icon-only
             variant="nude"
             @click="openLink(`https://www.google.com/search?q=${album.artists[0].name}+${album.name}`)"
           >
-            <i class="icon-google" />
+            <i aria-hidden="true" class="icon-google" />
           </BdButton>
           <BdButton
+label="Search this album on Discogs"
             icon-only
             variant="nude"
-            @click="openLink(`https://www.discogs.com/fr/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
+            @click="openLink(`https://www.discogs.com/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
           >
-            <i class="icon-discogs" />
+            <i aria-hidden="true" class="icon-discogs" />
           </BdButton>
         </div>
         <ShareContent :beardify-url="$route.fullPath" :spotify-url="props.album.external_urls.spotify" />

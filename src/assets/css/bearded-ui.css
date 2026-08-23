@@ -26,6 +26,14 @@
   --bg-color-light: var(--bd-bg-light);
   --bg-color-lighter: var(--bd-bg-lighter);
 
+  /* Espacements — la lib en definit deja une echelle, on l'alias comme les couleurs. */
+  --space-1: var(--bd-space-1);
+  --space-2: var(--bd-space-2);
+  --space-3: var(--bd-space-3);
+  --space-4: var(--bd-space-4);
+  --space-5: var(--bd-space-5);
+  --space-6: var(--bd-space-6);
+
   /* Texte */
   --font-color-darker: var(--bd-font-color-darker);
   --font-color-dark: var(--bd-font-color-dark);

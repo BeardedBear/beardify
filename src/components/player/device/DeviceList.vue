@@ -78,7 +78,13 @@ function formatName(device?: Device | null, shortenable = false): string {
   const count = nameCounts.value.get(device.name) || 0;
   let name = device.name;
   if (count > 1 && device.id) {
-    name = `${device.name}`;
+    /*
+     * This branch used to assign the name to itself, which made the whole
+     * nameCounts apparatus a no-op: two speakers both called "Salon" rendered
+     * identically and the only thing telling them apart was a 40-character hex
+     * id in a tooltip. The device type is what a person actually uses to pick.
+     */
+    name = `${device.name} (${device.type.toLowerCase()})`;
   }
   if (isMobile.value && shortenable) return truncate(name, 10);
   return name;

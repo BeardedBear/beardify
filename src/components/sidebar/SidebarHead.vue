@@ -4,15 +4,15 @@
       <img class="logo" src="/img/logo.svg" />
     </router-link>
     <BdButtonGroup full class="navigation">
-      <BdButton icon-only @click="router.go(-1)">
-        <i class="icon-arrow-left" />
+      <BdButton label="Go back" icon-only @click="router.go(-1)">
+        <i aria-hidden="true" class="icon-arrow-left" />
       </BdButton>
-      <BdButton icon-only @click="router.go(1)">
-        <i class="icon-arrow-right" />
+      <BdButton label="Go forward" icon-only @click="router.go(1)">
+        <i aria-hidden="true" class="icon-arrow-right" />
       </BdButton>
     </BdButtonGroup>
-    <BdButton icon-only @click="dialogStore.open({ type: 'search' })">
-      <i class="icon-search" />
+    <BdButton label="Search" icon-only @click="dialogStore.open({ type: 'search' })">
+      <i aria-hidden="true" class="icon-search" />
     </BdButton>
     <BdDropdown v-if="authStore.me !== null" v-model="configOpen" placement="bottom-end">
       <template #trigger>

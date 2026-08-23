@@ -8,8 +8,16 @@
       type="search"
       @input="searchStore.updateQuery(query)"
     />
-    <BdButton v-if="query" class="reset" icon-only size="small" @click="clearQuery()">
-      <i class="icon-x" />
+    <BdButton
+      v-if="query"
+      aria-label="Clear search"
+      class="reset"
+      icon-only
+      size="small"
+      title="Clear search"
+      @click="clearQuery()"
+    >
+      <i aria-hidden="true" class="icon-x" />
     </BdButton>
   </div>
 </template>

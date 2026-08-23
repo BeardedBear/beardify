@@ -41,7 +41,14 @@ const frameStore = useFrame();
   bottom: 7rem;
   display: flex;
   flex-direction: column;
-  left: 20rem;
+
+  /*
+   * Tracks the sidebar instead of guessing at it: 20rem was hardcoded against a
+   * rail that is 19rem, 25rem on --hdpi, and gone entirely below 1024px, so the
+   * pill sat under the sidebar on wide displays and floated into nothing on
+   * tablet.
+   */
+  left: calc(var(--sidebar-width) + 1rem);
   pointer-events: none;
   position: fixed;
   z-index: 998;

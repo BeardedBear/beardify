@@ -7,9 +7,13 @@
       <div class="title">
         <h1 class="name font-bold">Podcasts</h1>
       </div>
-      <div v-if="!podcastsStore.myPodcasts.length">
-        <BdLoader />
-      </div>
+      <BdEmptyState
+        v-if="!podcastsStore.myPodcasts.length"
+        message="Follow a show on Spotify and it will show up here."
+        title="You do not follow any podcast"
+      >
+        <template #icon><i class="icon-podcast" /></template>
+      </BdEmptyState>
       <div v-else class="podcast-list">
         <PodcastCard
           v-for="(podcast, index) in podcastsStore.myPodcasts"
@@ -23,7 +27,7 @@
 </template>
 
 <script lang="ts" setup>
-import { BdLoader } from "bearded-ui";
+import { BdEmptyState, BdLoader } from "bearded-ui";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 

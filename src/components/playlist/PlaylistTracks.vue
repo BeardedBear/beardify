@@ -56,8 +56,15 @@
         {{ timecode(track.item.duration_ms) }}
       </div>
       <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
-        <BdButton icon-only variant="nude" class="delete" @click.prevent.stop="deleteSong(track.item.uri)">
-          <i class="icon-trash-2" />
+        <BdButton
+          aria-label="Remove this track"
+          class="delete"
+          icon-only
+          title="Remove this track"
+          variant="nude"
+          @click.prevent.stop="deleteSong(track.item.uri)"
+        >
+          <i aria-hidden="true" class="icon-trash-2" />
         </BdButton>
       </div>
     </div>
@@ -77,9 +84,9 @@ import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
 import { date, timecode } from "@/helpers/date";
 import { isCurrentTrack } from "@/helpers/helper";
-import { notification } from "@/helpers/notifications";
+import { notification, notifyUndoable } from "@/helpers/notifications";
 import { playSongs } from "@/helpers/play";
-import { removePlaylistItems } from "@/helpers/playlist";
+import { addPlaylistItems, removePlaylistItems } from "@/helpers/playlist";
 import { isAlbum, isCompilation, isEP, isSingle } from "@/helpers/useCleanAlbums";
 import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
@@ -90,7 +97,8 @@ const props = defineProps<{
 }>();
 
 const { open } = useDialog();
-const { playlist, removeSong } = usePlaylist();
+const playlistStore = usePlaylist();
+const { playlist, removeSong } = playlistStore;
 const { me } = useAuth();
 const currentTrack = computed(() => usePlayer().playerState?.track_window.current_track);
 
@@ -104,10 +112,17 @@ const getContributorDisplayName = (userId: string): string => {
 };
 
 async function deleteSong(songId: string): Promise<void> {
+  // Captured before the removal: restoring at the end of the playlist is not
+  // an undo, it is a different playlist.
+  const position = playlistStore.tracks.findIndex((entry) => entry.item.uri === songId);
+  const name = playlistStore.tracks[position]?.item.name;
   try {
     await removePlaylistItems(playlist.id, [{ uri: songId }], playlist.snapshot_id);
     removeSong(songId);
-    notification({ msg: "Track deleted", type: NotificationType.Success });
+    notifyUndoable(name ? `Removed ${name}` : "Track removed", async () => {
+      await addPlaylistItems(playlist.id, [songId], position >= 0 ? position : undefined);
+      await playlistStore.reloadTracks(`playlists/${playlist.id}/items`);
+    });
   } catch (error: any) {
     notification({
       msg: error.response?.data?.error?.message ?? "Failed to delete track",

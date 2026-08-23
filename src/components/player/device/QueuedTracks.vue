@@ -1,8 +1,8 @@
 <template>
   <BdDropdown v-model="queueOpen" class="wrap" placement="top-end" size="small">
     <template #trigger>
-      <BdButton icon-only>
-        <i class="icon-queue" />
+      <BdButton label="Queue" icon-only>
+        <i aria-hidden="true" class="icon-queue" />
       </BdButton>
     </template>
 

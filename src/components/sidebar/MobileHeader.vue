@@ -1,13 +1,13 @@
 <template>
   <div class="mobile-header">
-    <BdButton icon-only @click="sidebarStore.toggle()">
-      <i class="icon-menu" />
+    <BdButton label="Open menu" icon-only @click="sidebarStore.toggle()">
+      <i aria-hidden="true" class="icon-menu" />
     </BdButton>
     <router-link to="/" class="logo-link">
       <img class="logo" src="/img/logo.svg" />
     </router-link>
-    <BdButton icon-only @click="dialogStore.open({ type: 'search' })">
-      <i class="icon-search" />
+    <BdButton label="Search" icon-only @click="dialogStore.open({ type: 'search' })">
+      <i aria-hidden="true" class="icon-search" />
     </BdButton>
   </div>
 </template>

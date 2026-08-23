@@ -6,18 +6,26 @@
     <span v-if="clipboardSpotify.copied.value" class="copied font-bold">Spotify URL copied</span>
     <span v-if="clipboardBeardify.copied.value" class="copied font-bold">Beardify URL copied</span>
     <div class="content">
-      <BdButton class="copy" icon-only size="small" variant="nude" @click="clipboardSpotify.copy()">
-        <i class="icon-spotify" />
+      <BdButton
+        aria-label="Copy the Spotify link"
+        class="copy"
+        icon-only
+        size="small"
+        title="Copy the Spotify link"
+        variant="nude"
+        @click="clipboardSpotify.copy()"
+      >
+        <i aria-hidden="true" class="icon-spotify" />
       </BdButton>
       <BdButton
-        v-if="beardifyUrl"
+v-if="beardifyUrl" label="Copy the Beardify link"
         class="copy"
         icon-only
         size="small"
         variant="nude"
         @click="clipboardBeardify.copy()"
       >
-        <i class="icon-beardify" />
+        <i aria-hidden="true" class="icon-beardify" />
       </BdButton>
     </div>
   </div>

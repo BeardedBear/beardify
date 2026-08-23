@@ -1,7 +1,17 @@
 <template>
   <div v-if="currentTrack" class="what">
     <div class="cover-wrap">
-      <img v-if="currentTrack.album.images.length" :src="currentTrack.album.images[1].url || ''" class="cover" />
+      <!--
+        Indexed [1] but guarded only on `.length`, so a single-image album threw.
+        Optional chaining picks the medium rendition when there is one and falls
+        back to whatever the album actually has.
+      -->
+      <img
+        v-if="currentTrack.album.images.length"
+        :src="currentTrack.album.images[1]?.url ?? currentTrack.album.images[0]?.url"
+        alt=""
+        class="cover"
+      />
       <div class="hover" @click="dialogStore.open({ type: 'addSong', track: currentTrack })">
         <i class="add icon-plus" />
       </div>

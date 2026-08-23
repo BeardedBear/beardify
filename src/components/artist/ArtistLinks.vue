@@ -2,27 +2,27 @@
   <div :class="{ floating }" class="links">
     <BdTooltip content="Sputnik" side="bottom">
       <BdButton variant="nude" @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')">
-        <i class="icon-sputnik" />
+        <i aria-hidden="true" class="icon-sputnik" />
         <span class="link-name">Sputnik</span>
       </BdButton>
     </BdTooltip>
     <BdTooltip content="Discogs" side="bottom">
-      <BdButton icon-only variant="nude" @click.stop.prevent="openLink(link.discogs)">
-        <i class="icon-discogs" />
+      <BdButton aria-label="Discogs" icon-only variant="nude" @click.stop.prevent="openLink(link.discogs)">
+        <i aria-hidden="true" class="icon-discogs" />
         <span class="link-name">Discogs</span>
       </BdButton>
     </BdTooltip>
     <BdTooltip content="RateYourMusic" side="bottom">
-      <BdButton icon-only variant="nude" @click.stop.prevent="openLink(link.rym)">
-        <i class="icon-rym" />
+      <BdButton aria-label="RateYourMusic" icon-only variant="nude" @click.stop.prevent="openLink(link.rym)">
+        <i aria-hidden="true" class="icon-rym" />
         <span class="link-name">RateYourMusic</span>
       </BdButton>
     </BdTooltip>
     <template v-if="!floating">
       <span class="separator">·</span>
       <BdTooltip v-for="socialLink in socialLinks" :key="socialLink.url" :content="socialLink.name" side="bottom">
-        <BdButton icon-only variant="nude" @click.stop.prevent="openLink(socialLink.url)">
-          <i :class="socialLink.icon" />
+        <BdButton :aria-label="socialLink.name" icon-only variant="nude" @click.stop.prevent="openLink(socialLink.url)">
+          <i :class="socialLink.icon" aria-hidden="true" />
           <span class="link-name">{{ socialLink.name }}</span>
         </BdButton>
       </BdTooltip>

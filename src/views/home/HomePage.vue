@@ -1,7 +1,25 @@
 <template>
-  <div v-if="!homeStore.recommendedAlbums.length" class="loader">
+  <div v-if="homeStore.loading" class="loader">
     <BdLoader />
   </div>
+  <BdEmptyState
+    v-else-if="homeStore.error"
+    action-label="Try again"
+    message="Spotify did not return recommendations. This can happen when the service is busy."
+    title="Could not load recommendations"
+    @action="getData()"
+  >
+    <template #icon><i class="icon-warning" /></template>
+  </BdEmptyState>
+  <BdEmptyState
+    v-else-if="!homeStore.recommendedAlbums.length"
+    action-label="Refresh"
+    message="Recommendations are built from the artists you listen to most. Play a few albums and come back."
+    title="Nothing to recommend yet"
+    @action="getData()"
+  >
+    <template #icon><i class="icon-album" /></template>
+  </BdEmptyState>
   <div v-else class="home">
     <div ref="scrollRef" class="home-content" @scroll="onScroll">
       <PageFit>
@@ -19,7 +37,7 @@
 </template>
 
 <script lang="ts" setup>
-import { BdButton, BdLoader } from "bearded-ui";
+import { BdButton, BdEmptyState, BdLoader } from "bearded-ui";
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 

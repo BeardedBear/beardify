@@ -11,7 +11,13 @@
         </h1>
       </div>
       <Options class="desktop-options" />
-      <BdButton class="mobile-options" icon-only @click="dialogStore.open({ type: 'artistOptions' })">
+      <BdButton
+        aria-label="Artist options"
+        class="mobile-options"
+        icon-only
+        title="Artist options"
+        @click="dialogStore.open({ type: 'artistOptions' })"
+      >
         <MoreHorizontal />
       </BdButton>
     </div>
@@ -115,12 +121,19 @@ watch(infoAvailable, (available) => {
   justify-content: space-between;
 }
 
+/*
+ * `scrolled` is set on .header, not on .name, so the nested `&.scrolled` here
+ * never matched and the artist title never shrank. Selecting from the header
+ * makes the intent work: the name gives room back to the discography as you
+ * scroll into it.
+ */
 .name {
   font-size: var(--font-size-xl);
+  transition: font-size 0.2s ease;
+}
 
-  &.scrolled {
-    font-size: var(--font-size-lg);
-  }
+.header.scrolled .name {
+  font-size: var(--font-size-lg);
 }
 
 .header {

@@ -81,9 +81,9 @@ import { usePlayer } from "@/components/player/PlayerStore";
 import Cover from "@/components/ui/AlbumCover.vue";
 import IconButton from "@/components/ui/IconButton.vue";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
-import { notification } from "@/helpers/notifications";
+import { notification, notifyUndoable } from "@/helpers/notifications";
 import { playAlbum } from "@/helpers/playAlbum"; // Import the playAlbum helper
-import { removePlaylistItems } from "@/helpers/playlist";
+import { addPlaylistItems, removePlaylistItems } from "@/helpers/playlist";
 import router from "@/router";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -153,10 +153,30 @@ async function deleteAlbum(albumId: string): Promise<void> {
       notification({ msg: "No valid track URIs found", type: NotificationType.Error });
       return;
     }
+
+    /*
+     * Read what to put back, and where, before removing anything.
+     *
+     * The removal above targets every track of the album by URI, but a
+     * collection only ever holds one of them as a marker (see AddAlbum). So the
+     * undo has to restore the intersection with what was actually in the
+     * playlist — re-adding `tracks` wholesale would turn one album entry into a
+     * full tracklist. And restoring at the end is not an undo: in a tier list it
+     * would silently move the album to a different tier.
+     */
+    const present = new Map(playlistStore.tracks.map((entry, index) => [entry.item.uri, index]));
+    const uris = tracks.map((track) => track.uri).filter((uri) => present.has(uri));
+    const position = uris.length ? (present.get(uris[0]) ?? -1) : -1;
+
     try {
       await removePlaylistItems(`${currentRouteId}`, tracks, playlistStore.playlist.snapshot_id);
       playlistStore.removeTracks(tracks);
-      notification({ msg: "Album successfully removed from playlist", type: NotificationType.Success });
+      if (uris.length) {
+        notifyUndoable(`Removed ${props.album.name}`, async () => {
+          await addPlaylistItems(`${currentRouteId}`, uris, position >= 0 ? position : undefined);
+          await playlistStore.reloadTracks(`playlists/${currentRouteId}/items`);
+        });
+      }
     } catch (error: any) {
       notification({
         msg: error.response?.data?.error?.message ?? "Album delete failed",
@@ -224,7 +244,8 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 }
 
 .album {
-  animation: popAlbum 1s ease both;
+  /* `animation: popAlbum 1s ease both` lived here, naming a keyframe that does
+     not exist anywhere in the project — a no-op the browser silently ignored. */
   color: var(--font-color);
   font-family: inherit;
   line-height: 1.4;

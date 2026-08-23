@@ -38,7 +38,9 @@
         />
       </div>
       <div class="actions">
-        <BdButton @click="remove()">Delete {{ isCollection ? "collection" : "playlist" }}</BdButton>
+        <BdButton variant="danger" @click="askDelete = true">
+          Delete {{ isCollection ? "collection" : "playlist" }}
+        </BdButton>
         <BdButton
           v-if="isEditable"
           variant="primary"
@@ -47,6 +49,20 @@
           Confirm
         </BdButton>
       </div>
+      <!--
+        The one destructive action in the app that no undo can cover: Spotify
+        unfollows a playlist irreversibly, so there is nothing to re-POST. A
+        blocking confirm is the only protection available here, and it is worth
+        the extra step for something a collector built by hand over years.
+      -->
+      <BdConfirmDialog
+        v-model="askDelete"
+        danger
+        :title="`Delete this ${isCollection ? 'collection' : 'playlist'}?`"
+        :message="`${playlistStore.playlist.name} will be removed from your Spotify library. This cannot be undone.`"
+        :confirm-label="`Delete ${isCollection ? 'collection' : 'playlist'}`"
+        @confirm="remove()"
+      />
       <div v-if="isTouchDevice()" class="bottom">
         <p>Share content</p>
         <ShareContent :beardify-url="$route.fullPath" :spotify-url="playlistStore.playlist.external_urls.spotify" />
@@ -56,7 +72,7 @@
 </template>
 
 <script lang="ts" setup>
-import { BdButton, BdButtonGroup, BdInput, BdLoader, BdOption } from "bearded-ui";
+import { BdButton, BdButtonGroup, BdConfirmDialog, BdInput, BdLoader, BdOption } from "bearded-ui";
 import { computed, reactive, ref, watchEffect } from "vue";
 
 import { UpdatePlaylistValues } from "@/@types/Dialog";
@@ -77,6 +93,7 @@ import { usePlaylist } from "@/views/playlist/PlaylistStore";
 import ShareContent from "../ui/ShareContent.vue";
 
 const dialogStore = useDialog();
+const askDelete = ref<boolean>(false);
 const playlistStore = usePlaylist();
 const sidebarStore = useSidebar();
 const values: UpdatePlaylistValues = reactive({

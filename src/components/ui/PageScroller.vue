@@ -2,11 +2,11 @@
   <div ref="page" class="page" @scroll="onScroll">
     <slot />
     <div class="nav">
-      <BdButton icon-only size="small" @click="scrollToTop()">
-        <i class="icon-arrow-up" />
+      <BdButton label="Scroll to top" icon-only size="small" @click="scrollToTop()">
+        <i aria-hidden="true" class="icon-arrow-up" />
       </BdButton>
-      <BdButton icon-only size="small" @click="scrollToBottom()">
-        <i class="icon-arrow-down" />
+      <BdButton label="Scroll to bottom" icon-only size="small" @click="scrollToBottom()">
+        <i aria-hidden="true" class="icon-arrow-down" />
       </BdButton>
     </div>
   </div>

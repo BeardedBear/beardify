@@ -49,7 +49,7 @@ export async function playSongs(sliceIndex: number, tracks: Track[] | TrackSimpl
 
   if (uris.length === 0) {
     notification({
-      msg: "No tracks found to play.",
+      msg: "No tracks found to play",
       type: NotificationType.Warning,
     });
     return;

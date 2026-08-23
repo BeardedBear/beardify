@@ -20,6 +20,14 @@
         @click="playerStore.toggleRepeat()"
       />
       <IconButton
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
+        :class="{ big: props.forceMobile }"
+        class="control-button previous squircle"
+        icon="skip-back"
+        label="Previous track"
+        @click="playerStore.previous()"
+      />
+      <IconButton
         v-if="playerStore.playerState?.paused"
         :class="{ big: props.forceMobile }"
         class="control-button play squircle"
@@ -160,7 +168,8 @@ watch(
     }
   }
 
-  &.next {
+  &.next,
+  &.previous {
     @media (--mobile) {
       display: none;
     }
@@ -175,7 +184,8 @@ watch(
     display: inline-flex;
   }
 
-  .force-mobile &.next {
+  .force-mobile &.next,
+  .force-mobile &.previous {
     display: inline-flex;
   }
 }

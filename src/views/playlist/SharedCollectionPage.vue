@@ -12,9 +12,9 @@
           <div class="infos">
             <Cover :images="playlist.images" class="cover" size="large" />
             <div>
-              <div class="title font-bold">
+              <h1 class="title font-bold">
                 {{ playlist.name.replace("#Collection ", "") }}
-              </div>
+              </h1>
               <div class="metas">{{ playlist.owner.display_name }} &nbsp;·&nbsp; {{ albumList.length }} albums</div>
             </div>
           </div>

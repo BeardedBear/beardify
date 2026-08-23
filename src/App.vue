@@ -228,15 +228,17 @@ body {
   text-rendering: optimizelegibility;
 }
 
+/*
+ * The rail width lives in layout.css as --sidebar-width so overlays that must
+ * clear it (MinimizedWindows) read the same number instead of hardcoding their
+ * own. Below --tablet-down the token is 0 and the sidebar overlays rather than
+ * occupying a column, so the grid collapses to one track.
+ */
 #app-content {
   display: grid;
-  grid-template-columns: 19rem 1fr;
+  grid-template-columns: var(--sidebar-width) 1fr;
   overflow: hidden;
   position: relative;
-
-  @media (--hdpi) {
-    grid-template-columns: 25rem 1fr;
-  }
 
   @media (--tablet-down) {
     grid-template-columns: 1fr;

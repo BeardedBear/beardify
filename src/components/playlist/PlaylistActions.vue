@@ -21,8 +21,15 @@
         <i class="icon-followed" />
       </BdButton>
     </div>
-    <BdButton v-else icon-only variant="nude" @click="edit(playlistStore.playlist.id)">
-      <i class="icon-more-vertical" />
+    <BdButton
+      v-else
+      aria-label="Playlist options"
+      icon-only
+      title="Playlist options"
+      variant="nude"
+      @click="edit(playlistStore.playlist.id)"
+    >
+      <i aria-hidden="true" class="icon-more-vertical" />
     </BdButton>
   </div>
 </template>

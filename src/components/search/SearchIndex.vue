@@ -11,6 +11,8 @@
 </template>
 
 <script lang="ts" setup>
+import { onBeforeUnmount, onMounted } from "vue";
+
 import SearchAlbums from "@/components/search/SearchAlbums.vue";
 import SearchArtists from "@/components/search/SearchArtists.vue";
 import SearchInput from "@/components/search/SearchInput.vue";
@@ -20,9 +22,17 @@ import { useSearch } from "@/components/search/SearchStore";
 
 const searchStore = useSearch();
 
-document.addEventListener("keydown", (keyboardEvent: KeyboardEvent) => {
+/*
+ * Bound to the component's lifetime. Registered bare at setup scope it was
+ * never removed, so every time the search dialog opened it left another
+ * Escape handler on document behind it.
+ */
+function onEscape(keyboardEvent: KeyboardEvent): void {
   if (keyboardEvent.key === "Escape") searchStore.reset();
-});
+}
+
+onMounted(() => document.addEventListener("keydown", onEscape));
+onBeforeUnmount(() => document.removeEventListener("keydown", onEscape));
 </script>
 
 <style scoped>

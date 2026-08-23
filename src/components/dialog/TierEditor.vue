@@ -14,8 +14,16 @@
         <span class="tier-color" :style="{ backgroundColor: getTierColor(index, tiers.length) }" />
         <BdInput v-model="tier.label" class="tier-label" placeholder="Name" size="small" @input="commit" />
         <BdTooltip content="Remove category">
-          <BdButton :disabled="tiers.length <= 1" icon-only size="small" variant="danger" @click="removeTier(index)">
-            <i class="icon-x" />
+          <BdButton
+            :disabled="tiers.length <= 1"
+            aria-label="Remove this tier"
+            icon-only
+            size="small"
+            title="Remove this tier"
+            variant="danger"
+            @click="removeTier(index)"
+          >
+            <i aria-hidden="true" class="icon-x" />
           </BdButton>
         </BdTooltip>
       </div>

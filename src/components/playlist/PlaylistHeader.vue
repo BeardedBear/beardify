@@ -23,6 +23,23 @@
         </div>
       </div>
     </div>
+    <!--
+      Mobile routes through PlaylistOptionsDialog, which already bundles the
+      actions, the filter and the share block — the same convention ArtistHeader
+      uses for artist options. The .right column below used to try to be its own
+      mobile sheet, gated on an `is-open` class nothing ever set, so the filter,
+      share and every playlist action were simply unreachable on a phone.
+    -->
+    <BdButton
+      aria-label="Playlist options"
+      class="mobile-options"
+      icon-only
+      title="Playlist options"
+      variant="nude"
+      @click="dialogStore.open({ playlistId: playlistStore.playlist.id, type: 'playlistOptions' })"
+    >
+      <i aria-hidden="true" class="icon-more-vertical" />
+    </BdButton>
     <div class="right">
       <BdInput
         v-if="withFilter"
@@ -136,30 +153,21 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   margin-bottom: 0.5rem;
 }
 
+/*
+ * Reads the shared --page-inset so the title lines up with the album grid below
+ * it. The old private --header-padd also declared 50rem at --hdpi, which never
+ * applied: the --xl block below it matched too and won on source order.
+ */
 .playlist-header {
-  --header-padd: 5rem;
-
   display: flex;
   justify-content: space-between;
-  padding: 2rem var(--header-padd) 1rem;
+  padding: 2rem var(--page-inset) 1rem;
   transition:
     padding-right ease 0.2s,
     padding-left ease 0.2s;
 
-  @media (--narrow-desktop-down) {
-    --header-padd: 2rem;
-  }
-
   &.not-fit {
     padding: 0 0 2rem;
-  }
-
-  @media (--hdpi) {
-    --header-padd: 50rem;
-  }
-
-  @media (--xl) {
-    --header-padd: 2rem;
   }
 
   img {
@@ -179,59 +187,15 @@ function sumDuration(tracks: PlaylistTrack[]): number {
   gap: 0.5rem;
 
   @media (--mobile) {
-    background: var(--bg-color-dark);
-    border-radius: 1rem;
     display: none;
-    flex-direction: column;
-    gap: 1.5rem;
-    left: 50%;
-    padding: 3rem 2rem 2rem;
-    position: fixed;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    z-index: 1000;
-
-    &.is-open {
-      display: flex;
-    }
-
-    .search {
-      width: 100%;
-    }
   }
 }
 
-.mobile-options-toggle {
+.mobile-options {
   display: none;
-  font-size: var(--font-size-xl);
 
   @media (--mobile) {
-    display: block;
-  }
-}
-
-.mobile-close {
-  cursor: pointer;
-  display: none;
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
-
-  @media (--mobile) {
-    display: block;
-  }
-}
-
-.backdrop {
-  background: rgb(0 0 0 / 50%);
-  display: none;
-  inset: 0;
-  position: fixed;
-  z-index: 999;
-
-  @media (--mobile) {
-    display: block;
+    display: inline-flex;
   }
 }
 

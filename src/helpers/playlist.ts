@@ -7,6 +7,20 @@ import { cleanUrl } from "@/helpers/urls";
 import { useAuth } from "@/views/auth/AuthStore";
 
 /**
+ * Insert items into a playlist, optionally at a given index.
+ *
+ * Exists for undo: restoring a deleted album has to put it back where it was,
+ * not at the end of the collection. Spotify appends when `position` is omitted,
+ * which is the right default for an ordinary add.
+ * @param playlistId - The Spotify playlist ID
+ * @param uris - Track/episode URIs to insert, in order
+ * @param position - Zero-based index to insert at; appends when omitted
+ */
+export async function addPlaylistItems(playlistId: string, uris: string[], position?: number): Promise<void> {
+  await instance().post(`playlists/${playlistId}/items`, position === undefined ? { uris } : { position, uris });
+}
+
+/**
  * Returns true if the current authenticated user owns the given playlist.
  * @param owner - The public user object from the playlist's owner field
  */

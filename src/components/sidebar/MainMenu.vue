@@ -11,7 +11,7 @@
     <RouterLink
       :class="{ 'active-route': $route.path.includes('/releases') }"
       :to="`/releases`"
-      class="link disabled font-bold squircle"
+      class="link font-bold squircle"
     >
       <i class="icon icon-album" />
       Releases
