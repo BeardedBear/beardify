@@ -1,54 +1,15 @@
 import { defineStore } from "pinia";
 
-import {
-  Config,
-  schemeApple,
-  schemeBlue,
-  schemeCrimson,
-  schemeDefault,
-  SchemeLabel,
-  ThemeColor,
-  themeDark,
-  ThemeLabel,
-  themeLight,
-} from "@/@types/Config";
+import { Config } from "@/@types/Config";
 
 export const useConfig = defineStore("config", {
   actions: {
     close() {
-      this.bye = true;
-      setTimeout(() => {
-        this.show = false;
-        this.bye = false;
-      }, 200);
+      this.show = false;
     },
 
     open() {
       this.show = true;
-    },
-
-    switchScheme(schemeLabel: SchemeLabel) {
-      this.schemeLabel = schemeLabel;
-      switch (schemeLabel) {
-        case "apple":
-          this.scheme = schemeApple;
-          break;
-        case "blue":
-          this.scheme = schemeBlue;
-          break;
-        case "crimson":
-          this.scheme = schemeCrimson;
-          break;
-        default:
-          this.scheme = schemeDefault;
-      }
-      this.scheme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
-    },
-
-    switchTheme(themeLabel: ThemeLabel) {
-      this.themeLabel = themeLabel;
-      this.theme = themeLabel === "light" ? themeLight : themeDark;
-      this.theme.forEach((c: ThemeColor) => document.documentElement.style.setProperty(c.var, c.color));
     },
 
     toggleTierListSideLabels(value: boolean) {
@@ -59,13 +20,10 @@ export const useConfig = defineStore("config", {
   persist: {
     key: "beardify-config",
   },
+  // Les couleurs ne sont plus ici : bearded-ui les tient dans `useTheme()`, qui
+  // les persiste sous sa propre clé `bearded-ui-theme`.
   state: (): Config => ({
-    bye: false,
-    scheme: schemeDefault,
-    schemeLabel: "default",
     show: false,
-    theme: themeDark,
-    themeLabel: "dark",
     tierListSideLabels: true,
   }),
 });

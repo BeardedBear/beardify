@@ -1,6 +1,6 @@
 <template>
   <div v-if="playlistStore.playlist.name === ''" class="loader">
-    <Loader />
+    <BdLoader />
   </div>
   <PageScroller v-else ref="scrollerRef">
     <PageFit>
@@ -114,6 +114,7 @@
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
 import { computed, onMounted, ref, watch } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 
@@ -125,7 +126,6 @@ import { useConfig } from "@/components/config/ConfigStore";
 import Header from "@/components/playlist/PlaylistHeader.vue";
 import TierRow from "@/components/playlist/TierRow.vue";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
-import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
 import { useCollectionRanking } from "@/composables/useCollectionRanking";

@@ -22,7 +22,7 @@
           class="dot desktop-only"
           >·
         </span>
-        <Tooltip :text="getCountry" placement="bottom">
+        <BdTooltip :content="getCountry" side="bottom">
           <img
             :src="getCountryFlagUrl(artistMetas.country)"
             :alt="artistMetas?.area?.name || artistMetas?.country"
@@ -31,7 +31,7 @@
           <strong>
             {{ artistMetas?.["begin-area"]?.name || artistMetas?.area?.name }}
           </strong>
-        </Tooltip>
+        </BdTooltip>
       </template>
       <template
         v-else-if="artistMetas?.['begin-area']?.name || artistMetas?.area?.name"
@@ -62,10 +62,10 @@
 </template>
 
 <script lang="ts" setup>
+import { BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 
-import Tooltip from "@/components/ui/Tooltip.vue";
 import { getCountryFlagUrl, getCountryName } from "@/helpers/country";
 import { formatDate } from "@/helpers/date";
 import { useArtist } from "@/views/artist/ArtistStore";

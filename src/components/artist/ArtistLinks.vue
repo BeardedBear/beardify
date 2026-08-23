@@ -1,43 +1,42 @@
 <template>
   <div :class="{ floating }" class="links">
-    <Tooltip text="Sputnik" placement="bottom">
-      <ButtonIndex variant="nude" @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')">
+    <BdTooltip content="Sputnik" side="bottom">
+      <BdButton variant="nude" @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')">
         <i class="icon-sputnik" />
         <span class="link-name">Sputnik</span>
-      </ButtonIndex>
-    </Tooltip>
-    <Tooltip text="Discogs" placement="bottom">
-      <ButtonIndex icon-only variant="nude" @click.stop.prevent="openLink(link.discogs)">
+      </BdButton>
+    </BdTooltip>
+    <BdTooltip content="Discogs" side="bottom">
+      <BdButton icon-only variant="nude" @click.stop.prevent="openLink(link.discogs)">
         <i class="icon-discogs" />
         <span class="link-name">Discogs</span>
-      </ButtonIndex>
-    </Tooltip>
-    <Tooltip text="RateYourMusic" placement="bottom">
-      <ButtonIndex icon-only variant="nude" @click.stop.prevent="openLink(link.rym)">
+      </BdButton>
+    </BdTooltip>
+    <BdTooltip content="RateYourMusic" side="bottom">
+      <BdButton icon-only variant="nude" @click.stop.prevent="openLink(link.rym)">
         <i class="icon-rym" />
         <span class="link-name">RateYourMusic</span>
-      </ButtonIndex>
-    </Tooltip>
+      </BdButton>
+    </BdTooltip>
     <template v-if="!floating">
       <span class="separator">·</span>
-      <Tooltip v-for="socialLink in socialLinks" :key="socialLink.url" :text="socialLink.name" placement="bottom">
-        <ButtonIndex icon-only variant="nude" @click.stop.prevent="openLink(socialLink.url)">
+      <BdTooltip v-for="socialLink in socialLinks" :key="socialLink.url" :content="socialLink.name" side="bottom">
+        <BdButton icon-only variant="nude" @click.stop.prevent="openLink(socialLink.url)">
           <i :class="socialLink.icon" />
           <span class="link-name">{{ socialLink.name }}</span>
-        </ButtonIndex>
-      </Tooltip>
+        </BdButton>
+      </BdTooltip>
     </template>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdButton, BdTooltip } from "bearded-ui";
 import { computed, onMounted, onUpdated, ref } from "vue";
 
 import type { SocialLink } from "@/helpers/socialLinks";
 
 import { useFrame } from "@/components/frame/FrameStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import Tooltip from "@/components/ui/Tooltip.vue";
 import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
 import { openLink } from "@/helpers/openLink";
 import { socialLinksFromDiscogs, socialLinksFromMusicBrainz, socialLinksFromWikidata } from "@/helpers/socialLinks";
@@ -124,7 +123,7 @@ onUpdated(() => updateLinks());
 
 <style>
 
-.links .tooltip-wrapper {
+.links .bd-tooltip-trigger {
   @media (--mobile) {
     width: 100%;
   }
@@ -170,7 +169,7 @@ onUpdated(() => updateLinks());
       display: none;
     }
 
-    .button {
+    .bd-button {
       justify-content: flex-start;
       opacity: 0.95;
       padding-left: 0.6rem;

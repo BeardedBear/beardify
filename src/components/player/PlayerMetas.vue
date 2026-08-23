@@ -12,9 +12,9 @@
           <span class="trackname font-bold">{{ currentTrack.name }}</span>
         </template>
         <template v-else>
-          <Tooltip :text="currentTrack.name">
+          <BdTooltip :content="currentTrack.name">
             <span class="trackname font-bold">{{ truncatedTrackName }}</span>
-          </Tooltip>
+          </BdTooltip>
         </template>
         <span class="separator">&nbsp;·&nbsp;</span>
         <span class="artists">
@@ -31,13 +31,13 @@
 </template>
 
 <script lang="ts" setup>
+import { BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
-import Tooltip from "@/components/ui/Tooltip.vue";
 import { transformUriToid } from "@/helpers/helper";
 
 const playerStore = usePlayer();

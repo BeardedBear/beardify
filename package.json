@@ -27,6 +27,7 @@
     "@tauri-apps/plugin-process": "^2.3.1",
     "@tauri-apps/plugin-updater": "^2.10.1",
     "@vueuse/motion": "^3.0.3",
+    "bearded-ui": "github:BeardedBear/bearded-ui#release",
     "crypto-js": "^4.2.0",
     "date-fns": "^4.4.0",
     "dompurify": "^3.4.12",

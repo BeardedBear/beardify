@@ -24,15 +24,15 @@
       </div>
     </div>
     <div class="right">
-      <input
+      <BdInput
         v-if="withFilter"
         ref="filterInput"
         v-model="playlistStore.filter"
-        class="search font-bold squircle"
+        class="search"
         placeholder="Filter..."
         type="search"
       />
-      <ButtonIndex
+      <BdButton
         v-if="showMigrateButton"
         :title="migrateButtonTooltip"
         variant="border"
@@ -40,8 +40,8 @@
       >
         <i class="icon-folder" />
         Convert to new collection format
-      </ButtonIndex>
-      <ButtonIndex
+      </BdButton>
+      <BdButton
         v-if="canShare"
         icon-only
         title="Share this collection"
@@ -49,13 +49,14 @@
         @click="dialogStore.open({ playlistId: playlistStore.playlist.id, type: 'shareCollection' })"
       >
         <i class="icon-share" />
-      </ButtonIndex>
+      </BdButton>
       <Actions />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdButton, BdInput } from "bearded-ui";
 import { computed, onMounted, ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 
@@ -63,7 +64,6 @@ import { PlaylistTrack } from "@/@types/Playlist";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Actions from "@/components/playlist/PlaylistActions.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { stripCollectionTags } from "@/helpers/collectionOptions";
 import { timecodeWithUnits } from "@/helpers/date";
 import { isLegacyCollectionName } from "@/helpers/isCollection";
@@ -80,7 +80,7 @@ const props = defineProps<{
 const dialogStore = useDialog();
 const playlistStore = usePlaylist();
 const route = useRoute();
-const filterInput = ref<HTMLInputElement | null>(null);
+const filterInput = ref<InstanceType<typeof BdInput> | null>(null);
 
 const canShare = computed<boolean>(
   () =>
@@ -114,12 +114,6 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 <style scoped>
 
 .search {
-  background: var(--bg-color);
-  border: none;
-  border-radius: 1rem;
-  color: var(--font);
-  outline: none;
-  padding: 0.6rem 1rem;
   width: 10rem;
 }
 

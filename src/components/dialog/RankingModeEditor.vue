@@ -2,28 +2,13 @@
   <div class="option-list section">
     <div class="option">
       <label for="rankingMode">Ranking</label>
-      <div class="buttons">
-        <ButtonIndex :variant="modeType === 'off' ? 'primary' : 'default'" @click="setMode('off')">Off</ButtonIndex>
-        <ButtonIndex :variant="modeType === 'top' ? 'primary' : 'default'" @click="setMode('top')">Top</ButtonIndex>
-        <ButtonIndex :variant="modeType === 'tierlist' ? 'primary' : 'default'" @click="setMode('tierlist')">
-          Tier list
-        </ButtonIndex>
-      </div>
+      <BdButtonGroup v-model="modeType" full :options="MODE_OPTIONS" @update:model-value="commit" />
     </div>
   </div>
   <div v-if="modeType === 'top'" class="option-list section">
     <div class="option">
       <label for="topPreset">Preset</label>
-      <div class="buttons">
-        <ButtonIndex
-          v-for="preset in TOP_PRESETS"
-          :key="preset.id"
-          :variant="isSelectedPreset(preset) ? 'primary' : 'default'"
-          @click="selectPreset(preset)"
-        >
-          {{ preset.label }}
-        </ButtonIndex>
-      </div>
+      <BdButtonGroup v-model="selectedPresetId" full :options="presetOptions" />
     </div>
   </div>
   <div v-else-if="modeType === 'tierlist'" class="section">
@@ -36,11 +21,19 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { BdButtonGroup, BdOption } from "bearded-ui";
+import { computed, ref, watch } from "vue";
 
 import TierEditor from "@/components/dialog/TierEditor.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import { CollectionRankingMode, TierList, TOP_PRESETS, TopPreset, TopTiers } from "@/helpers/collectionOptions";
+import { CollectionRankingMode, TierList, TOP_PRESETS, TopTiers } from "@/helpers/collectionOptions";
+
+const MODE_OPTIONS: BdOption[] = [
+  { label: "Off", value: "off" },
+  { label: "Top", value: "top" },
+  { label: "Tier list", value: "tierlist" },
+];
+
+const presetOptions: BdOption[] = TOP_PRESETS.map((preset) => ({ label: preset.label, value: preset.id }));
 
 const props = withDefaults(defineProps<{ descriptionText?: string; modelValue: CollectionRankingMode }>(), {
   descriptionText: "",
@@ -55,7 +48,7 @@ function defaultTierList(): TierList {
   ];
 }
 
-const modeType = ref(props.modelValue.type);
+const modeType = ref<CollectionRankingMode["type"]>(props.modelValue.type);
 const topTiers = ref<TopTiers>(props.modelValue.type === "top" ? props.modelValue.tiers : TOP_PRESETS[1].tiers);
 const tierListTiers = ref<TierList>(props.modelValue.type === "tierlist" ? props.modelValue.tiers : defaultTierList());
 
@@ -79,19 +72,15 @@ function handleTierListChange(value: TierList): void {
   commit();
 }
 
-function isSelectedPreset(preset: TopPreset): boolean {
-  return preset.tiers.join("-") === topTiers.value.join("-");
-}
-
-function selectPreset(preset: TopPreset): void {
-  topTiers.value = preset.tiers;
-  commit();
-}
-
-function setMode(mode: CollectionRankingMode["type"]): void {
-  modeType.value = mode;
-  commit();
-}
+const selectedPresetId = computed<string>({
+  get: () => TOP_PRESETS.find((preset) => preset.tiers.join("-") === topTiers.value.join("-"))?.id ?? "",
+  set: (id) => {
+    const preset = TOP_PRESETS.find((p) => p.id === id);
+    if (!preset) return;
+    topTiers.value = preset.tiers;
+    commit();
+  },
+});
 </script>
 
 <style scoped>
@@ -106,12 +95,6 @@ function setMode(mode: CollectionRankingMode["type"]): void {
 
 .section {
   margin-bottom: 1.2rem;
-}
-
-.buttons {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
 }
 
 label {

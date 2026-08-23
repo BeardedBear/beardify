@@ -17,20 +17,20 @@
     <div>
       <div class="options">
         <div class="links">
-          <ButtonIndex
+          <BdButton
             icon-only
             variant="nude"
             @click="openLink(`https://www.google.com/search?q=${album.artists[0].name}+${album.name}`)"
           >
             <i class="icon-google" />
-          </ButtonIndex>
-          <ButtonIndex
+          </BdButton>
+          <BdButton
             icon-only
             variant="nude"
             @click="openLink(`https://www.discogs.com/fr/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
           >
             <i class="icon-discogs" />
-          </ButtonIndex>
+          </BdButton>
         </div>
         <ShareContent :beardify-url="$route.fullPath" :spotify-url="props.album.external_urls.spotify" />
       </div>
@@ -39,10 +39,11 @@
 </template>
 
 <script lang="ts" setup>
+import { BdButton } from "bearded-ui";
+
 import { Album } from "@/@types/Album";
 import { Track, TrackSimplified } from "@/@types/Track";
 import ArtistList from "@/components/artist/ArtistList.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 import { date, timecodeWithUnits } from "@/helpers/date";
 import { openLink } from "@/helpers/openLink";

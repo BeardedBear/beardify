@@ -3,9 +3,9 @@
     <Transition name="fade">
       <div v-if="waiting" class="waiting-overlay">
         <div class="waiting-card">
-          <LoadingDots />
+          <BdLoader />
           <p class="waiting-label">Waiting for Spotify authorization…</p>
-          <button class="button button-ghost" @click="cancelWaiting">Cancel</button>
+          <BdButton variant="border" @click="cancelWaiting">Cancel</BdButton>
         </div>
       </div>
     </Transition>
@@ -33,24 +33,25 @@
           </li>
         </ul>
       </div>
-      <a
+      <BdButton
+        class="spotify"
         :href="spotifyAuthUrl"
-        class="button button-spotify"
+        size="big"
         @click.prevent="handleLogin"
       >
         <i class="icon icon-spotify" />
         Connect with Spotify (Premium)
-      </a>
+      </BdButton>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdButton, BdLoader } from "bearded-ui";
 import { computed, ref } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
 import { api } from "@/api";
-import LoadingDots from "@/components/ui/LoadingDots.vue";
 import { clearAuthData } from "@/helpers/authUtils";
 import { notification } from "@/helpers/notifications";
 import { isTauri } from "@/helpers/platform";
@@ -107,6 +108,16 @@ async function refreshChallenge(): Promise<void> {
 </script>
 
 <style scoped>
+
+.spotify {
+  background-color: #1db954;
+  color: #fff;
+
+  &:hover {
+    background-color: #1ed760;
+    color: #fff;
+  }
+}
 
 @keyframes pop-login {
   from {

@@ -2,21 +2,21 @@
   <div ref="page" class="page" @scroll="onScroll">
     <slot />
     <div class="nav">
-      <ButtonIndex icon-only size="small" @click="scrollToTop()">
+      <BdButton icon-only size="small" @click="scrollToTop()">
         <i class="icon-arrow-up" />
-      </ButtonIndex>
-      <ButtonIndex icon-only size="small" @click="scrollToBottom()">
+      </BdButton>
+      <BdButton icon-only size="small" @click="scrollToBottom()">
         <i class="icon-arrow-down" />
-      </ButtonIndex>
+      </BdButton>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdButton } from "bearded-ui";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 
 const page = ref<HTMLElement | null>(null);

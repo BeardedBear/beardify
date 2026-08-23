@@ -12,19 +12,15 @@
       <div v-for="(tier, index) in tiers" :key="index" class="tier-row">
         <i class="icon-menu tier-drag-handle" title="Drag to reorder" />
         <span class="tier-color" :style="{ backgroundColor: getTierColor(index, tiers.length) }" />
-        <input v-model="tier.label" class="input tier-label font-bold" placeholder="Name" type="text" @input="commit" />
-        <button
-          class="remove"
-          :disabled="tiers.length <= 1"
-          title="Remove category"
-          type="button"
-          @click="removeTier(index)"
-        >
-          ×
-        </button>
+        <BdInput v-model="tier.label" class="tier-label" placeholder="Name" size="small" @input="commit" />
+        <BdTooltip content="Remove category">
+          <BdButton :disabled="tiers.length <= 1" icon-only size="small" variant="danger" @click="removeTier(index)">
+            <i class="icon-x" />
+          </BdButton>
+        </BdTooltip>
       </div>
     </VueDraggable>
-    <ButtonIndex variant="border" @click="addTier">+ Add category</ButtonIndex>
+    <BdButton variant="border" @click="addTier">+ Add category</BdButton>
     <div class="budget" :class="{ over: remaining < 0 }">
       {{ remaining }} / {{ MAX_DESCRIPTION_LENGTH }} characters left
     </div>
@@ -32,10 +28,10 @@
 </template>
 
 <script lang="ts" setup>
+import { BdButton, BdInput, BdTooltip } from "bearded-ui";
 import { computed, ref, watch } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import {
   buildCollectionDescription,
   getTierColor,
@@ -116,39 +112,8 @@ function removeTier(index: number): void {
   width: 1.2rem;
 }
 
-.input {
-  background-color: var(--bg-color-light);
-  border: 0;
-  border-radius: 0.3rem;
-  color: currentcolor;
-  outline: 0;
-  padding: 0.6rem 0.8rem;
-}
-
 .tier-label {
   flex: 1;
-}
-
-.remove {
-  background: none;
-  border: 0;
-  border-radius: 0.3rem;
-  color: currentcolor;
-  cursor: pointer;
-  font-size: var(--font-size-lg);
-  line-height: 1;
-  opacity: 0.6;
-  padding: 0.4rem 0.6rem;
-
-  &:disabled {
-    cursor: default;
-    opacity: 0.2;
-  }
-
-  &:hover:not(:disabled) {
-    background-color: var(--bg-color-light);
-    opacity: 1;
-  }
 }
 
 .budget {

@@ -15,16 +15,17 @@
       <SeekBar :click-disable="isTouchDevice()" />
     </div>
   </template>
-  <Loader v-else />
+  <BdLoader v-else />
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
+
 import Device from "@/components/player/device/DeviceIndex.vue";
 import Controls from "@/components/player/PlayerControls.vue";
 import What from "@/components/player/PlayerMetas.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import SeekBar from "@/components/player/SeekBar.vue";
-import Loader from "@/components/ui/LoadingDots.vue";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 
 const playerStore = usePlayer();

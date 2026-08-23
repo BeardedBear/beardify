@@ -7,10 +7,10 @@
   >
     <div class="load-error">
       <i class="icon-warning" />
-      <ButtonIndex variant="nude" @click="sidebarStore.refreshPlaylists()">
+      <BdButton variant="nude" @click="sidebarStore.refreshPlaylists()">
         <i class="icon-refresh" />
         Retry
-      </ButtonIndex>
+      </BdButton>
     </div>
   </div>
   <div
@@ -18,7 +18,7 @@
     class="sidebar loading"
     :class="{ 'is-open': sidebarStore.isOpen }"
   >
-    <Loader />
+    <BdLoader />
   </div>
   <div
     v-else
@@ -31,24 +31,25 @@
       <div v-if="!collectionSearchOpened" class="heading title">
         <div class="title-name">Collections</div>
         <div class="options">
-          <ButtonIndex no-default-class class="icon" @click="sidebarStore.refreshPlaylists()">
+          <button type="button" class="icon" @click="sidebarStore.refreshPlaylists()">
             <i class="icon-refresh" />
-          </ButtonIndex>
-          <ButtonIndex no-default-class class="icon" @click="() => (collectionSearchOpened = true)">
+          </button>
+          <button type="button" class="icon" @click="() => (collectionSearchOpened = true)">
             <i class="icon-search" />
-          </ButtonIndex>
-          <ButtonIndex no-default-class class="icon add" @click="dialogStore.open({ type: 'createCollection' })">
+          </button>
+          <button type="button" class="icon add" @click="dialogStore.open({ type: 'createCollection' })">
             <i class="icon-plus" />
-          </ButtonIndex>
+          </button>
         </div>
       </div>
-      <div v-else class="heading title">
-        <input
+      <div v-else ref="collectionSearchWrap" class="heading title">
+        <BdInput
           ref="collectionSearchInput"
           v-model="collectionSearchQuery"
-          class="search font-bold"
+          class="search"
           placeholder="Search collection"
-          type="text"
+          size="small"
+          type="search"
         />
       </div>
       <div v-if="!sidebarStore.collections.length" class="empty">
@@ -69,8 +70,8 @@
             <span v-if="playlist.isTierList" class="tier-badge" title="Tier list enabled">TIER</span>
           </div>
           <VisibilityIcon :playlist="playlist" />
-          <ButtonIndex
-            no-default-class
+          <button
+type="button"
             class="edit"
             @click.prevent="
               dialogStore.open({
@@ -80,7 +81,7 @@
             "
           >
             <i class="icon-more-vertical" />
-          </ButtonIndex>
+          </button>
         </router-link>
       </div>
     </div>
@@ -88,24 +89,25 @@
       <div v-if="!playlistSearchOpened" class="heading title">
         <div class="title-name">Playlists</div>
         <div class="options">
-          <ButtonIndex no-default-class class="icon" @click="sidebarStore.refreshPlaylists()">
+          <button type="button" class="icon" @click="sidebarStore.refreshPlaylists()">
             <i class="icon-refresh" />
-          </ButtonIndex>
-          <ButtonIndex no-default-class class="icon" @click="() => (playlistSearchOpened = true)">
+          </button>
+          <button type="button" class="icon" @click="() => (playlistSearchOpened = true)">
             <i class="icon-search" />
-          </ButtonIndex>
-          <ButtonIndex no-default-class class="icon add" @click="dialogStore.open({ type: 'createPlaylist' })">
+          </button>
+          <button type="button" class="icon add" @click="dialogStore.open({ type: 'createPlaylist' })">
             <i class="icon-plus" />
-          </ButtonIndex>
+          </button>
         </div>
       </div>
-      <div v-else class="heading title">
-        <input
+      <div v-else ref="playlistSearchWrap" class="heading title">
+        <BdInput
           ref="playlistSearchInput"
           v-model="playlistSearchQuery"
-          class="search font-bold"
+          class="search"
           placeholder="Search playlist"
-          type="text"
+          size="small"
+          type="search"
         />
       </div>
       <div v-for="(playlist, index) in filteredPlaylists" :key="index">
@@ -120,8 +122,8 @@
             {{ playlist.name }}
           </div>
           <VisibilityIcon :playlist="playlist" />
-          <ButtonIndex
-            no-default-class
+          <button
+type="button"
             class="edit"
             @click.prevent="
               dialogStore.open({
@@ -131,7 +133,7 @@
             "
           >
             <i class="icon-more-vertical" />
-          </ButtonIndex>
+          </button>
         </router-link>
       </div>
     </div>
@@ -140,6 +142,7 @@
 
 <script lang="ts" setup>
 import { onClickOutside } from "@vueuse/core";
+import { BdButton, BdInput, BdLoader } from "bearded-ui";
 import { computed, ref, Ref, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 
@@ -149,8 +152,6 @@ import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
 import Topbar from "@/components/sidebar/SidebarHead.vue";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
 import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import Loader from "@/components/ui/LoadingDots.vue";
 import { parseCollectionRankingMode } from "@/helpers/collectionOptions";
 import { useAuth } from "@/views/auth/AuthStore";
 
@@ -162,15 +163,17 @@ const route = useRoute();
 // Collection search
 const collectionSearchOpened = ref<boolean>(false);
 const collectionSearchQuery = ref<string>("");
-const collectionSearchInput: Ref<HTMLInputElement | null> = ref(null);
+const collectionSearchInput: Ref<InstanceType<typeof BdInput> | null> = ref(null);
+// The wrapper, not the field: BdInput is a component, and VueUse's onClickOutside
+// only takes an element ref.
+const collectionSearchWrap: Ref<HTMLElement | null> = ref(null);
 
-onClickOutside(collectionSearchInput, () => {
+onClickOutside(collectionSearchWrap, () => {
   collectionSearchOpened.value = false;
   collectionSearchQuery.value = "";
-  collectionSearchInput.value = null;
 });
 
-watch(collectionSearchInput, () => collectionSearchInput.value && collectionSearchInput.value.focus());
+watch(collectionSearchInput, () => collectionSearchInput.value?.focus());
 
 // Parsed once per collections change, independent of the search query, so typing
 // in the filter box doesn't re-parse every description on each keystroke.
@@ -195,15 +198,17 @@ const filteredCollections = computed(() => {
 // Playlist search
 const playlistSearchOpened = ref<boolean>(false);
 const playlistSearchQuery = ref<string>("");
-const playlistSearchInput: Ref<HTMLInputElement | null> = ref(null);
+const playlistSearchInput: Ref<InstanceType<typeof BdInput> | null> = ref(null);
+// The wrapper, not the field: BdInput is a component, and VueUse's onClickOutside
+// only takes an element ref.
+const playlistSearchWrap: Ref<HTMLElement | null> = ref(null);
 
-onClickOutside(playlistSearchInput, () => {
+onClickOutside(playlistSearchWrap, () => {
   playlistSearchOpened.value = false;
   playlistSearchQuery.value = "";
-  playlistSearchInput.value = null;
 });
 
-watch(playlistSearchInput, () => playlistSearchInput.value && playlistSearchInput.value.focus());
+watch(playlistSearchInput, () => playlistSearchInput.value?.focus());
 
 // Optimized: pre-computed filtered playlists with memoized toLowerCase
 const filteredPlaylists = computed(() => {
@@ -384,16 +389,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 }
 
 .search {
-  background-color: var(--bg-color-light);
-  border: none;
-  border-radius: 0.2rem;
-  color: var(--font-color);
-  padding: 0.2rem 0.5rem;
   width: 100%;
-
-  &:focus {
-    outline: 0;
-  }
 }
 
 .title {

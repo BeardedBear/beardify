@@ -1,28 +1,28 @@
 <template>
   <div class="search">
-    <input
+    <BdInput
       ref="input"
       v-model="query"
-      class="input font-bold squircle"
       placeholder="Recherche..."
-      type="text"
+      size="big"
+      type="search"
       @input="searchStore.updateQuery(query)"
     />
-    <ButtonIndex v-if="query" no-default-class class="reset" @click="clearQuery()">
+    <BdButton v-if="query" class="reset" icon-only size="small" @click="clearQuery()">
       <i class="icon-x" />
-    </ButtonIndex>
+    </BdButton>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdButton, BdInput } from "bearded-ui";
 import { onMounted, ref } from "vue";
 
 import { useSearch } from "@/components/search/SearchStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 const searchStore = useSearch();
 const query = ref<string>("");
-const input = ref<HTMLInputElement | null>(null);
+const input = ref<InstanceType<typeof BdInput> | null>(null);
 
 function clearQuery(): void {
   searchStore.clear();
@@ -30,11 +30,9 @@ function clearQuery(): void {
 }
 
 onMounted(() => {
-  if (input.value) {
-    input.value.focus();
-    input.value.value = searchStore.query;
-    input.value.setSelectionRange(0, searchStore.query.length);
-  }
+  query.value = searchStore.query;
+  input.value?.focus();
+  input.value?.select();
 });
 </script>
 
@@ -47,29 +45,10 @@ onMounted(() => {
   position: relative;
 }
 
-.input {
-  background-color: var(--bg-color-light);
-  border: 0;
-  border-radius: var(--search-radius);
-  color: currentcolor;
-  outline: 0;
-  padding: 0.8rem 1.2rem;
-  width: 100%;
-}
-
 .reset {
-  background-color: var(--bg-color-lighter);
-  border: 0;
-  border-radius: var(--search-radius);
-  color: currentcolor;
-  cursor: pointer;
-  font-size: var(--font-size-base);
-  padding: 0.3rem;
   position: absolute;
   right: 1.8rem;
-  text-align: center;
   top: 50%;
   transform: translateY(-50%);
-  width: 2.2rem;
 }
 </style>

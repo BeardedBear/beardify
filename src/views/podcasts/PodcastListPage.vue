@@ -1,6 +1,6 @@
 <template>
   <div v-if="!podcastsStore.list && !podcastsStore.myPodcasts.length" class="loader">
-    <Loader />
+    <BdLoader />
   </div>
   <div v-else ref="scrollRef" class="podcasts" @scroll="onScroll">
     <PageFit>
@@ -8,7 +8,7 @@
         <div class="name font-bold">Podcasts</div>
       </div>
       <div v-if="!podcastsStore.myPodcasts.length">
-        <Loader />
+        <BdLoader />
       </div>
       <div v-else class="podcast-list">
         <PodcastCard
@@ -23,11 +23,11 @@
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 
 import PodcastCard from "@/components/podcast/PodcastCard.vue";
-import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { usePodcasts } from "@/views/podcasts/PodcastsStore";

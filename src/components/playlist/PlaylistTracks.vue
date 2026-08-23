@@ -56,15 +56,16 @@
         {{ timecode(track.item.duration_ms) }}
       </div>
       <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
-        <ButtonIndex icon-only variant="nude" class="delete" @click.prevent.stop="deleteSong(track.item.uri)">
+        <BdButton icon-only variant="nude" class="delete" @click.prevent.stop="deleteSong(track.item.uri)">
           <i class="icon-trash-2" />
-        </ButtonIndex>
+        </BdButton>
       </div>
     </div>
   </template>
 </template>
 
 <script lang="ts" setup>
+import { BdButton } from "bearded-ui";
 import { computed } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
@@ -74,7 +75,6 @@ import AlbumLink from "@/components/album/AlbumLink.vue";
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { date, timecode } from "@/helpers/date";
 import { isCurrentTrack } from "@/helpers/helper";
 import { notification } from "@/helpers/notifications";

@@ -12,24 +12,24 @@
       </div>
     </div>
     <div class="options">
-      <ButtonIndex @click="addTrackToQueue(track.uri)">Add</ButtonIndex>
-      <ButtonIndex
-        variant="nude"
-        no-default-class
+      <BdButton @click="addTrackToQueue(track.uri)">Add</BdButton>
+      <button
+type="button"
         class="link"
         @click="openLink(`https://www.youtube.com/results?search_query=${track?.artists[0].name}+${track?.name}`)"
       >
         <i class="icon-youtube" />
-      </ButtonIndex>
+      </button>
       <ShareContent :spotify-url="`https://open.spotify.com/track/${track.id}`" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdButton } from "bearded-ui";
+
 import { Track, TrackSimplified } from "@/@types/Track";
 import { usePlayer } from "@/components/player/PlayerStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 import { openLink } from "@/helpers/openLink";
 
@@ -76,6 +76,8 @@ defineProps<{
 
   .link {
     align-items: center;
+    background-color: transparent;
+    border: 0;
     color: currentcolor;
     cursor: pointer;
     display: flex;

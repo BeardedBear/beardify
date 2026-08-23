@@ -16,27 +16,25 @@
     <div class="visual">
       <div :class="{ 'is-playing': isPlaying }" class="cover">
         <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" class="img" @click="handleCoverClick" />
-        <ButtonIndex no-default-class class="play squircle" type="button" @click.stop="handlePlayAlbum(album.uri)">
+        <button class="play squircle" type="button" @click.stop="handlePlayAlbum(album.uri)">
           <i class="icon-play" />
-        </ButtonIndex>
-        <ButtonIndex
+        </button>
+        <button
           v-if="canSave"
-          no-default-class
           class="button-action add squircle"
           type="button"
           @click.stop="dialogStore.open({ type: 'addalbum', albumId: album.id })"
         >
           <i class="icon-plus" />
-        </ButtonIndex>
-        <ButtonIndex
+        </button>
+        <button
           v-if="canDelete"
-          no-default-class
           class="button-action delete squircle"
           type="button"
           @click.stop="deleteAlbum(album.id)"
         >
           <i class="icon-trash-2" />
-        </ButtonIndex>
+        </button>
         <div
           v-if="variantCount && variantCount > 0"
           class="album-group-stack-indicator"
@@ -80,7 +78,6 @@ import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
 import Cover from "@/components/ui/AlbumCover.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
 import { playAlbum } from "@/helpers/playAlbum"; // Import the playAlbum helper

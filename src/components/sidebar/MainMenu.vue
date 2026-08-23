@@ -1,28 +1,26 @@
 <template>
   <div class="menu">
-    <ButtonIndex
+    <RouterLink
       :class="{ 'active-route': $route.path.includes('/podcasts') }"
       :to="`/podcasts`"
       class="link font-bold squircle"
-      no-default-class
     >
       <i class="icon icon-podcast" />
       Podcasts
-    </ButtonIndex>
-    <ButtonIndex
+    </RouterLink>
+    <RouterLink
       :class="{ 'active-route': $route.path.includes('/releases') }"
       :to="`/releases`"
       class="link disabled font-bold squircle"
-      no-default-class
     >
       <i class="icon icon-album" />
       Releases
-    </ButtonIndex>
+    </RouterLink>
   </div>
 </template>
 
 <script lang="ts" setup>
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import { RouterLink } from "vue-router";
 </script>
 
 <style scoped>

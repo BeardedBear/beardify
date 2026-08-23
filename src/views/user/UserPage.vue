@@ -1,6 +1,6 @@
 <template>
   <div v-if="!userStore.user" class="loader">
-    <LoadingDots />
+    <BdLoader />
   </div>
   <div v-else ref="scrollRef" class="user-page" @scroll="onScroll">
     <div class="head">
@@ -53,11 +53,11 @@
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
 import { ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 
 import Cover from "@/components/ui/AlbumCover.vue";
-import LoadingDots from "@/components/ui/LoadingDots.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useUserStore } from "@/views/user/UserStore";

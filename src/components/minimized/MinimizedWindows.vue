@@ -1,32 +1,6 @@
 <template>
   <div class="minimized-windows">
     <div
-      v-if="dialogStore.show && dialogStore.isMinimized"
-      v-motion
-      :initial="{ scale: 0, opacity: 0, x: -50 }"
-      :enter="{
-        scale: 1,
-        opacity: 1,
-        x: 0,
-        transition: { type: 'spring', stiffness: 260, damping: 20 },
-      }"
-      :leave="{ scale: 0, opacity: 0, x: -50, transition: { duration: 200 } }"
-      class="minimized-window squircle"
-    >
-      <div class="window-content" @click="dialogStore.restore()">
-        <i class="icon-message-square" />
-        <span>{{ getDialogTitle() }}</span>
-      </div>
-      <button
-        class="close-btn"
-        aria-label="Close dialog"
-        @click.stop="dialogStore.close()"
-      >
-        <i class="icon-x" />
-      </button>
-    </div>
-
-    <div
       v-if="frameStore.show && frameStore.isMinimized"
       v-motion
       :initial="{ scale: 0, opacity: 0, x: -50 }"
@@ -55,32 +29,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useDialog } from "@/components/dialog/DialogStore";
 import { useFrame } from "@/components/frame/FrameStore";
 
-const dialogStore = useDialog();
 const frameStore = useFrame();
 
-const getDialogTitle = (): string => {
-  switch (dialogStore.type) {
-    case "addalbum":
-      return "Add album";
-    case "addSong":
-      return "Add to playlist";
-    case "createCollection":
-      return "Create collection";
-    case "createPlaylist":
-      return "Create playlist";
-    case "editPlaylist":
-      return "Edit playlist";
-    case "search":
-      return "Search";
-    case "widevine":
-      return "Widevine Warning";
-    default:
-      return "Dialog";
-  }
-};
 </script>
 
 <style scoped>

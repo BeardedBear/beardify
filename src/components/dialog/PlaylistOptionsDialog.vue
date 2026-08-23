@@ -2,7 +2,7 @@
   <Dialog title="Playlist options" with-title>
     <div class="wrap">
       <PlaylistActions />
-      <input
+      <BdInput
         v-if="route.name === 'Collection'"
         ref="searchElement"
         v-model="playlistStore.filter"
@@ -16,6 +16,7 @@
 </template>
 
 <script lang="ts" setup>
+import { BdInput } from "bearded-ui";
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
@@ -28,7 +29,7 @@ import { usePlaylist } from "@/views/playlist/PlaylistStore";
 const playlistStore = usePlaylist();
 const dialogStore = useDialog();
 const route = useRoute();
-const searchElement = ref<HTMLInputElement | null>(null);
+const searchElement = ref<InstanceType<typeof BdInput> | null>(null);
 
 watch(
   () => dialogStore.show,

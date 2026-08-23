@@ -1,6 +1,6 @@
 <template>
   <div v-if="!releasesStore.releases.length" class="loader">
-    <Loader />
+    <BdLoader />
   </div>
   <div v-else class="releases">
     <div class="side">
@@ -13,12 +13,12 @@
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import ReleaseList from "@/components/releases/ReleaseList.vue";
 import ReleaseSide from "@/components/releases/ReleaseSide.vue";
-import Loader from "@/components/ui/LoadingDots.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useAuth } from "@/views/auth/AuthStore";
 import { useReleases } from "@/views/releases/ReleasesStore";

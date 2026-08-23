@@ -1,14 +1,18 @@
-import { Notification } from "@/@types/Notification";
-import { useNotification } from "@/components/notification/NotificationStore";
+import { BdToastVariant, toast } from "bearded-ui";
+
+import { Notification, NotificationType } from "@/@types/Notification";
+
+const variants: Record<NotificationType, BdToastVariant> = {
+  [NotificationType.Error]: "danger",
+  [NotificationType.Success]: "success",
+  [NotificationType.Warning]: "warning",
+};
 
 /**
- * Display a notification to the user and auto-dismiss it after 4 seconds.
+ * Display a notification to the user. Rendering and auto-dismiss are handled by
+ * the `BdToaster` mounted in `App.vue`.
  * @param notif - Notification object containing message and type (info, warning, error)
  */
 export function notification(notif: Notification): void {
-  const notificationStore = useNotification();
-  const id = notificationStore.addNotification({ msg: notif.msg, type: notif.type });
-  setTimeout(() => {
-    notificationStore.removeNotification(id);
-  }, 4000);
+  toast(notif.msg, { variant: variants[notif.type] });
 }

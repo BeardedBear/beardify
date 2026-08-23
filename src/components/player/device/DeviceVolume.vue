@@ -8,9 +8,9 @@
         </div>
       </div>
     </div>
-    <ButtonIndex v-if="!forceMobile" no-default-class type="button" variant="nude" @click="toggleMute">
+    <button v-if="!forceMobile" class="mute" type="button" @click="toggleMute">
       <i :class="isMuted ? 'icon-volume-x' : 'icon-volume-2'" />
-    </ButtonIndex>
+    </button>
   </div>
 </template>
 
@@ -19,7 +19,6 @@ import { computed, onMounted, ref, watch } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
 import { usePlayer } from "@/components/player/PlayerStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { notification } from "@/helpers/notifications";
 import { clamp, sliderPercentToVolume, volumeToSliderPercent } from "@/helpers/volume";
 
@@ -126,6 +125,19 @@ async function toggleMute(): Promise<void> {
 </script>
 
 <style scoped>
+
+.mute {
+  background-color: transparent;
+  border: 0;
+  color: var(--font-color);
+  cursor: pointer;
+  opacity: 0.5;
+  padding: 0.5rem 0.6rem;
+
+  &:hover {
+    opacity: 1;
+  }
+}
 
 .volume-wrapper {
   align-items: center;

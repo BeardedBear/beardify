@@ -15,7 +15,7 @@
     </div>
     <Player key="player" />
     <PlayerSlideUp />
-    <Notification />
+    <BdToaster />
     <Frame />
     <MinimizedWindows />
     <UpdateToast />
@@ -23,6 +23,7 @@
 </template>
 
 <script lang="ts" setup>
+import { BdToaster } from "bearded-ui";
 import { onBeforeUnmount, onMounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
 
@@ -30,7 +31,6 @@ import DialogList from "@/components/dialog/DialogList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Frame from "@/components/frame/FrameIndex.vue";
 import MinimizedWindows from "@/components/minimized/MinimizedWindows.vue";
-import Notification from "@/components/notification/NotificationIndex.vue";
 import Player from "@/components/player/PlayerIndex.vue";
 import PlayerSlideUp from "@/components/player/PlayerSlideUp.vue";
 import { usePlayer } from "@/components/player/PlayerStore";

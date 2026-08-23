@@ -1,16 +1,16 @@
 <template>
   <div v-if="!homeStore.recommendedAlbums.length" class="loader">
-    <Loader />
+    <BdLoader />
   </div>
   <div v-else class="home">
     <div ref="scrollRef" class="home-content" @scroll="onScroll">
       <PageFit>
         <div class="title">
           <div class="name font-bold">Recommended albums</div>
-          <ButtonIndex @click="getData()">
+          <BdButton @click="getData()">
             <i class="icon-refresh" />
             Refresh
-          </ButtonIndex>
+          </BdButton>
         </div>
         <AlbumGallery :album-list="homeStore.recommendedAlbums" no-title />
       </PageFit>
@@ -19,12 +19,11 @@
 </template>
 
 <script lang="ts" setup>
+import { BdButton, BdLoader } from "bearded-ui";
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import AlbumGallery from "@/components/album/AlbumGallery.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useAuth } from "@/views/auth/AuthStore";
