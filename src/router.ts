@@ -1,19 +1,6 @@
 import { createRouter, createWebHistory, LocationQueryValue, RouteLocation, RouteRecordRaw } from "vue-router";
 
 import { isTauri } from "@/helpers/platform";
-import AlbumPage from "@/views/album/AlbumPage.vue";
-import ArtistPage from "@/views/artist/ArtistPage.vue";
-import AuthPage from "@/views/auth/AuthPage.vue";
-import GenrePage from "@/views/genre/GenrePage.vue";
-import HomePage from "@/views/home/HomePage.vue";
-import LoginPage from "@/views/LoginPage.vue";
-import CollectionPage from "@/views/playlist/CollectionPage.vue";
-import PlaylistPage from "@/views/playlist/PlaylistPage.vue";
-import SharedCollectionPage from "@/views/playlist/SharedCollectionPage.vue";
-import PodcastListPage from "@/views/podcasts/PodcastListPage.vue";
-import PodcastPage from "@/views/podcasts/PodcastPage.vue";
-import ReleaseListPage from "@/views/releases/ReleaseListPage.vue";
-import UserPage from "@/views/user/UserPage.vue";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -54,18 +41,18 @@ export function absoluteRouteUrl(routeName: RouteName, id: string): string {
 
 const routes: Array<RouteRecordRaw> = [
   {
-    component: HomePage,
+    component: (): Promise<unknown> => import("@/views/home/HomePage.vue"),
     name: "Home",
     path: RouteName.Home,
   },
   {
-    component: LoginPage,
+    component: (): Promise<unknown> => import("@/views/LoginPage.vue"),
     meta: { chromeless: true },
     name: "Login",
     path: RouteName.Login,
   },
   {
-    component: ArtistPage,
+    component: (): Promise<unknown> => import("@/views/artist/ArtistPage.vue"),
     name: "Artist",
     path: `${RouteName.Artist}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({
@@ -73,7 +60,7 @@ const routes: Array<RouteRecordRaw> = [
     }),
   },
   {
-    component: AlbumPage,
+    component: (): Promise<unknown> => import("@/views/album/AlbumPage.vue"),
     name: "Album",
     path: `${RouteName.Album}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({
@@ -81,7 +68,7 @@ const routes: Array<RouteRecordRaw> = [
     }),
   },
   {
-    component: PlaylistPage,
+    component: (): Promise<unknown> => import("@/views/playlist/PlaylistPage.vue"),
     name: "Playlist",
     path: `${RouteName.Playlist}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({
@@ -89,7 +76,7 @@ const routes: Array<RouteRecordRaw> = [
     }),
   },
   {
-    component: CollectionPage,
+    component: (): Promise<unknown> => import("@/views/playlist/CollectionPage.vue"),
     name: "Collection",
     path: `${RouteName.Collection}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({
@@ -97,7 +84,7 @@ const routes: Array<RouteRecordRaw> = [
     }),
   },
   {
-    component: SharedCollectionPage,
+    component: (): Promise<unknown> => import("@/views/playlist/SharedCollectionPage.vue"),
     meta: { chromeless: true, skipBootAuth: true },
     name: "Share",
     path: `${RouteName.Share}:id`,
@@ -106,7 +93,7 @@ const routes: Array<RouteRecordRaw> = [
     }),
   },
   {
-    component: GenrePage,
+    component: (): Promise<unknown> => import("@/views/genre/GenrePage.vue"),
     name: "Genre",
     path: `${RouteName.Genre}:name`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({
@@ -114,7 +101,7 @@ const routes: Array<RouteRecordRaw> = [
     }),
   },
   {
-    component: AuthPage,
+    component: (): Promise<unknown> => import("@/views/auth/AuthPage.vue"),
     meta: { skipBootAuth: true },
     name: "Auth",
     path: RouteName.Auth,
@@ -123,12 +110,12 @@ const routes: Array<RouteRecordRaw> = [
     }),
   },
   {
-    component: PodcastListPage,
+    component: (): Promise<unknown> => import("@/views/podcasts/PodcastListPage.vue"),
     name: "PodcastList",
     path: RouteName.Podcasts,
   },
   {
-    component: PodcastPage,
+    component: (): Promise<unknown> => import("@/views/podcasts/PodcastPage.vue"),
     name: "Podcast",
     path: `${RouteName.Podcasts}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({
@@ -136,12 +123,12 @@ const routes: Array<RouteRecordRaw> = [
     }),
   },
   {
-    component: ReleaseListPage,
+    component: (): Promise<unknown> => import("@/views/releases/ReleaseListPage.vue"),
     name: "Releases",
     path: RouteName.Releases,
   },
   {
-    component: UserPage,
+    component: (): Promise<unknown> => import("@/views/user/UserPage.vue"),
     name: "User",
     path: `${RouteName.User}:id`,
     props: (route: RouteLocation): Record<string, string | string[]> => ({

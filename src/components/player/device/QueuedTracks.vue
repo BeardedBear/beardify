@@ -62,9 +62,9 @@ watch(currentTrack, (track) => {
 }
 
 .section-title {
+  color: var(--font-color-dark);
   font-size: var(--font-size-xs);
   margin-top: 10px;
-  opacity: 0.5;
   padding: 0 10px;
   text-transform: uppercase;
 }

@@ -27,14 +27,13 @@ function goAlbum(albumId: string): void {
 <style scoped>
 
 .separator {
-  opacity: 0.2;
+  color: var(--font-color-dark);
 }
 
 .artist {
-  color: currentcolor;
+  color: var(--font-color-dark);
   cursor: pointer;
   font-size: var(--font-size-sm);
-  opacity: 0.5;
 
   &:hover {
     color: var(--primary-color);

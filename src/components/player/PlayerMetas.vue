@@ -65,7 +65,7 @@ const truncatedTrackName = computed(() => {
 
   .add {
     font-size: var(--font-size-xl);
-    transition: 0.2s;
+    transition: transform 0.2s ease;
     will-change: transform;
 
     &:hover {
@@ -83,7 +83,7 @@ const truncatedTrackName = computed(() => {
     justify-content: center;
     opacity: 0;
     position: absolute;
-    transition: 0.2s;
+    transition: opacity 0.2s ease;
   }
 
   &:hover {
@@ -142,8 +142,8 @@ const truncatedTrackName = computed(() => {
 }
 
 .album {
+  color: var(--font-color-dark);
   font-size: var(--font-size-sm);
-  opacity: 0.5;
 
   @media (--mobile) {
     overflow: hidden;

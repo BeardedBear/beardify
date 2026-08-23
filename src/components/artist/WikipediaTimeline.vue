@@ -367,9 +367,8 @@ const ticks = computed<AxisTick[]>(() => {
 }
 
 .member-name {
-  color: var(--font-color-light);
+  color: var(--font-color-dark);
   font-size: var(--font-size-sm);
-  opacity: 0.5;
   overflow: hidden;
   text-align: right;
   text-overflow: ellipsis;
@@ -464,9 +463,8 @@ const ticks = computed<AxisTick[]>(() => {
 }
 
 .timeline-source {
-  color: var(--font-color-light);
+  color: var(--font-color-dark);
   font-size: var(--font-size-xs);
   margin-top: 1rem;
-  opacity: 0.5;
 }
 </style>

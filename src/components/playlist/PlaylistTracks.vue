@@ -186,11 +186,10 @@ async function deleteSong(songId: string): Promise<void> {
   .link,
   .date,
   .owner {
-    color: currentcolor;
+    color: var(--font-color-dark);
     font-size: var(--font-size-sm);
     font-style: var(--font-style-italic);
     font-variation-settings: var(--font-variation-settings-italic);
-    opacity: 0.5;
     text-decoration: none;
   }
 

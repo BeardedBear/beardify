@@ -6,9 +6,9 @@
     </div>
     <div class="inner">
       <div class="title">
-        <div class="name font-bold">
+        <h1 class="name font-bold">
           {{ artistStore.artist.name }}
-        </div>
+        </h1>
       </div>
       <Options class="desktop-options" />
       <BdButton class="mobile-options" icon-only @click="dialogStore.open({ type: 'artistOptions' })">

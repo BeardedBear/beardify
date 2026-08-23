@@ -1,0 +1,37 @@
+/*
+ * Reduced-motion alternative.
+ *
+ * Deliberately *not* the `0.01ms !important` blanket kill: that removes the
+ * feedback that tells you a hover landed, a panel opened, or a track changed,
+ * and leaves the interface feeling broken rather than calm. What follows keeps
+ * every state change legible and only takes away the travel:
+ *
+ *  - transitions survive, capped short enough to read as instant;
+ *  - animations run once instead of looping, so decorative perpetual motion
+ *    (the now-playing badge, the update toast's pulse ring) settles;
+ *  - spinners are the one exception — see below.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-delay: 0ms !important;
+    animation-duration: 0.12s !important;
+    animation-iteration-count: 1 !important;
+    transition-delay: 0ms !important;
+    transition-duration: 0.12s !important;
+  }
+
+  /*
+   * A spinner's rotation *is* the "still working" message. Freeze it and you
+   * ship a motionless disc that reads as a stalled request, which is a worse
+   * outcome than the motion itself. Keep it turning, just calmer.
+   */
+  .loader-app,
+  .spin,
+  [class*="bd-loader"] {
+    animation-duration: 1.6s !important;
+    animation-iteration-count: infinite !important;
+  }
+}

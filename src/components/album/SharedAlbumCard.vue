@@ -67,6 +67,8 @@ defineProps<{
     position: absolute;
     right: 0;
     top: 0;
+
+    /* impeccable-disable-next-line layout-transition -- absolute box: reflows one card's subtree, once per hover */
     transition: padding 0.15s ease;
   }
 

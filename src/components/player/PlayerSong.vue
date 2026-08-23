@@ -12,7 +12,7 @@
           <Device />
         </div>
       </div>
-      <SeekBar :click-disable="isTouchDevice()" />
+      <SeekBar />
     </div>
   </template>
   <BdLoader v-else />

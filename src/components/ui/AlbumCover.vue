@@ -1,26 +1,56 @@
 <template>
-  <img v-if="size === 'small' && images && images.length >= 3" :src="images[2].url" loading="lazy" />
-  <img v-else-if="size === 'medium' && images && images.length >= 2" :src="images[1].url" loading="lazy" />
-  <img v-else-if="size === 'large' && images && images.length >= 1" :src="images[0].url" loading="lazy" />
-  <img v-else src="/img/default.png" loading="lazy" />
+  <img :alt="alt" :src="source" loading="lazy" />
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
+
 import { Image, ImageSize } from "@/@types/Image";
 
-defineProps<{
-  images: Image[] | null;
-  size: ImageSize;
-}>();
+/*
+ * `alt` defaults to empty on purpose. At all thirteen call sites this cover sits
+ * directly beside its own visible label — the album title, the artist, the
+ * playlist name — so a filled alt would make a screen reader read every entry
+ * twice. Empty alt is the correct answer for an image the adjacent text already
+ * names; pass `alt` explicitly for the rare cover that stands alone.
+ *
+ * Deliberately no width/height attributes. They look like free CLS insurance,
+ * but they are presentation hints, and the thirteen call sites size this image
+ * in every combination there is — some width only, some height only
+ * (TopTracks's .cover is 1.7rem tall and nothing else), some both. A hint the
+ * caller doesn't override then applies literally and stretches the artwork. The
+ * album grid, the one place the reflow was worth fixing, gets its box reserved
+ * by the `aspect-ratio` below instead, which no caller has to know about.
+ */
+const props = withDefaults(
+  defineProps<{
+    alt?: string;
+    images: Image[] | null;
+    size: ImageSize;
+  }>(),
+  { alt: "" },
+);
+
+// Spotify returns its three renditions largest-first.
+const INDEXES: Record<ImageSize, number> = { large: 0, medium: 1, small: 2 };
+
+const source = computed(() => props.images?.[INDEXES[props.size]]?.url ?? "/img/default.png");
 </script>
 
 <style scoped>
+/*
+ * This rule reads as dead — nothing in this template carries `class="img"` —
+ * but it is not: a child component's root element receives the classes the
+ * parent puts on the tag, so `<Cover class="img" />` in AlbumIndex lands here.
+ * It is what keeps the album grid square and reserves each cell before the
+ * image loads. Removing it as "unused" is exactly the mistake it invites.
+ */
 .img {
   aspect-ratio: 1 / 1;
   border-radius: 0.4rem;
   cursor: pointer;
   display: block;
-  transition: 0.3s;
+  transition: opacity 0.3s ease;
   width: 100%;
 }
 </style>

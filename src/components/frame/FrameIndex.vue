@@ -105,7 +105,7 @@ watch(
 
 .bg {
   animation: pop-bg 0.2s ease both;
-  background-color: #0d0d0d;
+  background-color: var(--bg-color-darker);
   filter: opacity(0.95);
   inset: 0;
   pointer-events: all;

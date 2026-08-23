@@ -16,25 +16,26 @@
     <div class="visual">
       <div :class="{ 'is-playing': isPlaying }" class="cover">
         <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" class="img" @click="handleCoverClick" />
-        <button class="play squircle" type="button" @click.stop="handlePlayAlbum(album.uri)">
-          <i class="icon-play" />
-        </button>
-        <button
+        <IconButton
+          class="play squircle"
+          icon="play"
+          :label="`Play ${album.name}`"
+          @click.stop="handlePlayAlbum(album.uri)"
+        />
+        <IconButton
           v-if="canSave"
           class="button-action add squircle"
-          type="button"
+          icon="plus"
+          :label="`Add ${album.name} to a collection`"
           @click.stop="dialogStore.open({ type: 'addalbum', albumId: album.id })"
-        >
-          <i class="icon-plus" />
-        </button>
-        <button
+        />
+        <IconButton
           v-if="canDelete"
           class="button-action delete squircle"
-          type="button"
+          icon="trash-2"
+          :label="`Remove ${album.name} from this collection`"
           @click.stop="deleteAlbum(album.id)"
-        >
-          <i class="icon-trash-2" />
-        </button>
+        />
         <div
           v-if="variantCount && variantCount > 0"
           class="album-group-stack-indicator"
@@ -78,6 +79,7 @@ import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
 import Cover from "@/components/ui/AlbumCover.vue";
+import IconButton from "@/components/ui/IconButton.vue";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
 import { playAlbum } from "@/helpers/playAlbum"; // Import the playAlbum helper
@@ -280,13 +282,21 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   }
 }
 
-@keyframes bounce {
-  0% {
-    transform: scale(0.8);
+/*
+ * Was `bounce ... infinite alternate` on a cubic-bezier(1, 0, 1, 0) curve — a
+ * marker that never stopped moving and had no reduced-motion escape. It now
+ * announces itself once, on arrival, and then holds still: the badge already
+ * says "this is the album playing" by existing.
+ */
+@keyframes pop-current {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
   }
 
-  100% {
-    transform: scale(1.2);
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -356,6 +366,8 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
     position: absolute;
     right: 0;
     top: 0;
+
+    /* impeccable-disable-next-line layout-transition -- absolute box: reflows one card's subtree, once per hover */
     transition: padding 0.15s ease;
   }
 
@@ -486,13 +498,13 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   position: absolute;
   right: 0;
   top: 0;
-  transition: all ease 0.2s;
+  transition: background-color 0.2s ease;
   width: var(--current-size);
   z-index: 1;
 
   i {
-    animation: bounce 0.5s cubic-bezier(1, 0, 1, 0) 0s infinite alternate;
-    color: white;
+    animation: pop-current 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    color: #fff;
     font-size: var(--font-size-lg);
     position: absolute;
     right: 0.3rem;
@@ -519,8 +531,8 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 }
 
 .date {
+  color: var(--font-color-dark);
   font-size: var(--font-size-sm);
-  opacity: 0.3;
 }
 
 .album-group-stack-layer {

@@ -216,14 +216,15 @@ label {
   outline: 0;
   padding: 0.8rem 1rem;
   resize: vertical;
-  transition: 0.2s;
+  transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
   width: 100%;
 
   &::placeholder {
-    color: var(--font-color);
-    font-style: italic;
-    font-weight: var(--font-variation-wgth);
-    opacity: 0.2;
+    color: var(--font-color-dark);
+    font-style: var(--font-style-italic);
+    font-variation-settings: var(--font-variation-settings-italic);
   }
 
   &:focus {

@@ -129,10 +129,10 @@ defineProps<{
   padding: 0.7rem 1rem;
 
   .metas {
+    color: var(--font-color-dark);
     display: flex;
     font-size: var(--font-size-sm);
     gap: 0.5rem;
-    opacity: 0.5;
   }
 }
 
@@ -143,7 +143,7 @@ defineProps<{
   margin-bottom: 1rem;
   position: relative;
   text-decoration: none;
-  transition: 0.2s;
+  transition: background-color 0.2s ease;
   will-change: transform;
 }
 
@@ -174,8 +174,8 @@ defineProps<{
 }
 
 .description {
+  color: var(--font-color-dark);
   margin-top: 0.5rem;
-  opacity: 0.3;
 }
 
 .name {

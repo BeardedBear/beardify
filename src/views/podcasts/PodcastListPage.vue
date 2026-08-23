@@ -5,7 +5,7 @@
   <div v-else ref="scrollRef" class="podcasts" @scroll="onScroll">
     <PageFit>
       <div class="title">
-        <div class="name font-bold">Podcasts</div>
+        <h1 class="name font-bold">Podcasts</h1>
       </div>
       <div v-if="!podcastsStore.myPodcasts.length">
         <BdLoader />
@@ -49,14 +49,16 @@ podcastsStore.clean().finally(() => {
 
 .podcasts {
   animation: pop-content 1s ease both;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding: 2rem 2.2rem;
 }
 
 .podcast-list {
   display: grid;
   gap: 2rem;
-  grid-template-columns: repeat(4, 1fr);
+
+  /* Was repeat(4, 1fr) with no breakpoint: four 55px columns at 390px wide. */
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   margin-bottom: 2rem;
 }
 

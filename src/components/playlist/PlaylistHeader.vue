@@ -3,9 +3,9 @@
     <div class="playlist-header-left">
       <Cover v-if="!noCover" :images="playlistStore.playlist.images" class="cover" size="large" />
       <div>
-        <div class="title font-bold">
+        <h1 class="title font-bold">
           {{ playlistStore.playlist.name.replace("#Collection ", "") }}
-        </div>
+        </h1>
         <div class="metas font-bold">
           <router-link
             v-if="playlistStore.playlist.owner.display_name !== 'Spotify'"
@@ -118,9 +118,9 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 .description {
+  color: var(--font-color-dark);
   margin-top: 0.5rem;
   max-width: 80%;
-  opacity: 0.5;
 }
 
 .metas {

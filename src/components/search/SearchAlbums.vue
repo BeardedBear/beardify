@@ -38,7 +38,9 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 .album {
   border-radius: 1rem;
   padding: 0.8rem;
-  transition: 0.2s;
+  transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
 
   &:hover {
     background-color: var(--bg-color-light);

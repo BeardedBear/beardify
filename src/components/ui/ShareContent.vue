@@ -87,10 +87,10 @@ const clipboardBeardify = useClipboard({
 
 .copied {
   animation: pop 0.2s ease both;
+  color: var(--font-color-dark);
   font-size: var(--font-size-sm);
   left: 50%;
   margin-right: 0.8rem;
-  opacity: 0.5;
   position: absolute;
   top: calc(100% + 1rem);
   transform: translate(-50%, -50%);

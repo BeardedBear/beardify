@@ -5,9 +5,9 @@
   <div v-else ref="scrollRef" class="podcast" @scroll="onScroll">
     <PageFit>
       <div class="title">
-        <div class="name font-bold">
+        <h1 class="name font-bold">
           {{ podcastsStore.podcast?.name }}
-        </div>
+        </h1>
         <PodcastFollowButton v-if="podcastsStore.podcast" :podcast-id="props.id" />
       </div>
       <div>

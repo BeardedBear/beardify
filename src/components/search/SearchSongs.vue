@@ -50,7 +50,9 @@ const searchStore = useSearch();
   display: flex;
   gap: 0.8rem;
   padding: 0.8rem;
-  transition: 0.2s;
+  transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
 
   &:hover {
     background-color: var(--bg-color-light);

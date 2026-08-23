@@ -9,9 +9,9 @@
         <div class="metas">
           <img :src="userStore.user.images[0].url" alt="" class="avatar" />
           <div>
-            <div class="name font-bold">
+            <h1 class="name font-bold">
               {{ userStore.user?.display_name }}
-            </div>
+            </h1>
             <div class="followers">{{ userStore.user?.followers.total }} followers</div>
           </div>
         </div>

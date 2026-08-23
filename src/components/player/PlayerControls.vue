@@ -1,51 +1,48 @@
 <template>
   <div class="controls" :class="{ 'force-mobile': props.forceMobile }">
     <div class="btns">
-      <button
-v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
-        type="button"
+      <IconButton
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         :class="{ active: playerStore.currentlyPlaying?.shuffle_state, big: props.forceMobile }"
+        :pressed="!!playerStore.currentlyPlaying?.shuffle_state"
         class="control-button shuffle squircle"
+        icon="shuffle"
+        label="Shuffle"
         @click="playerStore.toggleShuffle()"
-      >
-        <i class="icon-shuffle" />
-      </button>
-      <button
-v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
-        type="button"
+      />
+      <IconButton
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
+        :pressed="playerStore.currentlyPlaying?.repeat_state !== 'off'"
         class="control-button repeat squircle"
+        icon="repeat"
+        label="Repeat"
         @click="playerStore.toggleRepeat()"
-      >
-        <i class="icon-repeat" />
-      </button>
-      <button
-v-if="playerStore.playerState?.paused"
-        type="button"
-        class="control-button play squircle"
+      />
+      <IconButton
+        v-if="playerStore.playerState?.paused"
         :class="{ big: props.forceMobile }"
+        class="control-button play squircle"
+        icon="play"
+        label="Play"
         @click="playerStore.play()"
-      >
-        <i class="icon-play" />
-      </button>
-      <button
-v-else
-        type="button"
+      />
+      <IconButton
+        v-else
+        :class="{ big: props.forceMobile }"
         class="control-button play squircle"
-        :class="{ big: props.forceMobile }"
+        icon="pause"
+        label="Pause"
         @click="playerStore.pause()"
-      >
-        <i class="icon-pause" />
-      </button>
-      <button
-v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
-        type="button"
-        class="control-button next squircle"
+      />
+      <IconButton
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         :class="{ big: props.forceMobile }"
+        class="control-button next squircle"
+        icon="skip-forward"
+        label="Next track"
         @click="playerStore.next()"
-      >
-        <i class="icon-skip-forward" />
-      </button>
+      />
     </div>
     <div class="time font-bold">
       {{ timecode(currentTime) || "00:00" }} /
@@ -59,6 +56,7 @@ import { useIntervalFn } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
+import IconButton from "@/components/ui/IconButton.vue";
 import { timecode } from "@/helpers/date";
 
 const props = defineProps<{ forceMobile?: boolean }>();

@@ -89,7 +89,10 @@ async function add(albumId: string, playlistId: string): Promise<void> {
   font-size: var(--font-size-sm);
   opacity: 0.7;
   padding: 0.5rem 1rem;
-  transition: 0.1s;
+  transition:
+      background-color 0.1s ease,
+      opacity 0.1s ease,
+      padding-left 0.1s ease;
 
   &:hover {
     background: var(--bg-color-light);

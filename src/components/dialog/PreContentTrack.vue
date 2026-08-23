@@ -13,13 +13,12 @@
     </div>
     <div class="options">
       <BdButton @click="addTrackToQueue(track.uri)">Add</BdButton>
-      <button
-type="button"
+      <IconButton
         class="link"
+        icon="youtube"
+        label="Search this track on YouTube"
         @click="openLink(`https://www.youtube.com/results?search_query=${track?.artists[0].name}+${track?.name}`)"
-      >
-        <i class="icon-youtube" />
-      </button>
+      />
       <ShareContent :spotify-url="`https://open.spotify.com/track/${track.id}`" />
     </div>
   </div>
@@ -30,6 +29,7 @@ import { BdButton } from "bearded-ui";
 
 import { Track, TrackSimplified } from "@/@types/Track";
 import { usePlayer } from "@/components/player/PlayerStore";
+import IconButton from "@/components/ui/IconButton.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 import { openLink } from "@/helpers/openLink";
 
@@ -58,15 +58,14 @@ defineProps<{
 .note {
   background-color: var(--bg-color-lighter);
   border-radius: 5px;
+  color: var(--font-color-dark);
   font-size: var(--font-size-xl);
-  opacity: 0.5;
   padding: 10px;
 }
 
 .artist {
-  color: var(--text-color-light);
+  color: var(--font-color-dark);
   font-size: var(--font-size-sm);
-  opacity: 0.5;
 }
 
 .options {

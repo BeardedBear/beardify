@@ -57,7 +57,9 @@ const frameStore = useFrame();
   gap: 0.5rem;
   padding: 0.5rem;
   pointer-events: all;
-  transition: all 0.1s ease;
+  transition:
+      background-color 0.1s ease,
+      box-shadow 0.1s ease;
 }
 
 .window-content {
@@ -96,7 +98,9 @@ const frameStore = useFrame();
   justify-content: center;
   opacity: 0;
   padding: 0.25rem;
-  transition: all 0.2s ease;
+  transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
 
   &:hover {
     background-color: var(--bg-color);

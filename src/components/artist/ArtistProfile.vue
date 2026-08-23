@@ -102,18 +102,22 @@ const getCountry = computed(() => {
   }
 }
 
+/*
+ * Was a flat white at 10%, which is invisible on a light background. Tinting
+ * from the theme's own surface ladder keeps the same weight in both themes.
+ */
 .tag {
-  background-color: rgb(255 255 255 / 10%);
+  background-color: var(--bg-color-light);
   border-radius: 0.25rem;
   color: currentcolor;
   display: inline-block;
   padding: 0.1rem 0.3rem;
   text-decoration: none;
   text-transform: capitalize;
-  transition: 0.2s;
+  transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: rgb(255 255 255 / 20%);
+    background-color: var(--bg-color-lighter);
   }
 
   &:focus-visible {

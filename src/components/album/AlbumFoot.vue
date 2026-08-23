@@ -23,16 +23,15 @@ defineProps<{ album: Album }>();
 <style scoped>
 
 .mentions {
-  opacity: 0.3;
+  color: var(--font-color-dark);
 }
 
 .link {
   background-color: transparent;
   border: 0;
-  color: var(--font-color);
+  color: var(--font-color-dark);
   cursor: pointer;
   font: inherit;
-  opacity: 0.5;
   padding: 0.5rem 0.6rem;
   padding-left: 0;
 

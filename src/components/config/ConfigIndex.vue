@@ -98,16 +98,16 @@ const configStore = useConfig();
 }
 
 .version {
+  color: var(--font-color-dark);
   font-size: var(--font-size-xs);
   margin-top: 0.8rem;
-  opacity: 0.3;
   text-align: center;
 }
 
 .user-mail {
+  color: var(--font-color-dark);
   font-size: var(--font-size-sm);
   margin-top: 0.1rem;
-  opacity: 0.5;
 }
 
 .config {

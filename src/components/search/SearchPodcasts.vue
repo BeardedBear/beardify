@@ -49,7 +49,9 @@ const searchStore = useSearch();
     margin-bottom: 0.5rem;
     padding: 0.8rem;
     text-decoration: none;
-    transition: 0.2s;
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
 
     &:hover {
       background-color: var(--bg-color-light);
@@ -74,8 +76,7 @@ const searchStore = useSearch();
 }
 
 .publisher {
-  color: var(--text-color-light);
+  color: var(--font-color-dark);
   font-size: var(--font-size-xs);
-  opacity: 0.7;
 }
 </style>

@@ -4,7 +4,7 @@
   </div>
   <div v-else ref="scrollRef" class="genre" @scroll="onScroll">
     <div class="content">
-      <div class="title font-bold">{{ genreStore.genre }}</div>
+      <h1 class="title font-bold">{{ genreStore.genre }}</h1>
       <div v-if="genreStore.artists.length" class="gallery">
         <GenreArtistCard
           v-for="artist in genreStore.artists"

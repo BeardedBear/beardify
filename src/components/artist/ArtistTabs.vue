@@ -105,11 +105,10 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
   background-color: transparent;
   border: none;
   border-radius: var(--tab-radius) var(--tab-radius) 0 0;
-  color: var(--font-color-light);
+  color: var(--font-color-dark);
   cursor: pointer;
   display: flex;
   gap: 0.5rem;
-  opacity: 0.5;
   padding: 0.5rem 1rem;
   transition:
     background-color 0.2s ease,

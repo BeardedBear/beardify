@@ -55,7 +55,7 @@ function search(artist: string, album: string): void {
 .release-wrap {
   display: flex;
   gap: 0.3rem;
-  transition: 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .check {
@@ -66,7 +66,7 @@ function search(artist: string, album: string): void {
   opacity: 0.2;
   position: relative;
   top: -0.1rem;
-  transition: 0.2s;
+  transition: opacity 0.2s ease;
 
   &:hover {
     opacity: 0.8;
@@ -111,10 +111,10 @@ function search(artist: string, album: string): void {
     .slug {
       background-color: var(--bg-color-lighter);
       border-radius: 2rem;
+      color: var(--font-color-dark);
       display: inline-block;
       margin: 0.1rem 0;
       margin-left: 0.3rem;
-      opacity: 0.3;
       padding: 0.1rem 0.5rem;
 
       &.selected {

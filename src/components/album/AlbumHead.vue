@@ -1,9 +1,9 @@
 <template>
   <div class="album-header">
     <div>
-      <div class="title font-bold">
+      <h1 class="title font-bold">
         {{ album.name }}
-      </div>
+      </h1>
       <div class="infos">
         <ArtistList :artist-list="album.artists" />
         <span>&nbsp;·&nbsp;</span>

@@ -150,8 +150,7 @@ onMounted(() => {
 }
 
 .source-link {
-  color: var(--font-color-light);
-  opacity: 0.5;
+  color: var(--font-color-dark);
   transition: opacity 0.2s ease;
 
   &:hover {
@@ -291,9 +290,10 @@ onMounted(() => {
 
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
 .wikipedia-content :deep(blockquote) {
-  border-left: 3px solid var(--primary-color-default);
+  border-left: 1px solid var(--bg-color-lighter);
+  color: var(--font-color-dark);
   margin: 1rem 0;
-  padding-left: 1rem;
+  padding-left: 1.4rem;
 }
 
 .biography {

@@ -20,9 +20,10 @@
   >
     <BdLoader />
   </div>
-  <div
+  <nav
     v-else
     :class="{ 'search-opened': collectionSearchOpened || playlistSearchOpened, 'is-open': sidebarStore.isOpen }"
+    aria-label="Collections and playlists"
     class="sidebar"
   >
     <Topbar />
@@ -31,15 +32,24 @@
       <div v-if="!collectionSearchOpened" class="heading title">
         <div class="title-name">Collections</div>
         <div class="options">
-          <button type="button" class="icon" @click="sidebarStore.refreshPlaylists()">
-            <i class="icon-refresh" />
-          </button>
-          <button type="button" class="icon" @click="() => (collectionSearchOpened = true)">
-            <i class="icon-search" />
-          </button>
-          <button type="button" class="icon add" @click="dialogStore.open({ type: 'createCollection' })">
-            <i class="icon-plus" />
-          </button>
+          <IconButton
+            class="icon"
+            icon="refresh"
+            label="Refresh collections"
+            @click="sidebarStore.refreshPlaylists()"
+          />
+          <IconButton
+            class="icon"
+            icon="search"
+            label="Search collections"
+            @click="() => (collectionSearchOpened = true)"
+          />
+          <IconButton
+            class="icon add"
+            icon="plus"
+            label="New collection"
+            @click="dialogStore.open({ type: 'createCollection' })"
+          />
         </div>
       </div>
       <div v-else ref="collectionSearchWrap" class="heading title">
@@ -70,18 +80,17 @@
             <span v-if="playlist.isTierList" class="tier-badge" title="Tier list enabled">TIER</span>
           </div>
           <VisibilityIcon :playlist="playlist" />
-          <button
-type="button"
+          <IconButton
             class="edit"
+            icon="more-vertical"
+            :label="`Options for ${playlist.displayName}`"
             @click.prevent="
               dialogStore.open({
                 type: 'editPlaylist',
                 playlistId: playlist.id,
               })
             "
-          >
-            <i class="icon-more-vertical" />
-          </button>
+          />
         </router-link>
       </div>
     </div>
@@ -89,15 +98,19 @@ type="button"
       <div v-if="!playlistSearchOpened" class="heading title">
         <div class="title-name">Playlists</div>
         <div class="options">
-          <button type="button" class="icon" @click="sidebarStore.refreshPlaylists()">
-            <i class="icon-refresh" />
-          </button>
-          <button type="button" class="icon" @click="() => (playlistSearchOpened = true)">
-            <i class="icon-search" />
-          </button>
-          <button type="button" class="icon add" @click="dialogStore.open({ type: 'createPlaylist' })">
-            <i class="icon-plus" />
-          </button>
+          <IconButton class="icon" icon="refresh" label="Refresh playlists" @click="sidebarStore.refreshPlaylists()" />
+          <IconButton
+            class="icon"
+            icon="search"
+            label="Search playlists"
+            @click="() => (playlistSearchOpened = true)"
+          />
+          <IconButton
+            class="icon add"
+            icon="plus"
+            label="New playlist"
+            @click="dialogStore.open({ type: 'createPlaylist' })"
+          />
         </div>
       </div>
       <div v-else ref="playlistSearchWrap" class="heading title">
@@ -122,22 +135,21 @@ type="button"
             {{ playlist.name }}
           </div>
           <VisibilityIcon :playlist="playlist" />
-          <button
-type="button"
+          <IconButton
             class="edit"
+            icon="more-vertical"
+            :label="`Options for ${playlist.name}`"
             @click.prevent="
               dialogStore.open({
                 type: 'editPlaylist',
                 playlistId: playlist.id,
               })
             "
-          >
-            <i class="icon-more-vertical" />
-          </button>
+          />
         </router-link>
       </div>
     </div>
-  </div>
+  </nav>
 </template>
 
 <script lang="ts" setup>
@@ -152,6 +164,7 @@ import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
 import Topbar from "@/components/sidebar/SidebarHead.vue";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
 import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
+import IconButton from "@/components/ui/IconButton.vue";
 import { parseCollectionRankingMode } from "@/helpers/collectionOptions";
 import { useAuth } from "@/views/auth/AuthStore";
 
@@ -230,8 +243,8 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 <style scoped>
 
 .empty {
+  color: var(--font-color-dark);
   font-style: italic;
-  opacity: 0.5;
   padding: 0.8rem 20px 0.8rem 1rem;
 }
 
@@ -254,7 +267,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
     padding: 0.2rem 0.7rem;
     position: absolute;
     right: 0.5rem;
-    transition: 0.2s;
+    transition: background-color 0.2s ease;
 
     &:hover {
       background-color: var(--bg-color-lighter);
@@ -299,10 +312,20 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   }
 }
 
+/*
+ * These used to be `visibility: hidden` until the section was hovered, which
+ * took them out of the tab order entirely — "New collection", the product's
+ * central action, was unreachable by keyboard and absent on touch. They stay in
+ * the tree now: only opacity moves, `:focus-within` reveals them for keyboard
+ * users, and coarse pointers get them outright since there is no hover there.
+ */
 .options {
   opacity: 0;
-  transition: 0.2s;
-  visibility: hidden;
+  transition: opacity 0.2s ease;
+
+  @media (pointer: coarse) {
+    opacity: 1;
+  }
 
   .icon {
     background-color: transparent;
@@ -354,10 +377,10 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 
   .load-error {
     align-items: center;
+    color: var(--font-color-dark);
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
-    opacity: 0.5;
   }
 }
 
@@ -380,10 +403,10 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   overflow-y: auto;
   position: relative;
 
-  &:hover {
+  &:hover,
+  &:focus-within {
     .options {
       opacity: 1;
-      visibility: visible;
     }
   }
 }
@@ -405,7 +428,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   z-index: 1;
 
   .title-name {
-    opacity: 0.2;
+    color: var(--font-color-dark);
   }
 }
 </style>

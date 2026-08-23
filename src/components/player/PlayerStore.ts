@@ -13,6 +13,7 @@ import {
   isPodcastTrack,
   mapQueueToSpotifyTracks,
   notifyQueueError,
+  saveDeviceVolume,
   setRepeatState,
   setShuffleState,
 } from "@/helpers/player";
@@ -295,7 +296,6 @@ export const usePlayer = defineStore("player", {
       await instance().put(`me/player/volume?volume_percent=${rounded}`);
       // Persist the volume for the current device so we can restore it later
       try {
-        const { saveDeviceVolume } = await import("@/helpers/player");
         saveDeviceVolume(this.devices.activeDevice?.id, rounded);
       } catch {
         // ignore

@@ -337,7 +337,7 @@ const hasContent = computed(
 }
 
 .member-status {
+  color: var(--font-color-dark);
   font-style: italic;
-  opacity: 0.5;
 }
 </style>

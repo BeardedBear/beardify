@@ -6,7 +6,7 @@
     <div ref="scrollRef" class="home-content" @scroll="onScroll">
       <PageFit>
         <div class="title">
-          <div class="name font-bold">Recommended albums</div>
+          <h1 class="name font-bold">Recommended albums</h1>
           <BdButton @click="getData()">
             <i class="icon-refresh" />
             Refresh
@@ -85,7 +85,6 @@ watch(
 .home-content {
   overflow-y: auto;
   padding: 1rem 5rem;
-  transition: padding ease 0.2s;
 
   @media (--mobile) {
     padding: 1rem;

@@ -77,7 +77,7 @@ const configOpen = computed<boolean>({
   cursor: pointer;
   margin-left: 1rem;
   position: relative;
-  transition: 0.2s;
+  transition: transform 0.2s ease;
   will-change: transform;
 
   &:hover {

@@ -4,14 +4,15 @@
   </template>
   <template v-else>
     <DialogList />
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <div id="app-content">
       <Sidebar />
-      <div class="main-content">
+      <main id="main-content" class="main-content" tabindex="-1">
         <MobileHeader />
         <router-view v-slot="{ Component, route: currentRoute }">
           <component :is="Component" :key="currentRoute.fullPath" />
         </router-view>
-      </div>
+      </main>
     </div>
     <Player key="player" />
     <PlayerSlideUp />
@@ -24,24 +25,33 @@
 
 <script lang="ts" setup>
 import { BdToaster } from "bearded-ui";
-import { onBeforeUnmount, onMounted } from "vue";
+import { defineAsyncComponent, onBeforeUnmount, onMounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
 
-import DialogList from "@/components/dialog/DialogList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
-import Frame from "@/components/frame/FrameIndex.vue";
-import MinimizedWindows from "@/components/minimized/MinimizedWindows.vue";
-import Player from "@/components/player/PlayerIndex.vue";
-import PlayerSlideUp from "@/components/player/PlayerSlideUp.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
-import MobileHeader from "@/components/sidebar/MobileHeader.vue";
-import Sidebar from "@/components/sidebar/SidebarIndex.vue";
 import UpdateToast from "@/components/ui/UpdateToast.vue";
 import { useUpdater } from "@/composables/useUpdater";
 import { isTauri } from "@/helpers/platform";
 import { sleep } from "@/helpers/sleep";
 import { useKeyboardEvents } from "@/helpers/useKeyboardEvents";
 import { useAuth } from "@/views/auth/AuthStore";
+
+/*
+ * The whole shell lives behind `v-else`, so a chromeless route — the public
+ * /share page, the OAuth callback — renders none of it. Importing it statically
+ * still pulled the sidebar, the player and every dialog into the entry chunk,
+ * which meant a stranger opening a shared link downloaded the entire logged-in
+ * app before seeing a single cover. Async, they follow the branch that uses
+ * them.
+ */
+const DialogList = defineAsyncComponent(() => import("@/components/dialog/DialogList.vue"));
+const Frame = defineAsyncComponent(() => import("@/components/frame/FrameIndex.vue"));
+const MinimizedWindows = defineAsyncComponent(() => import("@/components/minimized/MinimizedWindows.vue"));
+const MobileHeader = defineAsyncComponent(() => import("@/components/sidebar/MobileHeader.vue"));
+const Player = defineAsyncComponent(() => import("@/components/player/PlayerIndex.vue"));
+const PlayerSlideUp = defineAsyncComponent(() => import("@/components/player/PlayerSlideUp.vue"));
+const Sidebar = defineAsyncComponent(() => import("@/components/sidebar/SidebarIndex.vue"));
 
 useKeyboardEvents();
 
@@ -158,11 +168,10 @@ onBeforeUnmount(() => {
 
 input {
   &::placeholder {
-    color: var(--font-color);
+    color: var(--font-color-dark);
     font-size: var(--font-size-base);
     font-style: var(--font-style-italic);
     font-variation-settings: var(--font-variation-settings-italic);
-    opacity: 0.3;
   }
 }
 
@@ -238,6 +247,33 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  /* Focused only via the skip link, so it must not draw a ring of its own. */
+  &:focus {
+    outline: none;
+  }
+}
+
+/*
+ * Off-screen until focused rather than `display: none`, which would take it out
+ * of the tab order and defeat the point. First stop for a keyboard user, and
+ * the only way past the sidebar's long playlist list.
+ */
+.skip-link {
+  background-color: var(--bg-color-light);
+  border-radius: 0 0 0.4rem;
+  color: var(--font-color);
+  left: 0;
+  padding: 0.6rem 1rem;
+  position: fixed;
+  text-decoration: none;
+  top: 0;
+  transform: translateY(-110%);
+  z-index: 10000;
+
+  &:focus-visible {
+    transform: translateY(0);
+  }
 }
 
 .loading {
