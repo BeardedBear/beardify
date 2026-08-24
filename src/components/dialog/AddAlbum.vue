@@ -3,8 +3,8 @@
     <div class="content">
       <BdInput
         v-if="collections.length > SEARCH_THRESHOLD"
-        ref="searchInput"
         v-model="query"
+        autofocus
         class="search"
         placeholder="Filter collections"
         size="small"
@@ -40,7 +40,7 @@
 
 <script lang="ts" setup>
 import { BdEmptyState, BdInput, BdLoader } from "bearded-ui";
-import { computed, onMounted, ref, Ref } from "vue";
+import { computed, ref } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
 import { Paging } from "@/@types/Paging";
@@ -65,7 +65,6 @@ const SEARCH_THRESHOLD = 8;
 const query = ref<string>("");
 /* The collection whose existence check is in flight, so its row can say so. */
 const pendingId = ref<null | string>(null);
-const searchInput: Ref<InstanceType<typeof BdInput> | null> = ref(null);
 
 const collections = computed(() =>
   sidebarStore.collections.filter(
@@ -77,8 +76,6 @@ const filtered = computed(() => {
   const q = query.value.toLowerCase();
   return collections.value.filter((playlist) => playlist.name.toLowerCase().includes(q));
 });
-
-onMounted(() => searchInput.value?.focus());
 
 async function add(albumId: string, playlistId: string): Promise<void> {
   /*

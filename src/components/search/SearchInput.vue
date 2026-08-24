@@ -1,9 +1,17 @@
 <template>
   <div class="search">
+    <!--
+      `autofocus` is what actually wins the focus here. The dialog's close
+      button sits in BdDialog's <header>, so it is the first focusable
+      descendant, and `showModal()` hands it the focus as part of opening —
+      overriding any focus() called from a child's onMounted, which runs first.
+      The attribute makes the browser's own focusing steps pick this field.
+    -->
     <BdInput
       ref="input"
       v-model="query"
-      placeholder="Recherche..."
+      autofocus
+      placeholder="Search..."
       size="big"
       type="search"
       @input="searchStore.updateQuery(query)"
@@ -24,7 +32,7 @@
 
 <script lang="ts" setup>
 import { BdButton, BdInput } from "bearded-ui";
-import { onMounted, ref } from "vue";
+import { nextTick, onMounted, ref } from "vue";
 
 import { useSearch } from "@/components/search/SearchStore";
 
@@ -39,8 +47,14 @@ function clearQuery(): void {
 
 onMounted(() => {
   query.value = searchStore.query;
-  input.value?.focus();
-  input.value?.select();
+
+  /*
+   * After the tick, not during it: selection is not part of the dialog focusing
+   * steps, and this component mounts before BdDialog calls showModal(). Waiting
+   * lets the dialog finish opening, then selects whatever the last search left
+   * behind so typing replaces it instead of appending to it.
+   */
+  nextTick(() => input.value?.select());
 });
 </script>
 
