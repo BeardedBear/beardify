@@ -99,7 +99,7 @@ const configOpen = computed<boolean>({
 }
 
 .avatar-image {
-  --avatar-image-size: 2rem;
+  --avatar-image-size: 2.3rem;
 
   border-radius: var(--avatar-image-size);
   display: block;
