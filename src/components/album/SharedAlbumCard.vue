@@ -7,9 +7,13 @@
     target="_blank"
   >
     <div class="visual">
-      <Cover :images="album.images" class="album-cover" size="medium" />
-      <div class="metas">
+      <div class="cover-wrap">
+        <Cover :images="album.images" class="album-cover" size="medium" />
+        <!-- Same reason as AlbumIndex: in the text row the numeral took a third
+             of a narrow cell and squeezed the name into mid-word breaks. -->
         <div v-if="rank" class="rank-number font-bold">{{ rank }}</div>
+      </div>
+      <div class="metas">
         <div class="infos">
           <div class="name font-bold">{{ album.name }}</div>
           <div class="artists">{{ album.artists.map((a) => a.name).join(", ") }}</div>
@@ -116,14 +120,40 @@ defineProps<{
   min-width: 0;
 }
 
-.rank-number {
-  color: var(--font-color-light);
-  flex-shrink: 0;
-  font-size: 2.4rem;
-  line-height: 1;
+.cover-wrap {
+  position: relative;
 }
 
+/* No hover actions on this card, so the corner stays free. */
+.rank-number {
+  backdrop-filter: blur(2px);
+  background: color-mix(in oklab, var(--bg-color-darker) 82%, transparent);
+  border-radius: 0.3rem;
+  bottom: 0.3rem;
+  color: var(--font-color-light);
+  font-size: var(--font-size-lg);
+  left: 0.3rem;
+  line-height: 1;
+  padding: 0.15rem 0.4rem;
+  position: absolute;
+  z-index: 2;
+}
+
+.name {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  text-overflow: ellipsis;
+}
+
+/* One line: an unclamped artist list made every card in the row grow to match. */
 .artists {
-  opacity: 0.6;
+  color: var(--font-color-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

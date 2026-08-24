@@ -16,6 +16,12 @@
     <div class="visual">
       <div :class="{ 'is-playing': isPlaying }" class="cover">
         <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" class="img" @click="handleCoverClick" />
+        <!--
+          On the artwork, not in the text row. As a flex sibling with
+          `flex-shrink: 0`, a two-digit rank ate a third of a 7rem tier cell
+          and left the album name breaking mid-word on two clamped lines.
+        -->
+        <div v-if="rank" class="rank-number font-bold">{{ rank }}</div>
         <IconButton
           class="play squircle"
           icon="play"
@@ -48,7 +54,6 @@
         </div>
       </div>
       <div v-if="!withoutMetas" class="metas">
-        <div v-if="rank" class="rank-number font-bold">{{ rank }}</div>
         <div class="infos">
           <div class="name font-bold">
             {{ album.name }}
@@ -252,6 +257,27 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   position: relative;
 }
 
+/*
+ * Bottom-left of the artwork — which is also where the play button lands on
+ * hover. All four corners are taken once the actions show, so the rank yields:
+ * it is a scanning aid, and you are no longer scanning the moment you reach for
+ * a control on that card.
+ */
+.rank-number {
+  backdrop-filter: blur(2px);
+  background: color-mix(in oklab, var(--bg-color-darker) 82%, transparent);
+  border-radius: 0.3rem;
+  bottom: 0.3rem;
+  color: var(--font-color-light);
+  font-size: var(--font-size-lg);
+  left: 0.3rem;
+  line-height: 1;
+  padding: 0.15rem 0.4rem;
+  position: absolute;
+  transition: opacity 0.15s ease;
+  z-index: 2;
+}
+
 .album.actions-open {
   .play,
   .add,
@@ -261,6 +287,10 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 
   .img {
     opacity: 0.4;
+  }
+
+  .rank-number {
+    opacity: 0;
   }
 }
 
@@ -275,6 +305,10 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 
     .img {
       opacity: 0.4;
+    }
+
+    .rank-number {
+      opacity: 0;
     }
   }
 }
@@ -502,13 +536,6 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   min-width: 0;
 }
 
-.rank-number {
-  color: var(--font-color-light);
-  flex-shrink: 0;
-  font-size: 2.4rem;
-  line-height: 1;
-}
-
 .current {
   --current-size: 3rem;
 
@@ -541,14 +568,25 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   line-clamp: 2;
   margin: 0.3rem 0 0;
   overflow: hidden;
-  overflow-wrap: anywhere;
+
+  /*
+   * `anywhere` split words mid-character — "Peripher / y" — because it lets a
+   * break land between any two letters. `break-word` only breaks a word that
+   * cannot fit on a line of its own, so names wrap at spaces and ellipsise
+   * instead of shattering.
+   */
+  overflow-wrap: break-word;
   text-overflow: ellipsis;
 }
 
+/*
+ * One line, ellipsised. Unclamped, "Genus Ordinis Dei" or "The Pretty Reckless"
+ * stacked three deep in a narrow cell and every card in the row grew to match.
+ */
 .artists {
-  overflow: visible;
-  overflow-wrap: anywhere;
-  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .date {
