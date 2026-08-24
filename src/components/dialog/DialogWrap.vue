@@ -1,5 +1,13 @@
 <template>
-  <BdDialog v-model="open" padding="none" :size="big ? 'big' : 'default'" :title="withTitle ? title : undefined">
+  <BdDialog
+    v-model="open"
+    :height="height"
+    :max-height="maxHeight"
+    :max-width="maxWidth"
+    :size="big ? 'big' : 'default'"
+    :title="withTitle ? title : undefined"
+    padding="none"
+  >
     <div v-if="preContent" class="pre-content">
       <slot name="pre-content" />
     </div>
@@ -15,6 +23,12 @@ import { useDialog } from "@/components/dialog/DialogStore";
 
 defineProps<{
   big?: boolean;
+  /** Fixes the dialog height, so it does not resize as content arrives. */
+  height?: string;
+  /** Caps the dialog height. Any CSS length; the library default is 90vh. */
+  maxHeight?: string;
+  /** Caps the dialog width. Any CSS length; the library default is 90vw. */
+  maxWidth?: string;
   preContent?: boolean;
   title?: string;
   withTitle: boolean;
