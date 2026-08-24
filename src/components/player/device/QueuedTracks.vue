@@ -8,10 +8,14 @@
 
     <div class="queue-list">
       <div class="section-title font-bold">Now</div>
-      <TrackHistory v-if="currentTrack" :cover-url="currentTrack.album.images[1].url" :track="currentTrack" />
+      <TrackHistory
+        v-if="currentTrack"
+        :cover-url="coverUrl(currentTrack.album.images, 'medium')"
+        :track="currentTrack"
+      />
       <div class="section-title font-bold">Next</div>
       <div v-for="(track, key) in playerStore.queue" :key="key">
-        <TrackHistory :cover-url="track.album.images[2].url" :index="key" :track="track" />
+        <TrackHistory :cover-url="coverUrl(track.album.images, 'small')" :index="key" :track="track" />
       </div>
       <div v-if="playerStore.queue.length === 0" class="empty-queue">
         <div class="empty-message font-italic">
@@ -28,6 +32,7 @@ import { computed, watch } from "vue";
 
 import TrackHistory from "@/components/player/history/TrackHistory.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
+import { coverUrl } from "@/helpers/cover";
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);

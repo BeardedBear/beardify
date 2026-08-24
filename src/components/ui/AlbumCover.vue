@@ -6,6 +6,7 @@
 import { computed } from "vue";
 
 import { Image, ImageSize } from "@/@types/Image";
+import { coverUrl } from "@/helpers/cover";
 
 /*
  * `alt` defaults to empty on purpose. At all thirteen call sites this cover sits
@@ -31,10 +32,7 @@ const props = withDefaults(
   { alt: "" },
 );
 
-// Spotify returns its three renditions largest-first.
-const INDEXES: Record<ImageSize, number> = { large: 0, medium: 1, small: 2 };
-
-const source = computed(() => props.images?.[INDEXES[props.size]]?.url ?? "/img/default.png");
+const source = computed(() => coverUrl(props.images, props.size));
 </script>
 
 <style scoped>
