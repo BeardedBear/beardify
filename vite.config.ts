@@ -2,7 +2,7 @@ import vue from "@vitejs/plugin-vue";
 import { copyFileSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { fileURLToPath, URL } from "node:url";
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 
 const pkg = JSON.parse(readFileSync("package.json", "utf-8")) as { version: string };
 
@@ -60,6 +60,16 @@ export default defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
+  },
+  /*
+   * Vitest reads this config, so tests get the `@/` alias and the Vue plugin for
+   * free. happy-dom rather than node: the app is browser-only and some helpers
+   * lean on it — `decodeHtmlEntities` parses Spotify's HTML-escaped descriptions
+   * through a detached <textarea>, and tier-list parsing goes through it.
+   */
+  test: {
+    environment: "happy-dom",
+    include: ["src/**/*.test.ts"],
   },
   server: {
     fs: { allow: ["./"] },
