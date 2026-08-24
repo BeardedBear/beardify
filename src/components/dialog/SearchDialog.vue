@@ -4,9 +4,9 @@
     content-driven panel is a thin strip on open and jumps once the first
     response lands — under a reader who is still typing. `max-height` could not
     fix that: a ceiling is not a floor. Held still here, the four result columns
-    scroll inside instead. These three numbers are the ones to tune.
+    scroll inside instead.
   -->
-  <Dialog  big height="90dvh" width="90dvw">
+  <Dialog big height="90dvh" title="Search" width="90dvw" with-title>
     <Search />
   </Dialog>
 </template>
