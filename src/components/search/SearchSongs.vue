@@ -50,7 +50,7 @@ const searchStore = useSearch();
 <style scoped>
 
 .song-list {
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
 }
 
 .track {
@@ -62,8 +62,8 @@ const searchStore = useSearch();
   cursor: pointer;
   display: flex;
   font: inherit;
-  gap: 0.8rem;
-  padding: 0.8rem;
+  gap: var(--space-3);
+  padding: var(--space-2);
   text-align: left;
   transition: background-color 0.15s ease;
   width: 100%;

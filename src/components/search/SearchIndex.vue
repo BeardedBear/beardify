@@ -146,7 +146,7 @@ const resultSummary = computed(() => {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-4);
 
   /*
    * `min-height: 0` is what lets this shrink below its content inside the
@@ -154,7 +154,7 @@ const resultSummary = computed(() => {
    * dialog body did, taking the search field off screen with it.
    */
   min-height: 0;
-  padding: 1rem;
+  padding: var(--space-4);
 }
 
 /*
@@ -192,7 +192,7 @@ const resultSummary = computed(() => {
 .col-tail {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-5);
   grid-area: tail;
   min-width: 0;
 }
@@ -201,7 +201,7 @@ const resultSummary = computed(() => {
   display: grid;
   flex: 1;
   font-size: var(--font-size-sm);
-  gap: 1.5rem;
+  gap: var(--space-5);
   grid-template-areas: "artists albums tail";
   grid-template-columns: 1fr 1.6fr 0.9fr;
   min-height: 0;
@@ -215,7 +215,7 @@ const resultSummary = computed(() => {
   }
 
   @media (--mobile) {
-    gap: 1.5rem;
+    gap: var(--space-5);
     grid-template-areas:
       "artists"
       "albums"

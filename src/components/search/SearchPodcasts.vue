@@ -40,7 +40,7 @@ const searchStore = useSearch();
 <style scoped>
 
 .podcast-list {
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
 
   .podcast {
     align-items: center;
@@ -49,9 +49,9 @@ const searchStore = useSearch();
     color: currentcolor;
     cursor: pointer;
     display: flex;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
-    padding: 0.8rem;
+    gap: var(--space-3);
+    margin-bottom: var(--space-1);
+    padding: var(--space-2);
     text-decoration: none;
     transition: background-color 0.2s ease;
 
@@ -73,7 +73,7 @@ const searchStore = useSearch();
 
 .name {
   font-size: var(--font-size-sm);
-  margin-bottom: 0.2rem;
+  margin-bottom: 0;
 }
 
 .publisher {

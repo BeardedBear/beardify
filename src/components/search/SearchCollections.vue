@@ -60,7 +60,7 @@ const matches = computed(() => {
 .collection-strip {
   border-bottom: 1px solid var(--bg-color-light);
   flex-shrink: 0;
-  padding-bottom: 1rem;
+  padding: 0 var(--space-4) var(--space-4);
 }
 
 /* Wraps rather than scrolls: this strip must never compete for vertical space
@@ -68,7 +68,7 @@ const matches = computed(() => {
 .row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: var(--space-2);
 }
 
 .hit {
@@ -78,9 +78,9 @@ const matches = computed(() => {
   color: var(--font-color);
   display: flex;
   font-size: var(--font-size-sm);
-  gap: 0.5rem;
+  gap: var(--space-2);
   max-width: 16rem;
-  padding: 0.3rem 0.6rem;
+  padding: var(--space-1) var(--space-3);
   text-decoration: none;
   transition: background-color 0.15s ease;
 

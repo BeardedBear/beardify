@@ -41,7 +41,7 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 
 .album {
   border-radius: 1rem;
-  padding: 0.8rem;
+  padding: var(--space-2);
   transition: background-color 0.2s ease;
 
   &:hover {
@@ -78,6 +78,6 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 }
 
 .album-wrap {
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
 }
 </style>

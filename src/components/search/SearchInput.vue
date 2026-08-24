@@ -73,7 +73,7 @@ onMounted(() => {
 .search {
   --search-radius: 1rem;
 
-  padding: 1rem;
+  padding: var(--space-4);
   position: relative;
 }
 

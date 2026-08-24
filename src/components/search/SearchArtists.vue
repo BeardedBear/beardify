@@ -54,7 +54,7 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
 <style scoped>
 
 .artist-list {
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
 
   .avatar {
     --avatar-size: 2.5rem;
@@ -71,9 +71,9 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
     color: currentcolor;
     display: flex;
     font-size: var(--font-size-sm);
-    gap: 1rem;
-    margin-bottom: 0.4rem;
-    padding: 0.5rem;
+    gap: var(--space-3);
+    margin-bottom: var(--space-1);
+    padding: var(--space-2);
     position: relative;
     text-decoration: none;
     transition: background-color 0.2s ease;
@@ -85,22 +85,22 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
     .artist-name {
       display: flex;
       flex-direction: column;
-      gap: 0.3rem;
+      gap: var(--space-1);
 
     }
 
     .genres {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.25rem;
-      margin-bottom: 0.15rem;
+      gap: var(--space-1);
+      margin-bottom: 0;
 
       .genre {
         background: var(--bg-color-lighter);
         border-radius: 0.2rem;
         color: var(--font-color-light);
         font-size: 0.65rem;
-        padding: 0.1rem 0.35rem;
+        padding: 0 var(--space-1);
         text-transform: capitalize;
       }
     }

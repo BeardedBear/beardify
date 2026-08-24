@@ -27,15 +27,15 @@ defineProps<{
   color: var(--primary-color);
   display: flex;
   font-size: var(--font-size-sm);
-  gap: 0.4rem;
-  margin: 0 0 1rem;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
   position: sticky;
   text-transform: uppercase;
   top: 0;
   z-index: 1;
 
   @media (--mobile) {
-    padding: 0 0 0.5rem;
+    padding: 0 0 var(--space-2);
   }
 }
 
