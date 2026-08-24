@@ -1,25 +1,29 @@
 <template>
   <div class="album-wrap">
-    <SearchTitle title="Albums" />
+    <SearchTitle :count="searchStore.albums.length" title="Albums" />
     <div class="album-list">
       <template v-if="searchStore.albums.length">
         <Album
-          v-for="(album, index) in searchStore.albums"
-          :key="index"
+          v-for="album in searchStore.albums"
+          :key="album.id"
           :album="album"
           :exact-search="exactAlbumSearched ? album.name.toLowerCase().includes(exactAlbumSearched) : false"
           class="album"
+          data-search-hit
           with-artists
           without-release-date
-          @click="searchStore.reset()"
+          @click="searchStore.close()"
+          @keydown.enter="searchStore.close()"
         />
       </template>
-      <template v-else>No album found</template>
+      <template v-else-if="searchStore.loading"><BdLoader size="small" /></template>
+    <template v-else>No album found</template>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
 import { computed, ComputedRef } from "vue";
 
 import Album from "@/components/album/AlbumIndex.vue";
@@ -38,13 +42,10 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 .album {
   border-radius: 1rem;
   padding: 0.8rem;
-  transition:
-      background-color 0.2s ease,
-      transform 0.2s ease;
+  transition: background-color 0.2s ease;
 
   &:hover {
     background-color: var(--bg-color-light);
-    transform: scale(1.03);
   }
 
   &.exact-search {

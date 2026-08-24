@@ -1,15 +1,16 @@
 <template>
   <div class="podcast-list">
-    <SearchTitle title="Podcasts" />
+    <SearchTitle :count="searchStore.podcasts.length" title="Podcasts" />
     <template v-if="searchStore.podcasts.length">
       <router-link
-        v-for="(podcast, index) in searchStore.podcasts"
-        :key="index"
+        v-for="podcast in searchStore.podcasts"
+        :key="podcast.id"
         :to="`/podcasts/${podcast.id}`"
         class="podcast"
-        @click="searchStore.reset()"
+        data-search-hit
+        @click="searchStore.close()"
       >
-        <img :src="podcast.images?.[1]?.url || podcast.images?.[0]?.url" class="cover" />
+        <img :src="coverUrl(podcast.images, 'medium')" alt="" class="cover" />
         <div class="content">
           <div class="name font-bold">
             {{ podcast.name }}
@@ -20,15 +21,18 @@
         </div>
       </router-link>
     </template>
+    <template v-else-if="searchStore.loading"><BdLoader size="small" /></template>
     <template v-else>No podcast found</template>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
 import { RouterLink } from "vue-router";
 
 import { useSearch } from "@/components/search/SearchStore";
 import SearchTitle from "@/components/search/SearchTitle.vue";
+import { coverUrl } from "@/helpers/cover";
 
 const searchStore = useSearch();
 </script>
@@ -49,13 +53,10 @@ const searchStore = useSearch();
     margin-bottom: 0.5rem;
     padding: 0.8rem;
     text-decoration: none;
-    transition:
-        background-color 0.2s ease,
-        transform 0.2s ease;
+    transition: background-color 0.2s ease;
 
     &:hover {
       background-color: var(--bg-color-light);
-      transform: scale(1.03);
     }
   }
 }

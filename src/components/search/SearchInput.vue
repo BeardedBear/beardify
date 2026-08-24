@@ -10,8 +10,9 @@
     <BdInput
       ref="input"
       v-model="query"
+      aria-label="Search Spotify"
       autofocus
-      placeholder="Search..."
+      placeholder="Search — or artist:name  &amp;  album:title"
       size="big"
       type="search"
       @input="searchStore.updateQuery(query)"
@@ -59,6 +60,15 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
+/*
+ * `type="search"` makes Chromium and WebKit draw their own clear cross, which
+ * landed directly under the custom .reset button. One control, not two.
+ */
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.search :deep(input[type="search"])::-webkit-search-cancel-button {
+  appearance: none;
+}
 
 .search {
   --search-radius: 1rem;

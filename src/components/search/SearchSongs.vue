@@ -1,15 +1,22 @@
 <template>
   <div class="song-list">
-    <SearchTitle title="Songs" />
-    <template v-if="searchStore.albums.length">
-      <div
-        v-for="(track, index) in searchStore.tracks"
-        :key="index"
+    <SearchTitle :count="searchStore.tracks.length" title="Songs" />
+    <template v-if="searchStore.tracks.length">
+      <!--
+        A button, not a div: artists and podcasts are router-links and so are
+        keyboard-reachable, but this column was a click handler on a plain div —
+        tabbing through the modal skipped every song.
+      -->
+      <button
+        v-for="track in searchStore.tracks"
+        :key="track.id"
         class="track"
+        data-search-hit
+        type="button"
         @click="
           () => {
             playSong(track.uri);
-            searchStore.reset();
+            searchStore.close();
           }
         "
       >
@@ -22,13 +29,16 @@
             <ArtistList :artist-list="track.artists" feat />
           </div>
         </div>
-      </div>
+      </button>
     </template>
-    <template v-else>No track found</template>
+    <template v-else-if="searchStore.loading"><BdLoader size="small" /></template>
+    <template v-else>No song found</template>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
+
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useSearch } from "@/components/search/SearchStore";
 import SearchTitle from "@/components/search/SearchTitle.vue";
@@ -45,18 +55,21 @@ const searchStore = useSearch();
 
 .track {
   align-items: center;
+  background: none;
+  border: 0;
   border-radius: 0.3rem;
+  color: inherit;
   cursor: pointer;
   display: flex;
+  font: inherit;
   gap: 0.8rem;
   padding: 0.8rem;
-  transition:
-      background-color 0.2s ease,
-      transform 0.2s ease;
+  text-align: left;
+  transition: background-color 0.15s ease;
+  width: 100%;
 
   &:hover {
     background-color: var(--bg-color-light);
-    transform: scale(1.03);
   }
 }
 

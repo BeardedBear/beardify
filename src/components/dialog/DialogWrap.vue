@@ -4,6 +4,7 @@
     :height="height"
     :max-height="maxHeight"
     :max-width="maxWidth"
+    :width="width"
     :size="big ? 'big' : 'default'"
     :title="withTitle ? title : undefined"
     padding="none"
@@ -31,6 +32,8 @@ defineProps<{
   maxWidth?: string;
   preContent?: boolean;
   title?: string;
+  /** Fixes the dialog width, overriding the `big` preset. */
+  width?: string;
   withTitle: boolean;
 }>();
 

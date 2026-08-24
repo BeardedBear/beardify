@@ -9,6 +9,9 @@
       'metas-above': metasAbove,
     }"
     class="album"
+    tabindex="-1"
+    @keydown.enter.prevent="handleCoverClick"
+    @keydown.space.prevent="handleCoverClick"
   >
     <div v-if="isPlaying" class="current">
       <i class="icon-volume-2" />
