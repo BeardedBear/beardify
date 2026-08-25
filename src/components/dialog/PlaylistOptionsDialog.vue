@@ -2,11 +2,10 @@
   <Dialog title="Playlist options" with-title>
     <div class="wrap">
       <PlaylistActions />
-      <BdInput
+      <input
         v-if="route.name === 'Collection'"
         ref="searchElement"
         v-model="playlistStore.filter"
-        autofocus
         class="search"
         placeholder="Filter album/artist"
         type="search"
@@ -17,8 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { BdInput } from "bearded-ui";
-import { nextTick, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { useDialog } from "@/components/dialog/DialogStore";
@@ -30,18 +28,16 @@ import { usePlaylist } from "@/views/playlist/PlaylistStore";
 const playlistStore = usePlaylist();
 const dialogStore = useDialog();
 const route = useRoute();
-const searchElement = ref<InstanceType<typeof BdInput> | null>(null);
+const searchElement = ref<HTMLInputElement | null>(null);
 
-/*
- * `autofocus` on the field owns the focus now — BdDialog's close button is the
- * first focusable descendant, so showModal() would otherwise take it. This is
- * left to select whatever filter was already typed, which focusing alone does
- * not do; nextTick because the dialog has not opened yet when this fires.
- */
 watch(
   () => dialogStore.show,
   (show) => {
-    if (show && dialogStore.type === "playlistOptions") nextTick(() => searchElement.value?.select());
+    if (show && dialogStore.type === "playlistOptions") {
+      setTimeout(() => {
+        if (searchElement.value) searchElement.value.focus();
+      }, 0);
+    }
   },
 );
 </script>

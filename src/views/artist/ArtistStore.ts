@@ -247,7 +247,7 @@ export const useArtist = defineStore("artist", {
         if (signal.aborted) return;
         this.artist = defaultArtist;
         this.timelineLoading = false;
-        notification({ msg: "Unable to load this artist", type: NotificationType.Error });
+        notification({ msg: "Unable to load this artist.", type: NotificationType.Error });
       }
     },
 

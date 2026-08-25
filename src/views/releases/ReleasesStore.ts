@@ -38,25 +38,10 @@ export const useReleases = defineStore("releases", {
       }
     },
 
-    /*
-     * Wrapped because it was not: this hits a third-party Directus instance, and
-     * an unhandled rejection there left the page spinning with nothing in the
-     * console for the user to act on.
-     */
     async getReleases() {
-      this.error = false;
-      this.loading = true;
-      let data: Release[];
-      try {
-        data = await http
-          .get(`https://2fpx4328.directus.app/assets/7e053788-71a4-46b3-b349-44b300a1b0a2?t=${new Date().getTime()}`)
-          .json<Release[]>();
-      } catch (error: unknown) {
-        if (import.meta.env.DEV) console.error("Error fetching releases:", error);
-        this.error = true;
-        this.loading = false;
-        return;
-      }
+      const data = await http
+        .get(`https://2fpx4328.directus.app/assets/7e053788-71a4-46b3-b349-44b300a1b0a2?t=${new Date().getTime()}`)
+        .json<Release[]>();
 
       // Build category menu using Map for O(1) lookups
       const categoryMap = new Map<string, Set<string>>();
@@ -111,7 +96,6 @@ export const useReleases = defineStore("releases", {
         return monthB - monthA;
       });
       this.releases = filteredReleases.sort((a, b) => b.releaseDateRaw - a.releaseDateRaw);
-      this.loading = false;
     },
 
     setActiveSlug(slug: null | string) {
@@ -135,8 +119,6 @@ export const useReleases = defineStore("releases", {
   state: (): ReleasesPage => ({
     activeSlug: null,
     checks: null,
-    error: false,
-    loading: false,
     menu: [],
     monthList: [],
     releases: [],

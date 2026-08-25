@@ -1,39 +1,16 @@
 <template>
   <div :class="['volume-wrapper', { 'force-visible': forceMobile }]">
-    <div ref="refVolume" class="volume font-bold" @mouseleave="onLeave" @mousemove="onMove">
+    <div ref="refVolume" class="volume font-bold" @click="onClick" @mousemove="onMove" @mouseleave="onLeave">
       <div :style="{ width: currentSliderPercent + '%' }" class="cursor" />
       <div :style="{ width: sliderPercent + '%' }" class="hover">
         <div class="perc">
           {{ previewVolume + "%" }}
         </div>
       </div>
-      <!--
-        The wedge above is painted by divs and a clip-path, so the control that
-        actually handles input is a real range sitting invisibly on top of it.
-        That buys arrow keys, Home/End, drag, and a correct announced value from
-        the platform, none of which the old click-on-a-div version had.
-      -->
-      <input
-        :value="sliderPercent"
-        :aria-valuetext="`${previewVolume}%`"
-        aria-label="Volume"
-        class="range"
-        max="100"
-        min="0"
-        step="1"
-        type="range"
-        @change="onCommit"
-        @input="onScrub"
-      />
     </div>
-    <IconButton
-      v-if="!forceMobile"
-      class="mute"
-      :icon="isMuted ? 'volume-x' : 'volume-2'"
-      :label="isMuted ? 'Unmute' : 'Mute'"
-      :pressed="isMuted"
-      @click="toggleMute"
-    />
+    <ButtonIndex v-if="!forceMobile" no-default-class type="button" variant="nude" @click="toggleMute">
+      <i :class="isMuted ? 'icon-volume-x' : 'icon-volume-2'" />
+    </ButtonIndex>
   </div>
 </template>
 
@@ -42,7 +19,7 @@ import { computed, onMounted, ref, watch } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
 import { usePlayer } from "@/components/player/PlayerStore";
-import IconButton from "@/components/ui/IconButton.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { notification } from "@/helpers/notifications";
 import { clamp, sliderPercentToVolume, volumeToSliderPercent } from "@/helpers/volume";
 
@@ -73,10 +50,19 @@ watch(
   },
 );
 
-// The request goes out once the value settles, so a drag across the bar is one
-// call to Spotify instead of one per pixel.
-async function onCommit(e: Event): Promise<void> {
-  sliderPercent.value = Number((e.target as HTMLInputElement).value);
+function getPercentFromEvent(e: MouseEvent | undefined): null | number {
+  const el = refVolume.value;
+  if (!e || !el) return null;
+  const rect = el.getBoundingClientRect();
+  const pos = clamp(((e.clientX - rect.left) / rect.width) * 100);
+  return Math.round(pos);
+}
+
+async function onClick(e?: MouseEvent): Promise<void> {
+  const pos = getPercentFromEvent(e);
+  if (pos !== null) {
+    sliderPercent.value = pos;
+  }
   await setVolumeOptimistic(previewVolume.value);
 }
 
@@ -91,11 +77,6 @@ function onMove(e: MouseEvent): void {
   const rect = el.getBoundingClientRect();
   const pos = clamp(((e.clientX - rect.left) / rect.width) * 100);
   sliderPercent.value = Math.round(pos);
-}
-
-// Dragging and arrow keys meanwhile only move the painted wedge.
-function onScrub(e: Event): void {
-  sliderPercent.value = Number((e.target as HTMLInputElement).value);
 }
 
 /**
@@ -145,19 +126,6 @@ async function toggleMute(): Promise<void> {
 </script>
 
 <style scoped>
-
-.mute {
-  background-color: transparent;
-  border: 0;
-  color: var(--font-color);
-  cursor: pointer;
-  opacity: 0.5;
-  padding: 0.5rem 0.6rem;
-
-  &:hover {
-    opacity: 1;
-  }
-}
 
 .volume-wrapper {
   align-items: center;
@@ -222,34 +190,7 @@ async function toggleMute(): Promise<void> {
     top: 0;
   }
 
-  .range {
-    appearance: none;
-    background: transparent;
-    cursor: pointer;
-    height: 100%;
-    inset: 0;
-    margin: 0;
-    opacity: 0;
-    position: absolute;
-    width: 100%;
-    z-index: 10;
-  }
-
   &:hover {
-    .hover {
-      opacity: 0.7;
-    }
-  }
-
-  /*
-   * The range itself is transparent, so its focus ring would be too. Draw it on
-   * the wedge instead — otherwise tabbing to the volume lands on nothing
-   * visible.
-   */
-  &:has(.range:focus-visible) {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-
     .hover {
       opacity: 0.7;
     }

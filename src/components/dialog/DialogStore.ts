@@ -17,7 +17,12 @@ export const useDialog = defineStore("dialog", {
       setTimeout(() => {
         this.show = false;
         this.isClosing = false;
+        this.isMinimized = false;
       }, 200);
+    },
+
+    minimize() {
+      this.isMinimized = true;
     },
 
     open(data: {
@@ -29,10 +34,15 @@ export const useDialog = defineStore("dialog", {
     }) {
       this.show = true;
       this.type = data.type;
+      this.isMinimized = false;
       if (data.albumId) this.albumId = data.albumId;
       if (data.track?.uri) this.track = data.track;
       if (data.playlistId) this.playlistId = data.playlistId;
       if (data.albumGroup) this.albumGroup = data.albumGroup;
+    },
+
+    restore() {
+      this.isMinimized = false;
     },
 
     async updatePlaylist(value: UpdatePlaylistValues, playlistId: string | undefined, isCollection: boolean) {
@@ -83,6 +93,7 @@ export const useDialog = defineStore("dialog", {
 
   state: (): Dialog => ({
     isClosing: false,
+    isMinimized: false,
     show: false,
     type: null,
   }),

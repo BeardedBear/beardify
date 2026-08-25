@@ -1,7 +1,7 @@
 <template>
   <div class="artist-concerts">
     <div v-if="loading" class="concerts-loader">
-      <BdLoader size="small" />
+      <LoadingDots size="small" />
     </div>
     <p v-else-if="!events.length" class="no-concerts">No upcoming concerts found.</p>
     <div v-else class="concerts-list">
@@ -26,10 +26,10 @@
 
 <script lang="ts" setup>
 import { ExternalLink } from "@lucide/vue";
-import { BdLoader } from "bearded-ui";
 import { onMounted, ref, watch } from "vue";
 
 import { TicketmasterEvent, TicketmasterVenue } from "@/@types/Ticketmaster";
+import LoadingDots from "@/components/ui/LoadingDots.vue";
 import { date } from "@/helpers/date";
 import { getTicketmasterEvents } from "@/helpers/ticketmaster";
 import { useArtist } from "@/views/artist/ArtistStore";

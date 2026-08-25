@@ -22,7 +22,7 @@
           class="dot desktop-only"
           >·
         </span>
-        <BdTooltip :content="getCountry" side="bottom">
+        <Tooltip :text="getCountry" placement="bottom">
           <img
             :src="getCountryFlagUrl(artistMetas.country)"
             :alt="artistMetas?.area?.name || artistMetas?.country"
@@ -31,7 +31,7 @@
           <strong>
             {{ artistMetas?.["begin-area"]?.name || artistMetas?.area?.name }}
           </strong>
-        </BdTooltip>
+        </Tooltip>
       </template>
       <template
         v-else-if="artistMetas?.['begin-area']?.name || artistMetas?.area?.name"
@@ -62,10 +62,10 @@
 </template>
 
 <script lang="ts" setup>
-import { BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 
+import Tooltip from "@/components/ui/Tooltip.vue";
 import { getCountryFlagUrl, getCountryName } from "@/helpers/country";
 import { formatDate } from "@/helpers/date";
 import { useArtist } from "@/views/artist/ArtistStore";
@@ -102,22 +102,18 @@ const getCountry = computed(() => {
   }
 }
 
-/*
- * Was a flat white at 10%, which is invisible on a light background. Tinting
- * from the theme's own surface ladder keeps the same weight in both themes.
- */
 .tag {
-  background-color: var(--bg-color-light);
+  background-color: rgb(255 255 255 / 10%);
   border-radius: 0.25rem;
   color: currentcolor;
   display: inline-block;
   padding: 0.1rem 0.3rem;
   text-decoration: none;
   text-transform: capitalize;
-  transition: background-color 0.2s ease;
+  transition: 0.2s;
 
   &:hover {
-    background-color: var(--bg-color-lighter);
+    background-color: rgb(255 255 255 / 20%);
   }
 
   &:focus-visible {

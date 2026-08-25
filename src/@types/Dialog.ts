@@ -7,6 +7,7 @@ export interface Dialog {
   albumGroup?: AlbumGroup;
   albumId?: string;
   isClosing: boolean;
+  isMinimized: boolean;
   playlistId?: string;
   show: boolean;
   track?: Spotify.Track | Track | TrackSimplified;

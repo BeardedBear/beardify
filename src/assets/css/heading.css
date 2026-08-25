@@ -12,20 +12,3 @@
     z-index: 3;
   }
 }
-
-/*
- * A view's primary heading is now an <h1> so the page has a document outline,
- * but its appearance still belongs to the component that owns it. bearded-ui
- * gives every h1 a size, a bottom margin and a line-height; without this those
- * would leak in and shift eight headers that already style themselves.
- *
- * Specificity is deliberate: `h1.name` (0,1,1) beats the library's bare `h1`
- * but loses to a component's scoped `.name[data-v-…]` (0,2,0), so anything the
- * component declares still wins.
- */
-h1.name,
-h1.title {
-  font-size: inherit;
-  line-height: inherit;
-  margin: 0;
-}

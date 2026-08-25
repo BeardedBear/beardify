@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!isPlaylistOwner(playlistStore.playlist.owner)">
-      <BdButton
+      <ButtonIndex
         v-if="!playlistStore.followed"
         icon-only
         variant="nude"
@@ -9,8 +9,8 @@
         @click="playlistStore.followPlaylist(playlistStore.playlist.id)"
       >
         <i class="icon-follow" />
-      </BdButton>
-      <BdButton
+      </ButtonIndex>
+      <ButtonIndex
         v-else
         icon-only
         variant="nude"
@@ -19,26 +19,18 @@
         @click="sidebarStore.removePlaylist(playlistStore.playlist.id)"
       >
         <i class="icon-followed" />
-      </BdButton>
+      </ButtonIndex>
     </div>
-    <BdButton
-      v-else
-      aria-label="Playlist options"
-      icon-only
-      title="Playlist options"
-      variant="nude"
-      @click="edit(playlistStore.playlist.id)"
-    >
-      <i aria-hidden="true" class="icon-more-vertical" />
-    </BdButton>
+    <ButtonIndex v-else icon-only variant="nude" @click="edit(playlistStore.playlist.id)">
+      <i class="icon-more-vertical" />
+    </ButtonIndex>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdButton } from "bearded-ui";
-
 import { useDialog } from "@/components/dialog/DialogStore";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { isPlaylistOwner } from "@/helpers/playlist";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 

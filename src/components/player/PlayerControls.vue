@@ -1,56 +1,52 @@
 <template>
   <div class="controls" :class="{ 'force-mobile': props.forceMobile }">
     <div class="btns">
-      <IconButton
+      <ButtonIndex
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
-        :class="{ active: playerStore.currentlyPlaying?.shuffle_state, big: props.forceMobile }"
-        :pressed="!!playerStore.currentlyPlaying?.shuffle_state"
+        no-default-class
+        :class="{ active: playerStore.currentlyPlaying?.shuffle_state }"
         class="control-button shuffle squircle"
-        icon="shuffle"
-        label="Shuffle"
+        :size="props.forceMobile ? 'big' : 'default'"
         @click="playerStore.toggleShuffle()"
-      />
-      <IconButton
+      >
+        <i class="icon-shuffle" />
+      </ButtonIndex>
+      <ButtonIndex
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
+        no-default-class
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
-        :pressed="playerStore.currentlyPlaying?.repeat_state !== 'off'"
         class="control-button repeat squircle"
-        icon="repeat"
-        label="Repeat"
         @click="playerStore.toggleRepeat()"
-      />
-      <IconButton
-        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
-        :class="{ big: props.forceMobile }"
-        class="control-button previous squircle"
-        icon="skip-back"
-        label="Previous track"
-        @click="playerStore.previous()"
-      />
-      <IconButton
+      >
+        <i class="icon-repeat" />
+      </ButtonIndex>
+      <ButtonIndex
         v-if="playerStore.playerState?.paused"
-        :class="{ big: props.forceMobile }"
+        no-default-class
         class="control-button play squircle"
-        icon="play"
-        label="Play"
+        :size="props.forceMobile ? 'big' : 'default'"
         @click="playerStore.play()"
-      />
-      <IconButton
+      >
+        <i class="icon-play" />
+      </ButtonIndex>
+      <ButtonIndex
         v-else
-        :class="{ big: props.forceMobile }"
+        no-default-class
         class="control-button play squircle"
-        icon="pause"
-        label="Pause"
+        :size="props.forceMobile ? 'big' : 'default'"
         @click="playerStore.pause()"
-      />
-      <IconButton
+      >
+        <i class="icon-pause" />
+      </ButtonIndex>
+      <ButtonIndex
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
-        :class="{ big: props.forceMobile }"
+        no-default-class
         class="control-button next squircle"
-        icon="skip-forward"
-        label="Next track"
+        :size="props.forceMobile ? 'big' : 'default'"
         @click="playerStore.next()"
-      />
+      >
+        <i class="icon-skip-forward" />
+      </ButtonIndex>
     </div>
     <div class="time font-bold">
       {{ timecode(currentTime) || "00:00" }} /
@@ -64,7 +60,7 @@ import { useIntervalFn } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
-import IconButton from "@/components/ui/IconButton.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { timecode } from "@/helpers/date";
 
 const props = defineProps<{ forceMobile?: boolean }>();
@@ -133,7 +129,7 @@ watch(
     background-color: var(--bg-color-lighter);
   }
 
-  &.big {
+  &.button-big {
     font-size: var(--font-size-xl);
     padding: 0.5rem 0.6rem;
   }
@@ -150,7 +146,7 @@ watch(
       background-color: var(--bg-color-lighter);
     }
 
-    &.big {
+    &.button-big {
       font-size: var(--font-size-xl);
       padding: 0.6rem 0.7rem;
     }
@@ -168,8 +164,7 @@ watch(
     }
   }
 
-  &.next,
-  &.previous {
+  &.next {
     @media (--mobile) {
       display: none;
     }
@@ -184,8 +179,7 @@ watch(
     display: inline-flex;
   }
 
-  .force-mobile &.next,
-  .force-mobile &.previous {
+  .force-mobile &.next {
     display: inline-flex;
   }
 }

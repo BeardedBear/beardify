@@ -27,9 +27,7 @@ defineProps<{
   color: var(--font-color);
   padding: 1rem;
   text-decoration: none;
-  transition:
-      background-color 0.2s ease,
-      transform 0.2s ease;
+  transition: 0.2s;
   will-change: transform;
 
   &:hover {

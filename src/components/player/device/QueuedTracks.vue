@@ -1,38 +1,38 @@
 <template>
-  <BdDropdown v-model="queueOpen" class="wrap" placement="top-end" size="small">
-    <template #trigger>
-      <BdButton label="Queue" icon-only>
-        <i aria-hidden="true" class="icon-queue" />
-      </BdButton>
-    </template>
-
-    <div class="queue-list">
-      <div class="section-title font-bold">Now</div>
-      <TrackHistory
-        v-if="currentTrack"
-        :cover-url="coverUrl(currentTrack.album.images, 'medium')"
-        :track="currentTrack"
-      />
-      <div class="section-title font-bold">Next</div>
-      <div v-for="(track, key) in playerStore.queue" :key="key">
-        <TrackHistory :cover-url="coverUrl(track.album.images, 'small')" :index="key" :track="track" />
+  <div class="wrap">
+    <div v-if="playerStore.queueOpened" ref="popup" class="content">
+      <div class="head">
+        <div class="heading">Queue</div>
       </div>
-      <div v-if="playerStore.queue.length === 0" class="empty-queue">
-        <div class="empty-message font-italic">
-          {{ isPlayingPodcast ? "Queue not available for podcast episodes" : "No tracks in queue" }}
+      <div class="body">
+        <div class="queue-list">
+          <div class="section-title font-bold">Now</div>
+          <TrackHistory v-if="currentTrack" :cover-url="currentTrack.album.images[1].url" :track="currentTrack" />
+          <div class="section-title font-bold">Next</div>
+          <div v-for="(track, key) in playerStore.queue" :key="key">
+            <TrackHistory :cover-url="track.album.images[2].url" :index="key" :track="track" />
+          </div>
+          <div v-if="playerStore.queue.length === 0" class="empty-queue">
+            <div class="empty-message font-italic">
+              {{ isPlayingPodcast ? "Queue not available for podcast episodes" : "No tracks in queue" }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </BdDropdown>
+    <ButtonIndex icon-only size="small" @click="playerStore.openQueue()">
+      <i class="icon-queue" />
+    </ButtonIndex>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { BdButton, BdDropdown } from "bearded-ui";
-import { computed, watch } from "vue";
+import { onClickOutside } from "@vueuse/core";
+import { computed, ref, watch } from "vue";
 
 import TrackHistory from "@/components/player/history/TrackHistory.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
-import { coverUrl } from "@/helpers/cover";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
@@ -40,12 +40,7 @@ const isPlayingPodcast = computed(() => {
   const track = currentTrack.value;
   return track?.type === "episode" || track?.uri?.includes("spotify:episode:");
 });
-// The store owns the panel state (the player toggles it from elsewhere too);
-// opening through it also refreshes the queue.
-const queueOpen = computed<boolean>({
-  get: () => playerStore.queueOpened,
-  set: (value) => (value ? playerStore.openQueue() : playerStore.closeQueue()),
-});
+const popup = ref<HTMLElement | null>();
 
 watch(currentTrack, (track) => {
   if (track) {
@@ -56,30 +51,67 @@ watch(currentTrack, (track) => {
     }
   }
 });
+
+onClickOutside(popup, () => playerStore.closeQueue());
 </script>
 
 <style scoped>
 
 .wrap {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  text-align: left;
+
   @media (--mobile) {
     display: none;
   }
 }
 
+.body {
+  background-color: var(--bg-color-dark);
+  border: 1px solid var(--bg-color-lighter);
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 0 10px 0 rgb(0 0 0 / 20%);
+  height: 300px;
+  overflow: auto;
+  position: relative;
+  width: 250px;
+}
+
+.content {
+  bottom: calc(100% + 10px);
+  position: absolute;
+  right: 0;
+  z-index: 20;
+}
+
+.head {
+  background-color: var(--bg-color-lighter);
+  border-radius: 10px 10px 0 0;
+  line-height: 1;
+  padding: 10px;
+  position: relative;
+  z-index: 3;
+
+  .heading {
+    color: var(--text-color-dark);
+    font-size: var(--font-size-sm);
+    padding: 3px 10px;
+  }
+}
+
 .section-title {
-  color: var(--font-color-dark);
   font-size: var(--font-size-xs);
   margin-top: 10px;
+  opacity: 0.5;
   padding: 0 10px;
   text-transform: uppercase;
 }
 
 .queue-list {
   font-size: var(--font-size-sm);
-  height: 300px;
-  overflow: auto;
   white-space: nowrap;
-  width: 250px;
 }
 
 .empty-queue {

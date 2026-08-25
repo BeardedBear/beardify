@@ -68,9 +68,9 @@ function playSingle(albumUri: string): void {
 }
 
 .release-date {
-  color: var(--font-color-dark);
   font-size: var(--font-size-sm);
   font-style: italic;
+  opacity: 0.5;
 }
 
 .cover {

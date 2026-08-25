@@ -1,22 +1,15 @@
 <template>
   <div class="song-list">
-    <SearchTitle :count="searchStore.tracks.length" title="Songs" />
-    <template v-if="searchStore.tracks.length">
-      <!--
-        A button, not a div: artists and podcasts are router-links and so are
-        keyboard-reachable, but this column was a click handler on a plain div —
-        tabbing through the modal skipped every song.
-      -->
-      <button
-        v-for="track in searchStore.tracks"
-        :key="track.id"
+    <SearchTitle title="Songs" />
+    <template v-if="searchStore.albums.length">
+      <div
+        v-for="(track, index) in searchStore.tracks"
+        :key="index"
         class="track"
-        data-search-hit
-        type="button"
         @click="
           () => {
             playSong(track.uri);
-            searchStore.close();
+            searchStore.reset();
           }
         "
       >
@@ -29,16 +22,13 @@
             <ArtistList :artist-list="track.artists" feat />
           </div>
         </div>
-      </button>
+      </div>
     </template>
-    <template v-else-if="searchStore.loading"><BdLoader size="small" /></template>
-    <template v-else>No song found</template>
+    <template v-else>No track found</template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdLoader } from "bearded-ui";
-
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useSearch } from "@/components/search/SearchStore";
 import SearchTitle from "@/components/search/SearchTitle.vue";
@@ -50,26 +40,21 @@ const searchStore = useSearch();
 <style scoped>
 
 .song-list {
-  padding: 0 var(--space-4);
+  padding: 0 1rem;
 }
 
 .track {
   align-items: center;
-  background: none;
-  border: 0;
   border-radius: 0.3rem;
-  color: inherit;
   cursor: pointer;
   display: flex;
-  font: inherit;
-  gap: var(--space-3);
-  padding: var(--space-2);
-  text-align: left;
-  transition: background-color 0.15s ease;
-  width: 100%;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  transition: 0.2s;
 
   &:hover {
     background-color: var(--bg-color-light);
+    transform: scale(1.03);
   }
 }
 

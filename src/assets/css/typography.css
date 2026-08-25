@@ -46,17 +46,9 @@
   }
 }
 
-/*
- * Bounds in `rem`, not `px`, on purpose: on the root element `rem` resolves
- * against the browser's own default, so a reader who raised theirs to 20px
- * gets a proportionally denser-but-larger interface instead of being pinned to
- * whatever we hard-coded. The `vw` term keeps the tuned 14px at a normal
- * desktop width (0.75rem + 0.16vw = 14.05px at 16px/1280px) and lets it grow
- * on the wide displays the --l/--xl/--hdpi breakpoints already target.
- */
 html {
   /* stylelint-disable property-no-vendor-prefix */
-  font-size: clamp(0.8125rem, calc(0.75rem + 0.16vw), 1.5rem);
+  font-size: clamp(14px, calc(0.9rem + 0.6vw), 14px);
   line-height: 1.4;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
@@ -74,6 +66,6 @@ textarea {
 
 @media (--mobile) {
   html {
-    font-size: clamp(0.875rem, calc(0.8rem + 0.5vw), 1.5rem);
+    font-size: clamp(14px, calc(1rem + 0.8vw), 16px);
   }
 }

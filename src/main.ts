@@ -1,6 +1,4 @@
-import "bearded-ui/style.css";
 import { MotionPlugin } from "@vueuse/motion";
-import { useTheme } from "bearded-ui";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import { createApp } from "vue";
@@ -91,9 +89,6 @@ function syncLS(key: string, value: string): void {
   if (!localStorage.getItem(key)) localStorage.setItem(key, value);
 }
 
-// Applies the stored palette to <html> and keeps it in sync from here on.
-useTheme();
-
 // Initialize the Spotify SDK error handler
 handleSpotifySDKErrors();
 
@@ -108,6 +103,8 @@ handleSpotifySDKErrors();
   if (router.currentRoute.value.meta.skipBootAuth) {
     // If we're on the auth page or a public share page, just mount the app without trying to refresh
     app.mount("#app");
+    useConfig().switchScheme(useConfig().schemeLabel);
+    useConfig().switchTheme(useConfig().themeLabel);
     syncLS("beardify-config", JSON.stringify(useConfig().$state));
     initTauriBridge();
   } else {
@@ -118,6 +115,8 @@ handleSpotifySDKErrors();
         // Start auto-refresh after successful token refresh
         useAuth().startAutoRefresh();
         app.mount("#app");
+        useConfig().switchScheme(useConfig().schemeLabel);
+        useConfig().switchTheme(useConfig().themeLabel);
         syncLS("beardify-config", JSON.stringify(useConfig().$state));
         syncLS("beardify-auth", JSON.stringify(useAuth().$state));
       }

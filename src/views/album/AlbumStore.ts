@@ -18,7 +18,7 @@ export const useAlbum = defineStore("album", {
         this.album = e.data;
       } catch {
         this.album = defaultAlbum;
-        notification({ msg: "Unable to load this album", type: NotificationType.Error });
+        notification({ msg: "Unable to load this album.", type: NotificationType.Error });
       }
     },
   },

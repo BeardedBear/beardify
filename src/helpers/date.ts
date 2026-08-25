@@ -53,27 +53,15 @@ export function formatDate(date?: null | string): string {
  * @param date - Duration in milliseconds
  * @returns Timecode string, or empty string if date is falsy
  */
-/*
- * Plain arithmetic on the millisecond count, not `new Date(ms).getHours()`.
- *
- * That trick read the epoch offset back as a *local* clock time, so the result
- * depended on where the reader was sitting: a 3:59 track rendered as "18:03:59"
- * in New York and "8:03:59" in Tokyo, and even in UTC an hour-long album came
- * out as "4:20" instead of "1:04:20". Only Europe/Paris was right. It never
- * showed up locally, but the public web build and every /share link are opened
- * from other timezones.
- * @param date - Duration in milliseconds
- */
 export function timecode(date: null | number | undefined): string {
-  if (!date) return "";
-
-  const totalSeconds = Math.floor(date / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  const pad = (value: number): string => String(value).padStart(2, "0");
-
-  return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${minutes}:${pad(seconds)}`;
+  if (date) {
+    const hours = new Date(date).getHours() - 1;
+    if (hours > 0) {
+      return format(new Date(date), `${hours}:mm:ss`, options);
+    }
+    return format(new Date(date), "m:ss", options);
+  }
+  return "";
 }
 
 /**
@@ -81,15 +69,9 @@ export function timecode(date: null | number | undefined): string {
  * @param date - Duration in milliseconds
  */
 export function timecodeWithUnits(date: number): string {
-  // Timezone-free for the same reason as `timecode` above.
-  const totalSeconds = Math.floor(date / 1000);
+  const hours = new Date(date).getHours() - 1;
+  const minutes = new Date(date).getMinutes();
+  const seconds = new Date(date).getSeconds();
 
-  return formatDuration(
-    {
-      hours: Math.floor(totalSeconds / 3600),
-      minutes: Math.floor((totalSeconds % 3600) / 60),
-      seconds: totalSeconds % 60,
-    },
-    options,
-  );
+  return formatDuration({ hours, minutes, seconds }, options);
 }

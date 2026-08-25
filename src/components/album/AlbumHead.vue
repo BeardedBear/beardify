@@ -1,9 +1,9 @@
 <template>
   <div class="album-header">
     <div>
-      <h1 class="title font-bold">
+      <div class="title font-bold">
         {{ album.name }}
-      </h1>
+      </div>
       <div class="infos">
         <ArtistList :artist-list="album.artists" />
         <span>&nbsp;·&nbsp;</span>
@@ -17,22 +17,20 @@
     <div>
       <div class="options">
         <div class="links">
-          <BdButton
-label="Search this album on Google"
+          <ButtonIndex
             icon-only
             variant="nude"
             @click="openLink(`https://www.google.com/search?q=${album.artists[0].name}+${album.name}`)"
           >
-            <i aria-hidden="true" class="icon-google" />
-          </BdButton>
-          <BdButton
-label="Search this album on Discogs"
+            <i class="icon-google" />
+          </ButtonIndex>
+          <ButtonIndex
             icon-only
             variant="nude"
-            @click="openLink(`https://www.discogs.com/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
+            @click="openLink(`https://www.discogs.com/fr/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
           >
-            <i aria-hidden="true" class="icon-discogs" />
-          </BdButton>
+            <i class="icon-discogs" />
+          </ButtonIndex>
         </div>
         <ShareContent :beardify-url="$route.fullPath" :spotify-url="props.album.external_urls.spotify" />
       </div>
@@ -41,11 +39,10 @@ label="Search this album on Discogs"
 </template>
 
 <script lang="ts" setup>
-import { BdButton } from "bearded-ui";
-
 import { Album } from "@/@types/Album";
 import { Track, TrackSimplified } from "@/@types/Track";
 import ArtistList from "@/components/artist/ArtistList.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 import { date, timecodeWithUnits } from "@/helpers/date";
 import { openLink } from "@/helpers/openLink";

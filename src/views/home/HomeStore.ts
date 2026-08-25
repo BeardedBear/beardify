@@ -14,60 +14,46 @@ import { isAlbum } from "@/helpers/useCleanAlbums";
 export const useHome = defineStore("home", {
   actions: {
     async clean() {
-      this.error = false;
-      this.loading = false;
       this.recommendedAlbums = [];
     },
 
     // Uses the deprecated /recommendations endpoint on purpose: Beardify's client ID
     // predates Spotify's Nov 27, 2024 cutoff and keeps extended quota access. Self-hosted
     // forks registering their own client ID after that date will get a 403 here.
-    /*
-     * Loading, empty and failed are three different things and the view has to
-     * be able to tell them apart. It used to gate its spinner on
-     * `!recommendedAlbums.length`, so a successful-but-empty response and a
-     * network error both rendered as a spinner that never stopped — and the
-     * error was swallowed here besides.
-     *
-     * This endpoint deserves the care: /recommendations is deprecated, and a
-     * fork with its own post-2024 client ID gets a 403 from it every time.
-     */
     async getRecommendedAlbums() {
       interface Top {
         seed: unknown;
         tracks: Track[];
       }
 
-      this.error = false;
-      this.loading = true;
-      try {
-        const { data } = await instance().get<Paging<Artist>>("me/top/artists");
-        if (!data.items.length) {
-          this.recommendedAlbums = [];
-          return;
-        }
+      const { data } = await instance().get<Paging<Artist>>("me/top/artists");
 
-        const seeds = Array.from({ length: 5 }, () => data.items[getRandomInt(0, 10)]?.id);
-        const f = await instance().get<Top>(
-          `recommendations?market=FR&seed_artists=${seeds.join(",")}&limit=50`,
-        );
-        const albums: AlbumSimplified[] = [];
-        for (const track of f.data.tracks) {
-          if (isAlbum(track.album)) albums.push(track.album);
+      if (data.items.length) {
+        const id1 = data.items[getRandomInt(0, 10)]?.id;
+        const id2 = data.items[getRandomInt(0, 10)]?.id;
+        const id3 = data.items[getRandomInt(0, 10)]?.id;
+        const id4 = data.items[getRandomInt(0, 10)]?.id;
+        const id5 = data.items[getRandomInt(0, 10)]?.id;
+        const artistsSeed = `${id1},${id2},${id3},${id4},${id5}`;
+
+        try {
+          const f = await instance().get<Top>(`recommendations?market=FR&seed_artists=${artistsSeed}&limit=50`);
+          // Combine map and filter for better performance
+          const albums: AlbumSimplified[] = [];
+          for (const track of f.data.tracks) {
+            if (isAlbum(track.album)) {
+              albums.push(track.album);
+            }
+          }
+          this.recommendedAlbums = removeDuplicatesAlbums(albums);
+        } catch {
+          // silent fail
         }
-        this.recommendedAlbums = removeDuplicatesAlbums(albums);
-      } catch (error: unknown) {
-        if (import.meta.env.DEV) console.error("Error fetching recommendations:", error);
-        this.error = true;
-      } finally {
-        this.loading = false;
-      }
+      } else if (!this.recommendedAlbums.length) this.getRecommendedAlbums();
     },
   },
 
   state: (): HomePage => ({
-    error: false,
-    loading: false,
     recommendedAlbums: [],
   }),
 });

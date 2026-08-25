@@ -138,7 +138,7 @@ export async function handlePlaybackApiError(
     }
   } else if (isApiError(error) && error.response?.status === 403) {
     notification({
-      msg: "You don't have permission to play on this device",
+      msg: "You don't have permission to play on this device.",
       type: NotificationType.Error,
     });
   } else {

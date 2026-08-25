@@ -1,6 +1,6 @@
 <template>
   <div v-if="playlistStore.playlist.name === ''" class="loader">
-    <BdLoader />
+    <Loader />
   </div>
   <PageScroller v-else ref="scrollerRef">
     <div class="playlist">
@@ -22,7 +22,6 @@
 </template>
 
 <script lang="ts" setup>
-import { BdLoader } from "bearded-ui";
 import { computed, ref } from "vue";
 
 import { PublicUser } from "@/@types/PublicUser";
@@ -30,6 +29,7 @@ import { instance } from "@/api";
 import AlbumGallery from "@/components/album/AlbumGallery.vue";
 import Header from "@/components/playlist/PlaylistHeader.vue";
 import Tracks from "@/components/playlist/PlaylistTracks.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { isAlbum, isEP, isSingle, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";

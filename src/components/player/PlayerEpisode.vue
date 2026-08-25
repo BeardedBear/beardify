@@ -1,11 +1,8 @@
 <template>
   <div class="surface" @click.capture="onSurfaceClick">
     <div class="meta">
-      <What
-        v-if="playerStore.currentFromSDK"
-        :cover-url="coverUrl(playerStore.currentFromSDK?.album.images, 'medium')"
-      />
-      <BdLoader v-else />
+      <What v-if="playerStore.currentFromSDK" :cover-url="playerStore.currentFromSDK?.album.images[1].url" />
+      <Loader v-else />
       <Controls
         :duration="playerStore.currentFromSDK && playerStore.currentFromSDK.duration_ms"
         :progress="playerStore.currentPositionFromSDK"
@@ -17,14 +14,12 @@
 </template>
 
 <script lang="ts" setup>
-import { BdLoader } from "bearded-ui";
-
 import Device from "@/components/player/device/DeviceIndex.vue";
 import Controls from "@/components/player/PlayerControls.vue";
 import What from "@/components/player/PlayerMetas.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import SeekBar from "@/components/player/SeekBar.vue";
-import { coverUrl } from "@/helpers/cover";
+import Loader from "@/components/ui/LoadingDots.vue";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 
 const playerStore = usePlayer();

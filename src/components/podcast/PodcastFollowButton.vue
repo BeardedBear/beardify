@@ -1,5 +1,5 @@
 <template>
-  <BdButton
+  <ButtonIndex
     :variant="!podcastsStore.isFollowing ? 'primary' : 'default'"
     :class="{ followed: podcastsStore.isFollowing }"
     class="follow-button"
@@ -14,13 +14,13 @@
     />
     <span v-if="!podcastsStore.isFollowing">Follow podcast</span>
     <span v-else>Unfollow</span>
-  </BdButton>
+  </ButtonIndex>
 </template>
 
 <script lang="ts" setup>
-import { BdButton } from "bearded-ui";
 import { ref } from "vue";
 
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { usePodcasts } from "@/views/podcasts/PodcastsStore";
 
 const props = defineProps<{

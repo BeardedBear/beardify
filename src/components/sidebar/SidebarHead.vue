@@ -3,51 +3,43 @@
     <router-link to="/">
       <img class="logo" src="/img/logo.svg" />
     </router-link>
-    <BdButtonGroup full class="navigation">
-      <BdButton label="Go back" icon-only @click="router.go(-1)">
-        <i aria-hidden="true" class="icon-arrow-left" />
-      </BdButton>
-      <BdButton label="Go forward" icon-only @click="router.go(1)">
-        <i aria-hidden="true" class="icon-arrow-right" />
-      </BdButton>
-    </BdButtonGroup>
-    <BdButton label="Search" icon-only @click="dialogStore.open({ type: 'search' })">
-      <i aria-hidden="true" class="icon-search" />
-    </BdButton>
-    <BdDropdown v-if="authStore.me !== null" v-model="configOpen" placement="bottom-end">
-      <template #trigger>
-        <div class="avatar">
+    <div class="navigation">
+      <ButtonIndex icon-only variant="full" @click="router.go(-1)">
+        <i class="icon-arrow-left" />
+      </ButtonIndex>
+      <ButtonIndex icon-only variant="full" @click="router.go(1)">
+        <i class="icon-arrow-right" />
+      </ButtonIndex>
+    </div>
+    <ButtonIndex icon-only @click="dialogStore.open({ type: 'search' })">
+      <i class="icon-search" />
+    </ButtonIndex>
+    <div>
+      <div v-if="authStore.me !== null">
+        <div class="avatar" @click="configStore.open()">
           <Cover :images="authStore.me?.images" class="avatar-image squircle" size="large" />
           <i class="icon icon-chevron-down font-bold" />
         </div>
-      </template>
-      <Config />
-    </BdDropdown>
+        <Config />
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdButton, BdButtonGroup, BdDropdown } from "bearded-ui";
-import { computed } from "vue";
 import { RouterLink } from "vue-router";
 
 import Config from "@/components/config/ConfigIndex.vue";
 import { useConfig } from "@/components/config/ConfigStore";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Cover from "@/components/ui/AlbumCover.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import router from "@/router";
 import { useAuth } from "@/views/auth/AuthStore";
 
 const authStore = useAuth();
 const configStore = useConfig();
 const dialogStore = useDialog();
-
-// The store owns the panel (logging out closes it from AuthStore); BdDropdown
-// only reports the gestures it handles itself — outside click, Escape.
-const configOpen = computed<boolean>({
-  get: () => configStore.show,
-  set: (value) => (value ? configStore.open() : configStore.close()),
-});
 </script>
 
 <style scoped>
@@ -59,25 +51,32 @@ const configOpen = computed<boolean>({
   justify-content: space-between;
   padding: 1rem;
   position: relative;
-
-  /* Seule la navigation absorbe la place restante : sans ça les autres items
-     rétrécissent aussi, et l'avatar est écrasé par le `max-width: 100%` que
-     bearded-ui pose sur les images. */
-  & > :not(.navigation) {
-    flex-shrink: 0;
-  }
 }
 
 .navigation {
+  --navigation-radius: 1rem;
+
+  display: flex;
   margin-left: 1rem;
   margin-right: 1rem;
+  width: 100%;
+
+  button {
+    &:first-of-type {
+      border-radius: var(--navigation-radius) 0 0 var(--navigation-radius);
+    }
+
+    &:last-of-type {
+      border-radius: 0 var(--navigation-radius) var(--navigation-radius) 0;
+    }
+  }
 }
 
 .avatar {
   cursor: pointer;
   margin-left: 1rem;
   position: relative;
-  transition: transform 0.2s ease;
+  transition: 0.2s;
   will-change: transform;
 
   &:hover {
@@ -99,7 +98,7 @@ const configOpen = computed<boolean>({
 }
 
 .avatar-image {
-  --avatar-image-size: 2.3rem;
+  --avatar-image-size: 2rem;
 
   border-radius: var(--avatar-image-size);
   display: block;

@@ -9,9 +9,6 @@
       'metas-above': metasAbove,
     }"
     class="album"
-    tabindex="-1"
-    @keydown.enter.prevent="handleCoverClick"
-    @keydown.space.prevent="handleCoverClick"
   >
     <div v-if="isPlaying" class="current">
       <i class="icon-volume-2" />
@@ -19,32 +16,27 @@
     <div class="visual">
       <div :class="{ 'is-playing': isPlaying }" class="cover">
         <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" class="img" @click="handleCoverClick" />
-        <!--
-          On the artwork, not in the text row. As a flex sibling with
-          `flex-shrink: 0`, a two-digit rank ate a third of a 7rem tier cell
-          and left the album name breaking mid-word on two clamped lines.
-        -->
-        <div v-if="rank" class="rank-number font-bold">{{ rank }}</div>
-        <IconButton
-          class="play squircle"
-          icon="play"
-          :label="`Play ${album.name}`"
-          @click.stop="handlePlayAlbum(album.uri)"
-        />
-        <IconButton
+        <ButtonIndex no-default-class class="play squircle" type="button" @click.stop="handlePlayAlbum(album.uri)">
+          <i class="icon-play" />
+        </ButtonIndex>
+        <ButtonIndex
           v-if="canSave"
+          no-default-class
           class="button-action add squircle"
-          icon="plus"
-          :label="`Add ${album.name} to a collection`"
+          type="button"
           @click.stop="dialogStore.open({ type: 'addalbum', albumId: album.id })"
-        />
-        <IconButton
+        >
+          <i class="icon-plus" />
+        </ButtonIndex>
+        <ButtonIndex
           v-if="canDelete"
+          no-default-class
           class="button-action delete squircle"
-          icon="trash-2"
-          :label="`Remove ${album.name} from this collection`"
+          type="button"
           @click.stop="deleteAlbum(album.id)"
-        />
+        >
+          <i class="icon-trash-2" />
+        </ButtonIndex>
         <div
           v-if="variantCount && variantCount > 0"
           class="album-group-stack-indicator"
@@ -57,6 +49,7 @@
         </div>
       </div>
       <div v-if="!withoutMetas" class="metas">
+        <div v-if="rank" class="rank-number font-bold">{{ rank }}</div>
         <div class="infos">
           <div class="name font-bold">
             {{ album.name }}
@@ -87,11 +80,11 @@ import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
 import Cover from "@/components/ui/AlbumCover.vue";
-import IconButton from "@/components/ui/IconButton.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
-import { notification, notifyUndoable } from "@/helpers/notifications";
+import { notification } from "@/helpers/notifications";
 import { playAlbum } from "@/helpers/playAlbum"; // Import the playAlbum helper
-import { addPlaylistItems, removePlaylistItems } from "@/helpers/playlist";
+import { removePlaylistItems } from "@/helpers/playlist";
 import router from "@/router";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -161,30 +154,10 @@ async function deleteAlbum(albumId: string): Promise<void> {
       notification({ msg: "No valid track URIs found", type: NotificationType.Error });
       return;
     }
-
-    /*
-     * Read what to put back, and where, before removing anything.
-     *
-     * The removal above targets every track of the album by URI, but a
-     * collection only ever holds one of them as a marker (see AddAlbum). So the
-     * undo has to restore the intersection with what was actually in the
-     * playlist — re-adding `tracks` wholesale would turn one album entry into a
-     * full tracklist. And restoring at the end is not an undo: in a tier list it
-     * would silently move the album to a different tier.
-     */
-    const present = new Map(playlistStore.tracks.map((entry, index) => [entry.item.uri, index]));
-    const uris = tracks.map((track) => track.uri).filter((uri) => present.has(uri));
-    const position = uris.length ? (present.get(uris[0]) ?? -1) : -1;
-
     try {
       await removePlaylistItems(`${currentRouteId}`, tracks, playlistStore.playlist.snapshot_id);
       playlistStore.removeTracks(tracks);
-      if (uris.length) {
-        notifyUndoable(`Removed ${props.album.name}`, async () => {
-          await addPlaylistItems(`${currentRouteId}`, uris, position >= 0 ? position : undefined);
-          await playlistStore.reloadTracks(`playlists/${currentRouteId}/items`);
-        });
-      }
+      notification({ msg: "Album successfully removed from playlist", type: NotificationType.Success });
     } catch (error: any) {
       notification({
         msg: error.response?.data?.error?.message ?? "Album delete failed",
@@ -252,33 +225,11 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 }
 
 .album {
-  /* `animation: popAlbum 1s ease both` lived here, naming a keyframe that does
-     not exist anywhere in the project — a no-op the browser silently ignored. */
+  animation: popAlbum 1s ease both;
   color: var(--font-color);
   font-family: inherit;
   line-height: 1.4;
   position: relative;
-}
-
-/*
- * Bottom-left of the artwork — which is also where the play button lands on
- * hover. All four corners are taken once the actions show, so the rank yields:
- * it is a scanning aid, and you are no longer scanning the moment you reach for
- * a control on that card.
- */
-.rank-number {
-  backdrop-filter: blur(2px);
-  background: color-mix(in oklab, var(--bg-color-darker) 82%, transparent);
-  border-radius: 0.3rem;
-  bottom: 0.3rem;
-  color: var(--font-color-light);
-  font-size: var(--font-size-lg);
-  left: 0.3rem;
-  line-height: 1;
-  padding: 0.15rem 0.4rem;
-  position: absolute;
-  transition: opacity 0.15s ease;
-  z-index: 2;
 }
 
 .album.actions-open {
@@ -290,10 +241,6 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 
   .img {
     opacity: 0.4;
-  }
-
-  .rank-number {
-    opacity: 0;
   }
 }
 
@@ -308,10 +255,6 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 
     .img {
       opacity: 0.4;
-    }
-
-    .rank-number {
-      opacity: 0;
     }
   }
 }
@@ -340,21 +283,13 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   }
 }
 
-/*
- * Was `bounce ... infinite alternate` on a cubic-bezier(1, 0, 1, 0) curve — a
- * marker that never stopped moving and had no reduced-motion escape. It now
- * announces itself once, on arrival, and then holds still: the badge already
- * says "this is the album playing" by existing.
- */
-@keyframes pop-current {
-  from {
-    opacity: 0;
-    transform: scale(0.6);
+@keyframes bounce {
+  0% {
+    transform: scale(0.8);
   }
 
-  to {
-    opacity: 1;
-    transform: scale(1);
+  100% {
+    transform: scale(1.2);
   }
 }
 
@@ -424,8 +359,6 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
     position: absolute;
     right: 0;
     top: 0;
-
-    /* impeccable-disable-next-line layout-transition -- absolute box: reflows one card's subtree, once per hover */
     transition: padding 0.15s ease;
   }
 
@@ -539,6 +472,13 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   min-width: 0;
 }
 
+.rank-number {
+  color: var(--font-color-light);
+  flex-shrink: 0;
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
 .current {
   --current-size: 3rem;
 
@@ -549,13 +489,13 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   position: absolute;
   right: 0;
   top: 0;
-  transition: background-color 0.2s ease;
+  transition: all ease 0.2s;
   width: var(--current-size);
   z-index: 1;
 
   i {
-    animation: pop-current 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-    color: #fff;
+    animation: bounce 0.5s cubic-bezier(1, 0, 1, 0) 0s infinite alternate;
+    color: white;
     font-size: var(--font-size-lg);
     position: absolute;
     right: 0.3rem;
@@ -571,30 +511,19 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   line-clamp: 2;
   margin: 0.3rem 0 0;
   overflow: hidden;
-
-  /*
-   * `anywhere` split words mid-character — "Peripher / y" — because it lets a
-   * break land between any two letters. `break-word` only breaks a word that
-   * cannot fit on a line of its own, so names wrap at spaces and ellipsise
-   * instead of shattering.
-   */
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   text-overflow: ellipsis;
 }
 
-/*
- * One line, ellipsised. Unclamped, "Genus Ordinis Dei" or "The Pretty Reckless"
- * stacked three deep in a narrow cell and every card in the row grew to match.
- */
 .artists {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .date {
-  color: var(--font-color-dark);
   font-size: var(--font-size-sm);
+  opacity: 0.3;
 }
 
 .album-group-stack-layer {

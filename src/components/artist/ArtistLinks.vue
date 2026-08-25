@@ -1,42 +1,43 @@
 <template>
   <div :class="{ floating }" class="links">
-    <BdTooltip content="Sputnik" side="bottom">
-      <BdButton variant="nude" @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')">
-        <i aria-hidden="true" class="icon-sputnik" />
+    <Tooltip text="Sputnik" placement="bottom">
+      <ButtonIndex variant="nude" @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')">
+        <i class="icon-sputnik" />
         <span class="link-name">Sputnik</span>
-      </BdButton>
-    </BdTooltip>
-    <BdTooltip content="Discogs" side="bottom">
-      <BdButton aria-label="Discogs" icon-only variant="nude" @click.stop.prevent="openLink(link.discogs)">
-        <i aria-hidden="true" class="icon-discogs" />
+      </ButtonIndex>
+    </Tooltip>
+    <Tooltip text="Discogs" placement="bottom">
+      <ButtonIndex icon-only variant="nude" @click.stop.prevent="openLink(link.discogs)">
+        <i class="icon-discogs" />
         <span class="link-name">Discogs</span>
-      </BdButton>
-    </BdTooltip>
-    <BdTooltip content="RateYourMusic" side="bottom">
-      <BdButton aria-label="RateYourMusic" icon-only variant="nude" @click.stop.prevent="openLink(link.rym)">
-        <i aria-hidden="true" class="icon-rym" />
+      </ButtonIndex>
+    </Tooltip>
+    <Tooltip text="RateYourMusic" placement="bottom">
+      <ButtonIndex icon-only variant="nude" @click.stop.prevent="openLink(link.rym)">
+        <i class="icon-rym" />
         <span class="link-name">RateYourMusic</span>
-      </BdButton>
-    </BdTooltip>
+      </ButtonIndex>
+    </Tooltip>
     <template v-if="!floating">
       <span class="separator">·</span>
-      <BdTooltip v-for="socialLink in socialLinks" :key="socialLink.url" :content="socialLink.name" side="bottom">
-        <BdButton :aria-label="socialLink.name" icon-only variant="nude" @click.stop.prevent="openLink(socialLink.url)">
-          <i :class="socialLink.icon" aria-hidden="true" />
+      <Tooltip v-for="socialLink in socialLinks" :key="socialLink.url" :text="socialLink.name" placement="bottom">
+        <ButtonIndex icon-only variant="nude" @click.stop.prevent="openLink(socialLink.url)">
+          <i :class="socialLink.icon" />
           <span class="link-name">{{ socialLink.name }}</span>
-        </BdButton>
-      </BdTooltip>
+        </ButtonIndex>
+      </Tooltip>
     </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdButton, BdTooltip } from "bearded-ui";
 import { computed, onMounted, onUpdated, ref } from "vue";
 
 import type { SocialLink } from "@/helpers/socialLinks";
 
 import { useFrame } from "@/components/frame/FrameStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import Tooltip from "@/components/ui/Tooltip.vue";
 import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
 import { openLink } from "@/helpers/openLink";
 import { socialLinksFromDiscogs, socialLinksFromMusicBrainz, socialLinksFromWikidata } from "@/helpers/socialLinks";
@@ -123,7 +124,7 @@ onUpdated(() => updateLinks());
 
 <style>
 
-.links .bd-tooltip-trigger {
+.links .tooltip-wrapper {
   @media (--mobile) {
     width: 100%;
   }
@@ -169,7 +170,7 @@ onUpdated(() => updateLinks());
       display: none;
     }
 
-    .bd-button {
+    .button {
       justify-content: flex-start;
       opacity: 0.95;
       padding-left: 0.6rem;

@@ -44,7 +44,7 @@ function goArtist(artistUri: string): void {
 <style scoped>
 
 .separator {
-  color: var(--font-color-dark);
+  opacity: 0.2;
 }
 
 @keyframes pop-options {
@@ -91,10 +91,10 @@ function goArtist(artistUri: string): void {
   text-decoration: none;
 
   &.feat {
-    color: var(--font-color-dark);
     font-size: var(--font-size-sm);
     font-style: var(--font-style-italic);
     font-variation-settings: var(--font-variation-settings-italic);
+    opacity: 0.5;
   }
 
   &:hover {

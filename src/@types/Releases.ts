@@ -28,9 +28,6 @@ export interface ReleasesCheck {
 export interface ReleasesPage {
   activeSlug: null | string;
   checks: Check[] | null;
-  /** The feed lives on a third-party Directus instance, so failure is a normal outcome. */
-  error: boolean;
-  loading: boolean;
   menu: MenuItem[];
   monthList: string[];
   releases: Release[];

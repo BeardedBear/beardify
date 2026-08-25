@@ -1,6 +1,6 @@
 <template>
   <div v-if="loading" class="loading">
-    <BdLoader />
+    <Loader />
   </div>
   <div v-else-if="error" class="error">
     <p>{{ error }}</p>
@@ -12,17 +12,17 @@
           <div class="infos">
             <Cover :images="playlist.images" class="cover" size="large" />
             <div>
-              <h1 class="title font-bold">
+              <div class="title font-bold">
                 {{ playlist.name.replace("#Collection ", "") }}
-              </h1>
+              </div>
               <div class="metas">{{ playlist.owner.display_name }} &nbsp;·&nbsp; {{ albumList.length }} albums</div>
             </div>
           </div>
           <div class="links">
-            <BdButton :href="beardifyUrl" target="_blank" variant="primary">Open in Beardify</BdButton>
-            <BdButton :href="playlist.external_urls.spotify" target="_blank" variant="border">
+            <ButtonIndex :href="beardifyUrl" target="_blank" variant="primary">Open in Beardify</ButtonIndex>
+            <ButtonIndex :href="playlist.external_urls.spotify" target="_blank" variant="border">
               Open in Spotify
-            </BdButton>
+            </ButtonIndex>
           </div>
         </header>
         <template v-if="topTiers">
@@ -76,7 +76,6 @@
 </template>
 
 <script lang="ts" setup>
-import { BdButton, BdLoader } from "bearded-ui";
 import { HTTPError } from "ky";
 import { computed, onMounted, ref } from "vue";
 
@@ -88,6 +87,8 @@ import SharedAlbumCard from "@/components/album/SharedAlbumCard.vue";
 import { useConfig } from "@/components/config/ConfigStore";
 import TierRow from "@/components/playlist/TierRow.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
 import { useCollectionRanking } from "@/composables/useCollectionRanking";
@@ -218,7 +219,7 @@ onMounted(async () => {
      stay top-level (outside any selector ancestor, at-rules are fine), never
      nested under a class selector — Vue's scoped-CSS compiler mishandles it. */
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-  .header .links :deep(.bd-button) {
+  .header .links :deep(.button) {
     flex: 1;
   }
 }
@@ -248,7 +249,7 @@ onMounted(async () => {
 }
 
 .tier-grid-0 {
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 }
 
 .tier-grid-1 {

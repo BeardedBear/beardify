@@ -64,9 +64,6 @@ pub fn run() {
 
             let handle = app.handle().clone();
 
-            // decorations(false) removes the native title bar; the Vue TitleBar
-            // component provides dragging and window controls instead.
-            // shadow(true) keeps the system drop shadow on undecorated windows.
             let window = WebviewWindowBuilder::new(
                 app,
                 "main",
@@ -76,8 +73,6 @@ pub fn run() {
             .inner_size(1280.0, 800.0)
             .min_inner_size(900.0, 600.0)
             .resizable(true)
-            .decorations(false)
-            .shadow(true)
             .build()?;
 
             #[cfg(windows)]

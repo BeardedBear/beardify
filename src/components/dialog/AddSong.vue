@@ -88,10 +88,7 @@ async function add(songUri: string, playlistId: string): Promise<void> {
   cursor: pointer;
   opacity: 0.7;
   padding: 0.5rem 1rem;
-  transition:
-      background-color 0.1s ease,
-      opacity 0.1s ease,
-      padding-left 0.1s ease;
+  transition: 0.1s;
 
   &:hover {
     background: var(--bg-color-light);

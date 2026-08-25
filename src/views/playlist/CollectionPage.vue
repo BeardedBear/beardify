@@ -1,6 +1,6 @@
 <template>
   <div v-if="playlistStore.playlist.name === ''" class="loader">
-    <BdLoader />
+    <Loader />
   </div>
   <PageScroller v-else ref="scrollerRef">
     <PageFit>
@@ -114,7 +114,6 @@
 </template>
 
 <script lang="ts" setup>
-import { BdLoader } from "bearded-ui";
 import { computed, onMounted, ref, watch } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 
@@ -126,6 +125,7 @@ import { useConfig } from "@/components/config/ConfigStore";
 import Header from "@/components/playlist/PlaylistHeader.vue";
 import TierRow from "@/components/playlist/TierRow.vue";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
+import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
 import { useCollectionRanking } from "@/composables/useCollectionRanking";
@@ -136,6 +136,7 @@ import {
   getTierColor,
   getTierLabel,
   groupByTierList,
+  shrinkTiersForRemovedAlbums,
   splitTopTiers,
   stripCollectionTags,
   TierList,
@@ -228,25 +229,39 @@ function syncNewPositions(event: { newIndex?: number; oldIndex?: number }): void
 }
 
 /**
- * Tier membership is derived purely from position + stored sizes.
- *
- * The tier structure belongs to the collection, not to the album set: removing
- * an album leaves every tier the size you gave it and lets the albums below
- * shift up one place. That is why nothing here rewrites the stored sizes any
- * more — a delete used to shrink the tier it came from, which quietly eroded
- * a hand-built ranking one mis-click at a time, and did it behind a toast.
- *
- * The recompute below is all that is needed: groupByTierList re-slices the
- * current list against unchanged sizes, which is exactly "everything moves up
- * one".
+ * Tier membership is derived purely from position + stored sizes, so any
+ * external change to albumList (drag, but also deletion) that isn't
+ * reflected in the stored sizes causes the fixed-size recompute to pull an
+ * item up from the next tier to fill the gap. Deletions don't go through
+ * handleTierListEnd (they're triggered from the Album component itself), so
+ * this watcher diffs against the last known album ids on every change (not
+ * just when the list shrinks — an add and a remove can land in the same
+ * tick and leave the length unchanged) to find which tier lost an album,
+ * and shrinks that tier's stored size to match before the normal
+ * slice-based recompute runs.
  */
+let previousTierAlbumIds: Set<string> = new Set();
+
 function syncTierGroups(): void {
   const list = tierList.value;
   if (!list) {
     tierGroups.value = [];
+    previousTierAlbumIds = new Set();
     return;
   }
 
+  const currentIds = new Set(albumList.value.map((album) => album.id));
+  const removedIds = [...previousTierAlbumIds].filter((id) => !currentIds.has(id));
+  const adjustedList = removedIds.length
+    ? shrinkTiersForRemovedAlbums(list, tierGroups.value, removedIds)
+    : null;
+  if (adjustedList) {
+    previousTierAlbumIds = currentIds;
+    writeTierListDescription(adjustedList);
+    return;
+  }
+
+  previousTierAlbumIds = currentIds;
   tierGroups.value = groupByTierList(albumList.value, list);
 }
 
@@ -319,36 +334,51 @@ playlistStore.clean().finally(() => {
   display: contents;
 }
 
-/*
- * One inset token, shared with the header (see PlaylistHeader), because the two
- * used to disagree: 5rem there against 10rem here meant the collection title
- * and its own albums had no common left edge on any display between 1201 and
- * 1929px — every laptop size in use.
- *
- * Columns are auto-fill rather than a fixed count per breakpoint. The old
- * version declared `@media (--l)` twice, so the first block was dead and the
- * grid held at 4 columns from 1201px all the way to 1929px before jumping to 8
- * — four albums per row inside 140px gutters on a 1920px screen, which is the
- * density thesis inverted. auto-fill makes density track the viewport
- * continuously instead of stair-stepping.
- */
 .album-list {
+  --album-list-padd: 10rem;
+
   display: grid;
   gap: 2rem;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-  padding: 2rem var(--page-inset);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 2rem 5rem;
+  padding-left: var(--album-list-padd);
+  padding-right: var(--album-list-padd);
   transition:
     padding-right ease 0.2s,
     padding-left ease 0.2s;
 
+  @media (--narrow-desktop-down) {
+    --album-list-padd: 2rem;
+
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  @media (--l) {
+    --album-list-padd: 2rem;
+
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  @media (--l) {
+    --album-list-padd: 2rem;
+
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+
+  @media (--hdpi) {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
   @media (--tablet) {
     gap: 1.5rem;
-    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 1.5rem;
   }
 
   @media (--mobile) {
     gap: 1rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 1rem;
   }
 }
 
@@ -383,7 +413,7 @@ playlistStore.clean().finally(() => {
 }
 
 .tier-grid-0 {
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 }
 
 .tier-grid-1 {

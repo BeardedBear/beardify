@@ -58,21 +58,21 @@
               left: `${event.left}%`,
             }"
           />
-          <BdTooltip
+          <Tooltip
             v-for="(seg, index) in row.segments"
             :key="index"
             class="segment-wrapper"
-            follow="x"
+            follow-cursor
             :style="{
               height: seg.height,
               left: `${seg.left}%`,
               width: `${seg.width}%`,
               zIndex: seg.z,
             }"
-            :content="seg.title"
+            :text="seg.title"
           >
             <span class="segment" :style="{ backgroundColor: seg.color }" />
-          </BdTooltip>
+          </Tooltip>
         </div>
       </template>
     </div>
@@ -82,7 +82,6 @@
 </template>
 
 <script lang="ts" setup>
-import { BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 
@@ -90,6 +89,7 @@ import type { AlbumSimplified } from "@/@types/Album";
 
 import MemberPopover from "@/components/artist/MemberPopover.vue";
 import ReleasePopover from "@/components/artist/ReleasePopover.vue";
+import Tooltip from "@/components/ui/Tooltip.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 interface AxisTick {
@@ -367,8 +367,9 @@ const ticks = computed<AxisTick[]>(() => {
 }
 
 .member-name {
-  color: var(--font-color-dark);
+  color: var(--font-color-light);
   font-size: var(--font-size-sm);
+  opacity: 0.5;
   overflow: hidden;
   text-align: right;
   text-overflow: ellipsis;
@@ -463,8 +464,9 @@ const ticks = computed<AxisTick[]>(() => {
 }
 
 .timeline-source {
-  color: var(--font-color-dark);
+  color: var(--font-color-light);
   font-size: var(--font-size-xs);
   margin-top: 1rem;
+  opacity: 0.5;
 }
 </style>

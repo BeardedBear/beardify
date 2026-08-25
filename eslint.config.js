@@ -9,7 +9,7 @@ import globals from "globals";
 export default [
   // Définir les fichiers à ignorer
   {
-    ignores: [".github/**", "node_modules/**", "dist/**", "public/**"],
+    ignores: ["node_modules/**", "dist/**", "public/**"],
   },
   // Configuration de base ESLint
   eslint.configs.recommended,

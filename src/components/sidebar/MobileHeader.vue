@@ -1,23 +1,23 @@
 <template>
   <div class="mobile-header">
-    <BdButton label="Open menu" icon-only @click="sidebarStore.toggle()">
-      <i aria-hidden="true" class="icon-menu" />
-    </BdButton>
+    <ButtonIndex icon-only @click="sidebarStore.toggle()">
+      <i class="icon-menu" />
+    </ButtonIndex>
     <router-link to="/" class="logo-link">
       <img class="logo" src="/img/logo.svg" />
     </router-link>
-    <BdButton label="Search" icon-only @click="dialogStore.open({ type: 'search' })">
-      <i aria-hidden="true" class="icon-search" />
-    </BdButton>
+    <ButtonIndex icon-only @click="dialogStore.open({ type: 'search' })">
+      <i class="icon-search" />
+    </ButtonIndex>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdButton } from "bearded-ui";
 import { RouterLink } from "vue-router";
 
 import { useDialog } from "@/components/dialog/DialogStore";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 const sidebarStore = useSidebar();
 const dialogStore = useDialog();

@@ -1,0 +1,242 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import { type RouteLocationRaw, RouterLink } from "vue-router";
+
+export interface ButtonProps {
+  align?: "center" | "justify" | "left" | "right";
+  as?: "a" | "button" | "router-link";
+  class?: string;
+  disabled?: boolean;
+  href?: string;
+  iconOnly?: boolean;
+  noDefaultClass?: boolean;
+  size?: "big" | "default" | "small" | "x-small";
+  target?: "_blank" | "_parent" | "_self" | "_top";
+  to?: RouteLocationRaw;
+  type?: "button" | "reset" | "submit";
+  variant?: "border" | "default" | "full" | "nude" | "primary";
+}
+
+const props = withDefaults(defineProps<ButtonProps>(), {
+  align: "center",
+  as: "button",
+  class: "",
+  disabled: false,
+  href: "",
+  iconOnly: false,
+  noDefaultClass: false,
+  size: "default",
+  target: "_self",
+  to: undefined,
+  type: "button",
+  variant: "default",
+});
+
+const componentTag = computed(() => {
+  if (props.as === "router-link" || props.to) {
+    return RouterLink;
+  }
+  if (props.as === "a" || props.href) {
+    return "a";
+  }
+  return "button";
+});
+
+const componentProps = computed(() => {
+  const baseProps: Record<string, unknown> = {};
+
+  if (componentTag.value === RouterLink) {
+    baseProps.to = props.to;
+  } else if (componentTag.value === "a") {
+    baseProps.href = props.href;
+    baseProps.target = props.target;
+    if (props.target === "_blank") baseProps.rel = "noopener";
+  } else {
+    baseProps.type = props.type;
+    baseProps.disabled = props.disabled;
+  }
+
+  return baseProps;
+});
+
+const classes = computed(() => {
+  const classList: string[] = [];
+
+  // Add default 'button' class unless noDefaultClass is true
+  if (!props.noDefaultClass) {
+    classList.push("button", "font-bold", "squircle");
+  }
+
+  // Add variant classes
+  if (props.variant === "primary") {
+    classList.push("button-primary");
+  } else if (props.variant === "nude") {
+    classList.push("button-nude");
+  } else if (props.variant === "full") {
+    classList.push("button-full");
+  } else if (props.variant === "border") {
+    classList.push("button-with-border");
+  }
+
+  // Add size classes
+  if (props.size === "small") {
+    classList.push("button-small");
+  } else if (props.size === "big") {
+    classList.push("button-big");
+  } else if (props.size === "x-small") {
+    classList.push("button-x-small");
+  }
+
+  // Add alignment classes
+  if (props.align === "left") {
+    classList.push("button-align-left");
+  } else if (props.align === "right") {
+    classList.push("button-align-right");
+  } else if (props.align === "justify") {
+    classList.push("button-align-justify");
+  } else {
+    classList.push("button-align-center");
+  }
+
+  // Add icon-only class
+  if (props.iconOnly) {
+    classList.push("button-icon-only");
+  }
+
+  // Add custom classes
+  if (props.class) {
+    classList.push(props.class);
+  }
+
+  return classList.join(" ");
+});
+</script>
+
+<template>
+  <component :is="componentTag" :class="classes" v-bind="componentProps">
+    <slot />
+  </component>
+</template>
+
+<style scoped>
+
+.button {
+  align-items: center;
+  appearance: none;
+  background-color: var(--bg-color-light);
+  border: 0;
+  border-radius: 1rem;
+  color: var(--font-color-dark);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-family-base);
+  gap: 8px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0.6rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  white-space: pre;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--bg-color-lighter);
+    color: var(--font-color-light);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--bg-color-lighter);
+  }
+
+}
+
+/* Modifiers: kept after .button so equal specificity resolves in their favour. */
+.button-primary {
+  background-color: var(--primary-color);
+  color: white;
+
+  &:hover:not(:disabled) {
+    background-color: var(--primary-color-light);
+    color: white;
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--primary-color-lighter);
+    color: white;
+  }
+}
+
+.button-nude {
+  background-color: transparent;
+  border: 0;
+  color: var(--font-color);
+  cursor: pointer;
+  opacity: 0.5;
+  padding: 0.5rem 0.6rem;
+
+  &:hover:not(:disabled) {
+    background-color: transparent;
+    opacity: 1;
+  }
+}
+
+.button-big {
+  font-size: var(--font-size-base);
+  padding: 0.75rem 1.2rem;
+}
+
+.button-small {
+  font-size: var(--font-size-sm);
+  padding: 0.5rem 0.6rem;
+}
+
+.button-x-small {
+  font-size: var(--font-size-sm);
+  padding: 0.1rem 0.5rem;
+}
+
+.button-icon-only {
+  &.button-small {
+    padding: 0.5rem 0.6rem;
+  }
+
+  &.button-x-small {
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+.button-full {
+  text-align: left;
+  width: 100%;
+}
+
+.button-with-border {
+  border: 1px solid var(--bg-color-lighter);
+}
+
+.button-align-left {
+  place-content: flex-start;
+}
+
+.button-align-center {
+  place-content: center;
+}
+
+.button-align-right {
+  /* "right" is not a valid align-content value, so browsers drop this whole
+     declaration and the modifier is a no-op today. Kept verbatim rather than
+     "corrected" here, since fixing it would change how right-aligned buttons
+     render — a separate call from this CSS migration. */
+  /* stylelint-disable-next-line declaration-property-value-no-unknown */
+  place-content: right;
+}
+
+.button-align-justify {
+  display: flex;
+  place-content: space-between;
+}
+</style>

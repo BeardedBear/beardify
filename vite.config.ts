@@ -2,7 +2,7 @@ import vue from "@vitejs/plugin-vue";
 import { copyFileSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { fileURLToPath, URL } from "node:url";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite";
 
 const pkg = JSON.parse(readFileSync("package.json", "utf-8")) as { version: string };
 
@@ -61,16 +61,6 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-  /*
-   * Vitest reads this config, so tests get the `@/` alias and the Vue plugin for
-   * free. happy-dom rather than node: the app is browser-only and some helpers
-   * lean on it — `decodeHtmlEntities` parses Spotify's HTML-escaped descriptions
-   * through a detached <textarea>, and tier-list parsing goes through it.
-   */
-  test: {
-    environment: "happy-dom",
-    include: ["src/**/*.test.ts"],
-  },
   server: {
     fs: { allow: ["./"] },
     headers: {
@@ -81,13 +71,6 @@ export default defineConfig({
     },
     host: "127.0.0.1",
     port: 3000,
-    /*
-     * `tauri:dev` starts Vite while cargo is still linking, and on Windows the
-     * linker holds an exclusive lock on target\debug\deps\*.dll — fs.watch then
-     * dies with EBUSY before the server ever listens. Nothing under src-tauri
-     * affects HMR anyway.
-     */
-    watch: { ignored: ["**/src-tauri/**"] },
     proxy: {
       // Plain `bun run dev` has no function host, and MusicBrainz is the one relay the app
       // can't work without. Node can set the User-Agent the browser refuses to, so dev gets

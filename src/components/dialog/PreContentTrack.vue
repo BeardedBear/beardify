@@ -12,24 +12,24 @@
       </div>
     </div>
     <div class="options">
-      <BdButton @click="addTrackToQueue(track.uri)">Add</BdButton>
-      <IconButton
+      <ButtonIndex @click="addTrackToQueue(track.uri)">Add</ButtonIndex>
+      <ButtonIndex
+        variant="nude"
+        no-default-class
         class="link"
-        icon="youtube"
-        label="Search this track on YouTube"
         @click="openLink(`https://www.youtube.com/results?search_query=${track?.artists[0].name}+${track?.name}`)"
-      />
+      >
+        <i class="icon-youtube" />
+      </ButtonIndex>
       <ShareContent :spotify-url="`https://open.spotify.com/track/${track.id}`" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdButton } from "bearded-ui";
-
 import { Track, TrackSimplified } from "@/@types/Track";
 import { usePlayer } from "@/components/player/PlayerStore";
-import IconButton from "@/components/ui/IconButton.vue";
+import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 import { openLink } from "@/helpers/openLink";
 
@@ -58,14 +58,15 @@ defineProps<{
 .note {
   background-color: var(--bg-color-lighter);
   border-radius: 5px;
-  color: var(--font-color-dark);
   font-size: var(--font-size-xl);
+  opacity: 0.5;
   padding: 10px;
 }
 
 .artist {
-  color: var(--font-color-dark);
+  color: var(--text-color-light);
   font-size: var(--font-size-sm);
+  opacity: 0.5;
 }
 
 .options {
@@ -75,8 +76,6 @@ defineProps<{
 
   .link {
     align-items: center;
-    background-color: transparent;
-    border: 0;
     color: currentcolor;
     cursor: pointer;
     display: flex;

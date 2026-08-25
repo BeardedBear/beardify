@@ -41,7 +41,7 @@ export const usePlaylist = defineStore("playlist", {
         if (import.meta.env.DEV) console.error("Error fetching playlist:", error);
         this.playlist = defaultPlaylist;
         this.followed = false;
-        notification({ msg: "Unable to load this playlist", type: NotificationType.Error });
+        notification({ msg: "Unable to load this playlist.", type: NotificationType.Error });
       }
     },
 
@@ -86,18 +86,6 @@ export const usePlaylist = defineStore("playlist", {
       } catch {
         notification({ msg: "Unable to convert this collection. Please try again.", type: NotificationType.Error });
       }
-    },
-
-    /*
-     * getTracks concatenates onto whatever is already loaded, so calling it
-     * twice duplicates the list. Undo needs a real reload — reset first, and
-     * bump the version so any pagination chain still in flight abandons instead
-     * of appending its pages onto the fresh list.
-     */
-    async reloadTracks(url: string) {
-      this.tracksVersion++;
-      this.tracks = [];
-      await this.getTracks(url, this.tracksVersion);
     },
 
     removeSong(songUri: string) {
