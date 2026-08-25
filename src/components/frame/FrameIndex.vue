@@ -137,11 +137,15 @@ watch(
   width: 100%;
   z-index: 999;
 
+  /*
+   * Centred with auto margins, not a transform: BdLoader spins with the
+   * `rotate` property, and a `transform` here would compose with it into an
+   * orbit around a point half the loader away.
+   */
   .load {
-    left: 50%;
+    inset: 0;
+    margin: auto;
     position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
   }
 }
 

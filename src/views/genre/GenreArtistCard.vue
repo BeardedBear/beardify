@@ -99,10 +99,14 @@ async function goToArtist(): Promise<void> {
   }
 }
 
+/*
+ * Auto margins rather than a transform — BdLoader spins with `rotate`, and a
+ * transform here would turn the spin into an orbit. The bottom inset pulls the
+ * centre 0.8rem up, clear of the label.
+ */
 .spinner {
-  left: 50%;
+  inset: 0 0 1.6rem;
+  margin: auto;
   position: absolute;
-  top: calc(50% - 0.8rem);
-  transform: translate(-50%, -50%);
 }
 </style>
