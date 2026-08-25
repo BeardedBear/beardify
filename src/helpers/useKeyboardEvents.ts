@@ -4,17 +4,41 @@ import { watch } from "vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
 
+/** How far one arrow press moves the playhead. Matches what podcast apps use for a skip button. */
+const SEEK_DELTA_MS = 10_000;
+
 /**
  * Register global keyboard shortcuts for the player:
  * - Shift+Up / Shift+Down: adjust volume by 2%
+ * - Shift+Left / Shift+Right: seek by 10 seconds
  * - Space (on body): toggle play/pause
  * - Ctrl/Cmd+K: open search
  */
 export function useKeyboardEvents(): void {
   const playerStore = usePlayer();
   const dialogStore = useDialog();
-  const { shift_down, shift_up } = useMagicKeys();
+  const { shift_down, shift_left, shift_right, shift_up } = useMagicKeys();
   const delta = 2;
+
+  /*
+   * Shift-modified like the volume pair, for the same reason: a bare arrow key
+   * belongs to whatever is focused — a list, a scroll container, the seek bar's
+   * own range — and stealing it globally would break all three.
+   */
+  const seekBy = (offset: number): void => {
+    const duration = playerStore.playerState?.duration;
+
+    if (!duration) return;
+    playerStore.seek(Math.min(Math.max(playerStore.playerState.position + offset, 0), duration));
+  };
+
+  watch(shift_right, (v) => {
+    if (v) seekBy(SEEK_DELTA_MS);
+  });
+
+  watch(shift_left, (v) => {
+    if (v) seekBy(-SEEK_DELTA_MS);
+  });
 
   watch(shift_up, (v) => {
     const currentVolume = playerStore.devices.activeDevice ? playerStore.devices.activeDevice.volume_percent : 0;

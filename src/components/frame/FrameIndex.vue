@@ -7,7 +7,7 @@ v-show="!frameStore.isMinimized" :class="{ 'is-closing': frameStore.isClosing }"
     <div
 ref="wrapperRef" v-motion :initial="{ scale: 0.8, opacity: 0, y: 50 }"
       :enter="{ scale: 1, opacity: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 20 } }"
-      :class="{ minimized: frameStore.isMinimized }" class="iframe-wrap"
+      :class="{ 'is-closing': frameStore.isClosing, minimized: frameStore.isMinimized }" class="iframe-wrap"
 >
       <BdLoader class="load" />
       <div class="head">
@@ -18,7 +18,7 @@ ref="wrapperRef" v-motion :initial="{ scale: 0.8, opacity: 0, y: 50 }"
           <BdButton size="small" @click="frameStore.close()">Close</BdButton>
         </div>
       </div>
-      <iframe :class="{ 'is-closing': frameStore.isClosing }" :src="frameStore.url" border="0" />
+      <iframe :src="frameStore.url" border="0" />
     </div>
   </div>
 </template>
@@ -103,6 +103,23 @@ watch(
   }
 }
 
+/*
+ * Uses the individual `scale` property so it composes with the inline
+ * `transform` @vueuse/motion leaves behind after the opening spring instead of
+ * fighting it. Timed to match the 200ms the store waits before unmounting.
+ */
+@keyframes bye-frame {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: 0.9;
+  }
+}
+
 .bg {
   animation: pop-bg 0.2s ease both;
   background-color: var(--bg-color-darker);
@@ -137,11 +154,15 @@ watch(
   width: 100%;
   z-index: 999;
 
+  /*
+   * Centred with auto margins, not a transform: BdLoader spins with the
+   * `rotate` property, and a `transform` here would compose with it into an
+   * orbit around a point half the loader away.
+   */
   .load {
-    left: 50%;
+    inset: 0;
+    margin: auto;
     position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
   }
 }
 
@@ -150,6 +171,12 @@ watch(
   border-radius: 15px;
   pointer-events: all;
   z-index: 1000;
+
+  /* The whole box leaves as one piece — panel, header and iframe together. */
+  &.is-closing {
+    animation: bye-frame 0.2s ease both;
+    pointer-events: none;
+  }
 
   &.minimized {
     pointer-events: none;
@@ -163,9 +190,5 @@ iframe {
   border-radius: 10px;
   height: 80dvh;
   width: 80vw;
-
-  &.is-closing {
-    animation: bye-bg 0.2s ease both;
-  }
 }
 </style>

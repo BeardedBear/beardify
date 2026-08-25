@@ -16,6 +16,19 @@ Beardify is a custom Spotify web client built with Vue 3 + TypeScript that enhan
 - **ky v2** for HTTP requests (via `instance()` helper)
 - **Spotify Web API + Web Playback SDK**
 
+## UI Library (bearded-ui)
+
+`bearded-ui` is the main UI library for Beardify. It lives in a sibling folder
+next to this repo (`../bearded-ui`), always checked out side by side.
+
+- **Components go to `bearded-ui` first.** When a component is missing or needs
+  changes, add/edit it in `../bearded-ui`, not locally in Beardify. Do not
+  duplicate a library component in `src/components/`.
+- Keep `bearded-ui` up to date whenever the work requires it — new component,
+  fixed prop, missing variant: the change belongs upstream.
+- The maintainer pushes the `bearded-ui` version and bumps the package here.
+  Don't publish or bump the dependency version yourself unless asked.
+
 ## Essential Commands
 
 ```bash

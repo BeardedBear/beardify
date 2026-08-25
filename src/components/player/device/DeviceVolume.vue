@@ -65,13 +65,21 @@ onMounted(() => {
   sliderPercent.value = volumeToSliderPercent(playerStore.devices.activeDevice.volume_percent ?? 0);
 });
 
+/*
+ * Snaps the slider back onto the device volume, unless it already sits on a
+ * position that produces it. The gamma curve is not round-trip exact once both
+ * ends are integers — a click at 10% stores volume 2, which maps back to 11% —
+ * so resyncing unconditionally nudged the bar away from the pixel just clicked.
+ */
+function syncSliderToDevice(): void {
+  const volume = currentDeviceVolume.value;
+
+  if (sliderPercentToVolume(sliderPercent.value) === volume) return;
+  sliderPercent.value = volumeToSliderPercent(volume);
+}
+
 // If volume changes externally, update the slider
-watch(
-  () => playerStore.devices.activeDevice.volume_percent,
-  (val) => {
-    sliderPercent.value = volumeToSliderPercent(val ?? 0);
-  },
-);
+watch(() => playerStore.devices.activeDevice.volume_percent, syncSliderToDevice);
 
 // The request goes out once the value settles, so a drag across the bar is one
 // call to Spotify instead of one per pixel.
@@ -82,7 +90,7 @@ async function onCommit(e: Event): Promise<void> {
 
 function onLeave(): void {
   // reset preview to current volume
-  sliderPercent.value = volumeToSliderPercent(currentDeviceVolume.value);
+  syncSliderToDevice();
 }
 
 function onMove(e: MouseEvent): void {
@@ -233,6 +241,25 @@ async function toggleMute(): Promise<void> {
     position: absolute;
     width: 100%;
     z-index: 10;
+  }
+
+  /*
+   * A range spreads its value over the track minus one thumb width, so a click
+   * lands up to half a thumb (~8px of a 96px bar) off the pixel it hit — and
+   * the wedge, which follows the pointer exactly, made the gap obvious. A
+   * zero-width thumb maps the value linearly across the whole bar. Nothing is
+   * lost visually: the position is painted by `.cursor` and `.hover`.
+   */
+  .range::-webkit-slider-thumb {
+    appearance: none;
+    height: 100%;
+    width: 0;
+  }
+
+  .range::-moz-range-thumb {
+    border: 0;
+    height: 100%;
+    width: 0;
   }
 
   &:hover {

@@ -5,8 +5,17 @@
   padding: 0.8rem 0;
   text-transform: uppercase;
 
+  /*
+   * The gap below a sticky heading has to be margin, not the shared padding:
+   * padding is inside the opaque background, and the playing album's ring is
+   * an outer box-shadow spreading 0.5rem above its card, so a first-row card
+   * had its ring painted over by the heading. Same trick as .sticky-heading in
+   * ArtistPage. Total spacing is unchanged.
+   */
   &.sticky {
     background-color: var(--bg-color-darker);
+    margin-bottom: 0.8rem;
+    padding-bottom: 0;
     position: sticky;
     top: 0;
     z-index: 3;

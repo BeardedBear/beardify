@@ -7,26 +7,28 @@
       :class="{ stuck: isStuck }"
       :style="{ top: headerHeight + 'px' }"
     >
-      <BdSelect
-        v-if="hasSections"
-        :model-value="selectedSection"
-        :options="sectionOptions"
-        placeholder="Go to section..."
-        @update:model-value="onSectionChange"
-      />
+      <BdDropdown v-if="hasSections" label="Go to section..." match-width size="small">
+        <BdDropdownItem v-for="section in sections" :key="section.id" @click="onSectionChange(section.id)">
+          {{ section.title }}
+        </BdDropdownItem>
+      </BdDropdown>
 
-      <BdSelect
-        v-if="hasMultipleLanguages"
-        :model-value="currentLanguage"
-        :options="languageOptions"
-        @update:model-value="onLanguageChange"
-      />
+      <BdDropdown v-if="hasMultipleLanguages" :label="currentLanguageName" placement="bottom-end" size="small">
+        <BdDropdownItem
+          v-for="language in languages"
+          :key="language.code"
+          :active="language.code === currentLanguage"
+          @click="emit('languageChange', language)"
+        >
+          {{ language.name }}
+        </BdDropdownItem>
+      </BdDropdown>
     </nav>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdOption, BdSelect } from "bearded-ui";
+import { BdDropdown, BdDropdownItem } from "bearded-ui";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import { LanguageOption } from "@/@types/Wikipedia";
@@ -56,39 +58,20 @@ const emit = defineEmits<{
 }>();
 
 const sentinelRef = ref<HTMLElement | null>(null);
-const selectedSection = ref("");
 const isStuck = ref(false);
 
 const hasSections = computed(() => props.sections.length > 0);
 const hasMultipleLanguages = computed(() => props.languages.length > 1);
 
-const sectionOptions = computed<BdOption[]>(() =>
-  props.sections.map((section) => ({
-    label: section.title,
-    value: section.id,
-  })),
-);
-
-const languageOptions = computed<BdOption[]>(() =>
-  props.languages.map((language) => ({
-    label: language.name,
-    value: language.code,
-  })),
+const currentLanguageName = computed(
+  () => props.languages.find((language) => language.code === props.currentLanguage)?.name ?? props.currentLanguage,
 );
 
 // Observer to detect when nav is stuck
 let observer: IntersectionObserver | null = null;
 
-function onLanguageChange(code: number | string | undefined): void {
-  const option = props.languages.find((language) => language.code === code);
-  if (option) emit("languageChange", option);
-}
-
-function onSectionChange(value: number | string | undefined): void {
-  const sectionId = String(value);
+function onSectionChange(sectionId: string): void {
   scrollToSection(sectionId);
-  // Reset selection to allow re-selecting the same section
-  selectedSection.value = "";
   emit("sectionChange", sectionId);
 }
 

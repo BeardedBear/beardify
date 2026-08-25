@@ -6,13 +6,10 @@
         :cover-url="coverUrl(playerStore.currentFromSDK?.album.images, 'medium')"
       />
       <BdLoader v-else />
-      <Controls
-        :duration="playerStore.currentFromSDK && playerStore.currentFromSDK.duration_ms"
-        :progress="playerStore.currentPositionFromSDK"
-      />
+      <Controls />
       <Device />
     </div>
-    <SeekBar :duration="playerStore.currentFromSDK && playerStore.currentFromSDK.duration_ms" />
+    <SeekBar />
   </div>
 </template>
 

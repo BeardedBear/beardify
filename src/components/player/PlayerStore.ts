@@ -27,6 +27,13 @@ const RETRY_DELAY_MS = 300;
 const HEARTBEAT_FAILURE_THRESHOLD = 3;
 const HEARTBEAT_FAILURE_NOTIFY_COOLDOWN_MS = 5 * 60 * 1000;
 const VOLUME_LOCK_DURATION_MS = 2000;
+/*
+ * A seek on an external device is acknowledged by Spotify long after the PUT
+ * returns, and `getExternalPlayerState()` polls every 2s — so a poll already in
+ * flight comes back carrying the position we just left. Long enough to outlive
+ * one poll round-trip.
+ */
+const SEEK_LOCK_DURATION_MS = 2000;
 
 export const usePlayer = defineStore("player", {
   actions: {
@@ -49,7 +56,9 @@ export const usePlayer = defineStore("player", {
 
     async _executeDeviceSwitch(targetDeviceId: string, retries: number): Promise<void> {
       this.isSettingDevice = true;
-      this.playerState = defaultPlaybackState;
+      // Copied, not aliased: assigning the module-level default made every later
+      // mutation of `playerState.position` rewrite the default itself.
+      this.playerState = { ...defaultPlaybackState };
 
       const startTime = Date.now();
       const hasTimedOut = (): boolean => Date.now() - startTime >= DEVICE_SWITCH_TIMEOUT_MS;
@@ -211,7 +220,7 @@ export const usePlayer = defineStore("player", {
       current.id = item.id;
       current.name = item.name;
       current.uri = item.uri;
-      playerState.position = data.progress_ms;
+      if (Date.now() >= (this.seekLockUntil ?? 0)) playerState.position = data.progress_ms;
       playerState.paused = !data.is_playing;
       playerState.shuffle = data.shuffle_state;
       playerState.duration = item.duration_ms;
@@ -280,10 +289,30 @@ export const usePlayer = defineStore("player", {
       instance().post("me/player/previous");
     },
 
+    /**
+     * Jump to a position in the current track, optimistically.
+     *
+     * The only place the user loses something irrecoverable when a call fails —
+     * their place in the track — so unlike the original this one puts the old
+     * position back and says so, the way `toggleShuffle` already did.
+     * @param progress - Target position in milliseconds
+     */
     async seek(progress: number): Promise<void> {
+      const previousProgress = this.currentlyPlaying.progress_ms;
+      const previousPosition = this.playerState.position;
+
       this.currentlyPlaying.progress_ms = progress;
       this.playerState.position = progress;
-      await instance().put(`me/player/seek?position_ms=${Math.round(progress)}`);
+      this.seekLockUntil = Date.now() + SEEK_LOCK_DURATION_MS;
+      try {
+        await instance().put(`me/player/seek?position_ms=${Math.round(progress)}`);
+      } catch (err) {
+        if (import.meta.env.DEV) console.error("Failed to seek:", err);
+        this.seekLockUntil = 0;
+        this.currentlyPlaying.progress_ms = previousProgress;
+        this.playerState.position = previousPosition;
+        notification({ msg: "Failed to seek", type: NotificationType.Error });
+      }
     },
 
     async setDevice(deviceId: null | string, retries = 3): Promise<void> {
@@ -490,6 +519,7 @@ export const usePlayer = defineStore("player", {
     playerState: defaultPlaybackState,
     queue: [],
     queueOpened: false,
+    seekLockUntil: 0,
     thisDeviceId: "",
     volumeLockUntil: 0,
   }),
