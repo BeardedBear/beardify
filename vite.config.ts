@@ -81,6 +81,13 @@ export default defineConfig({
     },
     host: "127.0.0.1",
     port: 3000,
+    /*
+     * `tauri:dev` starts Vite while cargo is still linking, and on Windows the
+     * linker holds an exclusive lock on target\debug\deps\*.dll — fs.watch then
+     * dies with EBUSY before the server ever listens. Nothing under src-tauri
+     * affects HMR anyway.
+     */
+    watch: { ignored: ["**/src-tauri/**"] },
     proxy: {
       // Plain `bun run dev` has no function host, and MusicBrainz is the one relay the app
       // can't work without. Node can set the User-Agent the browser refuses to, so dev gets

@@ -1,4 +1,5 @@
 <template>
+  <TitleBar v-if="showTitleBar" />
   <template v-if="route.meta.chromeless">
     <router-view />
   </template>
@@ -52,6 +53,7 @@ const MobileHeader = defineAsyncComponent(() => import("@/components/sidebar/Mob
 const Player = defineAsyncComponent(() => import("@/components/player/PlayerIndex.vue"));
 const PlayerSlideUp = defineAsyncComponent(() => import("@/components/player/PlayerSlideUp.vue"));
 const Sidebar = defineAsyncComponent(() => import("@/components/sidebar/SidebarIndex.vue"));
+const TitleBar = defineAsyncComponent(() => import("@/components/titlebar/TitleBar.vue"));
 
 useKeyboardEvents();
 
@@ -59,6 +61,8 @@ const authStore = useAuth();
 const { checkForUpdate } = useUpdater();
 const dialog = useDialog();
 const route = useRoute();
+// Custom title bar replaces the native one in the Tauri desktop build.
+const showTitleBar = isTauri();
 
 onMounted(() => {
   if (isTauri()) {
@@ -226,6 +230,14 @@ body {
   min-height: 100dvh;
   overflow: hidden;
   text-rendering: optimizelegibility;
+}
+
+/*
+ * When the custom title bar is rendered (Tauri build only), it takes a row of
+ * its own at the top; `:has()` keeps index.html's #app untouched.
+ */
+#app:has(> .titlebar) {
+  grid-template-rows: auto 1fr auto;
 }
 
 /*
