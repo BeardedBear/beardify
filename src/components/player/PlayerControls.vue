@@ -60,29 +60,22 @@
 </template>
 
 <script lang="ts" setup>
-import { useIntervalFn } from "@vueuse/core";
-import { computed, ref, watch } from "vue";
+import { computed } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
 import IconButton from "@/components/ui/IconButton.vue";
+import { usePlaybackClock } from "@/composables/usePlaybackClock";
 import { timecode } from "@/helpers/date";
 
 const props = defineProps<{ forceMobile?: boolean }>();
 const playerStore = usePlayer();
-const currentTime = ref<number>(0);
+/*
+ * Shared with the seek bar. These two used to count on their own — 1s here,
+ * 200ms there — so the number could sit up to 1.5s away from the bar it
+ * describes, and a keyboard scrub moved the bar while the number stood still.
+ */
+const { position: currentTime } = usePlaybackClock();
 const duration = computed(() => playerStore.playerState?.duration);
-
-useIntervalFn(() => {
-  if (!playerStore.playerState) return;
-  if (!playerStore.playerState.paused) currentTime.value = currentTime.value + 1000;
-}, 1000);
-
-watch(
-  () => playerStore.playerState.position,
-  (newPos) => {
-    if (Math.abs(newPos - currentTime.value) > 1500) currentTime.value = newPos;
-  },
-);
 </script>
 
 <style scoped>
