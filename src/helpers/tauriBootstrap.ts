@@ -3,6 +3,7 @@ import { watch } from "vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import { isTauri } from "@/helpers/platform";
 import { clamp } from "@/helpers/volume";
+import { getWindowTitle } from "@/helpers/windowTitle";
 import router, { RouteName } from "@/router";
 
 type ThumbarAction = "next" | "play-pause" | "previous" | "vol-down" | "vol-up";
@@ -89,7 +90,7 @@ async function setupThumbarBridge(): Promise<void> {
   );
 }
 
-/** Keep the native window title in sync with the currently playing track. */
+/** Keep the native window title (taskbar label) in sync with the playing track. */
 async function setupWindowTitle(): Promise<void> {
   const { getCurrentWindow } = await import("@tauri-apps/api/window");
   const win = getCurrentWindow();
@@ -98,7 +99,7 @@ async function setupWindowTitle(): Promise<void> {
 
   const updateTitle = (): void => {
     const track = player.playerState.track_window.current_track;
-    const title = track?.name ? `${track.artists.map((a) => a.name).join(", ")} — ${track.name}` : "Beardify";
+    const title = getWindowTitle(track);
     if (title === lastTitle) return;
     lastTitle = title;
     win.setTitle(title).catch(() => undefined);

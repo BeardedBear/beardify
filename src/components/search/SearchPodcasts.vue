@@ -1,15 +1,16 @@
 <template>
   <div class="podcast-list">
-    <SearchTitle title="Podcasts" />
+    <SearchTitle :count="searchStore.podcasts.length" title="Podcasts" />
     <template v-if="searchStore.podcasts.length">
       <router-link
-        v-for="(podcast, index) in searchStore.podcasts"
-        :key="index"
+        v-for="podcast in searchStore.podcasts"
+        :key="podcast.id"
         :to="`/podcasts/${podcast.id}`"
         class="podcast"
-        @click="searchStore.reset()"
+        data-search-hit
+        @click="searchStore.close()"
       >
-        <img :src="podcast.images?.[1]?.url || podcast.images?.[0]?.url" class="cover" />
+        <img :src="coverUrl(podcast.images, 'medium')" alt="" class="cover" />
         <div class="content">
           <div class="name font-bold">
             {{ podcast.name }}
@@ -20,15 +21,18 @@
         </div>
       </router-link>
     </template>
+    <template v-else-if="searchStore.loading"><BdLoader size="small" /></template>
     <template v-else>No podcast found</template>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
 import { RouterLink } from "vue-router";
 
 import { useSearch } from "@/components/search/SearchStore";
 import SearchTitle from "@/components/search/SearchTitle.vue";
+import { coverUrl } from "@/helpers/cover";
 
 const searchStore = useSearch();
 </script>
@@ -36,7 +40,7 @@ const searchStore = useSearch();
 <style scoped>
 
 .podcast-list {
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
 
   .podcast {
     align-items: center;
@@ -45,15 +49,14 @@ const searchStore = useSearch();
     color: currentcolor;
     cursor: pointer;
     display: flex;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
-    padding: 0.8rem;
+    gap: var(--space-3);
+    margin-bottom: var(--space-1);
+    padding: var(--space-2);
     text-decoration: none;
-    transition: 0.2s;
+    transition: background-color 0.2s ease;
 
     &:hover {
       background-color: var(--bg-color-light);
-      transform: scale(1.03);
     }
   }
 }
@@ -70,12 +73,11 @@ const searchStore = useSearch();
 
 .name {
   font-size: var(--font-size-sm);
-  margin-bottom: 0.2rem;
+  margin-bottom: 0;
 }
 
 .publisher {
-  color: var(--text-color-light);
+  color: var(--font-color-dark);
   font-size: var(--font-size-xs);
-  opacity: 0.7;
 }
 </style>

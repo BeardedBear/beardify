@@ -1,258 +1,60 @@
 <template>
-  <div v-if="dialogStore.show" class="dialog">
-    <div
-v-show="!dialogStore.isMinimized" :class="{ 'is-closing': dialogStore.isClosing }" class="bg"
-      @click="dialogStore.close()"
-/>
-    <div
-ref="wrapperRef" v-motion :initial="{ scale: 0.8, opacity: 0, y: 30 }"
-      :enter="{ scale: 1, opacity: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 20 } }"
-      :class="{ 'is-closing': dialogStore.isClosing, big, minimized: dialogStore.isMinimized }" class="wrapper"
->
-      <div v-if="preContent" class="pre-content">
-        <slot name="pre-content" />
-      </div>
-      <div class="dialog-content squircle">
-        <div v-if="withTitle" class="head font-bold squircle">
-          <div>{{ title }}</div>
-          <div class="head-buttons">
-            <ButtonIndex v-if="withMinimize" no-default-class class="minimize" @click="handleMinimize">
-              <i class="icon-minus" />
-            </ButtonIndex>
-            <ButtonIndex no-default-class class="close" @click="dialogStore.close()">
-              <i class="icon-x" />
-            </ButtonIndex>
-          </div>
-        </div>
-        <div :class="{ big }" class="content">
-          <slot />
-        </div>
-      </div>
+  <BdDialog
+    v-model="open"
+    :height="height"
+    :max-height="maxHeight"
+    :max-width="maxWidth"
+    :width="width"
+    :size="big ? 'big' : 'default'"
+    :title="withTitle ? title : undefined"
+    padding="none"
+  >
+    <div v-if="preContent" class="pre-content">
+      <slot name="pre-content" />
     </div>
-  </div>
+    <slot />
+  </BdDialog>
 </template>
 
 <script lang="ts" setup>
-import { useMotion } from "@vueuse/motion";
-import { ref, watch } from "vue";
+import { BdDialog } from "bearded-ui";
+import { computed } from "vue";
 
 import { useDialog } from "@/components/dialog/DialogStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 
 defineProps<{
   big?: boolean;
+  /** Fixes the dialog height, so it does not resize as content arrives. */
+  height?: string;
+  /** Caps the dialog height. Any CSS length; the library default is 90vh. */
+  maxHeight?: string;
+  /** Caps the dialog width. Any CSS length; the library default is 90vw. */
+  maxWidth?: string;
   preContent?: boolean;
   title?: string;
-  withMinimize?: boolean;
+  /** Fixes the dialog width, overriding the `big` preset. */
+  width?: string;
   withTitle: boolean;
 }>();
 
 const dialogStore = useDialog();
-const wrapperRef = ref<HTMLElement | null>(null);
 
-const handleMinimize = (): void => {
-  if (!wrapperRef.value) return;
-
-  const motion = useMotion(wrapperRef.value, {
-    initial: {
-      opacity: 1,
-      scale: 1,
-      x: 0,
-      y: 0,
-    },
-  });
-
-  motion.apply({
-    opacity: 0,
-    scale: 0.1,
-    transition: {
-      duration: 400,
-      ease: [0.4, 0, 0.2, 1],
-    },
-    x: -window.innerWidth / 2 + 150,
-    y: window.innerHeight / 2 - 100,
-  });
-
-  setTimeout(() => {
-    dialogStore.minimize();
-  }, 400);
-};
-
-watch(
-  () => dialogStore.isMinimized,
-  (isMinimized) => {
-    if (!isMinimized && wrapperRef.value) {
-      const motion = useMotion(wrapperRef.value, {});
-      motion.apply({
-        opacity: 1,
-        scale: 1,
-        transition: {
-          damping: 20,
-          stiffness: 200,
-          type: "spring",
-        },
-        x: 0,
-        y: 0,
-      });
-    }
+/*
+ * The store owns the open state — every dialog is mounted by DialogList from
+ * `dialogStore.type`. BdDialog only reports the closing gestures it handles
+ * itself (Escape, backdrop, cross), which the store then turns into its own
+ * closing animation.
+ */
+const open = computed<boolean>({
+  get: () => dialogStore.show && !dialogStore.isClosing,
+  set: (value) => {
+    if (!value && !dialogStore.isClosing) dialogStore.close();
   },
-);
+});
 </script>
 
 <style scoped>
-
-.head-buttons {
-  display: flex;
-  gap: 0.5rem;
-  position: absolute;
-  right: 0.9rem;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.close,
-.minimize {
-  background-color: var(--bg-color-light);
-  border: 0;
-  border-radius: 1rem;
-  color: currentcolor;
-
-  /* stylelint-disable-next-line property-no-unknown */
-  corner-shape: squircle;
-  cursor: pointer;
-  font-size: var(--font-size-base);
-  padding: 0.4rem 0.5rem;
-
-  &:hover {
-    background-color: var(--bg-color);
-  }
-}
-
-@keyframes pop-bg {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes bye-bg {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
-.bg {
-  animation: pop-bg 0.2s ease both;
-  background-color: #0d0d0d;
-  filter: opacity(0.95);
-  inset: 0;
-  pointer-events: all;
-  position: fixed;
-
-  &.is-closing {
-    animation: bye-bg 0.2s ease both;
-  }
-}
-
-.dialog {
-  display: grid;
-  inset: 0;
-  place-content: center;
-  pointer-events: none;
-  position: fixed;
-  transition: 200ms;
-  z-index: 99;
-}
-
-.head {
-  background-color: var(--bg-color-light);
-  border-radius: var(--dialog-radius) var(--dialog-radius) 0 0;
-  font-size: var(--font-size-base);
-  padding: 1rem 1.5rem;
-  position: relative;
-}
-
-@keyframes pop-dialog-content {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes bye-dialog-content {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  to {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-}
-
 .pre-content {
-  position: relative;
-  z-index: 1;
-}
-
-.wrapper {
-  animation: pop-dialog-content 0.2s ease both;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  pointer-events: all;
-  position: relative;
-  will-change: transform;
-
-  &.is-closing {
-    animation: bye-dialog-content 0.2s ease both;
-  }
-
-  &.minimized {
-    pointer-events: none;
-    visibility: hidden;
-  }
-}
-
-.dialog-content {
-  --dialog-radius: 2rem;
-
-  background: var(--bg-color);
-  border-radius: var(--dialog-radius);
-  box-shadow: 0 1rem 1rem rgb(0 0 0 / 10%);
-  display: grid;
-  grid-template-rows: auto 1fr;
-  position: relative;
-}
-
-.content {
-  max-height: 40rem;
-  min-width: 20rem;
-  overflow: auto;
-
-  &.big {
-    height: 80dvh;
-    max-height: 80dvh;
-    max-width: 80vw;
-    width: 80vw;
-
-    @media (--mobile) {
-      height: 95dvh;
-      max-height: 95dvh;
-    }
-  }
+  border-bottom: 0.1rem solid var(--bg-color-light);
 }
 </style>

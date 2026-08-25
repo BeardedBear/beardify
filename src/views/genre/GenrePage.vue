@@ -1,10 +1,10 @@
 <template>
   <div v-if="genreStore.loading" class="loader">
-    <Loader />
+    <BdLoader />
   </div>
   <div v-else ref="scrollRef" class="genre" @scroll="onScroll">
     <div class="content">
-      <div class="title font-bold">{{ genreStore.genre }}</div>
+      <h1 class="title font-bold">{{ genreStore.genre }}</h1>
       <div v-if="genreStore.artists.length" class="gallery">
         <GenreArtistCard
           v-for="artist in genreStore.artists"
@@ -18,10 +18,10 @@
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import Loader from "@/components/ui/LoadingDots.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import GenreArtistCard from "@/views/genre/GenreArtistCard.vue";
 import { useGenre } from "@/views/genre/GenreStore";

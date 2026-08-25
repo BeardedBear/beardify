@@ -6,15 +6,16 @@
     </div>
   </div>
   <div v-else class="options">
-    <Loader />
+    <BdLoader />
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
+
 import DevicesList from "@/components/player/device/DeviceList.vue";
 import DeviceVolume from "@/components/player/device/DeviceVolume.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
-import Loader from "@/components/ui/LoadingDots.vue";
 
 const props = defineProps<{ forceMobile?: boolean }>();
 const playerStore = usePlayer();

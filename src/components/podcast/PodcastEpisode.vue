@@ -40,12 +40,12 @@
         <div>{{ timecodeWithUnits(episode.duration_ms) }}</div>
       </div>
       <div class="actions">
-        <Loading
+        <BdLoader
           v-if="playerStore.currentFromSDK?.id === episode.id && playerStore.currentlyPlaying.is_playing"
           :size="'small'"
         />
         <div v-else>
-          <ButtonIndex
+          <BdButton
             :variant="
               !episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0
                 ? 'primary'
@@ -67,7 +67,7 @@
                 ? "Resume"
                 : "Play episode"
             }}
-          </ButtonIndex>
+          </BdButton>
         </div>
       </div>
     </div>
@@ -75,10 +75,10 @@
 </template>
 
 <script lang="ts" setup>
+import { BdButton, BdLoader } from "bearded-ui";
+
 import { Episode } from "@/@types/Podcast";
 import { usePlayer } from "@/components/player/PlayerStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import Loading from "@/components/ui/LoadingDots.vue";
 import { date, timecodeWithUnits } from "@/helpers/date";
 import { playSong } from "@/helpers/play";
 
@@ -129,10 +129,10 @@ defineProps<{
   padding: 0.7rem 1rem;
 
   .metas {
+    color: var(--font-color-dark);
     display: flex;
     font-size: var(--font-size-sm);
     gap: 0.5rem;
-    opacity: 0.5;
   }
 }
 
@@ -143,7 +143,7 @@ defineProps<{
   margin-bottom: 1rem;
   position: relative;
   text-decoration: none;
-  transition: 0.2s;
+  transition: background-color 0.2s ease;
   will-change: transform;
 }
 
@@ -174,8 +174,8 @@ defineProps<{
 }
 
 .description {
+  color: var(--font-color-dark);
   margin-top: 0.5rem;
-  opacity: 0.3;
 }
 
 .name {

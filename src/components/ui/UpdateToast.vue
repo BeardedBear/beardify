@@ -3,23 +3,10 @@ import { Download, Loader2, RefreshCw } from "@lucide/vue";
 
 import { useUpdater } from "@/composables/useUpdater";
 
-const { devSimulateUpdate, dismissed, downloadAndInstall, downloadProgress, restart, status, updateVersion }
-  = useUpdater();
-
-const isDev = import.meta.env.DEV;
+const { dismissed, downloadAndInstall, downloadProgress, restart, status, updateVersion } = useUpdater();
 </script>
 
 <template>
-  <button
-    v-if="isDev"
-    class="dev-trigger"
-    type="button"
-    title="Simulate update toast (dev only)"
-    @click="devSimulateUpdate"
-  >
-    🧪 Simulate update
-  </button>
-
   <Transition name="update-toast">
     <div
       v-if="!dismissed && (status === 'available' || status === 'downloading' || status === 'ready')"
@@ -29,7 +16,7 @@ const isDev = import.meta.env.DEV;
       aria-live="polite"
     >
       <div v-if="status === 'downloading'" class="toast-progress">
-        <div class="toast-progress-bar" :style="{ width: `${downloadProgress}%` }" />
+        <div class="toast-progress-bar" :style="{ transform: `scaleX(${downloadProgress / 100})` }" />
       </div>
 
       <div class="toast-body">
@@ -66,42 +53,25 @@ const isDev = import.meta.env.DEV;
   0% {
     box-shadow:
       0 6px 24px rgb(0 0 0 / 40%),
-      0 0 0 0 rgb(144 100 255 / 55%);
+      0 0 0 0 color-mix(in oklab, var(--primary-color) 55%, transparent);
   }
 
   70% {
     box-shadow:
       0 6px 24px rgb(0 0 0 / 40%),
-      0 0 0 0.6rem rgb(144 100 255 / 0%);
+      0 0 0 0.6rem color-mix(in oklab, var(--primary-color) 0%, transparent);
   }
 
   100% {
     box-shadow:
       0 6px 24px rgb(0 0 0 / 40%),
-      0 0 0 0 rgb(144 100 255 / 0%);
+      0 0 0 0 color-mix(in oklab, var(--primary-color) 0%, transparent);
   }
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-.dev-trigger {
-  background: var(--bg-color-lighter);
-  border: 1px solid var(--primary-color-dark);
-  border-radius: 0.375rem;
-  bottom: 3rem;
-  color: var(--font-color-light);
-  cursor: pointer;
-  left: 3rem;
-  padding: 0.35rem 0.6rem;
-  position: fixed;
-  z-index: 9998;
-
-  &:hover {
-    background: var(--bg-color-light);
   }
 }
 
@@ -130,7 +100,9 @@ const isDev = import.meta.env.DEV;
 .toast-progress-bar {
   background: #fff;
   height: 100%;
-  transition: width 0.3s ease;
+  transform-origin: left center;
+  transition: transform 0.3s ease;
+  width: 100%;
 }
 
 .toast-body {
@@ -154,7 +126,8 @@ const isDev = import.meta.env.DEV;
 .toast-content {
   color: #fff;
   flex: 1;
-  font-weight: 700;
+  font-variation-settings: var(--font-variation-settings-bold);
+  font-weight: var(--font-weight-bold);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -168,7 +141,8 @@ const isDev = import.meta.env.DEV;
   color: var(--primary-color-dark);
   cursor: pointer;
   flex-shrink: 0;
-  font-weight: 700;
+  font-variation-settings: var(--font-variation-settings-bold);
+  font-weight: var(--font-weight-bold);
   padding: 0.3rem 0.7rem;
   transition: opacity 0.15s;
   white-space: nowrap;

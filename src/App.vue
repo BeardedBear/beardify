@@ -1,21 +1,23 @@
 <template>
+  <TitleBar v-if="showTitleBar" />
   <template v-if="route.meta.chromeless">
     <router-view />
   </template>
   <template v-else>
     <DialogList />
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <div id="app-content">
       <Sidebar />
-      <div class="main-content">
+      <main id="main-content" class="main-content" tabindex="-1">
         <MobileHeader />
         <router-view v-slot="{ Component, route: currentRoute }">
           <component :is="Component" :key="currentRoute.fullPath" />
         </router-view>
-      </div>
+      </main>
     </div>
     <Player key="player" />
     <PlayerSlideUp />
-    <Notification />
+    <BdToaster />
     <Frame />
     <MinimizedWindows />
     <UpdateToast />
@@ -23,19 +25,12 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted } from "vue";
+import { BdToaster } from "bearded-ui";
+import { defineAsyncComponent, onBeforeUnmount, onMounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
 
-import DialogList from "@/components/dialog/DialogList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
-import Frame from "@/components/frame/FrameIndex.vue";
-import MinimizedWindows from "@/components/minimized/MinimizedWindows.vue";
-import Notification from "@/components/notification/NotificationIndex.vue";
-import Player from "@/components/player/PlayerIndex.vue";
-import PlayerSlideUp from "@/components/player/PlayerSlideUp.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
-import MobileHeader from "@/components/sidebar/MobileHeader.vue";
-import Sidebar from "@/components/sidebar/SidebarIndex.vue";
 import UpdateToast from "@/components/ui/UpdateToast.vue";
 import { useUpdater } from "@/composables/useUpdater";
 import { isTauri } from "@/helpers/platform";
@@ -43,12 +38,31 @@ import { sleep } from "@/helpers/sleep";
 import { useKeyboardEvents } from "@/helpers/useKeyboardEvents";
 import { useAuth } from "@/views/auth/AuthStore";
 
+/*
+ * The whole shell lives behind `v-else`, so a chromeless route — the public
+ * /share page, the OAuth callback — renders none of it. Importing it statically
+ * still pulled the sidebar, the player and every dialog into the entry chunk,
+ * which meant a stranger opening a shared link downloaded the entire logged-in
+ * app before seeing a single cover. Async, they follow the branch that uses
+ * them.
+ */
+const DialogList = defineAsyncComponent(() => import("@/components/dialog/DialogList.vue"));
+const Frame = defineAsyncComponent(() => import("@/components/frame/FrameIndex.vue"));
+const MinimizedWindows = defineAsyncComponent(() => import("@/components/minimized/MinimizedWindows.vue"));
+const MobileHeader = defineAsyncComponent(() => import("@/components/sidebar/MobileHeader.vue"));
+const Player = defineAsyncComponent(() => import("@/components/player/PlayerIndex.vue"));
+const PlayerSlideUp = defineAsyncComponent(() => import("@/components/player/PlayerSlideUp.vue"));
+const Sidebar = defineAsyncComponent(() => import("@/components/sidebar/SidebarIndex.vue"));
+const TitleBar = defineAsyncComponent(() => import("@/components/titlebar/TitleBar.vue"));
+
 useKeyboardEvents();
 
 const authStore = useAuth();
 const { checkForUpdate } = useUpdater();
 const dialog = useDialog();
 const route = useRoute();
+// Custom title bar replaces the native one in the Tauri desktop build.
+const showTitleBar = isTauri();
 
 onMounted(() => {
   if (isTauri()) {
@@ -158,11 +172,10 @@ onBeforeUnmount(() => {
 
 input {
   &::placeholder {
-    color: var(--font-color);
+    color: var(--font-color-dark);
     font-size: var(--font-size-base);
     font-style: var(--font-style-italic);
     font-variation-settings: var(--font-variation-settings-italic);
-    opacity: 0.3;
   }
 }
 
@@ -219,15 +232,25 @@ body {
   text-rendering: optimizelegibility;
 }
 
+/*
+ * When the custom title bar is rendered (Tauri build only), it takes a row of
+ * its own at the top; `:has()` keeps index.html's #app untouched.
+ */
+#app:has(> .titlebar) {
+  grid-template-rows: auto 1fr auto;
+}
+
+/*
+ * The rail width lives in layout.css as --sidebar-width so overlays that must
+ * clear it (MinimizedWindows) read the same number instead of hardcoding their
+ * own. Below --tablet-down the token is 0 and the sidebar overlays rather than
+ * occupying a column, so the grid collapses to one track.
+ */
 #app-content {
   display: grid;
-  grid-template-columns: 19rem 1fr;
+  grid-template-columns: var(--sidebar-width) 1fr;
   overflow: hidden;
   position: relative;
-
-  @media (--hdpi) {
-    grid-template-columns: 25rem 1fr;
-  }
 
   @media (--tablet-down) {
     grid-template-columns: 1fr;
@@ -238,6 +261,33 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  /* Focused only via the skip link, so it must not draw a ring of its own. */
+  &:focus {
+    outline: none;
+  }
+}
+
+/*
+ * Off-screen until focused rather than `display: none`, which would take it out
+ * of the tab order and defeat the point. First stop for a keyboard user, and
+ * the only way past the sidebar's long playlist list.
+ */
+.skip-link {
+  background-color: var(--bg-color-light);
+  border-radius: 0 0 0.4rem;
+  color: var(--font-color);
+  left: 0;
+  padding: 0.6rem 1rem;
+  position: fixed;
+  text-decoration: none;
+  top: 0;
+  transform: translateY(-110%);
+  z-index: 10000;
+
+  &:focus-visible {
+    transform: translateY(0);
+  }
 }
 
 .loading {

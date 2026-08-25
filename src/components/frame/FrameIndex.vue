@@ -9,13 +9,13 @@ ref="wrapperRef" v-motion :initial="{ scale: 0.8, opacity: 0, y: 50 }"
       :enter="{ scale: 1, opacity: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 20 } }"
       :class="{ minimized: frameStore.isMinimized }" class="iframe-wrap"
 >
-      <LoadingDots class="load" />
+      <BdLoader class="load" />
       <div class="head">
         <div>{{ frameStore.siteName }}</div>
         <div class="right">
-          <ButtonIndex :href="frameStore.url" size="small" target="_blank">Open in a new tab</ButtonIndex>
-          <ButtonIndex size="small" @click="handleMinimize">Minimize</ButtonIndex>
-          <ButtonIndex size="small" @click="frameStore.close()">Close</ButtonIndex>
+          <BdButton :href="frameStore.url" size="small" target="_blank">Open in a new tab</BdButton>
+          <BdButton size="small" @click="handleMinimize">Minimize</BdButton>
+          <BdButton size="small" @click="frameStore.close()">Close</BdButton>
         </div>
       </div>
       <iframe :class="{ 'is-closing': frameStore.isClosing }" :src="frameStore.url" border="0" />
@@ -25,11 +25,10 @@ ref="wrapperRef" v-motion :initial="{ scale: 0.8, opacity: 0, y: 50 }"
 
 <script lang="ts" setup>
 import { useMotion } from "@vueuse/motion";
+import { BdButton, BdLoader } from "bearded-ui";
 import { ref, watch } from "vue";
 
 import { useFrame } from "@/components/frame/FrameStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import LoadingDots from "@/components/ui/LoadingDots.vue";
 
 const frameStore = useFrame();
 const wrapperRef = ref<HTMLElement | null>(null);
@@ -106,7 +105,7 @@ watch(
 
 .bg {
   animation: pop-bg 0.2s ease both;
-  background-color: #0d0d0d;
+  background-color: var(--bg-color-darker);
   filter: opacity(0.95);
   inset: 0;
   pointer-events: all;

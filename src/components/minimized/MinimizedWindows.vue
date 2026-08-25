@@ -1,32 +1,6 @@
 <template>
   <div class="minimized-windows">
     <div
-      v-if="dialogStore.show && dialogStore.isMinimized"
-      v-motion
-      :initial="{ scale: 0, opacity: 0, x: -50 }"
-      :enter="{
-        scale: 1,
-        opacity: 1,
-        x: 0,
-        transition: { type: 'spring', stiffness: 260, damping: 20 },
-      }"
-      :leave="{ scale: 0, opacity: 0, x: -50, transition: { duration: 200 } }"
-      class="minimized-window squircle"
-    >
-      <div class="window-content" @click="dialogStore.restore()">
-        <i class="icon-message-square" />
-        <span>{{ getDialogTitle() }}</span>
-      </div>
-      <button
-        class="close-btn"
-        aria-label="Close dialog"
-        @click.stop="dialogStore.close()"
-      >
-        <i class="icon-x" />
-      </button>
-    </div>
-
-    <div
       v-if="frameStore.show && frameStore.isMinimized"
       v-motion
       :initial="{ scale: 0, opacity: 0, x: -50 }"
@@ -55,32 +29,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useDialog } from "@/components/dialog/DialogStore";
 import { useFrame } from "@/components/frame/FrameStore";
 
-const dialogStore = useDialog();
 const frameStore = useFrame();
 
-const getDialogTitle = (): string => {
-  switch (dialogStore.type) {
-    case "addalbum":
-      return "Add album";
-    case "addSong":
-      return "Add to playlist";
-    case "createCollection":
-      return "Create collection";
-    case "createPlaylist":
-      return "Create playlist";
-    case "editPlaylist":
-      return "Edit playlist";
-    case "search":
-      return "Search";
-    case "widevine":
-      return "Widevine Warning";
-    default:
-      return "Dialog";
-  }
-};
 </script>
 
 <style scoped>
@@ -89,7 +41,14 @@ const getDialogTitle = (): string => {
   bottom: 7rem;
   display: flex;
   flex-direction: column;
-  left: 20rem;
+
+  /*
+   * Tracks the sidebar instead of guessing at it: 20rem was hardcoded against a
+   * rail that is 19rem, 25rem on --hdpi, and gone entirely below 1024px, so the
+   * pill sat under the sidebar on wide displays and floated into nothing on
+   * tablet.
+   */
+  left: calc(var(--sidebar-width) + 1rem);
   pointer-events: none;
   position: fixed;
   z-index: 998;
@@ -105,7 +64,9 @@ const getDialogTitle = (): string => {
   gap: 0.5rem;
   padding: 0.5rem;
   pointer-events: all;
-  transition: all 0.1s ease;
+  transition:
+      background-color 0.1s ease,
+      box-shadow 0.1s ease;
 }
 
 .window-content {
@@ -144,7 +105,9 @@ const getDialogTitle = (): string => {
   justify-content: center;
   opacity: 0;
   padding: 0.25rem;
-  transition: all 0.2s ease;
+  transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
 
   &:hover {
     background-color: var(--bg-color);

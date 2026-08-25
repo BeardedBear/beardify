@@ -35,18 +35,18 @@
             class="grid-line"
             :style="{ left: `${tick.left}%` }"
           />
-          <Tooltip
+          <BdTooltip
             class="member-bar-wrapper"
-            follow-cursor
+            follow="x"
             :style="{ left: `${row.left}%`, width: `${row.width}%` }"
-            :text="row.tooltip"
+            :content="row.tooltip"
           >
             <span
               class="member-bar"
               :class="{ 'is-active': !row.ended, 'is-undated': !row.dated }"
               :style="{ backgroundColor: row.color }"
             />
-          </Tooltip>
+          </BdTooltip>
         </div>
       </template>
     </div>
@@ -56,10 +56,10 @@
 </template>
 
 <script lang="ts" setup>
+import { BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 
 import MemberPopover from "@/components/artist/MemberPopover.vue";
-import Tooltip from "@/components/ui/Tooltip.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 interface AxisTick {
@@ -345,9 +345,8 @@ const ticks = computed<AxisTick[]>(() => {
 }
 
 .timeline-source {
-  color: var(--font-color-light);
+  color: var(--font-color-dark);
   font-size: var(--font-size-xs);
   margin-top: 1rem;
-  opacity: 0.5;
 }
 </style>

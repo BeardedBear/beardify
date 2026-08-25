@@ -1,13 +1,12 @@
 <template>
   <div>
-    <ButtonIndex
-      no-default-class
-      variant="nude"
+    <button
+type="button"
       class="link"
       @click="openLink(`https://www.google.com/search?q=${album.label}+label`)"
     >
       {{ album.label }}
-    </ButtonIndex>
+    </button>
     <div class="mentions">
       {{ album.copyrights[0].text }}
     </div>
@@ -16,7 +15,6 @@
 
 <script lang="ts" setup>
 import { Album } from "@/@types/Album";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { openLink } from "@/helpers/openLink";
 
 defineProps<{ album: Album }>();
@@ -25,15 +23,21 @@ defineProps<{ album: Album }>();
 <style scoped>
 
 .mentions {
-  opacity: 0.3;
+  color: var(--font-color-dark);
 }
 
 .link {
+  background-color: transparent;
+  border: 0;
+  color: var(--font-color-dark);
   cursor: pointer;
+  font: inherit;
+  padding: 0.5rem 0.6rem;
   padding-left: 0;
 
   &:hover {
     color: var(--primary-color);
+    opacity: 1;
   }
 }
 </style>

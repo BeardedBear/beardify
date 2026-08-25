@@ -7,18 +7,18 @@
     @click.prevent="goToArtist"
   >
     <Cover :images="artist.images" class="cover" size="medium" />
-    <Loader v-if="resolving" class="spinner" />
+    <BdLoader v-if="resolving" class="spinner" />
     <div class="name">{{ artist.name }}</div>
   </a>
 </template>
 
 <script lang="ts" setup>
 import { useIntersectionObserver } from "@vueuse/core";
+import { BdLoader } from "bearded-ui";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
 import Cover from "@/components/ui/AlbumCover.vue";
-import Loader from "@/components/ui/LoadingDots.vue";
 import { GenreArtist, useGenre } from "@/views/genre/GenreStore";
 
 const props = defineProps<{ artist: GenreArtist }>();

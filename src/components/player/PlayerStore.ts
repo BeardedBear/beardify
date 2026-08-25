@@ -13,6 +13,7 @@ import {
   isPodcastTrack,
   mapQueueToSpotifyTracks,
   notifyQueueError,
+  saveDeviceVolume,
   setRepeatState,
   setShuffleState,
 } from "@/helpers/player";
@@ -190,6 +191,15 @@ export const usePlayer = defineStore("player", {
 
     async getExternalPlayerState(): Promise<void> {
       const { data } = await instance().get<CurrentlyPlaying>("me/player");
+
+      // `me/player` names the device that is REALLY active — adopt it, otherwise the
+      // store keeps tracking a stale device and the heartbeat later yanks playback
+      // back to this machine. Skipped mid-switch so a poll racing an explicit
+      // setDevice() can't adopt a half-transferred state over the user's choice.
+      if (!this.isSettingDevice && data.device && data.device.id !== this.devices.activeDevice?.id) {
+        this.devices.activeDevice = data.device;
+      }
+
       if (!data.item) return;
       const { item } = data;
       const current = this.playerState.track_window.current_track;
@@ -295,7 +305,6 @@ export const usePlayer = defineStore("player", {
       await instance().put(`me/player/volume?volume_percent=${rounded}`);
       // Persist the volume for the current device so we can restore it later
       try {
-        const { saveDeviceVolume } = await import("@/helpers/player");
         saveDeviceVolume(this.devices.activeDevice?.id, rounded);
       } catch {
         // ignore
@@ -312,12 +321,25 @@ export const usePlayer = defineStore("player", {
         if (this.devices.activeDevice?.id) {
           (async (): Promise<void> => {
             try {
-              const doKeepalive = async (): Promise<void> => {
-                if (!this.playerState?.paused) return;
-                await instance().put("me/player", { device_ids: [this.devices.activeDevice.id] });
-              };
+              // Keepalive, verify-first: refresh the list BEFORE re-asserting the
+              // tracked device, and only while it is still genuinely the active one.
+              // Transferring blindly used to yank playback back to this machine when
+              // the user had moved it elsewhere since the last poll.
+              const trackedId = this.devices.activeDevice?.id;
+              const { data } = await instance().get<DevicesResponse>("me/player/devices");
+              const tracked = trackedId ? data.devices.find((device): boolean => device.id === trackedId) : undefined;
 
-              await doKeepalive();
+              if (tracked?.is_active && this.playerState.paused) {
+                await instance().put("me/player", { device_ids: [tracked.id] });
+              }
+
+              // Follow an external takeover instead of fighting it: if another device
+              // is now really active, adopt it so the UI matches reality. A vanished
+              // tracked device is left to getDeviceList's "still listed" check.
+              const reallyActive = data.devices.find((device): boolean => device.is_active);
+              if (!this.isSettingDevice && reallyActive && reallyActive.id !== trackedId) {
+                this.devices.activeDevice = reallyActive;
+              }
 
               // Ping the SDK player instance to keep its session alive and detect disconnects early
               try {
@@ -342,16 +364,6 @@ export const usePlayer = defineStore("player", {
                   console.debug("SDK ping/connect failed during heartbeat", e);
                 }
               }
-
-              // Still verify device status via API and fall back to setDevice if needed
-              const { data } = await instance().get<DevicesResponse>("me/player/devices");
-              const currentDevice = data.devices.find((device): boolean => device.id === this.devices.activeDevice.id);
-              if (currentDevice && !currentDevice.is_active) {
-                this.setDevice(currentDevice.id);
-              }
-              // If currentDevice vanished entirely from the list, don't guess a replacement
-              // (data.devices[0] could be any device, e.g. this computer) — let getDeviceList's
-              // "still listed" check handle a genuine disconnect on the next refresh.
 
               // Success: reset failure counters
               this.heartbeatFailureCount = 0;

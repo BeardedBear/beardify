@@ -1,17 +1,17 @@
 <template>
   <div v-if="!userStore.user" class="loader">
-    <LoadingDots />
+    <BdLoader />
   </div>
   <div v-else ref="scrollRef" class="user-page" @scroll="onScroll">
     <div class="head">
-      <img :src="userStore.user.images[0].url" alt="" class="avatar-bg" />
+      <img :src="coverUrl(userStore.user.images, 'large')" alt="" class="avatar-bg" />
       <div class="inner">
         <div class="metas">
-          <img :src="userStore.user.images[0].url" alt="" class="avatar" />
+          <img :src="coverUrl(userStore.user.images, 'large')" alt="" class="avatar" />
           <div>
-            <div class="name font-bold">
+            <h1 class="name font-bold">
               {{ userStore.user?.display_name }}
-            </div>
+            </h1>
             <div class="followers">{{ userStore.user?.followers.total }} followers</div>
           </div>
         </div>
@@ -53,13 +53,14 @@
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
 import { ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 
 import Cover from "@/components/ui/AlbumCover.vue";
-import LoadingDots from "@/components/ui/LoadingDots.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
+import { coverUrl } from "@/helpers/cover";
 import { useUserStore } from "@/views/user/UserStore";
 
 const userStore = useUserStore();

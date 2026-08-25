@@ -2,7 +2,7 @@
   <div class="artist-info">
     <div class="main-content">
       <div v-if="artistStore.timelineLoading" class="timeline-loader">
-        <LoadingDots size="small" />
+        <BdLoader size="small" />
       </div>
       <WikipediaTimeline v-else-if="artistStore.wikiTimeline && !isSoloArtist" />
       <MemberTimeline v-else-if="artistStore.bandMembers.length > 0 && !isSoloArtist" />
@@ -42,15 +42,15 @@
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
 import DOMPurify from "dompurify";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 
+import { type LanguageOption } from "@/@types/Wikipedia";
 import ArtistNavigation from "@/components/artist/ArtistNavigation.vue";
 import ArtistSidebar from "@/components/artist/ArtistSidebar.vue";
 import MemberTimeline from "@/components/artist/MemberTimeline.vue";
 import WikipediaTimeline from "@/components/artist/WikipediaTimeline.vue";
-import { type LanguageOption } from "@/components/ui/LanguageSelect.vue";
-import LoadingDots from "@/components/ui/LoadingDots.vue";
 import { parseDiscogsMarkup } from "@/helpers/discogs";
 import { useArtist } from "@/views/artist/ArtistStore";
 
@@ -150,8 +150,7 @@ onMounted(() => {
 }
 
 .source-link {
-  color: var(--font-color-light);
-  opacity: 0.5;
+  color: var(--font-color-dark);
   transition: opacity 0.2s ease;
 
   &:hover {
@@ -291,9 +290,10 @@ onMounted(() => {
 
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
 .wikipedia-content :deep(blockquote) {
-  border-left: 3px solid var(--primary-color-default);
+  border-left: 1px solid var(--bg-color-lighter);
+  color: var(--font-color-dark);
   margin: 1rem 0;
-  padding-left: 1rem;
+  padding-left: 1.4rem;
 }
 
 .biography {

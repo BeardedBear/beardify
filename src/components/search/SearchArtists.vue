@@ -1,31 +1,34 @@
 <template>
   <div class="artist-list">
-    <SearchTitle title="Artists" />
+    <SearchTitle :count="searchStore.artists.length" title="Artists" />
     <template v-if="searchStore.artists.length">
       <router-link
-        v-for="(artist, index) in searchStore.artists"
-        :key="index"
+        v-for="artist in searchStore.artists"
+        :key="artist.id"
         :class="{
           'exact-search': exactArtistSearched === artist.name.toLowerCase(),
         }"
         :to="`/artist/${artist.id}`"
         class="artist font-bold"
-        @click="searchStore.reset()"
+        data-search-hit
+        @click="searchStore.close()"
       >
         <Cover :images="artist.images" class="avatar" size="small" />
         <div class="artist-name">
           <div class="name">{{ artist.name }}</div>
           <div v-if="artist.genres.length" class="genres">
-            <span v-for="genre in artist.genres" :key="genre" class="genre">{{ genre }}</span>
+            <span v-for="genre in artist.genres.slice(0, 3)" :key="genre" class="genre">{{ genre }}</span>
           </div>
         </div>
       </router-link>
     </template>
+    <template v-else-if="searchStore.loading"><BdLoader size="small" /></template>
     <template v-else>No artist found</template>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
 import { computed, ComputedRef } from "vue";
 import { RouterLink } from "vue-router";
 
@@ -34,16 +37,24 @@ import SearchTitle from "@/components/search/SearchTitle.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
 
 const searchStore = useSearch();
+/*
+ * The `artist:X  &  album:Y` protocol ReleaseIndex and MemberPopover emit.
+ *
+ * Optional chaining is the fix for a real crash: a query containing "  &  "
+ * but no colon — "opeth  &  damnation", easily typed by someone half-recalling
+ * the syntax — made `split(":")[1]` undefined and threw a TypeError during
+ * render, taking the whole modal down.
+ */
 const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
   if (!searchStore.query.includes("  &  ")) return undefined;
-  return searchStore.query.split(":")[1].split("&").shift()?.toLowerCase().trim();
+  return searchStore.query.split(":")[1]?.split("&").shift()?.toLowerCase().trim();
 });
 </script>
 
 <style scoped>
 
 .artist-list {
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
 
   .avatar {
     --avatar-size: 2.5rem;
@@ -60,37 +71,36 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
     color: currentcolor;
     display: flex;
     font-size: var(--font-size-sm);
-    gap: 1rem;
-    margin-bottom: 0.4rem;
-    padding: 0.5rem;
+    gap: var(--space-3);
+    margin-bottom: var(--space-1);
+    padding: var(--space-2);
     position: relative;
     text-decoration: none;
-    transition: 0.2s;
+    transition: background-color 0.2s ease;
 
     &:hover {
       background-color: var(--bg-color-light);
-      transform: scale(1.03);
     }
 
     .artist-name {
       display: flex;
       flex-direction: column;
-      gap: 0.3rem;
+      gap: var(--space-1);
 
     }
 
     .genres {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.25rem;
-      margin-bottom: 0.15rem;
+      gap: var(--space-1);
+      margin-bottom: 0;
 
       .genre {
         background: var(--bg-color-lighter);
         border-radius: 0.2rem;
         color: var(--font-color-light);
         font-size: 0.65rem;
-        padding: 0.1rem 0.35rem;
+        padding: 0 var(--space-1);
         text-transform: capitalize;
       }
     }

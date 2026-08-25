@@ -1,9 +1,9 @@
 <template>
   <div class="release-wrap">
-    <ButtonIndex no-default-class class="check" @click="releasesStore.toggleRelease(release.id)">
+    <button type="button" class="check" @click="releasesStore.toggleRelease(release.id)">
       <i v-if="releasesStore.checks?.find((r) => r.id === release.id)" class="icon-check" />
       <i v-else class="icon-circle" />
-    </ButtonIndex>
+    </button>
     <div
       :class="{
         'is-playing': playerStore.currentlyPlaying.item?.artists[0].name.toLowerCase() === release.artist.toLowerCase(),
@@ -33,7 +33,6 @@ import { Release } from "@/@types/Releases";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
 import { useSearch } from "@/components/search/SearchStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 defineProps<{
@@ -56,7 +55,7 @@ function search(artist: string, album: string): void {
 .release-wrap {
   display: flex;
   gap: 0.3rem;
-  transition: 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .check {
@@ -67,7 +66,7 @@ function search(artist: string, album: string): void {
   opacity: 0.2;
   position: relative;
   top: -0.1rem;
-  transition: 0.2s;
+  transition: opacity 0.2s ease;
 
   &:hover {
     opacity: 0.8;
@@ -112,10 +111,10 @@ function search(artist: string, album: string): void {
     .slug {
       background-color: var(--bg-color-lighter);
       border-radius: 2rem;
+      color: var(--font-color-dark);
       display: inline-block;
       margin: 0.1rem 0;
       margin-left: 0.3rem;
-      opacity: 0.3;
       padding: 0.1rem 0.5rem;
 
       &.selected {

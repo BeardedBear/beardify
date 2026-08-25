@@ -277,11 +277,11 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 }
 
 .member-popover .mp-section-title {
+  color: var(--font-color-dark);
   display: block;
   font-size: var(--font-size-xs);
   margin-bottom: 0.3rem;
   margin-top: 1rem;
-  opacity: 0.5;
   text-transform: uppercase;
 }
 

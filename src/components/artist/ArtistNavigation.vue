@@ -7,29 +7,29 @@
       :class="{ stuck: isStuck }"
       :style="{ top: headerHeight + 'px' }"
     >
-      <CustomSelect
+      <BdSelect
         v-if="hasSections"
         :model-value="selectedSection"
         :options="sectionOptions"
         placeholder="Go to section..."
-        @change="onSectionChange"
+        @update:model-value="onSectionChange"
       />
 
-      <LanguageSelect
+      <BdSelect
         v-if="hasMultipleLanguages"
         :model-value="currentLanguage"
         :options="languageOptions"
-        @change="onLanguageChange"
+        @update:model-value="onLanguageChange"
       />
     </nav>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdOption, BdSelect } from "bearded-ui";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
-import CustomSelect, { type SelectOption } from "@/components/ui/CustomSelect.vue";
-import LanguageSelect, { type LanguageOption } from "@/components/ui/LanguageSelect.vue";
+import { LanguageOption } from "@/@types/Wikipedia";
 
 interface Props {
   currentLanguage?: string;
@@ -62,27 +62,34 @@ const isStuck = ref(false);
 const hasSections = computed(() => props.sections.length > 0);
 const hasMultipleLanguages = computed(() => props.languages.length > 1);
 
-const sectionOptions = computed<SelectOption[]>(() =>
+const sectionOptions = computed<BdOption[]>(() =>
   props.sections.map((section) => ({
     label: section.title,
     value: section.id,
   })),
 );
 
-const languageOptions = computed(() => props.languages);
+const languageOptions = computed<BdOption[]>(() =>
+  props.languages.map((language) => ({
+    label: language.name,
+    value: language.code,
+  })),
+);
 
 // Observer to detect when nav is stuck
 let observer: IntersectionObserver | null = null;
 
-function onLanguageChange(option: LanguageOption): void {
-  emit("languageChange", option);
+function onLanguageChange(code: number | string | undefined): void {
+  const option = props.languages.find((language) => language.code === code);
+  if (option) emit("languageChange", option);
 }
 
-function onSectionChange(option: SelectOption): void {
-  scrollToSection(option.value);
+function onSectionChange(value: number | string | undefined): void {
+  const sectionId = String(value);
+  scrollToSection(sectionId);
   // Reset selection to allow re-selecting the same section
   selectedSection.value = "";
-  emit("sectionChange", option.value);
+  emit("sectionChange", sectionId);
 }
 
 function scrollToSection(sectionId: string): void {

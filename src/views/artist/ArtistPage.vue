@@ -1,6 +1,6 @@
 <template>
   <div v-if="artistStore.artist.name === ''" class="loader">
-    <Loader />
+    <BdLoader />
   </div>
   <div v-else ref="pageRef" class="artist-page" @scroll="handleScroll">
     <ArtistHeader />
@@ -8,7 +8,7 @@
       <div v-if="artistStore.activeTab === 'discography'" key="discography" class="content">
         <div class="list">
           <div v-if="artistStore.discographyLoading" class="discography-loader">
-            <Loader />
+            <BdLoader />
           </div>
           <template v-else>
             <div
@@ -43,6 +43,7 @@
 
 <script lang="ts" setup>
 import { useMediaQuery } from "@vueuse/core";
+import { BdLoader } from "bearded-ui";
 import { nextTick, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
@@ -55,7 +56,6 @@ import BlockEps from "@/components/artist/BlockEps.vue";
 import BlockSingles from "@/components/artist/BlockSingles.vue";
 import RelatedArtists from "@/components/artist/RelatedArtists.vue";
 import TopTracks from "@/components/artist/TopTracks.vue";
-import Loader from "@/components/ui/LoadingDots.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useArtist } from "@/views/artist/ArtistStore";
 

@@ -1,78 +1,54 @@
 <template>
   <QueuedTracks />
-  <div v-if="showList" class="dropdown-overlay" @click="showList = false" />
-  <div class="devices">
-    <ButtonIndex
-      variant="primary"
-      align="left"
-      class="active-device"
-      size="small"
-      type="button"
-      :disabled="playerStore.isSettingDevice"
-      @click="toggleList"
-      @mouseenter="playerStore.getDeviceList()"
-    >
-      <span
-        :title="playerStore.devices.activeDevice ? `Device ID: ${playerStore.devices.activeDevice.id}` : ''"
-        class="active-device-label"
-      >
-        <DeviceTypeIcon :type="playerStore.devices.activeDevice?.type" />
-        <span class="device-name">{{ formatName(playerStore.devices.activeDevice, true) }}</span>
-      </span>
-    </ButtonIndex>
-    <div :class="{ 'is-visible': showList }" class="available-device-list">
-      <LoadingDots v-if="!playerStore.devices.list.length" size="x-small" />
-      <ButtonIndex
-        v-for="(device, _key) in deviceListFiltered"
-        v-else
-        :key="_key"
-        variant="full"
-        type="button"
-        size="small"
-        align="justify"
+  <BdDropdown v-model="showList" class="devices" match-width placement="top-end" size="small">
+    <template #trigger>
+      <BdButton
+        align="left"
+        class="active-device"
         :disabled="playerStore.isSettingDevice"
-        :class="device.id === playerStore.devices.activeDevice.id ? 'device-active' : ''"
-        :aria-current="device.id === playerStore.devices.activeDevice.id"
-        @click="
-          () => {
-            if (!playerStore.isSettingDevice && device.id !== playerStore.devices.activeDevice.id)
-              playerStore.setDevice(device.id);
-            showList = false;
-          }
-        "
+        variant="primary"
+        @click="playerStore.getDeviceList()"
+        @mouseenter="playerStore.getDeviceList()"
       >
-        <span :title="`Device ID: ${device.id}`" class="device-label">
-          <DeviceTypeIcon :type="device.type" />
-          <span class="device-name">{{ formatName(device) }}</span>
-          <span
-            v-if="device.id === playerStore.thisDeviceId"
-            class="device-badge local font-bold"
-            title="Périphérique local"
-          >
-            Here
-          </span>
-          <i
-            v-if="device.id === playerStore.devices.activeDevice.id"
-            class="icon-check active-label"
-            aria-hidden="true"
-            title="Active device"
-          />
+        <span
+          class="active-device-label"
+          :title="playerStore.devices.activeDevice ? `Device ID: ${playerStore.devices.activeDevice.id}` : ''"
+        >
+          <DeviceTypeIcon :type="playerStore.devices.activeDevice?.type" />
+          <span class="device-name">{{ formatName(playerStore.devices.activeDevice, true) }}</span>
         </span>
-        <LoadingDots
-          v-if="playerStore.lastRequestedDeviceId === device.id && playerStore.isSettingDevice"
-          size="xx-small"
-        />
-      </ButtonIndex>
-      <ButtonIndex variant="border" class="refresh" type="button" size="small" @click="playerStore.getDeviceList()">
-        <i class="icon-refresh" />
-        Refresh
-      </ButtonIndex>
-    </div>
-  </div>
+      </BdButton>
+    </template>
+
+    <BdLoader v-if="!playerStore.devices.list.length" size="x-small" />
+    <BdDropdownItem
+      v-for="(device, index) in deviceListFiltered"
+      v-else
+      :key="index"
+      :active="device.id === playerStore.devices.activeDevice.id"
+      :disabled="playerStore.isSettingDevice"
+      @click="selectDevice(device)"
+    >
+      <span class="device-label" :title="`Device ID: ${device.id}`">
+        <DeviceTypeIcon :type="device.type" />
+        <span class="device-name">{{ formatName(device) }}</span>
+        <BdBadge v-if="device.id === playerStore.thisDeviceId" variant="primary">Here</BdBadge>
+      </span>
+      <BdLoader
+        v-if="playerStore.lastRequestedDeviceId === device.id && playerStore.isSettingDevice"
+        size="xx-small"
+      />
+    </BdDropdownItem>
+    <BdDropdownItem keep-open @click="playerStore.getDeviceList()">
+      <i class="icon-refresh" />
+      Refresh
+    </BdDropdownItem>
+  </BdDropdown>
 </template>
 
 <script lang="ts" setup>
 import { useWindowSize } from "@vueuse/core";
+import { BdBadge, BdButton, BdDropdown, BdDropdownItem, BdLoader } from "bearded-ui";
 import { computed, ref } from "vue";
 
 import type { Device } from "@/@types/Device";
@@ -80,8 +56,6 @@ import type { Device } from "@/@types/Device";
 import DeviceTypeIcon from "@/components/player/device/DeviceType.vue";
 import QueuedTracks from "@/components/player/device/QueuedTracks.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import LoadingDots from "@/components/ui/LoadingDots.vue";
 
 const playerStore = usePlayer();
 const deviceListFiltered = computed(() => [...playerStore.devices.list].sort((a, b) => a.name.localeCompare(b.name)));
@@ -104,7 +78,13 @@ function formatName(device?: Device | null, shortenable = false): string {
   const count = nameCounts.value.get(device.name) || 0;
   let name = device.name;
   if (count > 1 && device.id) {
-    name = `${device.name}`;
+    /*
+     * This branch used to assign the name to itself, which made the whole
+     * nameCounts apparatus a no-op: two speakers both called "Salon" rendered
+     * identically and the only thing telling them apart was a 40-character hex
+     * id in a tooltip. The device type is what a person actually uses to pick.
+     */
+    name = `${device.name} (${device.type.toLowerCase()})`;
   }
   if (isMobile.value && shortenable) return truncate(name, 10);
   return name;
@@ -116,88 +96,17 @@ function truncate(str: string, max: number) {
 
 const showList = ref(false);
 
-function toggleList() {
-  playerStore.getDeviceList();
-  showList.value = !showList.value;
+function selectDevice(device: Device): void {
+  if (playerStore.isSettingDevice || device.id === playerStore.devices.activeDevice.id) return;
+  playerStore.setDevice(device.id);
 }
 </script>
 
 <style scoped>
 
-.dropdown-overlay {
-  inset: 0;
-  position: fixed;
-  z-index: 9998;
-}
-
-.available-device-list {
-  --gap-list: 10px;
-
-  align-items: center;
-  background-color: var(--bg-color-light);
-  border-radius: 5px;
-  bottom: calc(100% + var(--gap-list));
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
-  justify-content: center;
-  min-height: 100px;
-  min-width: 200px;
-  opacity: 0;
-  padding: 10px;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  transform: translateY(-6px);
-  transition:
-    opacity 180ms ease-in-out,
-    transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  z-index: 9999;
-
-  &.is-visible,
-  &:hover {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-  }
-
-  &::after {
-    content: "";
-    height: var(--gap-list);
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 100%;
-  }
-}
-
-.refresh {
-  margin-top: 10px;
-}
-
-.active-device {
-  &:hover {
-    ~ .available-device-list {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateY(0);
-    }
-  }
-}
-
 .devices {
   display: flex;
   gap: 10px;
-  position: relative;
-  z-index: 10000;
-}
-
-.device-active {
-  color: var(--primary-color);
-
-  &:hover span {
-    color: var(--primary-color);
-  }
 }
 
 .device-label,
@@ -205,30 +114,6 @@ function toggleList() {
   align-items: center;
   display: inline-flex;
   gap: 0.4rem;
-}
-
-.device-badge {
-  align-items: center;
-  background-color: var(--bg-color-default);
-  border-radius: 999px;
-  color: var(--font-color-default);
-  display: inline-block;
-  font-size: var(--font-size-xs);
-  justify-content: center;
-  min-width: 32px;
-  padding: 0.15rem 0.4rem;
-  text-transform: uppercase;
-}
-
-.device-badge.active {
-  background-color: var(--primary-color);
-  color: white;
-}
-
-.device-badge.local {
-  background-color: transparent;
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
 }
 
 .device-name {

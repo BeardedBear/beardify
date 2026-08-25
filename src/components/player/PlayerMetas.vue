@@ -1,7 +1,17 @@
 <template>
   <div v-if="currentTrack" class="what">
     <div class="cover-wrap">
-      <img v-if="currentTrack.album.images.length" :src="currentTrack.album.images[1].url || ''" class="cover" />
+      <!--
+        Indexed [1] but guarded only on `.length`, so a single-image album threw.
+        Optional chaining picks the medium rendition when there is one and falls
+        back to whatever the album actually has.
+      -->
+      <img
+        v-if="currentTrack.album.images.length"
+        :src="currentTrack.album.images[1]?.url ?? currentTrack.album.images[0]?.url"
+        alt=""
+        class="cover"
+      />
       <div class="hover" @click="dialogStore.open({ type: 'addSong', track: currentTrack })">
         <i class="add icon-plus" />
       </div>
@@ -12,9 +22,9 @@
           <span class="trackname font-bold">{{ currentTrack.name }}</span>
         </template>
         <template v-else>
-          <Tooltip :text="currentTrack.name">
+          <BdTooltip :content="currentTrack.name">
             <span class="trackname font-bold">{{ truncatedTrackName }}</span>
-          </Tooltip>
+          </BdTooltip>
         </template>
         <span class="separator">&nbsp;·&nbsp;</span>
         <span class="artists">
@@ -31,13 +41,13 @@
 </template>
 
 <script lang="ts" setup>
+import { BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
-import Tooltip from "@/components/ui/Tooltip.vue";
 import { transformUriToid } from "@/helpers/helper";
 
 const playerStore = usePlayer();
@@ -65,7 +75,7 @@ const truncatedTrackName = computed(() => {
 
   .add {
     font-size: var(--font-size-xl);
-    transition: 0.2s;
+    transition: transform 0.2s ease;
     will-change: transform;
 
     &:hover {
@@ -83,7 +93,7 @@ const truncatedTrackName = computed(() => {
     justify-content: center;
     opacity: 0;
     position: absolute;
-    transition: 0.2s;
+    transition: opacity 0.2s ease;
   }
 
   &:hover {
@@ -142,8 +152,8 @@ const truncatedTrackName = computed(() => {
 }
 
 .album {
+  color: var(--font-color-dark);
   font-size: var(--font-size-sm);
-  opacity: 0.5;
 
   @media (--mobile) {
     overflow: hidden;

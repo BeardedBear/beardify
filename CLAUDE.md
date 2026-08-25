@@ -22,12 +22,15 @@ Beardify is a custom Spotify web client built with Vue 3 + TypeScript that enhan
 # Development
 bun run dev           # Start dev server (port 3000)
 bun run lint          # Run all linting (TypeScript + ESLint + Stylelint)
+bun run test          # Run the Vitest suite once
+bun run test:watch    # Vitest in watch mode
 bun run fix           # Auto-fix all linting issues
-bun run build         # Build for production (includes linting)
+bun run build         # Build for production (runs tests + linting first)
 bun run preview       # Preview production build
 ```
 
-**Always run `bun run lint` before committing changes.**
+**Always run `bun run lint` before committing changes.** `bun run build` runs
+`test` then `lint` then `vite build`, so a failing test blocks a build.
 
 ## General agent guidance
 
@@ -35,6 +38,9 @@ These guidelines apply to all AI agents working on this repository:
 
 - Follow project conventions: Vue 3 Composition API, `<script setup>`, TypeScript strict mode, scoped styles, alphabetical import ordering, and Unix (LF) line endings.
 - Always run `bun run lint` and fix reported issues before committing.
+- Tests use **Vitest** (`src/**/*.test.ts`, `happy-dom` environment, config in `vite.config.ts`).
+  Cover pure logic that can break silently — ordering, tag parsing, fallbacks — rather than
+  chasing coverage. Component tests are not set up; add `@vue/test-utils` when one earns it.
 - Use the `instance()` helper from `src/api.ts` for all Spotify Web API calls (do not call `ky` directly). Exception: `discogs.ts` and external APIs use `ky` or `http` directly because they target non-Spotify endpoints.
 - Use `notification()` helper for user-facing messages and errors.
 - Use `sleep()` from `src/helpers/sleep.ts` for async delays — do not inline `new Promise(resolve => setTimeout(resolve, ms))`.
@@ -204,6 +210,7 @@ Flag SVG files (`flag-icons` package) are served via:
 ## Important Notes
 
 - **Premium users only**: Spotify Web API restrictions
-- **No test framework**: Linting serves as primary quality assurance
+- **Vitest** covers the pure helpers where a silent bug costs data (`arrayDiff`,
+  `collectionOptions`, `cover`); linting still carries everything else
 - **Modern browsers required**: ES modules, CSS custom properties, Widevine DRM
 - **Error suppression**: Non-critical Spotify SDK errors are intentionally suppressed (see `main.ts:19`)

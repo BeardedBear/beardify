@@ -3,9 +3,9 @@
     <Transition name="fade">
       <div v-if="waiting" class="waiting-overlay">
         <div class="waiting-card">
-          <LoadingDots />
+          <BdLoader />
           <p class="waiting-label">Waiting for Spotify authorization…</p>
-          <button class="button button-ghost" @click="cancelWaiting">Cancel</button>
+          <BdButton variant="border" @click="cancelWaiting">Cancel</BdButton>
         </div>
       </div>
     </Transition>
@@ -33,24 +33,25 @@
           </li>
         </ul>
       </div>
-      <a
+      <BdButton
+        class="spotify"
         :href="spotifyAuthUrl"
-        class="button button-spotify"
+        size="big"
         @click.prevent="handleLogin"
       >
         <i class="icon icon-spotify" />
         Connect with Spotify (Premium)
-      </a>
+      </BdButton>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdButton, BdLoader } from "bearded-ui";
 import { computed, ref } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
 import { api } from "@/api";
-import LoadingDots from "@/components/ui/LoadingDots.vue";
 import { clearAuthData } from "@/helpers/authUtils";
 import { notification } from "@/helpers/notifications";
 import { isTauri } from "@/helpers/platform";
@@ -108,6 +109,16 @@ async function refreshChallenge(): Promise<void> {
 
 <style scoped>
 
+.spotify {
+  background-color: #1db954;
+  color: #fff;
+
+  &:hover {
+    background-color: #1ed760;
+    color: #fff;
+  }
+}
+
 @keyframes pop-login {
   from {
     opacity: 0;
@@ -125,7 +136,7 @@ b {
 }
 
 .login {
-  background-color: #16181d;
+  background-color: var(--bg-color-darker);
   background-image: url("/img/bg-login.png");
   background-size: cover;
   display: grid;
@@ -139,14 +150,19 @@ b {
   text-align: left;
 }
 
+/*
+ * `rgb(var(--primary-color) 0.1)` used to sit here. --primary-color resolves to
+ * a whole color, not the three channels rgb() wants, so the declaration was
+ * invalid and dropped on the floor — this card has been rendering with no
+ * background at all. color-mix() is the syntax that actually takes a color.
+ */
 .form {
   animation: pop-login 1s ease both;
-  background-color: rgb(var(--primary-color) 0.1);
+  background-color: color-mix(in oklab, var(--primary-color) 12%, var(--bg-color-dark));
   border-radius: 0.4rem;
   max-width: 35rem;
   padding: 2rem;
   text-align: center;
-  will-change: transform;
 }
 
 .logo {

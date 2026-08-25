@@ -6,14 +6,20 @@
     </div>
     <div class="inner">
       <div class="title">
-        <div class="name font-bold">
+        <h1 class="name font-bold">
           {{ artistStore.artist.name }}
-        </div>
+        </h1>
       </div>
       <Options class="desktop-options" />
-      <ButtonIndex class="mobile-options" icon-only @click="dialogStore.open({ type: 'artistOptions' })">
+      <BdButton
+        aria-label="Artist options"
+        class="mobile-options"
+        icon-only
+        title="Artist options"
+        @click="dialogStore.open({ type: 'artistOptions' })"
+      >
         <MoreHorizontal />
-      </ButtonIndex>
+      </BdButton>
     </div>
     <div class="collapsible" :class="{ collapsed: artistStore.scrolledDown }">
       <ArtistProfile />
@@ -25,13 +31,13 @@
 <script lang="ts" setup>
 import { CircleOff, Disc3, Info, Loader2, MoreHorizontal } from "@lucide/vue";
 import { useElementBounding } from "@vueuse/core";
+import { BdButton } from "bearded-ui";
 import { computed, ref, watch } from "vue";
 
 import Options from "@/components/artist/ArtistOptions.vue";
 import ArtistProfile from "@/components/artist/ArtistProfile.vue";
 import ArtistTabs, { Tab } from "@/components/artist/ArtistTabs.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const domHeader = ref<HTMLDivElement | null>(null);
@@ -115,12 +121,19 @@ watch(infoAvailable, (available) => {
   justify-content: space-between;
 }
 
+/*
+ * `scrolled` is set on .header, not on .name, so the nested `&.scrolled` here
+ * never matched and the artist title never shrank. Selecting from the header
+ * makes the intent work: the name gives room back to the discography as you
+ * scroll into it.
+ */
 .name {
   font-size: var(--font-size-xl);
+  transition: font-size 0.2s ease;
+}
 
-  &.scrolled {
-    font-size: var(--font-size-lg);
-  }
+.header.scrolled .name {
+  font-size: var(--font-size-lg);
 }
 
 .header {

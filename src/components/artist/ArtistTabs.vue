@@ -1,7 +1,7 @@
 <template>
   <div class="tabs">
     <template v-for="tab in tabs" :key="tab.id">
-      <Tooltip v-if="tab.disabled && tab.tooltip" :text="tab.tooltip">
+      <BdTooltip v-if="tab.disabled && tab.tooltip" :content="tab.tooltip">
         <button
           :class="tabClass(tab)"
           :aria-disabled="tab.disabled ? 'true' : 'false'"
@@ -11,7 +11,7 @@
           <component :is="tab.icon" />
           <span>{{ tab.label }}</span>
         </button>
-      </Tooltip>
+      </BdTooltip>
       <button
         v-else
         :key="tab.id + '-btn'"
@@ -30,6 +30,8 @@
 <script lang="ts">
 import type { Component } from "vue";
 
+import { BdTooltip } from "bearded-ui";
+
 export interface Tab {
   bar?: boolean;
   disabled?: boolean;
@@ -42,7 +44,6 @@ export interface Tab {
 </script>
 
 <script lang="ts" setup>
-import Tooltip from "@/components/ui/Tooltip.vue";
 
 const props = defineProps<{
   modelValue: string;
@@ -104,11 +105,10 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
   background-color: transparent;
   border: none;
   border-radius: var(--tab-radius) var(--tab-radius) 0 0;
-  color: var(--font-color-light);
+  color: var(--font-color-dark);
   cursor: pointer;
   display: flex;
   gap: 0.5rem;
-  opacity: 0.5;
   padding: 0.5rem 1rem;
   transition:
     background-color 0.2s ease,

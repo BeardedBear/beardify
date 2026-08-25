@@ -1,52 +1,56 @@
 <template>
   <div class="controls" :class="{ 'force-mobile': props.forceMobile }">
     <div class="btns">
-      <ButtonIndex
+      <IconButton
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
-        no-default-class
-        :class="{ active: playerStore.currentlyPlaying?.shuffle_state }"
+        :class="{ active: playerStore.currentlyPlaying?.shuffle_state, big: props.forceMobile }"
+        :pressed="!!playerStore.currentlyPlaying?.shuffle_state"
         class="control-button shuffle squircle"
-        :size="props.forceMobile ? 'big' : 'default'"
+        icon="shuffle"
+        label="Shuffle"
         @click="playerStore.toggleShuffle()"
-      >
-        <i class="icon-shuffle" />
-      </ButtonIndex>
-      <ButtonIndex
+      />
+      <IconButton
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
-        no-default-class
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
+        :pressed="playerStore.currentlyPlaying?.repeat_state !== 'off'"
         class="control-button repeat squircle"
+        icon="repeat"
+        label="Repeat"
         @click="playerStore.toggleRepeat()"
-      >
-        <i class="icon-repeat" />
-      </ButtonIndex>
-      <ButtonIndex
-        v-if="playerStore.playerState?.paused"
-        no-default-class
-        class="control-button play squircle"
-        :size="props.forceMobile ? 'big' : 'default'"
-        @click="playerStore.play()"
-      >
-        <i class="icon-play" />
-      </ButtonIndex>
-      <ButtonIndex
-        v-else
-        no-default-class
-        class="control-button play squircle"
-        :size="props.forceMobile ? 'big' : 'default'"
-        @click="playerStore.pause()"
-      >
-        <i class="icon-pause" />
-      </ButtonIndex>
-      <ButtonIndex
+      />
+      <IconButton
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
-        no-default-class
+        :class="{ big: props.forceMobile }"
+        class="control-button previous squircle"
+        icon="skip-back"
+        label="Previous track"
+        @click="playerStore.previous()"
+      />
+      <IconButton
+        v-if="playerStore.playerState?.paused"
+        :class="{ big: props.forceMobile }"
+        class="control-button play squircle"
+        icon="play"
+        label="Play"
+        @click="playerStore.play()"
+      />
+      <IconButton
+        v-else
+        :class="{ big: props.forceMobile }"
+        class="control-button play squircle"
+        icon="pause"
+        label="Pause"
+        @click="playerStore.pause()"
+      />
+      <IconButton
+        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
+        :class="{ big: props.forceMobile }"
         class="control-button next squircle"
-        :size="props.forceMobile ? 'big' : 'default'"
+        icon="skip-forward"
+        label="Next track"
         @click="playerStore.next()"
-      >
-        <i class="icon-skip-forward" />
-      </ButtonIndex>
+      />
     </div>
     <div class="time font-bold">
       {{ timecode(currentTime) || "00:00" }} /
@@ -60,7 +64,7 @@ import { useIntervalFn } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
+import IconButton from "@/components/ui/IconButton.vue";
 import { timecode } from "@/helpers/date";
 
 const props = defineProps<{ forceMobile?: boolean }>();
@@ -129,7 +133,7 @@ watch(
     background-color: var(--bg-color-lighter);
   }
 
-  &.button-big {
+  &.big {
     font-size: var(--font-size-xl);
     padding: 0.5rem 0.6rem;
   }
@@ -146,7 +150,7 @@ watch(
       background-color: var(--bg-color-lighter);
     }
 
-    &.button-big {
+    &.big {
       font-size: var(--font-size-xl);
       padding: 0.6rem 0.7rem;
     }
@@ -164,7 +168,8 @@ watch(
     }
   }
 
-  &.next {
+  &.next,
+  &.previous {
     @media (--mobile) {
       display: none;
     }
@@ -179,7 +184,8 @@ watch(
     display: inline-flex;
   }
 
-  .force-mobile &.next {
+  .force-mobile &.next,
+  .force-mobile &.previous {
     display: inline-flex;
   }
 }

@@ -45,7 +45,7 @@ const dialogStore = useDialog();
 
   .add {
     font-size: var(--font-size-base);
-    transition: 0.15s;
+    transition: transform 0.15s ease;
     will-change: transform;
 
     &:hover {
@@ -63,7 +63,7 @@ const dialogStore = useDialog();
     justify-content: center;
     opacity: 0;
     position: absolute;
-    transition: 0.15s;
+    transition: opacity 0.15s ease;
   }
 
   &:hover {

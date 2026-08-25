@@ -1,15 +1,19 @@
 <template>
   <div v-if="!podcastsStore.list && !podcastsStore.myPodcasts.length" class="loader">
-    <Loader />
+    <BdLoader />
   </div>
   <div v-else ref="scrollRef" class="podcasts" @scroll="onScroll">
     <PageFit>
       <div class="title">
-        <div class="name font-bold">Podcasts</div>
+        <h1 class="name font-bold">Podcasts</h1>
       </div>
-      <div v-if="!podcastsStore.myPodcasts.length">
-        <Loader />
-      </div>
+      <BdEmptyState
+        v-if="!podcastsStore.myPodcasts.length"
+        message="Follow a show on Spotify and it will show up here."
+        title="You do not follow any podcast"
+      >
+        <template #icon><i class="icon-podcast" /></template>
+      </BdEmptyState>
       <div v-else class="podcast-list">
         <PodcastCard
           v-for="(podcast, index) in podcastsStore.myPodcasts"
@@ -23,11 +27,11 @@
 </template>
 
 <script lang="ts" setup>
+import { BdEmptyState, BdLoader } from "bearded-ui";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 
 import PodcastCard from "@/components/podcast/PodcastCard.vue";
-import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { usePodcasts } from "@/views/podcasts/PodcastsStore";
@@ -49,14 +53,16 @@ podcastsStore.clean().finally(() => {
 
 .podcasts {
   animation: pop-content 1s ease both;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding: 2rem 2.2rem;
 }
 
 .podcast-list {
   display: grid;
   gap: 2rem;
-  grid-template-columns: repeat(4, 1fr);
+
+  /* Was repeat(4, 1fr) with no breakpoint: four 55px columns at 390px wide. */
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   margin-bottom: 2rem;
 }
 

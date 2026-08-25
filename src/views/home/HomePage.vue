@@ -1,16 +1,34 @@
 <template>
-  <div v-if="!homeStore.recommendedAlbums.length" class="loader">
-    <Loader />
+  <div v-if="homeStore.loading" class="loader">
+    <BdLoader />
   </div>
+  <BdEmptyState
+    v-else-if="homeStore.error"
+    action-label="Try again"
+    message="Spotify did not return recommendations. This can happen when the service is busy."
+    title="Could not load recommendations"
+    @action="getData()"
+  >
+    <template #icon><i class="icon-warning" /></template>
+  </BdEmptyState>
+  <BdEmptyState
+    v-else-if="!homeStore.recommendedAlbums.length"
+    action-label="Refresh"
+    message="Recommendations are built from the artists you listen to most. Play a few albums and come back."
+    title="Nothing to recommend yet"
+    @action="getData()"
+  >
+    <template #icon><i class="icon-album" /></template>
+  </BdEmptyState>
   <div v-else class="home">
     <div ref="scrollRef" class="home-content" @scroll="onScroll">
       <PageFit>
         <div class="title">
-          <div class="name font-bold">Recommended albums</div>
-          <ButtonIndex @click="getData()">
+          <h1 class="name font-bold">Recommended albums</h1>
+          <BdButton @click="getData()">
             <i class="icon-refresh" />
             Refresh
-          </ButtonIndex>
+          </BdButton>
         </div>
         <AlbumGallery :album-list="homeStore.recommendedAlbums" no-title />
       </PageFit>
@@ -19,12 +37,11 @@
 </template>
 
 <script lang="ts" setup>
+import { BdButton, BdEmptyState, BdLoader } from "bearded-ui";
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import AlbumGallery from "@/components/album/AlbumGallery.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import Loader from "@/components/ui/LoadingDots.vue";
 import PageFit from "@/components/ui/PageFit.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useAuth } from "@/views/auth/AuthStore";
@@ -86,7 +103,6 @@ watch(
 .home-content {
   overflow-y: auto;
   padding: 1rem 5rem;
-  transition: padding ease 0.2s;
 
   @media (--mobile) {
     padding: 1rem;

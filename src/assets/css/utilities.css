@@ -25,3 +25,18 @@
   /* stylelint-disable-next-line property-no-unknown */
   corner-shape: squircle;
 }
+
+/*
+ * Available to assistive technology, absent from the screen. `display: none`
+ * and `visibility: hidden` both remove it from the accessibility tree as well,
+ * which is the mistake ArtistLinks made — its link names were "hidden" that way
+ * and the buttons ended up with no accessible name at all.
+ */
+.visually-hidden {
+  block-size: 1px;
+  clip-path: inset(50%);
+  inline-size: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+}

@@ -3,7 +3,7 @@
     <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading album-heading">
       <i class="icon-album" />
       Albums
-      <ButtonIndex
+      <BdButton
         v-if="canSortByPlays"
         class="sort-button"
         size="x-small"
@@ -12,13 +12,13 @@
       >
         {{ sortByPlays ? "Most played" : "Release date" }}
         <i class="icon-arrow-down" />
-      </ButtonIndex>
+      </BdButton>
     </div>
     <div class="albums">
       <div v-for="group in sortedGroups" :key="group.baseAlbum.id" class="album-slot">
-        <Tooltip v-if="rank(group)" :text="tooltipText(group)" class="rank-badge">
+        <BdTooltip v-if="rank(group)" :content="tooltipText(group)" class="rank-badge">
           <span class="rank-badge-bubble font-bold">{{ rank(group) }}</span>
-        </Tooltip>
+        </BdTooltip>
         <AlbumGroup :group="group" can-save clean-name />
       </div>
     </div>
@@ -26,11 +26,10 @@
 </template>
 
 <script lang="ts" setup>
+import { BdButton, BdTooltip } from "bearded-ui";
 import { computed, ref } from "vue";
 
 import AlbumGroup from "@/components/album/AlbumGroup.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import Tooltip from "@/components/ui/Tooltip.vue";
 import { AlbumGroup as AlbumGroupType, getDisplayName, groupAlbumVariants } from "@/helpers/groupAlbumVariants";
 import { normalizeString } from "@/helpers/helper";
 import { useArtist } from "@/views/artist/ArtistStore";

@@ -1,20 +1,20 @@
 <template>
   <Dialog title="Create a playlist" with-title>
     <div class="wrap">
-      <input v-model="playlistName" class="input font-bold" placeholder="Playlist's name" type="text" />
-      <ButtonIndex variant="primary" @click="create()">Create</ButtonIndex>
+      <BdInput v-model="playlistName" placeholder="Playlist's name" />
+      <BdButton variant="primary" @click="create()">Create</BdButton>
     </div>
   </Dialog>
 </template>
 
 <script lang="ts" setup>
+import { BdButton, BdInput } from "bearded-ui";
 import { ref } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Dialog from "@/components/dialog/DialogWrap.vue";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { notification } from "@/helpers/notifications";
 
 const dialogStore = useDialog();
@@ -35,19 +35,9 @@ async function create(): Promise<void> {
 <style scoped>
 
 .wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
   padding: 1.2rem;
-  text-align: center;
-}
-
-.input {
-  background-color: var(--bg-color-light);
-  border: 0;
-  border-radius: 0.3rem;
-  color: currentcolor;
-  display: block;
-  margin-bottom: 1.2rem;
-  outline: 0;
-  padding: 0.8rem 1rem;
-  width: 100%;
 }
 </style>

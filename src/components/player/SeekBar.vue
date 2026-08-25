@@ -1,34 +1,43 @@
 <template>
-  <div class="seek-bar" :class="{ 'click-disabled': props.clickDisable }">
+  <div class="seek-bar">
     <div ref="progressWrap" class="progress-wrap">
       <div class="progress">
-        <div
-          v-if="playerStore.playerState"
-          :style="`width:${(currentTime / playerStore.playerState.duration) * 100}%`"
-          class="bar"
-        />
+        <div v-if="playerStore.playerState" :style="{ transform: `scaleX(${playedRatio})` }" class="bar" />
         <div :style="`width:${perc}%`" class="seek">
           <div class="time font-bold">
             {{ time }}
           </div>
         </div>
       </div>
+      <!--
+        Same trick as the volume wedge: the bar is painted, the range handles
+        input. It replaces a mouse-only click listener on a div, so the position
+        is now reachable with arrow keys and by touch — including on the phone,
+        where seeking used to be switched off entirely.
+      -->
+      <input
+        :value="currentTime"
+        :aria-valuetext="`${timecode(currentTime)} of ${timecode(playerStore.playerState?.duration)}`"
+        :max="playerStore.playerState?.duration || 0"
+        aria-label="Seek"
+        class="range"
+        min="0"
+        step="1000"
+        type="range"
+        @change="onCommit"
+        @input="onScrub"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useIntervalFn, useMouseInElement } from "@vueuse/core";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 import { usePlayer } from "@/components/player/PlayerStore";
 import { timecode } from "@/helpers/date";
 
-interface Props {
-  clickDisable?: boolean;
-}
-
-const props = withDefaults(defineProps<Props>(), <{ clickDisable?: boolean }>{ clickDisable: false });
 const progressWrap = ref<HTMLDivElement>();
 
 const { elementWidth, elementX } = useMouseInElement(progressWrap);
@@ -37,25 +46,31 @@ const time = ref<string>("");
 const playerStore = usePlayer();
 const currentTime = ref<number>(0);
 
+// Scrubbing only moves the painted bar; the seek request goes out on release.
+const onScrub = (e: Event): void => {
+  currentTime.value = Number((e.target as HTMLInputElement).value);
+};
+
+const onCommit = (e: Event): void => {
+  const target = Number((e.target as HTMLInputElement).value);
+  currentTime.value = target;
+  playerStore.seek(target);
+};
+
+// The hover read-out stays mouse-only by design: it previews a position you
+// have not committed to, which only means something with a pointer.
 const handleMouseMove = (): void => {
   perc.value = (elementX.value / elementWidth.value) * 100;
   const durationPerc = playerStore.playerState?.duration && (playerStore.playerState?.duration / 100) * perc.value;
   if (durationPerc) time.value = timecode(durationPerc);
 };
 
-const handleClick = (): void => {
-  const durationPerc = playerStore.playerState?.duration && (playerStore.playerState?.duration / 100) * perc.value;
-  if (durationPerc) playerStore.seek(durationPerc);
-};
+onMounted(() => progressWrap.value?.addEventListener("mousemove", handleMouseMove));
+onUnmounted(() => progressWrap.value?.removeEventListener("mousemove", handleMouseMove));
 
-onMounted(() => {
-  progressWrap.value?.addEventListener("mousemove", handleMouseMove);
-  progressWrap.value?.addEventListener("click", handleClick);
-});
-
-onUnmounted(() => {
-  progressWrap.value?.removeEventListener("mousemove", handleMouseMove);
-  progressWrap.value?.removeEventListener("click", handleClick);
+const playedRatio = computed(() => {
+  const duration = playerStore.playerState?.duration;
+  return duration ? Math.min(currentTime.value / duration, 1) : 0;
 });
 
 const freq = 200;
@@ -90,10 +105,6 @@ watch(
 .seek-bar {
   padding: 0 1.2rem;
 
-  &.click-disabled {
-    pointer-events: none;
-  }
-
   @media (--mobile) {
     padding: 0 0.8rem;
   }
@@ -108,7 +119,7 @@ watch(
 
   .seek {
     animation: pop-seek 0.5s ease 0s both;
-    background-color: rgb(255 255 255 / 20%);
+    background-color: var(--bg-color-lighter);
     border-radius: 1rem;
     bottom: 0;
     display: none;
@@ -122,7 +133,7 @@ watch(
       background: var(--primary-color);
       border-radius: 0.3rem;
       bottom: calc(100% + 0.4rem);
-      color: rgb(255 255 255 / 80%);
+      color: var(--font-color-light);
       font-size: var(--font-size-sm);
       padding: 0.1rem 0.4rem;
       pointer-events: none;
@@ -132,6 +143,12 @@ watch(
     }
   }
 
+  /*
+   * scaleX, not a width transition. The position ticks every 200ms and the old
+   * version re-ran a layout pass each time — for the whole length of every
+   * track, on a component that is always on screen. A transform is composited
+   * instead, so the same movement costs no layout at all.
+   */
   .bar {
     background: var(--primary-color);
     border-radius: 1rem;
@@ -139,17 +156,43 @@ watch(
     left: 0;
     position: absolute;
     top: 0;
-    transition: width linear 0.2s;
+    transform-origin: left center;
+    transition: transform linear 0.2s;
+    width: 100%;
   }
 }
 
 .progress-wrap {
   padding: 0.3rem 0 0.8rem;
+  position: relative;
 
   &:hover {
     .seek {
       display: block;
     }
+  }
+
+  /* The rail is 0.2rem tall; the target you can actually hit is the whole row. */
+  .range {
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    height: 100%;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 2;
+  }
+
+  &:has(.range:focus-visible) {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  @media (pointer: coarse) {
+    padding: 0.9rem 0 1.4rem;
   }
 }
 </style>

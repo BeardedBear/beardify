@@ -13,20 +13,20 @@
         Playback stays exclusive to Spotify accounts.
       </p>
       <p class="hint">The collection must be public on Spotify for the link to work.</p>
-      <ButtonIndex variant="primary" @click="copyPublicLink()">Copy public link</ButtonIndex>
+      <BdButton variant="primary" @click="copyPublicLink()">Copy public link</BdButton>
     </div>
   </Dialog>
 </template>
 
 <script lang="ts" setup>
 import { useClipboard } from "@vueuse/core";
+import { BdButton } from "bearded-ui";
 import { computed } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Dialog from "@/components/dialog/DialogWrap.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
 import { notification } from "@/helpers/notifications";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { absoluteRouteUrl, RouteName } from "@/router";

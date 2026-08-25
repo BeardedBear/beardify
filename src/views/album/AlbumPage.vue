@@ -1,6 +1,6 @@
 <template>
   <div v-if="albumStore.album.name === ''" class="loader">
-    <Loader />
+    <BdLoader />
   </div>
   <div v-else ref="pageRef" class="album-page" @scroll="onScroll">
     <div class="fit">
@@ -20,13 +20,12 @@
             class="track font-bold"
             @click="playSongs(index, albumStore.album.tracks.items)"
           >
-            <ButtonIndex
-              no-default-class
+            <IconButton
               class="add"
+              icon="plus"
+              :label="`Add ${track.name} to a playlist`"
               @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })"
-            >
-              <i class="icon-plus" />
-            </ButtonIndex>
+            />
             <span class="track-number font-italic">{{ track.track_number }}.</span>
             <div>
               <div>{{ track.name }}</div>
@@ -49,6 +48,7 @@
 </template>
 
 <script lang="ts" setup>
+import { BdLoader } from "bearded-ui";
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 
@@ -58,8 +58,7 @@ import Album from "@/components/album/AlbumIndex.vue";
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
-import ButtonIndex from "@/components/ui/ButtonIndex.vue";
-import Loader from "@/components/ui/LoadingDots.vue";
+import IconButton from "@/components/ui/IconButton.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { timecode } from "@/helpers/date";
 import { isCurrentTrack } from "@/helpers/helper";
@@ -111,7 +110,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   right: 100%;
   top: 50%;
   transform: translateY(-50%);
-  transition: 0.2s;
+  transition: opacity 0.2s ease;
 }
 
 .track {
@@ -147,8 +146,8 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
 }
 
 .track-number {
+  color: var(--font-color-dark);
   font-variant: tabular-nums;
-  opacity: 0.5;
 }
 
 .content {
