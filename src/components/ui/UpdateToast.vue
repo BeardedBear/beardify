@@ -3,23 +3,10 @@ import { Download, Loader2, RefreshCw } from "@lucide/vue";
 
 import { useUpdater } from "@/composables/useUpdater";
 
-const { devSimulateUpdate, dismissed, downloadAndInstall, downloadProgress, restart, status, updateVersion }
-  = useUpdater();
-
-const isDev = import.meta.env.DEV;
+const { dismissed, downloadAndInstall, downloadProgress, restart, status, updateVersion } = useUpdater();
 </script>
 
 <template>
-  <button
-    v-if="isDev"
-    class="dev-trigger"
-    type="button"
-    title="Simulate update toast (dev only)"
-    @click="devSimulateUpdate"
-  >
-    🧪 Simulate update
-  </button>
-
   <Transition name="update-toast">
     <div
       v-if="!dismissed && (status === 'available' || status === 'downloading' || status === 'ready')"
@@ -85,23 +72,6 @@ const isDev = import.meta.env.DEV;
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-.dev-trigger {
-  background: var(--bg-color-lighter);
-  border: 1px solid var(--primary-color-dark);
-  border-radius: 0.375rem;
-  bottom: 3rem;
-  color: var(--font-color-light);
-  cursor: pointer;
-  left: 3rem;
-  padding: 0.35rem 0.6rem;
-  position: fixed;
-  z-index: 9998;
-
-  &:hover {
-    background: var(--bg-color-light);
   }
 }
 
