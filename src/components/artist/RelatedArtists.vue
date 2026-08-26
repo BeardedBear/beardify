@@ -1,12 +1,12 @@
 <template>
   <div v-if="artistStore.relatedArtists.artists.length">
-    <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">Similar artists</div>
+    <div :style="{ top: artistStore.headerHeight + 'px' }" class="bd-heading sticky-heading">Similar artists</div>
     <div class="list">
       <router-link
         v-for="(artist, index) in artistStore.relatedArtists.artists"
         :key="index"
         :to="`/artist/${artist.id}`"
-        class="item font-bold"
+        class="item bd-font-bold"
       >
         <Cover :images="artist.images" class="image" size="small" />
         <div class="name">
@@ -33,20 +33,20 @@ const artistStore = useArtist();
 
   border-radius: var(--image-size);
   height: var(--image-size);
-  margin-bottom: 0.4rem;
+  margin-bottom: var(--bd-space-2);
   width: var(--image-size);
 }
 
 .item {
-  border-radius: 0.3rem;
+  border-radius: var(--bd-radius-sm);
   color: currentcolor;
   cursor: pointer;
-  padding: 0.8rem;
+  padding: var(--bd-space-3);
   text-align: center;
   text-decoration: none;
 
   &:hover {
-    background-color: var(--bg-color-dark);
+    background-color: var(--bd-bg-dark);
   }
 }
 

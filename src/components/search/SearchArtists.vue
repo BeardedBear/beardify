@@ -9,7 +9,7 @@
           'exact-search': exactArtistSearched === artist.name.toLowerCase(),
         }"
         :to="`/artist/${artist.id}`"
-        class="artist font-bold"
+        class="artist bd-font-bold"
         data-search-hit
         @click="searchStore.close()"
       >
@@ -54,7 +54,7 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
 <style scoped>
 
 .artist-list {
-  padding: 0 var(--space-4);
+  padding: 0 var(--bd-space-4);
 
   .avatar {
     --avatar-size: 2.5rem;
@@ -67,51 +67,51 @@ const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
 
   .artist {
     align-items: center;
-    border-radius: 0.3rem;
+    border-radius: var(--bd-radius-sm);
     color: currentcolor;
     display: flex;
-    font-size: var(--font-size-sm);
-    gap: var(--space-3);
-    margin-bottom: var(--space-1);
-    padding: var(--space-2);
+    font-size: var(--bd-font-size-sm);
+    gap: var(--bd-space-3);
+    margin-bottom: var(--bd-space-1);
+    padding: var(--bd-space-2);
     position: relative;
     text-decoration: none;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--bd-transition);
 
     &:hover {
-      background-color: var(--bg-color-light);
+      background-color: var(--bd-bg-light);
     }
 
     .artist-name {
       display: flex;
       flex-direction: column;
-      gap: var(--space-1);
+      gap: var(--bd-space-1);
 
     }
 
     .genres {
       display: flex;
       flex-wrap: wrap;
-      gap: var(--space-1);
+      gap: var(--bd-space-1);
       margin-bottom: 0;
 
       .genre {
-        background: var(--bg-color-lighter);
-        border-radius: 0.2rem;
-        color: var(--font-color-light);
+        background: var(--bd-bg-lighter);
+        border-radius: var(--bd-radius-sm);
+        color: var(--bd-font-color-light);
         font-size: 0.65rem;
-        padding: 0 var(--space-1);
+        padding: 0 var(--bd-space-1);
         text-transform: capitalize;
       }
     }
 
     &.exact-search {
-      background: var(--bg-color-lighter);
+      background: var(--bd-bg-lighter);
 
       &::after {
         --dot-size: 0.8rem;
 
-        background-color: var(--primary-color);
+        background-color: var(--bd-primary);
         border-radius: var(--dot-size);
         content: "";
         height: var(--dot-size);

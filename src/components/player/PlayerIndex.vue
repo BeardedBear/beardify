@@ -87,7 +87,7 @@ onBeforeUnmount(() => {
 <style scoped>
 
 .player {
-  background: var(--bg-color);
+  background: var(--bd-bg);
   position: relative;
 
   .player-bg {

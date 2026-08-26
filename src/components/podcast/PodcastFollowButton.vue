@@ -53,11 +53,11 @@ async function toggleFollow(): Promise<void> {
 .follow-button {
   align-items: center;
   display: flex;
-  gap: 0.5rem;
+  gap: var(--bd-space-2);
   white-space: nowrap;
 
   &.followed {
-    color: var(--primary-color);
+    color: var(--bd-primary);
   }
 
   &:disabled {
@@ -66,7 +66,7 @@ async function toggleFollow(): Promise<void> {
   }
 
   i {
-    font-size: var(--font-size-lg);
+    font-size: var(--bd-font-size-lg);
   }
 }
 </style>

@@ -52,20 +52,20 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
 @keyframes pulse-ring {
   0% {
     box-shadow:
-      0 6px 24px rgb(0 0 0 / 40%),
-      0 0 0 0 color-mix(in oklab, var(--primary-color) 55%, transparent);
+      var(--bd-shadow-md),
+      0 0 0 0 color-mix(in oklab, var(--bd-primary) 55%, transparent);
   }
 
   70% {
     box-shadow:
-      0 6px 24px rgb(0 0 0 / 40%),
-      0 0 0 0.6rem color-mix(in oklab, var(--primary-color) 0%, transparent);
+      var(--bd-shadow-md),
+      0 0 0 0.6rem color-mix(in oklab, var(--bd-primary) 0%, transparent);
   }
 
   100% {
     box-shadow:
-      0 6px 24px rgb(0 0 0 / 40%),
-      0 0 0 0 color-mix(in oklab, var(--primary-color) 0%, transparent);
+      var(--bd-shadow-md),
+      0 0 0 0 color-mix(in oklab, var(--bd-primary) 0%, transparent);
   }
 }
 
@@ -76,10 +76,10 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
 }
 
 .update-toast {
-  background: linear-gradient(135deg, var(--primary-color-dark), var(--primary-color-darker));
-  border-radius: 0.6rem;
+  background: linear-gradient(135deg, var(--bd-primary-dark), var(--bd-primary-darker));
+  border-radius: var(--bd-radius-md);
   bottom: 1.5rem;
-  box-shadow: 0 6px 24px rgb(0 0 0 / 40%);
+  box-shadow: var(--bd-shadow-md);
   max-width: 400px;
   min-width: 300px;
   overflow: hidden;
@@ -98,23 +98,23 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
 }
 
 .toast-progress-bar {
-  background: #fff;
+  background: var(--bd-on-primary);
   height: 100%;
   transform-origin: left center;
-  transition: transform 0.3s ease;
+  transition: transform var(--bd-duration) ease;
   width: 100%;
 }
 
 .toast-body {
   align-items: center;
   display: flex;
-  gap: 0.6rem;
-  padding: 1rem;
+  gap: var(--bd-space-2);
+  padding: var(--bd-space-4);
 }
 
 .toast-icon {
   align-items: center;
-  color: #fff;
+  color: var(--bd-on-primary);
   display: flex;
   flex-shrink: 0;
 
@@ -124,10 +124,10 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
 }
 
 .toast-content {
-  color: #fff;
+  color: var(--bd-on-primary);
   flex: 1;
-  font-variation-settings: var(--font-variation-settings-bold);
-  font-weight: var(--font-weight-bold);
+  font-variation-settings: var(--bd-font-variation-settings-bold);
+  font-weight: var(--bd-weight-bold-fallback);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -135,16 +135,16 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
 }
 
 .toast-action {
-  background: #fff;
-  border: 1px solid #fff;
-  border-radius: 0.375rem;
-  color: var(--primary-color-dark);
+  background: var(--bd-on-primary);
+  border: 1px solid var(--bd-on-primary);
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-primary-dark);
   cursor: pointer;
   flex-shrink: 0;
-  font-variation-settings: var(--font-variation-settings-bold);
-  font-weight: var(--font-weight-bold);
-  padding: 0.3rem 0.7rem;
-  transition: opacity 0.15s;
+  font-variation-settings: var(--bd-font-variation-settings-bold);
+  font-weight: var(--bd-weight-bold-fallback);
+  padding: var(--bd-space-1) var(--bd-space-3);
+  transition: opacity var(--bd-transition-fast);
   white-space: nowrap;
 
   &:hover {
@@ -156,27 +156,27 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
   align-items: center;
   background: transparent;
   border: none;
-  border-radius: 0.375rem;
+  border-radius: var(--bd-radius-sm);
   color: rgb(255 255 255 / 70%);
   cursor: pointer;
   display: flex;
   flex-shrink: 0;
-  font-size: var(--font-size-xs);
+  font-size: var(--bd-font-size-xs);
   justify-content: center;
-  padding: 0.25rem;
-  transition: background 0.15s;
+  padding: var(--bd-space-1);
+  transition: background var(--bd-transition-fast);
 
   &:hover {
     background: rgb(255 255 255 / 15%);
-    color: #fff;
+    color: var(--bd-on-primary);
   }
 }
 
 .update-toast-enter-active,
 .update-toast-leave-active {
   transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+    opacity var(--bd-transition),
+    transform var(--bd-transition);
 }
 
 .update-toast-enter-from,

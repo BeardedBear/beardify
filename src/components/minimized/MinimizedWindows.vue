@@ -11,7 +11,7 @@
         transition: { type: 'spring', stiffness: 260, damping: 20 },
       }"
       :leave="{ scale: 0, opacity: 0, x: -50, transition: { duration: 200 } }"
-      class="minimized-window squircle"
+      class="minimized-window bd-squircle"
     >
       <div class="window-content" @click="frameStore.restore()">
         <i class="icon-external-link" />
@@ -56,17 +56,17 @@ const frameStore = useFrame();
 
 .minimized-window {
   align-items: center;
-  background-color: var(--bg-color);
-  border: 1px solid var(--bg-color-light);
-  border-radius: 1rem;
-  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 20%);
+  background-color: var(--bd-bg);
+  border: 1px solid var(--bd-bg-light);
+  border-radius: var(--bd-radius-lg);
+  box-shadow: var(--bd-shadow-sm);
   display: flex;
-  gap: 0.5rem;
-  padding: 0.5rem;
+  gap: var(--bd-space-2);
+  padding: var(--bd-space-2);
   pointer-events: all;
   transition:
-      background-color 0.1s ease,
-      box-shadow 0.1s ease;
+    background-color var(--bd-transition-fast),
+    box-shadow var(--bd-transition-fast);
 }
 
 .window-content {
@@ -74,18 +74,18 @@ const frameStore = useFrame();
   cursor: pointer;
   display: flex;
   flex: 1;
-  gap: 0.5rem;
+  gap: var(--bd-space-2);
 
   i {
-    color: var(--primary-color);
-    font-size: var(--font-size-base);
+    color: var(--bd-primary);
+    font-size: var(--bd-font-size-base);
   }
 
   span {
-    color: var(--font-color);
-    font-size: var(--font-size-sm);
-    font-variation-settings: var(--font-variation-settings-bold);
-    font-weight: var(--font-weight-bold);
+    color: var(--bd-font-color);
+    font-size: var(--bd-font-size-sm);
+    font-variation-settings: var(--bd-font-variation-settings-bold);
+    font-weight: var(--bd-weight-bold-fallback);
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -97,21 +97,21 @@ const frameStore = useFrame();
   align-items: center;
   background-color: transparent;
   border: 0;
-  border-radius: 0.5rem;
-  color: var(--font-color-light);
+  border-radius: var(--bd-radius-md);
+  color: var(--bd-font-color-light);
   cursor: pointer;
   display: flex;
-  font-size: var(--font-size-xs);
+  font-size: var(--bd-font-size-xs);
   justify-content: center;
   opacity: 0;
-  padding: 0.25rem;
+  padding: var(--bd-space-1);
   transition:
-      background-color 0.2s ease,
-      color 0.2s ease;
+    background-color var(--bd-transition),
+    color var(--bd-transition);
 
   &:hover {
-    background-color: var(--bg-color);
-    color: var(--font-color);
+    background-color: var(--bd-bg);
+    color: var(--bd-font-color);
   }
 
   i {
@@ -120,8 +120,8 @@ const frameStore = useFrame();
 }
 
 .minimized-window:hover {
-  background-color: var(--bg-color-light);
-  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 30%);
+  background-color: var(--bd-bg-light);
+  box-shadow: var(--bd-shadow-md);
   transform: translateY(-2px);
 
   .close-btn {

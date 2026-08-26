@@ -1,6 +1,6 @@
 <template>
   <div v-if="artistStore.wikiTimeline && rows.length > 0" class="wiki-timeline">
-    <h2 class="timeline-title font-bold">Members timeline</h2>
+    <h2 class="timeline-title bd-font-bold">Members timeline</h2>
 
     <div class="timeline-legend">
       <span v-for="role in legend" :key="role.legend" class="legend-item">
@@ -308,34 +308,34 @@ const ticks = computed<AxisTick[]>(() => {
 <style scoped>
 
 .wiki-timeline {
-  margin-bottom: 2.5rem;
+  margin-bottom: var(--bd-space-6);
 }
 
 .timeline-title {
-  border-bottom: 1px solid var(--bg-color-light);
-  color: var(--font-color-default);
-  font-size: var(--font-size-xl);
-  margin-bottom: 1rem;
-  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--bd-bg-light);
+  color: var(--bd-font-color);
+  font-size: var(--bd-font-size-xl);
+  margin-bottom: var(--bd-space-4);
+  padding-bottom: var(--bd-space-2);
 }
 
 .timeline-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem 1rem;
-  margin-bottom: 1.2rem;
+  gap: var(--bd-space-2) var(--bd-space-4);
+  margin-bottom: var(--bd-space-4);
 }
 
 .legend-item {
   align-items: center;
-  color: var(--font-color-light);
+  color: var(--bd-font-color-light);
   display: inline-flex;
-  font-size: var(--font-size-xs);
-  gap: 0.4rem;
+  font-size: var(--bd-font-size-xs);
+  gap: var(--bd-space-2);
 }
 
 .legend-swatch {
-  border-radius: 0.2rem;
+  border-radius: var(--bd-radius-sm);
   display: inline-block;
   height: 0.7rem;
   width: 0.7rem;
@@ -344,7 +344,7 @@ const ticks = computed<AxisTick[]>(() => {
 .timeline-grid {
   align-items: center;
   display: grid;
-  gap: 0.35rem 1rem;
+  gap: var(--bd-space-1) var(--bd-space-4);
   grid-template-columns: minmax(7rem, max-content) 1fr;
 }
 
@@ -358,8 +358,8 @@ const ticks = computed<AxisTick[]>(() => {
 }
 
 .axis-tick {
-  color: var(--font-color-light);
-  font-size: var(--font-size-xs);
+  color: var(--bd-font-color-light);
+  font-size: var(--bd-font-size-xs);
   opacity: 0.6;
   position: absolute;
   transform: translateX(-50%);
@@ -367,8 +367,8 @@ const ticks = computed<AxisTick[]>(() => {
 }
 
 .member-name {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
   overflow: hidden;
   text-align: right;
   text-overflow: ellipsis;
@@ -379,12 +379,12 @@ const ticks = computed<AxisTick[]>(() => {
 
     &::after {
       background-color: #2ecc71;
-      border-radius: 50%;
+      border-radius: var(--bd-radius-full);
       box-shadow: 0 0 5px rgb(46 204 113 / 80%);
       content: "";
       display: inline-block;
       height: 7px;
-      margin-left: 0.4rem;
+      margin-left: var(--bd-space-2);
       vertical-align: middle;
       width: 7px;
     }
@@ -408,10 +408,10 @@ const ticks = computed<AxisTick[]>(() => {
 }
 
 .event-dot {
-  border-radius: 50%;
+  border-radius: var(--bd-radius-full);
   display: block;
   height: 0.7rem;
-  transition: transform 0.15s ease;
+  transition: transform var(--bd-transition-fast);
   width: 0.7rem;
 
   &:hover {
@@ -439,13 +439,13 @@ const ticks = computed<AxisTick[]>(() => {
 }
 
 .segment {
-  border-radius: 0.2rem;
+  border-radius: var(--bd-radius-sm);
   display: block;
   height: 100%;
   opacity: 0.7;
   transition:
-    filter 0.2s ease,
-    opacity 0.2s ease;
+    filter var(--bd-transition),
+    opacity var(--bd-transition);
   width: 100%;
 
   &:hover {
@@ -463,8 +463,8 @@ const ticks = computed<AxisTick[]>(() => {
 }
 
 .timeline-source {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-xs);
-  margin-top: 1rem;
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-xs);
+  margin-top: var(--bd-space-4);
 }
 </style>

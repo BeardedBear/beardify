@@ -40,21 +40,21 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 <style scoped>
 
 .album {
-  border-radius: 1rem;
-  padding: var(--space-2);
-  transition: background-color 0.2s ease;
+  border-radius: var(--bd-radius-lg);
+  padding: var(--bd-space-2);
+  transition: background-color var(--bd-transition);
 
   &:hover {
-    background-color: var(--bg-color-light);
+    background-color: var(--bd-bg-light);
   }
 
   &.exact-search {
-    background: var(--bg-color-lighter);
+    background: var(--bd-bg-lighter);
 
     &::after {
       --dot-size: 0.8rem;
 
-      background-color: var(--primary-color);
+      background-color: var(--bd-primary);
       border-radius: var(--dot-size);
       content: "";
       height: var(--dot-size);
@@ -78,6 +78,6 @@ const exactAlbumSearched: ComputedRef<string | undefined> = computed(() => {
 }
 
 .album-wrap {
-  padding: 0 var(--space-4);
+  padding: 0 var(--bd-space-4);
 }
 </style>

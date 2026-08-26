@@ -1,7 +1,7 @@
 <template>
   <router-link :to="`/podcasts/${id}`" class="podcast">
-    <img :src="covers[1].url" class="cover" />
-    <div v-if="name" class="name font-bold">
+    <Cover :images="covers" class="cover" size="medium" />
+    <div v-if="name" class="name bd-font-bold">
       {{ name }}
     </div>
   </router-link>
@@ -11,6 +11,7 @@
 import { RouterLink } from "vue-router";
 
 import { Image } from "@/@types/Image";
+import Cover from "@/components/ui/AlbumCover.vue";
 
 defineProps<{
   covers: Image[];
@@ -22,14 +23,14 @@ defineProps<{
 <style scoped>
 
 .podcast {
-  background-color: var(--bg-color);
-  border-radius: 1rem;
-  color: var(--font-color);
-  padding: 1rem;
+  background-color: var(--bd-bg);
+  border-radius: var(--bd-radius-lg);
+  color: var(--bd-font-color);
+  padding: var(--bd-space-4);
   text-decoration: none;
   transition:
-      background-color 0.2s ease,
-      transform 0.2s ease;
+    background-color var(--bd-transition),
+    transform var(--bd-transition);
   will-change: transform;
 
   &:hover {
@@ -39,12 +40,12 @@ defineProps<{
 
 .cover {
   aspect-ratio: 1;
-  border-radius: 0.5rem;
+  border-radius: var(--bd-radius-md);
   display: block;
   width: 100%;
 }
 
 .name {
-  margin-top: 1rem;
+  margin-top: var(--bd-space-4);
 }
 </style>

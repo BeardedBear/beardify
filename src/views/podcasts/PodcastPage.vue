@@ -5,7 +5,7 @@
   <div v-else ref="scrollRef" class="podcast" @scroll="onScroll">
     <PageFit>
       <div class="title">
-        <h1 class="name font-bold">
+        <h1 class="name bd-font-bold">
           {{ podcastsStore.podcast?.name }}
         </h1>
         <PodcastFollowButton v-if="podcastsStore.podcast" :podcast-id="props.id" />
@@ -52,18 +52,18 @@ podcastsStore.clean().finally(() => {
 .podcast {
   animation: pop-content 1s ease both;
   overflow-y: scroll;
-  padding: 2rem 2.2rem;
+  padding: var(--bd-space-6);
 }
 
 .title {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: var(--bd-space-6);
 
   .name {
     flex: 1;
-    font-size: var(--font-size-xl);
+    font-size: var(--bd-font-size-xl);
   }
 }
 </style>

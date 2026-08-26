@@ -51,7 +51,7 @@ function onSurfaceClick(event: MouseEvent): void {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   justify-content: space-between;
-  padding: 0.9rem 1.2rem 0.5rem;
+  padding: var(--bd-space-4) var(--bd-space-4) var(--bd-space-2);
 }
 
 .surface {

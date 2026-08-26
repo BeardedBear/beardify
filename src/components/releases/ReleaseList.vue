@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <div v-for="(month, index) in releasesStore.monthList" :key="index">
-      <div class="month font-bold">
+      <div class="month bd-font-bold">
         {{ month }}
       </div>
       <template v-for="release in releasesStore.releases" :key="release.id">
@@ -26,9 +26,9 @@ const releasesStore = useReleases();
 <style scoped>
 
 .month {
-  background-color: var(--bg-color-darker);
-  color: var(--primary-color);
-  padding: 1rem 0.5rem;
+  background-color: var(--bd-bg-darker);
+  color: var(--bd-primary);
+  padding: var(--bd-space-4) var(--bd-space-2);
   position: sticky;
   text-transform: uppercase;
   top: 0;
@@ -36,6 +36,6 @@ const releasesStore = useReleases();
 }
 
 .content {
-  padding: 0 2rem;
+  padding: 0 var(--bd-space-6);
 }
 </style>

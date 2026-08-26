@@ -25,7 +25,7 @@ async function create(): Promise<void> {
   try {
     await sidebarStore.addPlaylist(playlistName.value);
     dialogStore.close();
-    notification({ msg: `Playlist ${playlistName.value} create`, type: NotificationType.Success });
+    notification({ msg: `Playlist ${playlistName.value} created`, type: NotificationType.Success });
   } catch {
     // notification handled in store
   }
@@ -37,7 +37,7 @@ async function create(): Promise<void> {
 .wrap {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  padding: 1.2rem;
+  gap: var(--bd-space-4);
+  padding: var(--bd-space-4);
 }
 </style>

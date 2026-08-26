@@ -1,6 +1,6 @@
 <template>
   <div v-if="artistStore.albums.length" class="content-block">
-    <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading album-heading">
+    <div :style="{ top: artistStore.headerHeight + 'px' }" class="bd-heading sticky-heading album-heading">
       <i class="icon-album" />
       Albums
       <BdButton
@@ -17,7 +17,7 @@
     <div class="albums">
       <div v-for="group in sortedGroups" :key="group.baseAlbum.id" class="album-slot">
         <BdTooltip v-if="rank(group)" :content="tooltipText(group)" class="rank-badge">
-          <span class="rank-badge-bubble font-bold">{{ rank(group) }}</span>
+          <span class="rank-badge-bubble bd-font-bold">{{ rank(group) }}</span>
         </BdTooltip>
         <AlbumGroup :group="group" can-save clean-name />
       </div>
@@ -106,7 +106,7 @@ const tooltipText = (group: AlbumGroupType): string =>
 .album-heading {
   align-items: center;
   display: flex;
-  gap: 0.4rem;
+  gap: var(--bd-space-2);
 }
 
 .sort-button {
@@ -116,7 +116,7 @@ const tooltipText = (group: AlbumGroupType): string =>
 
 .albums {
   display: grid;
-  gap: 1.2rem;
+  gap: var(--bd-space-4);
   grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
 }
 
@@ -139,13 +139,13 @@ const tooltipText = (group: AlbumGroupType): string =>
   --rank-badge-size: 1.5rem;
 
   align-items: center;
-  background-color: var(--bg-color-light);
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--bg-color-darker);
-  color: var(--font-color-light);
+  background-color: var(--bd-bg-light);
+  border-radius: var(--bd-radius-full);
+  box-shadow: 0 0 0 2px var(--bd-bg-darker);
+  color: var(--bd-font-color-light);
   cursor: help;
   display: flex;
-  font-size: var(--font-size-xs);
+  font-size: var(--bd-font-size-xs);
   height: var(--rank-badge-size);
   justify-content: center;
   width: var(--rank-badge-size);

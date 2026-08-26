@@ -38,7 +38,7 @@ const forceMobile = props.forceMobile ?? false;
 .device {
   align-items: center;
   display: flex;
-  gap: 1rem;
+  gap: var(--bd-space-4);
   text-align: right;
 }
 </style>

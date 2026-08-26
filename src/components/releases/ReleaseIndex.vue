@@ -9,7 +9,7 @@
         'is-playing': playerStore.currentlyPlaying.item?.artists[0].name.toLowerCase() === release.artist.toLowerCase(),
         checked: releasesStore.checks?.find((r) => r.id === release.id),
       }"
-      class="release font-bold"
+      class="release bd-font-bold"
       @click="search(release.artist, release.album)"
     >
       <div>{{ release.artist }}</div>
@@ -54,19 +54,19 @@ function search(artist: string, album: string): void {
 
 .release-wrap {
   display: flex;
-  gap: 0.3rem;
-  transition: background-color 0.2s ease;
+  gap: var(--bd-space-1);
+  transition: background-color var(--bd-transition);
 }
 
 .check {
   background-color: transparent;
   border: none;
-  color: var(--font-color);
+  color: var(--bd-font-color);
   cursor: pointer;
   opacity: 0.2;
   position: relative;
   top: -0.1rem;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--bd-transition);
 
   &:hover {
     opacity: 0.8;
@@ -75,23 +75,23 @@ function search(artist: string, album: string): void {
 
 .release {
   align-items: center;
-  border-radius: 0.4rem;
+  border-radius: var(--bd-radius-sm);
   cursor: pointer;
   display: grid;
   flex: 1;
-  font-size: var(--font-size-sm);
+  font-size: var(--bd-font-size-sm);
   grid-template-columns: 0.6fr 0.6fr 1fr;
   justify-content: space-between;
-  margin-bottom: 0.3rem;
-  padding: 0.3rem 0.8rem;
-  transition: background-color 0.1s;
+  margin-bottom: var(--bd-space-1);
+  padding: var(--bd-space-1) var(--bd-space-3);
+  transition: background-color var(--bd-transition-fast);
 
   &:nth-child(even) {
-    background-color: var(--bg-color);
+    background-color: var(--bd-bg);
   }
 
   &:hover {
-    background-color: var(--bg-color-light);
+    background-color: var(--bd-bg-light);
   }
 
   &.checked {
@@ -99,23 +99,23 @@ function search(artist: string, album: string): void {
   }
 
   &.is-playing {
-    background-color: var(--primary-color);
+    background-color: var(--bd-primary);
   }
 
   .tags {
-    font-size: var(--font-size-xs);
+    font-size: var(--bd-font-size-xs);
     justify-content: end;
     text-align: right;
     text-transform: uppercase;
 
     .slug {
-      background-color: var(--bg-color-lighter);
-      border-radius: 2rem;
-      color: var(--font-color-dark);
+      background-color: var(--bd-bg-lighter);
+      border-radius: var(--bd-radius-full);
+      color: var(--bd-font-color-dark);
       display: inline-block;
       margin: 0.1rem 0;
-      margin-left: 0.3rem;
-      padding: 0.1rem 0.5rem;
+      margin-left: var(--bd-space-1);
+      padding: 0.1rem var(--bd-space-2);
 
       &.selected {
         opacity: 1;

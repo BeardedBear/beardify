@@ -51,9 +51,9 @@ const gridClass = computed(() => {
 <style scoped>
 .album-variants-grid {
   display: grid;
-  gap: 2rem;
+  gap: var(--bd-space-6);
   grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-  padding: 2rem;
+  padding: var(--bd-space-6);
 
   &.grid-small {
     max-width: 30rem;

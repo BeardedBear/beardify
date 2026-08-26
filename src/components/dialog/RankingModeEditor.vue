@@ -94,13 +94,13 @@ const selectedPresetId = computed<string>({
 }
 
 .section {
-  margin-bottom: 1.2rem;
+  margin-bottom: var(--bd-space-4);
 }
 
 label {
   display: block;
   font-style: italic;
-  margin-bottom: 0.3rem;
+  margin-bottom: var(--bd-space-1);
   opacity: 0.6;
   width: 100%;
 }

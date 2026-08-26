@@ -43,7 +43,7 @@ export function notifyUndoable(msg: string, restore: () => Promise<void>): void 
           await restore();
         } catch {
           notification({
-            msg: "Could not restore — reload to see the current state",
+            msg: "Unable to restore — reload to see the current state",
             type: NotificationType.Error,
           });
         }

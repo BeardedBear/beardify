@@ -1,10 +1,10 @@
 <template>
-  <div class="sharing squircle">
-    <div class="title squircle">
+  <div class="sharing bd-squircle">
+    <div class="title bd-squircle">
       <i class="share-icon icon-share" />
     </div>
-    <span v-if="clipboardSpotify.copied.value" class="copied font-bold">Spotify URL copied</span>
-    <span v-if="clipboardBeardify.copied.value" class="copied font-bold">Beardify URL copied</span>
+    <span v-if="clipboardSpotify.copied.value" class="copied bd-font-bold">Spotify URL copied</span>
+    <span v-if="clipboardBeardify.copied.value" class="copied bd-font-bold">Beardify URL copied</span>
     <div class="content">
       <BdButton
         aria-label="Copy the Spotify link"
@@ -50,8 +50,8 @@ const clipboardBeardify = useClipboard({
 .sharing {
   --sharing-radius: 1rem;
 
-  background-color: var(--bg-color);
-  border: 0.05rem solid var(--bg-color-light);
+  background-color: var(--bd-bg);
+  border: 0.05rem solid var(--bd-bg-light);
   border-radius: var(--sharing-radius);
   display: flex;
   height: 2.25rem;
@@ -60,25 +60,25 @@ const clipboardBeardify = useClipboard({
 
 .title {
   align-items: center;
-  background-color: var(--bg-color-light);
+  background-color: var(--bd-bg-light);
   border-radius: var(--sharing-radius) 0 0 var(--sharing-radius);
   display: flex;
 }
 
 .share-icon {
-  font-size: var(--font-size-sm);
+  font-size: var(--bd-font-size-sm);
   opacity: 0.2;
-  padding: 0.3rem 0.7rem 0.3rem 0.5rem;
+  padding: var(--bd-space-1) var(--bd-space-3) var(--bd-space-1) var(--bd-space-2);
 }
 
 .copy {
-  font-size: var(--font-size-lg);
+  font-size: var(--bd-font-size-lg);
 }
 
 .content {
   align-items: center;
   display: flex;
-  padding: 0 0.3rem 0 0.2rem;
+  padding: 0 var(--bd-space-1);
 }
 
 @keyframes pop {
@@ -95,10 +95,10 @@ const clipboardBeardify = useClipboard({
 
 .copied {
   animation: pop 0.2s ease both;
-  color: var(--font-color-dark);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
   left: 50%;
-  margin-right: 0.8rem;
+  margin-right: var(--bd-space-3);
   position: absolute;
   top: calc(100% + 1rem);
   transform: translate(-50%, -50%);

@@ -1,6 +1,6 @@
 <template>
   <div v-if="artistStore.albumsCompilation.length" class="content-block">
-    <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
+    <div :style="{ top: artistStore.headerHeight + 'px' }" class="bd-heading sticky-heading">
       <i class="icon-album" />
       Compilations
     </div>
@@ -28,7 +28,7 @@ const compilationGroups = computed(() => groupAlbumVariants(artistStore.albumsCo
 
 .albums {
   display: grid;
-  gap: 1.2rem;
+  gap: var(--bd-space-4);
   grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
 }
 </style>

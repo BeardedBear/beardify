@@ -10,7 +10,7 @@
       >
         <AlbumGallery :album-list="albums" :icon-name="'album'" class="block" title="Albums" />
         <AlbumGallery :album-list="eps" :icon-name="'ep'" class="block" title="EP's" />
-        <div class="heading sticky">
+        <div class="bd-heading sticky">
           <i class="icon-single" />
           Singles
         </div>
@@ -118,12 +118,12 @@ playlistStore.clean().finally(() => {
 <style scoped>
 
 .block {
-  margin-bottom: 2rem;
+  margin-bottom: var(--bd-space-6);
 }
 
 .playlist {
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--bd-space-6);
   width: 100%;
 }
 

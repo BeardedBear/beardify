@@ -334,20 +334,20 @@ playlistStore.clean().finally(() => {
  */
 .album-list {
   display: grid;
-  gap: 2rem;
+  gap: var(--bd-space-6);
   grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-  padding: 2rem var(--page-inset);
+  padding: var(--bd-space-6) var(--page-inset);
   transition:
-    padding-right ease 0.2s,
-    padding-left ease 0.2s;
+    padding-right var(--bd-transition),
+    padding-left var(--bd-transition);
 
   @media (--tablet) {
-    gap: 1.5rem;
+    gap: var(--bd-space-5);
     grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   }
 
   @media (--mobile) {
-    gap: 1rem;
+    gap: var(--bd-space-4);
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -366,20 +366,21 @@ playlistStore.clean().finally(() => {
 
   /* and so the page, wider. min-width: 0 opts it out of that contribution. */
   min-width: 0;
-  padding: 1rem 5rem 10rem;
+  padding: var(--bd-space-4) var(--page-inset) 10rem;
 
+  /* Seul le dégagement bas reste par palier : il dépend du lecteur, pas de la page. */
   @media (--tablet) {
-    padding: 1rem 1.5rem 7rem;
+    padding-bottom: 7rem;
   }
 
   @media (--mobile) {
-    padding: 1rem;
+    padding-bottom: var(--bd-space-4);
   }
 }
 
 .tier-grid {
   display: grid;
-  gap: 1rem;
+  gap: var(--bd-space-4);
 }
 
 .tier-grid-0 {
@@ -400,13 +401,13 @@ playlistStore.clean().finally(() => {
 }
 
 .tier-grid-side {
-  background-color: var(--bg-color);
-  border-radius: 0 0.4rem 0.4rem 0;
+  background-color: var(--bd-bg);
+  border-radius: 0 var(--bd-radius-sm) var(--bd-radius-sm) 0;
   display: flex;
   flex: 1;
   flex-wrap: wrap;
   min-height: 8rem;
-  padding: 1rem;
+  padding: var(--bd-space-4);
 }
 
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -441,18 +442,18 @@ playlistStore.clean().finally(() => {
 
 /* than pushing the page taller. */
 .tier-grid-unsorted {
-  background-color: var(--bg-color);
-  border-radius: 0.4rem;
+  background-color: var(--bd-bg);
+  border-radius: var(--bd-radius-sm);
   display: grid;
-  gap: 1rem;
+  gap: var(--bd-space-4);
   grid-auto-columns: 7rem;
   grid-auto-flow: column;
   grid-template-rows: 7rem;
-  padding: 1rem;
+  padding: var(--bd-space-4);
   width: max-content;
 
   @media (--mobile) {
-    gap: 1rem;
+    gap: var(--bd-space-4);
     grid-auto-columns: 6rem;
     grid-template-rows: 6rem;
   }

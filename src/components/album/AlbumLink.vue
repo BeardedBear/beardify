@@ -6,7 +6,7 @@
       'icon-compilation': isCompilation(album),
     }"
   />
-  <span class="artist font-italic" @click.prevent.stop="goAlbum(`/album/${album.id}`)">{{ album.name }}</span>
+  <span class="artist bd-font-italic" @click.prevent.stop="goAlbum(`/album/${album.id}`)">{{ album.name }}</span>
 </template>
 
 <script lang="ts" setup>
@@ -27,16 +27,16 @@ function goAlbum(albumId: string): void {
 <style scoped>
 
 .separator {
-  color: var(--font-color-dark);
+  color: var(--bd-font-color-dark);
 }
 
 .artist {
-  color: var(--font-color-dark);
+  color: var(--bd-font-color-dark);
   cursor: pointer;
-  font-size: var(--font-size-sm);
+  font-size: var(--bd-font-size-sm);
 
   &:hover {
-    color: var(--primary-color);
+    color: var(--bd-primary);
     opacity: 1;
   }
 }

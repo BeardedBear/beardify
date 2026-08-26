@@ -209,11 +209,11 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 <style>
 /* Unscoped: the popover is teleported to <body> */
 .member-popover {
-  background: var(--bg-color-dark);
-  border: 1px solid var(--bg-color-lighter);
-  border-radius: 0.5rem;
-  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 45%);
-  color: var(--font-color-light);
+  background: var(--bd-bg-dark);
+  border: 1px solid var(--bd-bg-lighter);
+  border-radius: var(--bd-radius-md);
+  box-shadow: var(--bd-shadow-md);
+  color: var(--bd-font-color-light);
   overflow: hidden;
   padding: 0;
   position: fixed;
@@ -257,9 +257,9 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--bd-space-1);
   min-width: 0;
-  padding: 0.75rem;
+  padding: var(--bd-space-3);
 }
 
 .member-popover .mp-section {
@@ -267,31 +267,31 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 }
 
 .member-popover .mp-name {
-  color: var(--font-color-default);
-  font-size: var(--font-size-base);
+  color: var(--bd-font-color);
+  font-size: var(--bd-font-size-base);
 }
 
 .member-popover .mp-realname {
-  font-size: var(--font-size-xs);
+  font-size: var(--bd-font-size-xs);
   opacity: 0.6;
 }
 
 .member-popover .mp-section-title {
-  color: var(--font-color-dark);
+  color: var(--bd-font-color-dark);
   display: block;
-  font-size: var(--font-size-xs);
-  margin-bottom: 0.3rem;
-  margin-top: 1rem;
+  font-size: var(--bd-font-size-xs);
+  margin-bottom: var(--bd-space-1);
+  margin-top: var(--bd-space-4);
   text-transform: uppercase;
 }
 
 .member-popover .mp-groups {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: var(--bd-space-1);
   list-style: none;
   margin: 0;
-  margin-bottom: 1rem;
+  margin-bottom: var(--bd-space-4);
   max-height: 12rem;
   overflow-y: auto;
   padding: 0;
@@ -300,8 +300,8 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
     align-items: baseline;
     display: flex;
     flex: 1;
-    font-size: var(--font-size-sm);
-    gap: 0.4rem;
+    font-size: var(--bd-font-size-sm);
+    gap: var(--bd-space-2);
     justify-content: space-between;
   }
 }
@@ -310,7 +310,7 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
   appearance: none;
   background: none;
   border: none;
-  color: var(--font-color-default);
+  color: var(--bd-font-color);
   cursor: pointer;
   flex: 1;
   font-family: inherit;
@@ -324,25 +324,25 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
   white-space: nowrap;
 
   &:hover {
-    color: var(--primary-color-light);
+    color: var(--bd-primary-light);
     text-decoration: underline;
   }
 }
 
 .member-popover .mp-former {
   flex-shrink: 0;
-  font-size: var(--font-size-xs);
+  font-size: var(--bd-font-size-xs);
   font-style: italic;
   opacity: 0.7;
 }
 
 .member-popover .mp-link {
   align-items: center;
-  color: var(--primary-color-light);
+  color: var(--bd-primary-light);
   display: inline-flex;
-  font-size: var(--font-size-sm);
-  gap: 0.3rem;
-  margin-top: 0.6rem;
+  font-size: var(--bd-font-size-sm);
+  gap: var(--bd-space-1);
+  margin-top: var(--bd-space-2);
   text-decoration: none;
 
   &:hover {
@@ -351,15 +351,15 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 }
 
 .member-popover .mp-state {
-  font-size: var(--font-size-sm);
+  font-size: var(--bd-font-size-sm);
   opacity: 0.6;
 }
 
 .member-popover-enter-active,
 .member-popover-leave-active {
   transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
+    opacity var(--bd-transition-fast),
+    transform var(--bd-transition-fast);
 }
 
 .member-popover-enter-from,

@@ -98,11 +98,11 @@ function onBackdropClick(event: MouseEvent): void {
 
   &::backdrop {
     backdrop-filter: blur(8px);
-    background-image: linear-gradient(to top, var(--bg-color-darker), transparent);
+    background-image: linear-gradient(to top, var(--bd-bg-darker), transparent);
   }
 
   .panel {
-    background-color: var(--bg-color);
+    background-color: var(--bd-bg);
     border-top-left-radius: 2rem;
     border-top-right-radius: 2rem;
     bottom: 0;
@@ -110,7 +110,7 @@ function onBackdropClick(event: MouseEvent): void {
     left: 0;
     max-height: 92dvh;
     overflow: auto;
-    padding: 2rem;
+    padding: var(--bd-space-6);
     position: absolute;
     right: 0;
     touch-action: pan-y;
@@ -118,7 +118,7 @@ function onBackdropClick(event: MouseEvent): void {
 
     /* Tablet+ layout */
     @media (--tablet-up) {
-      border-radius: 12px;
+      border-radius: var(--bd-radius-md);
       bottom: 2rem;
       left: 0;
       margin: 0 auto;
@@ -129,16 +129,16 @@ function onBackdropClick(event: MouseEvent): void {
 
   .content {
     display: grid;
-    gap: 1rem;
+    gap: var(--bd-space-4);
     grid-template-columns: 1fr;
-    padding-bottom: 2rem;
+    padding-bottom: var(--bd-space-6);
 
     @media (--tablet-up) {
       grid-template-columns: auto 1fr;
     }
 
     .cover img {
-      border-radius: 8px;
+      border-radius: var(--bd-radius-md);
       height: auto;
       max-width: 250px;
       width: 100%;
@@ -151,7 +151,7 @@ function onBackdropClick(event: MouseEvent): void {
       }
 
       .cover img {
-        border-radius: 8px;
+        border-radius: var(--bd-radius-md);
         max-width: 250px;
         object-fit: contain;
         width: 100%;
@@ -162,9 +162,9 @@ function onBackdropClick(event: MouseEvent): void {
       .meta-header {
         align-items: center;
         display: flex;
-        gap: 1rem;
+        gap: var(--bd-space-4);
         justify-content: space-between;
-        margin-bottom: 0.5rem;
+        margin-bottom: var(--bd-space-2);
 
         @media (--mobile) {
           align-items: flex-start;
@@ -178,17 +178,17 @@ function onBackdropClick(event: MouseEvent): void {
       }
 
       .title {
-        font-size: var(--font-size-lg);
-        margin: 0 0 0.25rem;
+        font-size: var(--bd-font-size-lg);
+        margin: 0 0 var(--bd-space-1);
       }
 
       .artists {
-        margin: 0 0 0.25rem;
+        margin: 0 0 var(--bd-space-1);
         opacity: 0.8;
       }
 
       .album {
-        margin: 0 0 0.5rem;
+        margin: 0 0 var(--bd-space-2);
         opacity: 0.8;
 
         .link {
@@ -198,7 +198,7 @@ function onBackdropClick(event: MouseEvent): void {
           text-decoration: none;
 
           &:hover {
-            color: var(--primary-color);
+            color: var(--bd-primary);
             opacity: 1;
           }
         }
@@ -212,7 +212,7 @@ function onBackdropClick(event: MouseEvent): void {
 
         @media (--mobile) {
           justify-content: center;
-          margin-top: 0.5rem;
+          margin-top: var(--bd-space-2);
           width: 100%;
         }
       }
@@ -220,19 +220,19 @@ function onBackdropClick(event: MouseEvent): void {
       .controls {
         align-items: center;
         display: flex;
-        gap: 0.75rem;
+        gap: var(--bd-space-3);
         justify-content: center;
-        margin-top: 1rem;
+        margin-top: var(--bd-space-4);
       }
 
       .controls .extra {
         align-items: center;
         display: flex;
-        gap: 0.5rem;
+        gap: var(--bd-space-2);
       }
 
       .more-info {
-        margin-top: 0.75rem;
+        margin-top: var(--bd-space-3);
       }
     }
   }

@@ -72,7 +72,7 @@ authStore.me && !releasesStore.checks && releasesStore.createReleasesCheckEntry(
 
 .side {
   overflow: auto;
-  padding: 0 1rem 1rem;
+  padding: 0 var(--bd-space-4) var(--bd-space-4);
   position: sticky;
   top: 0;
   width: 12rem;

@@ -53,6 +53,6 @@ function edit(playlistId: string): void {
 
 <style scoped>
 .followed {
-  color: var(--primary-color);
+  color: var(--bd-primary);
 }
 </style>

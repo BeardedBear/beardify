@@ -172,30 +172,41 @@ onBeforeUnmount(() => {
 
 input {
   &::placeholder {
-    color: var(--font-color-dark);
-    font-size: var(--font-size-base);
-    font-style: var(--font-style-italic);
-    font-variation-settings: var(--font-variation-settings-italic);
+    color: var(--bd-font-color-dark);
+    font-size: var(--bd-font-size-base);
+    font-style: var(--bd-style-italic-fallback);
+    font-variation-settings: var(--bd-font-variation-settings-italic);
   }
 }
 
 body {
-  font-family: var(--font-family-base);
-  -webkit-font-smoothing: subpixel-antialiased;
+  /*
+   * Le curseur de saisie et les contrôles natifs (case à cocher, `input[type=range]`
+   * là où il n'est pas entièrement redessiné) arrivent avec le bleu du système.
+   * Ce sont les dernières surfaces du navigateur qui n'appartenaient à aucun thème.
+   */
+  accent-color: var(--bd-primary);
+  caret-color: var(--bd-primary);
+  font-family: var(--bd-font-family);
   -webkit-font-smoothing: antialiased;
-  font-stretch: var(--font-stretch-base);
-  font-variation-settings: var(--font-variation-settings-base);
+  font-stretch: var(--bd-font-stretch);
+  font-variation-settings: var(--bd-font-variation-settings);
   overflow: hidden;
-  scrollbar-color: var(--bg-color-light) var(--bg-color-dark);
+  scrollbar-color: var(--bd-bg-light) var(--bd-bg-dark);
   scrollbar-width: thin;
 
   /* Improve font rendering on many platforms */
   text-rendering: optimizelegibility;
-
 }
 
+/*
+ * La couleur du texte manquait : la sélection ne reposait que sur un fond. Sur
+ * un thème clair, `--bd-primary-dark` est un accent sombre et le texte
+ * restait `--bd-font-color`, sombre lui aussi — sélection illisible.
+ */
 ::selection {
-  background-color: var(--primary-color-dark);
+  background-color: var(--bd-primary-dark);
+  color: var(--bd-on-primary);
 }
 
 ::-webkit-scrollbar {
@@ -209,7 +220,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background-clip: content-box;
-  background-color: var(--bg-color-light);
+  background-color: var(--bd-bg-light);
   border: 2px solid transparent;
 }
 
@@ -218,8 +229,8 @@ body {
 }
 
 #app {
-  background-color: var(--bg-color-darker);
-  color: var(--font-color);
+  background-color: var(--bd-bg-darker);
+  color: var(--bd-font-color);
   display: grid;
   font-optical-sizing: auto;
   -moz-osx-font-smoothing: grayscale;
@@ -274,11 +285,11 @@ body {
  * the only way past the sidebar's long playlist list.
  */
 .skip-link {
-  background-color: var(--bg-color-light);
-  border-radius: 0 0 0.4rem;
-  color: var(--font-color);
+  background-color: var(--bd-bg-light);
+  border-radius: 0 0 var(--bd-radius-sm);
+  color: var(--bd-font-color);
   left: 0;
-  padding: 0.6rem 1rem;
+  padding: var(--bd-space-2) var(--bd-space-4);
   position: fixed;
   text-decoration: none;
   top: 0;

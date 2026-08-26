@@ -106,14 +106,14 @@ function selectDevice(device: Device): void {
 
 .devices {
   display: flex;
-  gap: 10px;
+  gap: var(--bd-space-2);
 }
 
 .device-label,
 .active-device-label {
   align-items: center;
   display: inline-flex;
-  gap: 0.4rem;
+  gap: var(--bd-space-2);
 }
 
 .device-name {

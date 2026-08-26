@@ -1,5 +1,5 @@
 <template>
-  <div class="profile-container font-bold">
+  <div class="profile-container bd-font-bold">
     <div class="profile-wrapper" :class="{ visible: artistMetas || artistTags.length > 0 }">
       <template v-if="artistTags && artistTags.length > 0">
         <span class="tag-list">
@@ -86,19 +86,19 @@ const getCountry = computed(() => {
 <style scoped>
 
 .profile-container {
-  font-size: var(--font-size-sm);
-  margin-top: 0.5rem;
+  font-size: var(--bd-font-size-sm);
+  margin-top: var(--bd-space-2);
   min-height: 1.5rem;
 }
 
 .tag-list {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: var(--bd-space-1);
 
   @media (--mobile) {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--bd-space-2);
   }
 }
 
@@ -107,21 +107,21 @@ const getCountry = computed(() => {
  * from the theme's own surface ladder keeps the same weight in both themes.
  */
 .tag {
-  background-color: var(--bg-color-light);
-  border-radius: 0.25rem;
+  background-color: var(--bd-bg-light);
+  border-radius: var(--bd-radius-sm);
   color: currentcolor;
   display: inline-block;
-  padding: 0.1rem 0.3rem;
+  padding: 0.1rem var(--bd-space-1);
   text-decoration: none;
   text-transform: capitalize;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--bd-transition);
 
   &:hover {
-    background-color: var(--bg-color-lighter);
+    background-color: var(--bd-bg-lighter);
   }
 
   &:focus-visible {
-    outline: 1px solid var(--primary-color);
+    outline: 1px solid var(--bd-primary);
     outline-offset: 1px;
   }
 
@@ -130,7 +130,7 @@ const getCountry = computed(() => {
   }
 
   @media (--mobile) {
-    margin: 0 0.25rem 0.25rem 0;
+    margin: 0 var(--bd-space-1) var(--bd-space-1) 0;
   }
 }
 
@@ -139,10 +139,10 @@ const getCountry = computed(() => {
 }
 
 .dot {
-  margin: 0 1rem;
+  margin: 0 var(--bd-space-4);
 
   @media (--mobile) {
-    margin: 0 0.5rem;
+    margin: 0 var(--bd-space-2);
   }
 
   &.desktop-only {
@@ -181,7 +181,7 @@ const getCountry = computed(() => {
   border-radius: 0.1rem;
   display: inline-block;
   height: 0.8em;
-  margin: 0 0.3rem 0 0;
+  margin: 0 var(--bd-space-1) 0 0;
   width: auto;
 }
 </style>

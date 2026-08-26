@@ -33,7 +33,7 @@ export const usePodcasts = defineStore("podcasts", {
       } catch (error) {
         if (import.meta.env.DEV) console.error("Error following podcast:", error);
         notification({
-          msg: "Error adding podcast",
+          msg: "Unable to follow this podcast",
           type: NotificationType.Error,
         });
       }
@@ -107,7 +107,7 @@ export const usePodcasts = defineStore("podcasts", {
       } catch (error) {
         if (import.meta.env.DEV) console.error("Error unfollowing podcast:", error);
         notification({
-          msg: "Error removing podcast",
+          msg: "Unable to unfollow this podcast",
           type: NotificationType.Error,
         });
       }

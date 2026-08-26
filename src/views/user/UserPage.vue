@@ -9,7 +9,7 @@
         <div class="metas">
           <img :src="coverUrl(userStore.user.images, 'large')" alt="" class="avatar" />
           <div>
-            <h1 class="name font-bold">
+            <h1 class="name bd-font-bold">
               {{ userStore.user?.display_name }}
             </h1>
             <div class="followers">{{ userStore.user?.followers.total }} followers</div>
@@ -21,13 +21,13 @@
 
     <div class="content">
       <div v-if="userStore.collections.length">
-        <div class="heading sticky title">Collections</div>
+        <div class="bd-heading sticky title">Collections</div>
         <div class="gallery">
           <router-link
             v-for="collection in userStore.collections"
             :key="collection.id"
             :to="`/collection/${collection.id}`"
-            class="playlist font-bold"
+            class="playlist bd-font-bold"
           >
             <Cover :images="collection.images" :size="'large'" class="playlist-cover" />
             <div>{{ collection.name.replaceAll("#Collection ", "") }}</div>
@@ -35,13 +35,13 @@
         </div>
       </div>
       <div v-if="userStore.playlists.length">
-        <div class="heading sticky title">Playlists</div>
+        <div class="bd-heading sticky title">Playlists</div>
         <div class="gallery">
           <router-link
             v-for="playlist in userStore.playlists"
             :key="playlist.id"
             :to="`/playlist/${playlist.id}`"
-            class="playlist font-bold"
+            class="playlist bd-font-bold"
           >
             <Cover :images="playlist.images" :size="'large'" class="playlist-cover" />
             <div>{{ playlist.name }}</div>
@@ -80,21 +80,21 @@ userStore.clean().finally(() => {
 
 .head {
   overflow: hidden;
-  padding: 2rem 5rem;
+  padding: var(--bd-space-6) var(--page-inset);
   position: relative;
 
   @media (--mobile) {
-    padding: 1rem;
+    padding-block: var(--bd-space-4);
   }
 
   @media (--tablet) {
-    padding: 1.5rem 2rem;
+    padding-block: var(--bd-space-5);
   }
 
   .inner {
     align-items: center;
     display: flex;
-    gap: 1rem;
+    gap: var(--bd-space-4);
     justify-content: space-between;
     margin: 0 auto;
     max-width: 100rem;
@@ -104,20 +104,20 @@ userStore.clean().finally(() => {
 
   .metas {
     display: flex;
-    gap: 1rem;
+    gap: var(--bd-space-4);
     justify-content: space-between;
   }
 
   .avatar {
     --avatar-size: 4rem;
 
-    border-radius: 100%;
+    border-radius: var(--bd-radius-full);
     height: var(--avatar-size);
     width: var(--avatar-size);
   }
 
   .name {
-    font-size: var(--font-size-xl);
+    font-size: var(--bd-font-size-xl);
   }
 
   .avatar-bg {
@@ -132,20 +132,20 @@ userStore.clean().finally(() => {
 }
 
 .title {
-  margin: 2rem 1rem 0.5rem;
+  margin: var(--bd-space-6) var(--bd-space-4) var(--bd-space-2);
 }
 
 .content {
   margin: 0 auto;
   max-width: 100rem;
-  padding: 2rem 4rem;
+  padding: var(--bd-space-6) var(--bd-space-8);
 
   @media (--mobile) {
-    padding: 1rem;
+    padding: var(--bd-space-4);
   }
 
   @media (--tablet) {
-    padding: 1.5rem 2rem;
+    padding: var(--bd-space-5) var(--bd-space-6);
   }
 
   .gallery {
@@ -155,22 +155,22 @@ userStore.clean().finally(() => {
 
   .playlist-cover {
     aspect-ratio: 1;
-    border-radius: 0.4rem;
-    margin-bottom: 0.5rem;
+    border-radius: var(--bd-radius-sm);
+    margin-bottom: var(--bd-space-2);
     width: 100%;
   }
 
   .playlist {
-    border-radius: 0.5rem;
-    color: var(--font-color);
-    padding: 1rem;
+    border-radius: var(--bd-radius-md);
+    color: var(--bd-font-color);
+    padding: var(--bd-space-4);
     text-decoration: none;
     transition:
-      background-color 0.2s ease,
-      transform 0.2s ease;
+      background-color var(--bd-transition),
+      transform var(--bd-transition);
 
     &:hover {
-      background-color: var(--bg-color-light);
+      background-color: var(--bd-bg-light);
       transform: scale(1.05);
     }
   }

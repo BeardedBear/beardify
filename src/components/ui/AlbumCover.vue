@@ -45,10 +45,10 @@ const source = computed(() => coverUrl(props.images, props.size));
  */
 .img {
   aspect-ratio: 1 / 1;
-  border-radius: 0.4rem;
+  border-radius: var(--bd-radius-sm);
   cursor: pointer;
   display: block;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--bd-duration) ease;
   width: 100%;
 }
 </style>

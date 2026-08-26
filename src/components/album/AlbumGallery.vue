@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!noTitle" class="heading sticky">
+    <div v-if="!noTitle" class="bd-heading sticky">
       <i :class="`icon-${iconName}`" />
       {{ title }}
     </div>
@@ -28,7 +28,7 @@ defineProps<{
 
 .albums {
   display: grid;
-  gap: 2rem;
+  gap: var(--bd-space-6);
   grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
 }
 </style>

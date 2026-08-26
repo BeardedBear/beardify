@@ -15,7 +15,7 @@ import Dialog from "@/components/dialog/DialogWrap.vue";
 .wrap {
   display: flex;
   justify-content: center;
-  padding: 1.5rem;
+  padding: var(--bd-space-5);
 }
 
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */

@@ -180,19 +180,19 @@ function remove(): void {
 }
 
 .bottom {
-  border-top: 0.1rem solid var(--bg-color-light);
-  margin-top: 1rem;
+  border-top: 0.1rem solid var(--bd-bg-light);
+  margin-top: var(--bd-space-4);
 
   p {
-    font-variation-settings: var(--font-variation-settings-bold);
-    font-weight: var(--font-weight-bold);
-    margin-bottom: 0.5rem;
+    font-variation-settings: var(--bd-font-variation-settings-bold);
+    font-weight: var(--bd-weight-bold-fallback);
+    margin-bottom: var(--bd-space-2);
   }
 }
 
 .wrap {
   animation: pop-wrap 0.5s ease 0.1s both;
-  padding: 1.2rem;
+  padding: var(--bd-space-4);
 }
 
 .option-list {
@@ -207,45 +207,45 @@ function remove(): void {
 .actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 3rem;
+  margin-top: var(--bd-space-7);
 }
 
 label {
   display: block;
   font-style: italic;
-  margin-bottom: 0.3rem;
+  margin-bottom: var(--bd-space-1);
   opacity: 0.6;
   width: 100%;
 }
 
 .section {
-  margin-bottom: 1rem;
+  margin-bottom: var(--bd-space-4);
 }
 
 .textarea {
-  background-color: var(--bg-color-light);
+  background-color: var(--bd-bg-light);
   border: none;
-  border-radius: 0.4rem;
-  color: var(--font-color);
-  font-variation-settings: var(--font-variation-settings-bold);
-  font-weight: var(--font-weight-bold);
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-font-color);
+  font-variation-settings: var(--bd-font-variation-settings-bold);
+  font-weight: var(--bd-weight-bold-fallback);
   min-height: 5rem;
   outline: 0;
-  padding: 0.8rem 1rem;
+  padding: var(--bd-space-3) var(--bd-space-4);
   resize: vertical;
   transition:
-      border-color 0.2s ease,
-      box-shadow 0.2s ease;
+    border-color var(--bd-transition),
+    box-shadow var(--bd-transition);
   width: 100%;
 
   &::placeholder {
-    color: var(--font-color-dark);
-    font-style: var(--font-style-italic);
-    font-variation-settings: var(--font-variation-settings-italic);
+    color: var(--bd-font-color-dark);
+    font-style: var(--bd-style-italic-fallback);
+    font-variation-settings: var(--bd-font-variation-settings-italic);
   }
 
   &:focus {
-    box-shadow: 0 0 0 0.1rem var(--primary-color);
+    box-shadow: 0 0 0 0.1rem var(--bd-primary);
   }
 }
 </style>

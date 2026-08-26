@@ -1,7 +1,7 @@
 <template>
   <div class="album-header">
     <div>
-      <h1 class="title font-bold">
+      <h1 class="title bd-font-bold">
         {{ album.name }}
       </h1>
       <div class="infos">
@@ -65,31 +65,29 @@ function sumDuration(tracks: Track[] | TrackSimplified[]): number {
 
   @media (--mobile) {
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--bd-space-4);
   }
 }
 
 .infos {
-  color: var(--font-color-darker);
+  color: var(--bd-font-color-darker);
 
   /* opacity: 0.4; */
 }
 
 .title {
-  font-size: var(--font-size-xl);
-  margin-bottom: 0.4rem;
+  font-size: var(--bd-font-size-xl);
+  margin-bottom: var(--bd-space-2);
 }
 
 .options {
   align-items: center;
   display: flex;
-  gap: 1rem;
+  gap: var(--bd-space-4);
 }
 
 .links {
   align-items: center;
   display: flex;
-
-  /* gap: 0.5rem; */
 }
 </style>

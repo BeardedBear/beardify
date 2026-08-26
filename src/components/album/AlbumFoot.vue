@@ -23,20 +23,20 @@ defineProps<{ album: Album }>();
 <style scoped>
 
 .mentions {
-  color: var(--font-color-dark);
+  color: var(--bd-font-color-dark);
 }
 
 .link {
   background-color: transparent;
   border: 0;
-  color: var(--font-color-dark);
+  color: var(--bd-font-color-dark);
   cursor: pointer;
   font: inherit;
-  padding: 0.5rem 0.6rem;
+  padding: var(--bd-space-2);
   padding-left: 0;
 
   &:hover {
-    color: var(--primary-color);
+    color: var(--bd-primary);
     opacity: 1;
   }
 }

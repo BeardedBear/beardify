@@ -91,7 +91,13 @@ function syncLS(key: string, value: string): void {
   if (!localStorage.getItem(key)) localStorage.setItem(key, value);
 }
 
-// Applies the stored palette to <html> and keeps it in sync from here on.
+/*
+ * Toute la palette de l'app tient dans deux couleurs — `--bd-palette-base` et
+ * `--bd-palette-accent` — que ceci pose sur <html>, avec le `data-theme` que la
+ * lib déduit de la luminance du fond. Les composants ne lisent que des
+ * `var(--bd-*)`, donc changer de thème dans `BdThemePicker` traverse jusqu'au
+ * moindre style maison sans qu'aucune couleur soit dupliquée côté Beardify.
+ */
 useTheme();
 
 // Initialize the Spotify SDK error handler

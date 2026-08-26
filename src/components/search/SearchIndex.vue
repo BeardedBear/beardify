@@ -16,7 +16,7 @@
       live region announces the counts once they settle; `polite` so it waits
       for a pause rather than cutting across whatever is being read.
     -->
-    <p aria-live="polite" class="visually-hidden">{{ resultSummary }}</p>
+    <p aria-live="polite" class="bd-sr-only">{{ resultSummary }}</p>
     <BdEmptyState
       v-if="searchStore.failed"
       action-label="Try again"
@@ -146,7 +146,7 @@ const resultSummary = computed(() => {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--bd-space-4);
 
   /*
    * `min-height: 0` is what lets this shrink below its content inside the
@@ -154,7 +154,7 @@ const resultSummary = computed(() => {
    * dialog body did, taking the search field off screen with it.
    */
   min-height: 0;
-  padding: var(--space-4);
+  padding: var(--bd-space-4);
 }
 
 /*
@@ -192,7 +192,7 @@ const resultSummary = computed(() => {
 .col-tail {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--bd-space-5);
   grid-area: tail;
   min-width: 0;
 }
@@ -200,8 +200,8 @@ const resultSummary = computed(() => {
 .results {
   display: grid;
   flex: 1;
-  font-size: var(--font-size-sm);
-  gap: var(--space-5);
+  font-size: var(--bd-font-size-sm);
+  gap: var(--bd-space-5);
   grid-template-areas: "artists albums tail";
   grid-template-columns: 1fr 1.6fr 0.9fr;
   min-height: 0;
@@ -215,7 +215,7 @@ const resultSummary = computed(() => {
   }
 
   @media (--mobile) {
-    gap: var(--space-5);
+    gap: var(--bd-space-5);
     grid-template-areas:
       "artists"
       "albums"

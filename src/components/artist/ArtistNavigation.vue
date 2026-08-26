@@ -172,20 +172,20 @@ onBeforeUnmount(() => {
 
 .wikipedia-nav {
   align-items: center;
-  background: var(--bg-color);
-  border-radius: 0.5rem;
+  background: var(--bd-bg);
+  border-radius: var(--bd-radius-md);
   display: flex;
-  gap: 0.5rem;
+  gap: var(--bd-space-2);
   justify-content: space-between;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
+  margin-bottom: var(--bd-space-4);
+  padding: var(--bd-space-2);
   position: sticky;
   top: 0;
-  transition: border-radius 0.2s ease;
+  transition: border-radius var(--bd-transition);
   z-index: 10;
 
   &.stuck {
-    border-radius: 0 0 0.5rem 0.5rem;
+    border-radius: 0 0 var(--bd-radius-md) var(--bd-radius-md);
   }
 
   @media (--mobile) {

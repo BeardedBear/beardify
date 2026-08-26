@@ -105,7 +105,7 @@ export const usePlayer = defineStore("player", {
       }
 
       notification({
-        msg: "Failed to switch device. It may be offline — the device list has been refreshed.",
+        msg: "Unable to switch device. It may be offline — the device list has been refreshed.",
         type: NotificationType.Error,
       });
     },
@@ -166,7 +166,7 @@ export const usePlayer = defineStore("player", {
         });
       } catch {
         notification({
-          msg: "Error adding song to queue",
+          msg: "Unable to add this song to the queue",
           type: NotificationType.Error,
         });
       }
@@ -311,7 +311,7 @@ export const usePlayer = defineStore("player", {
         this.seekLockUntil = 0;
         this.currentlyPlaying.progress_ms = previousProgress;
         this.playerState.position = previousPosition;
-        notification({ msg: "Failed to seek", type: NotificationType.Error });
+        notification({ msg: "Unable to seek", type: NotificationType.Error });
       }
     },
 

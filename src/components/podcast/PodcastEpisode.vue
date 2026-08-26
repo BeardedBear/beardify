@@ -4,13 +4,13 @@
       <i class="icon icon-check" />
     </div>
     <div class="episode">
-      <img :src="episode.images?.[1]?.url || episode.images?.[0]?.url" class="cover" />
+      <Cover :images="episode.images" class="cover" size="medium" />
       <div class="content">
-        <div class="name font-bold">
+        <div class="name bd-font-bold">
           {{ episode.name }}
         </div>
-        <div v-if="episode.description" class="description font-italic">
-          {{ `${episode.description.slice(0, 200)}...` }}
+        <div v-if="episode.description" class="description bd-font-italic">
+          {{ episode.description }}
         </div>
       </div>
     </div>
@@ -34,7 +34,7 @@
       />
     </div>
     <div class="infos">
-      <div class="metas font-bold">
+      <div class="metas bd-font-bold">
         <div>{{ date(episode.release_date) }}</div>
         /
         <div>{{ timecodeWithUnits(episode.duration_ms) }}</div>
@@ -79,6 +79,7 @@ import { BdButton, BdLoader } from "bearded-ui";
 
 import { Episode } from "@/@types/Podcast";
 import { usePlayer } from "@/components/player/PlayerStore";
+import Cover from "@/components/ui/AlbumCover.vue";
 import { date, timecodeWithUnits } from "@/helpers/date";
 import { playSong } from "@/helpers/play";
 
@@ -92,15 +93,15 @@ defineProps<{
 <style scoped>
 
 .progress {
-  background-color: var(--bg-color-dark);
-  border-radius: 1rem;
+  background-color: var(--bd-bg-dark);
+  border-radius: var(--bd-radius-lg);
   height: 0.2rem;
-  margin: 0 1rem;
+  margin: 0 var(--bd-space-4);
   position: relative;
 
   .bar {
-    background-color: var(--primary-color);
-    border-radius: 1rem;
+    background-color: var(--bd-primary);
+    border-radius: var(--bd-radius-lg);
     bottom: 0;
     left: 0;
     position: absolute;
@@ -111,47 +112,47 @@ defineProps<{
 .episode {
   align-items: center;
   display: flex;
-  gap: 1rem;
-  padding: 1rem;
+  gap: var(--bd-space-4);
+  padding: var(--bd-space-4);
 }
 
 .actions {
   align-items: center;
   display: flex;
-  gap: 1rem;
+  gap: var(--bd-space-4);
 }
 
 .infos {
   align-items: center;
-  border-radius: 0 0 1rem 1rem;
+  border-radius: 0 0 var(--bd-radius-lg) var(--bd-radius-lg);
   display: flex;
   justify-content: space-between;
-  padding: 0.7rem 1rem;
+  padding: var(--bd-space-3) var(--bd-space-4);
 
   .metas {
-    color: var(--font-color-dark);
+    color: var(--bd-font-color-dark);
     display: flex;
-    font-size: var(--font-size-sm);
-    gap: 0.5rem;
+    font-size: var(--bd-font-size-sm);
+    gap: var(--bd-space-2);
   }
 }
 
 .episode-wrap {
-  background-color: var(--bg-color);
-  border-radius: 1rem;
-  color: var(--font-color);
-  margin-bottom: 1rem;
+  background-color: var(--bd-bg);
+  border-radius: var(--bd-radius-lg);
+  color: var(--bd-font-color);
+  margin-bottom: var(--bd-space-4);
   position: relative;
   text-decoration: none;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--bd-transition);
   will-change: transform;
 }
 
 .played {
   --played-size: 3rem;
 
-  background-color: var(--primary-color);
-  border-radius: 0 1rem 0 0;
+  background-color: var(--bd-primary);
+  border-radius: 0 var(--bd-radius-lg) 0 0;
   clip-path: polygon(100% 0, 0 0, 100% 100%);
   content: "";
   height: var(--played-size);
@@ -161,7 +162,7 @@ defineProps<{
   width: var(--played-size);
 
   .icon {
-    color: #fff;
+    color: var(--bd-on-primary);
     position: absolute;
     right: 0.4rem;
     top: 0.4rem;
@@ -169,17 +170,26 @@ defineProps<{
 }
 
 .cover {
-  border-radius: 0.5rem;
+  border-radius: var(--bd-radius-md);
   height: 5rem;
 }
 
+/*
+ * Coupé par la mise en page, plus par `slice(0, 200)` : la troncature JS
+ * ajoutait « ... » même à une description de trois mots, et coupait au même
+ * caractère quelle que soit la largeur disponible.
+ */
 .description {
-  color: var(--font-color-dark);
-  margin-top: 0.5rem;
+  -webkit-box-orient: vertical;
+  color: var(--bd-font-color-dark);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  margin-top: var(--bd-space-2);
+  overflow: hidden;
 }
 
 .name {
-  font-size: var(--font-size-base);
+  font-size: var(--bd-font-size-base);
 }
 
 .content {

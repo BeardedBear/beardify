@@ -1,17 +1,17 @@
 <template>
   <aside v-if="hasContent" class="sidebar">
     <div v-if="details.length" class="sidebar-section">
-      <h3 class="sidebar-title font-bold">Details</h3>
+      <h3 class="sidebar-title bd-font-bold">Details</h3>
       <div class="sidebar-list">
         <div v-for="item in details" :key="item.label" class="sidebar-item">
-          <span class="sidebar-label font-bold">{{ item.label }}</span>
+          <span class="sidebar-label bd-font-bold">{{ item.label }}</span>
           <span class="sidebar-value">{{ item.value }}</span>
         </div>
       </div>
     </div>
 
     <div v-if="activeMembers.length || formerMembers.length" class="sidebar-section">
-      <h3 class="sidebar-title font-bold">Members</h3>
+      <h3 class="sidebar-title bd-font-bold">Members</h3>
       <div v-if="activeMembers.length" class="sidebar-members">
         <MemberPopover
           v-for="member in activeMembers"
@@ -21,7 +21,7 @@
           :name="member.name"
           :thumbnail="member.thumbnail"
         >
-          <a :href="member.url" class="sidebar-member font-bold" target="_blank" rel="noopener noreferrer">
+          <a :href="member.url" class="sidebar-member bd-font-bold" target="_blank" rel="noopener noreferrer">
             <img v-if="member.thumbnail" :src="member.thumbnail" :alt="member.name" class="member-thumbnail" />
             <div v-else class="member-placeholder">
               <i class="icon-user" />
@@ -32,7 +32,7 @@
       </div>
 
       <template v-if="formerMembers.length">
-        <h4 class="sidebar-subtitle font-bold">Former</h4>
+        <h4 class="sidebar-subtitle bd-font-bold">Former</h4>
         <div class="sidebar-members">
           <MemberPopover
             v-for="member in formerMembers"
@@ -42,7 +42,12 @@
             :name="member.name"
             :thumbnail="member.thumbnail"
           >
-            <a :href="member.url" class="sidebar-member inactive font-bold" target="_blank" rel="noopener noreferrer">
+            <a
+              :href="member.url"
+              class="sidebar-member inactive bd-font-bold"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
               <img v-if="member.thumbnail" :src="member.thumbnail" :alt="member.name" class="member-thumbnail" />
               <div v-else class="member-placeholder">
                 <i class="icon-user" />
@@ -55,7 +60,7 @@
     </div>
 
     <div v-if="externalLinks.length" class="sidebar-section">
-      <h3 class="sidebar-title font-bold">External Links</h3>
+      <h3 class="sidebar-title bd-font-bold">External Links</h3>
       <div class="sidebar-links">
         <a
           v-for="link in externalLinks"
@@ -191,94 +196,94 @@ const hasContent = computed(
 
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--bd-space-5);
 }
 
 .sidebar-section {
-  background: var(--bg-color);
+  background: var(--bd-bg);
   border-radius: calc(var(--sidebar-radius) + var(--sidebar-margin));
 }
 
 .sidebar-title {
-  background-color: var(--bg-color-light);
+  background-color: var(--bd-bg-light);
   border-radius: var(--sidebar-radius) var(--sidebar-radius) 0 0;
-  font-size: var(--font-size-base);
+  font-size: var(--bd-font-size-base);
   margin: var(--sidebar-margin);
-  padding: 0.5rem 1rem;
+  padding: var(--bd-space-2) var(--bd-space-4);
   text-transform: uppercase;
 }
 
 .sidebar-subtitle {
-  border-top: 1px solid var(--bg-color-light);
-  margin: 0 1rem;
+  border-top: 1px solid var(--bd-bg-light);
+  margin: 0 var(--bd-space-4);
   opacity: 0.6;
-  padding: 0.75rem 0 0.25rem;
+  padding: var(--bd-space-3) 0 var(--bd-space-1);
   text-transform: uppercase;
 }
 
 .sidebar-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem;
+  gap: var(--bd-space-3);
+  padding: var(--bd-space-4);
 }
 
 .sidebar-item {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: var(--bd-space-1);
 }
 
 .sidebar-label {
-  font-size: var(--font-size-sm);
+  font-size: var(--bd-font-size-sm);
   opacity: 0.6;
   text-transform: uppercase;
 }
 
 .sidebar-value {
-  color: var(--font-color-default);
+  color: var(--bd-font-color);
   line-height: 1.4;
 }
 
 .sidebar-links {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  padding: 1rem;
+  gap: var(--bd-space-2);
+  padding: var(--bd-space-4);
 }
 
 .sidebar-link {
   align-items: center;
-  border-radius: 0.25rem;
-  color: var(--font-color-light);
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-font-color-light);
   display: flex;
-  gap: 0.5rem;
-  padding: 0.4rem 0.5rem;
+  gap: var(--bd-space-2);
+  padding: var(--bd-space-2);
   text-decoration: none;
   transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
+    background-color var(--bd-transition-fast),
+    color var(--bd-transition-fast);
 
   &:hover {
-    background-color: var(--bg-color-light);
-    color: var(--font-color-default);
+    background-color: var(--bd-bg-light);
+    color: var(--bd-font-color);
   }
 
   i {
-    font-size: var(--font-size-base);
+    font-size: var(--bd-font-size-base);
     opacity: 0.7;
   }
 
   span {
-    font-size: var(--font-size-sm);
+    font-size: var(--bd-font-size-sm);
   }
 }
 
 .sidebar-members {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  padding: 1rem;
+  gap: var(--bd-space-2);
+  padding: var(--bd-space-4);
 }
 
 .sidebar-member-pop {
@@ -287,31 +292,31 @@ const hasContent = computed(
 
 .sidebar-member {
   align-items: center;
-  border-radius: 0.25rem;
-  color: var(--font-color-light);
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-font-color-light);
   display: flex;
-  gap: 0.5rem;
-  padding: 0.4rem 0.5rem;
+  gap: var(--bd-space-2);
+  padding: var(--bd-space-2);
   position: relative;
   text-decoration: none;
   transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
+    background-color var(--bd-transition-fast),
+    color var(--bd-transition-fast);
   z-index: 1;
 
   &:hover {
-    background-color: var(--bg-color-light);
-    color: var(--font-color-default);
+    background-color: var(--bd-bg-light);
+    color: var(--bd-font-color);
     z-index: 10;
   }
 
   &.inactive {
-    color: var(--font-color);
+    color: var(--bd-font-color);
   }
 }
 
 .member-thumbnail {
-  border-radius: 50%;
+  border-radius: var(--bd-radius-full);
   height: 24px;
   object-fit: cover;
   width: 24px;
@@ -319,15 +324,15 @@ const hasContent = computed(
 
 .member-placeholder {
   align-items: center;
-  background-color: var(--bg-color-light);
-  border-radius: 50%;
+  background-color: var(--bd-bg-light);
+  border-radius: var(--bd-radius-full);
   display: flex;
   height: 24px;
   justify-content: center;
   width: 24px;
 
   i {
-    font-size: var(--font-size-xs);
+    font-size: var(--bd-font-size-xs);
     opacity: 0.5;
   }
 }
@@ -337,7 +342,7 @@ const hasContent = computed(
 }
 
 .member-status {
-  color: var(--font-color-dark);
+  color: var(--bd-font-color-dark);
   font-style: italic;
 }
 </style>

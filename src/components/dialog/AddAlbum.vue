@@ -21,7 +21,7 @@
         v-for="playlist in filtered"
         :key="playlist.id"
         :disabled="pendingId !== null"
-        class="collection font-bold"
+        class="collection bd-font-bold"
         type="button"
         @click="add(dialogStore.albumId ?? '', playlist.id)"
       >
@@ -101,7 +101,7 @@ async function add(albumId: string, playlistId: string): Promise<void> {
     dialogStore.close();
     notification({ msg: "Album added", type: NotificationType.Success });
   } catch (error: unknown) {
-    notification({ msg: "Failed to add album", type: NotificationType.Error });
+    notification({ msg: "Unable to add this album", type: NotificationType.Error });
     if (import.meta.env.DEV) console.error("Add album error:", error);
   } finally {
     pendingId.value = null;
@@ -112,36 +112,36 @@ async function add(albumId: string, playlistId: string): Promise<void> {
 <style scoped>
 
 .content {
-  padding: 0.5rem;
+  padding: var(--bd-space-2);
 }
 
 .album {
   align-items: center;
   display: flex;
-  gap: 1rem;
+  gap: var(--bd-space-4);
   justify-content: space-between;
 }
 
 .album-name {
   align-items: center;
   display: flex;
-  gap: 1rem;
+  gap: var(--bd-space-4);
 }
 
 .collection {
   background: none;
   border: 0;
-  border-radius: 0.3rem;
-  color: var(--font-color-dark);
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-font-color-dark);
   cursor: pointer;
   display: block;
   font-family: inherit;
-  font-size: var(--font-size-sm);
-  padding: 0.5rem 1rem;
+  font-size: var(--bd-font-size-sm);
+  padding: var(--bd-space-2) var(--bd-space-4);
   text-align: left;
   transition:
-    background-color 0.1s ease,
-    color 0.1s ease;
+    background-color var(--bd-transition-fast),
+    color var(--bd-transition-fast);
   width: 100%;
 
   &:disabled {
@@ -149,13 +149,13 @@ async function add(albumId: string, playlistId: string): Promise<void> {
   }
 
   &:hover:not(:disabled) {
-    background: var(--bg-color-light);
-    color: var(--font-color);
+    background: var(--bd-bg-light);
+    color: var(--bd-font-color);
   }
 }
 
 .search {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--bd-space-2);
   width: 100%;
 }
 </style>

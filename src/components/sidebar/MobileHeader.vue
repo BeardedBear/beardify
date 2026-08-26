@@ -4,7 +4,7 @@
       <i aria-hidden="true" class="icon-menu" />
     </BdButton>
     <router-link to="/" class="logo-link">
-      <img class="logo" src="/img/logo.svg" />
+      <img alt="Beardify home" class="logo" src="/img/logo.svg" />
     </router-link>
     <BdButton label="Search" icon-only @click="dialogStore.open({ type: 'search' })">
       <i aria-hidden="true" class="icon-search" />
@@ -27,10 +27,10 @@ const dialogStore = useDialog();
 
 .mobile-header {
   align-items: center;
-  background: var(--bg-color-dark);
+  background: var(--bd-bg-dark);
   display: none;
   justify-content: space-between;
-  padding: 0.5rem 0.8rem;
+  padding: var(--bd-space-2) var(--bd-space-3);
 
   @media (--tablet-down) {
     display: flex;

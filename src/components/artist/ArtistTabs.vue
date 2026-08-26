@@ -92,8 +92,8 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
 
 .tabs {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 0.8rem;
+  gap: var(--bd-space-2);
+  margin-top: var(--bd-space-3);
   position: relative;
   z-index: 1;
 }
@@ -105,26 +105,26 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
   background-color: transparent;
   border: none;
   border-radius: var(--tab-radius) var(--tab-radius) 0 0;
-  color: var(--font-color-dark);
+  color: var(--bd-font-color-dark);
   cursor: pointer;
   display: flex;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: var(--bd-space-2);
+  padding: var(--bd-space-2) var(--bd-space-4);
   transition:
-    background-color 0.2s ease,
-    opacity 0.2s ease;
+    background-color var(--bd-transition),
+    opacity var(--bd-transition);
 
   @media (--mobile) {
-    padding: 0.5rem 0.8rem;
+    padding: var(--bd-space-2) var(--bd-space-3);
   }
 
   &:hover {
-    background-color: var(--bg-color-dark);
+    background-color: var(--bd-bg-dark);
     opacity: 0.8;
   }
 
   &.active {
-    background-color: var(--bg-color-darker);
+    background-color: var(--bd-bg-darker);
     opacity: 1;
   }
 
@@ -146,11 +146,11 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
       background: linear-gradient(
         90deg,
         transparent 0%,
-        var(--primary-color) 50%,
+        var(--bd-primary) 50%,
         transparent 100%
       );
       background-size: 200% 100%;
-      border-radius: 0.5rem 0.5rem 0 0;
+      border-radius: var(--bd-radius-md) var(--bd-radius-md) 0 0;
       content: "";
       height: 2px;
       left: 0;

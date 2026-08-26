@@ -24,7 +24,7 @@
     <div ref="scrollRef" class="home-content" @scroll="onScroll">
       <PageFit>
         <div class="title">
-          <h1 class="name font-bold">Recommended albums</h1>
+          <h1 class="name bd-font-bold">Recommended albums</h1>
           <BdButton @click="getData()">
             <i class="icon-refresh" />
             Refresh
@@ -75,20 +75,20 @@ watch(
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 3rem;
+  margin-bottom: var(--bd-space-7);
 
   @media (--mobile) {
     flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 2rem;
+    gap: var(--bd-space-4);
+    margin-bottom: var(--bd-space-6);
   }
 
   .name {
     flex: 1;
-    font-size: var(--font-size-xl);
+    font-size: var(--bd-font-size-xl);
 
     @media (--mobile) {
-      font-size: var(--font-size-lg);
+      font-size: var(--bd-font-size-lg);
     }
   }
 }
@@ -100,21 +100,14 @@ watch(
   overflow: hidden;
 }
 
+/*
+ * Trois media queries redéclaraient ici la même échelle que --page-inset, à
+ * partir d'un 5rem que le token avait déjà remplacé par 3rem sur la collection.
+ * Le bord gauche sautait donc de 3 à 5rem en passant d'une route à l'autre.
+ */
 .home-content {
   overflow-y: auto;
-  padding: 1rem 5rem;
-
-  @media (--mobile) {
-    padding: 1rem;
-  }
-
-  @media (--tablet) {
-    padding: 1rem 2rem;
-  }
-
-  @media (--narrow-desktop-down) {
-    padding: 1rem 3rem;
-  }
+  padding: var(--bd-space-4) var(--page-inset);
 }
 
 .loader {

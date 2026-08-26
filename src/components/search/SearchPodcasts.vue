@@ -12,7 +12,7 @@
       >
         <img :src="coverUrl(podcast.images, 'medium')" alt="" class="cover" />
         <div class="content">
-          <div class="name font-bold">
+          <div class="name bd-font-bold">
             {{ podcast.name }}
           </div>
           <div v-if="podcast.publisher" class="publisher">
@@ -40,29 +40,29 @@ const searchStore = useSearch();
 <style scoped>
 
 .podcast-list {
-  padding: 0 var(--space-4);
+  padding: 0 var(--bd-space-4);
 
   .podcast {
     align-items: center;
-    background-color: var(--bg-color);
-    border-radius: 0.5rem;
+    background-color: var(--bd-bg);
+    border-radius: var(--bd-radius-md);
     color: currentcolor;
     cursor: pointer;
     display: flex;
-    gap: var(--space-3);
-    margin-bottom: var(--space-1);
-    padding: var(--space-2);
+    gap: var(--bd-space-3);
+    margin-bottom: var(--bd-space-1);
+    padding: var(--bd-space-2);
     text-decoration: none;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--bd-transition);
 
     &:hover {
-      background-color: var(--bg-color-light);
+      background-color: var(--bd-bg-light);
     }
   }
 }
 
 .cover {
-  border-radius: 0.3rem;
+  border-radius: var(--bd-radius-sm);
   height: 3rem;
   width: 3rem;
 }
@@ -72,12 +72,12 @@ const searchStore = useSearch();
 }
 
 .name {
-  font-size: var(--font-size-sm);
+  font-size: var(--bd-font-size-sm);
   margin-bottom: 0;
 }
 
 .publisher {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-xs);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-xs);
 }
 </style>

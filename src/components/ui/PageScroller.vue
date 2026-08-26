@@ -56,7 +56,7 @@ function scrollToTop(): void {
   bottom: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--bd-space-2);
   position: absolute;
   right: 1.5rem;
   z-index: 4;

@@ -2,11 +2,11 @@
   <div ref="domHeader" class="header" :class="{ scrolled: artistStore.scrolledDown }">
     <div class="image-container">
       <img v-if="artistStore.artist.images.length" :src="artistStore.artist.images[0].url" alt="" class="img" />
-      <img v-else class="img" src="/img/default.png" />
+      <img v-else alt="" class="img" src="/img/default.png" />
     </div>
     <div class="inner">
       <div class="title">
-        <h1 class="name font-bold">
+        <h1 class="name bd-font-bold">
           {{ artistStore.artist.name }}
         </h1>
       </div>
@@ -106,7 +106,7 @@ watch(infoAvailable, (available) => {
   }
 
   &::after {
-    background-image: linear-gradient(to top, var(--primary-color) 0%, transparent 100%);
+    background-image: linear-gradient(to top, var(--bd-primary) 0%, transparent 100%);
     content: "";
     inset: 0;
     opacity: 0.2;
@@ -128,26 +128,26 @@ watch(infoAvailable, (available) => {
  * scroll into it.
  */
 .name {
-  font-size: var(--font-size-xl);
-  transition: font-size 0.2s ease;
+  font-size: var(--bd-font-size-xl);
+  transition: font-size var(--bd-transition);
 }
 
 .header.scrolled .name {
-  font-size: var(--font-size-lg);
+  font-size: var(--bd-font-size-lg);
 }
 
 .header {
-  background-color: var(--bg-color-darker);
-  padding: 1.2rem 2.5rem 0;
+  background-color: var(--bd-bg-darker);
+  padding: var(--bd-space-4) var(--bd-space-6) 0;
   position: sticky;
   top: 0;
   transition:
-    transform ease 0.1s,
-    padding 0.3s ease;
+    transform var(--bd-transition-fast),
+    padding var(--bd-duration) ease;
   z-index: 20;
 
   @media (--mobile) {
-    padding: 0.5rem 1rem 0;
+    padding: var(--bd-space-2) var(--bd-space-4) 0;
   }
 }
 

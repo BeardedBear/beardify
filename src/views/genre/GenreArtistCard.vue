@@ -1,7 +1,7 @@
 <template>
   <a
     ref="itemRef"
-    class="item font-bold"
+    class="item bd-font-bold"
     :class="{ resolving }"
     href="#"
     @click.prevent="goToArtist"
@@ -58,39 +58,39 @@ async function goToArtist(): Promise<void> {
 /* Declared before .item so the higher-specificity overrides nested in it come later. */
 .cover {
   aspect-ratio: 1;
-  border-radius: 100%;
-  margin-bottom: 0.7rem;
+  border-radius: var(--bd-radius-full);
+  margin-bottom: var(--bd-space-3);
   object-fit: cover;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--bd-transition);
   width: 100%;
 }
 
 .name {
-  font-size: var(--font-size-sm);
+  font-size: var(--bd-font-size-sm);
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: color 0.2s ease;
+  transition: color var(--bd-transition);
   white-space: nowrap;
 }
 
 .item {
-  border-radius: 0.5rem;
-  color: var(--font-color);
+  border-radius: var(--bd-radius-md);
+  color: var(--bd-font-color);
   cursor: pointer;
-  padding: 1rem;
+  padding: var(--bd-space-4);
   position: relative;
   text-align: center;
   text-decoration: none;
   transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
+    background-color var(--bd-transition),
+    transform var(--bd-transition);
 
   &:hover {
-    background-color: var(--bg-color-light);
+    background-color: var(--bd-bg-light);
     transform: scale(1.05);
 
     .name {
-      color: var(--primary-color);
+      color: var(--bd-primary);
     }
   }
 
@@ -105,7 +105,7 @@ async function goToArtist(): Promise<void> {
  * centre 0.8rem up, clear of the label.
  */
 .spinner {
-  inset: 0 0 1.6rem;
+  inset: 0 0 var(--bd-space-5);
   margin: auto;
   position: absolute;
 }

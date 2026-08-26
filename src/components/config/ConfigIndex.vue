@@ -1,8 +1,8 @@
 <template>
   <div class="config">
-    <div class="user font-bold">
+    <div class="user bd-font-bold">
       <div>{{ authStore.me?.display_name }}</div>
-      <div class="user-mail font-italic">
+      <div class="user-mail bd-font-italic">
         {{ authStore.me?.email }}
       </div>
     </div>
@@ -93,8 +93,8 @@ const updater = useUpdater();
 .section {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  margin-top: 1rem;
+  gap: var(--bd-space-3);
+  margin-top: var(--bd-space-4);
 }
 
 /*
@@ -102,7 +102,7 @@ const updater = useUpdater();
  * the collapsed Debug row doesn't read as a foreign element.
  */
 .debug-section {
-  background-color: var(--bg-color-dark);
+  background-color: var(--bd-bg-dark);
   border: 1px solid var(--bd-border-color);
   border-radius: var(--bd-radius-md);
   padding: var(--bd-space-3);
@@ -110,7 +110,7 @@ const updater = useUpdater();
 
 .debug-header {
   align-items: center;
-  color: var(--font-color-light);
+  color: var(--bd-font-color-light);
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -122,11 +122,11 @@ const updater = useUpdater();
   }
 
   & > svg {
-    transition: rotate 0.2s ease;
+    transition: rotate var(--bd-transition);
   }
 
   &:hover {
-    color: var(--font-color);
+    color: var(--bd-font-color);
   }
 }
 
@@ -137,23 +137,23 @@ const updater = useUpdater();
 .debug-body {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: var(--bd-space-3);
 }
 
 .user {
-  margin-bottom: 1.2rem;
+  margin-bottom: var(--bd-space-4);
 }
 
 .version {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-xs);
-  margin-top: 0.8rem;
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-xs);
+  margin-top: var(--bd-space-3);
   text-align: center;
 }
 
 .user-mail {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
   margin-top: 0.1rem;
 }
 

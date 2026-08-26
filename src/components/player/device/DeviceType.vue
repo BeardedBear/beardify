@@ -24,7 +24,7 @@ const normalizedType = computed(() => (props.type ?? "unknown").replace(/_/g, "-
   background-repeat: no-repeat;
   background-size: contain;
   display: inline-block;
-  font-size: var(--font-size-lg);
+  font-size: var(--bd-font-size-lg);
   height: 1.2rem;
   line-height: 1;
   opacity: 0.95;

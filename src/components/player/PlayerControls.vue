@@ -5,7 +5,7 @@
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         :class="{ active: playerStore.currentlyPlaying?.shuffle_state, big: props.forceMobile }"
         :pressed="!!playerStore.currentlyPlaying?.shuffle_state"
-        class="control-button shuffle squircle"
+        class="control-button shuffle bd-squircle"
         icon="shuffle"
         label="Shuffle"
         @click="playerStore.toggleShuffle()"
@@ -14,7 +14,7 @@
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
         :pressed="playerStore.currentlyPlaying?.repeat_state !== 'off'"
-        class="control-button repeat squircle"
+        class="control-button repeat bd-squircle"
         icon="repeat"
         label="Repeat"
         @click="playerStore.toggleRepeat()"
@@ -22,7 +22,7 @@
       <IconButton
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         :class="{ big: props.forceMobile }"
-        class="control-button previous squircle"
+        class="control-button previous bd-squircle"
         icon="skip-back"
         label="Previous track"
         @click="playerStore.previous()"
@@ -30,7 +30,7 @@
       <IconButton
         v-if="playerStore.playerState?.paused"
         :class="{ big: props.forceMobile }"
-        class="control-button play squircle"
+        class="control-button play bd-squircle"
         icon="play"
         label="Play"
         @click="playerStore.play()"
@@ -38,7 +38,7 @@
       <IconButton
         v-else
         :class="{ big: props.forceMobile }"
-        class="control-button play squircle"
+        class="control-button play bd-squircle"
         icon="pause"
         label="Pause"
         @click="playerStore.pause()"
@@ -46,13 +46,13 @@
       <IconButton
         v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
         :class="{ big: props.forceMobile }"
-        class="control-button next squircle"
+        class="control-button next bd-squircle"
         icon="skip-forward"
         label="Next track"
         @click="playerStore.next()"
       />
     </div>
-    <div class="time font-bold">
+    <div class="time bd-font-bold">
       {{ timecode(currentTime) || "00:00" }} /
       {{ timecode(duration) || "00:00" }}
     </div>
@@ -83,12 +83,12 @@ const duration = computed(() => playerStore.playerState?.duration);
 .btns {
   align-items: center;
   display: flex;
-  gap: 0.8rem;
+  gap: var(--bd-space-3);
 }
 
 .time {
-  font-size: var(--font-size-sm);
-  font-variant: tabular-nums;
+  font-size: var(--bd-font-size-sm);
+  font-variant-numeric: tabular-nums;
 
   @media (--mobile) {
     display: none;
@@ -99,53 +99,53 @@ const duration = computed(() => playerStore.playerState?.duration);
   align-items: center;
   display: flex;
   flex: 1;
-  gap: 1.2rem;
+  gap: var(--bd-space-4);
   justify-content: center;
 }
 
 .control-button {
   background-color: transparent;
   border: none;
-  border-radius: 1rem;
+  border-radius: var(--bd-radius-lg);
   color: currentcolor;
   cursor: pointer;
-  font-size: var(--font-size-lg);
+  font-size: var(--bd-font-size-lg);
   line-height: 0;
   opacity: 0.5;
-  padding: 0.4rem 0.5rem;
+  padding: var(--bd-space-2);
 
   &.active {
     opacity: 1;
   }
 
   &:hover {
-    background-color: var(--bg-color-light);
+    background-color: var(--bd-bg-light);
   }
 
   &:active {
-    background-color: var(--bg-color-lighter);
+    background-color: var(--bd-bg-lighter);
   }
 
   &.big {
-    font-size: var(--font-size-xl);
-    padding: 0.5rem 0.6rem;
+    font-size: var(--bd-font-size-xl);
+    padding: var(--bd-space-2);
   }
 
   &.play {
-    font-size: var(--font-size-xl);
+    font-size: var(--bd-font-size-xl);
     opacity: 1;
 
     &:hover {
-      background-color: var(--bg-color-light);
+      background-color: var(--bd-bg-light);
     }
 
     &:active {
-      background-color: var(--bg-color-lighter);
+      background-color: var(--bd-bg-lighter);
     }
 
     &.big {
-      font-size: var(--font-size-xl);
-      padding: 0.6rem 0.7rem;
+      font-size: var(--bd-font-size-xl);
+      padding: var(--bd-space-2) var(--bd-space-3);
     }
   }
 

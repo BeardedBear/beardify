@@ -19,11 +19,11 @@
     <div class="text-content">
       <div class="track-details">
         <template v-if="!isTrackNameLong">
-          <span class="trackname font-bold">{{ currentTrack.name }}</span>
+          <span class="trackname bd-font-bold">{{ currentTrack.name }}</span>
         </template>
         <template v-else>
           <BdTooltip :content="currentTrack.name">
-            <span class="trackname font-bold">{{ truncatedTrackName }}</span>
+            <span class="trackname bd-font-bold">{{ truncatedTrackName }}</span>
           </BdTooltip>
         </template>
         <span class="separator">&nbsp;·&nbsp;</span>
@@ -31,8 +31,8 @@
           <ArtistList :artist-list="currentTrack.artists" feat />
         </span>
       </div>
-      <div class="album font-italic">
-        <router-link :to="`/album/${transformUriToid(currentTrack.album.uri)}`" class="link font-italic">
+      <div class="album bd-font-italic">
+        <router-link :to="`/album/${transformUriToid(currentTrack.album.uri)}`" class="link bd-font-italic">
           {{ currentTrack.album.name }}
         </router-link>
       </div>
@@ -66,7 +66,7 @@ const truncatedTrackName = computed(() => {
 <style scoped>
 
 .cover {
-  border-radius: 0.3rem;
+  border-radius: var(--bd-radius-sm);
   display: block;
 }
 
@@ -74,8 +74,8 @@ const truncatedTrackName = computed(() => {
   position: relative;
 
   .add {
-    font-size: var(--font-size-xl);
-    transition: transform 0.2s ease;
+    font-size: var(--bd-font-size-xl);
+    transition: transform var(--bd-transition);
     will-change: transform;
 
     &:hover {
@@ -86,14 +86,14 @@ const truncatedTrackName = computed(() => {
   .hover {
     align-items: center;
     background-color: rgb(0 0 0 / 80%);
-    border-radius: 0.3rem;
+    border-radius: var(--bd-radius-sm);
     cursor: pointer;
     display: flex;
     inset: 0;
     justify-content: center;
     opacity: 0;
     position: absolute;
-    transition: opacity 0.2s ease;
+    transition: opacity var(--bd-transition);
   }
 
   &:hover {
@@ -135,7 +135,7 @@ const truncatedTrackName = computed(() => {
 
 .artists {
   @media (--mobile) {
-    font-size: var(--font-size-sm);
+    font-size: var(--bd-font-size-sm);
     opacity: 0.8;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -146,14 +146,14 @@ const truncatedTrackName = computed(() => {
 
 .artistname {
   color: currentcolor;
-  font-variation-settings: var(--font-variation-settings-bold);
-  font-weight: var(--font-weight-bold);
+  font-variation-settings: var(--bd-font-variation-settings-bold);
+  font-weight: var(--bd-weight-bold-fallback);
   text-decoration: none;
 }
 
 .album {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
 
   @media (--mobile) {
     overflow: hidden;
@@ -165,11 +165,11 @@ const truncatedTrackName = computed(() => {
   .link {
     color: currentcolor;
     cursor: pointer;
-    font-size: var(--font-size-sm);
+    font-size: var(--bd-font-size-sm);
     text-decoration: none;
 
     &:hover {
-      color: var(--primary-color);
+      color: var(--bd-primary);
       opacity: 1;
     }
   }
@@ -179,7 +179,7 @@ const truncatedTrackName = computed(() => {
   align-items: center;
   display: flex;
   flex: 1;
-  gap: 1rem;
+  gap: var(--bd-space-4);
   min-width: 0;
 
   @media (--mobile) {
@@ -195,7 +195,7 @@ const truncatedTrackName = computed(() => {
   }
 
   @media (--mobile) {
-    gap: 0.6rem;
+    gap: var(--bd-space-2);
   }
 
   .cover-wrap {

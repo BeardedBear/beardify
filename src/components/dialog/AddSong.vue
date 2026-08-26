@@ -7,10 +7,10 @@
       <div
         v-for="(playlist, index) in filteredPlaylists"
         :key="index"
-        class="collection font-bold"
+        class="collection bd-font-bold"
         @click="add(dialogStore.track?.uri ? dialogStore.track?.uri : '', playlist.id)"
       >
-        <div class="playlist font-bold">
+        <div class="playlist bd-font-bold">
           <div>
             <PlaylistIcon :playlist="playlist" />
             {{ playlist.name }}
@@ -69,7 +69,7 @@ async function add(songUri: string, playlistId: string): Promise<void> {
 <style scoped>
 
 .content {
-  padding: 0.5rem;
+  padding: var(--bd-space-2);
 }
 
 .playlist {
@@ -78,25 +78,25 @@ async function add(songUri: string, playlistId: string): Promise<void> {
   justify-content: space-between;
 
   i {
-    margin-right: 1rem;
+    margin-right: var(--bd-space-4);
     opacity: 0.3;
   }
 }
 
 .collection {
-  border-radius: 0.3rem;
+  border-radius: var(--bd-radius-sm);
   cursor: pointer;
   opacity: 0.7;
-  padding: 0.5rem 1rem;
+  padding: var(--bd-space-2) var(--bd-space-4);
   transition:
-      background-color 0.1s ease,
-      opacity 0.1s ease,
-      padding-left 0.1s ease;
+    background-color var(--bd-transition-fast),
+    opacity var(--bd-transition-fast),
+    padding-left var(--bd-transition-fast);
 
   &:hover {
-    background: var(--bg-color-light);
+    background: var(--bd-bg-light);
     opacity: 1;
-    padding-left: 1.2rem;
+    padding-left: var(--bd-space-4);
   }
 }
 </style>
