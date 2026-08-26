@@ -2,9 +2,9 @@
   <div :class="['volume-wrapper', { 'force-visible': forceMobile }]">
     <div ref="refVolume" class="volume bd-font-bold" @mouseleave="onLeave" @mousemove="onMove">
       <div :style="{ width: currentSliderPercent + '%' }" class="cursor" />
-      <div :style="{ width: sliderPercent + '%' }" class="hover">
+      <div :style="{ width: wedgePercent + '%' }" class="hover">
         <div class="perc">
-          {{ previewVolume + "%" }}
+          {{ wedgeVolume + "%" }}
         </div>
       </div>
       <!--
@@ -15,7 +15,7 @@
       -->
       <input
         :value="sliderPercent"
-        :aria-valuetext="`${previewVolume}%`"
+        :aria-valuetext="`${announcedVolume}%`"
         aria-label="Volume"
         class="range"
         max="100"
@@ -49,8 +49,27 @@ import { clamp, sliderPercentToVolume, volumeToSliderPercent } from "@/helpers/v
 defineProps<{ forceMobile?: boolean }>();
 
 const refVolume = ref<HTMLDivElement | null>(null);
-const sliderPercent = ref<number>(0); // 0..100 slider visual position
-const previewVolume = computed<number>(() => sliderPercentToVolume(sliderPercent.value));
+
+/*
+ * Deux positions, et elles doivent rester distinctes. `sliderPercent` est la
+ * valeur que porte le <input type="range"> ; `hoverPercent` n'est que l'aperçu
+ * sous le curseur.
+ *
+ * Les deux n'en faisaient qu'une : `onMove` écrivait dans `sliderPercent`, lié à
+ * `:value`, donc au moment du clic l'input portait déjà la valeur du pixel visé.
+ * Un range qui reçoit la valeur qu'il a déjà n'émet ni `input` ni `change` — le
+ * clic ne réglait rien, sauf quand l'arrondi de `onMove` et celui du range
+ * tombaient à un cran d'écart.
+ */
+const sliderPercent = ref<number>(0);
+const hoverPercent = ref<null | number>(null);
+
+/* Le coin peint suit le curseur au survol, la valeur de l'input sinon. */
+const wedgePercent = computed<number>(() => hoverPercent.value ?? sliderPercent.value);
+const wedgeVolume = computed<number>(() => sliderPercentToVolume(wedgePercent.value));
+
+/* Ce qu'annonce le lecteur d'écran : la valeur réglée, jamais celle survolée. */
+const announcedVolume = computed<number>(() => sliderPercentToVolume(sliderPercent.value));
 const currentSliderPercent = computed<number>(() =>
   volumeToSliderPercent(playerStore.devices.activeDevice.volume_percent ?? 0),
 );
@@ -85,11 +104,11 @@ watch(() => playerStore.devices.activeDevice.volume_percent, syncSliderToDevice)
 // call to Spotify instead of one per pixel.
 async function onCommit(e: Event): Promise<void> {
   sliderPercent.value = Number((e.target as HTMLInputElement).value);
-  await setVolumeOptimistic(previewVolume.value);
+  await setVolumeOptimistic(sliderPercentToVolume(sliderPercent.value));
 }
 
 function onLeave(): void {
-  // reset preview to current volume
+  hoverPercent.value = null;
   syncSliderToDevice();
 }
 
@@ -98,12 +117,14 @@ function onMove(e: MouseEvent): void {
   if (!el) return;
   const rect = el.getBoundingClientRect();
   const pos = clamp(((e.clientX - rect.left) / rect.width) * 100);
-  sliderPercent.value = Math.round(pos);
+  hoverPercent.value = Math.round(pos);
 }
 
 // Dragging and arrow keys meanwhile only move the painted wedge.
 function onScrub(e: Event): void {
   sliderPercent.value = Number((e.target as HTMLInputElement).value);
+  // Au clavier il n'y a pas de curseur : le coin doit suivre l'input.
+  hoverPercent.value = null;
 }
 
 /**
