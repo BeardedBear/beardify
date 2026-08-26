@@ -55,6 +55,6 @@ const open = computed<boolean>({
 
 <style scoped>
 .pre-content {
-  border-bottom: 0.1rem solid var(--bg-color-light);
+  border-bottom: 0.1rem solid var(--bd-bg-light);
 }
 </style>

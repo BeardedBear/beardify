@@ -36,7 +36,7 @@ const authStore = useAuth();
 
 <style scoped>
 .type-icon {
-  margin-right: 1rem;
+  margin-right: var(--bd-space-4);
   opacity: 0.3;
   position: relative;
 
@@ -45,7 +45,7 @@ const authStore = useAuth();
       --dot-size: 0.2rem;
 
       background-color: currentcolor;
-      border-radius: 100%;
+      border-radius: var(--bd-radius-full);
       content: "";
       height: var(--dot-size);
       position: absolute;

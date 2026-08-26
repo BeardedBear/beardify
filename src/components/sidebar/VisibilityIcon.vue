@@ -13,8 +13,8 @@ defineProps<{
 
 <style scoped>
 .visibility-icon {
-  font-size: var(--font-size-sm);
-  margin-left: 1rem;
+  font-size: var(--bd-font-size-sm);
+  margin-left: var(--bd-space-4);
   opacity: 0.1;
 }
 </style>

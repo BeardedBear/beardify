@@ -4,7 +4,7 @@
       <div class="recap">
         <Cover :images="playlistStore.playlist.images" class="cover" size="large" />
         <div>
-          <div class="name font-bold">{{ playlistStore.playlist.name.replace("#Collection ", "") }}</div>
+          <div class="name bd-font-bold">{{ playlistStore.playlist.name.replace("#Collection ", "") }}</div>
           <div class="count">{{ albumCount }} albums</div>
         </div>
       </div>
@@ -55,19 +55,19 @@ function copyPublicLink(): void {
 .wrap {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--bd-space-4);
   max-width: 24rem;
-  padding: 1.2rem;
+  padding: var(--bd-space-4);
 }
 
 .recap {
   align-items: center;
   display: flex;
-  gap: 1rem;
+  gap: var(--bd-space-4);
 }
 
 .cover {
-  border-radius: 0.4rem;
+  border-radius: var(--bd-radius-sm);
   height: 5rem;
   width: 5rem;
 }

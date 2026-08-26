@@ -29,7 +29,7 @@
     <Topbar />
     <Menu />
     <div class="sidebar-item">
-      <div v-if="!collectionSearchOpened" class="heading title">
+      <div v-if="!collectionSearchOpened" class="bd-heading title">
         <div class="title-name">Collections</div>
         <div class="options">
           <IconButton
@@ -52,7 +52,7 @@
           />
         </div>
       </div>
-      <div v-else ref="collectionSearchWrap" class="heading title">
+      <div v-else ref="collectionSearchWrap" class="bd-heading title">
         <BdInput
           ref="collectionSearchInput"
           v-model="collectionSearchQuery"
@@ -71,7 +71,7 @@
           v-if="playlist.id"
           :class="{ active: $route.params.id === playlist.id }"
           :to="`/collection/${playlist.id}`"
-          class="playlist-item font-bold"
+          class="playlist-item bd-font-bold"
         >
           <PlaylistIcon :playlist="playlist" />
           <div class="name">
@@ -95,7 +95,7 @@
       </div>
     </div>
     <div class="sidebar-item">
-      <div v-if="!playlistSearchOpened" class="heading title">
+      <div v-if="!playlistSearchOpened" class="bd-heading title">
         <div class="title-name">Playlists</div>
         <div class="options">
           <IconButton class="icon" icon="refresh" label="Refresh playlists" @click="sidebarStore.refreshPlaylists()" />
@@ -113,7 +113,7 @@
           />
         </div>
       </div>
-      <div v-else ref="playlistSearchWrap" class="heading title">
+      <div v-else ref="playlistSearchWrap" class="bd-heading title">
         <BdInput
           ref="playlistSearchInput"
           v-model="playlistSearchQuery"
@@ -128,7 +128,7 @@
           v-if="playlist.id && playlist.name !== ''"
           :class="{ active: $route.params.id === playlist.id }"
           :to="`/playlist/${playlist.id}`"
-          class="playlist-item font-bold"
+          class="playlist-item bd-font-bold"
         >
           <PlaylistIcon :playlist="playlist" />
           <div class="name">
@@ -243,9 +243,9 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 <style scoped>
 
 .empty {
-  color: var(--font-color-dark);
+  color: var(--bd-font-color-dark);
   font-style: italic;
-  padding: 0.8rem 20px 0.8rem 1rem;
+  padding: var(--bd-space-3) var(--bd-space-4);
 }
 
 .playlist-item {
@@ -253,46 +253,46 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   color: currentcolor;
   display: flex;
   justify-content: space-between;
-  padding: 0.3rem 1.2rem 0.3rem 1rem;
+  padding: var(--bd-space-1) var(--bd-space-4);
   text-decoration: none;
 
   .edit {
-    background-color: var(--bg-color);
+    background-color: var(--bd-bg);
     border: none;
-    border-radius: 2rem;
-    color: var(--font-color);
+    border-radius: var(--bd-radius-full);
+    color: var(--bd-font-color);
     cursor: pointer;
-    font-size: var(--font-size-sm);
+    font-size: var(--bd-font-size-sm);
     opacity: 0;
-    padding: 0.2rem 0.7rem;
+    padding: var(--bd-space-1) var(--bd-space-3);
     position: absolute;
     right: 0.5rem;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--bd-transition);
 
     &:hover {
-      background-color: var(--bg-color-lighter);
+      background-color: var(--bd-bg-lighter);
     }
   }
 
   .name {
     flex: 1;
     text-align: left;
-    transition: transform 0.2s;
+    transition: transform var(--bd-transition);
   }
 
   .tier-badge,
   .top-badge {
-    border-radius: 0.3rem;
+    border-radius: var(--bd-radius-sm);
     color: white;
     font-size: 0.6rem;
     letter-spacing: 0.03rem;
-    margin-left: 0.4rem;
-    padding: 0.1rem 0.3rem;
+    margin-left: var(--bd-space-2);
+    padding: 0.1rem var(--bd-space-1);
     vertical-align: middle;
   }
 
   .top-badge {
-    background-color: var(--primary-color);
+    background-color: var(--bd-primary);
   }
 
   .tier-badge {
@@ -300,7 +300,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   }
 
   &:hover {
-    background-color: var(--bg-color);
+    background-color: var(--bd-bg);
 
     .edit {
       opacity: 1;
@@ -321,7 +321,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
  */
 .options {
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--bd-transition);
 
   @media (pointer: coarse) {
     opacity: 1;
@@ -330,14 +330,14 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   .icon {
     background-color: transparent;
     border: 0;
-    border-radius: 20rem;
-    color: var(--font-color);
+    border-radius: var(--bd-radius-full);
+    color: var(--bd-font-color);
     cursor: pointer;
     opacity: 0.4;
-    padding: 0.2rem 0.5rem;
+    padding: var(--bd-space-1) var(--bd-space-2);
 
     &:hover {
-      background-color: var(--bg-color-lighter);
+      background-color: var(--bd-bg-lighter);
       opacity: 1;
     }
   }
@@ -345,7 +345,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 
 .sidebar {
   animation: pop-content 1s ease both;
-  background: var(--bg-color-dark);
+  background: var(--bd-bg-dark);
   display: grid;
   grid-template-rows: auto auto auto;
   overflow: hidden;
@@ -377,10 +377,10 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 
   .load-error {
     align-items: center;
-    color: var(--font-color-dark);
+    color: var(--bd-font-color-dark);
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: var(--bd-space-3);
   }
 }
 
@@ -390,7 +390,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   opacity: 0;
   pointer-events: none;
   position: fixed;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--bd-duration) ease;
   z-index: 999;
 
   &.is-visible {
@@ -417,18 +417,18 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
 
 .title {
   align-items: center;
-  background-color: var(--bg-color-dark);
-  color: var(--font-color);
+  background-color: var(--bd-bg-dark);
+  color: var(--bd-font-color);
   display: flex;
   justify-content: space-between;
   margin: 0;
-  padding: 0.7rem 0.7rem 0.7rem 1rem;
+  padding: var(--bd-space-3) var(--bd-space-3) var(--bd-space-3) var(--bd-space-4);
   position: sticky;
   top: 0;
   z-index: 1;
 
   .title-name {
-    color: var(--font-color-dark);
+    color: var(--bd-font-color-dark);
   }
 }
 </style>

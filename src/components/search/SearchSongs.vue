@@ -22,7 +22,7 @@
       >
         <i class="track-icon icon-music" />
         <div>
-          <div class="track-name font-bold">
+          <div class="track-name bd-font-bold">
             {{ track.name }}
           </div>
           <div>
@@ -50,35 +50,35 @@ const searchStore = useSearch();
 <style scoped>
 
 .song-list {
-  padding: 0 var(--space-4);
+  padding: 0 var(--bd-space-4);
 }
 
 .track {
   align-items: center;
   background: none;
   border: 0;
-  border-radius: 0.3rem;
+  border-radius: var(--bd-radius-sm);
   color: inherit;
   cursor: pointer;
   display: flex;
   font: inherit;
-  gap: var(--space-3);
-  padding: var(--space-2);
+  gap: var(--bd-space-3);
+  padding: var(--bd-space-2);
   text-align: left;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--bd-transition-fast);
   width: 100%;
 
   &:hover {
-    background-color: var(--bg-color-light);
+    background-color: var(--bd-bg-light);
   }
 }
 
 .track-icon {
-  font-size: var(--font-size-xl);
+  font-size: var(--bd-font-size-xl);
   opacity: 0.1;
 }
 
 .track-name {
-  font-size: var(--font-size-sm);
+  font-size: var(--bd-font-size-sm);
 }
 </style>

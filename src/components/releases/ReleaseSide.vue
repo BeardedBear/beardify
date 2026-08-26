@@ -1,13 +1,13 @@
 <template>
   <div v-for="category in releasesStore.menu" :key="category.name">
-    <div class="title font-bold">
+    <div class="title bd-font-bold">
       {{ category.name }}
     </div>
     <div
       v-for="(slug, index) in category.slugs"
       :key="index"
       :class="{ selected: releasesStore.activeSlug === slug }"
-      class="slug font-bold"
+      class="slug bd-font-bold"
       @click="releasesStore.setActiveSlug(slug)"
     >
       {{ slug }}
@@ -24,27 +24,27 @@ const releasesStore = useReleases();
 <style scoped>
 
 .title {
-  background-color: var(--bg-color-darker);
-  color: var(--primary-color);
-  padding: 1rem 0.5rem 0.5rem;
+  background-color: var(--bd-bg-darker);
+  color: var(--bd-primary);
+  padding: var(--bd-space-4) var(--bd-space-2) var(--bd-space-2);
   position: sticky;
   text-transform: uppercase;
   top: 0;
 }
 
 .slug {
-  border-radius: 0.3rem;
+  border-radius: var(--bd-radius-sm);
   cursor: pointer;
-  font-size: var(--font-size-sm);
-  padding: 0.2rem 0.6rem;
+  font-size: var(--bd-font-size-sm);
+  padding: var(--bd-space-1) var(--bd-space-2);
   text-transform: capitalize;
 
   &:hover {
-    background-color: var(--bg-color);
+    background-color: var(--bd-bg);
   }
 
   &.selected {
-    background-color: var(--primary-color);
+    background-color: var(--bd-primary);
     color: white;
   }
 }

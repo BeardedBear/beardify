@@ -1,7 +1,7 @@
 <template>
   <div class="tier-row" :class="{ 'tier-row-side': sideLayout, 'tier-row-unsorted': scrollable }">
     <div
-      class="tier-heading font-bold"
+      class="tier-heading bd-font-bold"
       :class="{ 'tier-heading-colored': !!color, 'tier-heading-unsorted': unsorted, 'tier-heading-side': sideLayout }"
       :style="color ? { backgroundColor: color } : undefined"
     >
@@ -89,7 +89,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
 .tier-row-side {
   align-items: stretch;
   display: flex;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--bd-space-5);
 }
 
 /* Sticky requires an actual box (display: contents, used by .tier-row, opts an */
@@ -98,12 +98,12 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
 
 /* own always-boxed variant instead of reusing .tier-row. */
 .tier-row-unsorted {
-  background-color: var(--bg-color-darker);
+  background-color: var(--bd-bg-darker);
   bottom: 0;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding-bottom: 1rem;
+  padding-bottom: var(--bd-space-4);
   position: sticky;
   z-index: 2;
 
@@ -112,7 +112,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   }
 
   &::before {
-    background-image: linear-gradient(to top, var(--bg-color-darker) 0%, transparent 100%);
+    background-image: linear-gradient(to top, var(--bd-bg-darker) 0%, transparent 100%);
     bottom: 100%;
     content: "";
     height: 20px;
@@ -124,12 +124,12 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
 }
 
 .tier-heading {
-  background-color: var(--bg-color);
-  border-radius: 0.4rem;
-  font-size: var(--font-size-lg);
+  background-color: var(--bd-bg);
+  border-radius: var(--bd-radius-sm);
+  font-size: var(--bd-font-size-lg);
   line-break: anywhere;
-  margin: 2rem 0 1rem;
-  padding: 0.7rem 1.2rem;
+  margin: var(--bd-space-6) 0 var(--bd-space-4);
+  padding: var(--bd-space-3) var(--bd-space-4);
 }
 
 .tier-heading-colored {
@@ -139,15 +139,15 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
 
 .tier-heading-unsorted {
   background-color: transparent;
-  border: 0.1rem dashed var(--bg-color-lighter);
-  color: var(--font-color-dark);
+  border: 0.1rem dashed var(--bd-bg-lighter);
+  color: var(--bd-font-color-dark);
   font-style: italic;
   opacity: 0.7;
 }
 
 .tier-heading-side {
   align-items: center;
-  border-radius: 0.4rem 0 0 0.4rem;
+  border-radius: var(--bd-radius-sm) 0 0 var(--bd-radius-sm);
   display: flex;
   flex-shrink: 0;
   justify-content: center;
@@ -162,13 +162,13 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
 
 .unsorted-scroll-wrap {
   align-items: center;
-  background-color: var(--bg-color);
-  border-radius: 0 0.4rem 0.4rem 0;
+  background-color: var(--bd-bg);
+  border-radius: 0 var(--bd-radius-sm) var(--bd-radius-sm) 0;
   display: flex;
   flex: 1;
-  gap: 0.5rem;
+  gap: var(--bd-space-2);
   min-width: 0;
-  padding: 0 1rem;
+  padding: 0 var(--bd-space-4);
 }
 
 /* flex + min-width: 0 are required here: flex items default to min-width: */
@@ -190,14 +190,14 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
 
 .scroll-arrow {
   align-items: center;
-  background-color: var(--bg-color-light);
+  background-color: var(--bd-bg-light);
   border: 0;
-  border-radius: 50%;
+  border-radius: var(--bd-radius-full);
   color: currentcolor;
   cursor: pointer;
   display: flex;
   flex-shrink: 0;
-  font-size: var(--font-size-lg);
+  font-size: var(--bd-font-size-lg);
   height: 2.4rem;
   justify-content: center;
   width: 2.4rem;
@@ -208,7 +208,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   }
 
   &:hover:not(:disabled) {
-    background-color: var(--bg-color-lighter);
+    background-color: var(--bd-bg-lighter);
   }
 }
 </style>

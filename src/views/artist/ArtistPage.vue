@@ -149,13 +149,13 @@ watch(
 
 <style>
 .sticky-heading {
-  background-color: var(--bg-color-darker);
-  margin-bottom: 0.8rem;
+  background-color: var(--bd-bg-darker);
+  margin-bottom: var(--bd-space-3);
   position: sticky;
   z-index: 15;
 
   &::after {
-    background-color: var(--bg-color-darker);
+    background-color: var(--bd-bg-darker);
     bottom: 0;
     content: "";
     height: 100%;
@@ -179,17 +179,17 @@ watch(
 
 .content {
   display: grid;
-  gap: 2.5rem;
+  gap: var(--bd-space-6);
   grid-template-columns: 1fr 20rem;
   margin: 0 auto;
   max-width: 120rem;
-  padding: 2rem 2.5rem;
+  padding: var(--bd-space-6);
   position: relative;
 
   @media (--tablet-down) {
-    gap: 1.5rem;
+    gap: var(--bd-space-5);
     grid-template-columns: 1fr;
-    padding: 1rem;
+    padding: var(--bd-space-4);
   }
 
   @media (--xl) {
@@ -203,10 +203,10 @@ watch(
 }
 
 .content-block {
-  margin-bottom: 3rem;
+  margin-bottom: var(--bd-space-7);
 
   @media (--mobile) {
-    margin-bottom: 2rem;
+    margin-bottom: var(--bd-space-6);
   }
 }
 
@@ -224,10 +224,10 @@ watch(
 }
 
 .top-item {
-  margin-bottom: 2.5rem;
+  margin-bottom: var(--bd-space-6);
 
   @media (--mobile) {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--bd-space-5);
     order: -1;
   }
 
@@ -258,15 +258,15 @@ watch(
 
 .discography-loader {
   display: grid;
-  padding: 4rem 0;
+  padding: var(--bd-space-8) 0;
   place-content: center;
 }
 
 .tab-fade-enter-active,
 .tab-fade-leave-active {
   transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
+    opacity var(--bd-transition-fast),
+    transform var(--bd-transition-fast);
 }
 
 .tab-fade-enter-from {

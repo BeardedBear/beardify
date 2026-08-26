@@ -1,6 +1,6 @@
 <template>
   <div :class="['volume-wrapper', { 'force-visible': forceMobile }]">
-    <div ref="refVolume" class="volume font-bold" @mouseleave="onLeave" @mousemove="onMove">
+    <div ref="refVolume" class="volume bd-font-bold" @mouseleave="onLeave" @mousemove="onMove">
       <div :style="{ width: currentSliderPercent + '%' }" class="cursor" />
       <div :style="{ width: sliderPercent + '%' }" class="hover">
         <div class="perc">
@@ -120,7 +120,7 @@ async function setVolumeOptimistic(volume: number): Promise<void> {
     if (oldDeviceVolume.value !== null) {
       playerStore.devices.activeDevice.volume_percent = oldDeviceVolume.value;
     }
-    notification({ msg: "Failed to set volume", type: NotificationType.Error });
+    notification({ msg: "Unable to set the volume", type: NotificationType.Error });
   } finally {
     oldDeviceVolume.value = null;
   }
@@ -145,7 +145,7 @@ async function toggleMute(): Promise<void> {
     if (oldDeviceVolume.value !== null) {
       playerStore.devices.activeDevice.volume_percent = oldDeviceVolume.value;
     }
-    notification({ msg: "Failed to set volume", type: NotificationType.Error });
+    notification({ msg: "Unable to set the volume", type: NotificationType.Error });
   } finally {
     oldDeviceVolume.value = null;
   }
@@ -157,10 +157,10 @@ async function toggleMute(): Promise<void> {
 .mute {
   background-color: transparent;
   border: 0;
-  color: var(--font-color);
+  color: var(--bd-font-color);
   cursor: pointer;
   opacity: 0.5;
-  padding: 0.5rem 0.6rem;
+  padding: var(--bd-space-2);
 
   &:hover {
     opacity: 1;
@@ -170,7 +170,7 @@ async function toggleMute(): Promise<void> {
 .volume-wrapper {
   align-items: center;
   display: flex;
-  gap: 1rem;
+  gap: var(--bd-space-4);
 
   @media (--mobile) {
     display: none;
@@ -182,10 +182,10 @@ async function toggleMute(): Promise<void> {
 }
 
 .volume {
-  background-color: var(--bg-color-light);
+  background-color: var(--bd-bg-light);
   cursor: pointer;
   display: inline-block;
-  font-size: var(--font-size-sm);
+  font-size: var(--bd-font-size-sm);
   height: 1.7rem;
   position: relative;
   width: 6rem;
@@ -195,7 +195,7 @@ async function toggleMute(): Promise<void> {
   }
 
   &::before {
-    background-color: var(--bg-color);
+    background-color: var(--bd-bg);
     clip-path: polygon(-10% -10%, 0 82%, 100% 0);
     content: "";
     inset: -0.1rem;
@@ -204,7 +204,7 @@ async function toggleMute(): Promise<void> {
   }
 
   .cursor {
-    background-color: var(--primary-color);
+    background-color: var(--bd-primary);
     bottom: 0;
     left: 0;
     position: absolute;
@@ -221,7 +221,7 @@ async function toggleMute(): Promise<void> {
   }
 
   .hover {
-    background-color: var(--primary-color-light);
+    background-color: var(--bd-primary-light);
     bottom: 0;
     left: 0;
     opacity: 0;
@@ -274,7 +274,7 @@ async function toggleMute(): Promise<void> {
    * visible.
    */
   &:has(.range:focus-visible) {
-    outline: 2px solid var(--primary-color);
+    outline: 2px solid var(--bd-primary);
     outline-offset: 2px;
 
     .hover {

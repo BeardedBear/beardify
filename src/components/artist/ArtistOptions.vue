@@ -33,7 +33,7 @@ function switchFollow(artistId: string): void {
 .options {
   align-items: center;
   display: flex;
-  gap: 1rem;
+  gap: var(--bd-space-4);
 }
 
 .follow {

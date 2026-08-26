@@ -50,9 +50,9 @@ watch(
 .wrap {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--bd-space-4);
   justify-content: center;
-  padding: 1.5rem;
+  padding: var(--bd-space-5);
 }
 
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */

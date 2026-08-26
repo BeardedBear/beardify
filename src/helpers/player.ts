@@ -42,7 +42,7 @@ export function mapQueueToSpotifyTracks(queue: Track[]): Spotify.Track[] {
 
 /** Show a user-facing error notification when the playback queue cannot be fetched. */
 export function notifyQueueError(): void {
-  notification({ msg: "Error getting queue", type: NotificationType.Error });
+  notification({ msg: "Unable to load the queue", type: NotificationType.Error });
 }
 
 /**

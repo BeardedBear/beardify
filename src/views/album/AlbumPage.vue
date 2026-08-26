@@ -17,7 +17,7 @@
               active: isCurrentTrack(track, currentTrack),
               unavailable: !track.available_markets.length,
             }"
-            class="track font-bold"
+            class="track bd-font-bold"
             @click="playSongs(index, albumStore.album.tracks.items)"
           >
             <IconButton
@@ -26,7 +26,7 @@
               :label="`Add ${track.name} to a playlist`"
               @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })"
             />
-            <span class="track-number font-italic">{{ track.track_number }}.</span>
+            <span class="track-number bd-font-italic">{{ track.track_number }}.</span>
             <div>
               <div>{{ track.name }}</div>
               <div v-if="albumStore.album.artists.length">
@@ -87,7 +87,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 4rem;
+  gap: var(--bd-space-8);
   margin: 0 auto;
   max-width: 57rem;
   width: 100%;
@@ -100,30 +100,30 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
 .add {
   background: none;
   border: none;
-  color: var(--font-color);
+  color: var(--bd-font-color);
   cursor: pointer;
-  font-size: var(--font-size-lg);
+  font-size: var(--bd-font-size-lg);
   opacity: 0;
   padding: 0;
-  padding-right: 7px;
+  padding-right: var(--bd-space-2);
   position: absolute;
   right: 100%;
   top: 50%;
   transform: translateY(-50%);
-  transition: opacity 0.2s ease;
+  transition: opacity var(--bd-transition);
 }
 
 .track {
-  border-radius: 0.4rem;
+  border-radius: var(--bd-radius-sm);
   cursor: pointer;
   display: grid;
   grid-template-columns: 2rem 1fr auto;
-  margin-bottom: 0.3rem;
-  padding: 0.4rem 0.8rem;
+  margin-bottom: var(--bd-space-1);
+  padding: var(--bd-space-2) var(--bd-space-3);
   position: relative;
 
   &:hover {
-    background-color: var(--bg-color-dark);
+    background-color: var(--bd-bg-dark);
 
     .add {
       opacity: 0.3;
@@ -141,24 +141,24 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   }
 
   &:active {
-    background-color: var(--bg-color);
+    background-color: var(--bd-bg);
   }
 }
 
 .track-number {
-  color: var(--font-color-dark);
-  font-variant: tabular-nums;
+  color: var(--bd-font-color-dark);
+  font-variant-numeric: tabular-nums;
 }
 
 .content {
   display: flex;
   flex: 1;
-  gap: 3rem;
+  gap: var(--bd-space-7);
   justify-content: center;
 
   @media (--tablet-down) {
     flex-direction: column;
-    gap: 2rem;
+    gap: var(--bd-space-6);
   }
 
   @media (--l) {
@@ -177,10 +177,10 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
 
 .content-tracks {
   flex: 1;
-  font-size: var(--font-size-base);
+  font-size: var(--bd-font-size-base);
 
   @media (--mobile) {
-    font-size: var(--font-size-sm);
+    font-size: var(--bd-font-size-sm);
   }
 }
 
@@ -191,15 +191,15 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   flex-direction: column;
   min-height: 0;
   overflow-y: auto;
-  padding: 2rem 2.2rem;
+  padding: var(--bd-space-6);
   scroll-behavior: smooth;
 
   @media (--mobile) {
-    padding: 1rem;
+    padding: var(--bd-space-4);
   }
 
   @media (--tablet) {
-    padding: 1.5rem;
+    padding: var(--bd-space-5);
   }
 }
 
@@ -209,6 +209,6 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
 }
 
 .duration {
-  font-variant: tabular-nums;
+  font-variant-numeric: tabular-nums;
 }
 </style>

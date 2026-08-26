@@ -13,9 +13,9 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        <div class="concert-date font-bold">{{ date(event.dates.start.localDate) }}</div>
+        <div class="concert-date bd-font-bold">{{ date(event.dates.start.localDate) }}</div>
         <div class="concert-info">
-          <div class="concert-venue font-bold">{{ venue(event).name }}</div>
+          <div class="concert-venue bd-font-bold">{{ venue(event).name }}</div>
           <div class="concert-location">{{ location(event) }}</div>
         </div>
         <ExternalLink class="concert-link-icon" />
@@ -62,38 +62,38 @@ onMounted(loadEvents);
 .concerts-loader {
   display: flex;
   justify-content: center;
-  padding: 2rem 0;
+  padding: var(--bd-space-6) 0;
 }
 
 .no-concerts {
-  color: var(--font-color-light);
+  color: var(--bd-font-color-light);
   opacity: 0.6;
 }
 
 .concerts-list {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: var(--bd-space-2);
 }
 
 .concert-item {
   align-items: center;
-  background-color: var(--bg-color);
-  border-radius: 0.3rem;
+  background-color: var(--bd-bg);
+  border-radius: var(--bd-radius-sm);
   color: currentcolor;
   display: flex;
-  gap: 1.2rem;
-  padding: 0.8rem 1rem;
+  gap: var(--bd-space-4);
+  padding: var(--bd-space-3) var(--bd-space-4);
   text-decoration: none;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--bd-transition-fast);
 
   &:hover {
-    background-color: var(--bg-color-dark);
+    background-color: var(--bd-bg-dark);
   }
 }
 
 .concert-date {
-  color: var(--primary-color-light);
+  color: var(--bd-primary-light);
   flex: 0 0 7rem;
 }
 
@@ -103,13 +103,13 @@ onMounted(loadEvents);
 }
 
 .concert-location {
-  color: var(--font-color-light);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color-light);
+  font-size: var(--bd-font-size-sm);
   opacity: 0.7;
 }
 
 .concert-link-icon {
-  color: var(--font-color-light);
+  color: var(--bd-font-color-light);
   flex: 0 0 auto;
   height: 1rem;
   opacity: 0.5;

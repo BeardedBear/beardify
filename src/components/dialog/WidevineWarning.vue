@@ -27,20 +27,20 @@ import Dialog from "@/components/dialog/DialogWrap.vue";
 
 <style scoped>
 .wrap {
-  padding: 1.2rem;
+  padding: var(--bd-space-4);
   text-align: center;
 }
 
 code {
-  background-color: var(--bg-color-darker);
-  border-radius: 0.4rem;
+  background-color: var(--bd-bg-darker);
+  border-radius: var(--bd-radius-sm);
   display: block;
-  font-size: var(--font-size-sm);
-  margin: 0.4rem 0;
-  padding: 0.3rem;
+  font-size: var(--bd-font-size-sm);
+  margin: var(--bd-space-2) 0;
+  padding: var(--bd-space-1);
 }
 
 b {
-  color: var(--primary-color);
+  color: var(--bd-primary);
 }
 </style>

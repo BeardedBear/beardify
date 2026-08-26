@@ -101,7 +101,7 @@ export const useSidebar = defineStore("sidebar", {
         } catch (error) {
           if (attempt === MAX_RETRIES - 1) {
             this.loadFailed = true;
-            notification({ msg: "Error while fetching playlists", type: NotificationType.Error });
+            notification({ msg: "Unable to load your playlists", type: NotificationType.Error });
             if (import.meta.env.DEV) console.error("Failed to fetch playlists:", error);
           }
         }

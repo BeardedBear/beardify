@@ -4,7 +4,7 @@
   </div>
   <div v-else ref="scrollRef" class="genre" @scroll="onScroll">
     <div class="content">
-      <h1 class="title font-bold">{{ genreStore.genre }}</h1>
+      <h1 class="title bd-font-bold">{{ genreStore.genre }}</h1>
       <div v-if="genreStore.artists.length" class="gallery">
         <GenreArtistCard
           v-for="artist in genreStore.artists"
@@ -53,31 +53,31 @@ watch(
 .content {
   margin: 0 auto;
   max-width: 100rem;
-  padding: 2rem 4rem;
+  padding: var(--bd-space-6) var(--bd-space-8);
 
   @media (--mobile) {
-    padding: 1rem;
+    padding: var(--bd-space-4);
   }
 
   @media (--tablet) {
-    padding: 1.5rem 2rem;
+    padding: var(--bd-space-5) var(--bd-space-6);
   }
 }
 
 .title {
-  font-size: var(--font-size-xl);
-  margin-bottom: 2rem;
+  font-size: var(--bd-font-size-xl);
+  margin-bottom: var(--bd-space-6);
   text-transform: capitalize;
 }
 
 .gallery {
   display: grid;
-  gap: 0.5rem;
+  gap: var(--bd-space-2);
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
 }
 
 .empty {
   opacity: 0.6;
-  padding: 2rem 4rem;
+  padding: var(--bd-space-6) var(--bd-space-8);
 }
 </style>

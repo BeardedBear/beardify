@@ -15,11 +15,11 @@
 }
 
 .active {
-  background-color: var(--bg-color);
-  color: var(--primary-color) !important;
+  background-color: var(--bd-bg);
+  color: var(--bd-primary) !important;
 
   &:hover {
-    color: var(--primary-color) !important;
+    color: var(--bd-primary) !important;
   }
 
   i {

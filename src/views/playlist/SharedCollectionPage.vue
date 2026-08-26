@@ -12,7 +12,7 @@
           <div class="infos">
             <Cover :images="playlist.images" class="cover" size="large" />
             <div>
-              <h1 class="title font-bold">
+              <h1 class="title bd-font-bold">
                 {{ playlist.name.replace("#Collection ", "") }}
               </h1>
               <div class="metas">{{ playlist.owner.display_name }} &nbsp;·&nbsp; {{ albumList.length }} albums</div>
@@ -152,19 +152,19 @@ onMounted(async () => {
 }
 
 .shared-collection {
-  padding: 0 5rem 3rem;
+  padding: 0 var(--page-inset) var(--bd-space-7);
 
   @media (--mobile) {
-    padding: 0 1rem 1.5rem;
+    padding-bottom: var(--bd-space-5);
   }
 }
 
 .header {
   align-items: center;
-  background-color: var(--bg-color-darker);
+  background-color: var(--bd-bg-darker);
   display: flex;
   justify-content: space-between;
-  padding: 1.5rem 0;
+  padding: var(--bd-space-5) 0;
   position: sticky;
   top: 0;
   z-index: 1;
@@ -172,8 +172,8 @@ onMounted(async () => {
   @media (--mobile) {
     align-items: flex-start;
     flex-direction: column;
-    gap: 1rem;
-    padding: 1rem 0;
+    gap: var(--bd-space-4);
+    padding: var(--bd-space-4) 0;
   }
 
   .infos {
@@ -182,30 +182,30 @@ onMounted(async () => {
   }
 
   .cover {
-    border-radius: 0.4rem;
+    border-radius: var(--bd-radius-sm);
     height: 4rem;
-    margin-right: 2rem;
+    margin-right: var(--bd-space-6);
     width: 4rem;
 
     @media (--mobile) {
       height: 3rem;
-      margin-right: 1rem;
+      margin-right: var(--bd-space-4);
       width: 3rem;
     }
   }
 
   .title {
-    font-size: var(--font-size-xl);
+    font-size: var(--bd-font-size-xl);
   }
 
   .metas {
-    margin-top: 0.3rem;
+    margin-top: var(--bd-space-1);
     opacity: 0.6;
   }
 
   .links {
     display: flex;
-    gap: 0.6rem;
+    gap: var(--bd-space-2);
 
     @media (--mobile) {
       width: 100%;
@@ -225,25 +225,25 @@ onMounted(async () => {
 
 .album-list {
   display: grid;
-  gap: 2rem;
+  gap: var(--bd-space-6);
   grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
 
   @media (--mobile) {
-    gap: 1rem;
+    gap: var(--bd-space-4);
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 .tier-section {
-  padding-top: 1rem;
+  padding-top: var(--bd-space-4);
 }
 
 .tier-grid {
   display: grid;
-  gap: 2rem;
+  gap: var(--bd-space-6);
 
   @media (--mobile) {
-    gap: 1rem;
+    gap: var(--bd-space-4);
   }
 }
 
@@ -264,11 +264,11 @@ onMounted(async () => {
 }
 
 .tier-grid-side {
-  background-color: var(--bg-color);
-  border-radius: 0 0.4rem 0.4rem 0;
+  background-color: var(--bd-bg);
+  border-radius: 0 var(--bd-radius-sm) var(--bd-radius-sm) 0;
   display: flex;
   flex-wrap: wrap;
-  padding: 1rem;
+  padding: var(--bd-space-4);
 }
 
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */

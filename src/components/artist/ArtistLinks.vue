@@ -135,7 +135,7 @@ onUpdated(() => updateLinks());
 .links {
   align-items: center;
   display: flex;
-  gap: 0.25rem;
+  gap: var(--bd-space-1);
   justify-content: flex-start;
   position: relative;
   width: 100%;
@@ -145,15 +145,15 @@ onUpdated(() => updateLinks());
   }
 
   .separator {
-    color: rgb(125 125 125 / 50%);
-    margin: 0 0.3rem;
+    color: var(--bd-font-color-darker);
+    margin: 0 var(--bd-space-1);
   }
 
   .link-name {
-    color: var(--font-color);
+    color: var(--bd-font-color);
     display: none; /* hidden on desktop */
-    font-variation-settings: var(--font-variation-settings-bold);
-    font-weight: var(--font-weight-bold);
+    font-variation-settings: var(--bd-font-variation-settings-bold);
+    font-weight: var(--bd-weight-bold-fallback);
     white-space: nowrap;
   }
 }
@@ -163,7 +163,7 @@ onUpdated(() => updateLinks());
   .links {
     align-items: flex-start;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: var(--bd-space-1);
 
     .separator {
       display: none;
@@ -172,21 +172,21 @@ onUpdated(() => updateLinks());
     .bd-button {
       justify-content: flex-start;
       opacity: 0.95;
-      padding-left: 0.6rem;
-      padding-right: 0.6rem;
+      padding-left: var(--bd-space-2);
+      padding-right: var(--bd-space-2);
       width: 100%;
     }
 
     .link-name {
       display: inline-block;
-      margin-left: 0.5rem;
+      margin-left: var(--bd-space-2);
     }
 
     /* ensure icons are aligned and have a fixed width */
     i[class^="icon-"] {
       align-items: center;
       display: inline-flex;
-      font-size: var(--font-size-base);
+      font-size: var(--bd-font-size-base);
       justify-content: center;
       width: 1.25rem;
     }

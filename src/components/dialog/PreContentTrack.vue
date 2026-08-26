@@ -3,7 +3,7 @@
     <div class="meta">
       <i class="icon-note note" />
       <div>
-        <div class="name font-bold">
+        <div class="name bd-font-bold">
           {{ track?.name }}
         </div>
         <div class="artist">
@@ -45,33 +45,33 @@ defineProps<{
 .track {
   align-items: center;
   display: flex;
-  gap: 30px;
+  gap: var(--bd-space-6);
   justify-content: space-between;
 
   .meta {
     align-items: center;
     display: flex;
-    gap: 0.8rem;
+    gap: var(--bd-space-3);
   }
 }
 
 .note {
-  background-color: var(--bg-color-lighter);
-  border-radius: 5px;
-  color: var(--font-color-dark);
-  font-size: var(--font-size-xl);
-  padding: 10px;
+  background-color: var(--bd-bg-lighter);
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-xl);
+  padding: var(--bd-space-2);
 }
 
 .artist {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
 }
 
 .options {
   align-items: center;
   display: flex;
-  gap: 0.7rem;
+  gap: var(--bd-space-3);
 
   .link {
     align-items: center;
@@ -80,7 +80,7 @@ defineProps<{
     color: currentcolor;
     cursor: pointer;
     display: flex;
-    font-size: var(--font-size-xl);
+    font-size: var(--bd-font-size-xl);
     opacity: 0.3;
     text-decoration: none;
 

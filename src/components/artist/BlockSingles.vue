@@ -1,6 +1,6 @@
 <template>
   <div v-if="artistStore.singles.length" class="content-block">
-    <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">
+    <div :style="{ top: artistStore.headerHeight + 'px' }" class="bd-heading sticky-heading">
       <i class="icon-single" />
       Singles
     </div>

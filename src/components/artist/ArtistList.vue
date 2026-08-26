@@ -44,7 +44,7 @@ function goArtist(artistUri: string): void {
 <style scoped>
 
 .separator {
-  color: var(--font-color-dark);
+  color: var(--bd-font-color-dark);
 }
 
 @keyframes pop-options {
@@ -63,13 +63,13 @@ function goArtist(artistUri: string): void {
   --options-gap: 0.5rem;
 
   animation: pop-options 0.2s ease 0.75s both;
-  background-color: var(--bg-color-light);
-  border-radius: 5px;
+  background-color: var(--bd-bg-light);
+  border-radius: var(--bd-radius-sm);
   bottom: calc(100% + var(--options-gap));
-  box-shadow: 0 0.5rem 0.5rem rgb(0 0 0 / 20%);
+  box-shadow: var(--bd-shadow-md);
   display: none;
   left: 50%;
-  padding: 0.2rem;
+  padding: var(--bd-space-1);
   position: absolute;
   transform: translateX(-50%);
   z-index: 99;
@@ -91,14 +91,14 @@ function goArtist(artistUri: string): void {
   text-decoration: none;
 
   &.feat {
-    color: var(--font-color-dark);
-    font-size: var(--font-size-sm);
-    font-style: var(--font-style-italic);
-    font-variation-settings: var(--font-variation-settings-italic);
+    color: var(--bd-font-color-dark);
+    font-size: var(--bd-font-size-sm);
+    font-style: var(--bd-style-italic-fallback);
+    font-variation-settings: var(--bd-font-variation-settings-italic);
   }
 
   &:hover {
-    color: var(--primary-color);
+    color: var(--bd-primary);
     opacity: 1;
 
     .options {

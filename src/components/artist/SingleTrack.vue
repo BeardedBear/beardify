@@ -7,7 +7,7 @@
     <div class="what">
       <Cover :images="single.images" :size="'small'" class="cover" />
       <div>
-        <div class="name font-bold">
+        <div class="name bd-font-bold">
           {{ single.name }}
         </div>
         <ArtistList :artist-list="single.artists" feat />
@@ -43,38 +43,38 @@ function playSingle(albumUri: string): void {
 
 .single {
   align-items: center;
-  border-radius: 0.3rem;
+  border-radius: var(--bd-radius-sm);
   cursor: pointer;
   display: flex;
-  gap: 1rem;
+  gap: var(--bd-space-4);
   justify-content: space-between;
-  margin-bottom: 0.3rem;
-  padding: 0.5rem;
-  padding-right: 1rem;
+  margin-bottom: var(--bd-space-1);
+  padding: var(--bd-space-2);
+  padding-right: var(--bd-space-4);
 
   &:hover {
-    background-color: var(--bg-color);
+    background-color: var(--bd-bg);
   }
 
   &:active {
-    background-color: var(--bg-color-light);
+    background-color: var(--bd-bg-light);
   }
 }
 
 .what {
   align-items: center;
   display: flex;
-  gap: 1rem;
+  gap: var(--bd-space-4);
 }
 
 .release-date {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
   font-style: italic;
 }
 
 .cover {
-  border-radius: 0.2rem;
+  border-radius: var(--bd-radius-sm);
   height: 2.4rem;
 }
 </style>

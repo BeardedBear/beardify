@@ -42,7 +42,7 @@ async function create(): Promise<void> {
 .wrap {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  padding: 1.3rem;
+  gap: var(--bd-space-4);
+  padding: var(--bd-space-5);
 }
 </style>

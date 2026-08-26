@@ -3,7 +3,7 @@
     <RouterLink
       :class="{ 'active-route': $route.path.includes('/podcasts') }"
       :to="`/podcasts`"
-      class="link font-bold squircle"
+      class="link bd-font-bold bd-squircle"
     >
       <i class="icon icon-podcast" />
       Podcasts
@@ -11,7 +11,7 @@
     <RouterLink
       :class="{ 'active-route': $route.path.includes('/releases') }"
       :to="`/releases`"
-      class="link font-bold squircle"
+      class="link bd-font-bold bd-squircle"
     >
       <i class="icon icon-album" />
       Releases
@@ -27,18 +27,18 @@ import { RouterLink } from "vue-router";
 
 .menu {
   display: flex;
-  gap: 1rem;
-  padding: 1rem 1rem 0.3rem;
+  gap: var(--bd-space-4);
+  padding: var(--bd-space-4) var(--bd-space-4) var(--bd-space-1);
 }
 
 .link {
-  background-color: var(--bg-color);
-  border-radius: 1rem;
-  color: var(--font-color);
+  background-color: var(--bd-bg);
+  border-radius: var(--bd-radius-lg);
+  color: var(--bd-font-color);
   display: block;
   flex: 1;
-  font-size: var(--font-size-base);
-  padding: 0.4rem 0.8rem;
+  font-size: var(--bd-font-size-base);
+  padding: var(--bd-space-2) var(--bd-space-3);
   text-decoration: none;
 
   &.disabled {
@@ -48,16 +48,16 @@ import { RouterLink } from "vue-router";
   }
 
   &:hover {
-    background-color: var(--bg-color-light);
+    background-color: var(--bd-bg-light);
   }
 
   &.active-route {
-    background-color: var(--primary-color);
+    background-color: var(--bd-primary);
     color: white;
   }
 }
 
 .icon {
-  margin-right: 0.5rem;
+  margin-right: var(--bd-space-2);
 }
 </style>

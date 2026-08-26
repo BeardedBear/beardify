@@ -63,7 +63,7 @@ const createPlayer = (): Spotify.Player => {
         } catch {
           // Notification only, no need for the error variable
           notification({
-            msg: "Failed to authenticate with Spotify",
+            msg: "Unable to authenticate with Spotify",
             type: NotificationType.Error,
           });
 
@@ -244,7 +244,7 @@ const createPlayer = (): Spotify.Player => {
   } catch {
     // No need for error variable since we're only showing a notification
     notification({
-      msg: "Error initializing Spotify player",
+      msg: "Unable to initialize the Spotify player",
       type: NotificationType.Error,
     });
 

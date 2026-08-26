@@ -1,7 +1,7 @@
 <template>
   <div class="topbar">
     <router-link to="/">
-      <img class="logo" src="/img/logo.svg" />
+      <img alt="Beardify home" class="logo" src="/img/logo.svg" />
     </router-link>
     <BdButtonGroup full class="navigation">
       <BdButton label="Go back" icon-only @click="router.go(-1)">
@@ -17,8 +17,8 @@
     <BdDropdown v-if="authStore.me !== null" v-model="configOpen" placement="bottom-end">
       <template #trigger>
         <div class="avatar">
-          <Cover :images="authStore.me?.images" class="avatar-image squircle" size="large" />
-          <i class="icon icon-chevron-down font-bold" />
+          <Cover :images="authStore.me?.images" class="avatar-image bd-squircle" size="large" />
+          <i class="icon icon-chevron-down bd-font-bold" />
         </div>
       </template>
       <Config />
@@ -54,10 +54,10 @@ const configOpen = computed<boolean>({
 
 .topbar {
   align-items: center;
-  background: var(--bg-color);
+  background: var(--bd-bg);
   display: flex;
   justify-content: space-between;
-  padding: 1rem;
+  padding: var(--bd-space-4);
   position: relative;
 
   /* Seule la navigation absorbe la place restante : sans ça les autres items
@@ -69,15 +69,15 @@ const configOpen = computed<boolean>({
 }
 
 .navigation {
-  margin-left: 1rem;
-  margin-right: 1rem;
+  margin-left: var(--bd-space-4);
+  margin-right: var(--bd-space-4);
 }
 
 .avatar {
   cursor: pointer;
-  margin-left: 1rem;
+  margin-left: var(--bd-space-4);
   position: relative;
-  transition: transform 0.2s ease;
+  transition: transform var(--bd-transition);
   will-change: transform;
 
   &:hover {
@@ -87,12 +87,12 @@ const configOpen = computed<boolean>({
   .icon {
     --icon-offset: -0.3rem;
 
-    background-color: var(--font-color);
-    border: 0.2rem solid var(--bg-color);
-    border-radius: 2rem;
+    background-color: var(--bd-font-color);
+    border: 0.2rem solid var(--bd-bg);
+    border-radius: var(--bd-radius-full);
     bottom: var(--icon-offset);
-    color: var(--bg-color);
-    font-size: var(--font-size-xs);
+    color: var(--bd-bg);
+    font-size: var(--bd-font-size-xs);
     position: absolute;
     right: var(--icon-offset);
   }
@@ -122,12 +122,12 @@ const configOpen = computed<boolean>({
   display: flex;
 
   a {
-    color: var(--bg-color-light);
-    font-variation-settings: var(--font-variation-settings-bold);
-    font-weight: var(--font-weight-bold);
+    color: var(--bd-bg-light);
+    font-variation-settings: var(--bd-font-variation-settings-bold);
+    font-weight: var(--bd-weight-bold-fallback);
 
     &.router-link-exact-active {
-      color: var(--primary-color);
+      color: var(--bd-primary);
     }
   }
 }

@@ -77,7 +77,7 @@ async function handleLogin(): Promise<void> {
     try {
       await invoke("open_spotify_auth", { url: spotifyAuthUrl.value });
     } catch {
-      notification({ msg: "Could not open the Spotify login page", type: NotificationType.Error });
+      notification({ msg: "Unable to open the Spotify login page", type: NotificationType.Error });
       return;
     }
     waiting.value = true;
@@ -132,11 +132,11 @@ async function refreshChallenge(): Promise<void> {
 }
 
 b {
-  color: var(--primary-color);
+  color: var(--bd-primary);
 }
 
 .login {
-  background-color: var(--bg-color-darker);
+  background-color: var(--bd-bg-darker);
   background-image: url("/img/bg-login.png");
   background-size: cover;
   display: grid;
@@ -146,28 +146,28 @@ b {
 }
 
 .pres {
-  margin-bottom: 3rem;
+  margin-bottom: var(--bd-space-7);
   text-align: left;
 }
 
 /*
- * `rgb(var(--primary-color) 0.1)` used to sit here. --primary-color resolves to
+ * `rgb(var(--bd-primary) 0.1)` used to sit here. --primary-color resolves to
  * a whole color, not the three channels rgb() wants, so the declaration was
  * invalid and dropped on the floor — this card has been rendering with no
  * background at all. color-mix() is the syntax that actually takes a color.
  */
 .form {
   animation: pop-login 1s ease both;
-  background-color: color-mix(in oklab, var(--primary-color) 12%, var(--bg-color-dark));
-  border-radius: 0.4rem;
+  background-color: color-mix(in oklab, var(--bd-primary) 12%, var(--bd-bg-dark));
+  border-radius: var(--bd-radius-sm);
   max-width: 35rem;
-  padding: 2rem;
+  padding: var(--bd-space-6);
   text-align: center;
 }
 
 .logo {
   height: 4rem;
-  margin-bottom: 2rem;
+  margin-bottom: var(--bd-space-6);
 }
 
 .icon {
@@ -189,23 +189,23 @@ b {
 
 .waiting-card {
   align-items: center;
-  background-color: var(--bg-color-dark);
-  border-radius: 0.75rem;
+  background-color: var(--bd-bg-dark);
+  border-radius: var(--bd-radius-md);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding: 2.5rem 3rem;
+  gap: var(--bd-space-4);
+  padding: var(--bd-space-6) var(--bd-space-7);
 }
 
 .waiting-label {
-  color: var(--font-color-light);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color-light);
+  font-size: var(--bd-font-size-sm);
   margin: 0;
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity var(--bd-transition);
 }
 
 .fade-enter-from,

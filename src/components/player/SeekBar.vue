@@ -4,7 +4,7 @@
       <div class="progress">
         <div v-if="playerStore.playerState" :style="{ transform: `scaleX(${playedRatio})` }" class="bar" />
         <div :style="`width:${previewPercent}%`" class="seek">
-          <div class="time font-bold">
+          <div class="time bd-font-bold">
             {{ previewTime }}
           </div>
         </div>
@@ -101,16 +101,16 @@ const onCommit = (e: Event): void => {
 }
 
 .seek-bar {
-  padding: 0 1.2rem;
+  padding: 0 var(--bd-space-4);
 
   @media (--mobile) {
-    padding: 0 0.8rem;
+    padding: 0 var(--bd-space-3);
   }
 }
 
 .progress {
-  background: var(--bg-color-light);
-  border-radius: 1rem;
+  background: var(--bd-bg-light);
+  border-radius: var(--bd-radius-lg);
   height: 0.2rem;
   position: relative;
 
@@ -121,8 +121,8 @@ const onCommit = (e: Event): void => {
      * forever, so the old `to { opacity: 1 }` quietly killed the 0.5 below it.
      */
     animation: pop-seek 0.12s ease both;
-    background-color: var(--bg-color-lighter);
-    border-radius: 1rem;
+    background-color: var(--bd-bg-lighter);
+    border-radius: var(--bd-radius-lg);
     bottom: 0;
     display: none;
     left: 0;
@@ -132,22 +132,22 @@ const onCommit = (e: Event): void => {
     top: 0;
 
     /*
-     * Neutral chip, not an accent one. White on `--primary-color` measures
+     * Neutral chip, not an accent one. White on `--bd-primary` measures
      * 3.85:1 at this size — under the 4.5 small text needs — and the accent is
      * user-chosen, so no fixed foreground can be guaranteed against it. The
      * theme's own text/background pair is contrasty in both themes by
      * construction, and it leaves the accent to the bar it floats above.
      */
     .time {
-      background: var(--bg-color-darker);
-      border-radius: 0.3rem;
+      background: var(--bd-bg-darker);
+      border-radius: var(--bd-radius-sm);
       bottom: calc(100% + 0.4rem);
-      color: var(--font-color);
-      font-size: var(--font-size-sm);
+      color: var(--bd-font-color);
+      font-size: var(--bd-font-size-sm);
 
       /* Same as the timecode in the controls: the digits must not shift width mid-scrub. */
       font-variant-numeric: tabular-nums;
-      padding: 0.1rem 0.4rem;
+      padding: 0.1rem var(--bd-space-2);
       pointer-events: none;
       position: absolute;
       right: 0;
@@ -162,20 +162,20 @@ const onCommit = (e: Event): void => {
    * instead, so the same movement costs no layout at all.
    */
   .bar {
-    background: var(--primary-color);
-    border-radius: 1rem;
+    background: var(--bd-primary);
+    border-radius: var(--bd-radius-lg);
     bottom: 0;
     left: 0;
     position: absolute;
     top: 0;
     transform-origin: left center;
-    transition: transform linear 0.2s;
+    transition: transform 0.2s linear;
     width: 100%;
   }
 }
 
 .progress-wrap {
-  padding: 0.3rem 0 0.8rem;
+  padding: var(--bd-space-1) 0 var(--bd-space-3);
   position: relative;
 
   &:hover {
@@ -223,7 +223,7 @@ const onCommit = (e: Event): void => {
 
   /* Keyboard scrubbing needs the read-out too — the bar alone is 2px tall. */
   &:has(.range:focus-visible) {
-    outline: 2px solid var(--primary-color);
+    outline: 2px solid var(--bd-primary);
     outline-offset: 2px;
 
     .seek {
@@ -232,7 +232,7 @@ const onCommit = (e: Event): void => {
   }
 
   @media (pointer: coarse) {
-    padding: 0.9rem 0 1.4rem;
+    padding: var(--bd-space-4) 0 var(--bd-space-5);
   }
 }
 </style>

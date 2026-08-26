@@ -1,5 +1,5 @@
 <template>
-  <h3 class="search-title font-bold">
+  <h3 class="search-title bd-font-bold">
     {{ title }}
     <!-- Says the list is truncated. Six results with no count read as "six exist". -->
     <span v-if="count !== undefined" class="count">{{ count }}</span>
@@ -23,24 +23,24 @@ defineProps<{
  */
 .search-title {
   align-items: baseline;
-  background-color: var(--bg-color-dark);
-  color: var(--primary-color);
+  background-color: var(--bd-bg-dark);
+  color: var(--bd-primary);
   display: flex;
-  font-size: var(--font-size-sm);
-  gap: var(--space-2);
-  margin: 0 0 var(--space-4);
+  font-size: var(--bd-font-size-sm);
+  gap: var(--bd-space-2);
+  margin: 0 0 var(--bd-space-4);
   position: sticky;
   text-transform: uppercase;
   top: 0;
   z-index: 1;
 
   @media (--mobile) {
-    padding: 0 0 var(--space-2);
+    padding: 0 0 var(--bd-space-2);
   }
 }
 
 .count {
-  color: var(--font-color-dark);
-  font-variant: tabular-nums;
+  color: var(--bd-font-color-dark);
+  font-variant-numeric: tabular-nums;
 }
 </style>

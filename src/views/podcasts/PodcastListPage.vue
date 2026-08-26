@@ -5,7 +5,7 @@
   <div v-else ref="scrollRef" class="podcasts" @scroll="onScroll">
     <PageFit>
       <div class="title">
-        <h1 class="name font-bold">Podcasts</h1>
+        <h1 class="name bd-font-bold">Podcasts</h1>
       </div>
       <BdEmptyState
         v-if="!podcastsStore.myPodcasts.length"
@@ -20,6 +20,7 @@
           :id="podcast.show.id"
           :key="index"
           :covers="podcast?.show.images"
+          :name="podcast.show.name"
         />
       </div>
     </PageFit>
@@ -54,27 +55,27 @@ podcastsStore.clean().finally(() => {
 .podcasts {
   animation: pop-content 1s ease both;
   overflow-y: auto;
-  padding: 2rem 2.2rem;
+  padding: var(--bd-space-6);
 }
 
 .podcast-list {
   display: grid;
-  gap: 2rem;
+  gap: var(--bd-space-6);
 
   /* Was repeat(4, 1fr) with no breakpoint: four 55px columns at 390px wide. */
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-  margin-bottom: 2rem;
+  margin-bottom: var(--bd-space-6);
 }
 
 .title {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: var(--bd-space-6);
 
   .name {
     flex: 1;
-    font-size: var(--font-size-xl);
+    font-size: var(--bd-font-size-xl);
   }
 }
 </style>

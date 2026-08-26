@@ -77,19 +77,19 @@ onBeforeUnmount(() => {
   --titlebar-height: 2.25rem;
 
   align-items: center;
-  background: var(--bg-color-darker);
-  border-bottom: 1px solid color-mix(in oklab, var(--font-color) 8%, transparent);
+  background: var(--bd-bg-darker);
+  border-bottom: 1px solid color-mix(in oklab, var(--bd-font-color) 8%, transparent);
   display: flex;
   height: var(--titlebar-height);
   justify-content: space-between;
-  padding-left: 0.75rem;
+  padding-left: var(--bd-space-3);
   user-select: none;
 }
 
 .titlebar-brand {
   align-items: center;
   display: flex;
-  gap: 0.6rem;
+  gap: var(--bd-space-2);
   min-width: 0;
 }
 
@@ -99,8 +99,8 @@ onBeforeUnmount(() => {
 }
 
 .titlebar-title {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -115,16 +115,16 @@ onBeforeUnmount(() => {
   align-items: center;
   background: transparent;
   border: none;
-  color: var(--font-color-dark);
+  color: var(--bd-font-color-dark);
   cursor: default;
   display: flex;
   justify-content: center;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--bd-transition-fast);
   width: 2.75rem;
 
   &:hover {
-    background-color: var(--bg-color-lighter);
-    color: var(--font-color);
+    background-color: var(--bd-bg-lighter);
+    color: var(--bd-font-color);
   }
 
   &.close:hover {

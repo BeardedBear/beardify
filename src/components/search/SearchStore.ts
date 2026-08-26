@@ -72,7 +72,7 @@ export const useSearch = defineStore("search", {
         if (issuedFor !== this.query) return;
         if (import.meta.env.DEV) console.error("Search failed:", error);
         this.failed = true;
-        notification({ msg: "Search failed. Check your connection and try again", type: NotificationType.Error });
+        notification({ msg: "Unable to search. Check your connection and try again.", type: NotificationType.Error });
       } finally {
         if (issuedFor === this.query) this.loading = false;
       }

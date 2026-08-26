@@ -6,7 +6,7 @@
         v-for="playlist in matches"
         :key="playlist.id"
         :to="`${playlist.isCollection ? '/collection/' : '/playlist/'}${playlist.id}`"
-        class="hit font-bold"
+        class="hit bd-font-bold"
         @click="searchStore.close()"
       >
         <PlaylistIcon :playlist="playlist" />
@@ -58,9 +58,9 @@ const matches = computed(() => {
 
 <style scoped>
 .collection-strip {
-  border-bottom: 1px solid var(--bg-color-light);
+  border-bottom: 1px solid var(--bd-bg-light);
   flex-shrink: 0;
-  padding: 0 var(--space-4) var(--space-4);
+  padding: 0 var(--bd-space-4) var(--bd-space-4);
 }
 
 /* Wraps rather than scrolls: this strip must never compete for vertical space
@@ -68,24 +68,24 @@ const matches = computed(() => {
 .row {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--bd-space-2);
 }
 
 .hit {
   align-items: center;
-  background-color: var(--bg-color-light);
-  border-radius: 0.3rem;
-  color: var(--font-color);
+  background-color: var(--bd-bg-light);
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-font-color);
   display: flex;
-  font-size: var(--font-size-sm);
-  gap: var(--space-2);
+  font-size: var(--bd-font-size-sm);
+  gap: var(--bd-space-2);
   max-width: 16rem;
-  padding: var(--space-1) var(--space-3);
+  padding: var(--bd-space-1) var(--bd-space-3);
   text-decoration: none;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--bd-transition-fast);
 
   &:hover {
-    background-color: var(--bg-color-lighter);
+    background-color: var(--bd-bg-lighter);
   }
 }
 
@@ -96,8 +96,8 @@ const matches = computed(() => {
 }
 
 .empty {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
   margin: 0;
 }
 </style>

@@ -24,23 +24,23 @@
           `flex-shrink: 0`, a two-digit rank ate a third of a 7rem tier cell
           and left the album name breaking mid-word on two clamped lines.
         -->
-        <div v-if="rank" class="rank-number font-bold">{{ rank }}</div>
+        <div v-if="rank" class="rank-number bd-font-bold">{{ rank }}</div>
         <IconButton
-          class="play squircle"
+          class="play bd-squircle"
           icon="play"
           :label="`Play ${album.name}`"
           @click.stop="handlePlayAlbum(album.uri)"
         />
         <IconButton
           v-if="canSave"
-          class="button-action add squircle"
+          class="button-action add bd-squircle"
           icon="plus"
           :label="`Add ${album.name} to a collection`"
           @click.stop="dialogStore.open({ type: 'addalbum', albumId: album.id })"
         />
         <IconButton
           v-if="canDelete"
-          class="button-action delete squircle"
+          class="button-action delete bd-squircle"
           icon="trash-2"
           :label="`Remove ${album.name} from this collection`"
           @click.stop="deleteAlbum(album.id)"
@@ -50,21 +50,21 @@
           class="album-group-stack-indicator"
           @click.stop="variantClick && variantClick()"
         >
-          <div class="album-group-stack-layer album-group-stack-layer-1 font-bold" />
-          <div class="album-group-stack-layer album-group-stack-layer-2 font-bold">
+          <div class="album-group-stack-layer album-group-stack-layer-1 bd-font-bold" />
+          <div class="album-group-stack-layer album-group-stack-layer-2 bd-font-bold">
             {{ variantCount }}
           </div>
         </div>
       </div>
       <div v-if="!withoutMetas" class="metas">
         <div class="infos">
-          <div class="name font-bold">
+          <div class="name bd-font-bold">
             {{ album.name }}
           </div>
           <div v-if="withArtists" class="artists">
             <ArtistList :artist-list="album.artists" feat />
           </div>
-          <div v-if="album.release_date && !withoutReleaseDate" class="date font-italic">
+          <div v-if="album.release_date && !withoutReleaseDate" class="date bd-font-italic">
             {{ album.release_date.split("-").shift() }}
           </div>
         </div>
@@ -187,13 +187,13 @@ async function deleteAlbum(albumId: string): Promise<void> {
       }
     } catch (error: any) {
       notification({
-        msg: error.response?.data?.error?.message ?? "Album delete failed",
+        msg: error.response?.data?.error?.message ?? "Unable to delete this album",
         type: NotificationType.Error,
       });
     }
   } catch (error: any) {
     notification({
-      msg: error.response?.data?.error?.message ?? "Album delete failed",
+      msg: error.response?.data?.error?.message ?? "Unable to delete this album",
       type: NotificationType.Error,
     });
   }
@@ -225,36 +225,36 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   --play-size: 2.5rem;
 
   animation: pop-play-button 0.2s ease both;
-  background: var(--primary-color);
+  background: var(--bd-primary);
   border: 0;
   border-radius: var(--play-size);
   bottom: var(--play-offset);
   color: rgb(255 255 255 / 80%);
   cursor: pointer;
   display: none;
-  font-size: var(--font-size-lg);
+  font-size: var(--bd-font-size-lg);
   height: var(--play-size);
   left: var(--play-offset);
   line-height: 0;
   position: absolute;
-  transition: transform ease 0.1s;
+  transition: transform var(--bd-transition-fast);
   width: var(--play-size);
   will-change: transform;
 
   &:hover {
-    background: var(--primary-color-light);
+    background: var(--bd-primary-light);
     color: white;
   }
 
   &:active {
-    background: var(--primary-color-lighter);
+    background: var(--bd-primary-lighter);
   }
 }
 
 .album {
   /* `animation: popAlbum 1s ease both` lived here, naming a keyframe that does
      not exist anywhere in the project — a no-op the browser silently ignored. */
-  color: var(--font-color);
+  color: var(--bd-font-color);
   font-family: inherit;
   line-height: 1.4;
   position: relative;
@@ -268,16 +268,16 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
  */
 .rank-number {
   backdrop-filter: blur(2px);
-  background: color-mix(in oklab, var(--bg-color-darker) 82%, transparent);
-  border-radius: 0.3rem;
+  background: color-mix(in oklab, var(--bd-bg-darker) 82%, transparent);
+  border-radius: var(--bd-radius-sm);
   bottom: 0.3rem;
-  color: var(--font-color-light);
-  font-size: var(--font-size-lg);
+  color: var(--bd-font-color-light);
+  font-size: var(--bd-font-size-lg);
   left: 0.3rem;
   line-height: 1;
-  padding: 0.15rem 0.4rem;
+  padding: 0.15rem var(--bd-space-2);
   position: absolute;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--bd-transition-fast);
   z-index: 2;
 }
 
@@ -362,14 +362,14 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   animation: pop-add-button 0.2s ease both;
   background-color: transparent;
   border: 0;
-  border-radius: 20rem;
+  border-radius: var(--bd-radius-full);
   color: currentcolor;
   cursor: pointer;
   display: none;
-  font-size: var(--font-size-lg);
-  padding: 0.4rem 0.5rem;
+  font-size: var(--bd-font-size-lg);
+  padding: var(--bd-space-2);
   position: absolute;
-  transition: transform ease 0.1s;
+  transition: transform var(--bd-transition-fast);
   will-change: transform;
 
   &:hover {
@@ -391,19 +391,19 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 .metas {
   align-items: center;
   display: flex;
-  gap: 0.8rem;
+  gap: var(--bd-space-3);
 }
 
 .cover {
-  border-radius: 0.4rem;
-  margin-bottom: 0.8rem;
+  border-radius: var(--bd-radius-sm);
+  margin-bottom: var(--bd-space-3);
   position: relative;
-  transition: box-shadow ease 0.2s;
+  transition: box-shadow var(--bd-transition);
 
   &.is-playing {
     box-shadow:
-      0 0 0 0.3rem var(--bg-color),
-      0 0 0 0.5rem var(--primary-color);
+      0 0 0 0.3rem var(--bd-bg),
+      0 0 0 0.5rem var(--bd-primary);
   }
 }
 
@@ -426,7 +426,7 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
     top: 0;
 
     /* impeccable-disable-next-line layout-transition -- absolute box: reflows one card's subtree, once per hover */
-    transition: padding 0.15s ease;
+    transition: padding var(--bd-transition-fast);
   }
 
   .cover {
@@ -439,9 +439,9 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
     opacity: 0;
     overflow: hidden;
     transition:
-      margin-top ease 0.2s,
-      max-height ease 0.2s,
-      opacity ease 0.15s;
+      margin-top var(--bd-transition),
+      max-height var(--bd-transition),
+      opacity var(--bd-transition-fast);
   }
 
 }
@@ -456,16 +456,16 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 .album.hover-metas.metas-above {
   .metas {
     background: linear-gradient(rgb(0 0 0 / 85%) 40%, rgb(0 0 0 / 0%));
-    border-radius: 0.6rem 0.6rem 0 0;
+    border-radius: var(--bd-radius-md) var(--bd-radius-md) 0 0;
     color: #fff;
     left: 0;
     margin: 0;
-    padding: 0.6rem;
+    padding: var(--bd-space-2);
     pointer-events: none;
     position: absolute;
     right: 0;
     top: 0;
-    transition: opacity ease 0.15s;
+    transition: opacity var(--bd-transition-fast);
     z-index: 3;
   }
 }
@@ -478,15 +478,15 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
  */
 .album.hover-metas.actions-open:not(.dragging) {
   .visual {
-    background-color: var(--bg-color-light);
-    border-radius: 0.5rem;
-    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 40%);
-    padding: 0.5rem;
+    background-color: var(--bd-bg-light);
+    border-radius: var(--bd-radius-md);
+    box-shadow: var(--bd-shadow-md);
+    padding: var(--bd-space-2);
     z-index: 5;
   }
 
   .metas {
-    margin-top: 0.6rem;
+    margin-top: var(--bd-space-2);
     max-height: 10rem;
     opacity: 1;
   }
@@ -507,15 +507,15 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 @media (hover: hover) {
   .album.hover-metas:hover:not(.dragging) {
     .visual {
-      background-color: var(--bg-color-light);
-      border-radius: 0.5rem;
-      box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 40%);
-      padding: 0.5rem;
+      background-color: var(--bd-bg-light);
+      border-radius: var(--bd-radius-md);
+      box-shadow: var(--bd-shadow-md);
+      padding: var(--bd-space-2);
       z-index: 5;
     }
 
     .metas {
-      margin-top: 0.6rem;
+      margin-top: var(--bd-space-2);
       max-height: 10rem;
       opacity: 1;
     }
@@ -542,21 +542,21 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 .current {
   --current-size: 3rem;
 
-  background: var(--primary-color);
-  border-radius: 0 0.4rem 0 0;
+  background: var(--bd-primary);
+  border-radius: 0 var(--bd-radius-sm) 0 0;
   clip-path: polygon(100% 0, 0 0, 100% 100%);
   height: var(--current-size);
   position: absolute;
   right: 0;
   top: 0;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--bd-transition);
   width: var(--current-size);
   z-index: 1;
 
   i {
     animation: pop-current 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-    color: #fff;
-    font-size: var(--font-size-lg);
+    color: var(--bd-on-primary);
+    font-size: var(--bd-font-size-lg);
     position: absolute;
     right: 0.3rem;
     top: 0.3rem;
@@ -569,7 +569,7 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   line-break: auto;
   -webkit-line-clamp: 2;
   line-clamp: 2;
-  margin: 0.3rem 0 0;
+  margin: var(--bd-space-1) 0 0;
   overflow: hidden;
 
   /*
@@ -593,21 +593,21 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 }
 
 .date {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
 }
 
 .album-group-stack-layer {
-  background: var(--bg-color-light);
-  border: 0.1rem solid var(--bg-color-lighter);
-  border-radius: 0.3rem;
-  box-shadow: 0 0.2rem 0.4rem rgb(0 0 0 / 30%);
-  font-size: var(--font-size-sm);
+  background: var(--bd-bg-light);
+  border: 0.1rem solid var(--bd-bg-lighter);
+  border-radius: var(--bd-radius-sm);
+  box-shadow: var(--bd-shadow-sm);
+  font-size: var(--bd-font-size-sm);
   height: 1.5rem;
   position: absolute;
   transition:
-    left 0.15s ease,
-    top 0.15s ease;
+    left var(--bd-transition-fast),
+    top var(--bd-transition-fast);
   width: 1.5rem;
 }
 
@@ -638,8 +638,8 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   top: var(--indicator-offset);
   transform: translateY(-0.15rem) scale(0.97);
   transition:
-    opacity 0.18s ease,
-    transform 0.18s ease;
+    opacity var(--bd-transition),
+    transform var(--bd-transition);
   visibility: hidden;
   width: var(--indicator-size);
   z-index: 10;

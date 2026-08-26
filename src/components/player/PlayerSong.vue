@@ -55,16 +55,16 @@ function onSurfaceClick(event: MouseEvent): void {
 .meta {
   align-items: center;
   display: grid;
-  gap: 1rem;
+  gap: var(--bd-space-4);
   grid-template-areas: "metas controls device";
   grid-template-columns: 1fr auto 1fr;
-  padding: 0.9rem 1.2rem 0.5rem;
+  padding: var(--bd-space-4) var(--bd-space-4) var(--bd-space-2);
 
   @media (--mobile) {
     cursor: pointer; /* make it clear it's tappable on mobile */
     grid-template-areas: "controls metas device";
     grid-template-columns: auto 1fr auto;
-    padding: 0.8rem;
+    padding: var(--bd-space-3);
   }
 }
 

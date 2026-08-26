@@ -1,11 +1,11 @@
 <template>
   <div v-if="artistStore.topTracks.tracks?.length">
-    <div :style="{ top: artistStore.headerHeight + 'px' }" class="heading sticky-heading">Top tracks</div>
+    <div :style="{ top: artistStore.headerHeight + 'px' }" class="bd-heading sticky-heading">Top tracks</div>
     <div
       v-for="(trackItem, index) in artistStore.topTracks.tracks"
       :key="index"
       :class="{ active: isCurrentTrack(trackItem, playerStore.playerState?.track_window.current_track) }"
-      class="item font-bold"
+      class="item bd-font-bold"
       @click="playSongs(index, artistStore.topTracks.tracks)"
     >
       <div class="cover-wrap">
@@ -44,8 +44,8 @@ const dialogStore = useDialog();
   position: relative;
 
   .add {
-    font-size: var(--font-size-base);
-    transition: transform 0.15s ease;
+    font-size: var(--bd-font-size-base);
+    transition: transform var(--bd-transition-fast);
     will-change: transform;
 
     &:hover {
@@ -56,14 +56,14 @@ const dialogStore = useDialog();
   .hover {
     align-items: center;
     background-color: rgb(0 0 0 / 80%);
-    border-radius: 0.3rem;
+    border-radius: var(--bd-radius-sm);
     cursor: pointer;
     display: flex;
     inset: 0;
     justify-content: center;
     opacity: 0;
     position: absolute;
-    transition: opacity 0.15s ease;
+    transition: opacity var(--bd-transition-fast);
   }
 
   &:hover {
@@ -75,24 +75,24 @@ const dialogStore = useDialog();
 
 .item {
   align-items: center;
-  border-radius: 0.3rem;
+  border-radius: var(--bd-radius-sm);
   cursor: pointer;
   display: flex;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
-  padding-right: 0.8rem;
+  gap: var(--bd-space-4);
+  margin-bottom: var(--bd-space-2);
+  padding-right: var(--bd-space-3);
 
   &:hover {
-    background-color: var(--bg-color);
+    background-color: var(--bd-bg);
   }
 
   &:active {
-    background-color: var(--bg-color-light);
+    background-color: var(--bd-bg-light);
   }
 }
 
 .cover {
-  border-radius: 0.3rem;
+  border-radius: var(--bd-radius-sm);
   display: block;
   height: 1.7rem;
 }
@@ -102,6 +102,6 @@ const dialogStore = useDialog();
 }
 
 .duration {
-  font-variant: tabular-nums;
+  font-variant-numeric: tabular-nums;
 }
 </style>

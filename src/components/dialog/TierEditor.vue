@@ -87,19 +87,19 @@ function removeTier(index: number): void {
 .tier-editor {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: var(--bd-space-2);
 }
 
 .tier-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--bd-space-2);
 }
 
 .tier-row {
   align-items: center;
   display: flex;
-  gap: 0.5rem;
+  gap: var(--bd-space-2);
 }
 
 .tier-drag-handle {
@@ -114,7 +114,7 @@ function removeTier(index: number): void {
 }
 
 .tier-color {
-  border-radius: 50%;
+  border-radius: var(--bd-radius-full);
   flex-shrink: 0;
   height: 1.2rem;
   width: 1.2rem;
@@ -125,12 +125,12 @@ function removeTier(index: number): void {
 }
 
 .budget {
-  font-size: var(--font-size-sm);
+  font-size: var(--bd-font-size-sm);
   opacity: 0.6;
   text-align: right;
 
   &.over {
-    color: rgb(185 50 50);
+    color: var(--bd-danger);
     opacity: 1;
   }
 }

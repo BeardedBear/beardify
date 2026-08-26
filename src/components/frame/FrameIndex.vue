@@ -122,7 +122,7 @@ watch(
 
 .bg {
   animation: pop-bg 0.2s ease both;
-  background-color: var(--bg-color-darker);
+  background-color: var(--bd-bg-darker);
   filter: opacity(0.95);
   inset: 0;
   pointer-events: all;
@@ -137,11 +137,11 @@ watch(
   align-items: center;
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem 1rem;
+  padding: var(--bd-space-2) var(--bd-space-4);
 
   .right {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--bd-space-2);
   }
 }
 
@@ -167,8 +167,8 @@ watch(
 }
 
 .iframe-wrap {
-  background-color: var(--bg-color);
-  border-radius: 15px;
+  background-color: var(--bd-bg);
+  border-radius: var(--bd-radius-lg);
   pointer-events: all;
   z-index: 1000;
 
@@ -187,7 +187,7 @@ watch(
 iframe {
   animation: pop-bg 0.2s ease both;
   border: 0;
-  border-radius: 10px;
+  border-radius: var(--bd-radius-md);
   height: 80dvh;
   width: 80vw;
 }

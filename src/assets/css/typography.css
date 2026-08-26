@@ -1,58 +1,15 @@
-:root {
-  --font-family-base:
-    "Bricolage Grotesque", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen, ubuntu, cantarell,
-    "Open Sans", "Helvetica Neue", sans-serif;
-  --font-stretch-base: 90%;
-  --font-variation-slnt: 0;
-  --font-variation-slnt-italic: -10;
-  --font-variation-grad: 0;
-  --font-variation-rond: 0;
-  --font-variation-wght: 500;
-  --font-variation-wght-bold: 600;
-
-  /*
-   * Replaces the former font-bold / font-italic / font-bold-italic Sass mixins.
-   * Apply with `font-variation-settings: var(--font-variation-settings-bold);`
-   * plus the matching fallback declaration below.
-   */
-  --font-variation-settings-base:
-    "slnt" var(--font-variation-slnt), "GRAD" var(--font-variation-grad), "ROND" var(--font-variation-rond),
-    "wght" var(--font-variation-wght);
-  --font-variation-settings-bold:
-    "slnt" var(--font-variation-slnt), "GRAD" var(--font-variation-grad), "ROND" var(--font-variation-rond),
-    "wght" var(--font-variation-wght-bold);
-  --font-variation-settings-italic:
-    "slnt" var(--font-variation-slnt-italic), "GRAD" var(--font-variation-grad), "ROND" var(--font-variation-rond),
-    "wght" var(--font-variation-wght);
-  --font-variation-settings-bold-italic:
-    "slnt" var(--font-variation-slnt-italic), "GRAD" var(--font-variation-grad), "ROND" var(--font-variation-rond),
-    "wght" var(--font-variation-wght-bold);
-
-  /*
-   * Fallbacks used when the variable font axes are unavailable: `revert` leaves
-   * the UA/inherited value untouched, which is what the mixins did by only
-   * emitting these inside `@supports not font-tech(variations)`.
-   */
-  --font-weight-bold: revert;
-  --font-style-italic: revert;
-  --font-style-bold-italic: normal;
-}
-
-@supports not font-tech(variations) {
-  :root {
-    --font-weight-bold: 700;
-    --font-style-italic: italic;
-    --font-style-bold-italic: italic;
-  }
-}
-
 /*
- * Bounds in `rem`, not `px`, on purpose: on the root element `rem` resolves
- * against the browser's own default, so a reader who raised theirs to 20px
- * gets a proportionally denser-but-larger interface instead of being pinned to
- * whatever we hard-coded. The `vw` term keeps the tuned 14px at a normal
- * desktop width (0.75rem + 0.16vw = 14.05px at 16px/1280px) and lets it grow
- * on the wide displays the --l/--xl/--hdpi breakpoints already target.
+ * Tout ce qui touche à la fonte — famille, chasse, axes variables, tailles,
+ * classes `.bd-font-*` — vient de bearded-ui. Ne reste ici que la taille de
+ * police racine, seul endroit où Beardify diverge volontairement de la lib.
+ *
+ * Bornes en `rem` et non en `px`, exprès : sur l'élément racine, `rem` se
+ * résout contre la valeur par défaut du navigateur, donc un lecteur qui a monté
+ * la sienne à 20px obtient une interface proportionnellement plus grande au
+ * lieu d'être épinglé à ce qu'on aurait codé en dur — ce que fait la lib, qui
+ * fixe 14px. Le terme en `vw` conserve les 14px calibrés à une largeur de
+ * bureau normale (0.75rem + 0.16vw = 14.05px à 16px/1280px) et les laisse
+ * grandir sur les écrans larges que visent déjà --l / --xl / --hdpi.
  */
 html {
   /* stylelint-disable property-no-vendor-prefix */
@@ -61,15 +18,6 @@ html {
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   /* stylelint-enable property-no-vendor-prefix */
-}
-
-button,
-input,
-select,
-textarea {
-  font-family: var(--font-family-base);
-  font-stretch: var(--font-stretch-base);
-  font-variation-settings: var(--font-variation-settings-base);
 }
 
 @media (--mobile) {

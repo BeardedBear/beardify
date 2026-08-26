@@ -3,10 +3,10 @@
     <div class="playlist-header-left">
       <Cover v-if="!noCover" :images="playlistStore.playlist.images" class="cover" size="large" />
       <div>
-        <h1 class="title font-bold">
+        <h1 class="title bd-font-bold">
           {{ playlistStore.playlist.name.replace("#Collection ", "") }}
         </h1>
-        <div class="metas font-bold">
+        <div class="metas bd-font-bold">
           <router-link
             v-if="playlistStore.playlist.owner.display_name !== 'Spotify'"
             :to="`/user/${playlistStore.playlist.owner.id}`"
@@ -18,7 +18,7 @@
           <span>&nbsp;·&nbsp;{{ playlistStore.playlist.tracks.total }} items</span>
           <span v-if="!noDuration">&nbsp;·&nbsp;{{ timecodeWithUnits(sumDuration(playlistStore.tracks)) }}</span>
         </div>
-        <div v-if="showDescription" class="description font-italic">
+        <div v-if="showDescription" class="description bd-font-italic">
           {{ visibleDescription }}
         </div>
       </div>
@@ -135,22 +135,22 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 .description {
-  color: var(--font-color-dark);
-  margin-top: 0.5rem;
+  color: var(--bd-font-color-dark);
+  margin-top: var(--bd-space-2);
   max-width: 80%;
 }
 
 .metas {
   .owner {
-    color: var(--primary-color);
+    color: var(--bd-primary);
     text-decoration: none;
   }
 }
 
 .title {
-  font-size: var(--font-size-xl);
+  font-size: var(--bd-font-size-xl);
   line-height: 1;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--bd-space-2);
 }
 
 /*
@@ -161,17 +161,17 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 .playlist-header {
   display: flex;
   justify-content: space-between;
-  padding: 2rem var(--page-inset) 1rem;
+  padding: var(--bd-space-6) var(--page-inset) var(--bd-space-4);
   transition:
-    padding-right ease 0.2s,
-    padding-left ease 0.2s;
+    padding-right var(--bd-transition),
+    padding-left var(--bd-transition);
 
   &.not-fit {
-    padding: 0 0 2rem;
+    padding: 0 0 var(--bd-space-6);
   }
 
   img {
-    margin-right: 2rem;
+    margin-right: var(--bd-space-6);
   }
 }
 
@@ -183,8 +183,8 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 .right {
   align-items: center;
   display: flex;
-  font-size: var(--font-size-lg);
-  gap: 0.5rem;
+  font-size: var(--bd-font-size-lg);
+  gap: var(--bd-space-2);
 
   @media (--mobile) {
     display: none;
@@ -200,7 +200,7 @@ function sumDuration(tracks: PlaylistTrack[]): number {
 }
 
 .cover {
-  border-radius: 0.3rem;
+  border-radius: var(--bd-radius-sm);
   height: 7rem;
   width: 7rem;
 

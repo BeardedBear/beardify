@@ -7,18 +7,18 @@
     </template>
 
     <div class="queue-list">
-      <div class="section-title font-bold">Now</div>
+      <div class="section-title bd-font-bold">Now</div>
       <TrackHistory
         v-if="currentTrack"
         :cover-url="coverUrl(currentTrack.album.images, 'medium')"
         :track="currentTrack"
       />
-      <div class="section-title font-bold">Next</div>
+      <div class="section-title bd-font-bold">Next</div>
       <div v-for="(track, key) in playerStore.queue" :key="key">
         <TrackHistory :cover-url="coverUrl(track.album.images, 'small')" :index="key" :track="track" />
       </div>
       <div v-if="playerStore.queue.length === 0" class="empty-queue">
-        <div class="empty-message font-italic">
+        <div class="empty-message bd-font-italic">
           {{ isPlayingPodcast ? "Queue not available for podcast episodes" : "No tracks in queue" }}
         </div>
       </div>
@@ -67,15 +67,15 @@ watch(currentTrack, (track) => {
 }
 
 .section-title {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-xs);
-  margin-top: 10px;
-  padding: 0 10px;
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-xs);
+  margin-top: var(--bd-space-2);
+  padding: 0 var(--bd-space-2);
   text-transform: uppercase;
 }
 
 .queue-list {
-  font-size: var(--font-size-sm);
+  font-size: var(--bd-font-size-sm);
   height: 300px;
   overflow: auto;
   white-space: nowrap;
@@ -83,13 +83,13 @@ watch(currentTrack, (track) => {
 }
 
 .empty-queue {
-  padding: 20px 10px;
+  padding: var(--bd-space-4) var(--bd-space-2);
   text-align: center;
 }
 
 .empty-message {
-  color: var(--font-color);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color);
+  font-size: var(--bd-font-size-sm);
   opacity: 0.6;
 }
 </style>

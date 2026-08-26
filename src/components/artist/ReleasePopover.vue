@@ -40,7 +40,7 @@ withDefaults(
     meta?: string;
     name: string;
   }>(),
-  { color: "var(--bg-color-lighter)", meta: "" },
+  { color: "var(--bd-bg-lighter)", meta: "" },
 );
 
 const GAP = 10;
@@ -96,9 +96,24 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 </script>
 
 <style scoped>
+/*
+ * `outline: none` seul vivait ici : le wrapper est `tabindex="0"`, donc un
+ * utilisateur au clavier y atterrissait sans rien voir bouger sous son curseur.
+ * Le popover s'ouvre bien au focus, mais il est téléporté dans <body> — rien
+ * n'indiquait quelle vignette de la discographie était sélectionnée.
+ */
 .release-popover-wrapper {
+  border-radius: var(--bd-radius-sm);
   display: inline-block;
-  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--bd-primary);
+    outline-offset: 2px;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
 }
 </style>
 
@@ -106,14 +121,14 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 /* Unscoped: the popover is teleported to <body> */
 .release-popover {
   align-items: center;
-  background: var(--bg-color-dark);
-  border: 1px solid var(--bg-color-lighter);
-  border-radius: 0.5rem;
-  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 45%);
+  background: var(--bd-bg-dark);
+  border: 1px solid var(--bd-bg-lighter);
+  border-radius: var(--bd-radius-md);
+  box-shadow: var(--bd-shadow-md);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.5rem;
+  gap: var(--bd-space-2);
+  padding: var(--bd-space-2);
   pointer-events: none;
   position: fixed;
   width: 9rem;
@@ -122,7 +137,7 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 
 .release-popover .rp-cover {
   aspect-ratio: 1;
-  border-radius: 0.3rem;
+  border-radius: var(--bd-radius-sm);
   display: block;
   object-fit: cover;
   width: 100%;
@@ -133,24 +148,24 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 }
 
 .release-popover .rp-name {
-  color: var(--font-color-light);
-  font-size: var(--font-size-sm);
+  color: var(--bd-font-color-light);
+  font-size: var(--bd-font-size-sm);
   line-height: 1.2;
   overflow-wrap: break-word;
   text-align: center;
 }
 
 .release-popover .rp-meta {
-  color: var(--font-color-dark);
-  font-size: var(--font-size-xs);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-xs);
   text-align: center;
 }
 
 .release-popover-enter-active,
 .release-popover-leave-active {
   transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
+    opacity var(--bd-transition-fast),
+    transform var(--bd-transition-fast);
 }
 
 .release-popover-enter-from,

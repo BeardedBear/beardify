@@ -1,20 +1,20 @@
-.heading {
-  color: var(--primary-color);
-  font-variation-settings: var(--font-variation-settings-bold);
-  font-weight: var(--font-weight-bold);
-  padding: 0.8rem 0;
-  text-transform: uppercase;
-
+/*
+ * `.bd-heading` vient de bearded-ui — couleur d'accent, graisse, capitales,
+ * padding. Beardify n'ajoute que le comportement collant, qui n'a de sens que
+ * dans ses listes d'albums.
+ */
+.bd-heading {
   /*
-   * The gap below a sticky heading has to be margin, not the shared padding:
-   * padding is inside the opaque background, and the playing album's ring is
-   * an outer box-shadow spreading 0.5rem above its card, so a first-row card
-   * had its ring painted over by the heading. Same trick as .sticky-heading in
-   * ArtistPage. Total spacing is unchanged.
+   * Le dégagement sous un titre collant doit être une marge, pas le padding
+   * partagé : le padding est à l'intérieur du fond opaque, et l'anneau de
+   * l'album en cours est un box-shadow externe qui déborde de 0.5rem au-dessus
+   * de sa carte — une carte de première ligne se faisait donc repeindre son
+   * anneau par le titre. Même ruse que `.sticky-heading` dans ArtistPage.
+   * L'espacement total est inchangé.
    */
   &.sticky {
-    background-color: var(--bg-color-darker);
-    margin-bottom: 0.8rem;
+    background-color: var(--bd-bg-darker);
+    margin-bottom: var(--bd-space-3);
     padding-bottom: 0;
     position: sticky;
     top: 0;

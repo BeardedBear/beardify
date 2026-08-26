@@ -18,7 +18,7 @@
         <i class="track-icon-item save icon-plus" @click.prevent.stop="open({ type: 'addSong', track: track.item })" />
       </div>
       <div>
-        <div class="track-name font-bold">
+        <div class="track-name bd-font-bold">
           {{ track.item.name }}
         </div>
         <ArtistList :artist-list="track.item.artists" feat />
@@ -52,7 +52,7 @@
       <div class="date">
         {{ date(track.added_at) }}
       </div>
-      <div class="duration font-bold">
+      <div class="duration bd-font-bold">
         {{ timecode(track.item.duration_ms) }}
       </div>
       <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
@@ -125,7 +125,7 @@ async function deleteSong(songId: string): Promise<void> {
     });
   } catch (error: any) {
     notification({
-      msg: error.response?.data?.error?.message ?? "Failed to delete track",
+      msg: error.response?.data?.error?.message ?? "Unable to delete this track",
       type: NotificationType.Error,
     });
   }
@@ -153,14 +153,14 @@ async function deleteSong(songId: string): Promise<void> {
 }
 
 .track-icon-item {
-  font-size: var(--font-size-xl);
+  font-size: var(--bd-font-size-xl);
   opacity: 0.1;
 }
 
 .adder-button {
   background: none;
   border: none;
-  color: var(--primary-color);
+  color: var(--bd-primary);
   cursor: pointer;
   display: none;
   opacity: 1;
@@ -168,13 +168,13 @@ async function deleteSong(songId: string): Promise<void> {
 
 .track {
   align-items: center;
-  border-radius: 0.3rem;
+  border-radius: var(--bd-radius-sm);
   cursor: pointer;
   display: grid;
-  gap: 0.8rem;
+  gap: var(--bd-space-3);
   grid-template-columns: 2.2rem 1fr 0.9fr auto 0.3fr 2.8rem;
-  margin-bottom: 0.4rem;
-  padding: 0.4rem 0.8rem;
+  margin-bottom: var(--bd-space-2);
+  padding: var(--bd-space-2) var(--bd-space-3);
 
   &.deletable {
     grid-template-columns: 2.2rem 1fr 0.9fr auto 0.3fr 2.8rem auto;
@@ -185,9 +185,9 @@ async function deleteSong(songId: string): Promise<void> {
   }
 
   @media (--mobile) {
-    gap: 0.5rem;
+    gap: var(--bd-space-2);
     grid-template-columns: 2.2rem 1fr auto;
-    padding: 0.5rem;
+    padding: var(--bd-space-2);
   }
 
   .delete {
@@ -201,10 +201,10 @@ async function deleteSong(songId: string): Promise<void> {
   .link,
   .date,
   .owner {
-    color: var(--font-color-dark);
-    font-size: var(--font-size-sm);
-    font-style: var(--font-style-italic);
-    font-variation-settings: var(--font-variation-settings-italic);
+    color: var(--bd-font-color-dark);
+    font-size: var(--bd-font-size-sm);
+    font-style: var(--bd-style-italic-fallback);
+    font-variation-settings: var(--bd-font-variation-settings-italic);
     text-decoration: none;
   }
 
@@ -212,7 +212,7 @@ async function deleteSong(songId: string): Promise<void> {
     --contributor-size: 1.5rem;
 
     img {
-      border-radius: 50%;
+      border-radius: var(--bd-radius-full);
       display: block;
       height: var(--contributor-size);
       width: var(--contributor-size);
@@ -233,17 +233,17 @@ async function deleteSong(songId: string): Promise<void> {
 
   .link {
     &:hover {
-      color: var(--primary-color);
+      color: var(--bd-primary);
       opacity: 1;
     }
   }
 
   &:hover {
-    background-color: var(--bg-color-dark);
+    background-color: var(--bd-bg-dark);
   }
 
   &:active {
-    background-color: var(--bg-color);
+    background-color: var(--bd-bg);
   }
 
   .adder {
@@ -260,16 +260,16 @@ async function deleteSong(songId: string): Promise<void> {
 }
 
 .duration {
-  font-size: var(--font-size-sm);
-  font-variant: tabular-nums;
-  padding-right: 0.5rem;
+  font-size: var(--bd-font-size-sm);
+  font-variant-numeric: tabular-nums;
+  padding-right: var(--bd-space-2);
   text-align: right;
 }
 
 .album {
   align-items: center;
   display: flex;
-  font-size: var(--font-size-sm);
+  font-size: var(--bd-font-size-sm);
   text-align: left;
 
   @media (--mobile) {
@@ -277,12 +277,12 @@ async function deleteSong(songId: string): Promise<void> {
   }
 
   i {
-    font-size: var(--font-size-base);
-    margin-right: 0.8rem;
+    font-size: var(--bd-font-size-base);
+    margin-right: var(--bd-space-3);
     opacity: 0.3;
 
     &.icon-album {
-      color: var(--primary-color);
+      color: var(--bd-primary);
       opacity: 1;
     }
   }
