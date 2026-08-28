@@ -23,6 +23,11 @@
     </div>
 
     <div class="genres">
+      <!--
+        A followed-artist row is the one thing here that can sit outside the tracked
+        genres, on purpose. Unlabelled it reads as the filter leaking.
+      -->
+      <span v-if="release.sources.includes('followed')" class="genre followed">Followed</span>
       <span v-for="genre in release.genres.slice(0, GENRES_SHOWN)" :key="genre" class="genre">{{ genre }}</span>
     </div>
 
@@ -171,6 +176,11 @@ function search(artist: string, album?: string): void {
   padding: 0.1rem var(--bd-space-2);
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.genre.followed {
+  background-color: var(--bd-primary);
+  color: var(--bd-on-primary);
 }
 
 .date {

@@ -114,6 +114,15 @@ describe("matchesTrackedTags", () => {
     expect(matchesTrackedTags(release({ genres: [], sources: ["musicbrainz"] }), ["metal"])).toBe(true);
   });
 
+  /*
+   * The case the whole followed source exists for: a record released this week has
+   * no MusicBrainz genre tag yet, so testing it against the tracked genres would
+   * drop the one release the user was most likely waiting for.
+   */
+  it("keeps an untagged release by a followed artist", () => {
+    expect(matchesTrackedTags(release({ genres: [], sources: ["followed"] }), ["metal"])).toBe(true);
+  });
+
   it("filters nothing when nothing is tracked", () => {
     expect(matchesTrackedTags(release({ genres: ["k-pop"] }), [])).toBe(true);
   });

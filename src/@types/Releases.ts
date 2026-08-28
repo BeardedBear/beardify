@@ -28,7 +28,7 @@ export interface Release {
 }
 
 /** Where a release was picked up. A release found by several sources keeps them all. */
-export type ReleaseSource = "editorial" | "fresh" | "musicbrainz";
+export type ReleaseSource = "editorial" | "followed" | "fresh" | "musicbrainz";
 
 export interface ReleasesPage {
   /** Drop the singles flood; EPs (3+ tracks) stay. */

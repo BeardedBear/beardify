@@ -5,7 +5,8 @@ import { Artist } from "@/@types/Artist";
 import { Paging } from "@/@types/Paging";
 import { Release, ReleasesPage } from "@/@types/Releases";
 import { instance } from "@/api";
-import { searchMusicBrainzReleasesByTags } from "@/helpers/musicbrainz";
+import { normalizeString } from "@/helpers/helper";
+import { searchMusicBrainzReleasesByArtists, searchMusicBrainzReleasesByTags } from "@/helpers/musicbrainz";
 import {
   GENRE_FAMILIES,
   genreTerms,
@@ -30,6 +31,17 @@ const MUSICBRAINZ_PAGE_SIZE = 100;
 const MUSICBRAINZ_PAGES = 3;
 /** How far back a release still counts as news. */
 const RECENT_DAYS = 60;
+/*
+ * Followed artists per MusicBrainz query. Fifty names is a ~1.6 kB URL, well inside
+ * every limit, and the fuzzy matches they drag in still fit one page of 100 results.
+ */
+const ARTISTS_PER_QUERY = 50;
+/*
+ * Ceiling on those queries. Each one costs a slot in the shared MusicBrainz queue at
+ * one per 1.1s, so this bounds a very long follow list to about twenty seconds — paid
+ * once per six hours, not per visit.
+ */
+const MAX_ARTIST_QUERIES = 20;
 /** How many tags to seed from the user's top artists. More widen the feed without costing a request. */
 const SEEDED_TAGS = 6;
 /** The feed moves on a weekly rhythm — refetching on every visit buys nothing. */
@@ -51,12 +63,17 @@ export const useReleases = defineStore("releases", {
       if (!this.tagsCustom) this.tags = await deriveTags();
 
       /*
-       * `allSettled`, not `all`: the three sources are independent and fail
+       * `allSettled`, not `all`: the four sources are independent and fail
        * independently — MusicBrainz in particular answers 503 under load often
        * enough to matter. Losing one should thin the feed, not blank the page; the
        * error state is for the case where nothing at all came back.
        */
-      const results = await Promise.allSettled([fetchEditorial(), fetchFresh(), fetchMusicBrainz(this.tags)]);
+      const results = await Promise.allSettled([
+        fetchEditorial(),
+        fetchFresh(),
+        fetchMusicBrainz(this.tags),
+        fetchFollowed(),
+      ]);
       const lists = results.filter((result) => result.status === "fulfilled").map((result) => result.value);
 
       if (!lists.length) {
@@ -257,6 +274,71 @@ async function fetchEditorial(): Promise<Release[]> {
   return releases;
 }
 
+/**
+ * Recent releases by the artists the user follows.
+ *
+ * The source that answers "why is the album everyone is talking about missing".
+ * MusicBrainz tags accrue over months, so a record released this week carries no
+ * genre tag and the tag query cannot see it — measured, not assumed: Mastodon's
+ * "Marrow Deep" was tagged only `laut.de` and `plattentests.de` on release day.
+ * A name needs no curating, so asking by artist finds what asking by genre cannot.
+ *
+ * The follow list is read from Spotify (fifty artists a page) and handed to
+ * MusicBrainz fifty names at a time, so a five-hundred-artist account costs about
+ * twenty requests rather than the five hundred one-artist-at-a-time would.
+ */
+async function fetchFollowed(): Promise<Release[]> {
+  const genresByName = new Map<string, string[]>();
+  const idsByName = new Map<string, string>();
+  const names: string[] = [];
+
+  // Cursor pagination, not offset: this is the one Spotify listing that pages by `after`.
+  let after: null | string = null;
+  do {
+    const { data }: { data: { artists: { cursors: { after: null | string }; items: Artist[] } } }
+      = await instance().get(`me/following?type=artist&limit=${PAGE_SIZE}${after ? `&after=${after}` : ""}`);
+
+    for (const artist of data.artists.items) {
+      names.push(artist.name);
+      // Kept so the row lands with Spotify's genres and its artist id, which MusicBrainz has neither of.
+      genresByName.set(normalizeString(artist.name), artist.genres ?? []);
+      idsByName.set(normalizeString(artist.name), artist.id);
+    }
+    after = data.artists.cursors?.after ?? null;
+  } while (after);
+
+  const from = windowStart();
+  const to = today();
+  const releases: Release[] = [];
+
+  const capped = names.slice(0, ARTISTS_PER_QUERY * MAX_ARTIST_QUERIES);
+
+  for (let index = 0; index < capped.length; index += ARTISTS_PER_QUERY) {
+    const batch = capped.slice(index, index + ARTISTS_PER_QUERY);
+    const hits = await searchMusicBrainzReleasesByArtists(batch, from, to, MUSICBRAINZ_PAGE_SIZE);
+
+    for (const hit of hits) {
+      if (hit["secondary-types"]?.length) continue;
+
+      const release = toReleaseFromMusicBrainz(hit);
+      /*
+       * MusicBrainz artist search is fuzzy, so a batch containing "Ghost" comes back
+       * with "Ghost Loft" and "Crumbling Ghost" too. Only an exact name is this user's
+       * artist; the same normalization the release key uses settles the comparison.
+       */
+      const normalized = normalizeString(release.artistName);
+      if (!genresByName.has(normalized)) continue;
+
+      release.sources = ["followed"];
+      release.artistId = idsByName.get(normalized) ?? "";
+      if (!release.genres.length) release.genres = genresByName.get(normalized) ?? [];
+      releases.push(release);
+    }
+  }
+
+  return releases;
+}
+
 /*
  * `tag:new` is Spotify's only query that returns the *catalogue's* last two weeks
  * rather than an editor's pick. It hard-caps at 100 hits, so it widens the feed
@@ -290,8 +372,8 @@ async function fetchFresh(): Promise<Release[]> {
  */
 async function fetchMusicBrainz(tags: string[]): Promise<Release[]> {
   const releases: Release[] = [];
-  const from = new Date(Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-  const to = new Date().toISOString().slice(0, 10);
+  const from = windowStart();
+  const to = today();
 
   for (let page = 0; page < MUSICBRAINZ_PAGES; page++) {
     const hits = await searchMusicBrainzReleasesByTags(
@@ -319,4 +401,14 @@ async function fetchMusicBrainz(tags: string[]): Promise<Release[]> {
  */
 function isFamily(term: string): boolean {
   return GENRE_FAMILIES.includes(term);
+}
+
+/** Today, as the "YYYY-MM-DD" MusicBrainz date queries expect. */
+function today(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/** The oldest date still counted as news, in the same format. */
+function windowStart(): string {
+  return new Date(Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }

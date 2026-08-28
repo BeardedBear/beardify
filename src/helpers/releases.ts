@@ -99,8 +99,13 @@ export function matchesTrackedTags(release: Release, tags: string[]): boolean {
    * A MusicBrainz row was selected by the tag query itself, so it matches by
    * construction. Testing it again would drop the ones whose search hit came back
    * without its `tags` array — a response detail, not a statement about the album.
+   *
+   * A followed-artist row bypasses the genre filter for a different reason: the
+   * user follows the artist, which is a stronger statement of interest than any
+   * genre list. It is also the only way these rows survive at all — the newest
+   * releases are exactly the ones MusicBrainz has not tagged yet.
    */
-  if (release.sources.includes("musicbrainz")) return true;
+  if (release.sources.includes("musicbrainz") || release.sources.includes("followed")) return true;
 
   return tags.some((tag) => release.genres.some((genre) => genre.includes(tag)));
 }
