@@ -38,20 +38,6 @@ export interface MusicBrainzArtist {
 }
 
 /**
- * A release-group as the *search* endpoint returns it — richer than the browse
- * shape above, because a search result carries its artist credit and its tags.
- */
-export interface MusicBrainzReleaseGroupHit {
-  "artist-credit": { artist?: { id: string; name: string }; name: string }[];
-  "first-release-date"?: string;
-  id: string;
-  "primary-type": null | string;
-  "secondary-types"?: string[];
-  tags?: MusicBrainzTag[];
-  title: string;
-}
-
-/**
  * Interface for MusicBrainz area/location
  */
 interface MusicBrainzArea {
@@ -125,14 +111,6 @@ interface MusicBrainzReleaseGroup {
 interface MusicBrainzReleaseGroupBrowse {
   "release-group-count": number;
   "release-groups": MusicBrainzReleaseGroup[];
-}
-
-/**
- * Interface for the release-group search response
- */
-interface MusicBrainzReleaseGroupSearch {
-  count: number;
-  "release-groups": MusicBrainzReleaseGroupHit[];
 }
 
 /**
@@ -444,78 +422,6 @@ export async function searchMusicBrainzBySpotifyId(
   }
 
   return null;
-}
-
-/**
- * Search release-groups published in a date window by any of `artistNames`.
- *
- * The companion to the tag search, and the one that finds the releases people
- * actually notice. MusicBrainz tags accrue over months, so the newest records —
- * Mastodon's "Marrow Deep" the week it landed, tagged only `laut.de` — carry no
- * genre at all and no tag query can reach them. A name does not need curating.
- *
- * Names go into one `OR` clause per call, so a follow list costs a request per
- * batch rather than one per artist. Matching is MusicBrainz's own fuzzy artist
- * search, which answers "Ghost" with "Ghost Loft" and "Crumbling Ghost" — the
- * caller has to keep only exact name matches.
- * @param artistNames - Artist names to look for
- * @param from - Inclusive start of the window, "YYYY-MM-DD"
- * @param to - Inclusive end of the window, "YYYY-MM-DD"
- * @param limit - Page size, MusicBrainz caps it at 100
- * @returns The matching release-groups, or an empty array on failure
- */
-export async function searchMusicBrainzReleasesByArtists(
-  artistNames: string[],
-  from: string,
-  to: string,
-  limit: number,
-): Promise<MusicBrainzReleaseGroupHit[]> {
-  if (!artistNames.length) return [];
-
-  // Quotes and backslashes would end the term early and let the rest parse as query syntax.
-  const clause = artistNames
-    .map((name) => `artist:"${name.replace(/["\\]/g, "")}"`)
-    .join(" OR ");
-  const data = await fetchFromMusicBrainz<MusicBrainzReleaseGroupSearch>("release-group", {
-    limit,
-    query: `firstreleasedate:[${from} TO ${to}] AND (${clause}) AND primarytype:Album`,
-  });
-
-  return data?.["release-groups"] ?? [];
-}
-
-/**
- * Search release-groups published in a date window and tagged with any of `tags`.
- *
- * The whole tag list goes into one Lucene `OR` clause rather than one request per
- * tag: MusicBrainz asks for a second between calls, so the difference is a page
- * that loads once versus one that loads once per genre. Tags are community-applied,
- * which is what keeps the result usable — an untagged bedroom upload never surfaces.
- * @param tags - Genre tags to match, e.g. ["metal", "rock"]
- * @param from - Inclusive start of the window, "YYYY-MM-DD"
- * @param to - Inclusive end of the window, "YYYY-MM-DD"
- * @param limit - Page size, MusicBrainz caps it at 100
- * @param offset - Page offset
- * @returns The matching release-groups, or an empty array on failure
- */
-export async function searchMusicBrainzReleasesByTags(
-  tags: string[],
-  from: string,
-  to: string,
-  limit: number,
-  offset = 0,
-): Promise<MusicBrainzReleaseGroupHit[]> {
-  if (!tags.length) return [];
-
-  // Quoted: a multi-word tag like "hard rock" would otherwise parse as two clauses.
-  const tagClause = tags.map((tag) => `tag:"${tag}"`).join(" OR ");
-  const data = await fetchFromMusicBrainz<MusicBrainzReleaseGroupSearch>("release-group", {
-    limit,
-    offset,
-    query: `firstreleasedate:[${from} TO ${to}] AND (${tagClause}) AND primarytype:Album`,
-  });
-
-  return data?.["release-groups"] ?? [];
 }
 
 /**

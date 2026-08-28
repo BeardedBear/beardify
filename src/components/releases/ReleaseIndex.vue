@@ -23,15 +23,20 @@
     </div>
 
     <div class="genres">
-      <!--
-        A followed-artist row is the one thing here that can sit outside the tracked
-        genres, on purpose. Unlabelled it reads as the filter leaking.
-      -->
-      <span v-if="release.sources.includes('followed')" class="genre followed">Followed</span>
       <span v-for="genre in release.genres.slice(0, GENRES_SHOWN)" :key="genre" class="genre">{{ genre }}</span>
     </div>
 
-    <div class="date">{{ formatDate(release.releaseDate) }}</div>
+    <!--
+      The score, absent for a release the listing has not rated. Tested by type rather
+      than against null: a row restored from a cache written before this field existed
+      has it `undefined`, which `!== null` lets through.
+
+      No release date beside it: the source dates to the month and no further, which
+      the month heading above already says.
+    -->
+    <div class="rating">
+      <span v-if="typeof release.rating === 'number'">{{ release.rating.toFixed(1) }}</span>
+    </div>
   </div>
 </template>
 
@@ -43,7 +48,6 @@ import { Release } from "@/@types/Releases";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { useSearch } from "@/components/search/SearchStore";
 import Cover from "@/components/ui/AlbumCover.vue";
-import { formatDate } from "@/helpers/date";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 /** Spotify hands out up to a dozen micro-genres per artist; past three the row is a wall of tags. */
@@ -79,7 +83,7 @@ function search(artist: string, album?: string): void {
   border-radius: var(--bd-radius-sm);
   display: grid;
   gap: var(--bd-space-3);
-  grid-template-columns: 1.2rem 2.5rem minmax(0, 1.4fr) minmax(0, 1fr) 6rem;
+  grid-template-columns: 1.2rem 2.5rem minmax(0, 1.4fr) minmax(0, 1fr) 2.5rem;
   padding: var(--bd-space-2) var(--bd-space-3);
   transition: background-color var(--bd-transition-fast), opacity var(--bd-transition-fast);
 
@@ -95,8 +99,7 @@ function search(artist: string, album?: string): void {
   @media (--tablet-down) {
     grid-template-columns: 1.2rem 2.5rem minmax(0, 1fr);
 
-    .genres,
-    .date {
+    .genres {
       display: none;
     }
   }
@@ -178,14 +181,14 @@ function search(artist: string, album?: string): void {
   white-space: nowrap;
 }
 
-.genre.followed {
-  background-color: var(--bd-primary);
-  color: var(--bd-on-primary);
-}
-
-.date {
-  color: var(--bd-font-color-dark);
+.rating {
   font-size: var(--bd-font-size-xs);
   text-align: right;
+
+  span {
+    background-color: var(--bd-bg-lighter);
+    border-radius: var(--bd-radius-sm);
+    padding: 0.1rem var(--bd-space-2);
+  }
 }
 </style>

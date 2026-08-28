@@ -1,8 +1,6 @@
-import { AlbumSimplified } from "@/@types/Album";
-import { Release, ReleaseSource } from "@/@types/Releases";
+import { Release } from "@/@types/Releases";
 import { normalizeString } from "@/helpers/helper";
-import { MusicBrainzReleaseGroupHit } from "@/helpers/musicbrainz";
-import { isSingle } from "@/helpers/useCleanAlbums";
+import { FeedRelease } from "@/helpers/releaseFeed";
 
 /*
  * Broad families rolled up from the sources' micro-genres.
@@ -41,21 +39,6 @@ export const GENRE_FAMILIES = [
  * negative offset that album would file itself under July.
  */
 const MONTH_FORMATTER = new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "UTC", year: "numeric" });
-const DAY_FORMATTER = new Intl.DateTimeFormat("en-US", { day: "numeric", month: "long", timeZone: "UTC", weekday: "long" });
-
-/**
- * Day sub-heading for a release, e.g. "Friday, August 21".
- *
- * Returns null for anything the source only dated to a month or a year. Those
- * timestamps sit on the first of the period, so formatting them as a day would
- * invent a precision that is not there — an album MusicBrainz dates to "2026"
- * would claim to have come out on January 1st.
- * @param release - The release to label
- */
-export function dayLabel(release: Pick<Release, "releaseDate" | "timestamp">): null | string {
-  if (release.releaseDate.length !== 10 || !release.timestamp) return null;
-  return DAY_FORMATTER.format(release.timestamp);
-}
 
 /**
  * Every term a release can be filtered by: its own genres, plus the broad family
@@ -75,69 +58,30 @@ export function genreTerms(genres: string[]): string[] {
   return [...terms];
 }
 
+/*
+ * Nominal size for a feed cover. The scrapers publish one artwork URL per release and
+ * do not offer renditions, so this only tells the layout what shape to expect.
+ */
+const COVER_SIZE = 200;
+
 /** Ceiling on the tracked-genre list, to keep the MusicBrainz Lucene clause a sane length. */
 export const MAX_TRACKED_TAGS = 15;
 
 /**
- * Whether a release belongs in a feed tracking `tags`.
+ * Deduplicate the feed and put it newest first.
  *
- * This is what makes the tracked list mean "what is in the feed" rather than
- * "what one of the three sources was asked for". Spotify's two feeds take no
- * genre argument at all — `genre:` returns nothing on an album search — so
- * without this pass they pour their editorial pop into a feed set to metal, and
- * being the larger sources they bury MusicBrainz's answer entirely.
- *
- * Substring, not equality: tracking "doom metal" has to catch "epic doom metal",
- * the same widening `genreTerms` applies to the families.
- * @param release - Release to test
- * @param tags - Tracked genres; an empty list tracks nothing and filters nothing
- */
-export function matchesTrackedTags(release: Release, tags: string[]): boolean {
-  if (!tags.length) return true;
-
-  /*
-   * A MusicBrainz row was selected by the tag query itself, so it matches by
-   * construction. Testing it again would drop the ones whose search hit came back
-   * without its `tags` array — a response detail, not a statement about the album.
-   *
-   * A followed-artist row bypasses the genre filter for a different reason: the
-   * user follows the artist, which is a stronger statement of interest than any
-   * genre list. It is also the only way these rows survive at all — the newest
-   * releases are exactly the ones MusicBrainz has not tagged yet.
-   */
-  if (release.sources.includes("musicbrainz") || release.sources.includes("followed")) return true;
-
-  return tags.some((tag) => release.genres.some((genre) => genre.includes(tag)));
-}
-
-/**
- * Merge the sources into one feed: newest first, one row per album.
- *
- * Deduplication is on `key`, not on the id, because no two sources agree on an id
- * — Spotify alone hands the same record a different one per market and per edition,
- * and a MusicBrainz row has no Spotify id at all. The surviving row keeps every
- * source that found it and the best metadata any of them had.
- * @param lists - One array per source, in priority order: earlier wins on conflicts
+ * Keyed on artist + title rather than on the source id: the listing can carry the
+ * same record twice under two ids — a reissue filed beside the original, an entry
+ * corrected after the fact — and two rows for one album is what a listener notices.
+ * The first row of a pair wins, and the listing arrives rating-ordered within a
+ * month, so that is the better-known entry.
+ * @param lists - One array per source
  */
 export function mergeReleases(lists: Release[][]): Release[] {
   const byKey = new Map<string, Release>();
 
   for (const release of lists.flat()) {
-    const existing = byKey.get(release.key);
-
-    if (!existing) {
-      byKey.set(release.key, { ...release, sources: [...release.sources] });
-      continue;
-    }
-
-    for (const source of release.sources) {
-      if (!existing.sources.includes(source)) existing.sources.push(source);
-    }
-    // Each source is missing something the others have: Spotify never reports genres
-    // on an album, MusicBrainz has no cover of its own for a good third of releases.
-    if (!existing.images.length && release.images.length) existing.images = release.images;
-    if (!existing.genres.length && release.genres.length) existing.genres = release.genres;
-    if (!existing.artistId && release.artistId) existing.artistId = release.artistId;
+    if (!byKey.has(release.key)) byKey.set(release.key, release);
   }
 
   return [...byKey.values()].sort((a, b) => b.timestamp - a.timestamp);
@@ -170,13 +114,25 @@ export function normalizeTag(tag: string): string {
     .trim();
 }
 
+/*
+ * Listings disambiguate same-named artists with a country or an index — "Loathe (UK)",
+ * "Picture (DEN)", "Slaughter (2)" — and not all of them do it, nor the same way. 74
+ * artists in one window carried such a suffix, so leaving it in means the same album
+ * is listed twice, once per spelling, as soon as two sources disagree. Deliberately
+ * narrow: two or three uppercase letters with an optional region, or a small number.
+ * It will not touch "Sunn O)))" or a band whose name genuinely ends in a parenthesis.
+ */
+const ARTIST_DISAMBIGUATION = /\s*\((?:\d{1,3}|[A-Z]{2,3}(?:-[A-Z]{2,3})?)\)\s*$/;
+
 /**
  * The identity of a release across sources and across refreshes.
- * @param artist - Main artist name
+ * @param artist - Main artist name, as its source spells it
  * @param album - Album title
  */
 export function releaseKey(artist: string, album: string): string {
-  return `${normalizeString(artist)}|${normalizeString(album)}`;
+  const bareArtist = artist.replace(ARTIST_DISAMBIGUATION, "");
+
+  return `${normalizeString(bareArtist)}|${normalizeString(album)}`;
 }
 
 /**
@@ -235,54 +191,37 @@ export function suggestGenres(query: string, vocabulary: string[], exclude: stri
 }
 
 /**
- * Turn a Spotify album into a release row.
- * @param album - Simplified album from any Spotify listing endpoint
- * @param source - Which listing it came from
- */
-export function toRelease(album: AlbumSimplified, source: ReleaseSource): Release {
-  const artistName = album.artists[0]?.name ?? "Unknown artist";
-
-  return {
-    artistId: album.artists[0]?.id ?? "",
-    artistName,
-    genres: [],
-    id: album.id,
-    images: album.images,
-    key: releaseKey(artistName, album.name),
-    name: album.name,
-    releaseDate: album.release_date,
-    single: isSingle(album),
-    sources: [source],
-    terms: [],
-    timestamp: releaseTimestamp(album.release_date),
-  };
-}
-
-/**
- * Turn a MusicBrainz release-group into a release row.
+ * Turn a row of the scraped feed into a release row.
  *
- * The cover comes straight from the Cover Art Archive by release-group id — a URL,
- * not a lookup, so it costs no request. It 404s for roughly a third of releases,
- * which the cover component handles by falling back to the placeholder.
- * @param hit - Release-group as the search endpoint returned it
+ * The cover URL is stored by the scraper, not derived here: each source builds it its
+ * own way, and this side should not have to know which site a row came from. A dead
+ * one 404s and the cover component falls back to the placeholder.
+ * @param row - Row as the `releases` table stores it
  */
-export function toReleaseFromMusicBrainz(hit: MusicBrainzReleaseGroupHit): Release {
-  const artistName = hit["artist-credit"][0]?.name ?? "Unknown artist";
-  const releaseDate = hit["first-release-date"] ?? "";
+export function toReleaseFromFeed(row: FeedRelease): Release {
+  /*
+   * Stored as the first of the month because that is the only precision the listing
+   * states. Trimmed back to "YYYY-MM" here so the rest of the app reads it as such
+   * and does not announce a release "on the 1st" that came out some other day.
+   */
+  /*
+   * Stored as the first of a month because the column is a `date`, but the listing
+   * only ever states the month — so the day is dropped here rather than carried
+   * forward as a fact. Nothing downstream reads a date any finer than the heading.
+   */
+  const month = row.month.slice(0, 7);
 
   return {
     artistId: "",
-    artistName,
-    genres: (hit.tags ?? []).map((tag) => tag.name),
-    id: hit.id,
-    images: [{ height: 250, url: `https://coverartarchive.org/release-group/${hit.id}/front-250`, width: 250 }],
-    key: releaseKey(artistName, hit.title),
-    name: hit.title,
-    releaseDate,
-    // MusicBrainz was asked for primarytype:Album, so nothing here is a single.
-    single: false,
-    sources: ["musicbrainz"],
+    artistName: row.artist,
+    genres: row.genres,
+    // Prefixed with the source: two sites can number an album the same.
+    id: `${row.source}-${row.source_id}`,
+    images: row.cover_url ? [{ height: COVER_SIZE, url: row.cover_url, width: COVER_SIZE }] : [],
+    key: releaseKey(row.artist, row.album),
+    name: row.album,
+    rating: row.rating,
     terms: [],
-    timestamp: releaseTimestamp(releaseDate),
+    timestamp: releaseTimestamp(month),
   };
 }

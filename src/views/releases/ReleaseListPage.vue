@@ -65,7 +65,7 @@ const fetchedLabel = computed(() =>
 );
 
 watch(
-  () => [releasesStore.genre, releasesStore.albumsOnly],
+  () => releasesStore.genre,
   () => scrollRef.value?.scrollTo(0, 0),
 );
 

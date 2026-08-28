@@ -2,7 +2,7 @@
   <Dialog title="Tracked genres" width="min(94vw, 34rem)" with-title>
     <div class="wrap">
       <p class="intro">
-        Releases tagged with any of these show up in the feed. Sub-genres work —
+        Releases filed under any of these show up in the feed. Sub-genres work —
         <button class="example" type="button" @click="addGenre('atmospheric black metal')">
           atmospheric black metal
         </button>
@@ -61,7 +61,7 @@
           </li>
         </ul>
         <p v-else-if="query.trim() && !atLimit" class="no-match">
-          No MusicBrainz genre matches. Press Enter to track it anyway.
+          No genre in the listing matches. Press Enter to track it anyway.
         </p>
       </form>
 
@@ -77,9 +77,8 @@
 <script lang="ts" setup>
 import { X } from "@lucide/vue";
 import { BdButton, BdInput } from "bearded-ui";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
-import { MUSICBRAINZ_GENRES } from "@/assets/musicbrainzGenres";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Dialog from "@/components/dialog/DialogWrap.vue";
 import { MAX_TRACKED_TAGS, normalizeTag, suggestGenres } from "@/helpers/releases";
@@ -90,6 +89,10 @@ const SUGGESTIONS_SHOWN = 8;
 
 const dialogStore = useDialog();
 const releasesStore = useReleases();
+const vocabulary = ref<string[]>(releasesStore.genreVocabulary);
+
+// Fetched on open, not at module load: it is one request, and only this dialog needs it.
+onMounted(async () => (vocabulary.value = await releasesStore.loadGenreVocabulary()));
 
 /*
  * Edited on a copy. The whole point of the dialog is that nothing refetches until
@@ -101,7 +104,7 @@ const highlighted = ref(0);
 
 const atLimit = computed(() => draft.value.length >= MAX_TRACKED_TAGS);
 const suggestions = computed(() =>
-  atLimit.value ? [] : suggestGenres(query.value, MUSICBRAINZ_GENRES, draft.value, SUGGESTIONS_SHOWN),
+  atLimit.value ? [] : suggestGenres(query.value, vocabulary.value, draft.value, SUGGESTIONS_SHOWN),
 );
 const dirty = computed(
   () =>

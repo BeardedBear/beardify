@@ -1,51 +1,37 @@
 import { defineStore } from "pinia";
 
-import { AlbumSimplified } from "@/@types/Album";
 import { Artist } from "@/@types/Artist";
 import { Paging } from "@/@types/Paging";
 import { Release, ReleasesPage } from "@/@types/Releases";
 import { instance } from "@/api";
-import { normalizeString } from "@/helpers/helper";
-import { searchMusicBrainzReleasesByArtists, searchMusicBrainzReleasesByTags } from "@/helpers/musicbrainz";
+import { getFeedGenres, getFeedReleases } from "@/helpers/releaseFeed";
 import {
   GENRE_FAMILIES,
   genreTerms,
-  matchesTrackedTags,
   MAX_TRACKED_TAGS,
   mergeReleases,
-  toRelease,
-  toReleaseFromMusicBrainz,
+  toReleaseFromFeed,
 } from "@/helpers/releases";
 import { useCheckLiveAlbum, useCheckReissueAlbum } from "@/helpers/useCleanAlbums";
 
-/** Spotify's ceiling for `?ids=` on the artists endpoint. */
-const ID_BATCH = 50;
-/** Page size for the Spotify listings; also Spotify's maximum. */
-const PAGE_SIZE = 50;
-/** `tag:new` hard-caps at 100 hits — verified against the API, a third page returns nothing. */
-const FRESH_PAGES = 2;
-/** Editorial feed depth. It never holds more than 100. */
-const EDITORIAL_PAGES = 2;
-/** MusicBrainz page size (its own maximum) and how many pages to walk. */
-const MUSICBRAINZ_PAGE_SIZE = 100;
-const MUSICBRAINZ_PAGES = 3;
 /** How far back a release still counts as news. */
 const RECENT_DAYS = 60;
-/*
- * Followed artists per MusicBrainz query. Fifty names is a ~1.6 kB URL, well inside
- * every limit, and the fuzzy matches they drag in still fit one page of 100 results.
- */
-const ARTISTS_PER_QUERY = 50;
-/*
- * Ceiling on those queries. Each one costs a slot in the shared MusicBrainz queue at
- * one per 1.1s, so this bounds a very long follow list to about twenty seconds — paid
- * once per six hours, not per visit.
- */
-const MAX_ARTIST_QUERIES = 20;
 /** How many tags to seed from the user's top artists. More widen the feed without costing a request. */
 const SEEDED_TAGS = 6;
 /** The feed moves on a weekly rhythm — refetching on every visit buys nothing. */
 const STALE_AFTER_MS = 6 * 60 * 60 * 1000;
+
+/*
+ * Shape version of a persisted `Release`. Bump it whenever a field is added or its
+ * meaning changes.
+ *
+ * The feed lives in localStorage for six hours, so a build that adds a field meets
+ * rows written without it — and reading one is not a missing value but a crash:
+ * `rating.toFixed()` on undefined, `terms.includes()` on undefined. Every reader
+ * guarding every field is whack-a-mole; discarding a cache the current code cannot
+ * read costs one refetch and nothing else.
+ */
+const FEED_VERSION = 7;
 
 export const useReleases = defineStore("releases", {
   actions: {
@@ -62,38 +48,43 @@ export const useReleases = defineStore("releases", {
       // Only seeded while the list is untouched: re-deriving would throw away a hand-picked list.
       if (!this.tagsCustom) this.tags = await deriveTags();
 
-      /*
-       * `allSettled`, not `all`: the four sources are independent and fail
-       * independently — MusicBrainz in particular answers 503 under load often
-       * enough to matter. Losing one should thin the feed, not blank the page; the
-       * error state is for the case where nothing at all came back.
-       */
-      const results = await Promise.allSettled([
-        fetchEditorial(),
-        fetchFresh(),
-        fetchMusicBrainz(this.tags),
-        fetchFollowed(),
-      ]);
-      const lists = results.filter((result) => result.status === "fulfilled").map((result) => result.value);
+      const rows = await fetchFeed(this.tags);
 
-      if (!lists.length) {
-        if (import.meta.env.DEV) console.error("Error fetching releases:", results);
+      /*
+       * An empty answer is a failure here, not a quiet result. With a single source
+       * there is nothing left to thin the feed with, so a network error, a missing
+       * Supabase configuration or an RLS refusal all arrive as zero rows — and
+       * rendering that as "no releases this month" would hide a broken page.
+       */
+      if (!rows.length) {
         this.error = true;
         this.loading = false;
         return;
       }
 
       // Live albums and reissues are re-uploaded constantly and would bury the actual releases.
-      const merged = mergeReleases(lists).filter(
+      const merged = mergeReleases([rows]).filter(
         (release) => !useCheckLiveAlbum(release.name) && !useCheckReissueAlbum(release.name),
       );
 
-      // Genres have to be in place first: the Spotify rows carry none until annotate fills them.
-      await annotate(merged);
+      // The scrapers classify every row, so this only derives the terms the sidebar reads.
+      for (const release of merged) release.terms = genreTerms(release.genres);
 
-      this.releases = merged.filter((release) => matchesTrackedTags(release, this.tags));
+      this.releases = merged;
       this.fetchedAt = Date.now();
       this.loading = false;
+    },
+
+    /**
+     * The genres the table knows, for the tracking dialog's autocomplete.
+     *
+     * Fetched once and kept: the vocabulary is the scraper's editorial genre list and
+     * changes about never, while the dialog can be opened repeatedly in a session.
+     */
+    async loadGenreVocabulary(): Promise<string[]> {
+      if (!this.genreVocabulary.length) this.genreVocabulary = await getFeedGenres();
+
+      return this.genreVocabulary;
     },
 
     /** Back to the genres inferred from the user's top artists. */
@@ -145,16 +136,16 @@ export const useReleases = defineStore("releases", {
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
     },
 
-    /** The feed as the list renders it: every sidebar filter applied. */
+    /*
+     * The feed as the list renders it.
+     *
+     * No genre gate here any more: every source is now selected by genre in its own
+     * query: the feed is fetched with a genre overlap filter, so a second pass here
+     * could only ever return true. The gate that used to live here existed to hold
+     * back Spotify's editorial listings, which took no genre argument and are gone.
+     */
     visibleReleases(state): Release[] {
       return state.releases.filter((release) => {
-        /*
-         * Also applied at fetch time, and not redundantly: that pass keeps the
-         * stored feed small, this one keeps what is on screen honest about a feed
-         * persisted before the tracked list — or the filtering itself — changed.
-         */
-        if (!matchesTrackedTags(release, state.tags)) return false;
-        if (state.albumsOnly && release.single) return false;
         if (state.genre && !release.terms.includes(state.genre)) return false;
         if (state.hideChecked && state.checks[release.key]) return false;
         return true;
@@ -171,16 +162,49 @@ export const useReleases = defineStore("releases", {
    * only applying within a single session. A few hundred rows is ~150 KB.
    */
   persist: {
+    /*
+     * `checks`, `tags` and the filters are the user's own and survive the version
+     * gate; only the feed and its timestamp are dropped, so the next visit refetches
+     * rather than rendering rows the current code cannot read.
+     */
+    afterHydrate: ({ store }) => {
+      const releases = store as unknown as ReleasesPage;
+      if (releases.feedVersion === FEED_VERSION) return;
+
+      releases.releases = [];
+      releases.fetchedAt = null;
+      releases.feedVersion = FEED_VERSION;
+    },
     key: "beardify-releases",
-    pick: ["albumsOnly", "checks", "fetchedAt", "genre", "hideChecked", "releases", "tags", "tagsCustom"],
+    pick: [
+      "checks",
+      "feedVersion",
+      "fetchedAt",
+      "genre",
+      "genreVocabulary",
+      "hideChecked",
+      "releases",
+      "tags",
+      "tagsCustom",
+    ],
   },
 
   state: (): ReleasesPage => ({
-    albumsOnly: true,
     checks: {},
     error: false,
+    /*
+     * Zero, not FEED_VERSION, and that is the whole point of the gate.
+     *
+     * Hydration patches the stored keys over this state and leaves the rest alone,
+     * so a payload written before this field existed keeps whatever default sits
+     * here. Defaulting to the current version made every such cache look current —
+     * the gate passed, the stale feed stayed, and nothing was ever refetched. A
+     * value no stored payload can carry is what makes "absent" mean "too old".
+     */
+    feedVersion: 0,
     fetchedAt: null,
     genre: null,
+    genreVocabulary: [],
     hideChecked: false,
     loading: false,
     releases: [],
@@ -188,46 +212,6 @@ export const useReleases = defineStore("releases", {
     tagsCustom: false,
   }),
 });
-
-/**
- * Fills in genres and filter terms for the Spotify rows.
- *
- * Spotify never reports genres on an album, only on the artist, so without this
- * pass every Spotify-sourced row has an empty genre column. MusicBrainz rows arrive
- * already tagged and are skipped. Best-effort: a failure costs a column, not the page.
- * @param releases - Feed to annotate in place
- */
-async function annotate(releases: Release[]): Promise<void> {
-  const genresById = new Map<string, string[]>();
-  const artistIds = [...new Set(releases.map((release) => release.artistId).filter(Boolean))];
-
-  await Promise.all(
-    batched(artistIds).map(async (ids) => {
-      try {
-        const { data } = await instance().get<{ artists: Artist[] }>(`artists?ids=${ids.join(",")}`);
-        for (const artist of data.artists ?? []) {
-          if (artist) genresById.set(artist.id, artist.genres ?? []);
-        }
-      } catch (error: unknown) {
-        if (import.meta.env.DEV) console.error("Error fetching release genres:", error);
-      }
-    }),
-  );
-
-  for (const release of releases) {
-    if (!release.genres.length) release.genres = genresById.get(release.artistId) ?? [];
-    release.terms = genreTerms(release.genres);
-  }
-}
-
-/**
- * Splits ids into batches Spotify will accept.
- */
-function batched(ids: string[]): string[][] {
-  const batches: string[][] = [];
-  for (let index = 0; index < ids.length; index += ID_BATCH) batches.push(ids.slice(index, index + ID_BATCH));
-  return batches;
-}
 
 /**
  * The genre tags to build the feed from, taken from the user's own listening.
@@ -258,142 +242,27 @@ async function deriveTags(): Promise<string[]> {
 }
 
 /**
- * Spotify's editorial "New Releases" shelf — curated, worldwide, always answers.
- */
-async function fetchEditorial(): Promise<Release[]> {
-  const releases: Release[] = [];
-
-  for (let page = 0; page < EDITORIAL_PAGES; page++) {
-    const { data } = await instance().get<{ albums: Paging<AlbumSimplified> }>(
-      `browse/new-releases?limit=${PAGE_SIZE}&offset=${page * PAGE_SIZE}`,
-    );
-    releases.push(...data.albums.items.map((album) => toRelease(album, "editorial")));
-    if (!data.albums.next) break;
-  }
-
-  return releases;
-}
-
-/**
- * Recent releases by the artists the user follows.
+ * The scraped release feed, held in Supabase and refreshed nightly by
+ * https://github.com/BeardedBear/scrap.
  *
- * The source that answers "why is the album everyone is talking about missing".
- * MusicBrainz tags accrue over months, so a record released this week carries no
- * genre tag and the tag query cannot see it — measured, not assumed: Mastodon's
- * "Marrow Deep" was tagged only `laut.de` and `plattentests.de` on release day.
- * A name needs no curating, so asking by artist finds what asking by genre cannot.
- *
- * The follow list is read from Spotify (fifty artists a page) and handed to
- * MusicBrainz fifty names at a time, so a five-hundred-artist account costs about
- * twenty requests rather than the five hundred one-artist-at-a-time would.
+ * It exists because every other source classifies a release only once somebody has
+ * curated it, which takes months — so the newest records, the ones this page is for,
+ * arrive with no genre at all. The scrapers read sites that file each release under
+ * an editor-chosen genre on day one. One request, filtered and indexed server-side.
+ * @param tags - Tracked genres, applied as an array overlap in the query
  */
-async function fetchFollowed(): Promise<Release[]> {
-  const genresByName = new Map<string, string[]>();
-  const idsByName = new Map<string, string>();
-  const names: string[] = [];
+async function fetchFeed(tags: string[]): Promise<Release[]> {
+  /*
+   * Widened to the first of the window's month, not the window's own start. That
+   * column always holds the first of a month, so asking for `>= 2026-06-29` would
+   * compare against `2026-06-01` and drop the whole of June — a third of the window,
+   * silently.
+   */
+  const rows = await getFeedReleases(`${windowStart().slice(0, 7)}-01`, tags);
 
-  // Cursor pagination, not offset: this is the one Spotify listing that pages by `after`.
-  let after: null | string = null;
-  do {
-    const { data }: { data: { artists: { cursors: { after: null | string }; items: Artist[] } } }
-      = await instance().get(`me/following?type=artist&limit=${PAGE_SIZE}${after ? `&after=${after}` : ""}`);
-
-    for (const artist of data.artists.items) {
-      names.push(artist.name);
-      // Kept so the row lands with Spotify's genres and its artist id, which MusicBrainz has neither of.
-      genresByName.set(normalizeString(artist.name), artist.genres ?? []);
-      idsByName.set(normalizeString(artist.name), artist.id);
-    }
-    after = data.artists.cursors?.after ?? null;
-  } while (after);
-
-  const from = windowStart();
-  const to = today();
-  const releases: Release[] = [];
-
-  const capped = names.slice(0, ARTISTS_PER_QUERY * MAX_ARTIST_QUERIES);
-
-  for (let index = 0; index < capped.length; index += ARTISTS_PER_QUERY) {
-    const batch = capped.slice(index, index + ARTISTS_PER_QUERY);
-    const hits = await searchMusicBrainzReleasesByArtists(batch, from, to, MUSICBRAINZ_PAGE_SIZE);
-
-    for (const hit of hits) {
-      if (hit["secondary-types"]?.length) continue;
-
-      const release = toReleaseFromMusicBrainz(hit);
-      /*
-       * MusicBrainz artist search is fuzzy, so a batch containing "Ghost" comes back
-       * with "Ghost Loft" and "Crumbling Ghost" too. Only an exact name is this user's
-       * artist; the same normalization the release key uses settles the comparison.
-       */
-      const normalized = normalizeString(release.artistName);
-      if (!genresByName.has(normalized)) continue;
-
-      release.sources = ["followed"];
-      release.artistId = idsByName.get(normalized) ?? "";
-      if (!release.genres.length) release.genres = genresByName.get(normalized) ?? [];
-      releases.push(release);
-    }
-  }
-
-  return releases;
-}
-
-/*
- * `tag:new` is Spotify's only query that returns the *catalogue's* last two weeks
- * rather than an editor's pick. It hard-caps at 100 hits, so it widens the feed
- * without ever being the bulk of it.
- */
-async function fetchFresh(): Promise<Release[]> {
-  const releases: Release[] = [];
-
-  for (let page = 0; page < FRESH_PAGES; page++) {
-    const { data } = await instance().get<{ albums: Paging<AlbumSimplified> }>(
-      `search?q=${encodeURIComponent("tag:new")}&type=album&limit=${PAGE_SIZE}`
-      + `&offset=${page * PAGE_SIZE}&market=from_token`,
-    );
-    releases.push(...data.albums.items.map((album) => toRelease(album, "fresh")));
-    if (!data.albums.next) break;
-  }
-
-  return releases;
-}
-
-/**
- * The source that makes this page worth opening.
- *
- * Spotify's own feeds are editorial and market-shaped — measured against the live
- * API, both come back entirely pop and urban, so a listener who follows metal or
- * rock sees neither a release nor a matching genre, and there is no query-side fix
- * (`genre:` returns nothing on an album search). MusicBrainz answers by community
- * tag instead, which means the whole taste-shaped feed costs three requests total
- * rather than one per followed artist.
- * @param tags - Genre tags to query with
- */
-async function fetchMusicBrainz(tags: string[]): Promise<Release[]> {
-  const releases: Release[] = [];
-  const from = windowStart();
-  const to = today();
-
-  for (let page = 0; page < MUSICBRAINZ_PAGES; page++) {
-    const hits = await searchMusicBrainzReleasesByTags(
-      tags,
-      from,
-      to,
-      MUSICBRAINZ_PAGE_SIZE,
-      page * MUSICBRAINZ_PAGE_SIZE,
-    );
-
-    for (const hit of hits) {
-      // Live records, demos and compilations all come back as primarytype:Album.
-      if (hit["secondary-types"]?.length) continue;
-      releases.push(toReleaseFromMusicBrainz(hit));
-    }
-
-    if (hits.length < MUSICBRAINZ_PAGE_SIZE) break;
-  }
-
-  return releases;
+  return rows
+    .map(toReleaseFromFeed)
+    .filter((release) => !useCheckLiveAlbum(release.name) && !useCheckReissueAlbum(release.name));
 }
 
 /**
@@ -403,12 +272,7 @@ function isFamily(term: string): boolean {
   return GENRE_FAMILIES.includes(term);
 }
 
-/** Today, as the "YYYY-MM-DD" MusicBrainz date queries expect. */
-function today(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
-/** The oldest date still counted as news, in the same format. */
+/** The oldest date still counted as news, as "YYYY-MM-DD". */
 function windowStart(): string {
   return new Date(Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }

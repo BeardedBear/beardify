@@ -16,28 +16,30 @@ export interface Release {
    */
   key: string;
   name: string;
-  /** As the source returns it: "2026", "2026-08" or "2026-08-10". */
-  releaseDate: string;
-  /** Resolved at build time so the list filter does not have to re-derive it per render. */
-  single: boolean;
-  sources: ReleaseSource[];
+  /**
+   * The source's editorial score out of 5, when it publishes one. The only quality
+   * signal the feed carries, and what makes a long list triageable.
+   */
+  rating: null | number;
   /** What the sidebar filters on: `genres` plus their broad families. */
   terms: string[];
-  /** `releaseDate` resolved to a sortable epoch, month/year precision included. */
+  /** The release month, resolved to a sortable epoch. The only date the feed keeps. */
   timestamp: number;
 }
 
-/** Where a release was picked up. A release found by several sources keeps them all. */
-export type ReleaseSource = "editorial" | "followed" | "fresh" | "musicbrainz";
-
 export interface ReleasesPage {
-  /** Drop the singles flood; EPs (3+ tracks) stay. */
-  albumsOnly: boolean;
   /** Release key → moment it was ticked off. A plain map so a tick is O(1) both ways. */
   checks: Record<string, number>;
   error: boolean;
+  /**
+   * Shape version of the persisted feed. Bumped whenever a field is added to
+   * `Release`, so a cache written by an older build is dropped instead of rendered.
+   */
+  feedVersion: number;
   fetchedAt: null | number;
   genre: null | string;
+  /** Genres present in the scraped table — what the tracking dialog suggests. */
+  genreVocabulary: string[];
   hideChecked: boolean;
   loading: boolean;
   releases: Release[];

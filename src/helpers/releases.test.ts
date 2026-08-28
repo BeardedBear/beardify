@@ -1,21 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { AlbumSimplified } from "@/@types/Album";
 import { Release } from "@/@types/Releases";
-import { MUSICBRAINZ_GENRES } from "@/assets/musicbrainzGenres";
-import { MusicBrainzReleaseGroupHit } from "@/helpers/musicbrainz";
 import {
-  dayLabel,
   genreTerms,
-  matchesTrackedTags,
   mergeReleases,
   monthLabel,
   normalizeTag,
   releaseKey,
   releaseTimestamp,
   suggestGenres,
-  toRelease,
-  toReleaseFromMusicBrainz,
+  toReleaseFromFeed,
 } from "@/helpers/releases";
 
 function release(overrides: Partial<Release>): Release {
@@ -26,9 +20,7 @@ function release(overrides: Partial<Release>): Release {
     id: "id1",
     images: [],
     name: "Fortitude",
-    releaseDate: "2026-08-10",
-    single: false,
-    sources: ["editorial"],
+    rating: null,
     terms: [],
     timestamp: releaseTimestamp("2026-08-10"),
     ...overrides,
@@ -52,6 +44,16 @@ describe("releaseTimestamp", () => {
 });
 
 describe("releaseKey", () => {
+  it("ignores a listing's disambiguation suffix, which another source may not carry", () => {
+    expect(releaseKey("Loathe (UK)", "A Stranger to You")).toBe(releaseKey("Loathe", "A Stranger to You"));
+    expect(releaseKey("Picture (DEN)", "X")).toBe(releaseKey("Picture", "X"));
+    expect(releaseKey("Slaughter (2)", "X")).toBe(releaseKey("Slaughter", "X"));
+  });
+
+  it("leaves a name that genuinely ends in a parenthesis alone", () => {
+    expect(releaseKey("Godspeed You! (Black Emperor)", "X")).not.toBe(releaseKey("Godspeed You!", "X"));
+  });
+
   it("matches the same record across sources that punctuate and case it differently", () => {
     expect(releaseKey("Sigur Rós", "Á­gætis byrjun")).toBe(releaseKey("sigur rós", "á­gætis  byrjun"));
   });
@@ -93,41 +95,6 @@ describe("normalizeTag", () => {
   });
 });
 
-describe("matchesTrackedTags", () => {
-  it("keeps a release whose genre is the tracked one", () => {
-    expect(matchesTrackedTags(release({ genres: ["nu metal", "rock"] }), ["metal"])).toBe(true);
-  });
-
-  it("keeps a sub-genre of what is tracked", () => {
-    expect(matchesTrackedTags(release({ genres: ["epic doom metal"] }), ["doom metal"])).toBe(true);
-  });
-
-  it("drops the editorial pop that Spotify pours in regardless of the tracked genres", () => {
-    expect(matchesTrackedTags(release({ genres: ["k-pop", "afrobeats"] }), ["metal", "rock"])).toBe(false);
-  });
-
-  it("drops a release nothing could classify", () => {
-    expect(matchesTrackedTags(release({ genres: [] }), ["metal"])).toBe(false);
-  });
-
-  it("keeps a MusicBrainz row whose response echoed no tags back", () => {
-    expect(matchesTrackedTags(release({ genres: [], sources: ["musicbrainz"] }), ["metal"])).toBe(true);
-  });
-
-  /*
-   * The case the whole followed source exists for: a record released this week has
-   * no MusicBrainz genre tag yet, so testing it against the tracked genres would
-   * drop the one release the user was most likely waiting for.
-   */
-  it("keeps an untagged release by a followed artist", () => {
-    expect(matchesTrackedTags(release({ genres: [], sources: ["followed"] }), ["metal"])).toBe(true);
-  });
-
-  it("filters nothing when nothing is tracked", () => {
-    expect(matchesTrackedTags(release({ genres: ["k-pop"] }), [])).toBe(true);
-  });
-});
-
 describe("suggestGenres", () => {
   const vocabulary = ["acoustic metal", "atmospheric black metal", "black metal", "metal", "metalcore", "pop"];
 
@@ -162,86 +129,44 @@ describe("suggestGenres", () => {
   });
 });
 
-describe("MUSICBRAINZ_GENRES", () => {
-  it("is the vocabulary the query actually matches on, in the normalized form", () => {
-    expect(MUSICBRAINZ_GENRES).toContain("black metal");
-    expect(MUSICBRAINZ_GENRES.every((genre) => genre === normalizeTag(genre))).toBe(true);
-  });
-});
-
 describe("monthLabel", () => {
   it("keeps a UTC-midnight first of month in its own month", () => {
     expect(monthLabel(Date.UTC(2026, 7, 1))).toBe("August 2026");
   });
 });
 
-describe("dayLabel", () => {
-  it("labels a full date with its weekday", () => {
-    expect(dayLabel({ releaseDate: "2026-08-21", timestamp: releaseTimestamp("2026-08-21") }))
-      .toBe("Friday, August 21");
+describe("toReleaseFromFeed", () => {
+  const row = {
+    album: "Marrow Deep",
+    artist: "Mastodon",
+    cover_url: "https://www.sputnikmusic.com/images/albums/551990.jpg",
+    genres: ["metal", "sludge metal"],
+    month: "2026-08-01",
+    rating: 4.2,
+    source: "sputnik",
+    source_id: "551990",
+  };
+
+  it("keeps the month and drops the stored day, which the listing never stated", () => {
+    expect(toReleaseFromFeed(row).timestamp).toBe(releaseTimestamp("2026-08"));
   });
 
-  it("refuses to invent a day for a month- or year-only date", () => {
-    expect(dayLabel({ releaseDate: "2026-08", timestamp: releaseTimestamp("2026-08") })).toBeNull();
-    expect(dayLabel({ releaseDate: "2026", timestamp: releaseTimestamp("2026") })).toBeNull();
-    expect(dayLabel({ releaseDate: "", timestamp: 0 })).toBeNull();
-  });
-});
-
-describe("toRelease", () => {
-  it("flags a two-track single but not a three-track EP", () => {
-    const album = (total_tracks: number): AlbumSimplified =>
-      ({
-        album_type: "single",
-        artists: [{ id: "a1", name: "Gojira" }],
-        id: "x",
-        images: [],
-        name: "Amazonia",
-        release_date: "2026-08-10",
-        total_tracks,
-      }) as unknown as AlbumSimplified;
-
-    expect(toRelease(album(2), "fresh").single).toBe(true);
-    expect(toRelease(album(3), "fresh").single).toBe(false);
+  it("keys identically to the same record from another source", () => {
+    expect(toReleaseFromFeed(row).key).toBe(release({ artistName: "Mastodon", name: "Marrow Deep" }).key);
   });
 
-  it("does not throw on an album with no artist credited", () => {
-    const orphan = { artists: [], id: "x", images: [], name: "?", release_date: "2026" } as unknown as AlbumSimplified;
-
-    expect(toRelease(orphan, "fresh").artistName).toBe("Unknown artist");
-  });
-});
-
-describe("toReleaseFromMusicBrainz", () => {
-  const hit = {
-    "artist-credit": [{ artist: { id: "mb-artist", name: "Fen" }, name: "Fen" }],
-    "first-release-date": "2026-08-21",
-    id: "7e161d0f-51b0-4e12-ac5f-f93dda5138a0",
-    "primary-type": "Album",
-    tags: [{ count: 3, name: "metal" }, { count: 1, name: "black metal" }],
-    title: "Elemental Part One",
-  } as MusicBrainzReleaseGroupHit;
-
-  it("carries the community tags over as genres", () => {
-    expect(toReleaseFromMusicBrainz(hit).genres).toEqual(["metal", "black metal"]);
+  it("carries the score and the genres over", () => {
+    expect(toReleaseFromFeed(row).rating).toBe(4.2);
+    expect(toReleaseFromFeed(row).genres).toEqual(["metal", "sludge metal"]);
   });
 
-  it("points the cover at the Cover Art Archive without a lookup", () => {
-    expect(toReleaseFromMusicBrainz(hit).images[0].url).toBe(
-      "https://coverartarchive.org/release-group/7e161d0f-51b0-4e12-ac5f-f93dda5138a0/front-250",
-    );
+  it("namespaces the id by source, since two sites can number an album the same", () => {
+    expect(toReleaseFromFeed(row).id).toBe("sputnik-551990");
   });
 
-  it("keys identically to the Spotify row for the same record", () => {
-    const spotify = release({ artistName: "Fen", name: "Elemental Part One" });
-
-    expect(toReleaseFromMusicBrainz(hit).key).toBe(spotify.key);
-  });
-
-  it("survives a release-group with no date and no tags", () => {
-    const bare = { "artist-credit": [{ name: "X" }], id: "abc", "primary-type": "Album", title: "Y" };
-
-    expect(toReleaseFromMusicBrainz(bare as MusicBrainzReleaseGroupHit).timestamp).toBe(0);
+  it("takes the cover the scraper stored, and copes with a source that has none", () => {
+    expect(toReleaseFromFeed(row).images[0].url).toBe(row.cover_url);
+    expect(toReleaseFromFeed({ ...row, cover_url: null }).images).toEqual([]);
   });
 });
 
@@ -255,25 +180,10 @@ describe("mergeReleases", () => {
     expect(merged.map((r) => r.id)).toEqual(["new", "old"]);
   });
 
-  it("collapses the same record found under two source ids and keeps both sources", () => {
-    const merged = mergeReleases([
-      [release({ id: "spotify-id", sources: ["editorial"] })],
-      [release({ id: "mb-id", sources: ["musicbrainz"] })],
-    ]);
+  it("collapses the same record listed twice under different ids", () => {
+    const merged = mergeReleases([[release({ id: "a-1" })], [release({ id: "b-2" })]]);
 
     expect(merged).toHaveLength(1);
-    expect(merged[0].sources).toEqual(["editorial", "musicbrainz"]);
-  });
-
-  it("fills each gap from whichever source has the value", () => {
-    const cover = [{ height: 640, url: "cover.jpg", width: 640 }];
-    const merged = mergeReleases([
-      [release({ artistId: "spotify-artist", genres: [], images: cover })],
-      [release({ artistId: "", genres: ["black metal"], images: [] })],
-    ]);
-
-    expect(merged[0].images).toEqual(cover);
-    expect(merged[0].genres).toEqual(["black metal"]);
-    expect(merged[0].artistId).toBe("spotify-artist");
+    expect(merged[0].id).toBe("a-1");
   });
 });

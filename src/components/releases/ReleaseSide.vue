@@ -10,7 +10,6 @@
   </BdButton>
 
   <div class="filters">
-    <BdCheckbox v-model="releasesStore.albumsOnly" full-width label="Albums & EPs only" />
     <BdCheckbox v-model="releasesStore.hideChecked" full-width label="Hide listened" />
   </div>
 
