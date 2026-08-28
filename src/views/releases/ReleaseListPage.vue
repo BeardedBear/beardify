@@ -5,57 +5,71 @@
   <BdEmptyState
     v-else-if="releasesStore.error"
     action-label="Try again"
-    message="The releases feed is hosted separately from Spotify and is not answering right now."
+    message="Spotify did not answer for either of the release feeds."
     title="Could not load releases"
-    @action="releasesStore.getReleases()"
+    @action="releasesStore.getReleases(true)"
   >
-    <template #icon><i class="icon-warning" /></template>
+    <template #icon><TriangleAlert :size="32" /></template>
   </BdEmptyState>
   <BdEmptyState
     v-else-if="!releasesStore.releases.length"
-    message="Nothing has been published to the releases feed for the artists you follow."
+    action-label="Refresh"
+    message="No release matched the tracked genres. Widen them, or try again later."
     title="No releases yet"
+    @action="releasesStore.getReleases(true)"
   >
-    <template #icon><i class="icon-album" /></template>
+    <template #icon><Disc3 :size="32" /></template>
   </BdEmptyState>
   <div v-else class="releases">
     <div class="side">
       <ReleaseSide />
     </div>
     <div ref="scrollRef" class="list" @scroll="onScroll">
-      <ReleaseList />
+      <div class="toolbar">
+        <div class="fetched">Updated {{ fetchedLabel }}</div>
+        <BdButton size="small" @click="releasesStore.getReleases(true)">
+          <RefreshCw :size="14" />
+          Refresh
+        </BdButton>
+      </div>
+      <BdEmptyState
+        v-if="!releasesStore.visibleReleases.length"
+        message="No release matches the current filters."
+        title="Nothing here"
+      >
+        <template #icon><Disc3 :size="32" /></template>
+      </BdEmptyState>
+      <ReleaseList v-else />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdEmptyState, BdLoader } from "bearded-ui";
-import { ref, watch } from "vue";
+import { Disc3, RefreshCw, TriangleAlert } from "@lucide/vue";
+import { BdButton, BdEmptyState, BdLoader } from "bearded-ui";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import ReleaseList from "@/components/releases/ReleaseList.vue";
 import ReleaseSide from "@/components/releases/ReleaseSide.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
-import { useAuth } from "@/views/auth/AuthStore";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 const releasesStore = useReleases();
-const authStore = useAuth();
 const scrollRef = ref<HTMLElement | null>(null);
 const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, scrollRef);
 
+// Time, not date: the feed is refetched several times a day, so "28 Aug" says nothing.
+const fetchedLabel = computed(() =>
+  new Date(releasesStore.fetchedAt ?? Date.now()).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+);
+
 watch(
-  () => releasesStore.activeSlug,
+  () => [releasesStore.genre, releasesStore.albumsOnly],
   () => scrollRef.value?.scrollTo(0, 0),
 );
 
-watch(
-  () => authStore.me,
-  () => authStore.me && releasesStore.createReleasesCheckEntry(),
-);
-
-authStore.me && !releasesStore.checks && releasesStore.createReleasesCheckEntry();
-!releasesStore.releases.length && releasesStore.getReleases();
+releasesStore.getReleases();
 </script>
 
 <style scoped>
@@ -75,7 +89,20 @@ authStore.me && !releasesStore.checks && releasesStore.createReleasesCheckEntry(
   padding: 0 var(--bd-space-4) var(--bd-space-4);
   position: sticky;
   top: 0;
-  width: 12rem;
+  width: 14rem;
+}
+
+.toolbar {
+  align-items: center;
+  display: flex;
+  gap: var(--bd-space-3);
+  justify-content: flex-end;
+  padding: var(--bd-space-4) var(--bd-space-6) 0;
+}
+
+.fetched {
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-xs);
 }
 
 .loader {

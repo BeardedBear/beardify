@@ -24,6 +24,7 @@ export type DialogType
     | "playlistOptions"
     | "search"
     | "shareCollection"
+    | "trackedGenres"
     | "widevine"
     | null;
 
