@@ -221,7 +221,10 @@ function search(artist: string, album?: string): void {
   }
 }
 
+/* isolation: isolates the rank's z-index HERE, or it leaks up and outranks the
+   sticky month header (z-index 1) when the rail scrolls beneath it. */
 .top-cover-wrap {
+  isolation: isolate;
   position: relative;
   width: 100%;
 }
