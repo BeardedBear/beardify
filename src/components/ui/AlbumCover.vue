@@ -1,12 +1,14 @@
 <template>
-  <img :alt="alt" :src="source" loading="lazy" />
+  <img :alt="alt" :src="failed ? PLACEHOLDER : source" loading="lazy" @error="failed = true" />
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
 import { Image, ImageSize } from "@/@types/Image";
 import { coverUrl } from "@/helpers/cover";
+
+const PLACEHOLDER = "/img/default.png";
 
 /*
  * `alt` defaults to empty on purpose. At all thirteen call sites this cover sits
@@ -33,6 +35,16 @@ const props = withDefaults(
 );
 
 const source = computed(() => coverUrl(props.images, props.size));
+
+/*
+ * `coverUrl` can only check that a URL exists, not that it resolves. That was
+ * enough while every cover came from Spotify, which does not hand out dead ones;
+ * the releases feed also carries Cover Art Archive URLs, built from a release-group
+ * id without a lookup, and roughly a third of those 404. A broken-image glyph in
+ * the middle of a list is worse than the placeholder every other empty cover uses.
+ */
+const failed = ref(false);
+watch(source, () => (failed.value = false));
 </script>
 
 <style scoped>

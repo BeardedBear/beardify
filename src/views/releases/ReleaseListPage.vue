@@ -5,64 +5,128 @@
   <BdEmptyState
     v-else-if="releasesStore.error"
     action-label="Try again"
-    message="The releases feed is hosted separately from Spotify and is not answering right now."
+    message="Spotify did not answer for either of the release feeds."
     title="Could not load releases"
-    @action="releasesStore.getReleases()"
+    @action="releasesStore.getReleases(true)"
   >
-    <template #icon><i class="icon-warning" /></template>
+    <template #icon><TriangleAlert :size="32" /></template>
   </BdEmptyState>
   <BdEmptyState
     v-else-if="!releasesStore.releases.length"
-    message="Nothing has been published to the releases feed for the artists you follow."
+    action-label="Refresh"
+    message="No release matched the tracked genres. Widen them, or try again later."
     title="No releases yet"
+    @action="releasesStore.getReleases(true)"
   >
-    <template #icon><i class="icon-album" /></template>
+    <template #icon><Disc3 :size="32" /></template>
   </BdEmptyState>
   <div v-else class="releases">
-    <div class="side">
-      <ReleaseSide />
+    <div class="toolbar">
+      <h1 class="name bd-font-bold">Releases</h1>
+      <div class="tools">
+        <div
+          class="fetched"
+          :title="`Feed refreshed every 6 hours. Last update ${fetchedLabel}.`"
+        >
+          Updated {{ fetchedLabel }}
+        </div>
+        <BdButton
+          class="filters-button"
+          size="small"
+          variant="border"
+          @click="dialogStore.open({ type: 'releaseFilters' })"
+        >
+          <SlidersHorizontal :size="14" />
+          Filters
+        </BdButton>
+        <BdButton
+          :active="releasesStore.sortRating"
+          :label="'Sort releases by editorial rating'"
+          size="small"
+          variant="border"
+          @click="releasesStore.toggleSortRating()"
+        >
+          <ArrowUpDown :size="14" />
+          Rating
+        </BdButton>
+        <BdButton size="small" @click="releasesStore.getReleases(true)">
+          <RefreshCw :size="14" />
+          Refresh
+        </BdButton>
+      </div>
     </div>
-    <div ref="scrollRef" class="list" @scroll="onScroll">
-      <ReleaseList />
+    <div class="body">
+      <div class="side">
+        <ReleaseSide />
+      </div>
+      <div ref="scrollRef" class="list" @scroll="onScroll">
+        <BdEmptyState
+          v-if="!releasesStore.visibleReleases.length"
+          action-label="Clear filters"
+          message="No release matches the current filters."
+          title="Nothing here"
+          @action="clearFilters()"
+        >
+          <template #icon><Disc3 :size="32" /></template>
+        </BdEmptyState>
+        <ReleaseList v-else />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdEmptyState, BdLoader } from "bearded-ui";
-import { ref, watch } from "vue";
+import { ArrowUpDown, Disc3, RefreshCw, SlidersHorizontal, TriangleAlert } from "@lucide/vue";
+import { BdButton, BdEmptyState, BdLoader } from "bearded-ui";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
+import { useDialog } from "@/components/dialog/DialogStore";
 import ReleaseList from "@/components/releases/ReleaseList.vue";
 import ReleaseSide from "@/components/releases/ReleaseSide.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
-import { useAuth } from "@/views/auth/AuthStore";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 const releasesStore = useReleases();
-const authStore = useAuth();
+const dialogStore = useDialog();
 const scrollRef = ref<HTMLElement | null>(null);
 const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, scrollRef);
 
+// Time, not date: the feed is refetched several times a day, so "28 Aug" says nothing.
+const fetchedLabel = computed(() =>
+  new Date(releasesStore.fetchedAt ?? Date.now()).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+);
+
 watch(
-  () => releasesStore.activeSlug,
+  () => releasesStore.genre,
   () => scrollRef.value?.scrollTo(0, 0),
 );
 
-watch(
-  () => authStore.me,
-  () => authStore.me && releasesStore.createReleasesCheckEntry(),
-);
+/** Recovery from a dead filter combo: back to the full, unfiltered feed. */
+function clearFilters(): void {
+  releasesStore.genre = null;
+  releasesStore.hideChecked = false;
+}
 
-authStore.me && !releasesStore.checks && releasesStore.createReleasesCheckEntry();
-!releasesStore.releases.length && releasesStore.getReleases();
+releasesStore.getReleases();
 </script>
 
 <style scoped>
 .releases {
   animation: pop-content 1s ease both;
   display: flex;
-  overflow: hidden;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+
+  @media (--tablet-down) {
+    flex-direction: column;
+  }
 }
 
 .list {
@@ -71,11 +135,61 @@ authStore.me && !releasesStore.checks && releasesStore.createReleasesCheckEntry(
 }
 
 .side {
+  border-right: 1px solid var(--bd-bg-dark);
   overflow: auto;
   padding: 0 var(--bd-space-4) var(--bd-space-4);
   position: sticky;
   top: 0;
-  width: 12rem;
+  width: 14rem;
+
+  /* Mobile: the filter column is moved into a dialog, opened from the toolbar. */
+  @media (--tablet-down) {
+    display: none;
+  }
+}
+
+.toolbar {
+  align-items: center;
+  background-color: var(--bd-bg-darker);
+  border-bottom: 1px solid var(--bd-bg-dark);
+  display: flex;
+  gap: var(--bd-space-3);
+  justify-content: space-between;
+  padding: var(--bd-space-3) var(--bd-space-6);
+
+  @media (--mobile) {
+    flex-wrap: wrap;
+    padding: var(--bd-space-3) var(--bd-space-4);
+  }
+}
+
+.filters-button {
+  @media (--tablet-up) {
+    display: none;
+  }
+}
+
+.name {
+  font-size: var(--bd-font-size-xl);
+  margin: 0;
+}
+
+.tools {
+  align-items: center;
+  display: flex;
+  gap: var(--bd-space-2);
+  white-space: nowrap;
+}
+
+.fetched {
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-xs);
+  margin-inline-end: var(--bd-space-2);
+
+  /* A spare timestamp is noise in a phone header that is already tight. */
+  @media (--mobile) {
+    display: none;
+  }
 }
 
 .loader {

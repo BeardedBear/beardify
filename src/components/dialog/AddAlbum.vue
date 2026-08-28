@@ -30,7 +30,7 @@
             <PlaylistIcon :playlist="playlist" />
             {{ playlist.name.replace("#Collection ", "") }}
           </span>
-          <BdLoader v-if="pendingId === playlist.id" size="small" />
+          <BdLoader v-if="pendingId === playlist.id" size="x-small" />
           <VisibilityIcon v-else :playlist="playlist" />
         </span>
       </button>
@@ -136,7 +136,6 @@ async function add(albumId: string, playlistId: string): Promise<void> {
   cursor: pointer;
   display: block;
   font-family: inherit;
-  font-size: var(--bd-font-size-sm);
   padding: var(--bd-space-2) var(--bd-space-4);
   text-align: left;
   transition:
@@ -155,7 +154,11 @@ async function add(albumId: string, playlistId: string): Promise<void> {
 }
 
 .search {
-  margin-bottom: var(--bd-space-2);
   width: 100%;
+}
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.content :deep(.bd-field) {
+  margin-bottom: var(--bd-space-2);
 }
 </style>

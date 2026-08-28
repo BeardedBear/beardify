@@ -5,11 +5,13 @@
   <AlbumVariants v-else-if="dialogStore.type === 'albumVariants'" can-save />
   <EditPlaylist v-else-if="dialogStore.type === 'editPlaylist'" />
   <PlaylistOptionsDialog v-else-if="dialogStore.type === 'playlistOptions'" />
+  <ReleaseFiltersDialog v-else-if="dialogStore.type === 'releaseFilters'" />
   <AddCollection v-else-if="dialogStore.type === 'createCollection'" />
   <WidevineWarning v-else-if="dialogStore.type === 'widevine'" />
   <ArtistOptionsDialog v-else-if="dialogStore.type === 'artistOptions'" />
   <SearchDialog v-else-if="dialogStore.type === 'search'" />
   <ShareCollectionDialog v-else-if="dialogStore.type === 'shareCollection'" />
+  <TrackedGenresDialog v-else-if="dialogStore.type === 'trackedGenres'" />
 </template>
 
 <script lang="ts" setup>
@@ -22,8 +24,10 @@ import ArtistOptionsDialog from "@/components/dialog/ArtistOptionsDialog.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import EditPlaylist from "@/components/dialog/EditPlaylist.vue";
 import PlaylistOptionsDialog from "@/components/dialog/PlaylistOptionsDialog.vue";
+import ReleaseFiltersDialog from "@/components/dialog/ReleaseFiltersDialog.vue";
 import SearchDialog from "@/components/dialog/SearchDialog.vue";
 import ShareCollectionDialog from "@/components/dialog/ShareCollectionDialog.vue";
+import TrackedGenresDialog from "@/components/dialog/TrackedGenresDialog.vue";
 import WidevineWarning from "@/components/dialog/WidevineWarning.vue";
 
 const dialogStore = useDialog();

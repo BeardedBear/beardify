@@ -8,6 +8,7 @@ import { instance } from "@/api";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { notification } from "@/helpers/notifications";
 import { isSingle } from "@/helpers/useCleanAlbums";
+import router from "@/router";
 
 // Built outside the store so the timer survives across calls.
 let debouncedSearchFn: null | ReturnType<typeof useDebounceFn> = null;
@@ -39,6 +40,18 @@ export const useSearch = defineStore("search", {
       useDialog().close();
     },
 
+    /**
+     * Release-row click: resolve the album directly. One album hit navigates
+     * there; anything else lands in the search modal, where `search()` opens it.
+     * @param key - Release key, so that one row can show a loader while it searches
+     * @param query - The prefilled search
+     */
+    openAlbumSearch(key: string, query: string) {
+      this.navigateAlbumIfSingle = true;
+      this.activeAlbumKey = key;
+      this.updateQuery(query);
+    },
+
     async search() {
       /*
        * The query as it stands when the request leaves. Responses are not
@@ -68,11 +81,31 @@ export const useSearch = defineStore("search", {
         this.tracks = searchResults.data.tracks.items.slice(0, SHOWN.tracks);
         this.podcasts = searchResults.data.shows?.items.slice(0, SHOWN.podcasts) || [];
         this.failed = false;
+
+        // A click on a release album wants the album, not the ambiguity of a
+        // results modal. A single album hit is unambiguously the right one, so
+        // go straight there and spare the tap. Anything else falls back to the
+        // modal exactly as a plain search would.
+        if (this.navigateAlbumIfSingle) {
+          this.navigateAlbumIfSingle = false;
+          this.activeAlbumKey = null;
+          if (this.albums.length === 1 && this.albums[0].id) {
+            useDialog().close();
+            router.push(`/album/${this.albums[0].id}`);
+            return;
+          }
+          useDialog().open({ type: "search" });
+        }
       } catch (error: unknown) {
         if (issuedFor !== this.query) return;
         if (import.meta.env.DEV) console.error("Search failed:", error);
         this.failed = true;
         notification({ msg: "Unable to search. Check your connection and try again.", type: NotificationType.Error });
+        if (this.navigateAlbumIfSingle) {
+          this.navigateAlbumIfSingle = false;
+          this.activeAlbumKey = null;
+          useDialog().open({ type: "search" });
+        }
       } finally {
         if (issuedFor === this.query) this.loading = false;
       }
@@ -100,10 +133,12 @@ export const useSearch = defineStore("search", {
   },
 
   state: (): Search => ({
+    activeAlbumKey: null,
     albums: [],
     artists: [],
     failed: false,
     loading: false,
+    navigateAlbumIfSingle: false,
     podcasts: [],
     query: "",
     tracks: [],

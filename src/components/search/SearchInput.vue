@@ -33,30 +33,55 @@
 
 <script lang="ts" setup>
 import { BdButton, BdInput } from "bearded-ui";
-import { nextTick, onMounted, ref } from "vue";
+import { nextTick, onMounted, ref, watch } from "vue";
 
+import { useDialog } from "@/components/dialog/DialogStore";
 import { useSearch } from "@/components/search/SearchStore";
 
 const searchStore = useSearch();
+const dialogStore = useDialog();
 const query = ref<string>("");
 const input = ref<InstanceType<typeof BdInput> | null>(null);
+
+/**
+ * Show the store's query and select it, so typing replaces the previous search.
+ *
+ * Selection waits a tick: it is not part of the dialog's focusing steps, and this
+ * component is ready before BdDialog calls showModal().
+ */
+function adoptStoreQuery(): void {
+  query.value = searchStore.query;
+  nextTick(() => input.value?.select());
+}
 
 function clearQuery(): void {
   searchStore.clear();
   query.value = "";
 }
 
-onMounted(() => {
-  query.value = searchStore.query;
+/*
+ * Mount is not enough, and this used to be all there was.
+ *
+ * BdDialog renders a native <dialog> that stays in the DOM — opening and closing
+ * only calls showModal()/close() — and dialogStore.close() leaves `type` alone, so
+ * DialogList never tears this subtree down. The field therefore mounts once, for
+ * the lifetime of the app. Anything opening the dialog pre-filled (an artist or
+ * album name from the releases feed, say) set the store, searched correctly, and
+ * left the previous search sitting in the input.
+ */
+watch(
+  () => dialogStore.show && dialogStore.type === "search",
+  (isOpen) => isOpen && adoptStoreQuery(),
+);
 
-  /*
-   * After the tick, not during it: selection is not part of the dialog focusing
-   * steps, and this component mounts before BdDialog calls showModal(). Waiting
-   * lets the dialog finish opening, then selects whatever the last search left
-   * behind so typing replaces it instead of appending to it.
-   */
-  nextTick(() => input.value?.select());
-});
+/*
+ * Not folded into the watcher above: the store is also written while the dialog is
+ * already open — the prefilled-query path can fire from a dialog that is up — and
+ * an input showing something other than what is being searched is the same bug.
+ */
+watch(() => searchStore.query, (value) => (query.value = value));
+
+onMounted(adoptStoreQuery);
 </script>
 
 <style scoped>

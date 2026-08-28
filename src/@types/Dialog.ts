@@ -22,8 +22,10 @@ export type DialogType
     | "createPlaylist"
     | "editPlaylist"
     | "playlistOptions"
+    | "releaseFilters"
     | "search"
     | "shareCollection"
+    | "trackedGenres"
     | "widevine"
     | null;
 
