@@ -25,10 +25,18 @@
             :key="release.key"
             class="top-card"
             type="button"
-            @click="search(release.artistName, release.name)"
+            @click="openAlbum(release.key, release.artistName, release.name)"
           >
             <span class="top-cover-wrap">
               <Cover :images="release.images" class="top-cover" size="medium" />
+              <span
+                v-if="albumLoading(release.key)"
+                class="top-cover-loading"
+                aria-live="polite"
+                aria-label="Searching"
+              >
+                <BdLoader size="x-small" />
+              </span>
               <span class="rank bd-font-bold">{{ rank + 1 }}</span>
             </span>
             <span class="top-name bd-font-bold">{{ release.name }}</span>
@@ -46,10 +54,10 @@
 
 <script lang="ts" setup>
 import { CheckCheck } from "@lucide/vue";
+import { BdLoader } from "bearded-ui";
 import { computed } from "vue";
 
 import { Release as ReleaseType } from "@/@types/Releases";
-import { useDialog } from "@/components/dialog/DialogStore";
 import Release from "@/components/releases/ReleaseIndex.vue";
 import { useSearch } from "@/components/search/SearchStore";
 import Cover from "@/components/ui/AlbumCover.vue";
@@ -65,7 +73,6 @@ interface MonthGroup {
 
 const releasesStore = useReleases();
 const searchStore = useSearch();
-const dialogStore = useDialog();
 
 /*
  * Months, and nothing finer. The listing this feed comes from groups by month and
@@ -116,15 +123,21 @@ const groups = computed<MonthGroup[]>(() => {
   return months;
 });
 
+/** Whether an album search tagged to this release key is still in flight. */
+function albumLoading(key: string): boolean {
+  return searchStore.activeAlbumKey === key;
+}
+
 /*
- * Same landing as a release row: opens the search dialog pre-filled with the
- * artist, narrowed to the album when the album name was the thing clicked.
+ * Same landing as a release row: a single album hit goes straight to its page,
+ * anything else opens the search pre-filled with the artist, narrowed to the
+ * album when the album name was the thing clicked.
+ * @param key - Release key, so the card can show a loader while it searches
  * @param artist - Artist to search for
  * @param album - Album to narrow down to
  */
-function search(artist: string, album?: string): void {
-  searchStore.updateQuery(album ? `artist:${artist}  &  album:${album}` : `artist:${artist}`);
-  dialogStore.open({ type: "search" });
+function openAlbum(key: string, artist: string, album?: string): void {
+  searchStore.openAlbumSearch(key, album ? `artist:${artist}  &  album:${album}` : `artist:${artist}`);
 }
 </script>
 
@@ -223,14 +236,29 @@ function search(artist: string, album?: string): void {
 
 /* isolation: isolates the rank's z-index HERE, or it leaks up and outranks the
    sticky month header (z-index 1) when the rail scrolls beneath it. */
+.top-cover {
+  border-radius: var(--bd-radius-sm);
+  width: 100%;
+}
+
 .top-cover-wrap {
   isolation: isolate;
   position: relative;
   width: 100%;
+
+  &:has(.top-cover-loading) .top-cover {
+    opacity: 0.4;
+  }
 }
 
-.top-cover {
+.top-cover-loading {
+  align-items: center;
   border-radius: var(--bd-radius-sm);
+  display: flex;
+  height: 100%;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
   width: 100%;
 }
 

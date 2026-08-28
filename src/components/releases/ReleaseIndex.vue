@@ -11,13 +11,18 @@
       <Circle v-else :size="16" />
     </button>
 
-    <Cover :images="release.images" class="cover" size="small" />
+    <span class="cover-wrap">
+      <Cover :images="release.images" class="cover" size="small" />
+      <span v-if="isSearching" class="cover-loading" aria-live="polite" aria-label="Searching">
+        <BdLoader size="xx-small" />
+      </span>
+    </span>
 
     <div class="names">
-      <button class="album bd-font-bold" type="button" @click="search(release.artistName, release.name)">
+      <button class="album bd-font-bold" type="button" @click="openAlbum(release.artistName, release.name)">
         {{ release.name }}
       </button>
-      <button class="artist" type="button" @click="search(release.artistName)">
+      <button class="artist" type="button" @click="openAlbum(release.artistName)">
         {{ release.artistName }}
       </button>
     </div>
@@ -55,10 +60,10 @@
 
 <script lang="ts" setup>
 import { Check, Circle } from "@lucide/vue";
+import { BdLoader } from "bearded-ui";
 import { computed } from "vue";
 
 import { Release } from "@/@types/Releases";
-import { useDialog } from "@/components/dialog/DialogStore";
 import { useSearch } from "@/components/search/SearchStore";
 import Cover from "@/components/ui/AlbumCover.vue";
 import { useReleases } from "@/views/releases/ReleasesStore";
@@ -72,21 +77,23 @@ const props = defineProps<{
 
 const releasesStore = useReleases();
 const searchStore = useSearch();
-const dialogStore = useDialog();
 
 const isChecked = computed(() => Boolean(releasesStore.checks[props.release.key]));
+const isSearching = computed(() => searchStore.activeAlbumKey === props.release.key);
 
 /*
- * Opens the search dialog pre-filled. Album omitted means "everything by this
- * artist", which is the useful landing spot when the row itself is not what you
- * were after. The `&` separator is the app's own convention — see SearchInput's
- * placeholder.
+ * Opens the search pre-filled, resolving a single album hit straight to its page.
+ * Album omitted means "everything by this artist", which is the useful landing
+ * spot when the row itself is not what you were after. The `&` separator is the
+ * app's own convention — see SearchInput's placeholder.
  * @param artist - Artist to search for
  * @param album - Album to narrow down to, when the album name was the thing clicked
  */
-function search(artist: string, album?: string): void {
-  searchStore.updateQuery(album ? `artist:${artist}  &  album:${album}` : `artist:${artist}`);
-  dialogStore.open({ type: "search" });
+function openAlbum(artist: string, album?: string): void {
+  searchStore.openAlbumSearch(
+    props.release.key,
+    album ? `artist:${artist}  &  album:${album}` : `artist:${artist}`,
+  );
 }
 </script>
 
@@ -146,6 +153,27 @@ function search(artist: string, album?: string): void {
   height: 2.5rem;
   object-fit: cover;
   width: 2.5rem;
+}
+
+.cover-wrap {
+  height: 2.5rem;
+  position: relative;
+  width: 2.5rem;
+
+  &:has(.cover-loading) .cover {
+    opacity: 0.4;
+  }
+}
+
+.cover-loading {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 .names {

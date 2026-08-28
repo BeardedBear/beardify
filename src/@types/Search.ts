@@ -5,6 +5,8 @@ import { Podcast } from "./Podcast";
 import { TrackSimplified } from "./Track";
 
 export interface Search {
+  /** Transient: the release key whose album search is in flight, for its row's loader. */
+  activeAlbumKey: null | string;
   albums: Album[];
   artists: Artist[];
   /** Set when the request threw, so the view can tell "nothing" from "it broke". */
@@ -16,6 +18,8 @@ export interface Search {
    * failure while it is still running.
    */
   loading: boolean;
+  /** Transient: set on a release-row click; `search()` resolves or clears it. */
+  navigateAlbumIfSingle: boolean;
   podcasts: Podcast[];
   query: string;
   tracks: TrackSimplified[];
