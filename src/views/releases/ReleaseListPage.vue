@@ -31,6 +31,15 @@
           Updated {{ fetchedLabel }}
         </div>
         <BdButton
+          class="filters-button"
+          size="small"
+          variant="border"
+          @click="dialogStore.open({ type: 'releaseFilters' })"
+        >
+          <SlidersHorizontal :size="14" />
+          Filters
+        </BdButton>
+        <BdButton
           :active="releasesStore.sortRating"
           :label="'Sort releases by editorial rating'"
           size="small"
@@ -67,17 +76,19 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowUpDown, Disc3, RefreshCw, TriangleAlert } from "@lucide/vue";
+import { ArrowUpDown, Disc3, RefreshCw, SlidersHorizontal, TriangleAlert } from "@lucide/vue";
 import { BdButton, BdEmptyState, BdLoader } from "bearded-ui";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
+import { useDialog } from "@/components/dialog/DialogStore";
 import ReleaseList from "@/components/releases/ReleaseList.vue";
 import ReleaseSide from "@/components/releases/ReleaseSide.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 const releasesStore = useReleases();
+const dialogStore = useDialog();
 const scrollRef = ref<HTMLElement | null>(null);
 const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, scrollRef);
 
@@ -112,6 +123,10 @@ releasesStore.getReleases();
   display: flex;
   flex: 1;
   min-height: 0;
+
+  @media (--tablet-down) {
+    flex-direction: column;
+  }
 }
 
 .list {
@@ -126,6 +141,11 @@ releasesStore.getReleases();
   position: sticky;
   top: 0;
   width: 14rem;
+
+  /* Mobile: the filter column is moved into a dialog, opened from the toolbar. */
+  @media (--tablet-down) {
+    display: none;
+  }
 }
 
 .toolbar {
@@ -136,6 +156,17 @@ releasesStore.getReleases();
   gap: var(--bd-space-3);
   justify-content: space-between;
   padding: var(--bd-space-3) var(--bd-space-6);
+
+  @media (--mobile) {
+    flex-wrap: wrap;
+    padding: var(--bd-space-3) var(--bd-space-4);
+  }
+}
+
+.filters-button {
+  @media (--tablet-up) {
+    display: none;
+  }
 }
 
 .name {
@@ -154,6 +185,11 @@ releasesStore.getReleases();
   color: var(--bd-font-color-dark);
   font-size: var(--bd-font-size-xs);
   margin-inline-end: var(--bd-space-2);
+
+  /* A spare timestamp is noise in a phone header that is already tight. */
+  @media (--mobile) {
+    display: none;
+  }
 }
 
 .loader {
