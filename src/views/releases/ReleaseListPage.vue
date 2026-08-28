@@ -21,31 +21,53 @@
     <template #icon><Disc3 :size="32" /></template>
   </BdEmptyState>
   <div v-else class="releases">
-    <div class="side">
-      <ReleaseSide />
-    </div>
-    <div ref="scrollRef" class="list" @scroll="onScroll">
-      <div class="toolbar">
-        <div class="fetched">Updated {{ fetchedLabel }}</div>
+    <div class="toolbar">
+      <h1 class="name bd-font-bold">Releases</h1>
+      <div class="tools">
+        <div
+          class="fetched"
+          :title="`Feed refreshed every 6 hours. Last update ${fetchedLabel}.`"
+        >
+          Updated {{ fetchedLabel }}
+        </div>
+        <BdButton
+          :active="releasesStore.sortRating"
+          :label="'Sort releases by editorial rating'"
+          size="small"
+          variant="border"
+          @click="releasesStore.toggleSortRating()"
+        >
+          <ArrowUpDown :size="14" />
+          Rating
+        </BdButton>
         <BdButton size="small" @click="releasesStore.getReleases(true)">
           <RefreshCw :size="14" />
           Refresh
         </BdButton>
       </div>
-      <BdEmptyState
-        v-if="!releasesStore.visibleReleases.length"
-        message="No release matches the current filters."
-        title="Nothing here"
-      >
-        <template #icon><Disc3 :size="32" /></template>
-      </BdEmptyState>
-      <ReleaseList v-else />
+    </div>
+    <div class="body">
+      <div class="side">
+        <ReleaseSide />
+      </div>
+      <div ref="scrollRef" class="list" @scroll="onScroll">
+        <BdEmptyState
+          v-if="!releasesStore.visibleReleases.length"
+          action-label="Clear filters"
+          message="No release matches the current filters."
+          title="Nothing here"
+          @action="clearFilters()"
+        >
+          <template #icon><Disc3 :size="32" /></template>
+        </BdEmptyState>
+        <ReleaseList v-else />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { Disc3, RefreshCw, TriangleAlert } from "@lucide/vue";
+import { ArrowUpDown, Disc3, RefreshCw, TriangleAlert } from "@lucide/vue";
 import { BdButton, BdEmptyState, BdLoader } from "bearded-ui";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -69,6 +91,12 @@ watch(
   () => scrollRef.value?.scrollTo(0, 0),
 );
 
+/** Recovery from a dead filter combo: back to the full, unfiltered feed. */
+function clearFilters(): void {
+  releasesStore.genre = null;
+  releasesStore.hideChecked = false;
+}
+
 releasesStore.getReleases();
 </script>
 
@@ -76,7 +104,14 @@ releasesStore.getReleases();
 .releases {
   animation: pop-content 1s ease both;
   display: flex;
-  overflow: hidden;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
 }
 
 .list {
@@ -85,6 +120,7 @@ releasesStore.getReleases();
 }
 
 .side {
+  border-right: 1px solid var(--bd-bg-dark);
   overflow: auto;
   padding: 0 var(--bd-space-4) var(--bd-space-4);
   position: sticky;
@@ -94,15 +130,30 @@ releasesStore.getReleases();
 
 .toolbar {
   align-items: center;
+  background-color: var(--bd-bg-darker);
+  border-bottom: 1px solid var(--bd-bg-dark);
   display: flex;
   gap: var(--bd-space-3);
-  justify-content: flex-end;
-  padding: var(--bd-space-4) var(--bd-space-6) 0;
+  justify-content: space-between;
+  padding: var(--bd-space-3) var(--bd-space-6);
+}
+
+.name {
+  font-size: var(--bd-font-size-xl);
+  margin: 0;
+}
+
+.tools {
+  align-items: center;
+  display: flex;
+  gap: var(--bd-space-2);
+  white-space: nowrap;
 }
 
 .fetched {
   color: var(--bd-font-color-dark);
   font-size: var(--bd-font-size-xs);
+  margin-inline-end: var(--bd-space-2);
 }
 
 .loader {

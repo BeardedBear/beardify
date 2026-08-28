@@ -16,23 +16,29 @@
   <div class="counts">{{ releasesStore.visibleReleases.length }} shown · {{ checkedCount }} listened</div>
 
   <div class="title bd-font-bold">Genres</div>
-  <button
-    v-for="genre in releasesStore.genreList.slice(0, GENRES_SHOWN)"
-    :key="genre.name"
-    :class="{ selected: releasesStore.genre === genre.name }"
-    class="genre"
-    type="button"
-    @click="releasesStore.setGenre(genre.name)"
-  >
-    <span class="name">{{ genre.name }}</span>
-    <span class="count">{{ genre.count }}</span>
-  </button>
+  <BdInput v-model="query" class="genre-search" placeholder="Filter genres" size="small" type="search" />
+  <div class="genres">
+    <button
+      v-for="genre in shownGenres"
+      :key="genre.name"
+      :aria-pressed="releasesStore.genre === genre.name"
+      :class="{ selected: releasesStore.genre === genre.name }"
+      class="genre"
+      type="button"
+      @click="releasesStore.setGenre(genre.name)"
+    >
+      <span class="name">{{ genre.name }}</span>
+      <span class="count">{{ genre.count }}</span>
+    </button>
+    <span v-if="!shownGenres.length" class="no-match">No genre matches “{{ query }}”.</span>
+    <button v-if="hasMore" class="show-more" type="button" @click="showMore()">Show more</button>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import { SlidersHorizontal } from "@lucide/vue";
-import { BdButton, BdCheckbox } from "bearded-ui";
-import { computed } from "vue";
+import { BdButton, BdCheckbox, BdInput } from "bearded-ui";
+import { computed, ref } from "vue";
 
 import { useDialog } from "@/components/dialog/DialogStore";
 import { useReleases } from "@/views/releases/ReleasesStore";
@@ -42,14 +48,33 @@ import { useReleases } from "@/views/releases/ReleasesStore";
  * surface a few hundred of them, most attached to a single album. The list is
  * sorted by frequency, so cutting it here keeps the ones worth filtering on.
  */
-const GENRES_SHOWN = 40;
+const GENRES_SHOWN = 12;
+const GENRES_STEP = 12;
 const releasesStore = useReleases();
 const dialogStore = useDialog();
 
+const query = ref("");
+const visible = ref(GENRES_SHOWN);
+
 const checkedCount = computed(
-  () => releasesStore.releases.filter((release) => releasesStore.checks[release.key]).length,
+  () => releasesStore.visibleReleases.filter((release) => releasesStore.checks[release.key]).length,
 );
 
+/* The query narrows the frequency-sorted list; the cap keeps it from becoming a wall of options. */
+const matches = computed(() => {
+  const needle = query.value.trim().toLowerCase();
+  if (!needle) return releasesStore.genreList;
+
+  return releasesStore.genreList.filter((genre) => genre.name.toLowerCase().includes(needle));
+});
+
+const shownGenres = computed(() => matches.value.slice(0, visible.value));
+
+const hasMore = computed(() => matches.value.length > shownGenres.value.length);
+
+function showMore(): void {
+  visible.value += GENRES_STEP;
+}
 </script>
 
 <style scoped>
@@ -57,9 +82,7 @@ const checkedCount = computed(
   background-color: var(--bd-bg-darker);
   color: var(--bd-primary);
   padding: var(--bd-space-4) var(--bd-space-2) var(--bd-space-2);
-  position: sticky;
   text-transform: uppercase;
-  top: 0;
 }
 
 .tags {
@@ -93,13 +116,23 @@ const checkedCount = computed(
   display: flex;
   flex-direction: column;
   gap: var(--bd-space-1);
-  padding-top: var(--bd-space-4);
+  padding: var(--bd-space-4) var(--bd-space-2) 0;
 }
 
 .counts {
   color: var(--bd-font-color-dark);
   font-size: var(--bd-font-size-xs);
-  padding: var(--bd-space-2);
+  padding: var(--bd-space-2) var(--bd-space-2) var(--bd-space-1);
+}
+
+.genre-search {
+  padding: 0 var(--bd-space-2) var(--bd-space-2);
+}
+
+.genres {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bd-space-1);
 }
 
 .genre {
@@ -113,15 +146,16 @@ const checkedCount = computed(
   font-size: var(--bd-font-size-sm);
   gap: var(--bd-space-2);
   justify-content: space-between;
+  margin: 0 var(--bd-space-2);
   padding: var(--bd-space-1) var(--bd-space-2);
   text-align: left;
-  width: 100%;
+  width: calc(100% - var(--bd-space-4));
 
   &:hover {
     background-color: var(--bd-bg);
   }
 
-  &.selected {
+  &[aria-pressed="true"] {
     background-color: var(--bd-primary);
     color: var(--bd-on-primary);
   }
@@ -138,8 +172,30 @@ const checkedCount = computed(
     font-size: var(--bd-font-size-xs);
   }
 
-  &.selected .count {
+  &[aria-pressed="true"] .count {
     color: inherit;
+  }
+}
+
+.no-match {
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-xs);
+  padding: var(--bd-space-1) var(--bd-space-2);
+}
+
+.show-more {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--bd-primary);
+  cursor: pointer;
+  font-size: var(--bd-font-size-xs);
+  margin: var(--bd-space-1) var(--bd-space-2);
+  padding: var(--bd-space-1) var(--bd-space-2);
+  text-align: left;
+
+  &:hover {
+    text-decoration: underline;
   }
 }
 </style>

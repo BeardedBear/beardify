@@ -23,7 +23,18 @@
     </div>
 
     <div class="genres">
-      <span v-for="genre in release.genres.slice(0, GENRES_SHOWN)" :key="genre" class="genre">{{ genre }}</span>
+      <button
+        v-for="genre in release.genres.slice(0, GENRES_SHOWN)"
+        :key="genre"
+        :aria-pressed="releasesStore.genre === genre"
+        :class="{ 'is-active': releasesStore.genre === genre }"
+        :title="`Filter the feed to ${genre}`"
+        class="genre"
+        type="button"
+        @click="releasesStore.setGenre(genre)"
+      >
+        {{ genre }}
+      </button>
     </div>
 
     <!--
@@ -35,7 +46,9 @@
       the month heading above already says.
     -->
     <div class="rating">
-      <span v-if="typeof release.rating === 'number'">{{ release.rating.toFixed(1) }}</span>
+      <span v-if="typeof release.rating === 'number'" :title="`Editorial rating out of 5`">
+        {{ release.rating.toFixed(1) }}<span class="unit">/5</span>
+      </span>
     </div>
   </div>
 </template>
@@ -93,7 +106,7 @@ function search(artist: string, album?: string): void {
 
   /* Ticked off, not gone: still readable, clearly done, and one click from undone. */
   &.checked {
-    opacity: 0.35;
+    opacity: 0.5;
   }
 
   @media (--tablet-down) {
@@ -110,10 +123,13 @@ function search(artist: string, album?: string): void {
   border: none;
   color: var(--bd-font-color);
   cursor: pointer;
-  display: flex;
-  opacity: 0.3;
+  display: block;
+  height: 1.5rem;
+  margin: auto 0;
+  opacity: 0.65;
   padding: 0;
   transition: opacity var(--bd-transition);
+  width: 1.5rem;
 
   &:hover {
     opacity: 1;
@@ -144,7 +160,7 @@ function search(artist: string, album?: string): void {
   border: none;
   color: inherit;
   cursor: pointer;
-  font-size: var(--bd-font-size-sm);
+  font-size: var(--bd-font-size-base);
   overflow: hidden;
   padding: 0;
   text-align: left;
@@ -173,12 +189,24 @@ function search(artist: string, album?: string): void {
 
 .genre {
   background-color: var(--bd-bg-lighter);
+  border: none;
   border-radius: var(--bd-radius-full);
   color: var(--bd-font-color-dark);
+  cursor: pointer;
   font-size: var(--bd-font-size-xs);
   padding: 0.1rem var(--bd-space-2);
   text-transform: uppercase;
   white-space: nowrap;
+
+  &:hover {
+    background-color: var(--bd-bg-light);
+    color: var(--bd-font-color-light);
+  }
+
+  &.is-active {
+    background-color: var(--bd-primary);
+    color: var(--bd-on-primary);
+  }
 }
 
 .rating {
@@ -189,6 +217,11 @@ function search(artist: string, album?: string): void {
     background-color: var(--bd-bg-lighter);
     border-radius: var(--bd-radius-sm);
     padding: 0.1rem var(--bd-space-2);
+  }
+
+  .unit {
+    color: var(--bd-font-color-dark);
+    padding-inline-start: 0.1rem;
   }
 }
 </style>

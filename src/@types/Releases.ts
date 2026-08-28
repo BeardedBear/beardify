@@ -43,6 +43,8 @@ export interface ReleasesPage {
   hideChecked: boolean;
   loading: boolean;
   releases: Release[];
+  /** Sort each month's releases by the editorial rating, highest first. */
+  sortRating: boolean;
   /** MusicBrainz tags the feed is built from. Seeded from the user's top artists, then editable. */
   tags: string[];
   /** Set once the user edits `tags`, which stops the top-artists seeding from overwriting them. */

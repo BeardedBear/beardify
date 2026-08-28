@@ -87,6 +87,13 @@ export const useReleases = defineStore("releases", {
       return this.genreVocabulary;
     },
 
+    /** Mark a batch of releases as listened, leaving the already-checked ones alone. */
+    markHeard(keys: string[]) {
+      for (const key of keys) {
+        if (!this.checks[key]) this.checks[key] = Date.now();
+      }
+    },
+
     /** Back to the genres inferred from the user's top artists. */
     async resetTags() {
       this.tagsCustom = false;
@@ -120,6 +127,10 @@ export const useReleases = defineStore("releases", {
     toggleCheck(key: string) {
       if (this.checks[key]) delete this.checks[key];
       else this.checks[key] = Date.now();
+    },
+
+    toggleSortRating() {
+      this.sortRating = !this.sortRating;
     },
   },
 
@@ -184,6 +195,7 @@ export const useReleases = defineStore("releases", {
       "genreVocabulary",
       "hideChecked",
       "releases",
+      "sortRating",
       "tags",
       "tagsCustom",
     ],
@@ -208,6 +220,7 @@ export const useReleases = defineStore("releases", {
     hideChecked: false,
     loading: false,
     releases: [],
+    sortRating: false,
     tags: [],
     tagsCustom: false,
   }),
