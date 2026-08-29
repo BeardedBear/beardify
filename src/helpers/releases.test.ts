@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { Release } from "@/@types/Releases";
 import {
   genreTerms,
+  groupByMonth,
   mergeReleases,
   monthLabel,
   normalizeTag,
@@ -14,7 +15,6 @@ import {
 
 function release(overrides: Partial<Release>): Release {
   const base = {
-    artistId: "a1",
     artistName: "Gojira",
     genres: [],
     id: "id1",
@@ -160,6 +160,10 @@ describe("toReleaseFromFeed", () => {
     expect(toReleaseFromFeed(row).genres).toEqual(["metal", "sludge metal"]);
   });
 
+  it("derives the filter terms, without which the row is invisible to every sidebar filter", () => {
+    expect(toReleaseFromFeed(row).terms).toEqual(["metal", "sludge metal"]);
+  });
+
   it("namespaces the id by source, since two sites can number an album the same", () => {
     expect(toReleaseFromFeed(row).id).toBe("sputnik-551990");
   });
@@ -173,17 +177,63 @@ describe("toReleaseFromFeed", () => {
 describe("mergeReleases", () => {
   it("sorts newest first", () => {
     const merged = mergeReleases([
-      [release({ id: "old", key: "a|old", name: "Old", timestamp: releaseTimestamp("2026-01-05") })],
-      [release({ id: "new", key: "a|new", name: "New", timestamp: releaseTimestamp("2026-08-10") })],
+      release({ id: "old", key: "a|old", name: "Old", timestamp: releaseTimestamp("2026-01-05") }),
+      release({ id: "new", key: "a|new", name: "New", timestamp: releaseTimestamp("2026-08-10") }),
     ]);
 
     expect(merged.map((r) => r.id)).toEqual(["new", "old"]);
   });
 
   it("collapses the same record listed twice under different ids", () => {
-    const merged = mergeReleases([[release({ id: "a-1" })], [release({ id: "b-2" })]]);
+    const merged = mergeReleases([release({ id: "a-1" }), release({ id: "b-2" })]);
 
     expect(merged).toHaveLength(1);
     expect(merged[0].id).toBe("a-1");
+  });
+});
+
+describe("groupByMonth", () => {
+  const august = releaseTimestamp("2026-08");
+  const july = releaseTimestamp("2026-07");
+
+  function feed(): Release[] {
+    return [
+      release({ key: "a", name: "Aug high", rating: 4.5, timestamp: august }),
+      release({ key: "b", name: "Aug low", rating: 2, timestamp: august }),
+      release({ key: "c", name: "Aug unrated", rating: null, timestamp: august }),
+      release({ key: "d", name: "Jul one", rating: 3, timestamp: july }),
+    ];
+  }
+
+  it("splits an already-sorted feed into one labelled group per month", () => {
+    const groups = groupByMonth(feed(), {}, false);
+
+    expect(groups.map((group) => group.label)).toEqual(["August 2026", "July 2026"]);
+    expect(groups[0].releases).toHaveLength(3);
+  });
+
+  it("counts the releases still to hear, and only those", () => {
+    expect(groupByMonth(feed(), { a: Date.now(), b: Date.now() }, false)[0].unheard).toBe(1);
+  });
+
+  it("ranks the top of the month by score, leaving the unrated out", () => {
+    const [augustGroup] = groupByMonth(feed(), {}, false);
+
+    expect(augustGroup.top.map((r) => r.name)).toEqual(["Aug high", "Aug low"]);
+  });
+
+  it("keeps the top rail on score even when the list is sorted by score", () => {
+    const [unsorted] = groupByMonth(feed(), {}, false);
+    const [sorted] = groupByMonth(feed(), {}, true);
+
+    expect(sorted.top.map((r) => r.name)).toEqual(unsorted.top.map((r) => r.name));
+  });
+
+  it("sorts inside the month only, so the months stay chronological", () => {
+    const groups = groupByMonth(feed(), {}, true);
+
+    expect(groups.map((group) => group.label)).toEqual(["August 2026", "July 2026"]);
+    // Unrated sinks below the rated ones rather than being dropped.
+    expect(groups[0].releases.map((r) => r.name)).toEqual(["Aug high", "Aug low", "Aug unrated"]);
   });
 });

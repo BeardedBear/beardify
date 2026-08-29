@@ -5,13 +5,7 @@ import { Paging } from "@/@types/Paging";
 import { Release, ReleasesPage } from "@/@types/Releases";
 import { instance } from "@/api";
 import { getFeedGenres, getFeedReleases } from "@/helpers/releaseFeed";
-import {
-  GENRE_FAMILIES,
-  genreTerms,
-  MAX_TRACKED_TAGS,
-  mergeReleases,
-  toReleaseFromFeed,
-} from "@/helpers/releases";
+import { GENRE_FAMILIES, genreTerms, MAX_TRACKED_TAGS, mergeReleases, toReleaseFromFeed } from "@/helpers/releases";
 import { useCheckLiveAlbum, useCheckReissueAlbum } from "@/helpers/useCleanAlbums";
 
 /** How far back a release still counts as news. */
@@ -35,6 +29,12 @@ const FEED_VERSION = 7;
 
 export const useReleases = defineStore("releases", {
   actions: {
+    /** Recovery from a dead filter combo: back to the full, unfiltered feed. */
+    clearFilters() {
+      this.genre = null;
+      this.hideChecked = false;
+    },
+
     /**
      * Rebuild the feed from every source.
      * @param force - Refetch even when the cached feed is still fresh
@@ -45,34 +45,29 @@ export const useReleases = defineStore("releases", {
 
       this.error = false;
       this.loading = true;
-      // Only seeded while the list is untouched: re-deriving would throw away a hand-picked list.
-      if (!this.tagsCustom) this.tags = await deriveTags();
 
-      const rows = await fetchFeed(this.tags);
+      try {
+        // Only seeded while the list is untouched: re-deriving would throw away a hand-picked list.
+        if (!this.tagsCustom) this.tags = await deriveTags();
 
-      /*
-       * An empty answer is a failure here, not a quiet result. With a single source
-       * there is nothing left to thin the feed with, so a network error, a missing
-       * Supabase configuration or an RLS refusal all arrive as zero rows — and
-       * rendering that as "no releases this month" would hide a broken page.
-       */
-      if (!rows.length) {
-        this.error = true;
+        const rows = await fetchFeed(this.tags);
+
+        /*
+         * An empty answer is a failure here, not a quiet result. With a single source
+         * there is nothing left to thin the feed with, so a network error, a missing
+         * Supabase configuration or an RLS refusal all arrive as zero rows — and
+         * rendering that as "no releases this month" would hide a broken page.
+         */
+        if (!rows.length) {
+          this.error = true;
+          return;
+        }
+
+        this.releases = mergeReleases(rows);
+        this.fetchedAt = Date.now();
+      } finally {
         this.loading = false;
-        return;
       }
-
-      // Live albums and reissues are re-uploaded constantly and would bury the actual releases.
-      const merged = mergeReleases([rows]).filter(
-        (release) => !useCheckLiveAlbum(release.name) && !useCheckReissueAlbum(release.name),
-      );
-
-      // The scrapers classify every row, so this only derives the terms the sidebar reads.
-      for (const release of merged) release.terms = genreTerms(release.genres);
-
-      this.releases = merged;
-      this.fetchedAt = Date.now();
-      this.loading = false;
     },
 
     /**
@@ -109,9 +104,9 @@ export const useReleases = defineStore("releases", {
      * Replace the tracked genres and rebuild the feed.
      *
      * One call per confirmed edit, not per chip: the dialog collects the whole list
-     * and hands it over on validate. A refetch is ~11 requests plus MusicBrainz's
-     * own one-second pacing, which is not something to spend on an intermediate
-     * state the user is still editing.
+     * and hands it over on validate. A refetch is a full round trip and a rebuild of
+     * the feed, which is not something to spend on an intermediate state the user is
+     * still editing.
      * @param tags - The genres to track, already normalized by the dialog
      */
     async setTags(tags: string[]) {
@@ -135,6 +130,11 @@ export const useReleases = defineStore("releases", {
   },
 
   getters: {
+    /** How many of the visible releases are ticked off. A getter so both sidebars share one pass. */
+    checkedCount(): number {
+      return this.visibleReleases.filter((release) => this.checks[release.key]).length;
+    },
+
     /** Filter terms present in the feed, most common first — the sidebar list. */
     genreList(state): { count: number; name: string }[] {
       const counts = new Map<string, number>();
@@ -240,7 +240,7 @@ async function deriveTags(): Promise<string[]> {
     const counts = new Map<string, number>();
 
     for (const artist of data.items ?? []) {
-      for (const family of new Set(genreTerms(artist.genres ?? []).filter(isFamily))) {
+      for (const family of new Set(genreTerms(artist.genres ?? []).filter((term) => GENRE_FAMILIES.includes(term)))) {
         counts.set(family, (counts.get(family) ?? 0) + 1);
       }
     }
@@ -265,13 +265,7 @@ async function deriveTags(): Promise<string[]> {
  * @param tags - Tracked genres, applied as an array overlap in the query
  */
 async function fetchFeed(tags: string[]): Promise<Release[]> {
-  /*
-   * Widened to the first of the window's month, not the window's own start. That
-   * column always holds the first of a month, so asking for `>= 2026-06-29` would
-   * compare against `2026-06-01` and drop the whole of June — a third of the window,
-   * silently.
-   */
-  const rows = await getFeedReleases(`${windowStart().slice(0, 7)}-01`, tags);
+  const rows = await getFeedReleases(windowStart(), tags);
 
   return rows
     .map(toReleaseFromFeed)
@@ -279,13 +273,12 @@ async function fetchFeed(tags: string[]): Promise<Release[]> {
 }
 
 /**
- * Whether a term is one of the broad families, i.e. something MusicBrainz can be queried with.
+ * The oldest month still counted as news, as "YYYY-MM-01".
+ *
+ * The first of the window's month, not the window's own start: the `month` column
+ * always holds the first of a month, so asking for `>= 2026-06-29` would compare
+ * against `2026-06-01` and drop the whole of June — a third of the window, silently.
  */
-function isFamily(term: string): boolean {
-  return GENRE_FAMILIES.includes(term);
-}
-
-/** The oldest date still counted as news, as "YYYY-MM-DD". */
 function windowStart(): string {
-  return new Date(Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  return `${new Date(Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000).toISOString().slice(0, 7)}-01`;
 }

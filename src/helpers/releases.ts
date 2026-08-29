@@ -1,4 +1,4 @@
-import { Release } from "@/@types/Releases";
+import { MonthGroup, Release } from "@/@types/Releases";
 import { normalizeString } from "@/helpers/helper";
 import { FeedRelease } from "@/helpers/releaseFeed";
 
@@ -58,6 +58,58 @@ export function genreTerms(genres: string[]): string[] {
   return [...terms];
 }
 
+/** How many of a month's releases the highlight rail shows. */
+const TOP_SHOWN = 5;
+
+/**
+ * The feed as the list renders it: one entry per month, newest first.
+ *
+ * One pass over an already-sorted feed rather than a scan per heading. Grouping is
+ * on the timestamp, not the label — every release of a month carries the identical
+ * one, so the month heading is formatted once per group instead of once per row.
+ * @param releases - The releases to group, already sorted newest first
+ * @param checks - Release key to the moment it was ticked off
+ * @param sortRating - Order each month by the editorial rating instead of by date
+ */
+export function groupByMonth(
+  releases: Release[],
+  checks: Record<string, number>,
+  sortRating: boolean,
+): MonthGroup[] {
+  const months: MonthGroup[] = [];
+  let month: MonthGroup | undefined;
+
+  for (const release of releases) {
+    if (month?.timestamp !== release.timestamp) {
+      month = { label: monthLabel(release.timestamp), releases: [], timestamp: release.timestamp, top: [], unheard: 0 };
+      months.push(month);
+    }
+
+    month.releases.push(release);
+    if (!checks[release.key]) month.unheard += 1;
+  }
+
+  for (const group of months) {
+    /*
+     * The month's best, as a highlight rail above the full list. Only rated releases
+     * qualify — one with no score has nothing to rank on — and the rail is independent
+     * of the sort toggle, so it stays "best of the month" whatever the current order.
+     */
+    group.top = group.releases
+      .filter((release) => typeof release.rating === "number")
+      .sort((a, b) => (b.rating as number) - (a.rating as number) || a.name.localeCompare(b.name))
+      .slice(0, TOP_SHOWN);
+
+    // "Highest rated" stays inside the month: scattering it across months would lose
+    // the chronological orientation the feed is built around.
+    if (sortRating) {
+      group.releases.sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1) || a.name.localeCompare(b.name));
+    }
+  }
+
+  return months;
+}
+
 /*
  * Nominal size for a feed cover. The scrapers publish one artwork URL per release and
  * do not offer renditions, so this only tells the layout what shape to expect.
@@ -75,12 +127,12 @@ export const MAX_TRACKED_TAGS = 15;
  * corrected after the fact — and two rows for one album is what a listener notices.
  * The first row of a pair wins, and the listing arrives rating-ordered within a
  * month, so that is the better-known entry.
- * @param lists - One array per source
+ * @param releases - The rows to deduplicate
  */
-export function mergeReleases(lists: Release[][]): Release[] {
+export function mergeReleases(releases: Release[]): Release[] {
   const byKey = new Map<string, Release>();
 
-  for (const release of lists.flat()) {
+  for (const release of releases) {
     if (!byKey.has(release.key)) byKey.set(release.key, release);
   }
 
@@ -200,11 +252,6 @@ export function suggestGenres(query: string, vocabulary: string[], exclude: stri
  */
 export function toReleaseFromFeed(row: FeedRelease): Release {
   /*
-   * Stored as the first of the month because that is the only precision the listing
-   * states. Trimmed back to "YYYY-MM" here so the rest of the app reads it as such
-   * and does not announce a release "on the 1st" that came out some other day.
-   */
-  /*
    * Stored as the first of a month because the column is a `date`, but the listing
    * only ever states the month — so the day is dropped here rather than carried
    * forward as a fact. Nothing downstream reads a date any finer than the heading.
@@ -212,7 +259,6 @@ export function toReleaseFromFeed(row: FeedRelease): Release {
   const month = row.month.slice(0, 7);
 
   return {
-    artistId: "",
     artistName: row.artist,
     genres: row.genres,
     // Prefixed with the source: two sites can number an album the same.
@@ -221,7 +267,9 @@ export function toReleaseFromFeed(row: FeedRelease): Release {
     key: releaseKey(row.artist, row.album),
     name: row.album,
     rating: row.rating,
-    terms: [],
+    // Derived here rather than by the caller: a row that reached the store without
+    // its terms would be invisible to every sidebar filter and count.
+    terms: genreTerms(row.genres),
     timestamp: releaseTimestamp(month),
   };
 }
