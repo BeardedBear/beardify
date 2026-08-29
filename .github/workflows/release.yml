@@ -36,6 +36,9 @@ jobs:
           VITE_SPOTIFY_CLIENT_ID: ${{ secrets.VITE_SPOTIFY_CLIENT_ID }}
           VITE_DISCOGS_TOKEN: ${{ secrets.VITE_DISCOGS_TOKEN }}
           VITE_LASTFM_API_KEY: ${{ secrets.VITE_LASTFM_API_KEY }}
+          VITE_TICKETMASTER_API_KEY: ${{ secrets.VITE_TICKETMASTER_API_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_REDIRECT_URI_DEV: "http://127.0.0.1:3000/auth"
           VITE_REDIRECT_URI_DESKTOP: "beardify://auth"
           VITE_REDIRECT_URI_PROD: "https://beardify.netlify.app/auth"
