@@ -18,16 +18,18 @@
           <i aria-hidden="true" class="icon-spotify" />
         </BdButton>
       </BdTooltip>
-      <BdButton
-v-if="beardifyUrl" label="Copy the Beardify link"
-        class="copy"
-        icon-only
-        size="small"
-        variant="nude"
-        @click="clipboardBeardify.copy()"
-      >
-        <i aria-hidden="true" class="icon-beardify" />
-      </BdButton>
+      <BdTooltip v-if="beardifyUrl" bare content="Copy the Beardify link">
+        <BdButton
+          class="copy"
+          icon-only
+          label="Copy the Beardify link"
+          size="small"
+          variant="nude"
+          @click="clipboardBeardify.copy()"
+        >
+          <i aria-hidden="true" class="icon-beardify" />
+        </BdButton>
+      </BdTooltip>
     </div>
   </div>
 </template>

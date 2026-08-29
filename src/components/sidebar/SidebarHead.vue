@@ -4,16 +4,24 @@
       <img alt="Beardify home" class="logo" src="/img/logo.svg" />
     </router-link>
     <BdButtonGroup full class="navigation">
-      <BdButton label="Go back" icon-only @click="router.go(-1)">
-        <i aria-hidden="true" class="icon-arrow-left" />
-      </BdButton>
-      <BdButton label="Go forward" icon-only @click="router.go(1)">
-        <i aria-hidden="true" class="icon-arrow-right" />
-      </BdButton>
+      <BdTooltip bare content="Go back">
+        <BdButton icon-only label="Go back" @click="router.go(-1)">
+          <i aria-hidden="true" class="icon-arrow-left" />
+        </BdButton>
+      </BdTooltip>
+      <BdTooltip bare content="Go forward">
+        <BdButton icon-only label="Go forward" @click="router.go(1)">
+          <i aria-hidden="true" class="icon-arrow-right" />
+        </BdButton>
+      </BdTooltip>
     </BdButtonGroup>
-    <BdButton label="Search" icon-only @click="dialogStore.open({ type: 'search' })">
-      <i aria-hidden="true" class="icon-search" />
-    </BdButton>
+    <!-- Pas `bare` : `.topbar > :not(.navigation)` vise l'enfant direct, qui doit
+         donc garder une boîte pour recevoir son `flex-shrink: 0`. -->
+    <BdTooltip content="Search">
+      <BdButton icon-only label="Search" @click="dialogStore.open({ type: 'search' })">
+        <i aria-hidden="true" class="icon-search" />
+      </BdButton>
+    </BdTooltip>
     <BdDropdown v-if="authStore.me !== null" v-model="configOpen" placement="bottom-end">
       <template #trigger>
         <div class="avatar">
@@ -27,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import { BdButton, BdButtonGroup, BdDropdown } from "bearded-ui";
+import { BdButton, BdButtonGroup, BdDropdown, BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 

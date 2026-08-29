@@ -17,22 +17,26 @@
     <div>
       <div class="options">
         <div class="links">
-          <BdButton
-label="Search this album on Google"
-            icon-only
-            variant="nude"
-            @click="openLink(`https://www.google.com/search?q=${album.artists[0].name}+${album.name}`)"
-          >
-            <i aria-hidden="true" class="icon-google" />
-          </BdButton>
-          <BdButton
-label="Search this album on Discogs"
-            icon-only
-            variant="nude"
-            @click="openLink(`https://www.discogs.com/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
-          >
-            <i aria-hidden="true" class="icon-discogs" />
-          </BdButton>
+          <BdTooltip bare content="Search this album on Google">
+            <BdButton
+              icon-only
+              label="Search this album on Google"
+              variant="nude"
+              @click="openLink(`https://www.google.com/search?q=${album.artists[0].name}+${album.name}`)"
+            >
+              <i aria-hidden="true" class="icon-google" />
+            </BdButton>
+          </BdTooltip>
+          <BdTooltip bare content="Search this album on Discogs">
+            <BdButton
+              icon-only
+              label="Search this album on Discogs"
+              variant="nude"
+              @click="openLink(`https://www.discogs.com/search/?q=${album.artists[0].name}+${album.name}+&type=all`)"
+            >
+              <i aria-hidden="true" class="icon-discogs" />
+            </BdButton>
+          </BdTooltip>
         </div>
         <ShareContent :beardify-url="$route.fullPath" :spotify-url="props.album.external_urls.spotify" />
       </div>
@@ -41,7 +45,7 @@ label="Search this album on Discogs"
 </template>
 
 <script lang="ts" setup>
-import { BdButton } from "bearded-ui";
+import { BdButton, BdTooltip } from "bearded-ui";
 
 import { Album } from "@/@types/Album";
 import { Track, TrackSimplified } from "@/@types/Track";

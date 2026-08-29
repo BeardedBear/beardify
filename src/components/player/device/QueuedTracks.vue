@@ -1,9 +1,11 @@
 <template>
   <BdDropdown v-model="queueOpen" class="wrap" placement="top-end" size="small">
     <template #trigger>
-      <BdButton label="Queue" icon-only>
-        <i aria-hidden="true" class="icon-queue" />
-      </BdButton>
+      <BdTooltip bare content="Queue">
+        <BdButton icon-only label="Queue">
+          <i aria-hidden="true" class="icon-queue" />
+        </BdButton>
+      </BdTooltip>
     </template>
 
     <div class="queue-list">
@@ -27,7 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-import { BdButton, BdDropdown } from "bearded-ui";
+import { BdButton, BdDropdown, BdTooltip } from "bearded-ui";
 import { computed, watch } from "vue";
 
 import TrackHistory from "@/components/player/history/TrackHistory.vue";

@@ -36,16 +36,18 @@
           <SlidersHorizontal :size="14" />
           Filters
         </BdButton>
-        <BdButton
-          :active="releasesStore.sortRating"
-          :label="'Sort releases by editorial rating'"
-          size="small"
-          variant="border"
-          @click="releasesStore.toggleSortRating()"
-        >
-          <ArrowUpDown :size="14" />
-          Rating
-        </BdButton>
+        <BdTooltip bare content="Sort releases by editorial rating">
+          <BdButton
+            :active="releasesStore.sortRating"
+            label="Sort releases by editorial rating"
+            size="small"
+            variant="border"
+            @click="releasesStore.toggleSortRating()"
+          >
+            <ArrowUpDown :size="14" />
+            Rating
+          </BdButton>
+        </BdTooltip>
         <BdButton size="small" @click="releasesStore.getReleases(true)">
           <RefreshCw :size="14" />
           Refresh

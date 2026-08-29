@@ -1,19 +1,23 @@
 <template>
   <div class="mobile-header">
-    <BdButton label="Open menu" icon-only @click="sidebarStore.toggle()">
-      <i aria-hidden="true" class="icon-menu" />
-    </BdButton>
+    <BdTooltip bare content="Open menu">
+      <BdButton icon-only label="Open menu" @click="sidebarStore.toggle()">
+        <i aria-hidden="true" class="icon-menu" />
+      </BdButton>
+    </BdTooltip>
     <router-link to="/" class="logo-link">
       <img alt="Beardify home" class="logo" src="/img/logo.svg" />
     </router-link>
-    <BdButton label="Search" icon-only @click="dialogStore.open({ type: 'search' })">
-      <i aria-hidden="true" class="icon-search" />
-    </BdButton>
+    <BdTooltip bare content="Search">
+      <BdButton icon-only label="Search" @click="dialogStore.open({ type: 'search' })">
+        <i aria-hidden="true" class="icon-search" />
+      </BdButton>
+    </BdTooltip>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdButton } from "bearded-ui";
+import { BdButton, BdTooltip } from "bearded-ui";
 import { RouterLink } from "vue-router";
 
 import { useDialog } from "@/components/dialog/DialogStore";
