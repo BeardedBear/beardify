@@ -36,6 +36,9 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 /** PostgREST's own ceiling is higher, but a genre-filtered window never approaches this. */
 const MAX_ROWS = 1000;
 
+const REST_URL = `${SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/releases`;
+const AUTH_HEADERS = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
+
 /**
  * Every genre the table actually uses, sorted.
  *
@@ -54,9 +57,7 @@ export async function getFeedGenres(): Promise<string[]> {
 
   try {
     const rows = await http
-      .get(`${SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/releases?select=genres&limit=${MAX_ROWS}`, {
-        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
-      })
+      .get(`${REST_URL}?select=genres&limit=${MAX_ROWS}`, { headers: AUTH_HEADERS })
       .json<{ genres: string[] }[]>();
 
     return [...new Set(rows.flatMap((row) => row.genres ?? []))].sort();
@@ -102,11 +103,7 @@ export async function getFeedReleases(since: string, tags: string[]): Promise<Fe
   }
 
   try {
-    return await http
-      .get(`${SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/releases?${params}`, {
-        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
-      })
-      .json<FeedRelease[]>();
+    return await http.get(`${REST_URL}?${params}`, { headers: AUTH_HEADERS }).json<FeedRelease[]>();
   } catch (error: unknown) {
     if (import.meta.env.DEV) console.error("Error fetching release feed:", error);
     return [];

@@ -2,7 +2,7 @@
   <div class="title bd-font-bold">Tracking</div>
   <div class="tags">
     <span v-for="tag in releasesStore.tags" :key="tag" class="tag">{{ tag }}</span>
-    <span v-if="!releasesStore.tags.length" class="empty">Nothing tracked — Spotify's picks only.</span>
+    <span v-if="!releasesStore.tags.length" class="empty">Nothing tracked — the whole feed.</span>
   </div>
   <BdButton class="edit" size="small" @click="dialogStore.open({ type: 'trackedGenres' })">
     <SlidersHorizontal :size="14" />
@@ -13,7 +13,7 @@
     <BdCheckbox v-model="releasesStore.hideChecked" full-width label="Hide listened" />
   </div>
 
-  <div class="counts">{{ releasesStore.visibleReleases.length }} shown · {{ checkedCount }} listened</div>
+  <div class="counts">{{ releasesStore.visibleReleases.length }} shown · {{ releasesStore.checkedCount }} listened</div>
 
   <div class="title bd-font-bold">Genres</div>
   <BdInput v-model="query" class="genre-search" placeholder="Filter genres" size="small" type="search" />
@@ -41,28 +41,25 @@ import { BdButton, BdCheckbox, BdInput } from "bearded-ui";
 import { computed, ref } from "vue";
 
 import { useDialog } from "@/components/dialog/DialogStore";
+import { normalizeTag } from "@/helpers/releases";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 /*
- * Spotify's genre vocabulary has thousands of entries and a week of releases can
- * surface a few hundred of them, most attached to a single album. The list is
- * sorted by frequency, so cutting it here keeps the ones worth filtering on.
+ * A week of releases can surface a few hundred genres, most attached to a single
+ * album. The list is sorted by frequency, so cutting it here keeps the ones worth
+ * filtering on — and "Show more" reveals the next batch of the same size.
  */
-const GENRES_SHOWN = 12;
 const GENRES_STEP = 12;
 const releasesStore = useReleases();
 const dialogStore = useDialog();
 
 const query = ref("");
-const visible = ref(GENRES_SHOWN);
-
-const checkedCount = computed(
-  () => releasesStore.visibleReleases.filter((release) => releasesStore.checks[release.key]).length,
-);
+const visible = ref(GENRES_STEP);
 
 /* The query narrows the frequency-sorted list; the cap keeps it from becoming a wall of options. */
 const matches = computed(() => {
-  const needle = query.value.trim().toLowerCase();
+  // Normalized the way a tracked genre is, so "black  metal" matches here too.
+  const needle = normalizeTag(query.value);
   if (!needle) return releasesStore.genreList;
 
   return releasesStore.genreList.filter((genre) => genre.name.toLowerCase().includes(needle));
@@ -70,7 +67,7 @@ const matches = computed(() => {
 
 const shownGenres = computed(() => matches.value.slice(0, visible.value));
 
-const hasMore = computed(() => matches.value.length > shownGenres.value.length);
+const hasMore = computed(() => matches.value.length > visible.value);
 
 function showMore(): void {
   visible.value += GENRES_STEP;

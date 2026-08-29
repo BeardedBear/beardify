@@ -1,12 +1,22 @@
 import { Image } from "./Image";
 
+/** A month heading and the releases filed under it, as the list renders them. */
+export interface MonthGroup {
+  label: string;
+  releases: Release[];
+  /** Every release in the month carries the same one — what groups them. */
+  timestamp: number;
+  /** The month's highest-rated releases, for the highlight rail. */
+  top: Release[];
+  /** How many of the month's releases are not ticked off yet. */
+  unheard: number;
+}
+
 export interface Release {
-  /** Spotify artist id when the row came from Spotify; empty for a MusicBrainz row. */
-  artistId: string;
   artistName: string;
-  /** Spotify carries genres on the artist, not on an album; MusicBrainz carries tags. */
+  /** As the scrapers file it: lowercased, space-separated, several per release. */
   genres: string[];
-  /** Source-specific: a Spotify album id or a MusicBrainz release-group id. */
+  /** The scraper's own id for the row, prefixed with its source. */
   id: string;
   images: Image[];
   /**
@@ -45,7 +55,7 @@ export interface ReleasesPage {
   releases: Release[];
   /** Sort each month's releases by the editorial rating, highest first. */
   sortRating: boolean;
-  /** MusicBrainz tags the feed is built from. Seeded from the user's top artists, then editable. */
+  /** Genres the feed is built from. Seeded from the user's top artists, then editable. */
   tags: string[];
   /** Set once the user edits `tags`, which stops the top-artists seeding from overwriting them. */
   tagsCustom: boolean;

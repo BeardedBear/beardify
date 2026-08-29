@@ -30,8 +30,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useElementBounding, useEventListener, useWindowSize } from "@vueuse/core";
+import { useEventListener } from "@vueuse/core";
 import { nextTick, ref } from "vue";
+
+import { clamp } from "@/helpers/volume";
 
 withDefaults(
   defineProps<{
@@ -55,14 +57,6 @@ const panelStyle = ref<Record<string, string>>({ ...OFFSCREEN });
 const wrapperRef = ref<HTMLElement | null>(null);
 const panelRef = ref<HTMLElement | null>(null);
 
-const { height: viewportHeight, width: viewportWidth } = useWindowSize();
-const { width: wrapWidth, x: wrapLeft, y: wrapTop } = useElementBounding(wrapperRef);
-const { height: panelHeight, width: panelWidth } = useElementBounding(panelRef);
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
 function hide(): void {
   visible.value = false;
   panelStyle.value = { ...OFFSCREEN };
@@ -73,20 +67,27 @@ function show(): void {
   nextTick(updatePosition);
 }
 
+/*
+ * Rects read on demand rather than through `useElementBounding`.
+ *
+ * That composable installs a ResizeObserver, a MutationObserver and a
+ * capture-phase window scroll listener per element, alive whether the popover is
+ * open or not — and an artist's discography mounts one of these per release. The
+ * two handlers below already only fire while `visible`, which is the only time a
+ * position is needed at all.
+ */
 function updatePosition(): void {
-  const vpW = viewportWidth.value || window.innerWidth;
-  const vpH = viewportHeight.value || window.innerHeight;
-  const panelW = panelWidth.value || 0;
-  const panelH = panelHeight.value || 0;
+  const wrapper = wrapperRef.value?.getBoundingClientRect();
+  const panel = panelRef.value?.getBoundingClientRect();
+  if (!wrapper || !panel) return;
 
-  const desiredLeft = wrapLeft.value + wrapWidth.value / 2 - panelW / 2 + SHIFT_X;
-  const left = clamp(desiredLeft, MARGIN, Math.max(vpW - panelW - MARGIN, MARGIN));
+  const desiredLeft = wrapper.x + wrapper.width / 2 - panel.width / 2 + SHIFT_X;
+  const left = clamp(desiredLeft, MARGIN, Math.max(window.innerWidth - panel.width - MARGIN, MARGIN));
 
   // Prefer above the dot, flip below when there is not enough room
+  const above = wrapper.y - panel.height - GAP;
   const top
-    = wrapTop.value - panelH - GAP >= MARGIN
-      ? wrapTop.value - panelH - GAP
-      : Math.min(wrapTop.value + GAP, Math.max(vpH - panelH - MARGIN, MARGIN));
+    = above >= MARGIN ? above : Math.min(wrapper.y + GAP, Math.max(window.innerHeight - panel.height - MARGIN, MARGIN));
 
   panelStyle.value = { left: `${left}px`, top: `${top}px` };
 }

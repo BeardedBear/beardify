@@ -43,13 +43,18 @@ export const useSearch = defineStore("search", {
     /**
      * Release-row click: resolve the album directly. One album hit navigates
      * there; anything else lands in the search modal, where `search()` opens it.
+     *
+     * The query is assembled here rather than by each caller: the `  &  ` separator
+     * is a syntax `SearchAlbums` and `SearchArtists` parse back out, and it only
+     * stays parseable while one place writes it.
      * @param key - Release key, so that one row can show a loader while it searches
-     * @param query - The prefilled search
+     * @param artist - Artist to search for
+     * @param album - Album to narrow down to; omitted means everything by the artist
      */
-    openAlbumSearch(key: string, query: string) {
+    openAlbumSearch(key: string, artist: string, album?: string) {
       this.navigateAlbumIfSingle = true;
       this.activeAlbumKey = key;
-      this.updateQuery(query);
+      this.updateQuery(album ? `artist:${artist}  &  album:${album}` : `artist:${artist}`);
     },
 
     async search() {

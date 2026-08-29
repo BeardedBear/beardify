@@ -54,6 +54,16 @@ button {
   display: inline-flex;
   inline-size: 100%;
   justify-content: center;
+
+  /*
+   * The UA's own button padding, dropped. A call site pads the trigger span —
+   * `.options .icon` in the sidebar, for one — because that span is now this
+   * component's root; the UA's ~1px 6px then stacked underneath it and made
+   * every icon wider than the call site asked for. Three of them in the
+   * collections header was enough to overflow the row and wrap it into a
+   * column.
+   */
+  padding: 0;
 }
 
 /*

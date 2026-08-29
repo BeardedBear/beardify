@@ -25,7 +25,7 @@
             :key="release.key"
             class="top-card"
             type="button"
-            @click="openAlbum(release.key, release.artistName, release.name)"
+            @click="searchStore.openAlbumSearch(release.key, release.artistName, release.name)"
           >
             <span class="top-cover-wrap">
               <Cover :images="release.images" class="top-cover" size="medium" />
@@ -57,19 +57,11 @@ import { CheckCheck } from "@lucide/vue";
 import { BdLoader } from "bearded-ui";
 import { computed } from "vue";
 
-import { Release as ReleaseType } from "@/@types/Releases";
 import Release from "@/components/releases/ReleaseIndex.vue";
 import { useSearch } from "@/components/search/SearchStore";
 import Cover from "@/components/ui/AlbumCover.vue";
-import { monthLabel } from "@/helpers/releases";
+import { groupByMonth } from "@/helpers/releases";
 import { useReleases } from "@/views/releases/ReleasesStore";
-
-interface MonthGroup {
-  label: string;
-  releases: ReleaseType[];
-  top: ReleaseType[];
-  unheard: number;
-}
 
 const releasesStore = useReleases();
 const searchStore = useSearch();
@@ -78,66 +70,14 @@ const searchStore = useSearch();
  * Months, and nothing finer. The listing this feed comes from groups by month and
  * never states a day, so the day headings this used to carry would all read "exact
  * date unknown" — a heading per group that says the same thing is noise.
- *
- * One pass over an already-sorted feed rather than a scan per heading, which is what
- * the first version did: with the sidebar filters in play that was a full pass over
- * every release for every month on screen.
  */
-const groups = computed<MonthGroup[]>(() => {
-  const months: MonthGroup[] = [];
-  let month: MonthGroup | undefined;
-
-  for (const release of releasesStore.visibleReleases) {
-    const label = monthLabel(release.timestamp);
-
-    if (month?.label !== label) {
-      month = { label, releases: [], top: [], unheard: 0 };
-      months.push(month);
-    }
-
-    month.releases.push(release);
-    if (!releasesStore.checks[release.key]) month.unheard += 1;
-  }
-
-  // The month's best: the five highest editorial scores, shown as a highlight
-  // rail above the full list. Only rated releases qualify — a release with no
-  // score has nothing to rank on. Independent of the sort-by-rating toggle so
-  // the strip stays the "best of the month" no matter the current ordering.
-  for (const m of months) {
-    m.top = m.releases
-      .filter((release) => typeof release.rating === "number")
-      .sort((a, b) => (b.rating as number) - (a.rating as number) || a.name.localeCompare(b.name))
-      .slice(0, 5);
-  }
-
-  // "Highest rated" stays inside the month: scattering it across months would lose
-  // the chronological orientation the feed is built around.
-  if (releasesStore.sortRating) {
-    for (const m of months) {
-      m.releases = [...m.releases].sort(
-        (a, b) => (b.rating ?? -1) - (a.rating ?? -1) || a.name.localeCompare(b.name),
-      );
-    }
-  }
-
-  return months;
-});
+const groups = computed(() =>
+  groupByMonth(releasesStore.visibleReleases, releasesStore.checks, releasesStore.sortRating),
+);
 
 /** Whether an album search tagged to this release key is still in flight. */
 function albumLoading(key: string): boolean {
   return searchStore.activeAlbumKey === key;
-}
-
-/*
- * Same landing as a release row: a single album hit goes straight to its page,
- * anything else opens the search pre-filled with the artist, narrowed to the
- * album when the album name was the thing clicked.
- * @param key - Release key, so the card can show a loader while it searches
- * @param artist - Artist to search for
- * @param album - Album to narrow down to
- */
-function openAlbum(key: string, artist: string, album?: string): void {
-  searchStore.openAlbumSearch(key, album ? `artist:${artist}  &  album:${album}` : `artist:${artist}`);
 }
 </script>
 

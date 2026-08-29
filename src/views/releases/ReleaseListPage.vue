@@ -5,7 +5,7 @@
   <BdEmptyState
     v-else-if="releasesStore.error"
     action-label="Try again"
-    message="Spotify did not answer for either of the release feeds."
+    message="The release feed did not answer."
     title="Could not load releases"
     @action="releasesStore.getReleases(true)"
   >
@@ -64,7 +64,7 @@
           action-label="Clear filters"
           message="No release matches the current filters."
           title="Nothing here"
-          @action="clearFilters()"
+          @action="releasesStore.clearFilters()"
         >
           <template #icon><Disc3 :size="32" /></template>
         </BdEmptyState>
@@ -100,12 +100,6 @@ watch(
   () => releasesStore.genre,
   () => scrollRef.value?.scrollTo(0, 0),
 );
-
-/** Recovery from a dead filter combo: back to the full, unfiltered feed. */
-function clearFilters(): void {
-  releasesStore.genre = null;
-  releasesStore.hideChecked = false;
-}
 
 releasesStore.getReleases();
 </script>

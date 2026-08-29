@@ -19,17 +19,21 @@
     </span>
 
     <div class="names">
-      <button class="album bd-font-bold" type="button" @click="openAlbum(release.artistName, release.name)">
+      <button
+        class="album bd-font-bold"
+        type="button"
+        @click="searchStore.openAlbumSearch(release.key, release.artistName, release.name)"
+      >
         {{ release.name }}
       </button>
-      <button class="artist" type="button" @click="openAlbum(release.artistName)">
+      <button class="artist" type="button" @click="searchStore.openAlbumSearch(release.key, release.artistName)">
         {{ release.artistName }}
       </button>
     </div>
 
     <div class="genres">
       <BdTooltip
-        v-for="genre in release.genres.slice(0, GENRES_SHOWN)"
+        v-for="genre in shownGenres"
         :key="genre"
         :content="`Filter the feed to ${genre}`"
         bare
@@ -72,7 +76,7 @@ import { useSearch } from "@/components/search/SearchStore";
 import Cover from "@/components/ui/AlbumCover.vue";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
-/** Spotify hands out up to a dozen micro-genres per artist; past three the row is a wall of tags. */
+/** The scrapers file up to a dozen micro-genres per release; past three the row is a wall of tags. */
 const GENRES_SHOWN = 3;
 
 const props = defineProps<{
@@ -84,21 +88,8 @@ const searchStore = useSearch();
 
 const isChecked = computed(() => Boolean(releasesStore.checks[props.release.key]));
 const isSearching = computed(() => searchStore.activeAlbumKey === props.release.key);
-
-/*
- * Opens the search pre-filled, resolving a single album hit straight to its page.
- * Album omitted means "everything by this artist", which is the useful landing
- * spot when the row itself is not what you were after. The `&` separator is the
- * app's own convention — see SearchInput's placeholder.
- * @param artist - Artist to search for
- * @param album - Album to narrow down to, when the album name was the thing clicked
- */
-function openAlbum(artist: string, album?: string): void {
-  searchStore.openAlbumSearch(
-    props.release.key,
-    album ? `artist:${artist}  &  album:${album}` : `artist:${artist}`,
-  );
-}
+// Sliced here, not in the template, so an unrelated re-render does not reallocate it.
+const shownGenres = computed(() => props.release.genres.slice(0, GENRES_SHOWN));
 </script>
 
 <style scoped>
