@@ -22,7 +22,9 @@
           class="dot desktop-only"
           >·
         </span>
-        <BdTooltip :content="getCountry" side="bottom">
+        <!-- `bare` : drapeau et nom sont du texte courant, la boîte du trigger
+             en ferait un contexte flex et décalerait le drapeau du baseline. -->
+        <BdTooltip :content="getCountry" bare side="bottom">
           <img
             :src="getCountryFlagUrl(artistMetas.country)"
             :alt="artistMetas?.area?.name || artistMetas?.country"
