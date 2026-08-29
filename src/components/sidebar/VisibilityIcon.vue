@@ -1,9 +1,15 @@
 <template>
-  <i v-if="playlist.public && !playlist.collaborative" class="visibility-icon icon-public" title="Public" />
-  <i v-if="playlist.collaborative" class="visibility-icon icon-collaborative" title="Collaborative" />
+  <BdTooltip v-if="playlist.public && !playlist.collaborative" bare content="Public">
+    <i class="visibility-icon icon-public" />
+  </BdTooltip>
+  <BdTooltip v-if="playlist.collaborative" bare content="Collaborative">
+    <i class="visibility-icon icon-collaborative" />
+  </BdTooltip>
 </template>
 
 <script lang="ts" setup>
+import { BdTooltip } from "bearded-ui";
+
 import { SimplifiedPlaylist } from "@/@types/Playlist";
 
 defineProps<{

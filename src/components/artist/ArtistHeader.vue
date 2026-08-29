@@ -11,15 +11,16 @@
         </h1>
       </div>
       <Options class="desktop-options" />
-      <BdButton
-        aria-label="Artist options"
-        class="mobile-options"
-        icon-only
-        title="Artist options"
-        @click="dialogStore.open({ type: 'artistOptions' })"
-      >
-        <MoreHorizontal />
-      </BdButton>
+      <BdTooltip bare content="Artist options">
+        <BdButton
+          aria-label="Artist options"
+          class="mobile-options"
+          icon-only
+          @click="dialogStore.open({ type: 'artistOptions' })"
+        >
+          <MoreHorizontal />
+        </BdButton>
+      </BdTooltip>
     </div>
     <div class="collapsible" :class="{ collapsed: artistStore.scrolledDown }">
       <ArtistProfile />
@@ -31,7 +32,7 @@
 <script lang="ts" setup>
 import { CircleOff, Disc3, Info, Loader2, MoreHorizontal } from "@lucide/vue";
 import { useElementBounding } from "@vueuse/core";
-import { BdButton } from "bearded-ui";
+import { BdButton, BdTooltip } from "bearded-ui";
 import { computed, ref, watch } from "vue";
 
 import Options from "@/components/artist/ArtistOptions.vue";

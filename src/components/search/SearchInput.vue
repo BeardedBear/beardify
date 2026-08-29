@@ -17,22 +17,16 @@
       type="search"
       @input="searchStore.updateQuery(query)"
     />
-    <BdButton
-      v-if="query"
-      aria-label="Clear search"
-      class="reset"
-      icon-only
-      size="small"
-      title="Clear search"
-      @click="clearQuery()"
-    >
-      <i aria-hidden="true" class="icon-x" />
-    </BdButton>
+    <BdTooltip v-if="query" bare content="Clear search">
+      <BdButton aria-label="Clear search" class="reset" icon-only size="small" @click="clearQuery()">
+        <i aria-hidden="true" class="icon-x" />
+      </BdButton>
+    </BdTooltip>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdButton, BdInput } from "bearded-ui";
+import { BdButton, BdInput, BdTooltip } from "bearded-ui";
 import { nextTick, onMounted, ref, watch } from "vue";
 
 import { useDialog } from "@/components/dialog/DialogStore";

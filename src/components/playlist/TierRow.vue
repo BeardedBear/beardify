@@ -8,33 +8,26 @@
       {{ label }}
     </div>
     <div v-if="scrollable" class="unsorted-scroll-wrap">
-      <button
-        class="scroll-arrow"
-        :disabled="!canScrollLeft"
-        title="Scroll left"
-        type="button"
-        @click="scroll(-1)"
-      >
-        <i class="icon-arrow-left" />
-      </button>
+      <BdTooltip bare content="Scroll left">
+        <button class="scroll-arrow" :disabled="!canScrollLeft" type="button" @click="scroll(-1)">
+          <i class="icon-arrow-left" />
+        </button>
+      </BdTooltip>
       <div ref="scrollRef" class="unsorted-scroll" @scroll="updateScrollState">
         <slot />
       </div>
-      <button
-        class="scroll-arrow"
-        :disabled="!canScrollRight"
-        title="Scroll right"
-        type="button"
-        @click="scroll(1)"
-      >
-        <i class="icon-arrow-right" />
-      </button>
+      <BdTooltip bare content="Scroll right">
+        <button class="scroll-arrow" :disabled="!canScrollRight" type="button" @click="scroll(1)">
+          <i class="icon-arrow-right" />
+        </button>
+      </BdTooltip>
     </div>
     <slot v-else />
   </div>
 </template>
 
 <script lang="ts" setup>
+import { BdTooltip } from "bearded-ui";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
 withDefaults(

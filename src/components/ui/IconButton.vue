@@ -1,10 +1,14 @@
 <template>
-  <button :aria-label="label" :aria-pressed="pressed" :title="label" type="button">
-    <i :class="`icon-${icon}`" aria-hidden="true" />
-  </button>
+  <BdTooltip :content="label">
+    <button :aria-label="label" :aria-pressed="pressed" type="button">
+      <i :class="`icon-${icon}`" aria-hidden="true" />
+    </button>
+  </BdTooltip>
 </template>
 
 <script lang="ts" setup>
+import { BdTooltip } from "bearded-ui";
+
 /*
  * Every icon-only control in the app goes through here, because writing the
  * button by hand is exactly how seventeen of them ended up announcing
@@ -17,6 +21,13 @@
  *
  * `pressed` is only for real toggles (shuffle, repeat, mute). Left undefined,
  * Vue drops the attribute entirely, which is what a plain action button wants.
+ *
+ * The tooltip is the root on purpose, and not `bare`: call sites style this
+ * component's outer box (`position: absolute`, padding, `display: none` under a
+ * media query), and Vue hands a child component's root BOTH the class and the
+ * parent's scoped-style attribute. Split them — class forwarded to the button
+ * through `$attrs`, scope id left on the root — and every one of those rules
+ * stops matching.
  */
 defineProps<{
   icon: string;
@@ -26,13 +37,22 @@ defineProps<{
 </script>
 
 <style scoped>
+/*
+ * The tooltip trigger is this component's root, so a call site's class sizes,
+ * pads and positions that span — the button only fills it. Hence the 100%: a
+ * <span> hands out none of the centring a <button> gets for free from the UA
+ * stylesheet, so a sized call site (the 2.5rem round play button on an album
+ * card) would drop its glyph in the top-left corner.
+ */
 button {
   align-items: center;
   background-color: transparent;
+  block-size: 100%;
   border: 0;
   color: currentcolor;
   cursor: pointer;
   display: inline-flex;
+  inline-size: 100%;
   justify-content: center;
 }
 

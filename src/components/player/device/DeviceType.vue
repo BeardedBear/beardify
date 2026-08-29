@@ -1,14 +1,11 @@
 <template>
-  <i
-    :class="['device-type', `icon-${normalizedType}`]"
-    :title="type ?? ''"
-    role="img"
-    :aria-label="type ?? ''"
-    aria-hidden="false"
-  />
+  <BdTooltip :content="type ?? ''" bare>
+    <i :class="['device-type', `icon-${normalizedType}`]" role="img" :aria-label="type ?? ''" aria-hidden="false" />
+  </BdTooltip>
 </template>
 
 <script lang="ts" setup>
+import { BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 
 import type { DeviceType } from "@/@types/Device";

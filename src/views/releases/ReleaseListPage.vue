@@ -24,12 +24,9 @@
     <div class="toolbar">
       <h1 class="name bd-font-bold">Releases</h1>
       <div class="tools">
-        <div
-          class="fetched"
-          :title="`Feed refreshed every 6 hours. Last update ${fetchedLabel}.`"
-        >
-          Updated {{ fetchedLabel }}
-        </div>
+        <BdTooltip :content="`Feed refreshed every 6 hours. Last update ${fetchedLabel}.`" bare>
+          <div class="fetched">Updated {{ fetchedLabel }}</div>
+        </BdTooltip>
         <BdButton
           class="filters-button"
           size="small"
@@ -77,7 +74,7 @@
 
 <script lang="ts" setup>
 import { ArrowUpDown, Disc3, RefreshCw, SlidersHorizontal, TriangleAlert } from "@lucide/vue";
-import { BdButton, BdEmptyState, BdLoader } from "bearded-ui";
+import { BdButton, BdEmptyState, BdLoader, BdTooltip } from "bearded-ui";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 

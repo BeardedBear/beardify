@@ -10,7 +10,9 @@
       @end="commit"
     >
       <div v-for="(tier, index) in tiers" :key="index" class="tier-row">
-        <i class="icon-menu tier-drag-handle" title="Drag to reorder" />
+        <BdTooltip bare content="Drag to reorder">
+          <i class="icon-menu tier-drag-handle" />
+        </BdTooltip>
         <span class="tier-color" :style="{ backgroundColor: getTierColor(index, tiers.length) }" />
         <BdInput v-model="tier.label" class="tier-label" placeholder="Name" size="small" @input="commit" />
         <BdTooltip content="Remove category">
@@ -19,7 +21,6 @@
             aria-label="Remove this tier"
             icon-only
             size="small"
-            title="Remove this tier"
             variant="danger"
             @click="removeTier(index)"
           >

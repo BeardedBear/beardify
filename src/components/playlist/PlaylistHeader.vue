@@ -30,16 +30,17 @@
       mobile sheet, gated on an `is-open` class nothing ever set, so the filter,
       share and every playlist action were simply unreachable on a phone.
     -->
-    <BdButton
-      aria-label="Playlist options"
-      class="mobile-options"
-      icon-only
-      title="Playlist options"
-      variant="nude"
-      @click="dialogStore.open({ playlistId: playlistStore.playlist.id, type: 'playlistOptions' })"
-    >
-      <i aria-hidden="true" class="icon-more-vertical" />
-    </BdButton>
+    <BdTooltip bare content="Playlist options">
+      <BdButton
+        aria-label="Playlist options"
+        class="mobile-options"
+        icon-only
+        variant="nude"
+        @click="dialogStore.open({ playlistId: playlistStore.playlist.id, type: 'playlistOptions' })"
+      >
+        <i aria-hidden="true" class="icon-more-vertical" />
+      </BdButton>
+    </BdTooltip>
     <div class="right">
       <BdInput
         v-if="withFilter"
@@ -49,31 +50,28 @@
         placeholder="Filter..."
         type="search"
       />
-      <BdButton
-        v-if="showMigrateButton"
-        :title="migrateButtonTooltip"
-        variant="border"
-        @click="playlistStore.migrateLegacyCollectionTag()"
-      >
-        <i class="icon-folder" />
-        Convert to new collection format
-      </BdButton>
-      <BdButton
-        v-if="canShare"
-        icon-only
-        title="Share this collection"
-        variant="nude"
-        @click="dialogStore.open({ playlistId: playlistStore.playlist.id, type: 'shareCollection' })"
-      >
-        <i class="icon-share" />
-      </BdButton>
+      <BdTooltip v-if="showMigrateButton" :content="migrateButtonTooltip" bare>
+        <BdButton variant="border" @click="playlistStore.migrateLegacyCollectionTag()">
+          <i class="icon-folder" />
+          Convert to new collection format
+        </BdButton>
+      </BdTooltip>
+      <BdTooltip v-if="canShare" bare content="Share this collection">
+        <BdButton
+          icon-only
+          variant="nude"
+          @click="dialogStore.open({ playlistId: playlistStore.playlist.id, type: 'shareCollection' })"
+        >
+          <i class="icon-share" />
+        </BdButton>
+      </BdTooltip>
       <Actions />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdButton, BdInput } from "bearded-ui";
+import { BdButton, BdInput, BdTooltip } from "bearded-ui";
 import { computed, onMounted, ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 

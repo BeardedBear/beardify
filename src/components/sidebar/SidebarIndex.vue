@@ -76,8 +76,12 @@
           <PlaylistIcon :playlist="playlist" />
           <div class="name">
             {{ playlist.displayName }}
-            <span v-if="playlist.isTop" class="top-badge" title="Top ranking enabled">TOP</span>
-            <span v-if="playlist.isTierList" class="tier-badge" title="Tier list enabled">TIER</span>
+            <BdTooltip v-if="playlist.isTop" bare content="Top ranking enabled">
+              <span class="top-badge">TOP</span>
+            </BdTooltip>
+            <BdTooltip v-if="playlist.isTierList" bare content="Tier list enabled">
+              <span class="tier-badge">TIER</span>
+            </BdTooltip>
           </div>
           <VisibilityIcon :playlist="playlist" />
           <IconButton
@@ -154,7 +158,7 @@
 
 <script lang="ts" setup>
 import { onClickOutside } from "@vueuse/core";
-import { BdButton, BdInput, BdLoader } from "bearded-ui";
+import { BdButton, BdInput, BdLoader, BdTooltip } from "bearded-ui";
 import { computed, ref, Ref, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 

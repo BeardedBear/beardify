@@ -10,13 +10,15 @@
         @click="playerStore.getDeviceList()"
         @mouseenter="playerStore.getDeviceList()"
       >
-        <span
-          class="active-device-label"
-          :title="playerStore.devices.activeDevice ? `Device ID: ${playerStore.devices.activeDevice.id}` : ''"
+        <BdTooltip
+          :content="playerStore.devices.activeDevice ? `Device ID: ${playerStore.devices.activeDevice.id}` : ''"
+          bare
         >
-          <DeviceTypeIcon :type="playerStore.devices.activeDevice?.type" />
-          <span class="device-name">{{ formatName(playerStore.devices.activeDevice, true) }}</span>
-        </span>
+          <span class="active-device-label">
+            <DeviceTypeIcon :type="playerStore.devices.activeDevice?.type" />
+            <span class="device-name">{{ formatName(playerStore.devices.activeDevice, true) }}</span>
+          </span>
+        </BdTooltip>
       </BdButton>
     </template>
 
@@ -29,11 +31,13 @@
       :disabled="playerStore.isSettingDevice"
       @click="selectDevice(device)"
     >
-      <span class="device-label" :title="`Device ID: ${device.id}`">
-        <DeviceTypeIcon :type="device.type" />
-        <span class="device-name">{{ formatName(device) }}</span>
-        <BdBadge v-if="device.id === playerStore.thisDeviceId" variant="primary">Here</BdBadge>
-      </span>
+      <BdTooltip :content="`Device ID: ${device.id}`" bare>
+        <span class="device-label">
+          <DeviceTypeIcon :type="device.type" />
+          <span class="device-name">{{ formatName(device) }}</span>
+          <BdBadge v-if="device.id === playerStore.thisDeviceId" variant="primary">Here</BdBadge>
+        </span>
+      </BdTooltip>
       <BdLoader
         v-if="playerStore.lastRequestedDeviceId === device.id && playerStore.isSettingDevice"
         size="xx-small"
@@ -48,7 +52,7 @@
 
 <script lang="ts" setup>
 import { useWindowSize } from "@vueuse/core";
-import { BdBadge, BdButton, BdDropdown, BdDropdownItem, BdLoader } from "bearded-ui";
+import { BdBadge, BdButton, BdDropdown, BdDropdownItem, BdLoader, BdTooltip } from "bearded-ui";
 import { computed, ref } from "vue";
 
 import type { Device } from "@/@types/Device";

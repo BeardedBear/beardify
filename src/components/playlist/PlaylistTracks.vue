@@ -42,12 +42,13 @@
         <AlbumLink :album="track.item.album" no-icon />
       </div>
       <div class="contributor">
-        <img
+        <BdTooltip
           v-if="getContributorAvatar(track.added_by.id)"
-          :title="getContributorDisplayName(track.added_by.id)"
-          :src="getContributorAvatar(track.added_by.id)"
-          alt=""
-        />
+          :content="getContributorDisplayName(track.added_by.id)"
+          bare
+        >
+          <img :src="getContributorAvatar(track.added_by.id)" alt="" />
+        </BdTooltip>
       </div>
       <div class="date">
         {{ date(track.added_at) }}
@@ -56,23 +57,24 @@
         {{ timecode(track.item.duration_ms) }}
       </div>
       <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
-        <BdButton
-          aria-label="Remove this track"
-          class="delete"
-          icon-only
-          title="Remove this track"
-          variant="nude"
-          @click.prevent.stop="deleteSong(track.item.uri)"
-        >
-          <i aria-hidden="true" class="icon-trash-2" />
-        </BdButton>
+        <BdTooltip bare content="Remove this track">
+          <BdButton
+            aria-label="Remove this track"
+            class="delete"
+            icon-only
+            variant="nude"
+            @click.prevent.stop="deleteSong(track.item.uri)"
+          >
+            <i aria-hidden="true" class="icon-trash-2" />
+          </BdButton>
+        </BdTooltip>
       </div>
     </div>
   </template>
 </template>
 
 <script lang="ts" setup>
-import { BdButton } from "bearded-ui";
+import { BdButton, BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 
 import { NotificationType } from "@/@types/Notification";

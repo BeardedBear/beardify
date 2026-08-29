@@ -6,17 +6,18 @@
     <span v-if="clipboardSpotify.copied.value" class="copied bd-font-bold">Spotify URL copied</span>
     <span v-if="clipboardBeardify.copied.value" class="copied bd-font-bold">Beardify URL copied</span>
     <div class="content">
-      <BdButton
-        aria-label="Copy the Spotify link"
-        class="copy"
-        icon-only
-        size="small"
-        title="Copy the Spotify link"
-        variant="nude"
-        @click="clipboardSpotify.copy()"
-      >
-        <i aria-hidden="true" class="icon-spotify" />
-      </BdButton>
+      <BdTooltip bare content="Copy the Spotify link">
+        <BdButton
+          aria-label="Copy the Spotify link"
+          class="copy"
+          icon-only
+          size="small"
+          variant="nude"
+          @click="clipboardSpotify.copy()"
+        >
+          <i aria-hidden="true" class="icon-spotify" />
+        </BdButton>
+      </BdTooltip>
       <BdButton
 v-if="beardifyUrl" label="Copy the Beardify link"
         class="copy"
@@ -33,7 +34,7 @@ v-if="beardifyUrl" label="Copy the Beardify link"
 
 <script lang="ts" setup>
 import { useClipboard } from "@vueuse/core";
-import { BdButton } from "bearded-ui";
+import { BdButton, BdTooltip } from "bearded-ui";
 
 const props = defineProps<{
   beardifyUrl?: string;

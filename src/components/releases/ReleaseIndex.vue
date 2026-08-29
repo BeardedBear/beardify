@@ -28,18 +28,22 @@
     </div>
 
     <div class="genres">
-      <button
+      <BdTooltip
         v-for="genre in release.genres.slice(0, GENRES_SHOWN)"
         :key="genre"
-        :aria-pressed="releasesStore.genre === genre"
-        :class="{ 'is-active': releasesStore.genre === genre }"
-        :title="`Filter the feed to ${genre}`"
-        class="genre"
-        type="button"
-        @click="releasesStore.setGenre(genre)"
+        :content="`Filter the feed to ${genre}`"
+        bare
       >
-        {{ genre }}
-      </button>
+        <button
+          :aria-pressed="releasesStore.genre === genre"
+          :class="{ 'is-active': releasesStore.genre === genre }"
+          class="genre"
+          type="button"
+          @click="releasesStore.setGenre(genre)"
+        >
+          {{ genre }}
+        </button>
+      </BdTooltip>
     </div>
 
     <!--
@@ -51,16 +55,16 @@
       the month heading above already says.
     -->
     <div class="rating">
-      <span v-if="typeof release.rating === 'number'" :title="`Editorial rating out of 5`">
-        {{ release.rating.toFixed(1) }}<span class="unit">/5</span>
-      </span>
+      <BdTooltip v-if="typeof release.rating === 'number'" bare content="Editorial rating out of 5">
+        <span>{{ release.rating.toFixed(1) }}<span class="unit">/5</span></span>
+      </BdTooltip>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Check, Circle } from "@lucide/vue";
-import { BdLoader } from "bearded-ui";
+import { BdLoader, BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 
 import { Release } from "@/@types/Releases";

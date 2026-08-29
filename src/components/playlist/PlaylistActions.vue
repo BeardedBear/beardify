@@ -1,41 +1,32 @@
 <template>
   <div>
     <div v-if="!isPlaylistOwner(playlistStore.playlist.owner)">
-      <BdButton
-        v-if="!playlistStore.followed"
-        icon-only
-        variant="nude"
-        title="Follow the playlist"
-        @click="playlistStore.followPlaylist(playlistStore.playlist.id)"
-      >
-        <i class="icon-follow" />
-      </BdButton>
-      <BdButton
-        v-else
-        icon-only
-        variant="nude"
-        class="followed"
-        title="Unfollow the playlist"
-        @click="sidebarStore.removePlaylist(playlistStore.playlist.id)"
-      >
-        <i class="icon-followed" />
-      </BdButton>
+      <BdTooltip v-if="!playlistStore.followed" bare content="Follow the playlist">
+        <BdButton icon-only variant="nude" @click="playlistStore.followPlaylist(playlistStore.playlist.id)">
+          <i class="icon-follow" />
+        </BdButton>
+      </BdTooltip>
+      <BdTooltip v-else bare content="Unfollow the playlist">
+        <BdButton
+          icon-only
+          variant="nude"
+          class="followed"
+          @click="sidebarStore.removePlaylist(playlistStore.playlist.id)"
+        >
+          <i class="icon-followed" />
+        </BdButton>
+      </BdTooltip>
     </div>
-    <BdButton
-      v-else
-      aria-label="Playlist options"
-      icon-only
-      title="Playlist options"
-      variant="nude"
-      @click="edit(playlistStore.playlist.id)"
-    >
-      <i aria-hidden="true" class="icon-more-vertical" />
-    </BdButton>
+    <BdTooltip v-else bare content="Playlist options">
+      <BdButton aria-label="Playlist options" icon-only variant="nude" @click="edit(playlistStore.playlist.id)">
+        <i aria-hidden="true" class="icon-more-vertical" />
+      </BdButton>
+    </BdTooltip>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdButton } from "bearded-ui";
+import { BdButton, BdTooltip } from "bearded-ui";
 
 import { useDialog } from "@/components/dialog/DialogStore";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
