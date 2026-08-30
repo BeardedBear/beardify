@@ -292,6 +292,11 @@ export const useArtist = defineStore("artist", {
         this.discogsArtist = artist;
 
         if (artist) {
+          // Discogs often lists members MusicBrainz/Wikidata miss; keep the dated
+          // sources primary so their periods win on the timeline
+          const { discogsBandMembers, mergeBandMembers } = await import("@/helpers/bandMembers");
+          this.bandMembers = mergeBandMembers(this.bandMembers, discogsBandMembers(artist.members));
+
           await this.getDiscogsReleases(discogsId);
         }
       } catch {
@@ -709,6 +714,20 @@ export const useArtist = defineStore("artist", {
 
     updateHeaderHeight(height: number) {
       this.headerHeight = height;
+    },
+  },
+
+  getters: {
+    // Wikipedia is only one of the sources: a band with no article still has a
+    // members timeline and a Discogs profile worth showing on the Info tab
+    hasInfo(state): boolean {
+      return Boolean(
+        state.wikidataArtist
+        || state.wikipediaExtract
+        || state.bandMembers.length
+        || state.discogsArtist?.profile
+        || state.discogsArtist?.members?.length,
+      );
     },
   },
 

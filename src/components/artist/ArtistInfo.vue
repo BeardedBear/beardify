@@ -29,10 +29,7 @@
         <div v-else-if="artistStore.discogsArtist?.profile" class="biography" v-html="formattedDiscogsProfile" />
       </div>
 
-      <div
-        v-if="!artistStore.discogsArtist?.profile && !artistStore.wikidataArtist && !artistStore.wikipediaExtract"
-        class="info-section"
-      >
+      <div v-if="!artistStore.hasInfo" class="info-section">
         <p class="no-info">No additional information available for this artist.</p>
       </div>
     </div>

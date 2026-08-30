@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import type { BandMember } from "@/@types/Artist";
+import type { BandMember, DiscogsMember } from "@/@types/Artist";
 
-import { mergeBandMembers } from "./bandMembers";
+import { discogsBandMembers, mergeBandMembers } from "./bandMembers";
 
 const member = (name: string, extra: Partial<BandMember> = {}): BandMember => ({
   begin: null,
@@ -93,5 +93,61 @@ describe("mergeBandMembers", () => {
     expect(mergeBandMembers([], [])).toEqual([]);
     expect(mergeBandMembers([member("Thom Yorke")], [])).toHaveLength(1);
     expect(mergeBandMembers([], [member("Thom Yorke")])).toHaveLength(1);
+  });
+});
+
+/*
+ * Discogs is the only source listing every member for many small bands, but it
+ * carries no dates: the timeline must absorb those without duplicating anyone
+ * MusicBrainz already dated under a slightly different spelling.
+ */
+describe("discogsBandMembers", () => {
+  const discogs = (name: string, id: number, active = true): DiscogsMember => ({
+    active,
+    id,
+    name,
+    resource_url: "",
+    thumbnail_url: "",
+  });
+
+  it("strips the Discogs disambiguation suffix and flags inactive members as ended", () => {
+    expect(discogsBandMembers([discogs("Exodus (6)", 1, false)])).toEqual([
+      { begin: null, end: null, ended: true, id: "discogs-1", instruments: [], name: "Exodus" },
+    ]);
+  });
+
+  it("merges into dated sources without duplicating a person", () => {
+    const dated = member("Matthew Marcantonio", { begin: "2008" });
+    const merged = mergeBandMembers([dated], discogsBandMembers([discogs("Matt Marcantonio", 2)]));
+
+    expect(merged).toHaveLength(1);
+    expect(merged[0].begin).toBe("2008");
+  });
+
+  it("keeps the dated period when the same spelling comes from both sources", () => {
+    const merged = mergeBandMembers(
+      [member("Adam Godfrey", { begin: "2008" })],
+      discogsBandMembers([discogs("Adam Godfrey", 3)]),
+    );
+
+    expect(merged).toHaveLength(1);
+    expect(merged[0].begin).toBe("2008");
+  });
+});
+
+describe("mergeBandMembers name variants", () => {
+  it("merges a shortened or initialed first name with the full spelling", () => {
+    expect(mergeBandMembers([member("Matthew Marcantonio")], [member("Matt Marcantonio")])).toHaveLength(1);
+    expect(mergeBandMembers([member("Matthew Marcantonio")], [member("M. Marcantonio")])).toHaveLength(1);
+  });
+
+  it("keeps different people sharing a surname apart", () => {
+    expect(mergeBandMembers([member("Adam Godfrey")], [member("Anna Godfrey")])).toHaveLength(2);
+    expect(mergeBandMembers([member("Angus Young")], [member("Malcolm Young")])).toHaveLength(2);
+  });
+
+  it("does not merge on a first name alone", () => {
+    expect(mergeBandMembers([member("Matthew Marcantonio")], [member("Matthew Bellamy")])).toHaveLength(2);
+    expect(mergeBandMembers([member("Bono")], [member("Bono Vox")])).toHaveLength(2);
   });
 });

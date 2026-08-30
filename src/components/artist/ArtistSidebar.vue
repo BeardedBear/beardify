@@ -82,6 +82,7 @@
 import { computed } from "vue";
 
 import MemberPopover from "@/components/artist/MemberPopover.vue";
+import { cleanDiscogsName } from "@/helpers/discogs";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 interface DetailItem {
@@ -114,7 +115,7 @@ const activeMembers = computed<MemberItem[]>(() => {
     .map((member) => ({
       active: member.active,
       id: member.id,
-      name: member.name.replace(/\s*\(\d+\)$/, ""),
+      name: cleanDiscogsName(member.name),
       thumbnail: member.thumbnail_url || null,
       url: `https://www.discogs.com/artist/${member.id}`,
     }));
@@ -173,7 +174,7 @@ const formerMembers = computed<MemberItem[]>(() => {
     .map((member) => ({
       active: member.active,
       id: member.id,
-      name: member.name.replace(/\s*\(\d+\)$/, ""),
+      name: cleanDiscogsName(member.name),
       thumbnail: member.thumbnail_url || null,
       url: `https://www.discogs.com/artist/${member.id}`,
     }));
