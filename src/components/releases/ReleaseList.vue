@@ -84,6 +84,10 @@ function albumLoading(key: string): boolean {
 <style scoped>
 .content {
   padding: 0 var(--bd-space-6) var(--bd-space-6);
+
+  @media (--mobile) {
+    padding: 0 var(--bd-space-2) var(--bd-space-2);
+  }
 }
 
 .month {

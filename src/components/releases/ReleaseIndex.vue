@@ -112,7 +112,9 @@ const shownGenres = computed(() => props.release.genres.slice(0, GENRES_SHOWN));
   }
 
   @media (--tablet-down) {
-    grid-template-columns: 1.2rem 2.5rem minmax(0, 1fr);
+    /* Genres drop out, but the rating keeps a column — left in the flow it would
+       wrap onto an implicit second row and hang under the checkbox. */
+    grid-template-columns: 1.2rem 2.5rem minmax(0, 1fr) auto;
 
     .genres {
       display: none;

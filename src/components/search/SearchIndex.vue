@@ -155,6 +155,10 @@ const resultSummary = computed(() => {
    */
   min-height: 0;
   padding: var(--bd-space-4);
+
+  @media (--mobile) {
+    padding: 0;
+  }
 }
 
 /*
