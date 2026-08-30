@@ -30,7 +30,7 @@
 
 <script lang="ts" setup>
 import { BdButton, BdDropdown, BdTooltip } from "bearded-ui";
-import { computed, watch } from "vue";
+import { computed, ref, watch } from "vue";
 
 import TrackHistory from "@/components/player/history/TrackHistory.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
@@ -42,21 +42,21 @@ const isPlayingPodcast = computed(() => {
   const track = currentTrack.value;
   return track?.type === "episode" || track?.uri?.includes("spotify:episode:");
 });
-// The store owns the panel state (the player toggles it from elsewhere too);
-// opening through it also refreshes the queue.
-const queueOpen = computed<boolean>({
-  get: () => playerStore.queueOpened,
-  set: (value) => (value ? playerStore.openQueue() : playerStore.closeQueue()),
+/*
+ * Local, not in the store: this component is mounted twice (player bar and
+ * slide-up panel). Sharing the open flag made both dropdowns call showPopover()
+ * at once, and opening the second `popover="auto"` closed the first one — the
+ * visible panel flashed shut instantly.
+ */
+const queueOpen = ref(false);
+
+watch(queueOpen, (open) => {
+  if (open) playerStore.openQueue();
 });
 
-watch(currentTrack, (track) => {
-  if (track) {
-    // Only get queue if not playing a podcast episode
-    const isPlayingPodcast = track.type === "episode" || track.uri?.includes("spotify:episode:");
-    if (!isPlayingPodcast) {
-      playerStore.getQueue();
-    }
-  }
+// Refresh only while the panel is open — a closed instance has nothing to show.
+watch(currentTrack, () => {
+  if (queueOpen.value) playerStore.openQueue();
 });
 </script>
 

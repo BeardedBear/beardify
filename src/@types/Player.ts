@@ -17,7 +17,6 @@ export interface Player {
   panelOpened?: boolean;
   playerState: Spotify.PlaybackState;
   queue: Spotify.Track[];
-  queueOpened: boolean;
   seekLockUntil?: number;
   thisDeviceId: string;
   volumeLockUntil?: number;

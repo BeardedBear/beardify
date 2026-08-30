@@ -240,10 +240,6 @@ export const usePlayer = defineStore("player", {
       this.panelOpened = false;
     },
 
-    closeQueue(): void {
-      this.queueOpened = false;
-    },
-
     async getDeviceList(): Promise<void> {
       const { data } = await instance().get<DevicesResponse>("me/player/devices");
       const activeDevice = data.devices.find((device): boolean => device.is_active);
@@ -330,8 +326,6 @@ export const usePlayer = defineStore("player", {
       } else {
         this.queue = [];
       }
-
-      this.queueOpened = true;
     },
 
     async pause(): Promise<void> {
@@ -614,7 +608,6 @@ export const usePlayer = defineStore("player", {
     panelOpened: false,
     playerState: defaultPlaybackState,
     queue: [],
-    queueOpened: false,
     seekLockUntil: 0,
     thisDeviceId: "",
     volumeLockUntil: 0,
