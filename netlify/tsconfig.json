@@ -4,7 +4,9 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["*.mts"]
+  "include": ["functions/*.mts", "tests/*.mts"]
 }

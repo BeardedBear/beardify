@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "vite",
     "dev:functions": "netlify dev",
-    "lint": "vue-tsc --noEmit && eslint src/**/*.{vue,ts} && stylelint ./src/**/*.{vue,css}",
+    "lint": "vue-tsc --noEmit && tsc --noEmit -p netlify && eslint src/**/*.{vue,ts} netlify/**/*.mts && stylelint ./src/**/*.{vue,css}",
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "bun run test && bun run lint && vite build",
-    "fix": "eslint src/**/*.{vue,ts} --fix && stylelint ./src/**/*.{vue,css} --fix",
+    "fix": "eslint src/**/*.{vue,ts} netlify/**/*.mts --fix && stylelint ./src/**/*.{vue,css} --fix",
     "preview": "bun run build && vite preview",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
