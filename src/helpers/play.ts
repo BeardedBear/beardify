@@ -1,5 +1,4 @@
 import { NotificationType } from "@/@types/Notification";
-import { Track, TrackSimplified } from "@/@types/Track";
 import { ensureActiveDevice, executePlaybackApiCall } from "@/helpers/apiErrorHandling";
 import { notification } from "@/helpers/notifications";
 
@@ -31,9 +30,9 @@ export async function playSong(trackUri: string, position?: number): Promise<voi
  * Play a slice of a track list starting from a given index.
  * Sends all URIs from sliceIndex onwards to Spotify so the queue is pre-populated.
  * @param sliceIndex - Index of the track to start from
- * @param tracks - Full list of tracks to play from
+ * @param tracks - Full list of tracks to play from; anything carrying a `uri`
  */
-export async function playSongs(sliceIndex: number, tracks: Track[] | TrackSimplified[]): Promise<void> {
+export async function playSongs(sliceIndex: number, tracks: { uri: string }[]): Promise<void> {
   const deviceId = await ensureActiveDevice();
 
   if (!deviceId) {
@@ -44,7 +43,7 @@ export async function playSongs(sliceIndex: number, tracks: Track[] | TrackSimpl
     return;
   }
 
-  const flatTracks = tracks.map((track: Track | TrackSimplified) => track.uri);
+  const flatTracks = tracks.map((track) => track.uri);
   const uris = flatTracks.slice(sliceIndex);
 
   if (uris.length === 0) {

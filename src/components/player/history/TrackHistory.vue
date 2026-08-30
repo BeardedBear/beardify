@@ -1,15 +1,13 @@
 <template>
-  <div :class="{ 'wrap-current': index === undefined }">
-    <div :class="{ clickable, current: index === undefined }" class="track">
-      <img :src="coverUrl" alt="" class="cover" />
-      <div class="metas">
-        <div class="name">
-          <template v-if="index !== undefined">{{ index + 1 }}.</template>
-          {{ track.name }}
-        </div>
-        <div class="artists">
-          <ArtistList :artist-list="track.artists" feat />
-        </div>
+  <div :class="{ clickable, current }" class="track">
+    <img :src="coverUrl" alt="" class="cover" />
+    <div class="metas">
+      <div class="name">
+        <template v-if="index !== undefined">{{ index + 1 }}.</template>
+        {{ track.name }}
+      </div>
+      <div class="artists">
+        <ArtistList :artist-list="track.artists" feat />
       </div>
     </div>
   </div>
@@ -21,6 +19,7 @@ import ArtistList from "@/components/artist/ArtistList.vue";
 defineProps<{
   clickable?: boolean;
   coverUrl: string;
+  current?: boolean;
   index?: number;
   track: Spotify.Track;
 }>();
@@ -73,13 +72,5 @@ defineProps<{
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.wrap-current {
-  background-image: linear-gradient(to bottom, var(--bd-bg-dark), var(--bd-bg-darker), rgb(0 0 0 / 0%));
-  padding: var(--bd-space-2);
-  position: sticky;
-  top: 0;
-  z-index: 3;
 }
 </style>
