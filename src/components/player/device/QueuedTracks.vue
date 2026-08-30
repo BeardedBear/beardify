@@ -8,51 +8,70 @@
       </BdTooltip>
     </template>
 
-    <div ref="scroller" class="timeline">
-      <div class="rail">
-        <div v-if="past.length" class="section-title bd-font-bold">Played</div>
-        <div v-for="(track, key) in past" :key="`past-${track.uri}`" class="node past">
-          <TrackHistory
-            clickable
-            :cover-url="coverUrl(track.album.images, 'small')"
-            :track="track"
-            @click="replay(key)"
-          />
-        </div>
+    <div class="panel">
+      <div ref="scroller" class="timeline">
+        <div class="rail">
+          <div v-if="past.length" class="section-title bd-font-bold">Played</div>
+          <div v-for="(track, key) in past" :key="`past-${track.uri}`" class="node past">
+            <TrackHistory
+              clickable
+              :cover-url="coverUrl(track.album.images, 'small')"
+              :track="track"
+              @click="replay(key)"
+            />
+          </div>
 
-        <div v-if="currentTrack" ref="currentNode" class="node now">
-          <TrackHistory current :cover-url="coverUrl(currentTrack.album.images, 'medium')" :track="currentTrack" />
-        </div>
+          <div v-if="currentTrack" ref="currentNode" class="node now">
+            <TrackHistory current :cover-url="coverUrl(currentTrack.album.images, 'medium')" :track="currentTrack" />
+          </div>
 
-        <div v-if="playerStore.queue.length" class="section-title bd-font-bold">Up next</div>
-        <div v-for="(track, key) in playerStore.queue" :key="`next-${key}`" class="node">
-          <TrackHistory
-            clickable
-            :cover-url="coverUrl(track.album.images, 'small')"
-            :index="key"
-            :track="track"
-            @click="skipTo(key)"
-          />
-        </div>
+          <div v-if="playerStore.queue.length" class="section-title bd-font-bold">Up next</div>
+          <div v-for="(track, key) in playerStore.queue" :key="`next-${key}`" class="node">
+            <TrackHistory
+              clickable
+              :cover-url="coverUrl(track.album.images, 'small')"
+              :index="key"
+              :track="track"
+              @click="skipTo(key)"
+            />
+          </div>
 
-        <div v-if="playerStore.queue.length === 0" class="empty-queue">
-          <div class="empty-message bd-font-italic">
-            {{ isPlayingPodcast ? "Queue not available for podcast episodes" : "No tracks in queue" }}
+          <div v-if="playerStore.queue.length === 0" class="empty-queue">
+            <div class="empty-message bd-font-italic">
+              {{ isPlayingPodcast ? "Queue not available for podcast episodes" : "No tracks in queue" }}
+            </div>
           </div>
         </div>
       </div>
+
+      <Transition name="recenter">
+        <BdButton
+          v-if="currentTrack && !currentVisible"
+          :class="['recenter', currentAbove ? 'above' : 'below']"
+          label="Back to the current track"
+          size="small"
+          variant="primary"
+          @click="centerOnCurrent()"
+        >
+          <i aria-hidden="true" :class="currentAbove ? 'icon-arrow-up' : 'icon-arrow-down'" />
+          Now playing
+        </BdButton>
+      </Transition>
     </div>
   </BdDropdown>
 </template>
 
 <script lang="ts" setup>
+import { useIntersectionObserver } from "@vueuse/core";
 import { BdButton, BdDropdown, BdTooltip } from "bearded-ui";
-import { computed, nextTick, ref, useTemplateRef, watch } from "vue";
+import { computed, nextTick, onUnmounted, ref, useTemplateRef, watch } from "vue";
 
 import TrackHistory from "@/components/player/history/TrackHistory.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import { coverUrl } from "@/helpers/cover";
 import { playSongs } from "@/helpers/play";
+
+const SCROLL_DURATION_MS = 420;
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
@@ -74,18 +93,54 @@ const past = computed(() => [...playerStore.history].reverse());
 const queueOpen = ref(false);
 const scroller = useTemplateRef<HTMLElement>("scroller");
 const currentNode = useTemplateRef<HTMLElement>("currentNode");
+let scrollRaf = 0;
+const currentVisible = ref(true);
+const currentAbove = ref(false);
+
+/*
+ * Scrolled far enough and the current track leaves the panel — the button that
+ * brings it back has to know which edge it went out of. IntersectionObserver
+ * rather than a scroll listener: no throttling to tune, and it stays right
+ * across resizes and list refreshes.
+ */
+useIntersectionObserver(
+  currentNode,
+  ([entry]) => {
+    currentVisible.value = entry.isIntersecting;
+    if (!entry.isIntersecting) currentAbove.value = entry.boundingClientRect.top < (entry.rootBounds?.top ?? 0);
+  },
+  { root: scroller },
+);
 
 /*
  * The current track sits between the two lists, so the panel opens scrolled to
- * the middle. scrollTop rather than scrollIntoView: the latter also scrolls
- * every ancestor, dragging the page behind the popover.
+ * the middle — and the recenter button brings it back there.
+ *
+ * Tweened by hand rather than with `scroll-behavior: smooth` or
+ * `scrollTo({ behavior })`: both native paths were dropped silently here (the
+ * scroller becomes visible in the same frame as the popover, and browsers fall
+ * back to an instant jump under prefers-reduced-motion), so the scroll just
+ * teleported. scrollTop rather than scrollIntoView either way: the latter also
+ * scrolls every ancestor, dragging the page behind the popover.
  */
 async function centerOnCurrent(): Promise<void> {
   await nextTick();
   const list = scroller.value;
   const node = currentNode.value;
   if (!list || !node) return;
-  list.scrollTop = node.offsetTop - (list.clientHeight - node.clientHeight) / 2;
+
+  const from = list.scrollTop;
+  const distance = node.offsetTop - (list.clientHeight - node.clientHeight) / 2 - from;
+  const start = performance.now();
+
+  cancelAnimationFrame(scrollRaf);
+  const step = (now: number): void => {
+    const progress = Math.min((now - start) / SCROLL_DURATION_MS, 1);
+    // easeOutCubic: leaves fast, lands gently on the current track.
+    list.scrollTop = from + distance * (1 - (1 - progress) ** 3);
+    if (progress < 1) scrollRaf = requestAnimationFrame(step);
+  };
+  scrollRaf = requestAnimationFrame(step);
 }
 
 // Refresh only while the panel is open — a closed instance has nothing to show.
@@ -124,6 +179,8 @@ watch(queueOpen, (open) => {
 });
 
 watch(currentTrack, refresh);
+
+onUnmounted(() => cancelAnimationFrame(scrollRaf));
 watch(past, centerOnCurrent);
 </script>
 
@@ -141,6 +198,10 @@ watch(past, centerOnCurrent);
   margin-top: var(--bd-space-2);
   padding: 0 var(--bd-space-2);
   text-transform: uppercase;
+}
+
+.panel {
+  position: relative;
 }
 
 .timeline {
@@ -211,6 +272,46 @@ watch(past, centerOnCurrent);
 
   &:hover {
     opacity: 1;
+  }
+}
+
+/*
+ * Sits on the panel, not in the scroller, so it stays pinned while the list
+ * moves under it — and on the edge the current track went out of.
+ */
+.recenter {
+  gap: var(--bd-space-1);
+  left: 50%;
+  position: absolute;
+  translate: -50% 0;
+  z-index: 4;
+
+  &.above {
+    top: var(--bd-space-2);
+  }
+
+  &.below {
+    bottom: var(--bd-space-2);
+  }
+}
+
+.recenter-enter-active,
+.recenter-leave-active {
+  transition:
+    opacity 0.18s ease,
+    translate 0.18s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.recenter-enter-from,
+.recenter-leave-to {
+  opacity: 0;
+
+  &.above {
+    translate: -50% -0.6rem;
+  }
+
+  &.below {
+    translate: -50% 0.6rem;
   }
 }
 
