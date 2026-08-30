@@ -327,9 +327,11 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 /* Absolute so a tall or wide photo can't stretch the column and shift the arrows */
 .member-popover .mp-photo {
   display: block;
+  height: 100%;
   inset: 0;
-  object-fit: contain;
+  object-fit: cover;
   position: absolute;
+  width: 100%;
 }
 
 .member-popover .slide-next-enter-active,
