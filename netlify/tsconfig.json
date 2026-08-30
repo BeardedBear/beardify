@@ -8,5 +8,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["*.mts"]
+  "include": ["functions/*.mts", "tests/*.mts"]
 }

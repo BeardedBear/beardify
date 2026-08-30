@@ -106,9 +106,14 @@ export default defineConfig({
    */
   test: {
     environment: "happy-dom",
-    // The Netlify functions are server code living outside src/, but the token
-    // endpoint's cache and in-flight coalescing fail silently when broken.
-    include: ["src/**/*.test.ts", "netlify/functions/**/*.test.mts"],
+    /*
+     * The Netlify functions are server code living outside src/, but the token
+     * endpoint's cache and in-flight coalescing fail silently when broken. The
+     * tests sit beside the functions rather than inside them: Netlify packages
+     * every .mts in the functions directory, and "spotify-token.test" is not a
+     * legal function name.
+     */
+    include: ["src/**/*.test.ts", "netlify/tests/*.test.mts"],
   },
 
 });

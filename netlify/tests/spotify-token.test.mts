@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
  */
 async function loadHandler(): Promise<() => Promise<Response>> {
   vi.resetModules();
-  return (await import("./spotify-token.mts")).default as () => Promise<Response>;
+  return (await import("../functions/spotify-token.mts")).default as () => Promise<Response>;
 }
 
 /**
