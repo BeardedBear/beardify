@@ -50,9 +50,7 @@ const loading = computed(() => {
   return artistStore.discographyLoading || artistStore.reclassifying;
 });
 
-const infoAvailable = computed(() => {
-  return Boolean(artistStore.wikidataArtist || artistStore.wikipediaExtract);
-});
+const infoAvailable = computed(() => artistStore.hasInfo);
 
 const tabs = computed<Tab[]>(() => [
   {

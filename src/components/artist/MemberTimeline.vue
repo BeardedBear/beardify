@@ -51,7 +51,7 @@
       </template>
     </div>
 
-    <p class="timeline-source">Source: Wikidata / MusicBrainz</p>
+    <p class="timeline-source">Source: Wikidata / MusicBrainz / Discogs</p>
   </div>
 </template>
 

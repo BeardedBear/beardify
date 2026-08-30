@@ -180,6 +180,13 @@ const RELEASE_TYPE_PRIORITY: Record<string, number> = {
 };
 
 /**
+ * Strip the Discogs disambiguation suffix, e.g. "Exodus (6)" -> "Exodus".
+ */
+export function cleanDiscogsName(name: string): string {
+  return name.replace(/\s*\(\d+\)$/, "");
+}
+
+/**
  * Build a map of normalized release title -> type ("Live" | "Compilation" | "EP"
  * | "Album") from Discogs release entries.
  *
@@ -236,13 +243,6 @@ export async function searchDiscogsArtistId(name: string): Promise<null | number
   const normalizedQuery = normalizeString(name);
   const exact = data.results.find((result) => normalizeString(cleanDiscogsName(result.title)) === normalizedQuery);
   return (exact ?? data.results[0]).id;
-}
-
-/**
- * Strip the Discogs disambiguation suffix, e.g. "Exodus (6)" -> "Exodus".
- */
-function cleanDiscogsName(name: string): string {
-  return name.replace(/\s*\(\d+\)$/, "");
 }
 
 /**
