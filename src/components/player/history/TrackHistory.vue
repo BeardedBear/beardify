@@ -1,6 +1,6 @@
 <template>
   <div :class="{ 'wrap-current': index === undefined }">
-    <div :class="{ current: index === undefined }" class="track">
+    <div :class="{ clickable, current: index === undefined }" class="track">
       <img :src="coverUrl" alt="" class="cover" />
       <div class="metas">
         <div class="name">
@@ -19,6 +19,7 @@
 import ArtistList from "@/components/artist/ArtistList.vue";
 
 defineProps<{
+  clickable?: boolean;
   coverUrl: string;
   index?: number;
   track: Spotify.Track;
@@ -31,6 +32,15 @@ defineProps<{
   display: flex;
   gap: var(--bd-space-2);
   padding: var(--bd-space-2);
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--bd-bg-light);
+      border-radius: var(--bd-radius-md);
+    }
+  }
 
   &.current {
     background-color: var(--bd-bg);

@@ -27,6 +27,7 @@ const RETRY_DELAY_MS = 300;
 const HEARTBEAT_FAILURE_THRESHOLD = 3;
 const HEARTBEAT_FAILURE_NOTIFY_COOLDOWN_MS = 5 * 60 * 1000;
 const VOLUME_LOCK_DURATION_MS = 2000;
+const HISTORY_LIMIT = 20;
 /*
  * A seek on an external device is acknowledged by Spotify long after the PUT
  * returns, and `getExternalPlayerState()` polls every 2s — so a poll already in
@@ -286,6 +287,19 @@ export const usePlayer = defineStore("player", {
       playerState.duration = item.duration_ms;
       if (Date.now() >= (this.volumeLockUntil ?? 0) && data.device) {
         activeDevice.volume_percent = data.device.volume_percent;
+      }
+    },
+
+    async getHistory(): Promise<void> {
+      interface RecentlyPlayedResponse {
+        items: { track: Track }[];
+      }
+      try {
+        const { data } = await instance().get<RecentlyPlayedResponse>(`me/player/recently-played?limit=${HISTORY_LIMIT}`);
+        this.history = mapQueueToSpotifyTracks(data.items.map((item) => item.track));
+      } catch {
+        // ponytail: silent — history is a secondary panel, a failed fetch just shows the empty state
+        this.history = [];
       }
     },
 
@@ -603,6 +617,7 @@ export const usePlayer = defineStore("player", {
     heartbeatFailureCount: 0,
     heartbeatFailureNotified: false,
     heartbeatInterval: null,
+    history: [],
     isSettingDevice: false,
     lastRequestedDeviceId: null,
     panelOpened: false,

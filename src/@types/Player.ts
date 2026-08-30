@@ -12,6 +12,7 @@ export interface Player {
   heartbeatFailureCount?: number;
   heartbeatFailureNotified?: boolean;
   heartbeatInterval: null | number; // Interval ID for keeping the device active
+  history: Spotify.Track[];
   isSettingDevice?: boolean;
   lastRequestedDeviceId?: null | string;
   panelOpened?: boolean;
