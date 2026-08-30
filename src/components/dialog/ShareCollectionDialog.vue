@@ -4,7 +4,7 @@
       <div class="recap">
         <Cover :images="playlistStore.playlist.images" class="cover" size="large" />
         <div>
-          <div class="name bd-font-bold">{{ playlistStore.playlist.name.replace("#Collection ", "") }}</div>
+          <div class="name bd-font-bold">{{ collectionDisplayName(playlistStore.playlist.name) }}</div>
           <div class="count">{{ albumCount }} albums</div>
         </div>
       </div>
@@ -27,6 +27,7 @@ import { NotificationType } from "@/@types/Notification";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Dialog from "@/components/dialog/DialogWrap.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
+import { collectionDisplayName } from "@/helpers/isCollection";
 import { notification } from "@/helpers/notifications";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
 import { absoluteRouteUrl, RouteName } from "@/router";

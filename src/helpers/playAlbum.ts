@@ -1,7 +1,5 @@
-import { NotificationType } from "@/@types/Notification";
 import { usePlayer } from "@/components/player/PlayerStore";
-import { ensureActiveDevice, executePlaybackApiCall } from "@/helpers/apiErrorHandling";
-import { notification } from "@/helpers/notifications";
+import { ensureActiveDevice, executePlaybackApiCall, notifyNoDevice } from "@/helpers/apiErrorHandling";
 
 /**
  * Play an album given its URI
@@ -13,10 +11,7 @@ export async function playAlbum(albumUri: string): Promise<void> {
   const deviceId = await ensureActiveDevice();
 
   if (!deviceId) {
-    notification({
-      msg: "No active device found. Please select a device.",
-      type: NotificationType.Warning,
-    });
+    notifyNoDevice();
     return;
   }
 

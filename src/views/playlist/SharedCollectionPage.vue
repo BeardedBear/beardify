@@ -13,7 +13,7 @@
             <Cover :images="playlist.images" class="cover" size="large" />
             <div>
               <h1 class="title bd-font-bold">
-                {{ playlist.name.replace("#Collection ", "") }}
+                {{ collectionDisplayName(playlist.name) }}
               </h1>
               <div class="metas">{{ playlist.owner.display_name }} &nbsp;·&nbsp; {{ albumList.length }} albums</div>
             </div>
@@ -92,6 +92,7 @@ import PageFit from "@/components/ui/PageFit.vue";
 import PageScroller from "@/components/ui/PageScroller.vue";
 import { useCollectionRanking } from "@/composables/useCollectionRanking";
 import { displayTierLabel, getTierColor, getTierLabel, groupByTierList, splitTopTiers, UNSORTED_TIER_LABEL } from "@/helpers/collectionOptions";
+import { collectionDisplayName } from "@/helpers/isCollection";
 import { fetchAllPages } from "@/helpers/pagination";
 import { publicSpotifyGet } from "@/helpers/publicSpotify";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";

@@ -170,6 +170,7 @@ import { useSidebar } from "@/components/sidebar/SidebarStore";
 import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
 import IconButton from "@/components/ui/IconButton.vue";
 import { parseCollectionRankingMode } from "@/helpers/collectionOptions";
+import { collectionDisplayName } from "@/helpers/isCollection";
 import { useAuth } from "@/views/auth/AuthStore";
 
 const dialogStore = useDialog();
@@ -199,7 +200,7 @@ const enrichedCollections = computed(() =>
     const mode = parseCollectionRankingMode(playlist.description);
     return {
       ...playlist,
-      displayName: playlist.name.replace("#Collection ", "").replace("#collection ", ""),
+      displayName: collectionDisplayName(playlist.name),
       isTierList: mode.type === "tierlist",
       isTop: mode.type === "top",
       lowerName: playlist.name.toLowerCase(),

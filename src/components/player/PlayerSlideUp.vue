@@ -9,7 +9,7 @@
     <div class="panel">
       <div class="content">
         <div class="cover">
-          <img v-if="currentTrack" :src="currentTrack?.album?.images[0]?.url" alt="" />
+          <img v-if="currentTrack" :src="coverUrl(currentTrack.album.images, 'large')" alt="" />
         </div>
         <div class="metas">
           <div class="meta-header">
@@ -54,6 +54,7 @@ import Device from "@/components/player/device/DeviceIndex.vue";
 import PlayerControls from "@/components/player/PlayerControls.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import SeekBar from "@/components/player/SeekBar.vue";
+import { coverUrl } from "@/helpers/cover";
 import { transformUriToid } from "@/helpers/helper";
 
 const playerStore = usePlayer();

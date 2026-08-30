@@ -9,6 +9,7 @@ import { buildCollectionDescription, CollectionRankingMode, MAX_DESCRIPTION_LENG
 import { isACollection } from "@/helpers/isCollection";
 import { removeFromLibrary } from "@/helpers/library";
 import { notification } from "@/helpers/notifications";
+import { isPlaylistOwner } from "@/helpers/playlist";
 import { sleep } from "@/helpers/sleep";
 import { cleanUrl } from "@/helpers/urls";
 import router from "@/router";
@@ -120,34 +121,25 @@ export const useSidebar = defineStore("sidebar", {
 
     async removePlaylist(playlistId: string): Promise<void> {
       const playlistStore = usePlaylist();
-      const authStore = useAuth();
+      // Owning the playlist means deleting it; otherwise it is just an unfollow.
+      const owned = isPlaylistOwner(playlistStore.playlist.owner);
 
-      // Check if the user is the owner of the playlist
       try {
         await removeFromLibrary("playlist", playlistId);
         this.playlists = this.playlists.filter((playlist) => playlist.id !== playlistId);
         this.collections = this.collections.filter((collection) => collection.id !== playlistId);
         playlistStore.followed = false;
-        if (
-          router.currentRoute.value.params.id === playlistId
-          || playlistStore.playlist.owner.id === authStore.me?.id
-        ) {
+        if (router.currentRoute.value.params.id === playlistId || owned) {
           router.push("/");
         }
         notification({
-          msg:
-            playlistStore.playlist.owner.id === authStore.me?.id
-              ? "Playlist successfully deleted"
-              : "Unfollowed playlist",
+          msg: owned ? "Playlist successfully deleted" : "Unfollowed playlist",
           type: NotificationType.Success,
         });
       } catch (error) {
         if (import.meta.env.DEV) console.error("Error while deleting/unfollowing playlist:", error);
         notification({
-          msg:
-            playlistStore.playlist.owner.id === authStore.me?.id
-              ? "Unable to delete playlist"
-              : "Unable to unfollow playlist",
+          msg: owned ? "Unable to delete playlist" : "Unable to unfollow playlist",
           type: NotificationType.Error,
         });
         throw error;

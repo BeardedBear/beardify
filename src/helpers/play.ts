@@ -1,8 +1,6 @@
 import { NotificationType } from "@/@types/Notification";
-import { ensureActiveDevice, executePlaybackApiCall } from "@/helpers/apiErrorHandling";
+import { ensureActiveDevice, executePlaybackApiCall, notifyNoDevice } from "@/helpers/apiErrorHandling";
 import { notification } from "@/helpers/notifications";
-
-// API error types moved to apiErrorHandling.ts helper
 
 /**
  * Play a single track by URI on the active device.
@@ -13,10 +11,7 @@ export async function playSong(trackUri: string, position?: number): Promise<voi
   const deviceId = await ensureActiveDevice();
 
   if (!deviceId) {
-    notification({
-      msg: "No active device found. Please select a device.",
-      type: NotificationType.Warning,
-    });
+    notifyNoDevice();
     return;
   }
 
@@ -36,10 +31,7 @@ export async function playSongs(sliceIndex: number, tracks: { uri: string }[]): 
   const deviceId = await ensureActiveDevice();
 
   if (!deviceId) {
-    notification({
-      msg: "No active device found. Please select a device.",
-      type: NotificationType.Warning,
-    });
+    notifyNoDevice();
     return;
   }
 
@@ -58,5 +50,3 @@ export async function playSongs(sliceIndex: number, tracks: { uri: string }[]): 
 
   await executePlaybackApiCall(deviceId, payload);
 }
-
-// API error handling moved to apiErrorHandling.ts helper

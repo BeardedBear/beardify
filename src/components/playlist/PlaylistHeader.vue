@@ -4,7 +4,7 @@
       <Cover v-if="!noCover" :images="playlistStore.playlist.images" class="cover" size="large" />
       <div>
         <h1 class="title bd-font-bold">
-          {{ playlistStore.playlist.name.replace("#Collection ", "") }}
+          {{ collectionDisplayName(playlistStore.playlist.name) }}
         </h1>
         <div class="metas bd-font-bold">
           <router-link
@@ -81,7 +81,7 @@ import Actions from "@/components/playlist/PlaylistActions.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
 import { stripCollectionTags } from "@/helpers/collectionOptions";
 import { timecodeWithUnits } from "@/helpers/date";
-import { isLegacyCollectionName } from "@/helpers/isCollection";
+import { collectionDisplayName, isLegacyCollectionName } from "@/helpers/isCollection";
 import { isPlaylistOwner } from "@/helpers/playlist";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 

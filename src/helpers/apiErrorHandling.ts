@@ -165,3 +165,16 @@ export function isApiError(error: unknown): error is ApiError {
     && typeof error.response.status === "number"
   );
 }
+
+/**
+ * Tells the user no device could be activated. `ensureActiveDevice()` stays
+ * silent on purpose (it is also used as an internal retry step), so every
+ * playback entry point that gives up needs this exact message — hence one
+ * function instead of the same notification copy-pasted per entry point.
+ */
+export function notifyNoDevice(): void {
+  notification({
+    msg: "No active device found. Please select a device.",
+    type: NotificationType.Warning,
+  });
+}

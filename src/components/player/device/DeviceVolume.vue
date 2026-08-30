@@ -147,28 +147,20 @@ async function setVolumeOptimistic(volume: number): Promise<void> {
   }
 }
 
+// No try/catch here: setVolumeOptimistic already reverts and notifies, and
+// never rethrows, so a second copy of that handling could not fire.
 async function toggleMute(): Promise<void> {
   const current = playerStore.devices.activeDevice.volume_percent ?? 0;
-  try {
-    if (current === 0) {
-      // unmute
-      const to = previousVolume.value ?? 50;
-      previousVolume.value = null;
-      await setVolumeOptimistic(to);
-    } else {
-      // mute
-      previousVolume.value = current;
-      await setVolumeOptimistic(0);
-    }
-  } catch (err: any) {
-    if (import.meta.env.DEV) console.error("Failed to toggle mute:", err);
-    // revert on failure
-    if (oldDeviceVolume.value !== null) {
-      playerStore.devices.activeDevice.volume_percent = oldDeviceVolume.value;
-    }
-    notification({ msg: "Unable to set the volume", type: NotificationType.Error });
-  } finally {
-    oldDeviceVolume.value = null;
+
+  if (current === 0) {
+    // unmute
+    const to = previousVolume.value ?? 50;
+    previousVolume.value = null;
+    await setVolumeOptimistic(to);
+  } else {
+    // mute
+    previousVolume.value = current;
+    await setVolumeOptimistic(0);
   }
 }
 </script>
