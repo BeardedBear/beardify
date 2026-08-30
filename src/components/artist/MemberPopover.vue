@@ -97,7 +97,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useElementBounding, useEventListener, useWindowSize } from "@vueuse/core";
+import { useEventListener } from "@vueuse/core";
 import { computed, nextTick, ref } from "vue";
 
 import type { MemberInfo } from "@/@types/Artist";
@@ -130,10 +130,6 @@ let closeTimer: ReturnType<typeof setTimeout> | undefined;
 let loadTimer: ReturnType<typeof setTimeout> | undefined;
 
 const LOAD_DELAY = 250;
-
-const { height: viewportHeight, width: viewportWidth } = useWindowSize();
-const { height: wrapHeight, width: wrapWidth, x: wrapLeft, y: wrapTop } = useElementBounding(wrapperRef);
-const { height: panelHeight } = useElementBounding(panelRef);
 
 const imageIndex = ref(0);
 
@@ -183,6 +179,11 @@ function cancelLoad(): void {
   if (loadTimer) clearTimeout(loadTimer);
 }
 
+// Keeps the panel inside the viewport even when it is bigger than the space left
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), Math.max(min, max));
+}
+
 async function loadInfo(): Promise<void> {
   if (loaded.value) return;
   loaded.value = true;
@@ -221,25 +222,32 @@ function searchGroup(name: string): void {
   dialog.open({ type: "search" });
 }
 
+// Measures straight from the DOM: the panel is remounted on every open, so a
+// cached/reactive rect is stale (0 height) on the first tick after reopening
 function updatePosition(): void {
-  const vpW = viewportWidth.value || window.innerWidth;
-  const vpH = viewportHeight.value || window.innerHeight;
+  const wrap = wrapperRef.value?.getBoundingClientRect();
+  if (!wrap) return;
+
+  const vpW = window.innerWidth;
+  const vpH = window.innerHeight;
+
+  // Shrink the panel on viewports too narrow for its natural width
+  const width = Math.min(PANEL_WIDTH, vpW - MARGIN * 2);
 
   // Prefer the right side; flip left when there is not enough room
-  const spaceRight = vpW - (wrapLeft.value + wrapWidth.value) - GAP;
-  const left
-    = spaceRight >= PANEL_WIDTH + MARGIN
-      ? wrapLeft.value + wrapWidth.value + GAP
-      : Math.max(wrapLeft.value - PANEL_WIDTH - GAP, MARGIN);
+  const spaceRight = vpW - wrap.right - GAP;
+  const preferredLeft = spaceRight >= width + MARGIN ? wrap.right + GAP : wrap.left - width - GAP;
+  const left = clamp(preferredLeft, MARGIN, vpW - width - MARGIN);
 
-  const panelH = panelHeight.value || 0;
-  const desiredTop = wrapTop.value + wrapHeight.value / 2 - panelH / 2;
-  const top = Math.min(Math.max(desiredTop, MARGIN), Math.max(vpH - panelH - MARGIN, MARGIN));
+  const maxHeight = vpH - MARGIN * 2;
+  const panelH = Math.min(panelRef.value?.getBoundingClientRect().height || 0, maxHeight);
+  const top = clamp(wrap.top + wrap.height / 2 - panelH / 2, MARGIN, vpH - panelH - MARGIN);
 
   panelStyle.value = {
     left: `${left}px`,
+    "max-height": `${maxHeight}px`,
     top: `${top}px`,
-    width: `${PANEL_WIDTH}px`,
+    width: `${width}px`,
   };
 }
 
@@ -372,6 +380,7 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
   flex-direction: column;
   gap: var(--bd-space-1);
   min-width: 0;
+  overflow-y: auto;
   padding: var(--bd-space-3);
 }
 
