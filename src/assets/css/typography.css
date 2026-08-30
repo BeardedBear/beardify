@@ -22,6 +22,6 @@ html {
 
 @media (--mobile) {
   html {
-    font-size: clamp(0.875rem, calc(0.8rem + 0.5vw), 1.5rem);
+    font-size: clamp(1.125rem, calc(0.95rem + 0.2vw), 1.125rem);
   }
 }

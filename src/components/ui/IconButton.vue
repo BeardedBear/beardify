@@ -31,7 +31,7 @@ import { BdTooltip } from "bearded-ui";
  */
 defineProps<{
   icon: string;
-  label: string;
+  label?: string;
   pressed?: boolean;
 }>();
 </script>
