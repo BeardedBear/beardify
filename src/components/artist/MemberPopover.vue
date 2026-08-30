@@ -22,14 +22,26 @@
         >
           <div class="mp-layout">
             <div class="mp-photo-col">
-              <img v-if="image" :src="image" :alt="name" class="mp-photo" />
+              <transition :name="slideName">
+                <img v-if="image" :key="image" :src="image" :alt="name" class="mp-photo" />
+              </transition>
               <div
-                v-else
+                v-if="!image"
                 class="mp-photo mp-photo-placeholder"
                 :style="{ background: `hsl(${avatarHue}, 35%, 28%)` }"
               >
                 <span class="mp-initials">{{ initials }}</span>
               </div>
+
+              <template v-if="images.length > 1">
+                <button aria-label="Previous photo" class="mp-nav prev" type="button" @click="step(-1)">
+                  <i aria-hidden="true" class="icon-arrow-left" />
+                </button>
+                <button aria-label="Next photo" class="mp-nav next" type="button" @click="step(1)">
+                  <i aria-hidden="true" class="icon-arrow-right" />
+                </button>
+                <span class="mp-counter">{{ imageIndex + 1 }}/{{ images.length }}</span>
+              </template>
             </div>
 
             <div class="mp-info-col">
@@ -51,15 +63,29 @@
                     </li>
                   </ul>
                 </div>
-                <a
-                  v-if="info.profileUrl"
-                  class="mp-link"
-                  :href="info.profileUrl"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <i class="icon-discogs" /> Discogs
-                </a>
+                <div v-if="info.profileUrl || info.socialLinks.length" class="mp-links">
+                  <a
+                    v-if="info.profileUrl"
+                    class="mp-link"
+                    :href="info.profileUrl"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <i class="icon-discogs" /> Discogs
+                  </a>
+                  <a
+                    v-for="social in info.socialLinks"
+                    :key="social.url"
+                    :aria-label="social.name"
+                    class="mp-link mp-link-icon"
+                    :href="social.url"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    :title="social.name"
+                  >
+                    <i :class="social.icon" aria-hidden="true" />
+                  </a>
+                </div>
               </template>
               <div v-else class="mp-state">No additional info.</div>
             </div>
@@ -109,7 +135,21 @@ const { height: viewportHeight, width: viewportWidth } = useWindowSize();
 const { height: wrapHeight, width: wrapWidth, x: wrapLeft, y: wrapTop } = useElementBounding(wrapperRef);
 const { height: panelHeight } = useElementBounding(panelRef);
 
-const image = computed(() => info.value?.image || props.thumbnail || null);
+const imageIndex = ref(0);
+
+const images = computed(() => info.value?.images ?? []);
+
+const image = computed(() => images.value[imageIndex.value] || props.thumbnail || null);
+
+const slideName = ref("slide-next");
+
+// Wrap around so the arrows never dead-end
+function step(delta: number): void {
+  const total = images.value.length;
+  if (!total) return;
+  slideName.value = delta > 0 ? "slide-next" : "slide-prev";
+  imageIndex.value = (imageIndex.value + delta + total) % total;
+}
 
 const initials = computed(() =>
   props.name
@@ -148,6 +188,7 @@ async function loadInfo(): Promise<void> {
   loaded.value = true;
   loading.value = true;
   info.value = await getDiscogsMemberInfo({ discogsId: props.discogsId ?? null, name: props.name });
+  imageIndex.value = 0;
   loading.value = false;
   nextTick(updatePosition);
 }
@@ -226,21 +267,91 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
 }
 
 .member-popover .mp-photo-col {
+  background: #000;
   flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
   width: 150px;
 }
 
+.member-popover .mp-nav {
+  align-items: center;
+  appearance: none;
+  background: rgb(0 0 0 / 55%);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-size: var(--bd-font-size-sm);
+  height: 1.5rem;
+  justify-content: center;
+  opacity: 0;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: opacity var(--bd-transition-fast);
+  width: 1.5rem;
+
+  &:hover {
+    background: rgb(0 0 0 / 80%);
+  }
+
+  &.prev {
+    left: var(--bd-space-1);
+  }
+
+  &.next {
+    right: var(--bd-space-1);
+  }
+}
+
+.member-popover .mp-nav:focus-visible,
+.member-popover .mp-photo-col:hover .mp-nav {
+  opacity: 1;
+}
+
+.member-popover .mp-counter {
+  background: rgb(0 0 0 / 55%);
+  border-radius: var(--bd-radius-sm);
+  bottom: var(--bd-space-1);
+  color: #fff;
+  font-size: var(--bd-font-size-xs);
+  left: 50%;
+  padding: 0 var(--bd-space-1);
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+/* Absolute so a tall or wide photo can't stretch the column and shift the arrows */
 .member-popover .mp-photo {
   display: block;
-  height: 100%;
-  object-fit: cover;
-  width: 100%;
+  inset: 0;
+  object-fit: contain;
+  position: absolute;
+}
+
+.member-popover .slide-next-enter-active,
+.member-popover .slide-next-leave-active,
+.member-popover .slide-prev-enter-active,
+.member-popover .slide-prev-leave-active {
+  transition: transform var(--bd-transition);
+}
+
+.member-popover .slide-next-enter-from,
+.member-popover .slide-prev-leave-to {
+  transform: translateX(100%);
+}
+
+.member-popover .slide-next-leave-to,
+.member-popover .slide-prev-enter-from {
+  transform: translateX(-100%);
 }
 
 .member-popover .mp-photo-placeholder {
   align-items: center;
   display: flex;
-  height: 100%;
   justify-content: center;
 }
 
@@ -334,6 +445,17 @@ useEventListener(window, "resize", () => visible.value && updatePosition());
   font-size: var(--bd-font-size-xs);
   font-style: italic;
   opacity: 0.7;
+}
+
+.member-popover .mp-links {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bd-space-3);
+}
+
+.member-popover .mp-link-icon {
+  font-size: var(--bd-font-size-base);
 }
 
 .member-popover .mp-link {

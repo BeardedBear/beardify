@@ -2,6 +2,7 @@ import ky from "ky";
 
 import { DiscogsArtist, DiscogsArtistReleasesResponse, DiscogsRelease, MemberInfo } from "@/@types/Artist";
 import { normalizeString } from "@/helpers/helper";
+import { socialLinksFromDiscogs } from "@/helpers/socialLinks";
 
 const DISCOGS_API_URL = "https://api.discogs.com/";
 const DISCOGS_TOKEN = import.meta.env.VITE_DISCOGS_TOKEN || "";
@@ -120,9 +121,10 @@ export async function getDiscogsMemberInfo(options: {
       active: group.active,
       name: cleanDiscogsName(group.name),
     })),
-    image: artist.images?.[0]?.uri || artist.images?.[0]?.uri150 || null,
+    images: (artist.images ?? []).map((img) => img.uri || img.uri150).filter(Boolean),
     profileUrl: `https://www.discogs.com/artist/${id}`,
     realName: artist.realname?.trim() || null,
+    socialLinks: socialLinksFromDiscogs(artist.urls),
   };
   memberInfoCache.set(cacheKey, info);
   return info;

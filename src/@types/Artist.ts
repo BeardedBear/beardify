@@ -1,4 +1,5 @@
 import type { MusicBrainzArtist } from "@/helpers/musicbrainz";
+import type { SocialLink } from "@/helpers/socialLinks";
 import type { WikiTimeline } from "@/helpers/wikipediaTimeline";
 
 import { AlbumSimplified } from "./Album";
@@ -155,9 +156,10 @@ export interface DiscogsRelease {
 export interface MemberInfo {
   discogsId: null | number;
   groups: { active: boolean; name: string }[];
-  image: null | string;
+  images: string[];
   profileUrl: null | string;
   realName: null | string;
+  socialLinks: SocialLink[];
 }
 
 export interface RelatedArtists {
