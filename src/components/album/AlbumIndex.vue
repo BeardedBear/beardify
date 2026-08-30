@@ -19,30 +19,22 @@
     <div class="visual">
       <div :class="{ 'is-playing': isPlaying }" class="cover">
         <Cover :images="album.images" :size="coverSize ? coverSize : 'medium'" class="img" @click="handleCoverClick" />
-        <!--
-          On the artwork, not in the text row. As a flex sibling with
-          `flex-shrink: 0`, a two-digit rank ate a third of a 7rem tier cell
-          and left the album name breaking mid-word on two clamped lines.
-        -->
         <div v-if="rank" class="rank-number bd-font-bold">{{ rank }}</div>
         <IconButton
           class="play bd-squircle"
           icon="play"
-          :label="`Play ${album.name}`"
           @click.stop="handlePlayAlbum(album.uri)"
         />
         <IconButton
           v-if="canSave"
           class="button-action add bd-squircle"
           icon="plus"
-          :label="`Add ${album.name} to a collection`"
           @click.stop="dialogStore.open({ type: 'addalbum', albumId: album.id })"
         />
         <IconButton
           v-if="canDelete"
           class="button-action delete bd-squircle"
           icon="trash-2"
-          :label="`Remove ${album.name} from this collection`"
           @click.stop="deleteAlbum(album.id)"
         />
         <div
@@ -220,25 +212,41 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
 
 <style scoped>
 
+/*
+ * Play, add and delete are one family of controls, so they get one box. Left to
+ * size themselves — play on a fixed 2.5rem square, the others on icon size plus
+ * padding — they already differed; on a touch screen IconButton's 44px floor
+ * then overflowed each of them by a different amount. Sizing them here, past
+ * that floor on coarse pointers, keeps all three identical.
+ */
+.play,
+.button-action {
+  --action-size: 2.5rem;
+
+  height: var(--action-size);
+  width: var(--action-size);
+
+  @media (pointer: coarse) {
+    --action-size: 44px;
+  }
+}
+
 .play {
   --play-offset: 1rem;
-  --play-size: 2.5rem;
 
   animation: pop-play-button 0.2s ease both;
   background: var(--bd-primary);
   border: 0;
-  border-radius: var(--play-size);
+  border-radius: var(--bd-radius-full);
   bottom: var(--play-offset);
   color: rgb(255 255 255 / 80%);
   cursor: pointer;
   display: none;
   font-size: var(--bd-font-size-lg);
-  height: var(--play-size);
   left: var(--play-offset);
   line-height: 0;
   position: absolute;
   transition: transform var(--bd-transition-fast);
-  width: var(--play-size);
   will-change: transform;
 
   &:hover {
@@ -367,7 +375,6 @@ async function handlePlayAlbum(albumUri: string): Promise<void> {
   cursor: pointer;
   display: none;
   font-size: var(--bd-font-size-lg);
-  padding: var(--bd-space-2);
   position: absolute;
   transition: transform var(--bd-transition-fast);
   will-change: transform;
