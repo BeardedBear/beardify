@@ -127,14 +127,9 @@ const handleVisibilityChange = async (): Promise<void> => {
       }
     }
 
-    try {
-      const player = usePlayer();
-      await player.getDeviceList();
-      // Resync playback: after a long sleep the SDK state is stale (still "playing")
-      await player.getExternalPlayerState();
-    } catch {
-      // silent
-    }
+    // Reconnects the SDK, refreshes the device list and re-reads playback:
+    // after a long sleep all three are stale (the SDK still says "playing").
+    await usePlayer().resyncPlayback();
   }
 };
 

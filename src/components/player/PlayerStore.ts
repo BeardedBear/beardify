@@ -35,6 +35,14 @@ const VOLUME_LOCK_DURATION_MS = 2000;
  */
 const SEEK_LOCK_DURATION_MS = 2000;
 
+/**
+ * Spotify takes the target device in the query string. These calls used to pass
+ * `{ device_id }` as a JSON body, which the API silently ignores — so once the
+ * tracked device went idle the command hit "no active device" and did nothing.
+ * @param deviceId - Device to target, or undefined to let Spotify pick
+ */
+const deviceQuery = (deviceId?: string): string => (deviceId ? `?device_id=${deviceId}` : "");
+
 export const usePlayer = defineStore("player", {
   actions: {
     async _attemptDeviceActivation(
@@ -132,6 +140,62 @@ export const usePlayer = defineStore("player", {
         return false;
       } catch {
         await sleep(RETRY_DELAY_MS);
+        return false;
+      }
+    },
+
+    /**
+     * Re-activate a device after Spotify has dropped them all — what happens
+     * when the machine sleeps: the SDK socket dies, no device reports
+     * `is_active` any more, and every transport call 404s.
+     * @returns The id of the device now active, or null if none could be revived
+     */
+    async _reviveDevice(): Promise<null | string> {
+      try {
+        const { data } = await instance().get<DevicesResponse>("me/player/devices");
+        this.devices.list = data.devices;
+
+        // Trust Spotify's own active flag first — after a long sleep the tracked
+        // device may be gone for good — then the tracked one, then this browser.
+        const candidate
+          = data.devices.find((device) => device.is_active)
+            ?? data.devices.find((device) => device.id === this.devices.activeDevice?.id)
+            ?? data.devices.find((device) => device.id === this.thisDeviceId);
+
+        if (!candidate?.id) return null;
+        return (await this._performActivationAttempt(candidate.id)) ? candidate.id : null;
+      } catch {
+        return null;
+      }
+    },
+
+    /**
+     * Run a transport command against the active device, waking it first if
+     * Spotify has forgotten it. Without this the play button reports success
+     * optimistically while the request quietly 404s.
+     * @param request - Issues the command, scoped to the given device id
+     * @returns true when the command went through
+     */
+    async _sendPlaybackCommand(request: (deviceId?: string) => Promise<unknown>): Promise<boolean> {
+      try {
+        await request(this.devices.activeDevice?.id || undefined);
+        return true;
+      } catch {
+        const revived = await this._reviveDevice();
+
+        if (revived) {
+          try {
+            await request(revived);
+            return true;
+          } catch {
+            // fall through to the notification below
+          }
+        }
+
+        notification({
+          msg: "No device is available for playback. Pick one from the device list.",
+          type: NotificationType.Error,
+        });
         return false;
       }
     },
@@ -246,9 +310,9 @@ export const usePlayer = defineStore("player", {
       }
     },
 
-    next(): void {
+    async next(): Promise<void> {
       this.playerState.paused = false;
-      instance().post("me/player/next");
+      await this._sendPlaybackCommand((deviceId) => instance().post(`me/player/next${deviceQuery(deviceId)}`));
     },
 
     // Slide-up panel controls
@@ -270,23 +334,55 @@ export const usePlayer = defineStore("player", {
       this.queueOpened = true;
     },
 
-    pause(): void {
+    async pause(): Promise<void> {
+      const wasPaused = this.playerState.paused;
       this.playerState.paused = true;
-      instance().put("me/player/pause", {
-        device_id: this.devices.activeDevice?.id,
-      });
+      const ok = await this._sendPlaybackCommand((deviceId) =>
+        instance().put(`me/player/pause${deviceQuery(deviceId)}`),
+      );
+      if (!ok) this.playerState.paused = wasPaused;
     },
 
-    play(): void {
+    async play(): Promise<void> {
+      const wasPaused = this.playerState.paused;
       this.playerState.paused = false;
-      instance().put("me/player/play", {
-        device_id: this.devices.activeDevice?.id,
-      });
+      const ok = await this._sendPlaybackCommand((deviceId) =>
+        instance().put(`me/player/play${deviceQuery(deviceId)}`),
+      );
+      if (!ok) this.playerState.paused = wasPaused;
     },
 
-    previous(): void {
+    async previous(): Promise<void> {
       this.playerState.paused = false;
-      instance().post("me/player/previous");
+      await this._sendPlaybackCommand((deviceId) => instance().post(`me/player/previous${deviceQuery(deviceId)}`));
+    },
+
+    /**
+     * Bring the player back in line with reality after the tab — or the whole
+     * machine — has been asleep. Timers are frozen while suspended, so the SDK
+     * socket is dead, the device list is stale and `playerState` still describes
+     * whatever was true when the lid closed.
+     */
+    async resyncPlayback(): Promise<void> {
+      try {
+        const player = createSpotifyPlayer();
+        // A null state means the SDK lost its session while we were away.
+        if (!(await player.getCurrentState())) await player.connect();
+      } catch {
+        // The REST refresh below still matters even if the SDK stays down.
+      }
+
+      try {
+        await this.getDeviceList();
+      } catch {
+        // ignore
+      }
+
+      try {
+        await this.getExternalPlayerState();
+      } catch {
+        // ignore
+      }
     },
 
     /**
