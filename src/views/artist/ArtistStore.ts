@@ -178,7 +178,14 @@ export const useArtist = defineStore("artist", {
       this.followStatus = false;
     },
 
-    async getAlbums(url: string) {
+    /**
+     * Page through one Spotify release group, bucketing what comes back by name.
+     * Live records are always split out; `fallback` decides where the rest goes,
+     * which is the only thing separating the "album" and "compilation" groups.
+     * @param url - Spotify albums URL for the group
+     * @param fallback - Bucket for releases that aren't live
+     */
+    async fetchReleasePage(url: string, fallback: "albums" | "albumsCompilation") {
       const { signal } = navigationController;
       try {
         const cleanedUrl = cleanUrl(url);
@@ -186,29 +193,29 @@ export const useArtist = defineStore("artist", {
           = await instance().get<Paging<AlbumSimplified>>(cleanedUrl, { signal });
         if (signal.aborted) return;
 
-        const frenchMarketAlbums = data.items.filter((album) =>
-          album.available_markets.includes("FR"),
-        );
+        const buckets: Record<"albums" | "albumsCompilation" | "albumsLive", AlbumSimplified[]> = {
+          albums: [],
+          albumsCompilation: [],
+          albumsLive: [],
+        };
 
-        const lives: AlbumSimplified[] = [];
-        const compilations: AlbumSimplified[] = [];
-        const albums: AlbumSimplified[] = [];
+        data.items
+          .filter((album) => album.available_markets.includes("FR"))
+          .forEach((album) => {
+            if (useCheckLiveAlbum(album.name)) {
+              buckets.albumsLive.push(album);
+            } else if (fallback === "albums" && useCheckCompilationAlbum(album.name)) {
+              buckets.albumsCompilation.push(album);
+            } else {
+              buckets[fallback].push(album);
+            }
+          });
 
-        frenchMarketAlbums.forEach((album) => {
-          if (useCheckLiveAlbum(album.name)) {
-            lives.push(album);
-          } else if (useCheckCompilationAlbum(album.name)) {
-            compilations.push(album);
-          } else {
-            albums.push(album);
-          }
+        (Object.keys(buckets) as (keyof typeof buckets)[]).forEach((bucket) => {
+          if (buckets[bucket].length) this[bucket] = removeDuplicatesAlbums([...this[bucket], ...buckets[bucket]]);
         });
 
-        this.albums = removeDuplicatesAlbums([...this.albums, ...albums]);
-        this.albumsLive = removeDuplicatesAlbums([...this.albumsLive, ...lives]);
-        this.albumsCompilation = removeDuplicatesAlbums([...this.albumsCompilation, ...compilations]);
-
-        if (data.next) await this.getAlbums(data.next);
+        if (data.next) await this.fetchReleasePage(data.next, fallback);
 
         // Spotify mis-files EPs and live records under the "album" group.
         // Reclassify with external data (no-op until release types arrive).
@@ -216,6 +223,10 @@ export const useArtist = defineStore("artist", {
       } catch {
         // silent fail
       }
+    },
+
+    async getAlbums(url: string) {
+      await this.fetchReleasePage(url, "albums");
     },
 
     async getArtist(artistId: string) {
@@ -252,36 +263,7 @@ export const useArtist = defineStore("artist", {
     },
 
     async getCompilations(url: string) {
-      const { signal } = navigationController;
-      try {
-        const cleanedUrl = cleanUrl(url);
-        const { data }
-          = await instance().get<Paging<AlbumSimplified>>(cleanedUrl, { signal });
-        if (signal.aborted) return;
-
-        const frenchMarketAlbums = data.items.filter((album) =>
-          album.available_markets.includes("FR"),
-        );
-
-        const lives: AlbumSimplified[] = [];
-        const compilations: AlbumSimplified[] = [];
-        frenchMarketAlbums.forEach((album) => {
-          if (useCheckLiveAlbum(album.name)) {
-            lives.push(album);
-          } else {
-            compilations.push(album);
-          }
-        });
-
-        this.albumsCompilation = removeDuplicatesAlbums([...this.albumsCompilation, ...compilations]);
-        this.albumsLive = removeDuplicatesAlbums([...this.albumsLive, ...lives]);
-
-        if (data.next) await this.getCompilations(data.next);
-
-        this.reclassifyReleases();
-      } catch {
-        // silent fail
-      }
+      await this.fetchReleasePage(url, "albumsCompilation");
     },
 
     async getDiscogsArtist(discogsId: string) {

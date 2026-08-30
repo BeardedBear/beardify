@@ -158,15 +158,8 @@ const EXCLUDED_WIKIPEDIA_SECTIONS: string[] = [
   // Members
   "Members",
   "Membres",
-  "Mitglieder",
-  "Miembros",
   "Membri",
-  "Leden",
-  "Membros",
-  "Участники",
-  "メンバー",
   "成員",
-  "멤버",
 
   // External links
   "External links",
@@ -201,7 +194,6 @@ const EXCLUDED_WIKIPEDIA_SECTIONS: string[] = [
   "Notas",
   "Note",
   "Noten",
-  "Notas",
   "Примечания",
   "脚注",
   "注释",
@@ -212,13 +204,11 @@ const EXCLUDED_WIKIPEDIA_SECTIONS: string[] = [
   "Références",
   "Einzelnachweise",
   "Referencias",
-  "Note",
   "Referenties",
   "Referências",
   "Ссылки",
   "出典",
   "参考资料",
-  "각주",
 
   // See also
   "See also",
@@ -235,14 +225,12 @@ const EXCLUDED_WIKIPEDIA_SECTIONS: string[] = [
 
   // Sources
   "Sources",
-  "Sources",
   "Quellen",
   "Fuentes",
   "Fonti",
   "Bronnen",
   "Fontes",
   "Источники",
-  "出典",
   "来源",
   "출처",
 
@@ -278,7 +266,6 @@ const EXCLUDED_WIKIPEDIA_SECTIONS: string[] = [
   "Filmografie",
   "Filmografía",
   "Filmografia",
-  "Filmografie",
   "Фильмография",
   "フィルモグラフィー",
   "影视作品",
@@ -522,41 +509,29 @@ function cleanWikipediaHtml(html: string): string {
   // - <h2><span class="mw-headline" id="...">Title</span></h2>
   // We need to match all variations and remove everything until the next h2 or end
 
-  let result = html;
-
   // Helper function to escape special regex characters in exact section names
   const escapeRegex = (str: string): string => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-  // Remove sections matching exact names
-  for (const section of EXCLUDED_WIKIPEDIA_SECTIONS) {
-    const escapedSection = escapeRegex(section);
-    // Pattern to match h2/h3 containing the section title and everything until the next h2 or end
+  /*
+   * Exact names and regex patterns only differ in how their title source is
+   * built (escape a literal vs. unanchor a pattern) and in what may trail the
+   * title. Both then get the same three heading shapes, so they share one loop.
+   */
+  const titleSources = [
+    ...EXCLUDED_WIKIPEDIA_SECTIONS.map((section) => `${escapeRegex(section)}\\s*`),
+    ...EXCLUDED_WIKIPEDIA_SECTION_PATTERNS.map((pattern) => `${pattern.source.replace(/^\^/, "")}[^<]*`),
+  ];
+
+  let result = html;
+
+  for (const title of titleSources) {
     const patterns = [
       // Match <h2>...<span>Title</span>...</h2> followed by content until next <h2 or end
-      new RegExp(`<h2[^>]*>[^<]*<span[^>]*>[^<]*${escapedSection}[^<]*</span>[^<]*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
+      new RegExp(`<h2[^>]*>[^<]*<span[^>]*>[^<]*${title}[^<]*</span>[^<]*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
       // Match <h2>Title</h2> directly (no span)
-      new RegExp(`<h2[^>]*>\\s*${escapedSection}\\s*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
+      new RegExp(`<h2[^>]*>\\s*${title}</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
       // Match <h3> variants for subsections
-      new RegExp(`<h3[^>]*>[^<]*<span[^>]*>[^<]*${escapedSection}[^<]*</span>[^<]*</h3>[\\s\\S]*?(?=<h[23]|$)`, "gi"),
-    ];
-
-    for (const pattern of patterns) {
-      result = result.replace(pattern, "");
-    }
-  }
-
-  // Remove sections matching regex patterns (for sections with many variants like Discography)
-  for (const sectionPattern of EXCLUDED_WIKIPEDIA_SECTION_PATTERNS) {
-    // Convert the section pattern to a string source without anchors for embedding
-    const patternSource = sectionPattern.source.replace(/^\^/, "");
-
-    const patterns = [
-      // Match <h2>...<span>Title</span>...</h2> followed by content until next <h2 or end
-      new RegExp(`<h2[^>]*>[^<]*<span[^>]*>[^<]*${patternSource}[^<]*</span>[^<]*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
-      // Match <h2>Title</h2> directly (no span)
-      new RegExp(`<h2[^>]*>\\s*${patternSource}[^<]*</h2>[\\s\\S]*?(?=<h2|$)`, "gi"),
-      // Match <h3> variants for subsections
-      new RegExp(`<h3[^>]*>[^<]*<span[^>]*>[^<]*${patternSource}[^<]*</span>[^<]*</h3>[\\s\\S]*?(?=<h[23]|$)`, "gi"),
+      new RegExp(`<h3[^>]*>[^<]*<span[^>]*>[^<]*${title}[^<]*</span>[^<]*</h3>[\\s\\S]*?(?=<h[23]|$)`, "gi"),
     ];
 
     for (const pattern of patterns) {
@@ -726,32 +701,6 @@ function getWikipediaLanguages(
 }
 
 /**
- * Get Wikipedia URL from sitelinks
- * @param sitelinks - The sitelinks object from Wikidata
- * @returns Wikipedia URL or null
- */
-function getWikipediaUrl(
-  sitelinks: Record<string, { badges: string[]; site: string; title: string }> | undefined,
-): null | string {
-  if (!sitelinks) {
-    return null;
-  }
-
-  // Prefer English Wikipedia, then French
-  const enWiki = sitelinks["enwiki"];
-  if (enWiki) {
-    return `https://en.wikipedia.org/wiki/${encodeURIComponent(enWiki.title.replace(/ /g, "_"))}`;
-  }
-
-  const frWiki = sitelinks["frwiki"];
-  if (frWiki) {
-    return `https://fr.wikipedia.org/wiki/${encodeURIComponent(frWiki.title.replace(/ /g, "_"))}`;
-  }
-
-  return null;
-}
-
-/**
  * Whether an entity is a human (P31=Q5) or has no explicit type.
  * Used to drop non-person "has part" values such as albums or logos.
  */
@@ -785,6 +734,9 @@ function normalizeWikidataTime(time: string | undefined): null | string {
  */
 function parseWikidataEntity(entity: WikidataEntity): WikidataArtist {
   const claims = entity.claims || {};
+  // Already sorted English-first, then French, so the preferred link is just
+  // the first of those two that exists — no second preference list needed.
+  const wikipediaLanguages = getWikipediaLanguages(entity.sitelinks);
 
   return {
     description: entity.descriptions?.en?.value || entity.descriptions?.fr?.value || null,
@@ -811,7 +763,7 @@ function parseWikidataEntity(entity: WikidataEntity): WikidataArtist {
     },
     imageUrl: getWikimediaImageUrl(getClaimStringValue(claims, WIKIDATA_PROPERTIES.IMAGE)),
     label: entity.labels?.en?.value || entity.labels?.fr?.value || null,
-    wikipediaLanguages: getWikipediaLanguages(entity.sitelinks),
-    wikipediaUrl: getWikipediaUrl(entity.sitelinks),
+    wikipediaLanguages,
+    wikipediaUrl: wikipediaLanguages.find((lang) => lang.code === "en" || lang.code === "fr")?.url ?? null,
   };
 }

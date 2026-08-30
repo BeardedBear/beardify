@@ -204,11 +204,8 @@ export const usePlayer = defineStore("player", {
     _shouldStopAfterActivation(activated: boolean, desiredId: string): boolean {
       const hasNewRequest = this.lastRequestedDeviceId && this.lastRequestedDeviceId !== desiredId;
 
-      if (activated) {
-        if (this.lastRequestedDeviceId === desiredId) {
-          this.lastRequestedDeviceId = null;
-        }
-        return !hasNewRequest;
+      if (activated && this.lastRequestedDeviceId === desiredId) {
+        this.lastRequestedDeviceId = null;
       }
 
       return !hasNewRequest;

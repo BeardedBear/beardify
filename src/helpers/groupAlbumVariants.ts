@@ -166,13 +166,7 @@ const VARIANT_PATTERNS = [
  * For use in the UI to show cleaner names in the discography
  */
 export function getDisplayName(name: string): string {
-  // Always remove variant suffixes for cleaner display
-  let displayName = name.trim();
-  VARIANT_PATTERNS.forEach((pattern) => {
-    displayName = displayName.replace(pattern, "");
-  });
-
-  displayName = displayName.trim();
+  const displayName = stripVariantPatterns(name);
 
   // If cleaning removed everything, keep the original name
   return displayName.length > 0 ? displayName : name;
@@ -247,23 +241,16 @@ export function groupAlbumVariants(albums: AlbumSimplified[]): AlbumGroup[] {
  * Check if an album is a variant (has variant keywords in name)
  */
 function isVariant(album: AlbumSimplified): boolean {
-  const name = album.name.toLowerCase();
-  return VARIANT_PATTERNS.some((pattern) => pattern.test(name));
+  // No toLowerCase: every VARIANT_PATTERN is already built case-insensitive.
+  return VARIANT_PATTERNS.some((pattern) => pattern.test(album.name));
 }
 
 /**
  * Normalize an album name by removing variant suffixes
  */
 function normalizeAlbumName(name: string): string {
-  let normalized = name.trim();
-
-  // Apply all patterns
-  VARIANT_PATTERNS.forEach((pattern) => {
-    normalized = normalized.replace(pattern, "");
-  });
-
   // Normalize punctuation and capitalization
-  normalized = normalizeDiacritics(normalized.toLowerCase())
+  let normalized = normalizeDiacritics(stripVariantPatterns(name).toLowerCase())
     .replace(/[\u2018\u2019]/g, "'") // Normalize curly apostrophes to straight apostrophe
     .replace(/[\u201C\u201D]/g, "\"") // Normalize curly quotes to straight quotes
     .replace(/\s*\.{2,}\s*/g, "...") // Normalize ellipsis and remove spaces around it
@@ -279,4 +266,17 @@ function normalizeAlbumName(name: string): string {
   if (normalized === "") return name.trim().toLowerCase();
 
   return normalized;
+}
+
+/**
+ * Strip every variant suffix ("Deluxe Edition", "- 2011 Remaster", …) from a
+ * name. Shared by the display and normalization paths so the two can't drift.
+ * @param name - Raw album name
+ */
+function stripVariantPatterns(name: string): string {
+  let stripped = name.trim();
+  VARIANT_PATTERNS.forEach((pattern) => {
+    stripped = stripped.replace(pattern, "");
+  });
+  return stripped.trim();
 }

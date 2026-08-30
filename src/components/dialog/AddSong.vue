@@ -43,7 +43,7 @@ const sidebarStore = useSidebar();
 const filteredPlaylists = computed(() => sidebarStore.playlists.filter((playlist) => playlist.owner.id !== "spotify"));
 
 async function add(songUri: string, playlistId: string): Promise<void> {
-  if (await trackAllreadyExist(`playlists/${playlistId}/items?limit=50`, songUri)) {
+  if (await trackAllreadyExist(`playlists/${playlistId}/items?limit=100`, songUri)) {
     notification({
       msg: "This track already exists in this playlist",
       type: NotificationType.Error,

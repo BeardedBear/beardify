@@ -8,7 +8,7 @@
       -->
       <img
         v-if="currentTrack.album.images.length"
-        :src="currentTrack.album.images[1]?.url ?? currentTrack.album.images[0]?.url"
+        :src="coverUrl(currentTrack.album.images)"
         alt=""
         class="cover"
       />
@@ -48,6 +48,7 @@ import { RouterLink } from "vue-router";
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
+import { coverUrl } from "@/helpers/cover";
 import { transformUriToid } from "@/helpers/helper";
 
 const playerStore = usePlayer();

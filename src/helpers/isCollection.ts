@@ -2,6 +2,16 @@ import { Playlist, SimplifiedPlaylist } from "@/@types/Playlist";
 import { isDescriptionCollection } from "@/helpers/collectionOptions";
 
 /**
+ * Strips the legacy "#Collection" name tag so a collection can be displayed.
+ * Six call sites hand-rolled this replace and two of them handled the lowercase
+ * variant while the others didn't, so the strip lives here instead.
+ * @param name - Raw playlist name
+ */
+export function collectionDisplayName(name: string): string {
+  return name.replace(/#collection\s*/i, "");
+}
+
+/**
  * Returns true if the playlist is a Collection (i.e. its description contains "#collection").
  * Collections are the core Beardify feature that transforms playlists into album collections.
  * @param playlist - Spotify (simplified or full) playlist object

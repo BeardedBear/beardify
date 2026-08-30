@@ -3,7 +3,7 @@
     <div
       :class="{
         active: isCurrentTrack(track.item, currentTrack),
-        deletable: playlist.owner.id === me?.id || playlist.collaborative,
+        deletable: canDelete,
       }"
       class="track"
       @click="
@@ -56,7 +56,7 @@
       <div class="duration bd-font-bold">
         {{ timecode(track.item.duration_ms) }}
       </div>
-      <div v-if="playlist.owner.id === me?.id || playlist.collaborative">
+      <div v-if="canDelete">
         <BdTooltip bare content="Remove this track">
           <BdButton
             aria-label="Remove this track"
@@ -88,9 +88,8 @@ import { date, timecode } from "@/helpers/date";
 import { isCurrentTrack } from "@/helpers/helper";
 import { notification, notifyUndoable } from "@/helpers/notifications";
 import { playSongs } from "@/helpers/play";
-import { addPlaylistItems, removePlaylistItems } from "@/helpers/playlist";
+import { addPlaylistItems, isPlaylistOwner, removePlaylistItems } from "@/helpers/playlist";
 import { isAlbum, isCompilation, isEP, isSingle } from "@/helpers/useCleanAlbums";
-import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 const props = defineProps<{
@@ -101,7 +100,7 @@ const props = defineProps<{
 const { open } = useDialog();
 const playlistStore = usePlaylist();
 const { playlist, removeSong } = playlistStore;
-const { me } = useAuth();
+const canDelete = computed(() => isPlaylistOwner(playlist.owner) || playlist.collaborative);
 const currentTrack = computed(() => usePlayer().playerState?.track_window.current_track);
 
 const getContributorAvatar = (userId: string): string => {

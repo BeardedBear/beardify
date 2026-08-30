@@ -23,7 +23,7 @@
         <IconButton
           class="play bd-squircle"
           icon="play"
-          @click.stop="handlePlayAlbum(album.uri)"
+          @click.stop="playAlbum(album.uri)"
         />
         <IconButton
           v-if="canSave"
@@ -82,7 +82,7 @@ import Cover from "@/components/ui/AlbumCover.vue";
 import IconButton from "@/components/ui/IconButton.vue";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification, notifyUndoable } from "@/helpers/notifications";
-import { playAlbum } from "@/helpers/playAlbum"; // Import the playAlbum helper
+import { playAlbum } from "@/helpers/playAlbum";
 import { addPlaylistItems, removePlaylistItems } from "@/helpers/playlist";
 import router from "@/router";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
@@ -168,19 +168,12 @@ async function deleteAlbum(albumId: string): Promise<void> {
     const uris = tracks.map((track) => track.uri).filter((uri) => present.has(uri));
     const position = uris.length ? (present.get(uris[0]) ?? -1) : -1;
 
-    try {
-      await removePlaylistItems(`${currentRouteId}`, tracks, playlistStore.playlist.snapshot_id);
-      playlistStore.removeTracks(tracks);
-      if (uris.length) {
-        notifyUndoable(`Removed ${props.album.name}`, async () => {
-          await addPlaylistItems(`${currentRouteId}`, uris, position >= 0 ? position : undefined);
-          await playlistStore.reloadTracks(`playlists/${currentRouteId}/items`);
-        });
-      }
-    } catch (error: any) {
-      notification({
-        msg: error.response?.data?.error?.message ?? "Unable to delete this album",
-        type: NotificationType.Error,
+    await removePlaylistItems(`${currentRouteId}`, tracks, playlistStore.playlist.snapshot_id);
+    playlistStore.removeTracks(tracks);
+    if (uris.length) {
+      notifyUndoable(`Removed ${props.album.name}`, async () => {
+        await addPlaylistItems(`${currentRouteId}`, uris, position >= 0 ? position : undefined);
+        await playlistStore.reloadTracks(`playlists/${currentRouteId}/items`);
       });
     }
   } catch (error: any) {
@@ -199,14 +192,6 @@ function handleAlbumClick(): void {
     dialogStore.close();
   }
   router.push(`/album/${props.album.id}`);
-}
-
-/**
- * Wrapper function to call the imported playAlbum helper function
- * This fixes the issue where albums were being added to the playlist twice
- */
-async function handlePlayAlbum(albumUri: string): Promise<void> {
-  await playAlbum(albumUri);
 }
 </script>
 

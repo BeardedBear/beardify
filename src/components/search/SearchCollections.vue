@@ -24,6 +24,7 @@ import { useSearch } from "@/components/search/SearchStore";
 import SearchTitle from "@/components/search/SearchTitle.vue";
 import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
+import { collectionDisplayName } from "@/helpers/isCollection";
 
 /*
  * The one search result that costs nothing: collections and playlists are
@@ -44,13 +45,12 @@ const MAX_HITS = 8;
 
 const matches = computed(() => {
   const needle = searchStore.query.toLowerCase();
-  const strip = (name: string): string => name.replace("#Collection ", "").replace("#collection ", "");
 
   return [
     ...sidebarStore.collections.map((playlist) => ({ ...playlist, isCollection: true })),
     ...sidebarStore.playlists.map((playlist) => ({ ...playlist, isCollection: false })),
   ]
-    .map((playlist) => ({ ...playlist, displayName: strip(playlist.name) }))
+    .map((playlist) => ({ ...playlist, displayName: collectionDisplayName(playlist.name) }))
     .filter((playlist) => playlist.displayName.toLowerCase().includes(needle))
     .slice(0, MAX_HITS);
 });

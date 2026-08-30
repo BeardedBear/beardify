@@ -17,7 +17,30 @@ const SEEK_DELTA_MS = 10_000;
 export function useKeyboardEvents(): void {
   const playerStore = usePlayer();
   const dialogStore = useDialog();
-  const { shift_down, shift_left, shift_right, shift_up } = useMagicKeys();
+  /* One useMagicKeys call: each one wires its own keydown/keyup/blur listeners. */
+  const { shift_down, shift_left, shift_right, shift_up } = useMagicKeys({
+    onEventFired(keyboardEvent) {
+      /*
+       * preventDefault matters: Ctrl+K is the browsers' own address-bar search
+       * shortcut, so without it both fire and the browser wins.
+       */
+      if (keyboardEvent.key.toLowerCase() === "k" && (keyboardEvent.ctrlKey || keyboardEvent.metaKey)) {
+        keyboardEvent.preventDefault();
+        if (keyboardEvent.type === "keydown") dialogStore.open({ type: "search" });
+        return;
+      }
+
+      if (keyboardEvent.key === " " && keyboardEvent.target === document.body) {
+        keyboardEvent.preventDefault();
+        if (playerStore.currentlyPlaying.is_playing) {
+          playerStore.pause();
+        } else {
+          playerStore.play();
+        }
+      }
+    },
+    passive: false,
+  });
   const delta = 2;
 
   /*
@@ -58,29 +81,5 @@ export function useKeyboardEvents(): void {
       } else {
         playerStore.setVolume(currentVolume - delta);
       }
-  });
-
-  useMagicKeys({
-    onEventFired(keyboardEvent) {
-      /*
-       * preventDefault matters: Ctrl+K is the browsers' own address-bar search
-       * shortcut, so without it both fire and the browser wins.
-       */
-      if (keyboardEvent.key.toLowerCase() === "k" && (keyboardEvent.ctrlKey || keyboardEvent.metaKey)) {
-        keyboardEvent.preventDefault();
-        if (keyboardEvent.type === "keydown") dialogStore.open({ type: "search" });
-        return;
-      }
-
-      if (keyboardEvent.key === " " && keyboardEvent.target === document.body) {
-        keyboardEvent.preventDefault();
-        if (playerStore.currentlyPlaying.is_playing) {
-          playerStore.pause();
-        } else {
-          playerStore.play();
-        }
-      }
-    },
-    passive: false,
   });
 }

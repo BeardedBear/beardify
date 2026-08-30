@@ -176,39 +176,10 @@ let lastRequestAt = 0;
  * Ambiguous bases (same base, different types) are excluded to avoid false positives.
  */
 export function buildBaseTitleMap(groups: MusicBrainzReleaseGroup[]): Map<string, string> {
-  const map = new Map<string, string>();
-  const ambiguous = new Set<string>();
-
-  groups.forEach((group) => {
-    const secondary = group["secondary-types"] ?? [];
-    const primary = group["primary-type"];
-    let type: null | string = null;
-
-    if (secondary.includes("Live")) type = "Live";
-    else if (secondary.includes("Compilation") || secondary.includes("Soundtrack")) type = "Compilation";
-    else if (primary === "EP") type = "EP";
-    else if (primary === "Album") type = "Album";
-
-    if (!type) return;
-
-    const baseTitle = group.title.split(/:\s+|\s+[–-]\s+/)[0].trim();
-    const normalizedBase = normalizeString(baseTitle);
-    const normalizedFull = normalizeString(group.title);
-
-    if (normalizedBase === normalizedFull) return;
-
-    if (ambiguous.has(normalizedBase)) return;
-
-    const existing = map.get(normalizedBase);
-    if (existing && existing !== type) {
-      ambiguous.add(normalizedBase);
-      map.delete(normalizedBase);
-    } else if (!existing) {
-      map.set(normalizedBase, type);
-    }
+  return indexReleaseTypes(groups, (group) => {
+    const normalizedBase = normalizeString(group.title.split(/:\s+|\s+[–-]\s+/)[0].trim());
+    return normalizedBase === normalizeString(group.title) ? null : normalizedBase;
   });
-
-  return map;
 }
 
 /**
@@ -222,37 +193,7 @@ export function buildBaseTitleMap(groups: MusicBrainzReleaseGroup[]): Map<string
  * @param groups - Release-groups from {@link getMusicBrainzReleaseGroups}
  */
 export function buildReleaseTypeMap(groups: MusicBrainzReleaseGroup[]): Map<string, string> {
-  const map = new Map<string, string>();
-  const ambiguous = new Set<string>();
-
-  groups.forEach((group) => {
-    const secondary = group["secondary-types"] ?? [];
-    const primary = group["primary-type"];
-    let type: null | string = null;
-
-    // Secondary types win: a live or compilation album keeps primary "Album".
-    if (secondary.includes("Live")) type = "Live";
-    else if (secondary.includes("Compilation") || secondary.includes("Soundtrack")) type = "Compilation";
-    else if (primary === "EP") type = "EP";
-    else if (primary === "Album") type = "Album";
-
-    if (!type) return;
-
-    const key = normalizeString(group.title);
-    if (ambiguous.has(key)) return;
-
-    const existing = map.get(key);
-    if (existing && existing !== type) {
-      // Same normalized title, different types: we can't tell which Spotify release maps to which
-      // MB group, so leave it unclassified to avoid false positives.
-      ambiguous.add(key);
-      map.delete(key);
-    } else if (!existing) {
-      map.set(key, type);
-    }
-  });
-
-  return map;
+  return indexReleaseTypes(groups, (group) => normalizeString(group.title));
 }
 
 /**
@@ -285,38 +226,17 @@ export function extractExternalIds(artistFull: MusicBrainzArtist): {
   discogsId: null | string;
   wikidataId: null | string;
 } {
-  let discogsId: null | string = null;
-  let wikidataId: null | string = null;
-
-  if (artistFull.relations) {
-    // Extract Discogs ID
-    const discogsRelation = artistFull.relations.find(
-      (rel) =>
-        rel.type === "discogs" && rel["target-type"] === "url" && rel.url,
+  const idFromUrlRelation = (type: string, pattern: RegExp): null | string => {
+    const relation = artistFull.relations?.find(
+      (rel) => rel.type === type && rel["target-type"] === "url" && rel.url,
     );
+    return relation?.url?.resource.match(pattern)?.[1] ?? null;
+  };
 
-    if (discogsRelation?.url) {
-      const match = discogsRelation.url.resource.match(/\/artist\/(\d+)/);
-      if (match?.[1]) {
-        discogsId = match[1];
-      }
-    }
-
-    // Extract Wikidata ID
-    const wikidataRelation = artistFull.relations.find(
-      (rel) =>
-        rel.type === "wikidata" && rel["target-type"] === "url" && rel.url,
-    );
-
-    if (wikidataRelation?.url) {
-      const match = wikidataRelation.url.resource.match(/\/wiki\/(Q\d+)/);
-      if (match?.[1]) {
-        wikidataId = match[1];
-      }
-    }
-  }
-
-  return { discogsId, wikidataId };
+  return {
+    discogsId: idFromUrlRelation("discogs", /\/artist\/(\d+)/),
+    wikidataId: idFromUrlRelation("wikidata", /\/wiki\/(Q\d+)/),
+  };
 }
 
 /**
@@ -425,6 +345,23 @@ export async function searchMusicBrainzBySpotifyId(
 }
 
 /**
+ * Classify a release-group as "Live" | "Compilation" | "EP" | "Album".
+ * Secondary types win: a live or compilation album keeps primary "Album".
+ * @param group - A MusicBrainz release-group
+ * @returns The type, or null when the group is none of the four
+ */
+function classifyReleaseGroup(group: MusicBrainzReleaseGroup): null | string {
+  const secondary = group["secondary-types"] ?? [];
+  const primary = group["primary-type"];
+
+  if (secondary.includes("Live")) return "Live";
+  if (secondary.includes("Compilation") || secondary.includes("Soundtrack")) return "Compilation";
+  if (primary === "EP") return "EP";
+  if (primary === "Album") return "Album";
+  return null;
+}
+
+/**
  * Run a MusicBrainz request once the queue reaches it and the spacing has elapsed.
  * @param task - The request to run
  * @param signal - Skips the slot entirely when the caller has already moved on
@@ -487,6 +424,39 @@ async function fetchFromMusicBrainz<T>(
   }
 
   return null;
+}
+
+/**
+ * Index release-groups by a caller-chosen key, dropping keys that two groups
+ * classify differently: we can't tell which Spotify release maps to which MB
+ * group, so an ambiguous key is left unclassified rather than guessed at.
+ * @param groups - Release-groups from {@link getMusicBrainzReleaseGroups}
+ * @param keyOf - Key for a group, or null to skip it
+ */
+function indexReleaseTypes(
+  groups: MusicBrainzReleaseGroup[],
+  keyOf: (group: MusicBrainzReleaseGroup) => null | string,
+): Map<string, string> {
+  const map = new Map<string, string>();
+  const ambiguous = new Set<string>();
+
+  groups.forEach((group) => {
+    const type = classifyReleaseGroup(group);
+    if (!type) return;
+
+    const key = keyOf(group);
+    if (!key || ambiguous.has(key)) return;
+
+    const existing = map.get(key);
+    if (existing && existing !== type) {
+      ambiguous.add(key);
+      map.delete(key);
+    } else if (!existing) {
+      map.set(key, type);
+    }
+  });
+
+  return map;
 }
 
 /**

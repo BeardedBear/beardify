@@ -21,10 +21,21 @@ export async function addPlaylistItems(playlistId: string, uris: string[], posit
 }
 
 /**
- * Returns true if the current authenticated user owns the given playlist.
- * @param owner - The public user object from the playlist's owner field
+ * Check whether an album is already present in a playlist.
+ * @param url - Spotify API URL for the playlist's tracks (relative or absolute)
+ * @param albumId - Spotify album ID to search for
  */
-export function isPlaylistOwner(owner: PublicUser): boolean {
+export async function albumAllreadyExist(url: string, albumId: string): Promise<boolean> {
+  return playlistHas(url, (e) => e.item.album.id === albumId);
+}
+
+/**
+ * Returns true if the current authenticated user owns the given playlist.
+ * Takes just the id: a simplified playlist's owner carries fewer fields than a
+ * full `PublicUser`, and only the id is ever compared.
+ * @param owner - The playlist's owner field
+ */
+export function isPlaylistOwner(owner: Pick<PublicUser, "id">): boolean {
   return owner.id === useAuth().me?.id;
 }
 
@@ -44,60 +55,32 @@ export async function removePlaylistItems(
   });
 }
 
-let tempAlbums: PlaylistTrack[] = [];
 /**
- * Check whether an album is already present in a playlist by paginating through all its tracks.
- * Accumulates tracks across pages via recursion; resets the internal buffer on the first call.
- * @param url - Spotify API URL for the playlist's tracks (relative or absolute)
- * @param albumId - Spotify album ID to search for
- * @param isFirstCall - Internal flag; leave as true on initial call
- * @returns true if the album exists in the playlist, false otherwise
- */
-export async function albumAllreadyExist(
-  url: string,
-  albumId: string,
-  isFirstCall = true,
-): Promise<boolean | undefined> {
-  // Reset the tempAlbums array at the first call
-  if (isFirstCall) {
-    tempAlbums = [];
-  }
-
-  // Clean the URL first to avoid duplicate prefixes
-  const cleanedUrl = cleanUrl(url);
-
-  const { data } = await instance().get<Paging<PlaylistTrack>>(cleanedUrl);
-  tempAlbums = tempAlbums.concat(data.items);
-  return data.next
-    ? albumAllreadyExist(cleanUrl(data.next), albumId, false)
-    : tempAlbums.some((e) => e.item.album.id === albumId);
-}
-
-let tempTracks: PlaylistTrack[] = [];
-/**
- * Check whether a track URI is already present in a playlist by paginating through all its tracks.
- * Accumulates tracks across pages via recursion; resets the internal buffer on the first call.
+ * Check whether a track URI is already present in a playlist.
  * @param url - Spotify API URL for the playlist's tracks (relative or absolute)
  * @param trackId - Spotify track URI to search for
- * @param isFirstCall - Internal flag; leave as true on initial call
- * @returns true if the track exists in the playlist, false otherwise
  */
-export async function trackAllreadyExist(
-  url: string,
-  trackId: string,
-  isFirstCall = true,
-): Promise<boolean | undefined> {
-  // Reset the tempTracks array at the first call
-  if (isFirstCall) {
-    tempTracks = [];
+export async function trackAllreadyExist(url: string, trackId: string): Promise<boolean> {
+  return playlistHas(url, (e) => e.item.uri === trackId);
+}
+
+/**
+ * Walks a playlist page by page and stops at the first item that matches.
+ *
+ * The two callers used to buffer every page before testing, so adding to a
+ * 3000-track collection paged through the whole thing even when the match sat
+ * on page 1. Testing per page short-circuits instead.
+ * @param url - Spotify API URL for the playlist's tracks (relative or absolute)
+ * @param match - Predicate run on each track
+ */
+async function playlistHas(url: string, match: (track: PlaylistTrack) => boolean): Promise<boolean> {
+  let next: null | string = cleanUrl(url);
+
+  while (next) {
+    const { data }: { data: Paging<PlaylistTrack> } = await instance().get<Paging<PlaylistTrack>>(next);
+    if (data.items.some(match)) return true;
+    next = data.next ? cleanUrl(data.next) : null;
   }
 
-  // Clean the URL first to avoid duplicate prefixes
-  const cleanedUrl = cleanUrl(url);
-
-  const { data } = await instance().get<Paging<PlaylistTrack>>(cleanedUrl);
-  tempTracks = tempTracks.concat(data.items);
-  return data.next
-    ? trackAllreadyExist(cleanUrl(data.next), trackId, false)
-    : tempTracks.some((e) => e.item.uri === trackId);
+  return false;
 }

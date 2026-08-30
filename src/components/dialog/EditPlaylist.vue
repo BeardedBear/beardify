@@ -87,7 +87,7 @@ import { parseCollectionRankingMode, stripCollectionTags } from "@/helpers/colle
 import { isACollection } from "@/helpers/isCollection";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification } from "@/helpers/notifications";
-import { useAuth } from "@/views/auth/AuthStore";
+import { isPlaylistOwner } from "@/helpers/playlist";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
 import ShareContent from "../ui/ShareContent.vue";
@@ -128,7 +128,7 @@ watchEffect(async () => {
   if (dialogStore.show && dialogStore.type === "editPlaylist") {
     try {
       const { data } = await instance().get<Playlist>(`playlists/${dialogStore.playlistId}`);
-      isEditable.value = data.owner.id === useAuth().me?.id;
+      isEditable.value = isPlaylistOwner(data.owner);
       isCollection.value = isACollection(data);
       values.name = data.name;
       const cleanDescription = stripCollectionTags(data.description);

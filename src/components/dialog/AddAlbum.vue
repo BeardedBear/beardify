@@ -28,7 +28,7 @@
         <span class="album">
           <span class="album-name">
             <PlaylistIcon :playlist="playlist" />
-            {{ playlist.name.replace("#Collection ", "") }}
+            {{ collectionDisplayName(playlist.name) }}
           </span>
           <BdLoader v-if="pendingId === playlist.id" size="x-small" />
           <VisibilityIcon v-else :playlist="playlist" />
@@ -51,13 +51,12 @@ import Dialog from "@/components/dialog/DialogWrap.vue";
 import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
 import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
+import { collectionDisplayName } from "@/helpers/isCollection";
 import { notification } from "@/helpers/notifications";
-import { albumAllreadyExist } from "@/helpers/playlist";
-import { useAuth } from "@/views/auth/AuthStore";
+import { albumAllreadyExist, isPlaylistOwner } from "@/helpers/playlist";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
-const authStore = useAuth();
 
 /* Below this many collections a filter is more chrome than help. */
 const SEARCH_THRESHOLD = 8;
@@ -68,7 +67,7 @@ const pendingId = ref<null | string>(null);
 
 const collections = computed(() =>
   sidebarStore.collections.filter(
-    (playlist) => playlist.collaborative || playlist.owner.id === authStore.me?.id,
+    (playlist) => playlist.collaborative || isPlaylistOwner(playlist.owner),
   ),
 );
 
@@ -79,13 +78,13 @@ const filtered = computed(() => {
 
 async function add(albumId: string, playlistId: string): Promise<void> {
   /*
-   * albumAllreadyExist paginates the whole target collection, which takes
-   * seconds on a big one. Without this the row looked inert and got clicked
-   * again.
+   * albumAllreadyExist pages through the target collection until it finds a
+   * match, which still takes a while on a big one when there is none. Without
+   * this the row looked inert and got clicked again.
    */
   pendingId.value = playlistId;
   try {
-    if (await albumAllreadyExist(`playlists/${playlistId}/items?limit=50`, albumId)) {
+    if (await albumAllreadyExist(`playlists/${playlistId}/items?limit=100`, albumId)) {
       notification({
         msg: "This album is already in this collection",
         type: NotificationType.Error,
