@@ -35,10 +35,15 @@ const forceMobile = props.forceMobile ?? false;
   }
 }
 
+/*
+ * Pas de `text-align: right` ici : le flex fait déjà le placement, et
+ * l'alignement héritait jusque dans le panneau de la file d'attente, où chaque
+ * ligne se calait à droite dans une boîte à la largeur de son texte le plus
+ * long — rendu en dents de scie.
+ */
 .device {
   align-items: center;
   display: flex;
   gap: var(--bd-space-4);
-  text-align: right;
 }
 </style>
