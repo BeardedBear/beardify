@@ -267,7 +267,12 @@ export const usePlayer = defineStore("player", {
         this.devices.activeDevice = data.device;
       }
 
-      if (!data.item) return;
+      if (!data?.item) {
+        // No item = nothing is playing. Without this, a local SDK state frozen by a
+        // long sleep keeps the UI on "playing" forever.
+        this.playerState.paused = true;
+        return;
+      }
       const { item } = data;
       const current = this.playerState.track_window.current_track;
       const playerState = this.playerState;
@@ -547,6 +552,11 @@ export const usePlayer = defineStore("player", {
     },
 
     syncPlayerState(state: Spotify.PlaybackState): void {
+      // The local SDK keeps emitting its own state even when playback lives on another
+      // device — including a state frozen by a long machine sleep. Trust it only while
+      // this device is the active one; `me/player` is the truth otherwise.
+      const activeId = this.devices.activeDevice?.id;
+      if (this.thisDeviceId && activeId && activeId !== this.thisDeviceId) return;
       this.playerState = state;
     },
 
