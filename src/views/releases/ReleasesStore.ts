@@ -158,21 +158,58 @@ export const useReleases = defineStore("releases", {
   },
 
   getters: {
-    /** How many of the visible releases are ticked off. A getter so both sidebars share one pass. */
+    /**
+     * How many of the releases under the current genre filter are ticked off.
+     *
+     * Counted over `genreFiltered`, not `visibleReleases`: the latter drops every
+     * ticked row when "Hide listened" is on, so this used to read 0 for as long
+     * as the toggle was set — the one progress number on the page, zeroing out
+     * at the exact moment progress was being made, with the checkbox that caused
+     * it rendered one line above.
+     */
     checkedCount(): number {
-      return this.visibleReleases.filter((release) => this.checks[release.key]).length;
+      return this.genreFiltered.filter((release) => this.checks[release.key]).length;
     },
 
-    /** Filter terms present in the feed, most common first — the sidebar list. */
-    genreList(state): { count: number; name: string }[] {
+    /**
+     * The feed with the genre gate applied and nothing else.
+     *
+     * Split out because it is the honest denominator for progress: how much
+     * there is to get through in what you are currently looking at. Counting
+     * against `visibleReleases` cannot say that — it has already removed the
+     * rows being counted.
+     */
+    genreFiltered(state): Release[] {
+      if (!state.genres.length) return state.releases;
+
+      // Any of them, not all: two genres selected reads as "either".
+      return state.releases.filter((release) => state.genres.some((genre) => release.terms.includes(genre)));
+    },
+
+    /**
+     * Filter terms present in the feed, most common first — the sidebar list.
+     *
+     * Counted over `listenFiltered` rather than the whole feed, so a row saying
+     * 23 can actually deliver 23 rows. Not over `visibleReleases`: a facet count
+     * has to answer "how many if I pick this", which the genre gate would have
+     * already answered for it.
+     */
+    genreList(): { count: number; name: string }[] {
       const counts = new Map<string, number>();
-      for (const release of state.releases) {
+      for (const release of this.listenFiltered) {
         for (const term of release.terms) counts.set(term, (counts.get(term) ?? 0) + 1);
       }
 
       return [...counts.entries()]
         .map(([name, count]) => ({ count, name }))
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+    },
+
+    /** The feed with the listened gate applied and nothing else — what the facet counts are measured on. */
+    listenFiltered(state): Release[] {
+      if (!state.hideChecked) return state.releases;
+
+      return state.releases.filter((release) => !state.checks[release.key]);
     },
 
     /**
@@ -190,22 +227,11 @@ export const useReleases = defineStore("releases", {
       return groupByMonth(this.visibleReleases, this.checks, this.sortRating);
     },
 
-    /*
-     * The feed as the list renders it.
-     *
-     * No genre gate here any more: every source is now selected by genre in its own
-     * query: the feed is fetched with a genre overlap filter, so a second pass here
-     * could only ever return true. The gate that used to live here existed to hold
-     * back Spotify's editorial listings, which took no genre argument and are gone.
-     */
+    /** The feed as the list renders it: both gates, composed rather than re-tested. */
     visibleReleases(state): Release[] {
-      return state.releases.filter((release) => {
-        // Any of them, not all: two genres selected reads as "either", the way the
-        // server-side overlap the tracked list used to run did.
-        if (state.genres.length && !state.genres.some((genre) => release.terms.includes(genre))) return false;
-        if (state.hideChecked && state.checks[release.key]) return false;
-        return true;
-      });
+      if (!state.hideChecked) return this.genreFiltered;
+
+      return this.genreFiltered.filter((release) => !state.checks[release.key]);
     },
   },
 
