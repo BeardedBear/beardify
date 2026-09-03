@@ -6,7 +6,7 @@
         v-for="artist in searchStore.artists"
         :key="artist.id"
         :class="{
-          'exact-search': exactArtistSearched === artist.name.toLowerCase(),
+          'exact-search': searchStore.exactArtist === artist.name.toLowerCase(),
         }"
         :to="`/artist/${artist.id}`"
         class="artist bd-font-bold"
@@ -29,7 +29,6 @@
 
 <script lang="ts" setup>
 import { BdLoader } from "bearded-ui";
-import { computed, ComputedRef } from "vue";
 import { RouterLink } from "vue-router";
 
 import { useSearch } from "@/components/search/SearchStore";
@@ -37,18 +36,6 @@ import SearchTitle from "@/components/search/SearchTitle.vue";
 import Cover from "@/components/ui/AlbumCover.vue";
 
 const searchStore = useSearch();
-/*
- * The `artist:X  &  album:Y` protocol ReleaseIndex and MemberPopover emit.
- *
- * Optional chaining is the fix for a real crash: a query containing "  &  "
- * but no colon — "opeth  &  damnation", easily typed by someone half-recalling
- * the syntax — made `split(":")[1]` undefined and threw a TypeError during
- * render, taking the whole modal down.
- */
-const exactArtistSearched: ComputedRef<string | undefined> = computed(() => {
-  if (!searchStore.query.includes("  &  ")) return undefined;
-  return searchStore.query.split(":")[1]?.split("&").shift()?.toLowerCase().trim();
-});
 </script>
 
 <style scoped>

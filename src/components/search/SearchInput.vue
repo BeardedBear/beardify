@@ -12,7 +12,7 @@
       v-model="query"
       aria-label="Search Spotify"
       autofocus
-      placeholder="Search — or artist:name  &amp;  album:title"
+      placeholder="Search"
       size="big"
       type="search"
       @input="searchStore.updateQuery(query)"
