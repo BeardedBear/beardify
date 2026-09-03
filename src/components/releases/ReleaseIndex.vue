@@ -11,11 +11,24 @@
       <Circle v-else :size="16" />
     </button>
 
-    <span class="cover-wrap">
+    <span
+      class="cover-wrap"
+      @mouseenter="lookupReleaseAlbum(release)"
+      @mouseleave="cancelReleaseAlbumLookup()"
+    >
       <Cover :images="release.images" class="cover" size="small" />
       <span v-if="isSearching" class="cover-loading" aria-live="polite" aria-label="Searching">
         <BdLoader size="xx-small" />
       </span>
+      <button
+        v-else-if="playableUri"
+        :aria-label="`Play ${release.name}`"
+        class="cover-play"
+        type="button"
+        @click="playAlbum(playableUri)"
+      >
+        <Play :size="14" />
+      </button>
     </span>
 
     <div class="names">
@@ -67,13 +80,15 @@
 </template>
 
 <script lang="ts" setup>
-import { Check, Circle } from "@lucide/vue";
+import { Check, Circle, Play } from "@lucide/vue";
 import { BdLoader, BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 
 import { Release } from "@/@types/Releases";
 import { useSearch } from "@/components/search/SearchStore";
 import Cover from "@/components/ui/AlbumCover.vue";
+import { playAlbum } from "@/helpers/playAlbum";
+import { cancelReleaseAlbumLookup, lookupReleaseAlbum, releaseAlbum } from "@/helpers/releaseAlbum";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 /** The scrapers file up to a dozen micro-genres per release; past three the row is a wall of tags. */
@@ -87,7 +102,16 @@ const releasesStore = useReleases();
 const searchStore = useSearch();
 
 const isChecked = computed(() => Boolean(releasesStore.checks[props.release.key]));
-const isSearching = computed(() => searchStore.activeAlbumKey === props.release.key);
+/*
+ * One loader for two waits, because from the row's side they are the same wait:
+ * the modal search a click starts, and the hover lookup that decides whether
+ * this cover can be played straight from here.
+ */
+const isSearching = computed(
+  () => searchStore.activeAlbumKey === props.release.key || Boolean(releaseAlbum(props.release.key)?.pending),
+);
+/** Set only once the lookup has answered with an album this account can play. */
+const playableUri = computed(() => releaseAlbum(props.release.key)?.uri ?? undefined);
 // Sliced here, not in the template, so an unrelated re-render does not reallocate it.
 const shownGenres = computed(() => props.release.genres.slice(0, GENRES_SHOWN));
 </script>
@@ -159,6 +183,47 @@ const shownGenres = computed(() => props.release.genres.slice(0, GENRES_SHOWN));
 
   &:has(.cover-loading) .cover {
     opacity: 0.4;
+  }
+}
+
+/*
+ * The cover becomes the control rather than growing a neighbour: at 2.5rem
+ * there is no room beside it, and the row's four columns are already spoken
+ * for. Its own translucent ground is what dims the artwork underneath — one
+ * mechanism, not a dim plus an overlay.
+ *
+ * Hidden until the row is hovered, because the answer is cached: without the
+ * gate, every cover the pointer has ever crossed would keep a play button lit
+ * on a row nobody is pointing at.
+ */
+.cover-play {
+  align-items: center;
+  background-color: color-mix(in oklab, var(--bd-bg-darker) 55%, transparent);
+  border: none;
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-font-color-light);
+  cursor: pointer;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  opacity: 0;
+  padding: 0;
+  position: absolute;
+  transition: opacity var(--bd-transition-fast);
+
+  &:hover {
+    color: var(--bd-primary-light);
+  }
+}
+
+.cover-play:focus-visible,
+.release:hover .cover-play {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cover-play {
+    transition: none;
   }
 }
 
