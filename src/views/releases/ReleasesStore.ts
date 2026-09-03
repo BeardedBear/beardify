@@ -4,7 +4,7 @@ import { defineStore } from "pinia";
 import { MonthGroup, Release, ReleasesPage } from "@/@types/Releases";
 import { getRemoteChecks, putRemoteChecks } from "@/helpers/releaseChecks";
 import { getFeedReleases } from "@/helpers/releaseFeed";
-import { groupByMonth, mergeReleases, pruneChecks, toReleaseFromFeed } from "@/helpers/releases";
+import { groupByMonth, mergeReleases, monthLabel, pruneChecks, toReleaseFromFeed } from "@/helpers/releases";
 import { useCheckLiveAlbum, useCheckReissueAlbum } from "@/helpers/useCleanAlbums";
 import { useAuth } from "@/views/auth/AuthStore";
 
@@ -230,13 +230,38 @@ export const useReleases = defineStore("releases", {
      * all read "exact date unknown"; a heading per group saying the same thing
      * is noise.
      *
-     * Read by both the list and the side rail.
      * A getter rather than a computed in each: the grouping also sorts every
      * month, and the rail exists precisely to jump between the headings the
      * list renders — two passes could disagree about what months there are.
      */
     monthGroups(): MonthGroup[] {
       return groupByMonth(this.visibleReleases, this.checks, this.sortRating);
+    },
+
+    /**
+     * Every month the feed covers, with how many releases each one still shows.
+     *
+     * Deliberately not `monthGroups`: that holds only the months with something
+     * left in them, so driving the rail from it deletes a row the moment a
+     * filter empties its month — the navigation rearranges itself exactly when
+     * it is being used to navigate. The months a feed covers are a property of
+     * the feed, not of the current filter, so the rail keeps them all and lets
+     * the empty ones go inert.
+     */
+    monthNav(state): { count: number; label: string }[] {
+      const shown = new Map(this.monthGroups.map((group) => [group.label, group.releases.length]));
+
+      /*
+       * Keyed by timestamp rather than by adjacency, so the order is
+       * first-appearance rather than a bet on the feed arriving sorted, and two
+       * distinct months can never collapse into one row.
+       */
+      const months = new Map<number, string>();
+      for (const release of state.releases) {
+        if (!months.has(release.timestamp)) months.set(release.timestamp, monthLabel(release.timestamp));
+      }
+
+      return [...months.values()].map((label) => ({ count: shown.get(label) ?? 0, label }));
     },
 
     /** The feed as the list renders it: both gates, composed rather than re-tested. */

@@ -21,14 +21,15 @@
       Two controls, so a row cannot be one: the label goes to the month's first
       release, the arrow to its last.
     -->
-    <div v-for="month in releasesStore.monthGroups" :key="month.label" class="jump-row">
-      <button class="jump" type="button" @click="scrollToMonth(month.label, 'start')">
+    <div v-for="month in releasesStore.monthNav" :key="month.label" class="jump-row">
+      <button :disabled="!month.count" class="jump" type="button" @click="scrollToMonth(month.label, 'start')">
         <span class="jump-label">{{ month.label }}</span>
-        <span class="jump-count">{{ month.releases.length }}</span>
+        <span class="jump-count">{{ month.count }}</span>
       </button>
       <BdTooltip :content="`End of ${month.label}`" bare>
         <button
           :aria-label="`Jump to the end of ${month.label}`"
+          :disabled="!month.count"
           class="jump-end"
           type="button"
           @click="scrollToMonth(month.label, 'end')"
@@ -425,6 +426,17 @@ watch(query, () => {
   }
 }
 
+/*
+ * A month the current filter emptied. It stays in place, dimmed and inert,
+ * because a navigation list that drops rows rearranges itself under the pointer
+ * — and the 0 beside it is itself the answer to "anything in August?".
+ */
+.jump:disabled {
+  background-color: transparent;
+  cursor: default;
+  opacity: 0.35;
+}
+
 .jump-edge {
   color: var(--bd-font-color-dark);
   justify-content: flex-start;
@@ -475,8 +487,15 @@ watch(query, () => {
   }
 }
 
+.jump-end:disabled {
+  background-color: transparent;
+  color: var(--bd-font-color-dark);
+  cursor: default;
+  opacity: 0.35;
+}
+
 .jump-end:focus-visible,
-.jump-row:hover .jump-end {
+.jump-row:hover .jump-end:not(:disabled) {
   opacity: 1;
 }
 
