@@ -1,31 +1,25 @@
 <template>
-  <div class="title bd-font-bold">Tracking</div>
-  <div class="tags">
-    <span v-for="tag in releasesStore.tags" :key="tag" class="tag">{{ tag }}</span>
-    <span v-if="!releasesStore.tags.length" class="empty">Nothing tracked — the whole feed.</span>
-  </div>
-  <BdButton class="edit" size="small" @click="dialogStore.open({ type: 'trackedGenres' })">
-    <SlidersHorizontal :size="14" />
-    Edit genres
-  </BdButton>
-
   <div class="filters">
     <BdCheckbox v-model="releasesStore.hideChecked" full-width label="Hide listened" />
   </div>
 
   <div class="counts">{{ releasesStore.visibleReleases.length }} shown · {{ releasesStore.checkedCount }} listened</div>
 
-  <div class="title bd-font-bold">Genres</div>
+  <div class="title bd-font-bold">
+    <span>Genres</span>
+    <button v-if="releasesStore.genres.length" class="clear" type="button" @click="releasesStore.genres = []">
+      Clear
+    </button>
+  </div>
   <BdInput v-model="query" class="genre-search" placeholder="Filter genres" size="small" type="search" />
   <div class="genres">
     <button
       v-for="genre in shownGenres"
       :key="genre.name"
-      :aria-pressed="releasesStore.genre === genre.name"
-      :class="{ selected: releasesStore.genre === genre.name }"
+      :aria-pressed="isSelected(genre.name)"
       class="genre"
       type="button"
-      @click="releasesStore.setGenre(genre.name)"
+      @click="releasesStore.toggleGenre(genre.name)"
     >
       <span class="name">{{ genre.name }}</span>
       <span class="count">{{ genre.count }}</span>
@@ -36,11 +30,9 @@
 </template>
 
 <script lang="ts" setup>
-import { SlidersHorizontal } from "@lucide/vue";
-import { BdButton, BdCheckbox, BdInput } from "bearded-ui";
+import { BdCheckbox, BdInput } from "bearded-ui";
 import { computed, ref } from "vue";
 
-import { useDialog } from "@/components/dialog/DialogStore";
 import { normalizeTag } from "@/helpers/releases";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
@@ -51,23 +43,34 @@ import { useReleases } from "@/views/releases/ReleasesStore";
  */
 const GENRES_STEP = 12;
 const releasesStore = useReleases();
-const dialogStore = useDialog();
 
 const query = ref("");
 const visible = ref(GENRES_STEP);
 
 /* The query narrows the frequency-sorted list; the cap keeps it from becoming a wall of options. */
 const matches = computed(() => {
-  // Normalized the way a tracked genre is, so "black  metal" matches here too.
+  // Normalized the way a genre is stored, so "black  metal" matches here too.
   const needle = normalizeTag(query.value);
   if (!needle) return releasesStore.genreList;
 
   return releasesStore.genreList.filter((genre) => genre.name.toLowerCase().includes(needle));
 });
 
-const shownGenres = computed(() => matches.value.slice(0, visible.value));
+/*
+ * Selected genres are pinned above the rest and escape both the search and the cap:
+ * a filter the user cannot see is a filter they cannot lift, and picking a rare genre
+ * then typing anything else would push it out of a twelve-row list.
+ */
+const picked = computed(() => releasesStore.genreList.filter((genre) => isSelected(genre.name)));
+const rest = computed(() => matches.value.filter((genre) => !isSelected(genre.name)));
 
-const hasMore = computed(() => matches.value.length > visible.value);
+const shownGenres = computed(() => [...picked.value, ...rest.value.slice(0, visible.value)]);
+
+const hasMore = computed(() => rest.value.length > visible.value);
+
+function isSelected(name: string): boolean {
+  return releasesStore.genres.includes(name);
+}
 
 function showMore(): void {
   visible.value += GENRES_STEP;
@@ -76,37 +79,26 @@ function showMore(): void {
 
 <style scoped>
 .title {
+  align-items: baseline;
   background-color: var(--bd-bg-darker);
   color: var(--bd-primary);
+  display: flex;
+  justify-content: space-between;
   padding: var(--bd-space-4) var(--bd-space-2) var(--bd-space-2);
   text-transform: uppercase;
 }
 
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--bd-space-1);
-  padding: 0 var(--bd-space-2);
-}
-
-.tag {
-  background-color: var(--bd-bg-lighter);
-  border-radius: var(--bd-radius-full);
+.clear {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
   font-size: var(--bd-font-size-xs);
-  max-width: 100%;
-  overflow: hidden;
-  padding: 0.15rem var(--bd-space-2);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+  padding: 0;
 
-.empty {
-  color: var(--bd-font-color-dark);
-  font-size: var(--bd-font-size-xs);
-}
-
-.edit {
-  margin: var(--bd-space-3) var(--bd-space-2) 0;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .filters {

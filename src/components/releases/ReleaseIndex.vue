@@ -39,11 +39,11 @@
         bare
       >
         <button
-          :aria-pressed="releasesStore.genre === genre"
-          :class="{ 'is-active': releasesStore.genre === genre }"
+          :aria-pressed="releasesStore.genres.includes(genre)"
+          :class="{ 'is-active': releasesStore.genres.includes(genre) }"
           class="genre"
           type="button"
-          @click="releasesStore.setGenre(genre)"
+          @click="releasesStore.toggleGenre(genre)"
         >
           {{ genre }}
         </button>

@@ -14,7 +14,7 @@
   <BdEmptyState
     v-else-if="!releasesStore.releases.length"
     action-label="Refresh"
-    message="No release matched the tracked genres. Widen them, or try again later."
+    message="The feed came back empty. Try again in a moment."
     title="No releases yet"
     @action="releasesStore.getReleases(true)"
   >
@@ -97,7 +97,7 @@ const fetchedLabel = computed(() =>
 );
 
 watch(
-  () => releasesStore.genre,
+  () => releasesStore.genres,
   () => scrollRef.value?.scrollTo(0, 0),
 );
 

@@ -11,7 +11,6 @@
   <ArtistOptionsDialog v-else-if="dialogStore.type === 'artistOptions'" />
   <SearchDialog v-else-if="dialogStore.type === 'search'" />
   <ShareCollectionDialog v-else-if="dialogStore.type === 'shareCollection'" />
-  <TrackedGenresDialog v-else-if="dialogStore.type === 'trackedGenres'" />
 </template>
 
 <script lang="ts" setup>
@@ -27,7 +26,6 @@ import PlaylistOptionsDialog from "@/components/dialog/PlaylistOptionsDialog.vue
 import ReleaseFiltersDialog from "@/components/dialog/ReleaseFiltersDialog.vue";
 import SearchDialog from "@/components/dialog/SearchDialog.vue";
 import ShareCollectionDialog from "@/components/dialog/ShareCollectionDialog.vue";
-import TrackedGenresDialog from "@/components/dialog/TrackedGenresDialog.vue";
 import WidevineWarning from "@/components/dialog/WidevineWarning.vue";
 
 const dialogStore = useDialog();

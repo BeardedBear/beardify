@@ -10,7 +10,6 @@ import {
   pruneChecks,
   releaseKey,
   releaseTimestamp,
-  suggestGenres,
   toReleaseFromFeed,
 } from "@/helpers/releases";
 
@@ -93,40 +92,6 @@ describe("normalizeTag", () => {
 
   it("returns empty for input with nothing usable left", () => {
     expect(normalizeTag("  \"\" ")).toBe("");
-  });
-});
-
-describe("suggestGenres", () => {
-  const vocabulary = ["acoustic metal", "atmospheric black metal", "black metal", "metal", "metalcore", "pop"];
-
-  it("puts the plain term first instead of burying it under alphabetical matches", () => {
-    expect(suggestGenres("metal", vocabulary, [], 8)[0]).toBe("metal");
-  });
-
-  it("ranks prefix matches above matches in the middle", () => {
-    expect(suggestGenres("metal", vocabulary, [], 8)).toEqual([
-      "metal",
-      "metalcore",
-      "black metal",
-      "acoustic metal",
-      "atmospheric black metal",
-    ]);
-  });
-
-  it("leaves out what is already tracked", () => {
-    expect(suggestGenres("metal", vocabulary, ["metal", "metalcore"], 8)[0]).toBe("black metal");
-  });
-
-  it("matches the way the tag will be normalized, not the way it was typed", () => {
-    expect(suggestGenres("  BLACK  Metal ", vocabulary, [], 8)).toContain("black metal");
-  });
-
-  it("returns nothing for an empty query rather than the whole vocabulary", () => {
-    expect(suggestGenres("   ", vocabulary, [], 8)).toEqual([]);
-  });
-
-  it("honours the limit", () => {
-    expect(suggestGenres("metal", vocabulary, [], 2)).toHaveLength(2);
   });
 });
 
