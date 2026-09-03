@@ -25,7 +25,6 @@ export type DialogType
     | "releaseFilters"
     | "search"
     | "shareCollection"
-    | "trackedGenres"
     | "widevine"
     | null;
 

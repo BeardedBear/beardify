@@ -5,16 +5,12 @@ import { FeedRelease } from "@/helpers/releaseFeed";
 /*
  * Broad families rolled up from the sources' micro-genres.
  *
- * Spotify does tag plenty of artists with a bare "rock" or "metal" — but not all
- * of them: Radiohead comes back as "art rock, alternative rock" and nothing else,
- * so a filter matching genre strings exactly hides it under every heading a
- * listener would think to look. Each family is a substring probe, which is why
- * "hip hop" sits next to "rap": they are separate strings in the vocabulary.
- *
- * They double as MusicBrainz query tags, so every entry has to be a term that
- * community actually applies — "metal" and "rock" are, "alt-rock" is not.
+ * The scrapers file a release under "atmospheric black metal" or "art rock" and
+ * nothing broader, so a sidebar listing genre strings verbatim hides it under every
+ * heading a listener would think to look. Each family is a substring probe, which is
+ * why "hip hop" sits next to "rap": they are separate strings in the vocabulary.
  */
-export const GENRE_FAMILIES = [
+const GENRE_FAMILIES = [
   "blues",
   "classical",
   "country",
@@ -115,9 +111,6 @@ export function groupByMonth(
  * do not offer renditions, so this only tells the layout what shape to expect.
  */
 const COVER_SIZE = 200;
-
-/** Ceiling on the tracked-genre list, to keep the MusicBrainz Lucene clause a sane length. */
-export const MAX_TRACKED_TAGS = 15;
 
 /**
  * Deduplicate the feed and put it newest first.
@@ -229,39 +222,6 @@ export function releaseTimestamp(releaseDate: string): number {
   const parsed = Date.parse(padded);
 
   return isNaN(parsed) ? 0 : parsed;
-}
-
-/**
- * Genre suggestions for a partial query, best match first.
- *
- * Ranked rather than merely filtered: typing "metal" against 2192 genres matches
- * over a hundred, and an alphabetical slice of those starts at "acoustic metal"
- * — the plain "metal" the user is reaching for would not be on screen. A prefix
- * match outranks a match in the middle, and a shorter genre outranks a longer one.
- * @param query - What the user has typed
- * @param vocabulary - Genres to search, e.g. the MusicBrainz list
- * @param exclude - Genres already tracked, left out of the results
- * @param limit - How many suggestions to return
- */
-export function suggestGenres(query: string, vocabulary: string[], exclude: string[], limit: number): string[] {
-  const needle = normalizeTag(query);
-  if (!needle) return [];
-
-  const taken = new Set(exclude);
-  const prefix: string[] = [];
-  const contains: string[] = [];
-
-  for (const genre of vocabulary) {
-    if (taken.has(genre)) continue;
-
-    const at = genre.indexOf(needle);
-    if (at === 0) prefix.push(genre);
-    else if (at > 0) contains.push(genre);
-  }
-
-  const byLength = (a: string, b: string): number => a.length - b.length || a.localeCompare(b);
-
-  return [...prefix.sort(byLength), ...contains.sort(byLength)].slice(0, limit);
 }
 
 /**

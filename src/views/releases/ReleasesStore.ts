@@ -1,27 +1,15 @@
 import { useDebounceFn } from "@vueuse/core";
 import { defineStore } from "pinia";
 
-import { Artist } from "@/@types/Artist";
-import { Paging } from "@/@types/Paging";
 import { Release, ReleasesPage } from "@/@types/Releases";
-import { instance } from "@/api";
 import { getRemoteChecks, putRemoteChecks } from "@/helpers/releaseChecks";
-import { getFeedGenres, getFeedReleases } from "@/helpers/releaseFeed";
-import {
-  GENRE_FAMILIES,
-  genreTerms,
-  MAX_TRACKED_TAGS,
-  mergeReleases,
-  pruneChecks,
-  toReleaseFromFeed,
-} from "@/helpers/releases";
+import { getFeedReleases } from "@/helpers/releaseFeed";
+import { mergeReleases, pruneChecks, toReleaseFromFeed } from "@/helpers/releases";
 import { useCheckLiveAlbum, useCheckReissueAlbum } from "@/helpers/useCleanAlbums";
 import { useAuth } from "@/views/auth/AuthStore";
 
 /** How far back a release still counts as news. */
 const RECENT_DAYS = 60;
-/** How many tags to seed from the user's top artists. More widen the feed without costing a request. */
-const SEEDED_TAGS = 6;
 /** The feed moves on a weekly rhythm — refetching on every visit buys nothing. */
 const STALE_AFTER_MS = 6 * 60 * 60 * 1000;
 /*
@@ -49,7 +37,7 @@ export const useReleases = defineStore("releases", {
   actions: {
     /** Recovery from a dead filter combo: back to the full, unfiltered feed. */
     clearFilters() {
-      this.genre = null;
+      this.genres = [];
       this.hideChecked = false;
     },
 
@@ -73,10 +61,7 @@ export const useReleases = defineStore("releases", {
       this.loading = true;
 
       try {
-        // Only seeded while the list is untouched: re-deriving would throw away a hand-picked list.
-        if (!this.tagsCustom) this.tags = await deriveTags();
-
-        const rows = await fetchFeed(this.tags);
+        const rows = await fetchFeed();
 
         /*
          * An empty answer is a failure here, not a quiet result. With a single source
@@ -96,18 +81,6 @@ export const useReleases = defineStore("releases", {
       }
 
       await checks;
-    },
-
-    /**
-     * The genres the table knows, for the tracking dialog's autocomplete.
-     *
-     * Fetched once and kept: the vocabulary is the scraper's editorial genre list and
-     * changes about never, while the dialog can be opened repeatedly in a session.
-     */
-    async loadGenreVocabulary(): Promise<string[]> {
-      if (!this.genreVocabulary.length) this.genreVocabulary = await getFeedGenres();
-
-      return this.genreVocabulary;
     },
 
     /** Mark a batch of releases as listened, leaving the already-checked ones alone. */
@@ -136,34 +109,18 @@ export const useReleases = defineStore("releases", {
       debouncedPush();
     },
 
-    /** Back to the genres inferred from the user's top artists. */
-    async resetTags() {
-      this.tagsCustom = false;
-      this.tags = [];
-      await this.getReleases(true);
-    },
-
-    setGenre(genre: null | string) {
-      this.genre = this.genre === genre ? null : genre;
-    },
-
     /**
-     * Replace the tracked genres and rebuild the feed.
+     * Add or remove a genre from the filter.
      *
-     * One call per confirmed edit, not per chip: the dialog collects the whole list
-     * and hands it over on validate. A refetch is a full round trip and a rebuild of
-     * the feed, which is not something to spend on an intermediate state the user is
-     * still editing.
-     * @param tags - The genres to track, already normalized by the dialog
+     * A fresh array rather than a mutation: the page watches this to scroll back to
+     * the top, and an in-place push leaves the reference — and so the watcher —
+     * untouched.
+     * @param genre - The term as the sidebar and the row chips spell it
      */
-    async setTags(tags: string[]) {
-      const next = tags.slice(0, MAX_TRACKED_TAGS);
-      const unchanged = next.length === this.tags.length && next.every((tag, index) => tag === this.tags[index]);
-
-      this.tags = next;
-      // Set even when the list matches the seeded one, so a later seeding pass cannot undo the choice.
-      this.tagsCustom = true;
-      if (!unchanged) await this.getReleases(true);
+    toggleGenre(genre: string) {
+      this.genres = this.genres.includes(genre)
+        ? this.genres.filter((selected) => selected !== genre)
+        : [...this.genres, genre];
     },
 
     /**
@@ -228,7 +185,9 @@ export const useReleases = defineStore("releases", {
      */
     visibleReleases(state): Release[] {
       return state.releases.filter((release) => {
-        if (state.genre && !release.terms.includes(state.genre)) return false;
+        // Any of them, not all: two genres selected reads as "either", the way the
+        // server-side overlap the tracked list used to run did.
+        if (state.genres.length && !state.genres.some((genre) => release.terms.includes(genre))) return false;
         if (state.hideChecked && state.checks[release.key]) return false;
         return true;
       });
@@ -246,9 +205,9 @@ export const useReleases = defineStore("releases", {
    */
   persist: {
     /*
-     * `tags` and the filters are the user's own and survive the version gate; only
-     * the feed and its timestamp are dropped, so the next visit refetches rather
-     * than rendering rows the current code cannot read.
+     * The filters are the user's own and survive the version gate; only the feed and
+     * its timestamp are dropped, so the next visit refetches rather than rendering
+     * rows the current code cannot read.
      */
     afterHydrate: ({ store }) => {
       const releases = store as unknown as ReleasesPage;
@@ -259,17 +218,7 @@ export const useReleases = defineStore("releases", {
       releases.feedVersion = FEED_VERSION;
     },
     key: "beardify-releases",
-    pick: [
-      "feedVersion",
-      "fetchedAt",
-      "genre",
-      "genreVocabulary",
-      "hideChecked",
-      "releases",
-      "sortRating",
-      "tags",
-      "tagsCustom",
-    ],
+    pick: ["feedVersion", "fetchedAt", "genres", "hideChecked", "releases", "sortRating"],
   },
 
   state: (): ReleasesPage => ({
@@ -286,44 +235,13 @@ export const useReleases = defineStore("releases", {
      */
     feedVersion: 0,
     fetchedAt: null,
-    genre: null,
-    genreVocabulary: [],
+    genres: [],
     hideChecked: false,
     loading: false,
     releases: [],
     sortRating: false,
-    tags: [],
-    tagsCustom: false,
   }),
 });
-
-/**
- * The genre tags to build the feed from, taken from the user's own listening.
- *
- * One request, not one per followed artist: `me/top/artists` is the taste signal,
- * and rolling its micro-genres up to broad families is what turns it into terms
- * MusicBrainz recognises. Falls back to the whole family list when Spotify has
- * nothing to say — a new account, or the endpoint refusing.
- */
-async function deriveTags(): Promise<string[]> {
-  try {
-    const { data } = await instance().get<Paging<Artist>>("me/top/artists?limit=50&time_range=long_term");
-    const counts = new Map<string, number>();
-
-    for (const artist of data.items ?? []) {
-      for (const family of new Set(genreTerms(artist.genres ?? []).filter((term) => GENRE_FAMILIES.includes(term)))) {
-        counts.set(family, (counts.get(family) ?? 0) + 1);
-      }
-    }
-
-    const ranked = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([family]) => family);
-    if (ranked.length) return ranked.slice(0, SEEDED_TAGS);
-  } catch (error: unknown) {
-    if (import.meta.env.DEV) console.error("Error deriving release tags:", error);
-  }
-
-  return GENRE_FAMILIES.slice(0, SEEDED_TAGS);
-}
 
 /**
  * The scraped release feed, held in Supabase and refreshed nightly by
@@ -332,11 +250,15 @@ async function deriveTags(): Promise<string[]> {
  * It exists because every other source classifies a release only once somebody has
  * curated it, which takes months — so the newest records, the ones this page is for,
  * arrive with no genre at all. The scrapers read sites that file each release under
- * an editor-chosen genre on day one. One request, filtered and indexed server-side.
- * @param tags - Tracked genres, applied as an array overlap in the query
+ * an editor-chosen genre on day one.
+ *
+ * The whole window, unfiltered: it runs to a few hundred rows, so selecting genres
+ * server-side saved nothing and cost a second vocabulary request, a taste-derivation
+ * request, and a genre list that could only ever show what was already tracked. The
+ * sidebar filters what came back instead, on honest counts.
  */
-async function fetchFeed(tags: string[]): Promise<Release[]> {
-  const rows = await getFeedReleases(windowStart(), tags);
+async function fetchFeed(): Promise<Release[]> {
+  const rows = await getFeedReleases(windowStart());
 
   return rows
     .map(toReleaseFromFeed)

@@ -50,16 +50,11 @@ export interface ReleasesPage {
    */
   feedVersion: number;
   fetchedAt: null | number;
-  genre: null | string;
-  /** Genres present in the scraped table — what the tracking dialog suggests. */
-  genreVocabulary: string[];
+  /** The terms the list is narrowed to. Empty is the whole feed; several read as "any of". */
+  genres: string[];
   hideChecked: boolean;
   loading: boolean;
   releases: Release[];
   /** Sort each month's releases by the editorial rating, highest first. */
   sortRating: boolean;
-  /** Genres the feed is built from. Seeded from the user's top artists, then editable. */
-  tags: string[];
-  /** Set once the user edits `tags`, which stops the top-artists seeding from overwriting them. */
-  tagsCustom: boolean;
 }
