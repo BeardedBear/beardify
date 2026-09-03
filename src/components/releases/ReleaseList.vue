@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <div v-for="month in groups" :key="month.label">
+    <div v-for="month in releasesStore.monthGroups" :key="month.label" :data-month="month.label">
       <div class="month bd-font-bold">
         <span class="month-label">
           {{ month.label }}
@@ -20,31 +20,51 @@
       <div v-if="month.top.length" class="top">
         <div class="top-heading bd-font-bold">Top of the month</div>
         <div class="top-row">
-          <button
+          <!--
+            The play control is a sibling of the card, not a child: the card is
+            itself a <button>, and a button inside a button is not a DOM the
+            browser will keep. The wrapper is what lets it sit over the cover.
+          -->
+          <div
             v-for="(release, rank) in month.top"
             :key="release.key"
-            class="top-card"
-            type="button"
-            @click="searchStore.openAlbumSearch(release.key, release.artistName, release.name)"
+            class="top-card-wrap"
+            @mouseenter="lookupReleaseAlbum(release)"
+            @mouseleave="cancelReleaseAlbumLookup()"
           >
-            <span class="top-cover-wrap">
-              <Cover :images="release.images" class="top-cover" size="medium" />
-              <span
-                v-if="albumLoading(release.key)"
-                class="top-cover-loading"
-                aria-live="polite"
-                aria-label="Searching"
-              >
-                <BdLoader size="x-small" />
+            <button
+              class="top-card"
+              type="button"
+              @click="searchStore.openAlbumSearch(release.key, release.artistName, release.name)"
+            >
+              <span class="top-cover-wrap">
+                <Cover :images="release.images" class="top-cover" size="medium" />
+                <span
+                  v-if="albumLoading(release.key)"
+                  class="top-cover-loading"
+                  aria-live="polite"
+                  aria-label="Searching"
+                >
+                  <BdLoader size="x-small" />
+                </span>
+                <span class="rank bd-font-bold">{{ rank + 1 }}</span>
               </span>
-              <span class="rank bd-font-bold">{{ rank + 1 }}</span>
-            </span>
-            <span class="top-name bd-font-bold">{{ release.name }}</span>
-            <span class="top-artist">{{ release.artistName }}</span>
-            <span v-if="typeof release.rating === 'number'" class="top-rating">
-              {{ release.rating.toFixed(1) }}<span class="unit">/5</span>
-            </span>
-          </button>
+              <span class="top-name bd-font-bold">{{ release.name }}</span>
+              <span class="top-artist">{{ release.artistName }}</span>
+              <span v-if="typeof release.rating === 'number'" class="top-rating">
+                {{ release.rating.toFixed(1) }}<span class="unit">/5</span>
+              </span>
+            </button>
+            <button
+              v-if="!albumLoading(release.key) && playableUri(release.key)"
+              :aria-label="`Play ${release.name}`"
+              class="top-play"
+              type="button"
+              @click="playAlbum(playableUri(release.key)!)"
+            >
+              <Play :size="22" />
+            </button>
+          </div>
         </div>
       </div>
       <Release v-for="release in month.releases" :key="release.key" :release="release" />
@@ -53,31 +73,34 @@
 </template>
 
 <script lang="ts" setup>
-import { CheckCheck } from "@lucide/vue";
+import { CheckCheck, Play } from "@lucide/vue";
 import { BdLoader } from "bearded-ui";
-import { computed } from "vue";
 
 import Release from "@/components/releases/ReleaseIndex.vue";
 import { useSearch } from "@/components/search/SearchStore";
 import Cover from "@/components/ui/AlbumCover.vue";
-import { groupByMonth } from "@/helpers/releases";
+import { playAlbum } from "@/helpers/playAlbum";
+import { cancelReleaseAlbumLookup, lookupReleaseAlbum, releaseAlbum } from "@/helpers/releaseAlbum";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 const releasesStore = useReleases();
 const searchStore = useSearch();
 
-/*
- * Months, and nothing finer. The listing this feed comes from groups by month and
- * never states a day, so the day headings this used to carry would all read "exact
- * date unknown" — a heading per group that says the same thing is noise.
+/**
+ * Whether either search tagged to this release key is still in flight — the
+ * modal one a click starts, or the hover lookup behind the play control.
+ * @param key - Release key
  */
-const groups = computed(() =>
-  groupByMonth(releasesStore.visibleReleases, releasesStore.checks, releasesStore.sortRating),
-);
-
-/** Whether an album search tagged to this release key is still in flight. */
 function albumLoading(key: string): boolean {
-  return searchStore.activeAlbumKey === key;
+  return searchStore.activeAlbumKey === key || Boolean(releaseAlbum(key)?.pending);
+}
+
+/**
+ * The album URI a hover resolved, once it answered with something playable.
+ * @param key - Release key
+ */
+function playableUri(key: string): string | undefined {
+  return releaseAlbum(key)?.uri ?? undefined;
 }
 </script>
 
@@ -159,6 +182,11 @@ function albumLoading(key: string): boolean {
   padding-bottom: var(--bd-space-2);
 }
 
+.top-card-wrap {
+  flex: 0 0 auto;
+  position: relative;
+}
+
 .top-card {
   align-items: flex-start;
   background-color: transparent;
@@ -167,14 +195,53 @@ function albumLoading(key: string): boolean {
   color: inherit;
   cursor: pointer;
   display: flex;
-  flex: 0 0 auto;
   flex-direction: column;
   gap: var(--bd-space-1);
   padding: var(--bd-space-2);
   width: 7.5rem;
+}
+
+/* The card lights up from the wrapper, so pointing at the play control still
+   reads as pointing at the card it belongs to. */
+.top-card-wrap:hover .top-card {
+  background-color: var(--bd-bg-light);
+}
+
+/*
+ * Sits exactly on the artwork without being inside it: the card pads by
+ * space-2 and the cover fills the rest of that width, so the same inset plus a
+ * square aspect ratio lands on the cover box. Its own translucent ground dims
+ * the artwork — no second overlay.
+ */
+.top-play {
+  align-items: center;
+  aspect-ratio: 1;
+  background-color: color-mix(in oklab, var(--bd-bg-darker) 55%, transparent);
+  border: none;
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-font-color-light);
+  cursor: pointer;
+  display: flex;
+  inset: var(--bd-space-2) var(--bd-space-2) auto;
+  justify-content: center;
+  opacity: 0;
+  padding: 0;
+  position: absolute;
+  transition: opacity var(--bd-transition-fast);
 
   &:hover {
-    background-color: var(--bd-bg-light);
+    color: var(--bd-primary-light);
+  }
+}
+
+.top-play:focus-visible,
+.top-card-wrap:hover .top-play {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .top-play {
+    transition: none;
   }
 }
 

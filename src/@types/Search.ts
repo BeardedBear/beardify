@@ -9,6 +9,14 @@ export interface Search {
   activeAlbumKey: null | string;
   albums: Album[];
   artists: Artist[];
+  /**
+   * What a release-row click was actually after, kept as terms rather than
+   * re-parsed out of `query`: the two views highlight the exact hit with them,
+   * and `search()` uses them to decide whether one result is *the* result.
+   * Null while the query is whatever the user typed.
+   */
+  exactAlbum: null | string;
+  exactArtist: null | string;
   /** Set when the request threw, so the view can tell "nothing" from "it broke". */
   failed: boolean;
   /**

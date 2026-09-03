@@ -70,12 +70,26 @@ function isBrandFontOnOwnDomain(font) {
   return allowed.some(suffix => host === suffix || host.endsWith('.' + suffix));
 }
 
-const GENERIC_FONTS = new Set([
+// Overused-font primary selection skips only CSS generics so a system stack
+// keeps the system face as primary; GENERIC_FONTS still includes platform
+// faces for design-system/serif resolution.
+const CSS_GENERIC_FONTS = new Set([
   'serif', 'sans-serif', 'monospace', 'cursive', 'fantasy',
-  'system-ui', 'ui-serif', 'ui-sans-serif', 'ui-monospace', 'ui-rounded',
-  '-apple-system', 'blinkmacsystemfont', 'segoe ui',
   'inherit', 'initial', 'unset', 'revert',
 ]);
+
+const GENERIC_FONTS = new Set([
+  ...CSS_GENERIC_FONTS,
+  'system-ui', 'ui-serif', 'ui-sans-serif', 'ui-monospace', 'ui-rounded',
+  '-apple-system', 'blinkmacsystemfont', 'segoe ui',
+]);
+
+function primaryFontFace(fontFamily, skip = CSS_GENERIC_FONTS) {
+  return String(fontFamily || '')
+    .split(',')
+    .map(f => f.trim().replace(/^['"]|['"]$/g, '').toLowerCase())
+    .find(f => f && !skip.has(f)) || null;
+}
 
 // WCAG large text thresholds are defined in points: 18pt normal text and
 // 14pt bold text. Browsers expose font-size in CSS pixels at 96px per inch.
@@ -145,7 +159,7 @@ const ANTIPATTERNS = [
     scopes: ['type'],
     name: 'Flat type hierarchy',
     description:
-      'Font sizes are too close together — no clear visual hierarchy. Use fewer sizes with more contrast (aim for at least a 1.25 ratio between steps).',
+      'Dominant heading and body roles are separated by less than 1.25× at every step, leaving the size hierarchy flat. Add at least one stronger size step.',
     skillSection: 'Typography',
     skillGuideline: 'flat type hierarchy',
   },
@@ -231,6 +245,24 @@ const ANTIPATTERNS = [
     description:
       'A large inline SVG that builds a pictorial scene from a pile of primitive shapes reads as placeholder clip art, not illustration. Icons, logos, and data graphics are fine at their scale; a hero-sized visual deserves real artwork, a photograph, or a deliberately drawn graphic.',
     skillSection: 'Imagery',
+  },
+  {
+    id: 'organic-clip-path',
+    category: 'quality',
+    name: 'Organic contour drawn as clip-path',
+    description:
+      'A clip-path polygon with many arbitrary vertices, or a curved clip-path path(), is CSS approximating a torn edge, blob, or silhouette. It reads as the cheap version of the effect and is usually a produced or photographic material replaced with code. Derive an alpha matte from the real image, or ship the shape as a cut-out raster; keep clip-path for geometry (cut corners, diagonals, hexagons).',
+    skillSection: 'Imagery',
+    skillGuideline: 'geometric masks standing in for organic contours',
+  },
+  {
+    id: 'buried-raster',
+    category: 'quality',
+    name: 'Raster buried under a wash or opacity',
+    description:
+      'A background image under a near-opaque gradient wash, or a raster on an element at near-zero opacity, never reaches the screen: the page shows the wash, and the produced texture or photo ships as a compliance token. Let the material show (a tint under 0.9 alpha, a blend mode, an opacity you can see) or remove the file.',
+    skillSection: 'Imagery',
+    skillGuideline: 'a produced material must survive to the screen',
   },
   {
     id: 'dark-glow',
@@ -773,14 +805,22 @@ function extractColorFunctionTokens(value) {
 function parseGradientColors(bgImage) {
   if (!bgImage || !bgImage.includes('gradient')) return [];
   const colors = [];
+  const tokenSpans = [];
+  let from = 0;
   // Stops arrive in whatever syntax the author wrote and the browser kept.
   // A dark ground painted as `linear-gradient(oklch(...), oklch(...))` used
   // to read as a gradient with no stops at all.
   for (const token of extractColorFunctionTokens(bgImage)) {
+    const start = bgImage.indexOf(token, from);
+    if (start < 0) break;
+    tokenSpans.push({ start, end: start + token.length });
+    from = start + token.length;
     const c = parseAnyColor(token);
     if (c) colors.push(c);
   }
   for (const m of bgImage.matchAll(/#([0-9a-f]{6}|[0-9a-f]{3})\b/gi)) {
+    // Nested hex inside color-mix is an ingredient, not a stop (issue #578).
+    if (tokenSpans.some(s => m.index >= s.start && m.index < s.end)) continue;
     const h = m[1];
     if (h.length === 6) {
       colors.push({ r: parseInt(h.slice(0,2),16), g: parseInt(h.slice(2,4),16), b: parseInt(h.slice(4,6),16), a: 1 });
@@ -1565,7 +1605,7 @@ function checkIconTile(opts) {
 function resolveSerif(fontFamily) {
   if (!fontFamily) return { primary: null, isSerif: false };
   const tokens = fontFamily.split(',').map(f => f.trim().replace(/^['"]|['"]$/g, '').toLowerCase());
-  const primary = tokens.find(f => f && !GENERIC_FONTS.has(f)) || null;
+  const primary = primaryFontFace(fontFamily, GENERIC_FONTS);
   if (!primary) return { primary: null, isSerif: false };
   if (KNOWN_SERIF_FONTS.has(primary)) return { primary, isSerif: true };
   if (tokens.includes('serif')) return { primary, isSerif: true };
@@ -1916,8 +1956,13 @@ function enclosingCssSelector(cssText, index) {
   if (!cssText || !Number.isFinite(index)) return null;
   const open = cssText.lastIndexOf('{', index);
   if (open === -1) return null;
+  // A match inside an inline style fragment (`style="…"` appended to the
+  // corpus by buildHtmlPatternCorpora) has no enclosing rule; the previous
+  // `{` belongs to some other selector.
+  const closeBeforeIndex = cssText.lastIndexOf('}', index);
+  if (closeBeforeIndex > open) return null;
   const prevClose = Math.max(cssText.lastIndexOf('}', open - 1), cssText.lastIndexOf(';', open - 1));
-  const raw = cssText.slice(prevClose + 1, open).trim().replace(/\s+/g, ' ');
+  const raw = cssText.slice(prevClose + 1, open).replace(/\/\*[\s\S]*?\*\//g, '').trim().replace(/\s+/g, ' ');
   if (!raw || raw.startsWith('@') || /^\d/.test(raw) || /[{}<]/.test(raw)) return null;
   // Keyframe steps: percentage steps fail the digit test above, but `from`
   // and `to` would read as (never-matching) type selectors and get a valid
@@ -1955,20 +2000,19 @@ function scanCssTextForGlow(content) {
   return results;
 }
 
-// Decorative grid or line-field backgrounds drawn with hairline
+// Decorative two-axis grid backgrounds drawn with hairline
 // linear-gradient layers tiled by a fixed pixel cell. Shared by the HTML
 // pattern pass and the regex source engine so standalone CSS, component
 // styles, and inline styles receive the same coverage. Both signals must
 // co-occur in one declaration block; unrelated rules must not add up across
-// the file. Returns [{ index, snippet }], capped at one finding per source to
-// match the page-level HTML check's existing behavior.
+// the file. A single hairline is a line, divider, or rail, not a grid, even
+// when tiled by a 2D px cell. Returns [{ index, snippet }], capped at one
+// finding per source to match the page-level HTML check's existing behavior.
 function scanCssTextForGridBackground(content) {
   const hairlineRe = /\b\d{1,3}px\s*,\s*transparent\s+\d{1,3}px/gi;
   const invertedHairlineRe = /transparent\s+calc\(100%\s*-\s*\d{1,3}px\)/gi;
   const sizeDeclPxRe = /background-size\s*:[^;{}"']*\b\d{1,3}px\b/i;
-  const sizeDeclPxPairRe = /background-size\s*:[^;{}"']*\b\d{1,3}px\s+\d{1,3}px/i;
   const shorthandPxAnyRe = /\/\s*\d{1,3}px\b/;
-  const shorthandPxPairRe = /\/\s*\d{1,3}px\s+\d{1,3}px/;
   const bgDeclRe = /\bbackground(?:-image)?\s*:\s*([^;{}"']*)/gi;
   const blockRe = /\{([^{}]*)\}|style\s*=\s*"([^"]*)"|style\s*=\s*'([^']*)'/gi;
   let blk;
@@ -1985,13 +2029,10 @@ function scanCssTextForGridBackground(content) {
     }
     if (hairlineCount === 0) continue;
     const hasPxCell = sizeDeclPxRe.test(block) || shorthandPxAnyRe.test(bgJoined);
-    const hasPxPairCell = sizeDeclPxPairRe.test(block) || shorthandPxPairRe.test(bgJoined);
-    if ((hairlineCount >= 2 && hasPxCell) || hasPxPairCell) {
+    if (hairlineCount >= 2 && hasPxCell) {
       return [{
         index: blk.index,
-        snippet: hairlineCount >= 2
-          ? 'two-axis grid-line gradient background'
-          : 'px-tiled hairline line-field background',
+        snippet: 'two-axis grid-line gradient background',
       }];
     }
   }
@@ -2687,6 +2728,95 @@ function scanHtmlForShapeAssembledIllustration(html) {
   return findings;
 }
 
+
+// --- Organic clip-path polygons ----------------------------------------------
+// A `clip-path: polygon(...)` with many vertices, or `clip-path: path(...)`
+// with curves, is CSS approximating an organic contour: a torn edge, a blob,
+// a silhouette. The approximation reads as the cheap version of the effect
+// (the craft floor's geometric-occlusion-mask ban), and it is the signature
+// of a comp's produced material being replaced with code. Geometric clips
+// (cut corners, diagonals, hexagons, arrows: few vertices, or vertices on
+// the 0/50/100 grid) pass; circle()/inset()/ellipse() pass; a mask-image
+// from an alpha matte passes.
+const ORGANIC_POLYGON_MIN_VERTICES = 10;
+function scanCssTextForOrganicClipPath(styleText) {
+  const findings = [];
+  const re = /clip-path\s*:\s*(polygon|path)\s*\(([^)]*(?:\)[^;}]*)?)/gi;
+  let m;
+  while ((m = re.exec(styleText)) !== null) {
+    const kind = m[1].toLowerCase();
+    const body = m[2];
+    if (kind === 'path') {
+      // curves (C, S, Q, T, A, absolute or relative) drawing a contour, not a
+      // rectilinear M/L/Z outline; letters in path data are only commands
+      const curves = (body.match(/[CSQTA]/gi) || []).length;
+      if (curves < 3) continue;
+      findings.push({ id: 'organic-clip-path', snippet: `clip-path: path() with ${curves} curve segments`, selector: enclosingCssSelector(styleText, m.index) || undefined });
+      continue;
+    }
+    const points = body.split(',').map((p) => p.trim()).filter(Boolean);
+    if (points.length < ORGANIC_POLYGON_MIN_VERTICES) continue;
+    // Vertices sitting on a coarse grid (multiples of 25%) are geometric; a
+    // contour has arbitrary values.
+    let offGrid = 0;
+    for (const p of points) {
+      const nums = p.match(/-?[\d.]+/g) || [];
+      for (const n of nums) { const v = parseFloat(n); if (Math.abs(v - Math.round(v / 25) * 25) > 0.5) offGrid++; }
+    }
+    if (offGrid < points.length) continue;
+    findings.push({ id: 'organic-clip-path', snippet: `clip-path: polygon() with ${points.length} vertices approximating an organic contour`, selector: enclosingCssSelector(styleText, m.index) || undefined });
+  }
+  return findings;
+}
+
+// --- Buried raster ------------------------------------------------------------
+// A raster (background-image url or <img>) that never reaches the screen:
+// under a near-opaque gradient wash in the same background stack, or on an
+// element at near-zero opacity. It is how a produced texture "ships" while
+// the page shows flat color, and the finish reviewer cannot see it either.
+// A tint under 0.9 alpha passes (hero darkening); a blend mode passes
+// (multiply/overlay keep the material visible); opacity >= 0.15 passes.
+function scanCssTextForBuriedRaster(styleText) {
+  const findings = [];
+  // background stacks: split declarations, look for url() + a gradient whose
+  // stops all carry alpha >= 0.9 (or opaque hex/named colors)
+  const declRe = /background(?:-image)?\s*:\s*([^;}]+)/gi;
+  let m;
+  while ((m = declRe.exec(styleText)) !== null) {
+    const value = m[1];
+    if (!/url\(/i.test(value) || !/gradient\(/i.test(value)) continue;
+    // a blend mode declared in the same rule keeps the raster visible
+    const ruleStart = styleText.lastIndexOf('{', m.index);
+    const ruleEnd = styleText.indexOf('}', m.index);
+    const rule = styleText.slice(ruleStart < 0 ? 0 : ruleStart, ruleEnd < 0 ? styleText.length : ruleEnd);
+    if (/background-blend-mode\s*:\s*(?!normal)/i.test(rule) || /mix-blend-mode\s*:\s*(?!normal)/i.test(rule)) continue;
+    // Layers are painted first-on-top: only a wash listed BEFORE the url()
+    // covers it. An image on top of a gradient is not buried.
+    const firstUrl = value.search(/url\(/i);
+    const gradients = [...value.matchAll(/(?:linear|radial|conic)-gradient\([^()]*(?:\([^()]*\)[^()]*)*\)/gi)].filter((gm) => gm.index < firstUrl).map((gm) => gm[0]);
+    let opaqueWash = false;
+    // an alpha token normalized to 0..1: '0.8' -> 0.8, '80%' -> 0.8
+    const alphaOf = (a) => { if (a == null) return 1; const v = parseFloat(a); return String(a).trim().endsWith('%') ? v / 100 : v; };
+    for (const g of gradients) {
+      const alphas = [...g.matchAll(/rgba?\(\s*[\d.]+%?\s*,?\s*[\d.]+%?\s*,?\s*[\d.]+%?\s*(?:[,/]\s*([\d.]+%?))?\s*\)|hsla?\([^)]*?(?:[,/]\s*([\d.]+%?))?\s*\)/gi)].map((a) => alphaOf(a[1] ?? a[2]));
+      const stripped = g.replace(/rgba?\([^)]*\)|hsla?\([^)]*\)/gi, '');
+      // hex stops: 4- and 8-digit forms carry their own alpha
+      for (const h of stripped.matchAll(/#([0-9a-f]{3,8})\b/gi)) {
+        const hex = h[1];
+        if (hex.length === 4) alphas.push(parseInt(hex[3] + hex[3], 16) / 255);
+        else if (hex.length === 8) alphas.push(parseInt(hex.slice(6), 16) / 255);
+        else alphas.push(1);
+      }
+      const named = /\b(?:white|black|ivory|beige|linen|snow|cream)\b/i.test(stripped);
+      if (named) alphas.push(1);
+      if (alphas.length && alphas.every((a) => !Number.isFinite(a) || a >= 0.9)) { opaqueWash = true; break; }
+    }
+    if (!opaqueWash) continue;
+    findings.push({ id: 'buried-raster', snippet: `raster under a near-opaque gradient wash: ${value.trim().slice(0, 90)}`, selector: enclosingCssSelector(styleText, m.index) || undefined });
+  }
+  return findings;
+}
+
 // Scoped scan corpora for the page-level pattern checks. CSS-property
 // regexes run over the whole source string fire on documentation ABOUT
 // css — `<code>background-clip: text</code>` prose, <pre> samples, HTML
@@ -2858,6 +2988,10 @@ function checkHtmlPatterns(html, corpora) {
 
   // Shape-assembled illustrations (large pictorial SVGs built from primitives)
   findings.push(...scanHtmlForShapeAssembledIllustration(html));
+
+  // Organic clip-path contours and rasters buried under washes or opacity
+  findings.push(...scanCssTextForOrganicClipPath(styleText));
+  findings.push(...scanCssTextForBuriedRaster(styleText));
 
   // Auto-scrolling marquees (<marquee> or infinite horizontal loop animations)
   findings.push(...scanCssTextForMarquee(styleText, html));
@@ -3986,7 +4120,7 @@ function checkElementAIPaletteDOM(el) {
   }
 
   // Check for neon text (vivid cyan/purple color on dark background)
-  const textColor = parseRgb(style.color);
+  const textColor = parseRgb(style.color) || parseAnyColor(style.color);
   if (textColor && hasChroma(textColor, 80)) {
     const hue = getHue(textColor);
     const isAIPalette = (hue >= 160 && hue <= 200) || (hue >= 260 && hue <= 310);
@@ -4329,14 +4463,30 @@ function isNonRenderedText(el, tag, style) {
 function checkQuality(opts) {
   const { el, tag, style, hasDirectText, textLen, fontSize, lineHeightPx, letterSpacingPx, rect, lineMax = 80, viewportWidth = 0, win = null } = opts;
   const findings = [];
-  // Skip browser extension injected elements. Read the id via getAttribute
-  // whenever `el.id` is not a string: on a <form> (and other
-  // [LegacyOverrideBuiltIns] hosts) a named control like <input name="id">
-  // shadows the builtin `id` getter and returns the control element, whose
-  // `.startsWith` is undefined and throws (issue #407 — every Shopify product
-  // form ships an <input name="id">).
+  // A raster (<img>, or an element with a background url) at near-zero
+  // opacity never reaches the screen: the produced material ships as a
+  // compliance token. The CSS-text scan catches the stylesheet form; this
+  // catches computed opacity on the element itself (both engines).
+  // Skip browser extension injected elements BEFORE any finding is pushed
+  // (a low-opacity raster those hosts inject used to be recorded and then
+  // returned by this very skip). Read the id via getAttribute whenever
+  // `el.id` is not a string: on a <form> (and other [LegacyOverrideBuiltIns]
+  // hosts) a named control like <input name="id"> shadows the builtin `id`
+  // getter and returns the control element, whose `.startsWith` is undefined
+  // and throws (issue #407 — every Shopify product form ships an
+  // <input name="id">).
   const elId = typeof el.id === 'string' ? el.id : (el.getAttribute?.('id') || '');
   if (elId.startsWith('claude-') || elId.startsWith('cic-')) return findings;
+  {
+    const op = parseFloat(style.opacity);
+    if (Number.isFinite(op) && op < 0.15 && op >= 0) {
+      const bg = String(style.backgroundImage || '');
+      if (tag === 'img' || /url\(/i.test(bg)) {
+        const label = tag === 'img' ? (el.getAttribute && el.getAttribute('alt')) || '' : (el.textContent || '').trim().slice(0, 40);
+        findings.push({ id: 'buried-raster', snippet: `${tag === 'img' ? '<img>' : 'raster background'} at opacity ${op}${label ? ` "${label}"` : ''}` });
+      }
+    }
+  }
 
   // --- Line length too long --- (browser-only: needs rect.width)
   if (rect && hasDirectText && QUALITY_TEXT_TAGS.has(tag) && rect.width > 0 && textLen > lineMax) {
@@ -5034,6 +5184,88 @@ function checkElementGlow(tag, style, effectiveBg) {
 
 // ─── Section 6: Page-Level Checks ───────────────────────────────────────────
 
+const TYPE_HIERARCHY_SELECTOR = 'h1,h2,h3,h4,h5,h6,p,li,td,th,dd,blockquote,figcaption';
+const TYPE_HIERARCHY_MIN_ROLES = 3;
+const TYPE_HIERARCHY_MIN_STEP_RATIO = 1.25;
+
+function typeHierarchyRole(el) {
+  const tag = String(el?.tagName || el?.nodeName || '').toLowerCase();
+  return /^h[1-6]$/.test(tag) ? tag : 'body';
+}
+
+function hasTextContent(el) {
+  return String(el?.textContent || '').trim().length > 0;
+}
+
+function isRenderedTypeElement(el, getStyle) {
+  for (let current = el; current; current = current.parentElement) {
+    const hiddenAttr = typeof current.getAttribute === 'function' && current.getAttribute('hidden') !== null;
+    if (current.hidden || hiddenAttr) return false;
+    const style = getStyle(current);
+    if (!style) continue;
+    const display = String(style.display || '').toLowerCase();
+    const visibility = String(style.visibility || '').toLowerCase();
+    const contentVisibility = String(style.contentVisibility || '').toLowerCase();
+    if (display === 'none' || visibility === 'hidden' || visibility === 'collapse' || contentVisibility === 'hidden') return false;
+    const opacity = parseFloat(style.opacity);
+    if (Number.isFinite(opacity) && opacity <= 0.01) return false;
+  }
+  return true;
+}
+
+function dominantTypeRoleSize(samples) {
+  const counts = new Map();
+  for (const sample of samples) {
+    counts.set(sample.size, (counts.get(sample.size) || 0) + 1);
+  }
+  const ranked = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0] - b[0]);
+  if (ranked.length > 1 && ranked[0][1] === ranked[1][1]) return null;
+  return ranked[0]?.[0] ?? null;
+}
+
+function checkFlatTypeHierarchySamples(samples) {
+  const byRole = new Map();
+  for (const sample of samples || []) {
+    const role = String(sample?.role || '');
+    const size = Math.round(Number(sample?.size) * 10) / 10;
+    if (!role || !Number.isFinite(size) || size < 8 || size >= 200) continue;
+    if (!byRole.has(role)) byRole.set(role, []);
+    byRole.get(role).push({ role, size });
+  }
+
+  const roles = [...byRole.entries()].map(([role, roleSamples]) => ({
+    role,
+    size: dominantTypeRoleSize(roleSamples),
+  })).filter(item => item.size !== null);
+
+  if (roles.length < TYPE_HIERARCHY_MIN_ROLES) return [];
+
+  const sorted = roles.slice().sort((a, b) => a.size - b.size || a.role.localeCompare(b.role));
+  let largestStep = 1;
+  for (let i = 1; i < sorted.length; i++) {
+    largestStep = Math.max(largestStep, sorted[i].size / sorted[i - 1].size);
+  }
+  if (largestStep >= TYPE_HIERARCHY_MIN_STEP_RATIO) return [];
+
+  const roleSizes = sorted.map(item => `${item.role} ${item.size}px`).join(', ');
+  return [{
+    id: 'flat-type-hierarchy',
+    snippet: `Role sizes: ${roleSizes} (largest adjacent step ${largestStep.toFixed(2)}:1; target ${TYPE_HIERARCHY_MIN_STEP_RATIO}:1)`,
+  }];
+}
+
+function checkFlatTypeHierarchyFromDoc(root, getStyle, options = {}) {
+  const samples = [];
+  for (const el of root.querySelectorAll(TYPE_HIERARCHY_SELECTOR)) {
+    if (options.skipElement?.(el)) continue;
+    if (!hasTextContent(el) || !isRenderedTypeElement(el, getStyle)) continue;
+    const fontSize = parseFloat(getStyle(el)?.fontSize);
+    if (!Number.isFinite(fontSize) || fontSize < 8 || fontSize >= 200) continue;
+    samples.push({ role: typeHierarchyRole(el), size: fontSize });
+  }
+  return checkFlatTypeHierarchySamples(samples);
+}
+
 // Browser page-level checks — use document/getComputedStyle globals
 
 function checkTypography() {
@@ -5054,8 +5286,7 @@ function checkTypography() {
     const style = getComputedStyle(el);
     const ff = style.fontFamily;
     if (!ff) continue;
-    const stack = ff.split(',').map(f => f.trim().replace(/^['"]|['"]$/g, '').toLowerCase());
-    const primary = stack.find(f => f && !GENERIC_FONTS.has(f));
+    const primary = primaryFontFace(ff);
     if (!primary) continue;
     fontUsage.set(primary, (fontUsage.get(primary) || 0) + 1);
     totalTextElements++;
@@ -5073,17 +5304,10 @@ function checkTypography() {
     }
   }
 
-  const sizes = new Set();
-  for (const el of document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,a,li,td,th,label,button,div')) {
-    const fs = parseFloat(getComputedStyle(el).fontSize);
-    if (fs > 0 && fs < 200) sizes.add(Math.round(fs * 10) / 10);
-  }
-  if (sizes.size >= 3) {
-    const sorted = [...sizes].sort((a, b) => a - b);
-    const ratio = sorted[sorted.length - 1] / sorted[0];
-    if (ratio < 2.0) {
-      findings.push({ type: 'flat-type-hierarchy', detail: `Sizes: ${sorted.map(s => s + 'px').join(', ')} (ratio ${ratio.toFixed(1)}:1)` });
-    }
+  for (const finding of checkFlatTypeHierarchyFromDoc(document, getComputedStyle, {
+    skipElement: el => el.closest?.('.impeccable-overlay, .impeccable-label, .impeccable-banner, .impeccable-tooltip, [id^="impeccable-live-"]'),
+  })) {
+    findings.push({ type: finding.id, detail: finding.snippet });
   }
 
   return findings;
@@ -5300,8 +5524,7 @@ function checkPageTypography(doc, win) {
       if (rule.type !== 1) continue;
       const ff = rule.style?.fontFamily;
       if (!ff) continue;
-      const stack = ff.split(',').map(f => f.trim().replace(/^['"]|['"]$/g, '').toLowerCase());
-      const primary = stack.find(f => f && !GENERIC_FONTS.has(f));
+      const primary = primaryFontFace(ff);
       if (primary) {
         fonts.add(primary);
         if (OVERUSED_FONTS.has(primary)) overusedFound.add(primary);
@@ -5320,11 +5543,10 @@ function checkPageTypography(doc, win) {
   const ffRe = /font-family\s*:\s*([^;}]+)/gi;
   let fm;
   while ((fm = ffRe.exec(html)) !== null) {
-    for (const f of fm[1].split(',').map(f => f.trim().replace(/^['"]|['"]$/g, '').toLowerCase())) {
-      if (f && !GENERIC_FONTS.has(f)) {
-        fonts.add(f);
-        if (OVERUSED_FONTS.has(f)) overusedFound.add(f);
-      }
+    const primary = primaryFontFace(fm[1]);
+    if (primary) {
+      fonts.add(primary);
+      if (OVERUSED_FONTS.has(primary)) overusedFound.add(primary);
     }
   }
 
@@ -5332,21 +5554,7 @@ function checkPageTypography(doc, win) {
     findings.push({ id: 'overused-font', snippet: `Primary font: ${font}` });
   }
 
-  // Flat type hierarchy
-  const sizes = new Set();
-  const textEls = doc.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a, li, td, th, label, button, div');
-  for (const el of textEls) {
-    const fontSize = parseFloat(win.getComputedStyle(el).fontSize);
-    // Filter out sub-8px values (jsdom doesn't resolve relative units properly)
-    if (fontSize >= 8 && fontSize < 200) sizes.add(Math.round(fontSize * 10) / 10);
-  }
-  if (sizes.size >= 3) {
-    const sorted = [...sizes].sort((a, b) => a - b);
-    const ratio = sorted[sorted.length - 1] / sorted[0];
-    if (ratio < 2.0) {
-      findings.push({ id: 'flat-type-hierarchy', snippet: `Sizes: ${sorted.map(s => s + 'px').join(', ')} (ratio ${ratio.toFixed(1)}:1)` });
-    }
-  }
+  findings.push(...checkFlatTypeHierarchyFromDoc(doc, el => win.getComputedStyle(el)));
 
   return findings;
 }
@@ -6400,6 +6608,36 @@ function checkTextOcclusionDOM() {
   // reads as an opaque box.
   const effectiveOpacity = effectiveOpacityDOM;
 
+  // The part of an element that is actually painted, after every scrolling or
+  // clipping ancestor has had its say.
+  //
+  // getBoundingClientRect reports where a box would be if nothing cut it off,
+  // so a paragraph half scrolled out of a panel still reports its full height,
+  // and the half that is clipped away lands wherever the page continues below
+  // the panel. The elementFromPoint probe then samples coordinates the text is
+  // not painted at, finds whatever genuinely is painted there, and reports the
+  // text as buried under it. Any sticky footer or toolbar beneath a scroll
+  // region produces this, and it is the shape most likely to be waved off as
+  // noise, which costs the rule its credibility on the findings that are real.
+  //
+  // Border box rather than padding box on purpose: it errs toward probing, and
+  // giving up a scrollbar gutter's width would drop true findings at the right
+  // edge of a scroller.
+  const paintedRect = (el, rect) => {
+    let left = rect.left, top = rect.top, right = rect.right, bottom = rect.bottom;
+    for (let cur = el.parentElement; cur && cur !== document.documentElement; cur = cur.parentElement) {
+      let cs; try { cs = getComputedStyle(cur); } catch { continue; }
+      const clipsX = String(cs.overflowX || 'visible') !== 'visible';
+      const clipsY = String(cs.overflowY || 'visible') !== 'visible';
+      if (!clipsX && !clipsY) continue;
+      let b; try { b = cur.getBoundingClientRect(); } catch { continue; }
+      if (clipsX) { left = Math.max(left, b.left); right = Math.min(right, b.right); }
+      if (clipsY) { top = Math.max(top, b.top); bottom = Math.min(bottom, b.bottom); }
+      if (right - left < 1 || bottom - top < 1) return null;
+    }
+    return { left, top, right, bottom, width: right - left, height: bottom - top };
+  };
+
   // Collect renderable text owners in / near the first viewport for the
   // elementFromPoint probe. SVG <text> counts too.
   const textEls = [];
@@ -6412,8 +6650,13 @@ function checkTextOcclusionDOM() {
     if (text.length < 2) continue;
     if (!isPaintedForOcclusion(el)) continue;
     if (effectiveOpacity(el) <= 0.02) continue;
-    let rect; try { rect = el.getBoundingClientRect(); } catch { continue; }
-    if (rect.width < 6 || rect.height < 6) continue;
+    let full; try { full = el.getBoundingClientRect(); } catch { continue; }
+    if (full.width < 6 || full.height < 6) continue;
+    // Probe only where the text is on screen. A run clipped down to a sliver is
+    // dropped rather than sampled: a few pixels of visible text cannot support
+    // a coverage fraction worth reporting either way.
+    const rect = paintedRect(el, full);
+    if (!rect || rect.width < 6 || rect.height < 6) continue;
     // Viewport-bound probe: keep text whose box overlaps the live viewport.
     if (rect.bottom <= 0 || rect.top >= vh) continue;
     textEls.push({ el, rect, text, inSvg });
@@ -7281,7 +7524,7 @@ if (IS_BROWSER) {
       if (currentStyle.filter && currentStyle.filter !== 'none') reasons.add('filter');
       if (currentStyle.backdropFilter && currentStyle.backdropFilter !== 'none') reasons.add('backdrop filter');
 
-      const solidBg = parseRgb(currentStyle.backgroundColor);
+      const solidBg = parseRgb(currentStyle.backgroundColor) || parseAnyColor(currentStyle.backgroundColor);
       if (solidBg && solidBg.a >= 0.95 && (!bgImage || bgImage === 'none')) break;
       current = current.parentElement;
     }
@@ -7343,7 +7586,7 @@ if (IS_BROWSER) {
       // starve the url()-backed texts this mode exists to sample.
       if (options.imageOnly && !reasons.includes('image background')) continue;
 
-      const textColor = parseRgb(style.color);
+      const textColor = parseRgb(style.color) || parseAnyColor(style.color);
       const fontSize = parseFloat(style.fontSize) || 16;
       const fontWeight = parseInt(style.fontWeight) || 400;
       const isLargeText = fontSize >= WCAG_LARGE_TEXT_PX || (fontSize >= WCAG_LARGE_BOLD_TEXT_PX && fontWeight >= 700);
@@ -7640,7 +7883,7 @@ if (IS_BROWSER) {
         return sample;
       }
     }
-    const bg = parseRgb(style.backgroundColor);
+    const bg = parseRgb(style.backgroundColor) || parseAnyColor(style.backgroundColor);
     if (bg && bg.a > 0.05) return { status: 'sampled', color: bg, method: 'solid-background' };
     return { status: 'unresolved', reason: 'no readable background' };
   }
@@ -7770,7 +8013,7 @@ if (IS_BROWSER) {
     }
 
     const style = getComputedStyle(el);
-    const textColor = parseRgb(style.color) || candidate.textColor;
+    const textColor = parseRgb(style.color) || parseAnyColor(style.color) || candidate.textColor;
     if (!textColor) return { ...candidate, status: 'unresolved', confidence: 'none', reason: 'unreadable text color' };
 
     const rect = getDirectTextRect(el) || el.getBoundingClientRect();
@@ -8127,7 +8370,19 @@ if (IS_BROWSER) {
     return findings;
   }
 
+  // A page matched by detector.ignoreFiles is waived wholesale: every scan
+  // stage answers empty so the badge and toast read zero. Mirrors
+  // shouldIgnoreDetectionFile in cli/lib/impeccable-config.mjs; the live
+  // overlay resolves the globs per page (live-browser-ignores.js) and
+  // forwards the verdict as config.skipScan.
+  function skipScanActive() {
+    return EXTENSION_MODE && window.__IMPECCABLE_CONFIG__?.skipScan === true;
+  }
+
   function collectBrowserFindings() {
+    if (skipScanActive()) {
+      return { groupMap: new Map(), allFindings: [], pageLevelFindings: [] };
+    }
     const groupMap = new Map();
     const _disabled = EXTENSION_MODE ? (window.__IMPECCABLE_CONFIG__?.disabledRules || []) : [];
     const _ruleOk = (id) => !_disabled.length || !_disabled.includes(id);
@@ -8328,6 +8583,119 @@ if (IS_BROWSER) {
       }).filter(f => _ruleOk(f.type));
       pageLevelFindings.push(...mapped);
       addBrowserFindings(groupMap, document.body, mapped);
+    }
+
+    // Value-level suppression (issue #639). `disabledRules` above handles
+    // whole rules; this applies the config's remaining ignoreValues entries,
+    // which the CLI filters through isIgnoredFindingValue in
+    // cli/lib/impeccable-config.mjs, so a project waiver like
+    // overused-font = "geist mono" reaches the overlay and extension too.
+    const _normValue = (v) => String(v || '').trim().replace(/^["']|["']$/g, '')
+      .replace(/\+/g, ' ').replace(/\s+/g, ' ').toLowerCase();
+    const _disabledValues = EXTENSION_MODE
+      ? (Array.isArray(window.__IMPECCABLE_CONFIG__?.disabledValues) ? window.__IMPECCABLE_CONFIG__.disabledValues : [])
+        .filter(e => e && typeof e === 'object' && e.rule && e.value)
+        .map(e => ({ rule: String(e.rule).trim().toLowerCase(), value: _normValue(e.value) }))
+      : [];
+    if (_disabledValues.length > 0) {
+      // The six rules whose findings carry a matchable value; keep in step
+      // with extractFindingIgnoreValue in cli/lib/impeccable-config.mjs.
+      // Everything else is suppressed by rule or by file scope, both already
+      // resolved into disabledRules before the scan message was sent.
+      const _directValueRules = new Set([
+        'overused-font',
+        'bounce-easing',
+        'design-system-font',
+        'design-system-color',
+        'design-system-radius',
+        'design-system-font-size',
+      ]);
+      // The design-system checks set `ignoreValue` on their findings; the
+      // detail fallbacks catch overused-font, whose value lives in its
+      // sentence. One CLI matcher is not mirrored here: the motion extractor
+      // (a value-scoped bounce-easing waiver only matches when the finding
+      // carries ignoreValue directly). The CLI's [?&]family= URL fallback is
+      // also omitted on purpose: browser findings for these rules always
+      // carry ignoreValue or a "Primary font:" / "Google Fonts:" /
+      // font-family sentence, so it is unreachable here.
+      const _findingValue = (f) => {
+        if (!f || !_directValueRules.has(f.type || f.id)) return '';
+        const direct = f.ignoreValue || f.value;
+        if (direct) return _normValue(direct);
+        // The CLI routes bounce-easing through extractMotionIgnoreValue and
+        // never the font regexes; without a direct ignoreValue there is no
+        // value to match, so do not invent one from unrelated CSS text.
+        if ((f.type || f.id) === 'bounce-easing') return '';
+        for (const text of [f.detail, f.snippet]) {
+          if (typeof text !== 'string' || !text) continue;
+          const primary = text.match(/Primary font:\s*([^()\n;]+)/i);
+          if (primary) return _normValue(primary[1]);
+          const google = text.match(/Google Fonts:\s*([^()\n;]+)/i);
+          if (google) return _normValue(google[1]);
+          const family = text.match(/font-family\s*:\s*["']?([^'",;\n]+)/i);
+          if (family) return _normValue(family[1]);
+        }
+        return '';
+      };
+      // design-system-color compares by color value, not by spelling: the
+      // browser reports computed rgb(...) strings while waivers are usually
+      // written as hex. Mirrors ignoreValueMatches -> colorIgnoreKey in
+      // cli/lib/impeccable-config.mjs for the hex and rgb()/rgba() forms;
+      // hsl stays CLI-only.
+      const _colorKey = (value) => {
+        const text = String(value || '').trim().toLowerCase();
+        const hex = text.match(/^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/);
+        if (hex) {
+          const expanded = hex[1].length <= 4 ? [...hex[1]].map(d => d + d).join('') : hex[1];
+          const [r, g, b, a = 255] = expanded.match(/../g).map(ch => parseInt(ch, 16));
+          return `${r},${g},${b},${a}`;
+        }
+        const rgb = text.match(/^rgba?\((.*)\)$/);
+        if (!rgb) return '';
+        const body = rgb[1].trim().replace(/\s*\/\s*/g, ' / ');
+        let parts;
+        if (body.includes(',')) {
+          parts = body.split(',').map(p => p.trim()).filter(Boolean);
+          const last = parts[parts.length - 1];
+          if (last && last.includes('/')) {
+            parts = [...parts.slice(0, -1), ...last.split('/').map(p => p.trim()).filter(Boolean)];
+          }
+        } else {
+          parts = body.split(/\s+/).filter(p => p && p !== '/');
+        }
+        if (parts.length < 3 || parts.length > 4) return '';
+        const channel = (raw, isAlpha) => {
+          const m = String(raw).trim().match(/^(-?\d*\.?\d+)(%)?$/);
+          if (!m) return null;
+          let v = parseFloat(m[1]);
+          if (m[2]) v = isAlpha ? v / 100 : v * 2.55;
+          const max = isAlpha ? 1 : 255;
+          if (!Number.isFinite(v) || v < 0 || v > max) return null;
+          return isAlpha ? v : Math.round(v);
+        };
+        const r = channel(parts[0], false);
+        const g = channel(parts[1], false);
+        const b = channel(parts[2], false);
+        const a = parts[3] === undefined ? 1 : channel(parts[3], true);
+        if ([r, g, b, a].some(v => v === null)) return '';
+        return `${r},${g},${b},${Math.round(a * 255)}`;
+      };
+      const _valueIgnored = (f) => {
+        const value = _findingValue(f);
+        if (!value) return false;
+        const rule = f.type || f.id;
+        return _disabledValues.some(e => e.rule === rule && (e.value === value
+          || (rule === 'design-system-color'
+            && _colorKey(e.value) !== '' && _colorKey(e.value) === _colorKey(value))));
+      };
+      for (const [el, list] of [...groupMap.entries()]) {
+        const kept = list.filter(f => !_valueIgnored(f));
+        if (kept.length > 0) groupMap.set(el, kept);
+        else groupMap.delete(el);
+      }
+      for (let i = pageLevelFindings.length - 1; i >= 0; i--) {
+        if (_valueIgnored(pageLevelFindings[i])) pageLevelFindings.splice(i, 1);
+      }
     }
 
     return {
@@ -8547,6 +8915,12 @@ if (IS_BROWSER) {
 
   async function collectBrowserFindingsAsync(options = {}, runtime = {}) {
     const collected = collectBrowserFindings();
+    // The visual pass walks the DOM on its own; on a skipScan page it would
+    // repopulate the emptied scan, so it is skipped with everything else.
+    if (skipScanActive()) {
+      lastVisualContrastAnalyses = [];
+      return { ...collected, allFindings: [], visualContrastAnalyses: [] };
+    }
     await addVisualContrastFindings(collected.groupMap, options, runtime);
     return {
       ...collected,
@@ -8600,7 +8974,7 @@ if (IS_BROWSER) {
     const generation = scanGeneration;
     const collected = collectBrowserFindings();
     const allFindings = renderBrowserFindings(collected, options);
-    if (shouldRunVisualContrast(options)) {
+    if (!skipScanActive() && shouldRunVisualContrast(options)) {
       addVisualContrastFindings(collected.groupMap, options, { decorate: true, generation })
         .then(() => {
           if (generation === scanGeneration) postSerializedFindings(collected.groupMap, options);

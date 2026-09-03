@@ -9,6 +9,13 @@
 @custom-media --mobile (width <= 767px);
 @custom-media --tablet-up (width >= 768px);
 @custom-media --tablet-down (width <= 1024px);
+
+/*
+ * The exact complement of --tablet-down, for anything that must appear precisely
+ * where the desktop layout stops. --tablet-up is NOT that complement: it starts
+ * at 768px, so pairing the two leaves 768-1024px where both sides are hidden.
+ */
+@custom-media --desktop-up (width >= 1025px);
 @custom-media --tablet (width >= 768px) and (width <= 1024px);
 @custom-media --narrow-desktop-down (width <= 1200px);
 @custom-media --l (width >= 1930px);

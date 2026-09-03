@@ -962,13 +962,45 @@ export function extractPlatform(product) {
  * (this file lives at `<skill>/scripts/context.mjs`). Returns null when the
  * frontmatter is missing or unreadable.
  */
+function parseSkillFrontmatterVersion(content) {
+  const match = String(content).match(/^---[ \t]*\r?\n([\s\S]*?)\r?\n---(?:[ \t]*\r?\n|[ \t]*$)/);
+  if (!match) return null;
+
+  let metadataVersion = null;
+  let topLevelVersion = null;
+  let inMetadata = false;
+  let metadataIndent = null;
+
+  for (const line of match[1].split(/\r?\n/)) {
+    if (!line.trim() || line.trimStart().startsWith('#')) continue;
+    const indentText = line.match(/^[ \t]*/)[0];
+    const indent = indentText.replace(/\t/g, '  ').length;
+
+    if (indent === 0) {
+      inMetadata = /^metadata:\s*(?:#.*)?$/.test(line);
+      metadataIndent = null;
+      const version = line.match(/^version:\s*(.+?)\s*$/);
+      if (version) topLevelVersion = version[1];
+      continue;
+    }
+
+    if (!inMetadata) continue;
+    if (metadataIndent === null) metadataIndent = indent;
+    if (indent !== metadataIndent) continue;
+    const version = line.trim().match(/^version:\s*(.+?)\s*$/);
+    if (version) metadataVersion = version[1];
+  }
+
+  const value = metadataVersion || topLevelVersion;
+  return value ? value.trim().replace(/^(["'])(.*)\1$/, '$2') : null;
+}
+
 function readLocalSkillVersion() {
   try {
     const here = path.dirname(fileURLToPath(import.meta.url));
     const skillMd = path.join(here, '..', 'SKILL.md');
     const content = fs.readFileSync(skillMd, 'utf-8');
-    const match = content.match(/^version:\s*(.+)$/m);
-    return match ? match[1].trim().replace(/^["']|["']$/g, '') : null;
+    return parseSkillFrontmatterVersion(content);
   } catch {
     return null;
   }
@@ -1011,6 +1043,27 @@ async function fetchLatestSkillVersion() {
   } catch {
     return null; // offline, sandboxed, timed out, or bad JSON: all non-fatal
   }
+}
+
+// Destroy fetch's global undici dispatcher before process.exit(): a live
+// keep-alive socket trips a libuv assertion on Windows/Node 24 after a
+// successful boot (nodejs/node#56645, issue #573).
+async function destroyFetchDispatcher() {
+  const dispatcher = globalThis[Symbol.for('undici.globalDispatcher.1')];
+  if (dispatcher && typeof dispatcher.destroy === 'function') {
+    try { await dispatcher.destroy(); } catch { /* exit regardless */ }
+  }
+}
+
+// Drain the boot payload before process.exit(): a live pipe that has not
+// flushed yet is truncated when Node tears down (issue #573 review). Then
+// close fetch so Windows teardown does not abort on the keep-alive socket.
+async function finishCli(output) {
+  await new Promise((resolve) => {
+    process.stdout.write(output, () => resolve());
+  });
+  await destroyFetchDispatcher();
+  process.exit(0);
 }
 
 // Two instructions used to sit in one directive: ask, and "if they agree, run
@@ -1151,6 +1204,7 @@ async function cli() {
     appendDetectorFallback(parts, ctx);
     appendImageGenDirective(parts);
     appendBuildPathDirective(parts, ctx);
+    await appendCompRoundOpenDirective(parts, ctx);
     appendAutonomyCounterDirective(parts);
     appendSubagentAuthorizationDirective(parts);
     if (shouldWarnMissingTarget(ctx, targetProvided, targetExists)) {
@@ -1159,8 +1213,7 @@ async function cli() {
     appendImageToolsDirective(parts);
     appendStalenessDirective(parts, ctx, cliOptions);
     if (updateDirective) parts.push(updateDirective);
-    process.stdout.write(parts.join('\n\n---\n\n') + '\n');
-    process.exit(0);
+    await finishCli(parts.join('\n\n---\n\n') + '\n');
   }
   const parts = [`# PRODUCT.md\n\n${ctx.product.trim()}`];
   if (ctx.hasDesign) {
@@ -1171,6 +1224,7 @@ async function cli() {
   appendDetectorFallback(parts, ctx);
   appendImageGenDirective(parts);
   appendBuildPathDirective(parts, ctx);
+  await appendCompRoundOpenDirective(parts, ctx);
   appendAutonomyCounterDirective(parts);
   appendSubagentAuthorizationDirective(parts);
   if (shouldWarnMissingTarget(ctx, targetProvided, targetExists)) {
@@ -1206,7 +1260,7 @@ async function cli() {
     }
   }
   if (updateDirective) parts.push(updateDirective);
-  process.stdout.write(parts.join('\n\n---\n\n') + '\n');
+  await finishCli(parts.join('\n\n---\n\n') + '\n');
 }
 
 function parseCliOptions(args) {
@@ -1309,6 +1363,25 @@ function readBuildPathAt(root) {
 // selecting another workspace, cwd is the caller's app, not the target's, and
 // letting it rank above the repo root hands one workspace another's workflow.
 // It stands in only when no project resolved at all.
+// A direction was dealt for a comp-led build and the phase machine never
+// started, or stopped short of the hero gate: the comp round is open. Said
+// here because every model in the corpus ran context.mjs unprompted, and
+// the run that skipped the round did so between the roll and the first
+// write; a boot that names the open round is a boot the write cannot claim
+// it never saw. Reads build-phase's own helper so the two agree.
+async function appendCompRoundOpenDirective(parts, ctx) {
+  try {
+    const { compRoundOpen } = await import('./build-phase.mjs');
+    const roots = [...new Set([ctx?.projectRoot || process.cwd(), ctx?.repoRoot].filter(Boolean).map((r) => path.resolve(r)))];
+    for (const root of roots) {
+      const open = compRoundOpen(root);
+      if (!open) continue;
+      parts.push(`COMP_ROUND_OPEN: ${open.reason}. On a comp-led build no page code is written before build-phase.mjs closes the comps, spec, plates, and hero gates; run \`node ${path.dirname(fileURLToPath(import.meta.url))}/build-phase.mjs status\` and follow its NEXT line. A page written past an open round is what the finish reviewer sends back.`);
+      return;
+    }
+  } catch { /* build-phase absent: nothing to say */ }
+}
+
 function appendBuildPathDirective(parts, ctx) {
   const roots = [...new Set(
     [ctx?.projectRoot || process.cwd(), ctx?.repoRoot].filter(Boolean).map((root) => path.resolve(root)),

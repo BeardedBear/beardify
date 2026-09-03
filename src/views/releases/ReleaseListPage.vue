@@ -54,13 +54,31 @@
         </BdButton>
       </div>
     </div>
+    <!-- The filter column is ~25 tab stops and precedes the feed in the DOM. -->
+    <a class="skip-link" href="#release-feed">Skip to releases</a>
     <div class="body">
       <div class="side">
         <ReleaseSide />
       </div>
-      <div ref="scrollRef" class="list" @scroll="onScroll">
+      <div id="release-feed" ref="scrollRef" class="list" @scroll="onScroll">
+        <!--
+          Two ways to end up with an empty feed, and only one of them is a
+          mistake. Ticking off the last unheard release is the task completed —
+          answering that with "Nothing here / No release matches the current
+          filters" and a button that undoes the work makes the reward for
+          finishing indistinguishable from an error.
+        -->
         <BdEmptyState
-          v-if="!releasesStore.visibleReleases.length"
+          v-if="caughtUp"
+          action-label="Show listened"
+          message="Nothing unheard in the last 60 days."
+          title="Caught up"
+          @action="releasesStore.hideChecked = false"
+        >
+          <template #icon><CheckCheck :size="32" /></template>
+        </BdEmptyState>
+        <BdEmptyState
+          v-else-if="!releasesStore.visibleReleases.length"
           action-label="Clear filters"
           message="No release matches the current filters."
           title="Nothing here"
@@ -75,7 +93,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowUpDown, Disc3, RefreshCw, SlidersHorizontal, TriangleAlert } from "@lucide/vue";
+import { ArrowUpDown, CheckCheck, Disc3, RefreshCw, SlidersHorizontal, TriangleAlert } from "@lucide/vue";
 import { BdButton, BdEmptyState, BdLoader, BdTooltip } from "bearded-ui";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -90,6 +108,19 @@ const releasesStore = useReleases();
 const dialogStore = useDialog();
 const scrollRef = ref<HTMLElement | null>(null);
 const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, scrollRef);
+
+/*
+ * Empty because the week is done, not because the filters are too tight: the
+ * listened gate is the only thing holding anything back, and there was something
+ * to hold back in the first place.
+ */
+const caughtUp = computed(
+  () =>
+    !releasesStore.visibleReleases.length
+    && releasesStore.hideChecked
+    && !releasesStore.genres.length
+    && releasesStore.releases.length > 0,
+);
 
 // Time, not date: the feed is refetched several times a day, so "28 Aug" says nothing.
 const fetchedLabel = computed(() =>
@@ -112,6 +143,12 @@ releasesStore.getReleases();
   min-height: 0;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .releases {
+    animation: none;
+  }
+}
+
 .body {
   display: flex;
   flex: 1;
@@ -127,12 +164,13 @@ releasesStore.getReleases();
   overflow: auto;
 }
 
+/* No `position: sticky` here: .side is stretched to its containing block's
+   height and .body is not a scroll container, so there is no range to stick
+   within — it scrolls its own overflow instead, which is what was wanted. */
 .side {
   border-right: 1px solid var(--bd-bg-dark);
   overflow: auto;
   padding: 0 var(--bd-space-4) var(--bd-space-4);
-  position: sticky;
-  top: 0;
   width: 14rem;
 
   /* Mobile: the filter column is moved into a dialog, opened from the toolbar. */
@@ -156,8 +194,16 @@ releasesStore.getReleases();
   }
 }
 
+/*
+ * Hidden exactly where .side reappears, and not one pixel earlier. Paired with
+ * --tablet-up (>= 768px) against .side's --tablet-down (<= 1024px), the two
+ * hid each other across 768-1024px: the filter column was gone and the only
+ * button that opens it as a dialog was gone with it, so the entire filter and
+ * month-navigation panel had no reachable trigger on a landscape tablet or a
+ * narrowed desktop window.
+ */
 .filters-button {
-  @media (--tablet-up) {
+  @media (--desktop-up) {
     display: none;
   }
 }

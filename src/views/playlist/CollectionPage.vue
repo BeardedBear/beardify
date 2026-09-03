@@ -4,13 +4,13 @@
   </div>
   <PageScroller v-else ref="scrollerRef">
     <PageFit>
-      <div class="collection">
+      <div class="collection" :class="{ 'is-dragging': isDragging }">
         <Header no-duration with-filter />
         <div class="content">
           <template v-if="playlistStore.filter !== ''">
-            <div class="album-list">
+            <TransitionGroup class="album-list" name="album-shift" tag="div">
               <Album v-for="item in albumListFiltered" :key="item.id" :album="item" can-delete can-save with-artists />
-            </div>
+            </TransitionGroup>
           </template>
           <template v-else-if="topTiers">
             <div class="tier-section">
@@ -21,6 +21,7 @@
                     v-bind="dragOptions"
                     :class="['tier-grid', `tier-grid-${i}`, { 'draggable-grid': !dragOptions.disabled }]"
                     @end="handleTopTierEnd"
+                    @start="isDragging = true"
                   >
                     <Album
                       v-for="item in group"
@@ -104,6 +105,7 @@
             v-bind="dragOptions"
             :class="['album-list', { 'draggable-grid': !dragOptions.disabled }]"
             @end="syncNewPositions"
+            @start="isDragging = true"
           >
             <Album v-for="item in albumList" :key="item.id" :album="item" can-delete can-save with-artists />
           </VueDraggable>
@@ -195,8 +197,10 @@ function handleAutoScroll(
   hoverTargetEl.scrollTop += delta;
 }
 
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 const dragOptions = computed(() => ({
-  animation: 150,
+  animation: prefersReducedMotion ? 0 : 150,
   delay: 200,
   disabled: playlistStore.playlist.owner.id !== authStore.me?.id,
   forceFallback: true,
@@ -219,10 +223,12 @@ function handleTierListEnd(): void {
 }
 
 function handleTopTierEnd(): void {
+  isDragging.value = false;
   applyReorder(topTierGroups.value.flat());
 }
 
 function syncNewPositions(event: { newIndex?: number; oldIndex?: number }): void {
+  isDragging.value = false;
   if (event.oldIndex === undefined || event.newIndex === undefined) return;
   playlistStore.updateCollectionPosition(event.oldIndex, event.newIndex);
 }
@@ -422,14 +428,153 @@ playlistStore.clean().finally(() => {
   }
 }
 
+/*
+ * Ordonner est l'acte pour lequel cette page existe : dans une collection, la
+ * position EST le propos. Le drag est donc le seul moment chorégraphié ici, et
+ * le reste de la page ne bouge pas. Trois questions que le geste doit trancher,
+ * trois états ci-dessous : est-ce que je la tiens, d'où vient-elle, où peut-elle
+ * atterrir.
+ */
+
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
 .draggable-grid :deep(.album) {
   cursor: grab;
 }
 
+/*
+ * `delay: 200` dans dragOptions : 200 ms de pression avant que le drag démarre.
+ * Sans retour, c'est 200 ms où rien ne répond. La pochette s'enfonce pendant
+ * l'armement, puis se relâche dans la main.
+ */
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.draggable-grid :deep(.cover) {
+  transition:
+    box-shadow var(--bd-transition),
+    transform var(--bd-transition-fast);
+}
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.draggable-grid :deep(.album:active .cover) {
+  transform: scale(0.96);
+}
+
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
 .draggable-grid :deep(.sortable-chosen) {
   cursor: grabbing;
+}
+
+/*
+ * En main. Sortable clone la carte et écrit la translation du pointeur en style
+ * inline sur ce clone : un `scale` ou un `rotate` posé sur le clone lui-même se
+ * composerait avec cette translation et décrocherait la carte du curseur — 2°
+ * suffisent à la décaler d'une vingtaine de pixels après 500 px de trajet.
+ * L'élévation va donc sur `.visual`, à l'intérieur, hors d'atteinte du inline.
+ */
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.draggable-grid :deep(.sortable-drag .visual) {
+  animation: lift-in-hand 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* L'ombre va sur .cover : c'est la seule boîte réellement opaque de la carte. */
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.draggable-grid :deep(.sortable-drag .cover) {
+  box-shadow: var(--bd-shadow-lg);
+}
+
+@keyframes lift-in-hand {
+  from {
+    transform: scale(1) rotate(0deg);
+  }
+
+  to {
+    transform: scale(1.05) rotate(-2deg);
+  }
+}
+
+/*
+ * Ce qui reste sur place n'est plus une carte, c'est l'emplacement qu'elle a
+ * libéré — et c'est aussi l'endroit exact où elle retombera si on relâche ici.
+ */
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.draggable-grid :deep(.sortable-ghost) {
+  outline: 0.15rem dashed var(--bd-primary);
+  outline-offset: 0.3rem;
+}
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.draggable-grid :deep(.sortable-ghost .visual) {
+  opacity: 0.25;
+}
+
+/*
+ * Tant qu'une carte est en l'air, chaque tier annonce qu'il peut la recevoir.
+ * `tier-grid-dynamic` en a plus besoin que les autres : un tier vide n'a aucun
+ * fond, donc aujourd'hui aucune cible visible.
+ */
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.is-dragging :deep(.tier-grid) {
+  outline: 0.1rem dashed color-mix(in oklab, var(--bd-primary) 30%, transparent);
+  outline-offset: 0.3rem;
+  transition:
+    background-color var(--bd-transition),
+    outline-color var(--bd-transition);
+}
+
+/*
+ * Celui qui tient le placeholder est la destination réelle : sortable déplace
+ * l'élément dragué dans le conteneur survolé au fil du geste, donc `:has()` suit
+ * la cible sans aucune comptabilité côté JS.
+ */
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.is-dragging :deep(.tier-grid:has(.sortable-ghost)) {
+  background-color: color-mix(in oklab, var(--bd-primary) 12%, var(--bd-bg));
+  border-radius: var(--bd-radius-sm);
+  outline-color: var(--bd-primary);
+}
+
+/*
+ * Filtrer recompose la grille sous les doigts. Sans FLIP, chaque frappe est un
+ * saut sec et on perd de vue ce qui a survécu au filtre ; la sortie reste
+ * instantanée pour que la frappe ne traîne pas derrière un chaînage de 400 ms.
+ */
+.album-shift-move {
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.album-shift-enter-active {
+  transition: opacity var(--bd-transition);
+}
+
+.album-shift-enter-from {
+  opacity: 0;
+}
+
+/*
+ * Le geste garde ses signaux d'état — l'emplacement libéré, le tier ciblé, la
+ * pochette élevée — et ne perd que le déplacement. Voir aussi `animation: 0`
+ * passé à sortable dans dragOptions, qui coupe le glissement des voisins.
+ */
+@media (prefers-reduced-motion: reduce) {
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  .draggable-grid :deep(.album:active .cover) {
+    transform: none;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  .draggable-grid :deep(.sortable-drag .visual) {
+    animation: none;
+  }
+
+  .album-shift-enter-active,
+  .album-shift-move {
+    transition: none;
+  }
 }
 
 /* Fixed to a single row (grid-template-rows) with new columns created as */
