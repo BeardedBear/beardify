@@ -58,7 +58,7 @@
       <div class="side">
         <ReleaseSide />
       </div>
-      <div ref="scrollRef" class="list" @scroll="onScroll">
+      <div id="release-feed" ref="scrollRef" class="list" @scroll="onScroll">
         <BdEmptyState
           v-if="!releasesStore.visibleReleases.length"
           action-label="Clear filters"

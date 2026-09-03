@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <div v-for="month in groups" :key="month.label">
+    <div v-for="month in releasesStore.monthGroups" :key="month.label" :data-month="month.label">
       <div class="month bd-font-bold">
         <span class="month-label">
           {{ month.label }}
@@ -75,27 +75,16 @@
 <script lang="ts" setup>
 import { CheckCheck, Play } from "@lucide/vue";
 import { BdLoader } from "bearded-ui";
-import { computed } from "vue";
 
 import Release from "@/components/releases/ReleaseIndex.vue";
 import { useSearch } from "@/components/search/SearchStore";
 import Cover from "@/components/ui/AlbumCover.vue";
 import { playAlbum } from "@/helpers/playAlbum";
 import { cancelReleaseAlbumLookup, lookupReleaseAlbum, releaseAlbum } from "@/helpers/releaseAlbum";
-import { groupByMonth } from "@/helpers/releases";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 const releasesStore = useReleases();
 const searchStore = useSearch();
-
-/*
- * Months, and nothing finer. The listing this feed comes from groups by month and
- * never states a day, so the day headings this used to carry would all read "exact
- * date unknown" — a heading per group that says the same thing is noise.
- */
-const groups = computed(() =>
-  groupByMonth(releasesStore.visibleReleases, releasesStore.checks, releasesStore.sortRating),
-);
 
 /**
  * Whether either search tagged to this release key is still in flight — the

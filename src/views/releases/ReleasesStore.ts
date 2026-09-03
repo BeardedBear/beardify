@@ -1,10 +1,10 @@
 import { useDebounceFn } from "@vueuse/core";
 import { defineStore } from "pinia";
 
-import { Release, ReleasesPage } from "@/@types/Releases";
+import { MonthGroup, Release, ReleasesPage } from "@/@types/Releases";
 import { getRemoteChecks, putRemoteChecks } from "@/helpers/releaseChecks";
 import { getFeedReleases } from "@/helpers/releaseFeed";
-import { mergeReleases, pruneChecks, toReleaseFromFeed } from "@/helpers/releases";
+import { groupByMonth, mergeReleases, pruneChecks, toReleaseFromFeed } from "@/helpers/releases";
 import { useCheckLiveAlbum, useCheckReissueAlbum } from "@/helpers/useCleanAlbums";
 import { useAuth } from "@/views/auth/AuthStore";
 
@@ -173,6 +173,21 @@ export const useReleases = defineStore("releases", {
       return [...counts.entries()]
         .map(([name, count]) => ({ count, name }))
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+    },
+
+    /**
+     * The feed grouped into months — and nothing finer. The listing this feed
+     * comes from groups by month and never states a day, so day headings would
+     * all read "exact date unknown"; a heading per group saying the same thing
+     * is noise.
+     *
+     * Read by both the list and the side rail.
+     * A getter rather than a computed in each: the grouping also sorts every
+     * month, and the rail exists precisely to jump between the headings the
+     * list renders — two passes could disagree about what months there are.
+     */
+    monthGroups(): MonthGroup[] {
+      return groupByMonth(this.visibleReleases, this.checks, this.sortRating);
     },
 
     /*
