@@ -38,7 +38,10 @@ export interface Release {
 }
 
 export interface ReleasesPage {
-  /** Release key → moment it was ticked off. A plain map so a tick is O(1) both ways. */
+  /**
+   * Release key → moment it was ticked off. A plain map so a tick is O(1) both ways.
+   * Not persisted locally: Supabase holds it, so it is empty until the sync answers.
+   */
   checks: Record<string, number>;
   error: boolean;
   /**

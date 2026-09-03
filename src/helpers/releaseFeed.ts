@@ -1,4 +1,5 @@
 import { http } from "@/helpers/http";
+import { hasSupabase, restUrl, SUPABASE_HEADERS } from "@/helpers/supabase";
 
 /**
  * A row of the `releases` table, filled daily by the scrapers at
@@ -24,20 +25,10 @@ export interface FeedRelease {
   source_id: string;
 }
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
-/*
- * The anon key is meant to be public — it identifies the project, and the table's
- * RLS policy is what actually grants access (select only, for anon). The service
- * role key, which bypasses RLS, lives in the scraper's environment and nowhere near
- * this bundle.
- */
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
-
 /** PostgREST's own ceiling is higher, but a genre-filtered window never approaches this. */
 const MAX_ROWS = 1000;
 
-const REST_URL = `${SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/releases`;
-const AUTH_HEADERS = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
+const REST_URL = restUrl("releases");
 
 /**
  * Every genre the table actually uses, sorted.
@@ -53,11 +44,11 @@ const AUTH_HEADERS = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPAB
  * @returns The distinct genres, or an empty array on failure
  */
 export async function getFeedGenres(): Promise<string[]> {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return [];
+  if (!hasSupabase()) return [];
 
   try {
     const rows = await http
-      .get(`${REST_URL}?select=genres&limit=${MAX_ROWS}`, { headers: AUTH_HEADERS })
+      .get(`${REST_URL}?select=genres&limit=${MAX_ROWS}`, { headers: SUPABASE_HEADERS })
       .json<{ genres: string[] }[]>();
 
     return [...new Set(rows.flatMap((row) => row.genres ?? []))].sort();
@@ -83,7 +74,7 @@ export async function getFeedGenres(): Promise<string[]> {
  * @returns The matching rows, or an empty array
  */
 export async function getFeedReleases(since: string, tags: string[]): Promise<FeedRelease[]> {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return [];
+  if (!hasSupabase()) return [];
 
   const params = new URLSearchParams({
     limit: String(MAX_ROWS),
@@ -103,7 +94,7 @@ export async function getFeedReleases(since: string, tags: string[]): Promise<Fe
   }
 
   try {
-    return await http.get(`${REST_URL}?${params}`, { headers: AUTH_HEADERS }).json<FeedRelease[]>();
+    return await http.get(`${REST_URL}?${params}`, { headers: SUPABASE_HEADERS }).json<FeedRelease[]>();
   } catch (error: unknown) {
     if (import.meta.env.DEV) console.error("Error fetching release feed:", error);
     return [];
