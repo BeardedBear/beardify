@@ -129,16 +129,21 @@ const matches = computed(() => {
 });
 
 /*
- * Selected genres are pinned above the rest and escape both the search and the cap:
- * a filter the user cannot see is a filter they cannot lift, and picking a rare genre
- * then typing anything else would push it out of a twelve-row list.
+ * Selecting a genre changes exactly one thing: that row's pressed state.
+ *
+ * Selected rows used to be pulled to the top and excused from the cap, so a
+ * single click both jumped the row out from under the pointer and promoted one
+ * more genre into the twelve visible — the list you were reading rearranged
+ * itself and grew every time you used it.
+ *
+ * What the pinning was protecting against — a filter scrolled or searched out
+ * of sight and therefore impossible to lift — is covered by `Clear`, which
+ * appears the moment anything is selected and rides in the sticky header, so it
+ * is on screen whatever the list is doing.
  */
-const picked = computed(() => releasesStore.genreList.filter((genre) => isSelected(genre.name)));
-const rest = computed(() => matches.value.filter((genre) => !isSelected(genre.name)));
+const shownGenres = computed(() => matches.value.slice(0, visible.value));
 
-const shownGenres = computed(() => [...picked.value, ...rest.value.slice(0, visible.value)]);
-
-const hasMore = computed(() => rest.value.length > visible.value);
+const hasMore = computed(() => matches.value.length > visible.value);
 
 /*
  * Clamped, because toggling a genre re-partitions picked/rest without touching
@@ -219,7 +224,7 @@ function scrollToMonth(label: string, block: "end" | "start"): void {
 
 /** Enter in the search field takes the top hit, so a typed genre never ends in a mouse trip. */
 function selectFirstMatch(): void {
-  const first = rest.value[0];
+  const first = matches.value[0];
   if (!first) return;
   releasesStore.toggleGenre(first.name);
   query.value = "";

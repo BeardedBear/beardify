@@ -189,20 +189,32 @@ export const useReleases = defineStore("releases", {
     /**
      * Filter terms present in the feed, most common first — the sidebar list.
      *
-     * Counted over `listenFiltered` rather than the whole feed, so a row saying
-     * 23 can actually deliver 23 rows. Not over `visibleReleases`: a facet count
-     * has to answer "how many if I pick this", which the genre gate would have
-     * already answered for it.
+     * Ordered on the whole feed and counted on what is left, which are two
+     * different numbers on purpose. The count has to answer "how many rows if I
+     * pick this", so it is measured over `listenFiltered` — over the whole feed
+     * a row saying 23 could not deliver 23 rows once "Hide listened" was on.
+     * The *order* must not answer that: sorting by the live count would re-rank
+     * the sidebar on every tick, so the list a user is reading reshuffles under
+     * the pointer while they work through it. Frequency across the feed never
+     * moves, so neither does a row.
+     *
+     * Not over `visibleReleases` either: the genre gate would have pre-answered
+     * the very question the facet count exists to ask.
      */
-    genreList(): { count: number; name: string }[] {
-      const counts = new Map<string, number>();
-      for (const release of this.listenFiltered) {
-        for (const term of release.terms) counts.set(term, (counts.get(term) ?? 0) + 1);
+    genreList(state): { count: number; name: string }[] {
+      const total = new Map<string, number>();
+      for (const release of state.releases) {
+        for (const term of release.terms) total.set(term, (total.get(term) ?? 0) + 1);
       }
 
-      return [...counts.entries()]
-        .map(([name, count]) => ({ count, name }))
-        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+      const remaining = new Map<string, number>();
+      for (const release of this.listenFiltered) {
+        for (const term of release.terms) remaining.set(term, (remaining.get(term) ?? 0) + 1);
+      }
+
+      return [...total.entries()]
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .map(([name]) => ({ count: remaining.get(name) ?? 0, name }));
     },
 
     /** The feed with the listened gate applied and nothing else — what the facet counts are measured on. */
