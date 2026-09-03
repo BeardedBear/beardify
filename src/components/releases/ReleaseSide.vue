@@ -13,10 +13,13 @@
 
   <h2 class="title bd-font-bold"><span>Months</span></h2>
   <nav aria-label="Jump to a month" class="months">
-    <button class="jump jump-edge" type="button" @click="scrollFeed(0)">
-      <ArrowUpToLine :size="13" />
-      <span class="jump-label">Top of feed</span>
-    </button>
+    <div class="jump-row">
+      <button class="jump jump-edge" type="button" @click="scrollFeed(0)">
+        <span class="jump-label">Top of feed</span>
+        <ArrowUpToLine :size="13" />
+      </button>
+      <span class="jump-slot" />
+    </div>
     <!--
       Two controls, so a row cannot be one: the label goes to the month's first
       release, the arrow to its last.
@@ -38,10 +41,13 @@
         </button>
       </BdTooltip>
     </div>
-    <button class="jump jump-edge" type="button" @click="scrollFeed(Number.MAX_SAFE_INTEGER)">
-      <ArrowDownToLine :size="13" />
-      <span class="jump-label">End of feed</span>
-    </button>
+    <div class="jump-row">
+      <button class="jump jump-edge" type="button" @click="scrollFeed(Number.MAX_SAFE_INTEGER)">
+        <span class="jump-label">End of feed</span>
+        <ArrowDownToLine :size="13" />
+      </button>
+      <span class="jump-slot" />
+    </div>
   </nav>
 
   <div class="genre-head">
@@ -298,7 +304,7 @@ watch(query, () => {
   display: flex;
   flex-direction: column;
   gap: var(--bd-space-1);
-  padding: var(--bd-space-4) var(--bd-space-2) 0;
+  padding: var(--bd-space-4) var(--bd-space-4) 0;
 }
 
 .counts {
@@ -389,6 +395,10 @@ watch(query, () => {
 }
 
 .months {
+  /* Shared by the per-month arrow and by the empty slot the edge rows hold in
+     its place, so one value keeps the trailing column straight. */
+  --jump-end-size: 1.9rem;
+
   display: flex;
   flex-direction: column;
   gap: var(--bd-space-1);
@@ -439,12 +449,15 @@ watch(query, () => {
 
 .jump-edge {
   color: var(--bd-font-color-dark);
-  justify-content: flex-start;
-  margin: 0 var(--bd-space-2);
 
   &:hover {
     color: var(--bd-font-color);
   }
+}
+
+.jump-slot {
+  flex-shrink: 0;
+  width: var(--jump-end-size);
 }
 
 .jump-label {
@@ -474,12 +487,14 @@ watch(query, () => {
   cursor: pointer;
   display: flex;
   flex-shrink: 0;
+  height: var(--jump-end-size);
   justify-content: center;
   opacity: 0.6;
-  padding: var(--bd-space-2);
+  padding: 0;
   transition:
     background-color var(--bd-transition-fast),
     opacity var(--bd-transition-fast);
+  width: var(--jump-end-size);
 
   &:hover {
     background-color: var(--bd-bg);
