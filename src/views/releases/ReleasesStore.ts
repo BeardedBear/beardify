@@ -110,20 +110,6 @@ export const useReleases = defineStore("releases", {
     },
 
     /**
-     * Add or remove a genre from the filter.
-     *
-     * A fresh array rather than a mutation: the page watches this to scroll back to
-     * the top, and an in-place push leaves the reference — and so the watcher —
-     * untouched.
-     * @param genre - The term as the sidebar and the row chips spell it
-     */
-    toggleGenre(genre: string) {
-      this.genres = this.genres.includes(genre)
-        ? this.genres.filter((selected) => selected !== genre)
-        : [...this.genres, genre];
-    },
-
-    /**
      * Adopt the ticks stored for the account, so every device shows the same list.
      *
      * The remote row wins outright rather than being merged into the local one: an
@@ -150,6 +136,20 @@ export const useReleases = defineStore("releases", {
       else this.checks[key] = Date.now();
 
       this.pushChecks();
+    },
+
+    /**
+     * Add or remove a genre from the filter.
+     *
+     * A fresh array rather than a mutation: the page watches this to scroll back to
+     * the top, and an in-place push leaves the reference — and so the watcher —
+     * untouched.
+     * @param genre - The term as the sidebar and the row chips spell it
+     */
+    toggleGenre(genre: string) {
+      this.genres = this.genres.includes(genre)
+        ? this.genres.filter((selected) => selected !== genre)
+        : [...this.genres, genre];
     },
 
     toggleSortRating() {
