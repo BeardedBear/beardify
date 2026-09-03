@@ -7,6 +7,7 @@ import {
   mergeReleases,
   monthLabel,
   normalizeTag,
+  pruneChecks,
   releaseKey,
   releaseTimestamp,
   suggestGenres,
@@ -235,5 +236,16 @@ describe("groupByMonth", () => {
     expect(groups.map((group) => group.label)).toEqual(["August 2026", "July 2026"]);
     // Unrated sinks below the rated ones rather than being dropped.
     expect(groups[0].releases.map((r) => r.name)).toEqual(["Aug high", "Aug low", "Aug unrated"]);
+  });
+});
+
+describe("pruneChecks", () => {
+  it("keeps recent ticks and drops the ones past the retention window", () => {
+    const now = Date.UTC(2026, 8, 3);
+    const day = 24 * 60 * 60 * 1000;
+
+    expect(
+      pruneChecks({ fresh: now - day, old: now - 91 * day, yesterday: now - 89 * day }, now),
+    ).toEqual({ fresh: now - day, yesterday: now - 89 * day });
   });
 });

@@ -1,12 +1,22 @@
+import { useDebounceFn } from "@vueuse/core";
 import { defineStore } from "pinia";
 
 import { Artist } from "@/@types/Artist";
 import { Paging } from "@/@types/Paging";
 import { Release, ReleasesPage } from "@/@types/Releases";
 import { instance } from "@/api";
+import { getRemoteChecks, putRemoteChecks } from "@/helpers/releaseChecks";
 import { getFeedGenres, getFeedReleases } from "@/helpers/releaseFeed";
-import { GENRE_FAMILIES, genreTerms, MAX_TRACKED_TAGS, mergeReleases, toReleaseFromFeed } from "@/helpers/releases";
+import {
+  GENRE_FAMILIES,
+  genreTerms,
+  MAX_TRACKED_TAGS,
+  mergeReleases,
+  pruneChecks,
+  toReleaseFromFeed,
+} from "@/helpers/releases";
 import { useCheckLiveAlbum, useCheckReissueAlbum } from "@/helpers/useCleanAlbums";
+import { useAuth } from "@/views/auth/AuthStore";
 
 /** How far back a release still counts as news. */
 const RECENT_DAYS = 60;
@@ -14,6 +24,11 @@ const RECENT_DAYS = 60;
 const SEEDED_TAGS = 6;
 /** The feed moves on a weekly rhythm — refetching on every visit buys nothing. */
 const STALE_AFTER_MS = 6 * 60 * 60 * 1000;
+/*
+ * Ticking a row is a click, and a batch is a click that ticks a whole month. Waiting
+ * out a short quiet period turns a run of them into one upsert.
+ */
+const PUSH_DEBOUNCE_MS = 2000;
 
 /*
  * Shape version of a persisted `Release`. Bump it whenever a field is added or its
@@ -26,6 +41,9 @@ const STALE_AFTER_MS = 6 * 60 * 60 * 1000;
  * read costs one refetch and nothing else.
  */
 const FEED_VERSION = 7;
+
+// Built outside the store so the timer survives across calls.
+let debouncedPush: null | ReturnType<typeof useDebounceFn> = null;
 
 export const useReleases = defineStore("releases", {
   actions: {
@@ -40,8 +58,16 @@ export const useReleases = defineStore("releases", {
      * @param force - Refetch even when the cached feed is still fresh
      */
     async getReleases(force = false) {
+      /*
+       * Started before the freshness gate and awaited after the feed: a revisit that
+       * skips the refetch must still pick up what another device ticked, and the two
+       * reads share no data — awaiting this one first only added a round trip to the
+       * page load.
+       */
+      const checks = this.syncChecks();
+
       const isFresh = this.fetchedAt !== null && Date.now() - this.fetchedAt < STALE_AFTER_MS;
-      if (!force && isFresh && this.releases.length) return;
+      if (!force && isFresh && this.releases.length) return checks;
 
       this.error = false;
       this.loading = true;
@@ -68,6 +94,8 @@ export const useReleases = defineStore("releases", {
       } finally {
         this.loading = false;
       }
+
+      await checks;
     },
 
     /**
@@ -87,6 +115,25 @@ export const useReleases = defineStore("releases", {
       for (const key of keys) {
         if (!this.checks[key]) this.checks[key] = Date.now();
       }
+
+      this.pushChecks();
+    },
+
+    /**
+     * Store the ticks for the account, once the clicking has stopped.
+     *
+     * Fire and forget: nothing waits on the upsert, and a failed one costs the
+     * sharing between devices — the tick itself is already on screen.
+     */
+    pushChecks() {
+      if (!debouncedPush) {
+        debouncedPush = useDebounceFn(() => {
+          const userId = useAuth().me?.id;
+          if (userId) void putRemoteChecks(userId, { ...this.checks });
+        }, PUSH_DEBOUNCE_MS);
+      }
+
+      debouncedPush();
     },
 
     /** Back to the genres inferred from the user's top artists. */
@@ -119,9 +166,33 @@ export const useReleases = defineStore("releases", {
       if (!unchanged) await this.getReleases(true);
     },
 
+    /**
+     * Adopt the ticks stored for the account, so every device shows the same list.
+     *
+     * The remote row wins outright rather than being merged into the local one: an
+     * untick is the absence of a key, and a union would resurrect every row unticked
+     * on another device. A read that fails or finds no row leaves the local list be.
+     */
+    async syncChecks() {
+      const userId = useAuth().me?.id;
+      if (!userId) return;
+
+      const remote = await getRemoteChecks(userId);
+      if (!remote) return;
+
+      const kept = pruneChecks(remote);
+
+      this.checks = kept;
+      // Written back only when the pruning actually dropped something, so a plain read
+      // does not turn into a write on every visit.
+      if (Object.keys(kept).length !== Object.keys(remote).length) this.pushChecks();
+    },
+
     toggleCheck(key: string) {
       if (this.checks[key]) delete this.checks[key];
       else this.checks[key] = Date.now();
+
+      this.pushChecks();
     },
 
     toggleSortRating() {
@@ -165,18 +236,19 @@ export const useReleases = defineStore("releases", {
   },
 
   /*
-   * The ticks used to live on a third-party Directus instance that is gone, taking
-   * the list with it. localStorage is the honest scope for them: they are one
-   * person's "heard it" marks, and no part of the app needs them on another device.
+   * The ticks are not in here: they live in Supabase, keyed on the account, and a
+   * local copy could only ever contradict it — a row unticked on the phone would
+   * come back ticked on the desktop until the sync answered, which is the bug the
+   * sharing was added to fix.
    *
-   * The feed rides along so the 6-hour window below survives a reload instead of
+   * The feed itself stays so the 6-hour window below survives a reload instead of
    * only applying within a single session. A few hundred rows is ~150 KB.
    */
   persist: {
     /*
-     * `checks`, `tags` and the filters are the user's own and survive the version
-     * gate; only the feed and its timestamp are dropped, so the next visit refetches
-     * rather than rendering rows the current code cannot read.
+     * `tags` and the filters are the user's own and survive the version gate; only
+     * the feed and its timestamp are dropped, so the next visit refetches rather
+     * than rendering rows the current code cannot read.
      */
     afterHydrate: ({ store }) => {
       const releases = store as unknown as ReleasesPage;
@@ -188,7 +260,6 @@ export const useReleases = defineStore("releases", {
     },
     key: "beardify-releases",
     pick: [
-      "checks",
       "feedVersion",
       "fetchedAt",
       "genre",

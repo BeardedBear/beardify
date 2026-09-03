@@ -166,6 +166,28 @@ export function normalizeTag(tag: string): string {
     .trim();
 }
 
+/**
+ * How long a listened tick is kept.
+ *
+ * The feed itself never reaches further back than two months, so a tick older than
+ * this can only refer to a release the page will never show again — dead weight in
+ * localStorage and in the row synced between devices, growing forever otherwise.
+ */
+export const CHECK_TTL_MS = 90 * 24 * 60 * 60 * 1000;
+
+/**
+ * The ticks worth keeping: everything ticked within the retention window.
+ *
+ * Keyed on when the tick was made, not on the release date — the release month is
+ * not carried by the map, and a tick made today is worth keeping whatever it points
+ * at.
+ * @param checks - Release key to the moment it was ticked off
+ * @param now - Reference time, injectable for tests
+ */
+export function pruneChecks(checks: Record<string, number>, now = Date.now()): Record<string, number> {
+  return Object.fromEntries(Object.entries(checks).filter(([, at]) => now - at < CHECK_TTL_MS));
+}
+
 /*
  * Listings disambiguate same-named artists with a country or an index — "Loathe (UK)",
  * "Picture (DEN)", "Slaughter (2)" — and not all of them do it, nor the same way. 74
