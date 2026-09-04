@@ -4,7 +4,7 @@ import { defineStore } from "pinia";
 import { MonthGroup, Release, ReleasesPage } from "@/@types/Releases";
 import { getRemoteChecks, putRemoteChecks } from "@/helpers/releaseChecks";
 import { getFeedReleases } from "@/helpers/releaseFeed";
-import { groupByMonth, mergeReleases, monthLabel, pruneChecks, toReleaseFromFeed } from "@/helpers/releases";
+import { genreTerms, groupByMonth, mergeReleases, monthLabel, pruneChecks, toReleaseFromFeed } from "@/helpers/releases";
 import { useCheckLiveAlbum, useCheckReissueAlbum } from "@/helpers/useCleanAlbums";
 import { useAuth } from "@/views/auth/AuthStore";
 
@@ -39,6 +39,27 @@ export const useReleases = defineStore("releases", {
     clearFilters() {
       this.genres = [];
       this.hideChecked = false;
+    },
+
+    /**
+     * Fill in the genres of a row the scrapers filed without any, from what Spotify
+     * knows about its artist — two thirds of the feed arrives bare, and a row with no
+     * chips is a row no sidebar filter can ever reach.
+     *
+     * Written onto the row rather than kept beside it so the terms are rebuilt with
+     * it: the chips, the facet counts and the filter all read `terms`, and a chip the
+     * filter did not know about would hide its own row when clicked. A row that
+     * already has genres keeps them — the scrapers name the record, Spotify only ever
+     * names the artist.
+     * @param key - The release key the hover lookup answered for
+     * @param genres - The artist genres Spotify returned, possibly none
+     */
+    enrichGenres(key: string, genres: string[]) {
+      const release = this.releases.find((item) => item.key === key);
+      if (!release || release.genres.length || !genres.length) return;
+
+      release.genres = genres;
+      release.terms = genreTerms(genres);
     },
 
     /**

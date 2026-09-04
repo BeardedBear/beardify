@@ -1,9 +1,11 @@
 import { reactive } from "vue";
 
 import { Album } from "@/@types/Album";
+import { Artist } from "@/@types/Artist";
 import { Paging } from "@/@types/Paging";
 import { Release } from "@/@types/Releases";
 import { instance } from "@/api";
+import { useReleases } from "@/views/releases/ReleasesStore";
 
 /** What a release row has learnt about the Spotify album behind it. */
 export interface ReleaseAlbum {
@@ -95,6 +97,28 @@ export function releaseAlbum(key: string): ReleaseAlbum | undefined {
   return resolved.get(key);
 }
 
+/**
+ * Hands the row whatever genres Spotify files its artist under.
+ *
+ * Its own request, because the album objects a search returns carry no genres —
+ * and the full album's are empty for all but a handful of records, while the
+ * artist's are filled for practically everyone. One extra call, on a row that
+ * has none of its own, once per release for the life of the tab.
+ * @param key - The release key being resolved
+ * @param album - The album the search matched, for its primary artist
+ */
+async function enrichReleaseGenres(key: string, album: Album): Promise<void> {
+  const artistId = album.artists[0]?.id;
+  if (!artistId) return;
+
+  try {
+    const { data } = await instance().get<Artist>(`artists/${artistId}`);
+    useReleases().enrichGenres(key, data.genres);
+  } catch {
+    // The row keeps its bare chip strip, which is what it had a moment ago anyway.
+  }
+}
+
 async function fetchReleaseAlbum(release: Release): Promise<void> {
   resolved.set(release.key, { pending: true, uri: null });
 
@@ -105,6 +129,14 @@ async function fetchReleaseAlbum(release: Release): Promise<void> {
     );
     const match = matchReleaseAlbum(release, results.data.albums.items);
     resolved.set(release.key, { pending: false, uri: match?.uri ?? null });
+
+    /*
+     * The hover already knows which artist this is, and two thirds of the feed
+     * arrives with no genre at all — so the same gesture that finds the album is
+     * what fills the row's empty chip strip. Only when it is empty: the scrapers
+     * classify the record, Spotify classifies the artist, and the record wins.
+     */
+    if (match && !release.genres.length) await enrichReleaseGenres(release.key, match);
   } catch {
     /*
      * Nothing to tell the reader: the row keeps its cover and every control it
