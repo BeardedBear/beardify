@@ -412,7 +412,7 @@ watch(query, () => {
   align-items: center;
   color: var(--bd-font-color-dark);
   display: flex;
-  font-size: var(--bd-font-size-xs);
+  font-size: var(--bd-font-size-sm);
   gap: var(--bd-space-2);
   margin-bottom: var(--bd-space-4);
 }
@@ -525,7 +525,7 @@ watch(query, () => {
   /* Indented and quieter: the family above it is the heading this belongs to. */
   &.child {
     color: var(--bd-font-color-dark);
-    font-size: var(--bd-font-size-xs);
+    font-size: var(--bd-font-size-sm);
     margin-inline-start: var(--bd-space-4);
   }
 
@@ -543,7 +543,7 @@ watch(query, () => {
 
   .count {
     color: var(--bd-font-color-dark);
-    font-size: var(--bd-font-size-xs);
+    font-size: var(--bd-font-size-sm);
   }
 
   &[aria-pressed="true"] .count {
@@ -553,7 +553,7 @@ watch(query, () => {
 
 .no-match {
   color: var(--bd-font-color-dark);
-  font-size: var(--bd-font-size-xs);
+  font-size: var(--bd-font-size-sm);
   padding: var(--bd-space-1) var(--bd-space-2);
 }
 
@@ -634,7 +634,7 @@ watch(query, () => {
 
 .jump-count {
   color: var(--bd-font-color-dark);
-  font-size: var(--bd-font-size-xs);
+  font-size: var(--bd-font-size-sm);
 }
 
 /*

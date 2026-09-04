@@ -1,5 +1,16 @@
 <template>
-  <div :class="{ checked: isChecked }" class="release">
+  <!--
+    The lookup runs on focus as well as on hover: the play control only exists once
+    it has answered, so nothing inside the cover is focusable until then — waiting
+    for a focus that can never arrive is what closed this row's main action to the
+    keyboard entirely. Focusing the album title is the same intent as pointing at it.
+  -->
+  <div
+    :class="{ checked: isChecked }"
+    class="release"
+    @focusin="lookupReleaseAlbum(release)"
+    @mouseleave="cancelReleaseAlbumLookup()"
+  >
     <button
       :aria-label="isChecked ? `Mark ${release.name} as not listened` : `Mark ${release.name} as listened`"
       :aria-pressed="isChecked"
@@ -11,11 +22,7 @@
       <Circle v-else :size="16" />
     </button>
 
-    <span
-      class="cover-wrap"
-      @mouseenter="lookupReleaseAlbum(release)"
-      @mouseleave="cancelReleaseAlbumLookup()"
-    >
+    <span class="cover-wrap" @mouseenter="lookupReleaseAlbum(release)">
       <Cover :images="release.images" class="cover" size="small" />
       <span v-if="isSearching" class="cover-loading" aria-live="polite" aria-label="Searching">
         <BdLoader size="xx-small" />
@@ -29,17 +36,38 @@
       >
         <Play :size="14" />
       </button>
+      <!--
+        A third state, because the search answering with nothing used to render as
+        nothing at all — indistinguishable from a hover too short to have fired. An
+        empty answer is information: this record is not on Spotify.
+      -->
+      <span
+        v-else-if="isUnplayable"
+        aria-label="Not on Spotify"
+        class="cover-missing"
+        role="img"
+        title="Not on Spotify"
+      >
+        <Ban :size="14" />
+      </span>
     </span>
 
     <div class="names">
+      <!-- Both names are clipped to their column, so each carries its own full text. -->
       <button
+        :title="release.name"
         class="album bd-font-bold"
         type="button"
         @click="searchStore.openAlbumSearch(release.key, release.artistName, release.name)"
       >
         {{ release.name }}
       </button>
-      <button class="artist" type="button" @click="searchStore.openAlbumSearch(release.key, release.artistName)">
+      <button
+        :title="release.artistName"
+        class="artist"
+        type="button"
+        @click="searchStore.openAlbumSearch(release.key, release.artistName)"
+      >
         {{ release.artistName }}
       </button>
     </div>
@@ -77,14 +105,14 @@
           :class="{ 'is-hot': release.rating >= HOT_RATING }"
           :style="{ '--score': release.rating }"
           class="score score-color"
-        >{{ release.rating }}<span class="unit"></span></span>
+        >{{ release.rating }}</span>
       </BdTooltip>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { Check, Circle, Play } from "@lucide/vue";
+import { Ban, Check, Circle, Play } from "@lucide/vue";
 import { BdLoader, BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 
@@ -117,6 +145,12 @@ const isSearching = computed(
 );
 /** Set only once the lookup has answered with an album this account can play. */
 const playableUri = computed(() => releaseAlbum(props.release.key)?.uri ?? undefined);
+/* The search ran and came back empty — a resolved absence, not a lookup that never happened. */
+const isUnplayable = computed(() => {
+  const album = releaseAlbum(props.release.key);
+
+  return Boolean(album) && !album?.pending && !album?.uri;
+});
 // Sliced here, not in the template, so an unrelated re-render does not reallocate it.
 const shownGenres = computed(() => props.release.genres.slice(0, GENRES_SHOWN));
 </script>
@@ -129,15 +163,10 @@ const shownGenres = computed(() => props.release.genres.slice(0, GENRES_SHOWN));
   gap: var(--bd-space-3);
   grid-template-columns: 1.2rem 2.5rem minmax(0, 1.4fr) minmax(0, 1fr) 4rem;
   padding: var(--bd-space-2) var(--bd-space-3);
-  transition: background-color var(--bd-transition-fast), opacity var(--bd-transition-fast);
+  transition: background-color var(--bd-transition-fast);
 
   &:hover {
     background-color: var(--bd-bg-light);
-  }
-
-  /* Ticked off, not gone: still readable, clearly done, and one click from undone. */
-  &.checked {
-    opacity: 0.5;
   }
 
   @media (--tablet-down) {
@@ -184,6 +213,7 @@ const shownGenres = computed(() => props.release.genres.slice(0, GENRES_SHOWN));
 .cover-wrap {
   height: 2.5rem;
   position: relative;
+  transition: opacity var(--bd-transition-fast);
   width: 2.5rem;
 
   &:has(.cover-loading) .cover {
@@ -226,7 +256,27 @@ const shownGenres = computed(() => props.release.genres.slice(0, GENRES_SHOWN));
   opacity: 1;
 }
 
+/* The play control's footprint, gated the same way: the answer is cached, so an
+   ungated marker would sit on every cover the pointer has ever crossed. */
+.cover-missing {
+  align-items: center;
+  background-color: color-mix(in oklab, var(--bd-bg-darker) 55%, transparent);
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-font-color);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  opacity: 0;
+  position: absolute;
+  transition: opacity var(--bd-transition-fast);
+}
+
+.release:hover .cover-missing {
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .cover-missing,
   .cover-play {
     transition: none;
   }
@@ -316,9 +366,18 @@ const shownGenres = computed(() => props.release.genres.slice(0, GENRES_SHOWN));
     border-radius: var(--bd-radius-sm);
     padding: 0.1rem var(--bd-space-2);
   }
+}
 
-  .unit {
-    padding-inline-start: 0.1rem;
-  }
+/*
+ * Ticked off, not greyed out. Dimming the whole row also dimmed the album title,
+ * which is the only thing on the row that identifies it — so a month worked through
+ * became unreadable exactly where it was the record of the work. The artwork and the
+ * tag strip carry the "done" reading; the title keeps full strength, and the tick
+ * stays the way back.
+ */
+.release.checked .cover-wrap,
+.release.checked .genres,
+.release.checked .rating {
+  opacity: 0.4;
 }
 </style>

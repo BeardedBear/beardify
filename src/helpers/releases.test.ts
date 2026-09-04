@@ -241,43 +241,41 @@ describe("groupByMonth", () => {
   }
 
   it("splits an already-sorted feed into one labelled group per month", () => {
-    const groups = groupByMonth(feed(), {}, false);
+    const groups = groupByMonth(feed(), {}, "rating");
 
     expect(groups.map((group) => group.label)).toEqual(["August 2026", "July 2026"]);
     expect(groups[0].releases).toHaveLength(3);
   });
 
   it("counts the releases still to hear, and only those", () => {
-    expect(groupByMonth(feed(), { a: Date.now(), b: Date.now() }, false)[0].unheard).toBe(1);
+    expect(groupByMonth(feed(), { a: Date.now(), b: Date.now() }, "rating")[0].unheard).toBe(1);
   });
 
-  it("ranks the top of the month by score, leaving the unrated out", () => {
-    const [augustGroup] = groupByMonth(feed(), {}, false);
+  it("restates the rating order rather than trusting the feed to arrive in it", () => {
+    // Handed in deliberately backwards: the cache and the network answer merge in
+    // either order, so the sort the control names has to be the one it performs.
+    const shuffled = [feed()[2], feed()[1], feed()[0], feed()[3]];
+    const [augustGroup] = groupByMonth(shuffled, {}, "rating");
 
-    expect(augustGroup.top.map((r) => r.name)).toEqual(["Aug high", "Aug low"]);
+    // Unrated sinks below the rated ones rather than being dropped.
+    expect(augustGroup.releases.map((r) => r.name)).toEqual(["Aug high", "Aug low", "Aug unrated"]);
   });
 
-  it("keeps the top rail on score even when the list is sorted by score", () => {
-    const [unsorted] = groupByMonth(feed(), {}, false);
-    const [sorted] = groupByMonth(feed(), {}, true);
+  it("orders a month by artist, then by album, when asked to", () => {
+    const byArtist = [
+      release({ artistName: "Zu", key: "z", name: "Carboniferous", rating: 1, timestamp: august }),
+      release({ artistName: "Alcest", key: "y", name: "Shelter", rating: 2, timestamp: august }),
+      release({ artistName: "Alcest", key: "x", name: "Kodama", rating: 3, timestamp: august }),
+    ];
+    const [augustGroup] = groupByMonth(byArtist, {}, "artist");
 
-    expect(sorted.top.map((r) => r.name)).toEqual(unsorted.top.map((r) => r.name));
-  });
-
-  it("leaves the promoted releases out of the flat list, and only those", () => {
-    const [augustGroup] = groupByMonth(feed(), {}, false);
-
-    // The month itself still holds all three — the count and "Mark heard" read it.
-    expect(augustGroup.releases).toHaveLength(3);
-    expect(augustGroup.rest.map((r) => r.name)).toEqual(["Aug unrated"]);
+    expect(augustGroup.releases.map((r) => r.name)).toEqual(["Kodama", "Shelter", "Carboniferous"]);
   });
 
   it("sorts inside the month only, so the months stay chronological", () => {
-    const groups = groupByMonth(feed(), {}, true);
+    const groups = groupByMonth(feed(), {}, "artist");
 
     expect(groups.map((group) => group.label)).toEqual(["August 2026", "July 2026"]);
-    // Unrated sinks below the rated ones rather than being dropped.
-    expect(groups[0].releases.map((r) => r.name)).toEqual(["Aug high", "Aug low", "Aug unrated"]);
   });
 });
 

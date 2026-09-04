@@ -1,4 +1,4 @@
-import { GenreFacet, GenreGroup, MonthGroup, Release } from "@/@types/Releases";
+import { GenreFacet, GenreGroup, MonthGroup, Release, ReleaseSort } from "@/@types/Releases";
 import { normalizeString } from "@/helpers/helper";
 import { FeedRelease } from "@/helpers/releaseFeed";
 
@@ -126,6 +126,52 @@ export function genreTerms(genres: string[]): string[] {
 }
 
 /**
+ * The feed as the list renders it: one entry per month, newest first.
+ *
+ * One pass over an already-sorted feed rather than a scan per heading. Grouping is
+ * on the timestamp, not the label — every release of a month carries the identical
+ * one, so the month heading is formatted once per group instead of once per row.
+ * @param releases - The releases to group, already sorted newest first
+ * @param checks - Release key to the moment it was ticked off
+ * @param sort - How to order the releases inside each month
+ */
+export function groupByMonth(releases: Release[], checks: Record<string, number>, sort: ReleaseSort): MonthGroup[] {
+  const months: MonthGroup[] = [];
+  let month: MonthGroup | undefined;
+
+  for (const release of releases) {
+    if (month?.timestamp !== release.timestamp) {
+      month = {
+        label: monthLabel(release.timestamp),
+        releases: [],
+        timestamp: release.timestamp,
+        unheard: 0,
+      };
+      months.push(month);
+    }
+
+    month.releases.push(release);
+    if (!checks[release.key]) month.unheard += 1;
+  }
+
+  /*
+   * Sorting stays inside the month: either order scattered across months would lose
+   * the orientation the headings are built around. Rating is restated rather than
+   * inherited from the feed's own order — the cache and the network answer can be
+   * merged in either order, so the control has to guarantee what it names.
+   */
+  for (const group of months) {
+    group.releases.sort(
+      sort === "artist"
+        ? (a, b): number => a.artistName.localeCompare(b.artistName) || a.name.localeCompare(b.name)
+        : (a, b): number => (b.rating ?? -1) - (a.rating ?? -1) || a.name.localeCompare(b.name),
+    );
+  }
+
+  return months;
+}
+
+/**
  * The flat facet list arranged as families and their micro-genres.
  *
  * Both levels stay filterable and both were already terms — this only decides where
@@ -168,75 +214,6 @@ export function groupGenres(genres: GenreFacet[]): GenreGroup[] {
   }
 
   return tree;
-}
-
-/** How many of a month's releases the highlight rail shows. */
-const TOP_SHOWN = 5;
-
-/**
- * The feed as the list renders it: one entry per month, newest first.
- *
- * One pass over an already-sorted feed rather than a scan per heading. Grouping is
- * on the timestamp, not the label — every release of a month carries the identical
- * one, so the month heading is formatted once per group instead of once per row.
- * @param releases - The releases to group, already sorted newest first
- * @param checks - Release key to the moment it was ticked off
- * @param sortRating - Order each month by the editorial rating instead of by date
- */
-export function groupByMonth(
-  releases: Release[],
-  checks: Record<string, number>,
-  sortRating: boolean,
-): MonthGroup[] {
-  const months: MonthGroup[] = [];
-  let month: MonthGroup | undefined;
-
-  for (const release of releases) {
-    if (month?.timestamp !== release.timestamp) {
-      month = {
-        label: monthLabel(release.timestamp),
-        releases: [],
-        rest: [],
-        timestamp: release.timestamp,
-        top: [],
-        unheard: 0,
-      };
-      months.push(month);
-    }
-
-    month.releases.push(release);
-    if (!checks[release.key]) month.unheard += 1;
-  }
-
-  for (const group of months) {
-    /*
-     * The month's best, as a highlight rail above the full list. Only rated releases
-     * qualify — one with no score has nothing to rank on — and the rail is independent
-     * of the sort toggle, so it stays "best of the month" whatever the current order.
-     */
-    group.top = group.releases
-      .filter((release) => typeof release.rating === "number")
-      .sort((a, b) => (b.rating as number) - (a.rating as number) || a.name.localeCompare(b.name))
-      .slice(0, TOP_SHOWN);
-
-    // "Highest rated" stays inside the month: scattering it across months would lose
-    // the chronological orientation the feed is built around.
-    if (sortRating) {
-      group.releases.sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1) || a.name.localeCompare(b.name));
-    }
-
-    /*
-     * What the flat list renders: the month minus the records the rail above it is
-     * already showing, which otherwise appear twice within one screen. Derived rather
-     * than carved out of `releases`, because `releases` is still the month itself —
-     * what the heading counts, what the rail is picked from and what "Mark heard"
-     * ticks all have to mean every record in the month, rail included.
-     */
-    const promoted = new Set(group.top.map((release) => release.key));
-    group.rest = group.releases.filter((release) => !promoted.has(release.key));
-  }
-
-  return months;
 }
 
 /*

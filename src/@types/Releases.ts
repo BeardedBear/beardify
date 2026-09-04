@@ -21,12 +21,8 @@ export interface GenreGroup extends GenreFacet {
 export interface MonthGroup {
   label: string;
   releases: Release[];
-  /** The month minus what the highlight rail already shows — what the flat list renders. */
-  rest: Release[];
   /** Every release in the month carries the same one — what groups them. */
   timestamp: number;
-  /** The month's highest-rated releases, for the highlight rail. */
-  top: Release[];
   /** How many of the month's releases are not ticked off yet. */
   unheard: number;
 }
@@ -57,6 +53,15 @@ export interface Release {
   timestamp: number;
 }
 
+/**
+ * How a month's releases are ordered.
+ *
+ * "rating" is the feed's own order, restated here so the control names what is
+ * already happening; "artist" is the only other order a 200-row scan needs — the
+ * way back to a record whose name you remember and whose score you do not.
+ */
+export type ReleaseSort = "artist" | "rating";
+
 export interface ReleasesPage {
   /**
    * Release key → moment it was ticked off. A plain map so a tick is O(1) both ways.
@@ -79,6 +84,6 @@ export interface ReleasesPage {
   /** Lowest and highest score kept, inclusive. Unrated rows answer to `hideUnrated` instead. */
   ratingRange: [number, number];
   releases: Release[];
-  /** Sort each month's releases by the editorial rating, highest first. */
-  sortRating: boolean;
+  /** How each month's releases are ordered. */
+  sort: ReleaseSort;
 }

@@ -127,13 +127,21 @@ export const useReleases = defineStore("releases", {
       await checks;
     },
 
-    /** Mark a batch of releases as listened, leaving the already-checked ones alone. */
-    markHeard(keys: string[]) {
-      for (const key of keys) {
-        if (!this.checks[key]) this.checks[key] = Date.now();
-      }
+    /**
+     * Mark a batch of releases as listened, leaving the already-checked ones alone.
+     *
+     * Returns the keys it actually ticked, which is what an undo needs: unticking
+     * everything the click covered would also erase the rows that were already done
+     * before it — the one gesture that can silently lose work here.
+     * @param keys - Every release the click covers, ticked or not
+     */
+    markHeard(keys: string[]): string[] {
+      const marked = keys.filter((key) => !this.checks[key]);
+      for (const key of marked) this.checks[key] = Date.now();
 
       this.pushChecks();
+
+      return marked;
     },
 
     /**
@@ -196,8 +204,14 @@ export const useReleases = defineStore("releases", {
         : [...this.genres, genre];
     },
 
-    toggleSortRating() {
-      this.sortRating = !this.sortRating;
+    /**
+     * Take back a batch tick. The counterpart of `markHeard`, fed its return value.
+     * @param keys - Exactly the keys that tick actually set
+     */
+    unmarkHeard(keys: string[]) {
+      for (const key of keys) delete this.checks[key];
+
+      this.pushChecks();
     },
   },
 
@@ -294,11 +308,11 @@ export const useReleases = defineStore("releases", {
      * is noise.
      *
      * A getter rather than a computed in each: the grouping also sorts every
-     * month, and the rail exists precisely to jump between the headings the
+     * month, and the sidebar exists precisely to jump between the headings the
      * list renders — two passes could disagree about what months there are.
      */
     monthGroups(): MonthGroup[] {
-      return groupByMonth(this.visibleReleases, this.checks, this.sortRating);
+      return groupByMonth(this.visibleReleases, this.checks, this.sort);
     },
 
     /**
@@ -342,6 +356,19 @@ export const useReleases = defineStore("releases", {
       return state.releases.filter((release) => matchesRating(release, state.hideUnrated, state.ratingRange));
     },
 
+    /**
+     * Whether a score gate is holding anything back.
+     *
+     * The one question "caught up" has to ask before it congratulates: a feed the
+     * range or the unrated switch emptied is a filter too tight, not a month
+     * finished, and the two must never show the same screen.
+     */
+    scoreGated(state): boolean {
+      const [low, high] = state.ratingRange;
+
+      return state.hideUnrated || low > RATING_BOUNDS[0] || high < RATING_BOUNDS[1];
+    },
+
     /** The feed as the list renders it: both gates, composed rather than re-tested. */
     visibleReleases(state): Release[] {
       if (!state.hideChecked) return this.genreFiltered;
@@ -382,7 +409,7 @@ export const useReleases = defineStore("releases", {
       "hideUnrated",
       "ratingRange",
       "releases",
-      "sortRating",
+      "sort",
     ],
   },
 
@@ -406,7 +433,7 @@ export const useReleases = defineStore("releases", {
     loading: false,
     ratingRange: [...RATING_BOUNDS],
     releases: [],
-    sortRating: false,
+    sort: "rating",
   }),
 });
 

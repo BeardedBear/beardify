@@ -11,15 +11,6 @@
   >
     <template #icon><TriangleAlert :size="32" /></template>
   </BdEmptyState>
-  <BdEmptyState
-    v-else-if="!releasesStore.releases.length"
-    action-label="Refresh"
-    message="The feed came back empty. Try again in a moment."
-    title="No releases yet"
-    @action="releasesStore.getReleases(true)"
-  >
-    <template #icon><Disc3 :size="32" /></template>
-  </BdEmptyState>
   <div v-else class="releases">
     <div class="toolbar">
       <div class="heading">
@@ -45,18 +36,13 @@
           <SlidersHorizontal :size="14" />
           Filters
         </BdButton>
-        <BdTooltip bare content="Sort releases by editorial rating">
-          <BdButton
-            :active="releasesStore.sortRating"
-            label="Sort releases by editorial rating"
-            size="small"
-            variant="border"
-            @click="releasesStore.toggleSortRating()"
-          >
-            <ArrowUpDown :size="14" />
-            Rating
-          </BdButton>
-        </BdTooltip>
+        <!--
+          Both orders named, because the old control was a single "Rating" toggle
+          whose off state had no name — and no effect either, the feed already
+          arriving rated-first. Artist is the order the feed actually lacked: the
+          way back to a record you remember by name after two hundred rows.
+        -->
+        <BdButtonGroup v-model="releasesStore.sort" :options="sortOptions" aria-label="Sort" size="small" />
         <BdButton size="small" @click="releasesStore.getReleases(true)">
           <RefreshCw :size="14" />
           Refresh
@@ -80,7 +66,7 @@
         <BdEmptyState
           v-if="caughtUp"
           action-label="Show listened"
-          message="Nothing unheard in the last 60 days."
+          message="Nothing unheard in the months this feed covers."
           title="Caught up"
           @action="releasesStore.hideChecked = false"
         >
@@ -102,16 +88,22 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowUpDown, CheckCheck, Disc3, RefreshCw, SlidersHorizontal, TriangleAlert } from "@lucide/vue";
-import { BdButton, BdEmptyState, BdLoader, BdTooltip } from "bearded-ui";
+import { CheckCheck, Disc3, RefreshCw, SlidersHorizontal, TriangleAlert } from "@lucide/vue";
+import { BdButton, BdButtonGroup, BdEmptyState, BdLoader, BdTooltip } from "bearded-ui";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
+import { ReleaseSort } from "@/@types/Releases";
 import { useDialog } from "@/components/dialog/DialogStore";
 import ReleaseList from "@/components/releases/ReleaseList.vue";
 import ReleaseSide from "@/components/releases/ReleaseSide.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useReleases } from "@/views/releases/ReleasesStore";
+
+const sortOptions: { label: string; tooltip: string; value: ReleaseSort }[] = [
+  { label: "Rating", tooltip: "Highest rated first", value: "rating" },
+  { label: "Artist", tooltip: "By artist, A to Z", value: "artist" },
+];
 
 const releasesStore = useReleases();
 const dialogStore = useDialog();
@@ -128,13 +120,22 @@ const caughtUp = computed(
     !releasesStore.visibleReleases.length
     && releasesStore.hideChecked
     && !releasesStore.genres.length
+    && !releasesStore.scoreGated
     && releasesStore.releases.length > 0,
 );
 
-// Time, not date: the feed is refetched several times a day, so "28 Aug" says nothing.
-const fetchedLabel = computed(() =>
-  new Date(releasesStore.fetchedAt ?? Date.now()).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-);
+/*
+ * The time, and the day too once it is no longer today: the feed is refetched
+ * several times a day, so a date alone says nothing — but a tab left open
+ * overnight showed "Updated 22:10" with nothing to pin it to.
+ */
+const fetchedLabel = computed(() => {
+  const at = new Date(releasesStore.fetchedAt ?? Date.now());
+  const time = at.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  if (at.toDateString() === new Date().toDateString()) return time;
+
+  return `${at.toLocaleDateString([], { day: "numeric", month: "short" })} ${time}`;
+});
 
 watch(
   () => releasesStore.genres,
@@ -232,7 +233,7 @@ releasesStore.getReleases();
 
 .counts {
   color: var(--bd-font-color-dark);
-  font-size: var(--bd-font-size-xs);
+  font-size: var(--bd-font-size-sm);
   white-space: nowrap;
 }
 
@@ -245,7 +246,7 @@ releasesStore.getReleases();
 
 .fetched {
   color: var(--bd-font-color-dark);
-  font-size: var(--bd-font-size-xs);
+  font-size: var(--bd-font-size-sm);
   margin-inline-end: var(--bd-space-2);
 
   /* A spare timestamp is noise in a phone header that is already tight. */
