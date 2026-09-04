@@ -70,7 +70,7 @@
           </div>
         </div>
       </div>
-      <Release v-for="release in month.releases" :key="release.key" :release="release" />
+      <Release v-for="release in month.rest" :key="release.key" :release="release" />
     </div>
   </div>
 </template>

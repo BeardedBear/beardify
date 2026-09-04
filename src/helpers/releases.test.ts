@@ -195,6 +195,14 @@ describe("groupByMonth", () => {
     expect(sorted.top.map((r) => r.name)).toEqual(unsorted.top.map((r) => r.name));
   });
 
+  it("leaves the promoted releases out of the flat list, and only those", () => {
+    const [augustGroup] = groupByMonth(feed(), {}, false);
+
+    // The month itself still holds all three — the count and "Mark heard" read it.
+    expect(augustGroup.releases).toHaveLength(3);
+    expect(augustGroup.rest.map((r) => r.name)).toEqual(["Aug unrated"]);
+  });
+
   it("sorts inside the month only, so the months stay chronological", () => {
     const groups = groupByMonth(feed(), {}, true);
 

@@ -77,7 +77,14 @@ export function groupByMonth(
 
   for (const release of releases) {
     if (month?.timestamp !== release.timestamp) {
-      month = { label: monthLabel(release.timestamp), releases: [], timestamp: release.timestamp, top: [], unheard: 0 };
+      month = {
+        label: monthLabel(release.timestamp),
+        releases: [],
+        rest: [],
+        timestamp: release.timestamp,
+        top: [],
+        unheard: 0,
+      };
       months.push(month);
     }
 
@@ -101,6 +108,16 @@ export function groupByMonth(
     if (sortRating) {
       group.releases.sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1) || a.name.localeCompare(b.name));
     }
+
+    /*
+     * What the flat list renders: the month minus the records the rail above it is
+     * already showing, which otherwise appear twice within one screen. Derived rather
+     * than carved out of `releases`, because `releases` is still the month itself —
+     * what the heading counts, what the rail is picked from and what "Mark heard"
+     * ticks all have to mean every record in the month, rail included.
+     */
+    const promoted = new Set(group.top.map((release) => release.key));
+    group.rest = group.releases.filter((release) => !promoted.has(release.key));
   }
 
   return months;

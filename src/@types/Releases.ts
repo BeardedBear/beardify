@@ -4,6 +4,8 @@ import { Image } from "./Image";
 export interface MonthGroup {
   label: string;
   releases: Release[];
+  /** The month minus what the highlight rail already shows — what the flat list renders. */
+  rest: Release[];
   /** Every release in the month carries the same one — what groups them. */
   timestamp: number;
   /** The month's highest-rated releases, for the highlight rail. */
