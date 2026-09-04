@@ -4,6 +4,7 @@ import { Release } from "@/@types/Releases";
 import {
   genreTerms,
   groupByMonth,
+  groupGenres,
   matchesRating,
   mergeReleases,
   monthLabel,
@@ -78,6 +79,49 @@ describe("genreTerms", () => {
 
   it("leaves a genre outside the families alone", () => {
     expect(genreTerms(["djent"])).toEqual(["djent"]);
+  });
+});
+
+describe("groupGenres", () => {
+  function facets(): { count: number; name: string }[] {
+    return [
+      { count: 40, name: "metal" },
+      { count: 20, name: "rock" },
+      { count: 12, name: "black metal" },
+      { count: 8, name: "folk metal" },
+      { count: 5, name: "shoegaze" },
+    ];
+  }
+
+  it("files micro-genres under their family and leaves them out of the top level", () => {
+    const tree = groupGenres(facets());
+
+    expect(tree.map((group) => group.name)).toEqual(["metal", "rock", "shoegaze"]);
+    expect(tree[0].children.map((child) => child.name)).toEqual(["black metal", "folk metal"]);
+  });
+
+  it("lists a genre naming two families under both", () => {
+    const tree = groupGenres([...facets(), { count: 3, name: "folk" }]);
+    const folk = tree.find((group) => group.name === "folk");
+
+    expect(folk?.children.map((child) => child.name)).toEqual(["folk metal"]);
+  });
+
+  /* Frequency order is stable across ticks, so the list must never re-rank itself. */
+  it("keeps the order it was given", () => {
+    const reversed = [...facets()].reverse();
+
+    expect(groupGenres(reversed).map((group) => group.name)).toEqual(["shoegaze", "rock", "metal"]);
+  });
+
+  it("files a micro-genre listed ahead of its own family", () => {
+    const tree = groupGenres([
+      { count: 12, name: "black metal" },
+      { count: 12, name: "metal" },
+    ]);
+
+    expect(tree.map((group) => group.name)).toEqual(["metal"]);
+    expect(tree[0].children.map((child) => child.name)).toEqual(["black metal"]);
   });
 });
 

@@ -1,12 +1,13 @@
 import { useDebounceFn } from "@vueuse/core";
 import { defineStore } from "pinia";
 
-import { MonthGroup, Release, ReleasesPage } from "@/@types/Releases";
+import { GenreGroup, MonthGroup, Release, ReleasesPage } from "@/@types/Releases";
 import { getRemoteChecks, putRemoteChecks } from "@/helpers/releaseChecks";
 import { getFeedReleases } from "@/helpers/releaseFeed";
 import {
   genreTerms,
   groupByMonth,
+  groupGenres,
   matchesRating,
   mergeReleases,
   monthLabel,
@@ -249,6 +250,17 @@ export const useReleases = defineStore("releases", {
       return [...total.entries()]
         .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
         .map(([name]) => ({ count: remaining.get(name) ?? 0, name }));
+    },
+
+    /**
+     * The same facets as `genreList`, arranged as families and their micro-genres.
+     *
+     * A derivation of that list, not a second count: both levels are terms the feed
+     * already carries, so the numbers are the ones the flat list showed and picking a
+     * family still means "this genre and everything under it".
+     */
+    genreTree(): GenreGroup[] {
+      return groupGenres(this.genreList);
     },
 
     /** The feed with the listened gate applied and nothing else — what the facet counts are measured on. */

@@ -1,4 +1,4 @@
-import { MonthGroup, Release } from "@/@types/Releases";
+import { GenreFacet, GenreGroup, MonthGroup, Release } from "@/@types/Releases";
 import { normalizeString } from "@/helpers/helper";
 import { FeedRelease } from "@/helpers/releaseFeed";
 
@@ -52,6 +52,51 @@ export function genreTerms(genres: string[]): string[] {
   }
 
   return [...terms];
+}
+
+/**
+ * The flat facet list arranged as families and their micro-genres.
+ *
+ * Both levels stay filterable and both were already terms — this only decides where
+ * each one is rendered. "black metal" is filed under "metal" because a release
+ * carrying it also carries the family (see `genreTerms`), so picking the parent is
+ * genuinely "this genre and everything under it" rather than a second query.
+ *
+ * A micro-genre naming two families — "folk metal" — is listed under both. Choosing
+ * an owner would need a rule the vocabulary does not have, and hiding it under one
+ * of them is how a genre becomes unfindable.
+ *
+ * Incoming order is preserved rather than re-sorted: it is frequency across the whole
+ * feed, which never moves, and re-ranking on the live counts would reshuffle the list
+ * under the pointer on every tick.
+ * @param genres - The facets, already ordered as the sidebar wants them
+ */
+export function groupGenres(genres: GenreFacet[]): GenreGroup[] {
+  /*
+   * Every family present is built before anything is filed under it. Built inline, a
+   * micro-genre sorting ahead of its own family — "black metal" against a "metal" of
+   * the same count — would find no parent yet and vanish from the list entirely.
+   */
+  const groups = new Map<string, GenreGroup>(
+    genres
+      .filter((genre) => GENRE_FAMILIES.includes(genre.name))
+      .map((genre) => [genre.name, { children: [], count: genre.count, name: genre.name }]),
+  );
+
+  const tree: GenreGroup[] = [];
+  for (const genre of genres) {
+    const group = groups.get(genre.name);
+    if (group) {
+      tree.push(group);
+      continue;
+    }
+
+    const parents = [...groups.keys()].filter((family) => genre.name.includes(family));
+    if (!parents.length) tree.push({ children: [], count: genre.count, name: genre.name });
+    for (const parent of parents) groups.get(parent)?.children.push({ count: genre.count, name: genre.name });
+  }
+
+  return tree;
 }
 
 /** How many of a month's releases the highlight rail shows. */

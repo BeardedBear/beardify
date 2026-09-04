@@ -1,5 +1,22 @@
 import { Image } from "./Image";
 
+/** One filterable term and how many rows it still leaves. */
+export interface GenreFacet {
+  count: number;
+  name: string;
+}
+
+/**
+ * A broad family and the micro-genres rolled into it — how the sidebar lists them.
+ *
+ * The family is itself a term, so it filters on its own: picking "metal" keeps every
+ * row any of its children would have kept, and picking a child narrows to that child.
+ * A genre belonging to no family is a group with no children.
+ */
+export interface GenreGroup extends GenreFacet {
+  children: GenreFacet[];
+}
+
 /** A month heading and the releases filed under it, as the list renders them. */
 export interface MonthGroup {
   label: string;

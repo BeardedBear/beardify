@@ -180,7 +180,8 @@ releasesStore.getReleases();
   border-right: 1px solid var(--bd-bg-dark);
   overflow: auto;
   padding: 0 var(--bd-space-4) var(--bd-space-4);
-  width: 14rem;
+  width: 17rem;
+  scrollbar-gutter: stable;
 
   /* Mobile: the filter column is moved into a dialog, opened from the toolbar. */
   @media (--tablet-down) {

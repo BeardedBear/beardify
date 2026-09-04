@@ -86,19 +86,41 @@
     @keydown.down.prevent="moveGenreFocus(1)"
     @keydown.up.prevent="moveGenreFocus(-1)"
   >
-    <button
-      v-for="(genre, index) in shownGenres"
-      :key="genre.name"
-      :aria-pressed="isSelected(genre.name)"
-      :tabindex="index === activeGenre ? 0 : -1"
-      class="genre"
-      type="button"
-      @click="releasesStore.toggleGenre(genre.name)"
-      @focus="genreFocus = index"
-    >
-      <span class="name">{{ genre.name }}</span>
-      <span class="count">{{ genre.count }}</span>
-    </button>
+    <!--
+      One flat loop over a tree the script has already flattened, so the roving
+      tabindex stays a single index and arrow keys walk families and their
+      micro-genres as one list — which is what they look like on screen.
+    -->
+    <div v-for="(genre, index) in shownGenres" :key="`${genre.depth}-${genre.name}`" class="genre-row">
+      <button
+        :aria-pressed="isSelected(genre.name)"
+        :class="{ child: genre.depth > 0 }"
+        :tabindex="index === activeGenre ? 0 : -1"
+        class="genre"
+        type="button"
+        @click="releasesStore.toggleGenre(genre.name)"
+        @focus="genreFocus = index"
+      >
+        <span class="name">{{ genre.name }}</span>
+        <span class="count">{{ genre.count }}</span>
+      </button>
+      <BdTooltip
+        v-if="genre.expandable"
+        :content="expanded.has(genre.name) ? 'Hide sub-genres' : 'Show sub-genres'"
+        bare
+      >
+        <button
+          :aria-expanded="expanded.has(genre.name)"
+          :aria-label="`Sub-genres of ${genre.name}`"
+          class="genre-expand"
+          type="button"
+          @click="toggleFamily(genre.name)"
+        >
+          <ChevronDown :class="{ open: expanded.has(genre.name) }" :size="14" />
+        </button>
+      </BdTooltip>
+      <span v-if="!genre.expandable" class="genre-slot" />
+    </div>
     <span v-if="!shownGenres.length" class="no-match">No genre matches “{{ query }}”.</span>
     <button v-if="hasMore" class="show-more" type="button" @click="showMore()">Show more</button>
     <button v-if="visible > GENRES_STEP" class="show-more" type="button" @click="visible = GENRES_STEP">
@@ -108,12 +130,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowDownToLine } from "@lucide/vue";
+import { ArrowDownToLine, ChevronDown } from "@lucide/vue";
 import Slider from "@vueform/slider";
 import { BdCheckbox, BdInput, BdTooltip } from "bearded-ui";
 import { computed, ref, watch } from "vue";
 import "@vueform/slider/themes/default.css";
 
+import { GenreGroup } from "@/@types/Releases";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { normalizeTag } from "@/helpers/releases";
 import { useReleases } from "@/views/releases/ReleasesStore";
@@ -129,18 +152,34 @@ const SCORE_MAX = 100;
 const SCORE_MIN = 0;
 const releasesStore = useReleases();
 
+/** A row as the list renders it: a family, or one of the micro-genres under it. */
+interface GenreRow {
+  count: number;
+  depth: number;
+  expandable: boolean;
+  name: string;
+}
+
+const expanded = ref(new Set<string>());
 const genreFocus = ref(0);
 const genresRef = ref<HTMLElement | null>(null);
 const query = ref("");
 const visible = ref(GENRES_STEP);
 
 /* The query narrows the frequency-sorted list; the cap keeps it from becoming a wall of options. */
-const matches = computed(() => {
+const matches = computed<GenreGroup[]>(() => {
   // Normalized the way a genre is stored, so "black  metal" matches here too.
   const needle = normalizeTag(query.value);
-  if (!needle) return releasesStore.genreList;
+  if (!needle) return releasesStore.genreTree;
 
-  return releasesStore.genreList.filter((genre) => genre.name.toLowerCase().includes(needle));
+  /*
+   * A family is kept when it matches itself or when anything under it does, and its
+   * children are narrowed to the matches. Searching "black" has to reach "black
+   * metal" even though the family above it says nothing about black.
+   */
+  return releasesStore.genreTree
+    .map((family) => ({ ...family, children: family.children.filter((child) => child.name.includes(needle)) }))
+    .filter((family) => family.name.includes(needle) || family.children.length);
 });
 
 /*
@@ -156,8 +195,22 @@ const matches = computed(() => {
  * appears the moment anything is selected and rides in the sticky header, so it
  * is on screen whatever the list is doing.
  */
-const shownGenres = computed(() => matches.value.slice(0, visible.value));
+const shownGenres = computed<GenreRow[]>(() => {
+  const rows: GenreRow[] = [];
 
+  for (const family of matches.value.slice(0, visible.value)) {
+    rows.push({ count: family.count, depth: 0, expandable: family.children.length > 0, name: family.name });
+    if (!expanded.value.has(family.name)) continue;
+
+    for (const child of family.children) {
+      rows.push({ count: child.count, depth: 1, expandable: false, name: child.name });
+    }
+  }
+
+  return rows;
+});
+
+/* The cap counts families, not rows: an expanded one is a deliberate request to see all of it. */
 const hasMore = computed(() => matches.value.length > visible.value);
 
 /*
@@ -270,6 +323,15 @@ function showMore(): void {
   visible.value += GENRES_STEP;
 }
 
+/**
+ * Opens or closes a family's micro-genres. Purely a display state — the family
+ * filters on its own whether it is open or not.
+ * @param name - The family row that was clicked
+ */
+function toggleFamily(name: string): void {
+  if (!expanded.value.delete(name)) expanded.value.add(name);
+}
+
 /*
  * A cap raised to 36 and then left there silently applies to the next search
  * too, so a two-word query can still return a wall. The focus index is reset
@@ -278,6 +340,12 @@ function showMore(): void {
 watch(query, () => {
   visible.value = GENRES_STEP;
   genreFocus.value = 0;
+
+  /*
+   * A search that only matched micro-genres would otherwise return families that look
+   * empty, so a query opens what it found and clearing it folds everything back.
+   */
+  expanded.value = new Set(query.value ? matches.value.filter((f) => f.children.length).map((f) => f.name) : []);
 });
 </script>
 
@@ -393,6 +461,47 @@ watch(query, () => {
   margin: 0 var(--bd-space-2);
 }
 
+/* Shared by the chevron and by the empty slot a childless row holds in its
+   place, so the trailing column stays straight down the list. */
+.genre-row {
+  --genre-expand-size: 1.6rem;
+
+  display: flex;
+  gap: var(--bd-space-1);
+}
+
+.genre-expand {
+  background: none;
+  border: none;
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-font-color-dark);
+  cursor: pointer;
+  display: grid;
+  flex-shrink: 0;
+  padding: 0;
+  place-items: center;
+  width: var(--genre-expand-size);
+
+  &:hover {
+    background-color: var(--bd-bg);
+    color: var(--bd-font-color);
+  }
+
+  /* Points at what it will reveal, and at what it will fold away once open. */
+  svg {
+    transition: rotate var(--bd-transition-fast);
+  }
+
+  .open {
+    rotate: 180deg;
+  }
+}
+
+.genre-slot {
+  flex-shrink: 0;
+  width: var(--genre-expand-size);
+}
+
 .genre {
   align-items: center;
   background-color: transparent;
@@ -401,14 +510,23 @@ watch(query, () => {
   color: inherit;
   cursor: pointer;
   display: flex;
+  flex: 1;
   font-size: var(--bd-font-size-sm);
   gap: var(--bd-space-2);
   justify-content: space-between;
+  min-width: 0;
   padding: var(--bd-space-1) var(--bd-space-2);
   text-align: left;
 
   &:hover {
     background-color: var(--bd-bg);
+  }
+
+  /* Indented and quieter: the family above it is the heading this belongs to. */
+  &.child {
+    color: var(--bd-font-color-dark);
+    font-size: var(--bd-font-size-xs);
+    margin-inline-start: var(--bd-space-4);
   }
 
   &[aria-pressed="true"] {
