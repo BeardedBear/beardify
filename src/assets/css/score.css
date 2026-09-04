@@ -1,0 +1,87 @@
+/*
+ * Rating badges, coloured by the score itself.
+ *
+ * The component sets `--score` (0-100) inline and everything else is arithmetic
+ * in CSS, so there is no per-row JS and no palette table to keep in sync. The
+ * ramp follows the convention critics' aggregates already trained everyone on:
+ * 50 and under is red, 75 is amber, 100 is green — hue 0 to 120 over that span,
+ * clamped at both ends so a stray 30 or a 100 stays inside the ramp.
+ *
+ * Lightness is the only part the theme changes: the same hue has to read on a
+ * dark ground and on a light one.
+ */
+
+/* Registered so the rotating border can interpolate it — an unregistered custom
+   property is a string to the animation engine and would snap 0 to 360. */
+@property --score-angle {
+  inherits: false;
+  initial-value: 0deg;
+  syntax: "<angle>";
+}
+
+:root {
+  --score-bg-l: 26%;
+  --score-fg-l: 80%;
+}
+
+[data-theme="light"] {
+  --score-bg-l: 86%;
+  --score-fg-l: 26%;
+}
+
+/* The transparent border is carried by every badge, hot or not, so the 90+ ring
+   costs no layout shift and the badges stay on one baseline. */
+.score-color {
+  --score-hue: clamp(0, (var(--score) - 50) * 2.4, 120);
+  --score-bg: hsl(var(--score-hue) 42% var(--score-bg-l));
+
+  background-color: var(--score-bg);
+  border: 1px solid transparent;
+  color: hsl(var(--score-hue) 80% var(--score-fg-l));
+
+  .unit {
+    /* The denominator is furniture — it rides the same hue, just quieter. */
+    color: hsl(var(--score-hue) 30% var(--score-fg-l) / 60%);
+  }
+}
+
+/*
+ * 90+ only. A ring that every badge wore would say nothing; on the handful of
+ * records a month that clear 90 it is the thing the eye lands on first.
+ *
+ * Two backgrounds, one box: the fill is clipped to the padding box and the
+ * conic gradient to the border box, so the 1px border becomes a ring the
+ * gradient's bright head travels around. The fill is pushed greener here to
+ * meet the text, which at this hue is already firmly green.
+ */
+@keyframes score-spin {
+  to {
+    --score-angle: 360deg;
+  }
+}
+
+.score-color.is-hot {
+  --score-bg: hsl(var(--score-hue) 60% calc(var(--score-bg-l) + 7%));
+  --score-ring: hsl(var(--score-hue) 70% 45% / 25%);
+
+  animation: score-spin 3s linear infinite;
+  background:
+    linear-gradient(var(--score-bg), var(--score-bg)) padding-box,
+    conic-gradient(
+      from var(--score-angle),
+      hsl(var(--score-hue) 85% 65%),
+      var(--score-ring) 25%,
+      var(--score-ring) 100%
+    )
+    border-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .score-color.is-hot {
+    /* Still marked, just not moving: the ring stays, lit all the way round. */
+    animation: none;
+    background:
+      linear-gradient(var(--score-bg), var(--score-bg)) padding-box,
+      linear-gradient(hsl(var(--score-hue) 80% 55%), hsl(var(--score-hue) 80% 55%)) border-box;
+  }
+}

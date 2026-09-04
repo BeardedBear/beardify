@@ -27,8 +27,9 @@ export interface Release {
   key: string;
   name: string;
   /**
-   * The source's editorial score out of 5, when it publishes one. The only quality
-   * signal the feed carries, and what makes a long list triageable.
+   * The score out of 100, when a source publishes one — a critic aggregate where the
+   * feed has one, an editorial score otherwise. The only quality signal the feed
+   * carries, and what makes a long list triageable.
    */
   rating: null | number;
   /** What the sidebar filters on: `genres` plus their broad families. */
