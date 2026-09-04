@@ -51,9 +51,12 @@
               </span>
               <span class="top-name bd-font-bold">{{ release.name }}</span>
               <span class="top-artist">{{ release.artistName }}</span>
-              <span v-if="typeof release.rating === 'number'" class="top-rating">
-                {{ release.rating.toFixed(1) }}<span class="unit">/5</span>
-              </span>
+              <span
+                v-if="typeof release.rating === 'number'"
+                :class="{ 'is-hot': release.rating >= HOT_RATING }"
+                :style="{ '--score': release.rating }"
+                class="top-rating score-color"
+              >{{ release.rating }}<span class="unit"></span></span>
             </button>
             <button
               v-if="!albumLoading(release.key) && playableUri(release.key)"
@@ -81,6 +84,7 @@ import { useSearch } from "@/components/search/SearchStore";
 import Cover from "@/components/ui/AlbumCover.vue";
 import { playAlbum } from "@/helpers/playAlbum";
 import { cancelReleaseAlbumLookup, lookupReleaseAlbum, releaseAlbum } from "@/helpers/releaseAlbum";
+import { HOT_RATING } from "@/helpers/releases";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 const releasesStore = useReleases();
@@ -310,15 +314,14 @@ function playableUri(key: string): string | undefined {
   width: 100%;
 }
 
+/* Colours come from `.score-color` (src/assets/css/score.css). */
 .top-rating {
-  background-color: var(--bd-bg-lighter);
   border-radius: var(--bd-radius-sm);
   font-size: var(--bd-font-size-sm);
   margin-top: var(--bd-space-1);
   padding: 0.1rem var(--bd-space-2);
 
   .unit {
-    color: var(--bd-font-color-dark);
     font-size: var(--bd-font-size-xs);
     padding-inline-start: 0.1rem;
   }

@@ -108,9 +108,8 @@ describe("toReleaseFromFeed", () => {
     cover_url: "https://www.sputnikmusic.com/images/albums/551990.jpg",
     genres: ["metal", "sludge metal"],
     month: "2026-08-01",
-    rating: 4.2,
-    source: "sputnik",
-    source_id: "551990",
+    rating: 84,
+    release_key: "mastodon|marrow deep|2026-08-01",
   };
 
   it("keeps the month and drops the stored day, which the listing never stated", () => {
@@ -122,7 +121,7 @@ describe("toReleaseFromFeed", () => {
   });
 
   it("carries the score and the genres over", () => {
-    expect(toReleaseFromFeed(row).rating).toBe(4.2);
+    expect(toReleaseFromFeed(row).rating).toBe(84);
     expect(toReleaseFromFeed(row).genres).toEqual(["metal", "sludge metal"]);
   });
 
@@ -130,8 +129,8 @@ describe("toReleaseFromFeed", () => {
     expect(toReleaseFromFeed(row).terms).toEqual(["metal", "sludge metal"]);
   });
 
-  it("namespaces the id by source, since two sites can number an album the same", () => {
-    expect(toReleaseFromFeed(row).id).toBe("sputnik-551990");
+  it("takes the id straight from the upstream key, which is already unique", () => {
+    expect(toReleaseFromFeed(row).id).toBe("mastodon|marrow deep|2026-08-01");
   });
 
   it("takes the cover the scraper stored, and copes with a source that has none", () => {

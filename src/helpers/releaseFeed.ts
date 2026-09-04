@@ -5,9 +5,8 @@ import { hasSupabase, restUrl, SUPABASE_HEADERS } from "@/helpers/supabase";
  * A row of the `releases` table, filled daily by the scrapers at
  * https://github.com/BeardedBear/scrap.
  *
- * Deliberately named after the table and not after a site: the table takes several
- * sources, each identified by its `source` column, and a reader should not have to
- * know which one a row came from.
+ * Deliberately named after the table and not after a site: a row is one record, merged
+ * from however many sites listed it, and a reader should not have to know which.
  */
 export interface FeedRelease {
   album: string;
@@ -18,11 +17,15 @@ export interface FeedRelease {
   genres: string[];
   /** First of the month, "YYYY-MM-01" — the sources state no day. */
   month: string;
-  /** The source's score out of 5, or null when it publishes none. */
+  /** The score out of 100, or null when no source published one. */
   rating: null | number;
-  /** Which scraper wrote the row. Kept so a row can be traced back to its site. */
-  source: string;
-  source_id: string;
+  /**
+   * The row's key upstream: "artist|album|month", normalized. Stable across runs and
+   * unique in the table, which is what makes it usable as an id on this side. A site's
+   * own id is not stored — it is unique per site and never across them, so it could
+   * not survive the table taking more than one source.
+   */
+  release_key: string;
 }
 
 /** PostgREST's own ceiling is higher, but a two-month window is a few hundred rows. */
@@ -50,7 +53,7 @@ export async function getFeedReleases(since: string): Promise<FeedRelease[]> {
     limit: String(MAX_ROWS),
     month: `gte.${since}`,
     order: "month.desc,rating.desc.nullslast",
-    select: "source,source_id,artist,album,month,genres,rating,cover_url",
+    select: "release_key,artist,album,month,genres,rating,cover_url",
   });
 
   try {

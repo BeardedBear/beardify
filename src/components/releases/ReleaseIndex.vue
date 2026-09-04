@@ -72,8 +72,12 @@
       the month heading above already says.
     -->
     <div class="rating">
-      <BdTooltip v-if="typeof release.rating === 'number'" bare content="Editorial rating out of 5">
-        <span>{{ release.rating.toFixed(1) }}<span class="unit">/5</span></span>
+      <BdTooltip v-if="typeof release.rating === 'number'" bare content="Critic rating out of 100">
+        <span
+          :class="{ 'is-hot': release.rating >= HOT_RATING }"
+          :style="{ '--score': release.rating }"
+          class="score score-color"
+        >{{ release.rating }}<span class="unit"></span></span>
       </BdTooltip>
     </div>
   </div>
@@ -89,6 +93,7 @@ import { useSearch } from "@/components/search/SearchStore";
 import Cover from "@/components/ui/AlbumCover.vue";
 import { playAlbum } from "@/helpers/playAlbum";
 import { cancelReleaseAlbumLookup, lookupReleaseAlbum, releaseAlbum } from "@/helpers/releaseAlbum";
+import { HOT_RATING } from "@/helpers/releases";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 /** The scrapers file up to a dozen micro-genres per release; past three the row is a wall of tags. */
@@ -122,7 +127,7 @@ const shownGenres = computed(() => props.release.genres.slice(0, GENRES_SHOWN));
   border-radius: var(--bd-radius-sm);
   display: grid;
   gap: var(--bd-space-3);
-  grid-template-columns: 1.2rem 2.5rem minmax(0, 1.4fr) minmax(0, 1fr) 2.5rem;
+  grid-template-columns: 1.2rem 2.5rem minmax(0, 1.4fr) minmax(0, 1fr) 4rem;
   padding: var(--bd-space-2) var(--bd-space-3);
   transition: background-color var(--bd-transition-fast), opacity var(--bd-transition-fast);
 
@@ -303,14 +308,16 @@ const shownGenres = computed(() => props.release.genres.slice(0, GENRES_SHOWN));
   font-size: var(--bd-font-size-xs);
   text-align: right;
 
-  span {
-    background-color: var(--bd-bg-lighter);
+  /* Class, not a bare `span`: as a descendant selector it also hit the nested
+     .unit, padding it a second time and hanging the badge past the row.
+     Colours come from `.score-color` (src/assets/css/score.css) — only the box
+     is decided here. */
+  .score {
     border-radius: var(--bd-radius-sm);
     padding: 0.1rem var(--bd-space-2);
   }
 
   .unit {
-    color: var(--bd-font-color-dark);
     padding-inline-start: 0.1rem;
   }
 }

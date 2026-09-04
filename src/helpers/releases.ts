@@ -169,6 +169,14 @@ export function normalizeTag(tag: string): string {
 export const CHECK_TTL_MS = 90 * 24 * 60 * 60 * 1000;
 
 /**
+ * Where a score stops being good and starts being an event. The colour ramp is
+ * continuous, so the badge already says "high" on its own; this is the line above
+ * which it also gets the glow, and 90 is rare enough — a handful a month — that
+ * the glow stays a signal instead of decoration.
+ */
+export const HOT_RATING = 90;
+
+/**
  * The ticks worth keeping: everything ticked within the retention window.
  *
  * Keyed on when the tick was made, not on the release date — the release month is
@@ -243,8 +251,8 @@ export function toReleaseFromFeed(row: FeedRelease): Release {
   return {
     artistName: row.artist,
     genres: row.genres,
-    // Prefixed with the source: two sites can number an album the same.
-    id: `${row.source}-${row.source_id}`,
+    // Already unique in the table, and stable across runs: nothing to prefix.
+    id: row.release_key,
     images: row.cover_url ? [{ height: COVER_SIZE, url: row.cover_url, width: COVER_SIZE }] : [],
     key: releaseKey(row.artist, row.album),
     name: row.album,
