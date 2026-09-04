@@ -13,7 +13,9 @@
       <div class="score-head">
         <span id="score-range-label">Score</span>
         <span class="score-value">{{ scoreLabel }}</span>
-        <button v-if="scoreFiltered" class="clear" type="button" @click="resetScore()">Reset</button>
+        <button v-if="releasesStore.rangeNarrowed" class="clear" type="button" @click="releasesStore.resetScore()">
+          Reset
+        </button>
       </div>
       <Slider
         v-model="releasesStore.ratingRange"
@@ -35,9 +37,14 @@
       release, the arrow to its last.
     -->
     <div v-for="month in releasesStore.monthNav" :key="month.label" class="jump-row">
-      <button :disabled="!month.count" class="jump" type="button" @click="scrollToMonth(month.label, 'start')">
-        <span class="jump-label">{{ month.label }}</span>
-        <span class="jump-count">{{ month.count }}</span>
+      <button
+        :disabled="!month.count"
+        class="row-button"
+        type="button"
+        @click="scrollToMonth(month.label, 'start')"
+      >
+        <span class="name">{{ month.label }}</span>
+        <span class="count">{{ month.count }}</span>
       </button>
       <BdTooltip :content="`End of ${month.label}`" bare>
         <button
@@ -96,7 +103,7 @@
         :aria-pressed="isSelected(genre.name)"
         :class="{ child: genre.depth > 0 }"
         :tabindex="index === activeGenre ? 0 : -1"
-        class="genre"
+        class="row-button genre"
         type="button"
         @click="releasesStore.toggleGenre(genre.name)"
         @focus="genreFocus = index"
@@ -119,9 +126,9 @@
           <ChevronDown :class="{ open: expanded.has(genre.name) }" :size="14" />
         </button>
       </BdTooltip>
-      <span v-if="!genre.expandable" class="genre-slot" />
+      <span v-else class="genre-slot" />
     </div>
-    <span v-if="!shownGenres.length" class="no-match">No genre matches “{{ query }}”.</span>
+    <span v-if="!shownGenres.length" class="no-match">{{ noMatch }}</span>
     <button v-if="hasMore" class="show-more" type="button" @click="showMore()">Show more</button>
     <button v-if="visible > GENRES_STEP" class="show-more" type="button" @click="visible = GENRES_STEP">
       Show less
@@ -138,7 +145,7 @@ import "@vueform/slider/themes/default.css";
 
 import { GenreGroup } from "@/@types/Releases";
 import { useDialog } from "@/components/dialog/DialogStore";
-import { normalizeTag } from "@/helpers/releases";
+import { normalizeTag, RATING_BOUNDS } from "@/helpers/releases";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 /*
@@ -147,10 +154,8 @@ import { useReleases } from "@/views/releases/ReleasesStore";
  * filtering on — and "Show more" reveals the next batch of the same size.
  */
 const GENRES_STEP = 12;
-/** The scale the sources score on, and so both ends of the range control. */
-const SCORE_MAX = 100;
-const SCORE_MIN = 0;
 const releasesStore = useReleases();
+const [SCORE_MIN, SCORE_MAX] = RATING_BOUNDS;
 
 /** A row as the list renders it: a family, or one of the micro-genres under it. */
 interface GenreRow {
@@ -214,16 +219,11 @@ const shownGenres = computed<GenreRow[]>(() => {
 const hasMore = computed(() => matches.value.length > visible.value);
 
 /*
- * Clamped, because toggling a genre re-partitions picked/rest without touching
- * the query: left raw, the index could point past the end and no row would hold
- * `tabindex="0"`, which takes the whole list out of the tab order.
+ * Clamped, because folding a family or narrowing the query shortens the list under
+ * the index: left raw it could point past the end, no row would hold `tabindex="0"`,
+ * and the whole list would drop out of the tab order.
  */
 const activeGenre = computed(() => Math.min(genreFocus.value, Math.max(shownGenres.value.length - 1, 0)));
-
-/** Whether the range is narrower than the full scale — what the reset button hangs off. */
-const scoreFiltered = computed(
-  () => releasesStore.ratingRange[0] > SCORE_MIN || releasesStore.ratingRange[1] < SCORE_MAX,
-);
 
 /*
  * The handles under the pointer, or the committed range when nothing is being
@@ -237,18 +237,21 @@ const scoreFiltered = computed(
  */
 const dragRange = ref<null | number[]>(null);
 
-const displayRange = computed(() => dragRange.value ?? releasesStore.ratingRange);
-
 /** The range in words, so the two handles have a readout the panel can show at a glance. */
 const scoreLabel = computed(() => {
-  const [low, high] = displayRange.value;
+  const [low, high] = dragRange.value ?? releasesStore.ratingRange;
 
   return low === SCORE_MIN && high === SCORE_MAX ? "Any" : `${low}–${high}`;
 });
 
-/** What the live region reads out after a keystroke — the only evidence filtering happened. */
+/*
+ * What the live region reads out after a keystroke — the only evidence filtering
+ * happened. The empty case is rendered in the list too, from this same string: two
+ * copies of one sentence is how the announcement and the visible text drift apart.
+ */
+const noMatch = computed(() => `No genre matches “${query.value}”.`);
 const genreStatus = computed(() =>
-  shownGenres.value.length ? `${shownGenres.value.length} genres shown` : `No genre matches ${query.value}`,
+  shownGenres.value.length ? `${shownGenres.value.length} genres shown` : noMatch.value,
 );
 
 /*
@@ -274,14 +277,11 @@ function isSelected(name: string): boolean {
  * @param delta - How far to move, in rows
  */
 function moveGenreFocus(delta: number): void {
-  const buttons = [...(genresRef.value?.querySelectorAll<HTMLButtonElement>(".genre") ?? [])];
-  if (!buttons.length) return;
-  genreFocus.value = (activeGenre.value + delta + buttons.length) % buttons.length;
-  buttons[genreFocus.value].focus();
-}
+  const total = shownGenres.value.length;
+  if (!total) return;
 
-function resetScore(): void {
-  releasesStore.ratingRange = [SCORE_MIN, SCORE_MAX];
+  genreFocus.value = (activeGenre.value + delta + total) % total;
+  genresRef.value?.querySelectorAll<HTMLButtonElement>(".genre")[genreFocus.value]?.focus();
 }
 
 /*
@@ -433,7 +433,7 @@ watch(query, () => {
   --slider-handle-bg: var(--bd-font-color-light);
   --slider-handle-border: 0;
   --slider-handle-height: 0.9rem;
-  --slider-handle-ring-color: color-mix(in oklab, var(--bd-primary) 40%%, transparent);
+  --slider-handle-ring-color: color-mix(in oklab, var(--bd-primary) 40%, transparent);
   --slider-handle-ring-width: 0.2rem;
   --slider-handle-shadow: none;
   --slider-handle-shadow-active: none;
@@ -502,7 +502,13 @@ watch(query, () => {
   width: var(--genre-expand-size);
 }
 
-.genre {
+/*
+ * The box both row buttons wear. A genre and a month are both "take me to this",
+ * one tab column wide, and a second visual language for the same gesture in the
+ * same panel would be a second thing to learn — so it is one rule rather than two
+ * copies kept in step by hand.
+ */
+.row-button {
   align-items: center;
   background-color: transparent;
   border: none;
@@ -521,7 +527,32 @@ watch(query, () => {
   &:hover {
     background-color: var(--bd-bg);
   }
+}
 
+/*
+ * A row the current filter emptied — a month with nothing left in it. It stays in
+ * place, dimmed and inert, because a navigation list that drops rows rearranges
+ * itself under the pointer, and the 0 beside it is itself the answer to "anything
+ * in August?".
+ */
+.row-button:disabled {
+  background-color: transparent;
+  cursor: default;
+  opacity: 0.35;
+}
+
+.row-button .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row-button .count {
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
+}
+
+.genre {
   /* Indented and quieter: the family above it is the heading this belongs to. */
   &.child {
     color: var(--bd-font-color-dark);
@@ -535,15 +566,7 @@ watch(query, () => {
   }
 
   .name {
-    overflow: hidden;
-    text-overflow: ellipsis;
     text-transform: capitalize;
-    white-space: nowrap;
-  }
-
-  .count {
-    color: var(--bd-font-color-dark);
-    font-size: var(--bd-font-size-sm);
   }
 
   &[aria-pressed="true"] .count {
@@ -574,10 +597,6 @@ watch(query, () => {
 }
 
 .months {
-  /* Shared by the per-month arrow and by the empty slot the edge rows hold in
-     its place, so one value keeps the trailing column straight. */
-  --jump-end-size: 1.9rem;
-
   display: flex;
   flex-direction: column;
   gap: var(--bd-space-1);
@@ -590,54 +609,6 @@ watch(query, () => {
 }
 
 /*
- * Deliberately the genre row's box, not a new one: both are "narrow the feed to
- * this" and a second visual language for the same gesture in the same column
- * would be a second thing to learn.
- */
-.jump {
-  align-items: center;
-  background-color: transparent;
-  border: none;
-  border-radius: var(--bd-radius-sm);
-  color: inherit;
-  cursor: pointer;
-  display: flex;
-  flex: 1;
-  font-size: var(--bd-font-size-sm);
-  gap: var(--bd-space-2);
-  justify-content: space-between;
-  min-width: 0;
-  padding: var(--bd-space-1) var(--bd-space-2);
-  text-align: left;
-
-  &:hover {
-    background-color: var(--bd-bg);
-  }
-}
-
-/*
- * A month the current filter emptied. It stays in place, dimmed and inert,
- * because a navigation list that drops rows rearranges itself under the pointer
- * — and the 0 beside it is itself the answer to "anything in August?".
- */
-.jump:disabled {
-  background-color: transparent;
-  cursor: default;
-  opacity: 0.35;
-}
-
-.jump-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.jump-count {
-  color: var(--bd-font-color-dark);
-  font-size: var(--bd-font-size-sm);
-}
-
-/*
  * Held a register below the month itself: the month is the destination anyone
  * is looking for, its tail the occasional one. Sized past the 24px target floor
  * — it was 19px, on the component that doubles as the mobile touch surface —
@@ -645,6 +616,8 @@ watch(query, () => {
  * dimmed foreground well under any usable contrast.
  */
 .jump-end {
+  --jump-end-size: 1.9rem;
+
   align-items: center;
   background-color: transparent;
   border: none;

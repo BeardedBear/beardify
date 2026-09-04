@@ -41,13 +41,16 @@ const REST_URL = restUrl("releases");
  * bought a smaller payload that was never large, at the price of a feed that could
  * not show what it had not been told to ask for.
  *
- * Best-effort: a missing configuration or a failed request costs the feed, not the
- * page.
+ * Failures are raised, not swallowed into an empty array. Zero rows is a legitimate
+ * answer — a window with nothing new in it — so the two have to stay tellable apart:
+ * flattening them left the caller reading "no releases" off a broken request and
+ * offering a Try again button for a feed that was never going to fill.
  * @param since - Oldest month to include, "YYYY-MM-DD"
- * @returns The matching rows, or an empty array
+ * @returns The matching rows, possibly none
+ * @throws When the feed is not configured, or the request fails
  */
 export async function getFeedReleases(since: string): Promise<FeedRelease[]> {
-  if (!hasSupabase()) return [];
+  if (!hasSupabase()) throw new Error("The release feed is not configured");
 
   const params = new URLSearchParams({
     limit: String(MAX_ROWS),
@@ -56,10 +59,5 @@ export async function getFeedReleases(since: string): Promise<FeedRelease[]> {
     select: "release_key,artist,album,month,genres,rating,cover_url",
   });
 
-  try {
-    return await http.get(`${REST_URL}?${params}`, { headers: SUPABASE_HEADERS }).json<FeedRelease[]>();
-  } catch (error: unknown) {
-    if (import.meta.env.DEV) console.error("Error fetching release feed:", error);
-    return [];
-  }
+  return http.get(`${REST_URL}?${params}`, { headers: SUPABASE_HEADERS }).json<FeedRelease[]>();
 }

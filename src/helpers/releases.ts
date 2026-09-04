@@ -17,71 +17,66 @@ import { FeedRelease } from "@/helpers/releaseFeed";
  * naming two families belongs to both — "rap metal" is filed under each — so the
  * order of this list decides nothing.
  */
-const GENRE_FAMILIES: { name: string; probes: string[] }[] = [
-  { name: "metal", probes: ["metal", "grind", "deathcore", "doom", "sludge", "djent", "black gaze"] },
-  { name: "punk", probes: ["punk", "hardcore", "emo", "screamo", "riot grrrl", "queercore", "crust"] },
-  {
-    name: "rock",
-    probes: ["rock", "shoegaze", "grunge", "psychedel", "psychédél", "gothic", "gothique", "garage", "stoner"],
-  },
-  { name: "pop", probes: ["pop", "shibuya-kei"] },
-  {
-    name: "electronic",
-    probes: [
-      "electro",
-      "électro",
-      "techno",
-      "house",
-      "ambient",
-      "drone",
-      "idm",
-      "dance",
-      "breakcore",
-      "drum & bass",
-      "drum and bass",
-      "jungle",
-      "dubstep",
-      "industri",
-      "edm",
-      "trance",
-      "synth",
-      "trip hop",
-    ],
-  },
-  { name: "hip hop", probes: ["hip hop", "hip-hop", "rap", "trap", "boom bap", "crunk", "hiplife", "grime", "drill"] },
-  { name: "soul", probes: ["soul", "r&b", "rnb", "funk", "motown", "disco", "gospel"] },
-  { name: "jazz", probes: ["jazz", "bebop", "big band"] },
-  { name: "blues", probes: ["blues"] },
-  { name: "country", probes: ["country", "americana", "bluegrass", "newgrass", "red dirt", "honky tonk", "billy"] },
-  { name: "folk", probes: ["folk", "singer-songwriter", "chanson", "traditionnel"] },
-  {
-    name: "classical",
-    probes: ["classical", "classique", "orchestr", "de chambre", "opera", "opéra", "baroque", "minimalis"],
-  },
-  {
-    name: "experimental",
-    probes: [
-      "experimental",
-      "expérimental",
-      "avant-garde",
-      "avant garde",
-      "concrète",
-      "concrete",
-      "electroacoustique",
-      "électroacoustique",
-      "plunderphonics",
-      "bruitiste",
-      "noise",
-      "lo fi",
-      "lo-fi",
-      "spoken word",
-    ],
-  },
-  { name: "reggae", probes: ["reggae", "dancehall", "ska", "dub poetry"] },
-  { name: "latin", probes: ["latin", "latino", "cumbia", "mambo", "salsa", "cubano", "mpb", "bossa", "reggaeton"] },
-  { name: "african", probes: ["afro", "azonto", "alté", "highlife", "amapiano", "makossa"] },
-  { name: "indie", probes: ["indie"] },
-];
+const GENRE_FAMILIES: Record<string, string[]> = {
+  african: ["afro", "azonto", "alté", "highlife", "amapiano", "makossa"],
+  blues: ["blues"],
+  classical: ["classical", "classique", "orchestr", "de chambre", "opera", "opéra", "baroque", "minimalis"],
+  country: ["country", "americana", "bluegrass", "newgrass", "red dirt", "honky tonk", "billy"],
+  electronic: [
+    "electro",
+    "électro",
+    "techno",
+    "house",
+    "ambient",
+    "drone",
+    "idm",
+    "dance",
+    "breakcore",
+    "drum & bass",
+    "drum and bass",
+    "jungle",
+    "dubstep",
+    "industri",
+    "edm",
+    "trance",
+    "synth",
+    "trip hop",
+  ],
+  experimental: [
+    "experimental",
+    "expérimental",
+    "avant-garde",
+    "avant garde",
+    "concrète",
+    "concrete",
+    "electroacoustique",
+    "électroacoustique",
+    "plunderphonics",
+    "bruitiste",
+    "noise",
+    "lo fi",
+    "lo-fi",
+    "spoken word",
+  ],
+  folk: ["folk", "singer-songwriter", "chanson", "traditionnel"],
+  "hip hop": ["hip hop", "hip-hop", "rap", "trap", "boom bap", "crunk", "hiplife", "grime", "drill"],
+  indie: ["indie"],
+  jazz: ["jazz", "bebop", "big band"],
+  latin: ["latin", "latino", "cumbia", "mambo", "salsa", "cubano", "mpb", "bossa", "reggaeton"],
+  metal: ["metal", "grind", "deathcore", "doom", "sludge", "djent", "black gaze"],
+  pop: ["pop", "shibuya-kei"],
+  punk: ["punk", "hardcore", "emo", "screamo", "riot grrrl", "queercore", "crust"],
+  reggae: ["reggae", "dancehall", "ska", "dub poetry"],
+  rock: ["rock", "shoegaze", "grunge", "psychedel", "psychédél", "gothic", "gothique", "garage", "stoner"],
+  soul: ["soul", "r&b", "rnb", "funk", "motown", "disco", "gospel"],
+};
+
+/*
+ * One entry per distinct tag, not per occurrence: the same handful of strings comes
+ * back on hundreds of rows, and every facet recount walked all 116 probes for each
+ * of them. The vocabulary is bounded by the feed, so the map is too.
+ */
+const familiesByTag = new Map<string, string[]>();
 
 /**
  * Every family a raw tag belongs to.
@@ -92,14 +87,20 @@ const GENRE_FAMILIES: { name: string; probes: string[] }[] = [
  * @param genre - One genre string, as the feed spells it
  */
 export function genreFamilies(genre: string): string[] {
-  return GENRE_FAMILIES.filter((family) => family.probes.some((probe) => genre.includes(probe))).map(
-    (family) => family.name,
+  const known = familiesByTag.get(genre);
+  if (known) return known;
+
+  const families = Object.keys(GENRE_FAMILIES).filter((name) =>
+    GENRE_FAMILIES[name].some((probe) => genre.includes(probe)),
   );
+  familiesByTag.set(genre, families);
+
+  return families;
 }
 
 /** Whether a term is one of the families, and so always worth a row of its own. */
 export function isGenreFamily(name: string): boolean {
-  return GENRE_FAMILIES.some((family) => family.name === name);
+  return name in GENRE_FAMILIES;
 }
 
 /*
@@ -108,6 +109,13 @@ export function isGenreFamily(name: string): boolean {
  * negative offset that album would file itself under July.
  */
 const MONTH_FORMATTER = new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "UTC", year: "numeric" });
+
+/*
+ * Hoisted for the same reason as the formatter above. `String.localeCompare` builds a
+ * collator per call, and every sort here runs it once per comparison — a few thousand
+ * of them each time a month is reordered.
+ */
+export const COLLATOR = new Intl.Collator(undefined, { sensitivity: "base" });
 
 /**
  * Every term a release can be filtered by: its own genres, plus the broad family
@@ -163,8 +171,8 @@ export function groupByMonth(releases: Release[], checks: Record<string, number>
   for (const group of months) {
     group.releases.sort(
       sort === "artist"
-        ? (a, b): number => a.artistName.localeCompare(b.artistName) || a.name.localeCompare(b.name)
-        : (a, b): number => (b.rating ?? -1) - (a.rating ?? -1) || a.name.localeCompare(b.name),
+        ? (a, b): number => COLLATOR.compare(a.artistName, b.artistName) || COLLATOR.compare(a.name, b.name)
+        : (a, b): number => (b.rating ?? -1) - (a.rating ?? -1) || COLLATOR.compare(a.name, b.name),
     );
   }
 
@@ -302,6 +310,15 @@ export const CHECK_TTL_MS = 90 * 24 * 60 * 60 * 1000;
  * the glow stays a signal instead of decoration.
  */
 export const HOT_RATING = 90;
+
+/**
+ * The score scale the sources publish on, and so both ends of the range control.
+ *
+ * Here rather than in the store or the sidebar because all three read it: the gate
+ * that applies the range, the control that sets it, and the reset that clears it had
+ * three copies of the same two numbers between them.
+ */
+export const RATING_BOUNDS: [number, number] = [0, 100];
 
 /**
  * The ticks worth keeping: everything ticked within the retention window.

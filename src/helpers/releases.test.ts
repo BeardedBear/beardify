@@ -74,7 +74,9 @@ describe("genreTerms", () => {
   });
 
   it("adds every family a genre spans", () => {
-    expect(genreTerms(["rap metal"])).toEqual(["rap metal", "metal", "hip hop"]);
+    // Order-free on purpose: a tag belongs to every family that probes it, and which
+    // one is listed first is not something any reader of `terms` is entitled to.
+    expect(genreTerms(["rap metal"]).sort()).toEqual(["hip hop", "metal", "rap metal"]);
   });
 
   it("leaves a genre outside the families alone", () => {

@@ -41,15 +41,11 @@
         nothing at all — indistinguishable from a hover too short to have fired. An
         empty answer is information: this record is not on Spotify.
       -->
-      <span
-        v-else-if="isUnplayable"
-        aria-label="Not on Spotify"
-        class="cover-missing"
-        role="img"
-        title="Not on Spotify"
-      >
-        <Ban :size="14" />
-      </span>
+      <BdTooltip v-else-if="isUnplayable" bare content="Not on Spotify">
+        <span aria-label="Not on Spotify" class="cover-missing" role="img">
+          <Ban :size="14" />
+        </span>
+      </BdTooltip>
     </span>
 
     <div class="names">
@@ -358,9 +354,7 @@ const shownGenres = computed(() => props.release.genres.slice(0, GENRES_SHOWN));
   font-size: var(--bd-font-size-xs);
   text-align: right;
 
-  /* Class, not a bare `span`: as a descendant selector it also hit the nested
-     .unit, padding it a second time and hanging the badge past the row.
-     Colours come from `.score-color` (src/assets/css/score.css) — only the box
+  /* Colours come from `.score-color` (src/assets/css/score.css) — only the box
      is decided here. */
   .score {
     border-radius: var(--bd-radius-sm);

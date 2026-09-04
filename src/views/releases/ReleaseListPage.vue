@@ -11,6 +11,20 @@
   >
     <template #icon><TriangleAlert :size="32" /></template>
   </BdEmptyState>
+  <!--
+    Reachable again now that the feed raises instead of answering a broken request
+    with zero rows: a window the sources genuinely had nothing for is not an error,
+    and must not offer a Try again button as if it were.
+  -->
+  <BdEmptyState
+    v-else-if="!releasesStore.releases.length"
+    action-label="Refresh"
+    message="No release in the months this feed covers."
+    title="Nothing new"
+    @action="releasesStore.getReleases(true)"
+  >
+    <template #icon><Disc3 :size="32" /></template>
+  </BdEmptyState>
   <div v-else class="releases">
     <div class="toolbar">
       <div class="heading">
