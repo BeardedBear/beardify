@@ -74,11 +74,24 @@ describe("genreTerms", () => {
   });
 
   it("adds every family a genre spans", () => {
-    expect(genreTerms(["rap metal"])).toEqual(["rap metal", "metal", "rap"]);
+    expect(genreTerms(["rap metal"])).toEqual(["rap metal", "metal", "hip hop"]);
   });
 
   it("leaves a genre outside the families alone", () => {
-    expect(genreTerms(["djent"])).toEqual(["djent"]);
+    expect(genreTerms(["klezmer"])).toEqual(["klezmer"]);
+  });
+
+  /* Spotify answers in the account's language, so the same music arrives spelled twice. */
+  it("folds a localized spelling onto the same family as its English one", () => {
+    expect(genreTerms(["musique expérimentale"])).toContain("experimental");
+    expect(genreTerms(["experimental hip hop"])).toContain("experimental");
+    expect(genreTerms(["néo-classique"])).toContain("classical");
+  });
+
+  it("pulls a micro-genre that never names its family into it", () => {
+    expect(genreTerms(["shoegaze"])).toContain("rock");
+    expect(genreTerms(["deathcore"])).toContain("metal");
+    expect(genreTerms(["boom bap"])).toContain("hip hop");
   });
 });
 
@@ -89,15 +102,27 @@ describe("groupGenres", () => {
       { count: 20, name: "rock" },
       { count: 12, name: "black metal" },
       { count: 8, name: "folk metal" },
-      { count: 5, name: "shoegaze" },
+      { count: 5, name: "klezmer" },
     ];
   }
 
   it("files micro-genres under their family and leaves them out of the top level", () => {
     const tree = groupGenres(facets());
 
-    expect(tree.map((group) => group.name)).toEqual(["metal", "rock", "shoegaze"]);
+    // klezmer names no family, so it keeps a row of its own.
+    expect(tree.map((group) => group.name)).toEqual(["metal", "rock", "klezmer"]);
     expect(tree[0].children.map((child) => child.name)).toEqual(["black metal", "folk metal"]);
+  });
+
+  /* The probes are what fold a tag that never names its family into it. */
+  it("files a micro-genre under a family its name does not contain", () => {
+    const tree = groupGenres([
+      { count: 20, name: "rock" },
+      { count: 5, name: "shoegaze" },
+    ]);
+
+    expect(tree.map((group) => group.name)).toEqual(["rock"]);
+    expect(tree[0].children.map((child) => child.name)).toEqual(["shoegaze"]);
   });
 
   it("lists a genre naming two families under both", () => {
@@ -111,7 +136,7 @@ describe("groupGenres", () => {
   it("keeps the order it was given", () => {
     const reversed = [...facets()].reverse();
 
-    expect(groupGenres(reversed).map((group) => group.name)).toEqual(["shoegaze", "rock", "metal"]);
+    expect(groupGenres(reversed).map((group) => group.name)).toEqual(["klezmer", "rock", "metal"]);
   });
 
   it("files a micro-genre listed ahead of its own family", () => {

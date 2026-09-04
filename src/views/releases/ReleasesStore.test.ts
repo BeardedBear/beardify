@@ -22,6 +22,15 @@ function release(overrides: Partial<Release>): Release {
 describe("enrichGenres", () => {
   beforeEach(() => setActivePinia(createPinia()));
 
+  it("lowercases what Spotify hands back, which the scrapers' tags already are", () => {
+    const store = useReleases();
+    store.releases = [release({})];
+
+    store.enrichGenres("gojira|fortitude", ["Progressive Metal"]);
+
+    expect(store.releases[0].genres).toEqual(["progressive metal"]);
+  });
+
   it("fills a bare row and rebuilds its filter terms", () => {
     const store = useReleases();
     store.releases = [release({})];

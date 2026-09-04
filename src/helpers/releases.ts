@@ -3,31 +3,104 @@ import { normalizeString } from "@/helpers/helper";
 import { FeedRelease } from "@/helpers/releaseFeed";
 
 /*
- * Broad families rolled up from the sources' micro-genres.
+ * Broad families, and the probes that pull a raw tag into one.
  *
  * The scrapers file a release under "atmospheric black metal" or "art rock" and
  * nothing broader, so a sidebar listing genre strings verbatim hides it under every
- * heading a listener would think to look. Each family is a substring probe, which is
- * why "hip hop" sits next to "rap": they are separate strings in the vocabulary.
+ * heading a listener would think to look. On top of that the hover lookup adds
+ * Spotify's artist genres, which arrive in the account's own language — the same
+ * music reaches the list as "experimental" and "musique expérimentale", "classical"
+ * and "classique". Both are probes of the same family, which is what folds the two
+ * vocabularies back into one.
+ *
+ * Probes are plain substrings, matched against the tag as the feed spells it. A tag
+ * naming two families belongs to both — "rap metal" is filed under each — so the
+ * order of this list decides nothing.
  */
-const GENRE_FAMILIES = [
-  "blues",
-  "classical",
-  "country",
-  "electronic",
-  "folk",
-  "hip hop",
-  "house",
-  "jazz",
-  "metal",
-  "pop",
-  "punk",
-  "rap",
-  "reggae",
-  "rock",
-  "soul",
-  "techno",
+const GENRE_FAMILIES: { name: string; probes: string[] }[] = [
+  { name: "metal", probes: ["metal", "grind", "deathcore", "doom", "sludge", "djent", "black gaze"] },
+  { name: "punk", probes: ["punk", "hardcore", "emo", "screamo", "riot grrrl", "queercore", "crust"] },
+  {
+    name: "rock",
+    probes: ["rock", "shoegaze", "grunge", "psychedel", "psychédél", "gothic", "gothique", "garage", "stoner"],
+  },
+  { name: "pop", probes: ["pop", "shibuya-kei"] },
+  {
+    name: "electronic",
+    probes: [
+      "electro",
+      "électro",
+      "techno",
+      "house",
+      "ambient",
+      "drone",
+      "idm",
+      "dance",
+      "breakcore",
+      "drum & bass",
+      "drum and bass",
+      "jungle",
+      "dubstep",
+      "industri",
+      "edm",
+      "trance",
+      "synth",
+      "trip hop",
+    ],
+  },
+  { name: "hip hop", probes: ["hip hop", "hip-hop", "rap", "trap", "boom bap", "crunk", "hiplife", "grime", "drill"] },
+  { name: "soul", probes: ["soul", "r&b", "rnb", "funk", "motown", "disco", "gospel"] },
+  { name: "jazz", probes: ["jazz", "bebop", "big band"] },
+  { name: "blues", probes: ["blues"] },
+  { name: "country", probes: ["country", "americana", "bluegrass", "newgrass", "red dirt", "honky tonk", "billy"] },
+  { name: "folk", probes: ["folk", "singer-songwriter", "chanson", "traditionnel"] },
+  {
+    name: "classical",
+    probes: ["classical", "classique", "orchestr", "de chambre", "opera", "opéra", "baroque", "minimalis"],
+  },
+  {
+    name: "experimental",
+    probes: [
+      "experimental",
+      "expérimental",
+      "avant-garde",
+      "avant garde",
+      "concrète",
+      "concrete",
+      "electroacoustique",
+      "électroacoustique",
+      "plunderphonics",
+      "bruitiste",
+      "noise",
+      "lo fi",
+      "lo-fi",
+      "spoken word",
+    ],
+  },
+  { name: "reggae", probes: ["reggae", "dancehall", "ska", "dub poetry"] },
+  { name: "latin", probes: ["latin", "latino", "cumbia", "mambo", "salsa", "cubano", "mpb", "bossa", "reggaeton"] },
+  { name: "african", probes: ["afro", "azonto", "alté", "highlife", "amapiano", "makossa"] },
+  { name: "indie", probes: ["indie"] },
 ];
+
+/**
+ * Every family a raw tag belongs to.
+ *
+ * The one place the probes are read, so the terms a release is filtered by and the
+ * branch the sidebar files it under can never disagree — a micro-genre shown under
+ * "metal" whose row does not carry the term would empty the feed when clicked.
+ * @param genre - One genre string, as the feed spells it
+ */
+export function genreFamilies(genre: string): string[] {
+  return GENRE_FAMILIES.filter((family) => family.probes.some((probe) => genre.includes(probe))).map(
+    (family) => family.name,
+  );
+}
+
+/** Whether a term is one of the families, and so always worth a row of its own. */
+export function isGenreFamily(name: string): boolean {
+  return GENRE_FAMILIES.some((family) => family.name === name);
+}
 
 /*
  * Month headers are built from the UTC parts on purpose. Release dates are bare
@@ -46,9 +119,7 @@ export function genreTerms(genres: string[]): string[] {
   const terms = new Set(genres);
 
   for (const genre of genres) {
-    for (const family of GENRE_FAMILIES) {
-      if (genre.includes(family)) terms.add(family);
-    }
+    for (const family of genreFamilies(genre)) terms.add(family);
   }
 
   return [...terms];
@@ -79,7 +150,7 @@ export function groupGenres(genres: GenreFacet[]): GenreGroup[] {
    */
   const groups = new Map<string, GenreGroup>(
     genres
-      .filter((genre) => GENRE_FAMILIES.includes(genre.name))
+      .filter((genre) => isGenreFamily(genre.name))
       .map((genre) => [genre.name, { children: [], count: genre.count, name: genre.name }]),
   );
 
@@ -91,7 +162,7 @@ export function groupGenres(genres: GenreFacet[]): GenreGroup[] {
       continue;
     }
 
-    const parents = [...groups.keys()].filter((family) => genre.name.includes(family));
+    const parents = genreFamilies(genre.name).filter((family) => groups.has(family));
     if (!parents.length) tree.push({ children: [], count: genre.count, name: genre.name });
     for (const parent of parents) groups.get(parent)?.children.push({ count: genre.count, name: genre.name });
   }

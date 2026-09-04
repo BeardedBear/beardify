@@ -8,6 +8,7 @@ import {
   genreTerms,
   groupByMonth,
   groupGenres,
+  isGenreFamily,
   matchesRating,
   mergeReleases,
   monthLabel,
@@ -27,6 +28,9 @@ const STALE_AFTER_MS = 6 * 60 * 60 * 1000;
  */
 const PUSH_DEBOUNCE_MS = 2000;
 
+/** How many releases a tag has to cover before the sidebar offers it as a filter. */
+const GENRE_MIN_ROWS = 2;
+
 /** The score scale the sources publish on, and so the range control's two ends. */
 const RATING_BOUNDS: [number, number] = [0, 100];
 
@@ -40,7 +44,7 @@ const RATING_BOUNDS: [number, number] = [0, 100];
  * guarding every field is whack-a-mole; discarding a cache the current code cannot
  * read costs one refetch and nothing else.
  */
-const FEED_VERSION = 7;
+const FEED_VERSION = 8;
 
 // Built outside the store so the timer survives across calls.
 let debouncedPush: null | ReturnType<typeof useDebounceFn> = null;
@@ -72,8 +76,13 @@ export const useReleases = defineStore("releases", {
       const release = this.releases.find((item) => item.key === key);
       if (!release || release.genres.length || !genres.length) return;
 
-      release.genres = genres;
-      release.terms = genreTerms(genres);
+      /*
+       * Lowercased on the way in. The scrapers file tags lowercase and Spotify does
+       * not, so "Country alternative" would sit beside "country alternative" as a
+       * separate facet — and match none of the family probes, which are lowercase.
+       */
+      release.genres = genres.map((genre) => genre.toLowerCase());
+      release.terms = genreTerms(release.genres);
     },
 
     /**
@@ -247,7 +256,15 @@ export const useReleases = defineStore("releases", {
         for (const term of release.terms) remaining.set(term, (remaining.get(term) ?? 0) + 1);
       }
 
+      /*
+       * The long tail is dropped: a tag carried by a single release cannot narrow
+       * anything, and the feed carries hundreds of them — one-off scraper tags plus
+       * every localized spelling Spotify hands back. They stay on the row that owns
+       * them, where clicking one still filters; they just no longer bury the terms
+       * that do the work. Families are exempt, being the headings.
+       */
       return [...total.entries()]
+        .filter(([name, count]) => count >= GENRE_MIN_ROWS || isGenreFamily(name))
         .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
         .map(([name]) => ({ count: remaining.get(name) ?? 0, name }));
     },
