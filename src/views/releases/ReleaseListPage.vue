@@ -22,7 +22,16 @@
   </BdEmptyState>
   <div v-else class="releases">
     <div class="toolbar">
-      <h1 class="name bd-font-bold">Releases</h1>
+      <div class="heading">
+        <h1 class="name bd-font-bold">Releases</h1>
+        <!--
+          One denominator. This used to read "N shown · M listened", two numbers
+          off two different sets, and the second was pinned to 0 for as long as
+          "Hide listened" was on — the toggle appeared to erase the progress it
+          was measuring.
+        -->
+        <div class="counts">{{ releasesStore.checkedCount }} of {{ releasesStore.genreFiltered.length }} listened</div>
+      </div>
       <div class="tools">
         <BdTooltip :content="`Feed refreshed every 6 hours. Last update ${fetchedLabel}.`" bare>
           <div class="fetched">Updated {{ fetchedLabel }}</div>
@@ -211,6 +220,19 @@ releasesStore.getReleases();
 .name {
   font-size: var(--bd-font-size-xl);
   margin: 0;
+}
+
+/* Baseline, not centre: the count reads as a subtitle of the title it sits beside. */
+.heading {
+  align-items: baseline;
+  display: flex;
+  gap: var(--bd-space-3);
+}
+
+.counts {
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-xs);
+  white-space: nowrap;
 }
 
 .tools {

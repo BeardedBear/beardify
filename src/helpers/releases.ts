@@ -113,6 +113,23 @@ export function groupByMonth(
 const COVER_SIZE = 200;
 
 /**
+ * Whether a release survives the score gates.
+ *
+ * The two gates answer different questions and are deliberately independent: a row
+ * the sources never scored has nothing to compare against a range, so narrowing the
+ * range must not quietly delete it — only its own switch does that. Roughly a third
+ * of the feed is unrated, so the mistake would hide a third of the page.
+ * @param release - The row under test
+ * @param hideUnrated - Drop the rows no source scored
+ * @param range - Lowest and highest score kept, inclusive
+ */
+export function matchesRating(release: Release, hideUnrated: boolean, range: [number, number]): boolean {
+  if (typeof release.rating !== "number") return !hideUnrated;
+
+  return release.rating >= range[0] && release.rating <= range[1];
+}
+
+/**
  * Deduplicate the feed and put it newest first.
  *
  * Keyed on artist + title rather than on the source id: the listing can carry the

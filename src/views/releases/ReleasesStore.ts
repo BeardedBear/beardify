@@ -4,7 +4,15 @@ import { defineStore } from "pinia";
 import { MonthGroup, Release, ReleasesPage } from "@/@types/Releases";
 import { getRemoteChecks, putRemoteChecks } from "@/helpers/releaseChecks";
 import { getFeedReleases } from "@/helpers/releaseFeed";
-import { genreTerms, groupByMonth, mergeReleases, monthLabel, pruneChecks, toReleaseFromFeed } from "@/helpers/releases";
+import {
+  genreTerms,
+  groupByMonth,
+  matchesRating,
+  mergeReleases,
+  monthLabel,
+  pruneChecks,
+  toReleaseFromFeed,
+} from "@/helpers/releases";
 import { useCheckLiveAlbum, useCheckReissueAlbum } from "@/helpers/useCleanAlbums";
 import { useAuth } from "@/views/auth/AuthStore";
 
@@ -17,6 +25,9 @@ const STALE_AFTER_MS = 6 * 60 * 60 * 1000;
  * out a short quiet period turns a run of them into one upsert.
  */
 const PUSH_DEBOUNCE_MS = 2000;
+
+/** The score scale the sources publish on, and so the range control's two ends. */
+const RATING_BOUNDS: [number, number] = [0, 100];
 
 /*
  * Shape version of a persisted `Release`. Bump it whenever a field is added or its
@@ -39,6 +50,8 @@ export const useReleases = defineStore("releases", {
     clearFilters() {
       this.genres = [];
       this.hideChecked = false;
+      this.hideUnrated = false;
+      this.ratingRange = [...RATING_BOUNDS];
     },
 
     /**
@@ -201,10 +214,10 @@ export const useReleases = defineStore("releases", {
      * rows being counted.
      */
     genreFiltered(state): Release[] {
-      if (!state.genres.length) return state.releases;
+      if (!state.genres.length) return this.ratingFiltered;
 
       // Any of them, not all: two genres selected reads as "either".
-      return state.releases.filter((release) => state.genres.some((genre) => release.terms.includes(genre)));
+      return this.ratingFiltered.filter((release) => state.genres.some((genre) => release.terms.includes(genre)));
     },
 
     /**
@@ -240,9 +253,9 @@ export const useReleases = defineStore("releases", {
 
     /** The feed with the listened gate applied and nothing else — what the facet counts are measured on. */
     listenFiltered(state): Release[] {
-      if (!state.hideChecked) return state.releases;
+      if (!state.hideChecked) return this.ratingFiltered;
 
-      return state.releases.filter((release) => !state.checks[release.key]);
+      return this.ratingFiltered.filter((release) => !state.checks[release.key]);
     },
 
     /**
@@ -285,6 +298,21 @@ export const useReleases = defineStore("releases", {
       return [...months.values()].map((label) => ({ count: shown.get(label) ?? 0, label }));
     },
 
+    /**
+     * The feed with the score gates applied — the base every other gate composes on.
+     *
+     * Underneath the genre and listened gates rather than beside them, so the facet
+     * counts and the progress denominator are both measured on rows the score filter
+     * has already kept. A sidebar promising 23 rows that the range then withholds is
+     * the bug this ordering prevents.
+     */
+    ratingFiltered(state): Release[] {
+      const [low, high] = state.ratingRange;
+      if (!state.hideUnrated && low === RATING_BOUNDS[0] && high === RATING_BOUNDS[1]) return state.releases;
+
+      return state.releases.filter((release) => matchesRating(release, state.hideUnrated, state.ratingRange));
+    },
+
     /** The feed as the list renders it: both gates, composed rather than re-tested. */
     visibleReleases(state): Release[] {
       if (!state.hideChecked) return this.genreFiltered;
@@ -317,7 +345,16 @@ export const useReleases = defineStore("releases", {
       releases.feedVersion = FEED_VERSION;
     },
     key: "beardify-releases",
-    pick: ["feedVersion", "fetchedAt", "genres", "hideChecked", "releases", "sortRating"],
+    pick: [
+      "feedVersion",
+      "fetchedAt",
+      "genres",
+      "hideChecked",
+      "hideUnrated",
+      "ratingRange",
+      "releases",
+      "sortRating",
+    ],
   },
 
   state: (): ReleasesPage => ({
@@ -336,7 +373,9 @@ export const useReleases = defineStore("releases", {
     fetchedAt: null,
     genres: [],
     hideChecked: false,
+    hideUnrated: false,
     loading: false,
+    ratingRange: [...RATING_BOUNDS],
     releases: [],
     sortRating: false,
   }),

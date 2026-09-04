@@ -1,15 +1,32 @@
 <template>
   <div class="filters">
     <BdCheckbox v-model="releasesStore.hideChecked" full-width label="Hide listened" />
-  </div>
+    <BdCheckbox v-model="releasesStore.hideUnrated" full-width label="Hide unrated" />
 
-  <!--
-    One denominator. This used to read "N shown · M listened", two numbers off
-    two different sets, and the second was pinned to 0 for as long as "Hide
-    listened" was on — the toggle one line above appeared to erase the progress
-    it was measuring.
-  -->
-  <div class="counts">{{ releasesStore.checkedCount }} of {{ releasesStore.genreFiltered.length }} listened</div>
+    <!--
+      The range and the checkbox above are two questions, not one: a row nobody
+      scored has nothing to compare against a range, so it answers only to the
+      checkbox. Dragging the low end up therefore never silently swallows the
+      third of the feed that arrives unscored.
+    -->
+    <div class="score">
+      <div class="score-head">
+        <span id="score-range-label">Score</span>
+        <span class="score-value">{{ scoreLabel }}</span>
+        <button v-if="scoreFiltered" class="clear" type="button" @click="resetScore()">Reset</button>
+      </div>
+      <Slider
+        v-model="releasesStore.ratingRange"
+        :max="SCORE_MAX"
+        :min="SCORE_MIN"
+        :tooltips="false"
+        aria-labelledby="score-range-label"
+        class="score-slider"
+        @end="dragRange = null"
+        @slide="dragRange = $event"
+      />
+    </div>
+  </div>
 
   <h2 class="title bd-font-bold"><span>Months</span></h2>
   <nav aria-label="Jump to a month" class="months">
@@ -106,8 +123,10 @@
 
 <script lang="ts" setup>
 import { ArrowDownToLine, ArrowUpToLine } from "@lucide/vue";
+import Slider from "@vueform/slider";
 import { BdCheckbox, BdInput, BdTooltip } from "bearded-ui";
 import { computed, ref, watch } from "vue";
+import "@vueform/slider/themes/default.css";
 
 import { useDialog } from "@/components/dialog/DialogStore";
 import { normalizeTag } from "@/helpers/releases";
@@ -119,6 +138,9 @@ import { useReleases } from "@/views/releases/ReleasesStore";
  * filtering on — and "Show more" reveals the next batch of the same size.
  */
 const GENRES_STEP = 12;
+/** The scale the sources score on, and so both ends of the range control. */
+const SCORE_MAX = 100;
+const SCORE_MIN = 0;
 const releasesStore = useReleases();
 
 const genreFocus = ref(0);
@@ -159,6 +181,32 @@ const hasMore = computed(() => matches.value.length > visible.value);
  */
 const activeGenre = computed(() => Math.min(genreFocus.value, Math.max(shownGenres.value.length - 1, 0)));
 
+/** Whether the range is narrower than the full scale — what the reset button hangs off. */
+const scoreFiltered = computed(
+  () => releasesStore.ratingRange[0] > SCORE_MIN || releasesStore.ratingRange[1] < SCORE_MAX,
+);
+
+/*
+ * The handles under the pointer, or the committed range when nothing is being
+ * dragged.
+ *
+ * The slider is left in its lazy mode on purpose — it commits to the store on
+ * release, not on every mousemove — because the store is persisted whole, and a
+ * write per pixel would re-serialize the entire feed into localStorage for the
+ * length of a drag. This ref is what a drag moves instead, so the readout tracks
+ * the handle while the feed below stays still.
+ */
+const dragRange = ref<null | number[]>(null);
+
+const displayRange = computed(() => dragRange.value ?? releasesStore.ratingRange);
+
+/** The range in words, so the two handles have a readout the panel can show at a glance. */
+const scoreLabel = computed(() => {
+  const [low, high] = displayRange.value;
+
+  return low === SCORE_MIN && high === SCORE_MAX ? "Any" : `${low}–${high}`;
+});
+
 /** What the live region reads out after a keystroke — the only evidence filtering happened. */
 const genreStatus = computed(() =>
   shownGenres.value.length ? `${shownGenres.value.length} genres shown` : `No genre matches ${query.value}`,
@@ -191,6 +239,10 @@ function moveGenreFocus(delta: number): void {
   if (!buttons.length) return;
   genreFocus.value = (activeGenre.value + delta + buttons.length) % buttons.length;
   buttons[genreFocus.value].focus();
+}
+
+function resetScore(): void {
+  releasesStore.ratingRange = [SCORE_MIN, SCORE_MAX];
 }
 
 /*
@@ -307,10 +359,42 @@ watch(query, () => {
   padding: var(--bd-space-4) var(--bd-space-4) 0;
 }
 
-.counts {
+.score {
+  padding: var(--bd-space-3) var(--bd-space-1) var(--bd-space-1);
+}
+
+.score-head {
+  align-items: center;
   color: var(--bd-font-color-dark);
+  display: flex;
   font-size: var(--bd-font-size-xs);
-  padding: var(--bd-space-2) var(--bd-space-4) var(--bd-space-1);
+  gap: var(--bd-space-2);
+  margin-bottom: var(--bd-space-4);
+}
+
+.score-value {
+  color: var(--bd-font-color);
+  margin-inline-start: auto;
+}
+
+/*
+ * The library ships its own theme as custom properties, so the whole control is
+ * re-skinned by redefining them on the root it inherits from — no ::v-deep into
+ * its internals, which is what would break the day it renames a class.
+ */
+.score-slider {
+  --slider-bg: var(--bd-bg-lighter);
+  --slider-connect-bg: var(--bd-primary);
+  --slider-handle-bg: var(--bd-font-color-light);
+  --slider-handle-border: 0;
+  --slider-handle-height: 0.9rem;
+  --slider-handle-ring-color: color-mix(in oklab, var(--bd-primary) 40%%, transparent);
+  --slider-handle-ring-width: 0.2rem;
+  --slider-handle-shadow: none;
+  --slider-handle-shadow-active: none;
+  --slider-handle-width: 0.9rem;
+  --slider-height: 0.25rem;
+  --slider-radius: var(--bd-radius-full);
 }
 
 /*

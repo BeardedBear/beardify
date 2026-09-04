@@ -54,7 +54,11 @@ export interface ReleasesPage {
   /** The terms the list is narrowed to. Empty is the whole feed; several read as "any of". */
   genres: string[];
   hideChecked: boolean;
+  /** Drop the rows no source ever scored — about a third of the feed. */
+  hideUnrated: boolean;
   loading: boolean;
+  /** Lowest and highest score kept, inclusive. Unrated rows answer to `hideUnrated` instead. */
+  ratingRange: [number, number];
   releases: Release[];
   /** Sort each month's releases by the editorial rating, highest first. */
   sortRating: boolean;

@@ -4,6 +4,7 @@ import { Release } from "@/@types/Releases";
 import {
   genreTerms,
   groupByMonth,
+  matchesRating,
   mergeReleases,
   monthLabel,
   normalizeTag,
@@ -211,5 +212,24 @@ describe("pruneChecks", () => {
     expect(
       pruneChecks({ fresh: now - day, old: now - 91 * day, yesterday: now - 89 * day }, now),
     ).toEqual({ fresh: now - day, yesterday: now - 89 * day });
+  });
+});
+
+describe("matchesRating", () => {
+  it("keeps a score inside the range, at either end", () => {
+    expect(matchesRating(release({ rating: 70 }), false, [70, 90])).toBe(true);
+    expect(matchesRating(release({ rating: 90 }), false, [70, 90])).toBe(true);
+  });
+
+  it("drops a score outside the range", () => {
+    expect(matchesRating(release({ rating: 69 }), false, [70, 90])).toBe(false);
+    expect(matchesRating(release({ rating: 91 }), false, [70, 90])).toBe(false);
+  });
+
+  /* The gates are independent on purpose: narrowing the range must not delete the
+     third of the feed that has no score to compare against it. */
+  it("leaves an unrated row to its own switch, whatever the range", () => {
+    expect(matchesRating(release({ rating: null }), false, [70, 90])).toBe(true);
+    expect(matchesRating(release({ rating: null }), true, [0, 100])).toBe(false);
   });
 });
