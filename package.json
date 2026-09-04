@@ -14,11 +14,11 @@
     "preview": "bun run build && vite preview",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build",
-    "tauri:build:debug": "tauri build --debug",
+    "tauri:build": "bun --env-file=.env run tauri build",
+    "tauri:build:debug": "bun --env-file=.env run tauri build --debug",
     "vite:dev-build": "vite build --mode development",
     "build:ci": "vite build",
-    "build:app": "bun run tauri build && bun run scripts/package-release.ts",
+    "build:app": "bun run tauri:build && bun run scripts/package-release.ts",
     "release": "bun run scripts/release.ts"
   },
   "dependencies": {

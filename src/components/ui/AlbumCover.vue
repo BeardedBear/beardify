@@ -1,5 +1,17 @@
 <template>
-  <img :alt="alt" :src="failed ? PLACEHOLDER : source" loading="lazy" @error="failed = true" />
+  <!--
+    `no-referrer`: albumoftheyear's CDN, which serves two thirds of the releases
+    feed's artwork, answers 403 to any request carrying a Referer — hotlink
+    protection, and it does not care which origin the header names. Sending none
+    is what the browser needs to be told to do; Spotify's CDN is indifferent.
+  -->
+  <img
+    :alt="alt"
+    :src="failed ? PLACEHOLDER : source"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+    @error="failed = true"
+  />
 </template>
 
 <script lang="ts" setup>
