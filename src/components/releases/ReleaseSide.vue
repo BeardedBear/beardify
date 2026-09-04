@@ -30,13 +30,6 @@
 
   <h2 class="title bd-font-bold"><span>Months</span></h2>
   <nav aria-label="Jump to a month" class="months">
-    <div class="jump-row">
-      <button class="jump jump-edge" type="button" @click="scrollFeed(0)">
-        <span class="jump-label">Top of feed</span>
-        <ArrowUpToLine :size="13" />
-      </button>
-      <span class="jump-slot" />
-    </div>
     <!--
       Two controls, so a row cannot be one: the label goes to the month's first
       release, the arrow to its last.
@@ -57,13 +50,6 @@
           <ArrowDownToLine :size="12" />
         </button>
       </BdTooltip>
-    </div>
-    <div class="jump-row">
-      <button class="jump jump-edge" type="button" @click="scrollFeed(Number.MAX_SAFE_INTEGER)">
-        <span class="jump-label">End of feed</span>
-        <ArrowDownToLine :size="13" />
-      </button>
-      <span class="jump-slot" />
     </div>
   </nav>
 
@@ -122,7 +108,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowDownToLine, ArrowUpToLine } from "@lucide/vue";
+import { ArrowDownToLine } from "@lucide/vue";
 import Slider from "@vueform/slider";
 import { BdCheckbox, BdInput, BdTooltip } from "bearded-ui";
 import { computed, ref, watch } from "vue";
@@ -253,15 +239,6 @@ function resetScore(): void {
  */
 function scrollBehavior(): "auto" | "smooth" {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-}
-
-/**
- * Jumps to an absolute offset in the feed. Clamped by the browser, so
- * `MAX_SAFE_INTEGER` is simply "the end" without having to read scrollHeight.
- * @param top - Target scroll offset
- */
-function scrollFeed(top: number): void {
-  feedElement()?.scrollTo({ behavior: scrollBehavior(), top });
 }
 
 /**
@@ -529,19 +506,6 @@ watch(query, () => {
   background-color: transparent;
   cursor: default;
   opacity: 0.35;
-}
-
-.jump-edge {
-  color: var(--bd-font-color-dark);
-
-  &:hover {
-    color: var(--bd-font-color);
-  }
-}
-
-.jump-slot {
-  flex-shrink: 0;
-  width: var(--jump-end-size);
 }
 
 .jump-label {
