@@ -28,6 +28,7 @@
           <div
             v-for="(release, rank) in month.top"
             :key="release.key"
+            :class="{ checked: releasesStore.checks[release.key] }"
             class="top-card-wrap"
             @mouseenter="lookupReleaseAlbum(release)"
             @mouseleave="cancelReleaseAlbumLookup()"
@@ -51,6 +52,11 @@
               </span>
               <span class="top-name bd-font-bold">{{ release.name }}</span>
               <span class="top-artist">{{ release.artistName }}</span>
+              <!--
+                Plain text, not the row's filter chips: the card is itself a
+                button, and a chip inside it would be a button inside a button.
+              -->
+              <span v-if="release.genres.length" class="top-genres">{{ topGenres(release.genres) }}</span>
               <span
                 v-if="typeof release.rating === 'number'"
                 :class="{ 'is-hot': release.rating >= HOT_RATING }"
@@ -67,6 +73,25 @@
             >
               <Play :size="22" />
             </button>
+            <!--
+              Last in the wrapper and above the play control, which covers the
+              whole cover once the pointer is on the card — ordered the other way
+              round, the tick would be unclickable exactly when it is reachable.
+            -->
+            <button
+              :aria-label="
+                releasesStore.checks[release.key]
+                  ? `Mark ${release.name} as not listened`
+                  : `Mark ${release.name} as listened`
+              "
+              :aria-pressed="Boolean(releasesStore.checks[release.key])"
+              class="top-check"
+              type="button"
+              @click="releasesStore.toggleCheck(release.key)"
+            >
+              <Check v-if="releasesStore.checks[release.key]" :size="15" />
+              <Circle v-else :size="15" />
+            </button>
           </div>
         </div>
       </div>
@@ -76,7 +101,7 @@
 </template>
 
 <script lang="ts" setup>
-import { CheckCheck, Play } from "@lucide/vue";
+import { Check, CheckCheck, Circle, Play } from "@lucide/vue";
 import { BdLoader } from "bearded-ui";
 
 import Release from "@/components/releases/ReleaseIndex.vue";
@@ -86,6 +111,9 @@ import { playAlbum } from "@/helpers/playAlbum";
 import { cancelReleaseAlbumLookup, lookupReleaseAlbum, releaseAlbum } from "@/helpers/releaseAlbum";
 import { HOT_RATING } from "@/helpers/releases";
 import { useReleases } from "@/views/releases/ReleasesStore";
+
+/* Two at 7.5rem wide: a third is an ellipsis in every case, which says nothing. */
+const TOP_GENRES_SHOWN = 2;
 
 const releasesStore = useReleases();
 const searchStore = useSearch();
@@ -105,6 +133,14 @@ function albumLoading(key: string): boolean {
  */
 function playableUri(key: string): string | undefined {
   return releaseAlbum(key)?.uri ?? undefined;
+}
+
+/**
+ * The card's genre line — the first couple of tags, as one string.
+ * @param genres - The release's genres, as the feed filed them
+ */
+function topGenres(genres: string[]): string {
+  return genres.slice(0, TOP_GENRES_SHOWN).join(" · ");
 }
 </script>
 
@@ -291,6 +327,49 @@ function playableUri(key: string): string | undefined {
   padding: 0.15rem var(--bd-space-2);
   position: absolute;
   z-index: 2;
+}
+
+/*
+ * Ticked off, not gone: the rail is the month's best, so a heard record stays in
+ * its place, dimmed. The tick itself keeps its opacity — it is the way back.
+ */
+.top-card-wrap.checked .top-card {
+  opacity: 0.45;
+}
+
+.top-check {
+  align-items: center;
+  backdrop-filter: blur(2px);
+  background: color-mix(in oklab, var(--bd-bg-darker) 82%, transparent);
+  border: none;
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-font-color-light);
+  cursor: pointer;
+  display: flex;
+  inset: var(--bd-space-2) var(--bd-space-2) auto auto;
+  justify-content: center;
+  padding: 0.15rem;
+  position: absolute;
+  z-index: 3;
+
+  &:hover {
+    color: var(--bd-primary-light);
+  }
+
+  &[aria-pressed="true"] {
+    color: var(--bd-primary);
+  }
+}
+
+.top-genres {
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-xs);
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+  white-space: nowrap;
+  width: 100%;
 }
 
 .top-name {
