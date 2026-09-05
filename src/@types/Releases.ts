@@ -1,13 +1,28 @@
 import { Image } from "./Image";
 
+/** One filterable term and how many rows it still leaves. */
+export interface GenreFacet {
+  count: number;
+  name: string;
+}
+
+/**
+ * A broad family and the micro-genres rolled into it — how the sidebar lists them.
+ *
+ * The family is itself a term, so it filters on its own: picking "metal" keeps every
+ * row any of its children would have kept, and picking a child narrows to that child.
+ * A genre belonging to no family is a group with no children.
+ */
+export interface GenreGroup extends GenreFacet {
+  children: GenreFacet[];
+}
+
 /** A month heading and the releases filed under it, as the list renders them. */
 export interface MonthGroup {
   label: string;
   releases: Release[];
   /** Every release in the month carries the same one — what groups them. */
   timestamp: number;
-  /** The month's highest-rated releases, for the highlight rail. */
-  top: Release[];
   /** How many of the month's releases are not ticked off yet. */
   unheard: number;
 }
@@ -38,6 +53,15 @@ export interface Release {
   timestamp: number;
 }
 
+/**
+ * How a month's releases are ordered.
+ *
+ * "rating" is the feed's own order, restated here so the control names what is
+ * already happening; "artist" is the only other order a 200-row scan needs — the
+ * way back to a record whose name you remember and whose score you do not.
+ */
+export type ReleaseSort = "artist" | "rating";
+
 export interface ReleasesPage {
   /**
    * Release key → moment it was ticked off. A plain map so a tick is O(1) both ways.
@@ -54,8 +78,12 @@ export interface ReleasesPage {
   /** The terms the list is narrowed to. Empty is the whole feed; several read as "any of". */
   genres: string[];
   hideChecked: boolean;
+  /** Drop the rows no source ever scored — about a third of the feed. */
+  hideUnrated: boolean;
   loading: boolean;
+  /** Lowest and highest score kept, inclusive. Unrated rows answer to `hideUnrated` instead. */
+  ratingRange: [number, number];
   releases: Release[];
-  /** Sort each month's releases by the editorial rating, highest first. */
-  sortRating: boolean;
+  /** How each month's releases are ordered. */
+  sort: ReleaseSort;
 }

@@ -38,11 +38,6 @@
   background-color: var(--score-bg);
   border: 1px solid transparent;
   color: hsl(var(--score-hue) 80% var(--score-fg-l));
-
-  .unit {
-    /* The denominator is furniture — it rides the same hue, just quieter. */
-    color: hsl(var(--score-hue) 30% var(--score-fg-l) / 60%);
-  }
 }
 
 /*

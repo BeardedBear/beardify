@@ -1,33 +1,107 @@
-import { MonthGroup, Release } from "@/@types/Releases";
+import { GenreFacet, GenreGroup, MonthGroup, Release, ReleaseSort } from "@/@types/Releases";
 import { normalizeString } from "@/helpers/helper";
 import { FeedRelease } from "@/helpers/releaseFeed";
 
 /*
- * Broad families rolled up from the sources' micro-genres.
+ * Broad families, and the probes that pull a raw tag into one.
  *
  * The scrapers file a release under "atmospheric black metal" or "art rock" and
  * nothing broader, so a sidebar listing genre strings verbatim hides it under every
- * heading a listener would think to look. Each family is a substring probe, which is
- * why "hip hop" sits next to "rap": they are separate strings in the vocabulary.
+ * heading a listener would think to look. On top of that the hover lookup adds
+ * Spotify's artist genres, which arrive in the account's own language — the same
+ * music reaches the list as "experimental" and "musique expérimentale", "classical"
+ * and "classique". Both are probes of the same family, which is what folds the two
+ * vocabularies back into one.
+ *
+ * Probes are plain substrings, matched against the tag as the feed spells it. A tag
+ * naming two families belongs to both — "rap metal" is filed under each — so the
+ * order of this list decides nothing.
  */
-const GENRE_FAMILIES = [
-  "blues",
-  "classical",
-  "country",
-  "electronic",
-  "folk",
-  "hip hop",
-  "house",
-  "jazz",
-  "metal",
-  "pop",
-  "punk",
-  "rap",
-  "reggae",
-  "rock",
-  "soul",
-  "techno",
-];
+const GENRE_FAMILIES: Record<string, string[]> = {
+  african: ["afro", "azonto", "alté", "highlife", "amapiano", "makossa"],
+  blues: ["blues"],
+  classical: ["classical", "classique", "orchestr", "de chambre", "opera", "opéra", "baroque", "minimalis"],
+  country: ["country", "americana", "bluegrass", "newgrass", "red dirt", "honky tonk", "billy"],
+  electronic: [
+    "electro",
+    "électro",
+    "techno",
+    "house",
+    "ambient",
+    "drone",
+    "idm",
+    "dance",
+    "breakcore",
+    "drum & bass",
+    "drum and bass",
+    "jungle",
+    "dubstep",
+    "industri",
+    "edm",
+    "trance",
+    "synth",
+    "trip hop",
+  ],
+  experimental: [
+    "experimental",
+    "expérimental",
+    "avant-garde",
+    "avant garde",
+    "concrète",
+    "concrete",
+    "electroacoustique",
+    "électroacoustique",
+    "plunderphonics",
+    "bruitiste",
+    "noise",
+    "lo fi",
+    "lo-fi",
+    "spoken word",
+  ],
+  folk: ["folk", "singer-songwriter", "chanson", "traditionnel"],
+  "hip hop": ["hip hop", "hip-hop", "rap", "trap", "boom bap", "crunk", "hiplife", "grime", "drill"],
+  indie: ["indie"],
+  jazz: ["jazz", "bebop", "big band"],
+  latin: ["latin", "latino", "cumbia", "mambo", "salsa", "cubano", "mpb", "bossa", "reggaeton"],
+  metal: ["metal", "grind", "deathcore", "doom", "sludge", "djent", "black gaze"],
+  pop: ["pop", "shibuya-kei"],
+  punk: ["punk", "hardcore", "emo", "screamo", "riot grrrl", "queercore", "crust"],
+  reggae: ["reggae", "dancehall", "ska", "dub poetry"],
+  rock: ["rock", "shoegaze", "grunge", "psychedel", "psychédél", "gothic", "gothique", "garage", "stoner"],
+  soul: ["soul", "r&b", "rnb", "funk", "motown", "disco", "gospel"],
+};
+
+/*
+ * One entry per distinct tag, not per occurrence: the same handful of strings comes
+ * back on hundreds of rows, and every facet recount walked all 116 probes for each
+ * of them. The vocabulary is bounded by the feed, so the map is too.
+ */
+const familiesByTag = new Map<string, string[]>();
+
+/**
+ * Every family a raw tag belongs to.
+ *
+ * The one place the probes are read, so the terms a release is filtered by and the
+ * branch the sidebar files it under can never disagree — a micro-genre shown under
+ * "metal" whose row does not carry the term would empty the feed when clicked.
+ * @param genre - One genre string, as the feed spells it
+ */
+export function genreFamilies(genre: string): string[] {
+  const known = familiesByTag.get(genre);
+  if (known) return known;
+
+  const families = Object.keys(GENRE_FAMILIES).filter((name) =>
+    GENRE_FAMILIES[name].some((probe) => genre.includes(probe)),
+  );
+  familiesByTag.set(genre, families);
+
+  return families;
+}
+
+/** Whether a term is one of the families, and so always worth a row of its own. */
+export function isGenreFamily(name: string): boolean {
+  return name in GENRE_FAMILIES;
+}
 
 /*
  * Month headers are built from the UTC parts on purpose. Release dates are bare
@@ -35,6 +109,13 @@ const GENRE_FAMILIES = [
  * negative offset that album would file itself under July.
  */
 const MONTH_FORMATTER = new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "UTC", year: "numeric" });
+
+/*
+ * Hoisted for the same reason as the formatter above. `String.localeCompare` builds a
+ * collator per call, and every sort here runs it once per comparison — a few thousand
+ * of them each time a month is reordered.
+ */
+export const COLLATOR = new Intl.Collator(undefined, { sensitivity: "base" });
 
 /**
  * Every term a release can be filtered by: its own genres, plus the broad family
@@ -46,16 +127,11 @@ export function genreTerms(genres: string[]): string[] {
   const terms = new Set(genres);
 
   for (const genre of genres) {
-    for (const family of GENRE_FAMILIES) {
-      if (genre.includes(family)) terms.add(family);
-    }
+    for (const family of genreFamilies(genre)) terms.add(family);
   }
 
   return [...terms];
 }
-
-/** How many of a month's releases the highlight rail shows. */
-const TOP_SHOWN = 5;
 
 /**
  * The feed as the list renders it: one entry per month, newest first.
@@ -65,19 +141,20 @@ const TOP_SHOWN = 5;
  * one, so the month heading is formatted once per group instead of once per row.
  * @param releases - The releases to group, already sorted newest first
  * @param checks - Release key to the moment it was ticked off
- * @param sortRating - Order each month by the editorial rating instead of by date
+ * @param sort - How to order the releases inside each month
  */
-export function groupByMonth(
-  releases: Release[],
-  checks: Record<string, number>,
-  sortRating: boolean,
-): MonthGroup[] {
+export function groupByMonth(releases: Release[], checks: Record<string, number>, sort: ReleaseSort): MonthGroup[] {
   const months: MonthGroup[] = [];
   let month: MonthGroup | undefined;
 
   for (const release of releases) {
     if (month?.timestamp !== release.timestamp) {
-      month = { label: monthLabel(release.timestamp), releases: [], timestamp: release.timestamp, top: [], unheard: 0 };
+      month = {
+        label: monthLabel(release.timestamp),
+        releases: [],
+        timestamp: release.timestamp,
+        unheard: 0,
+      };
       months.push(month);
     }
 
@@ -85,25 +162,66 @@ export function groupByMonth(
     if (!checks[release.key]) month.unheard += 1;
   }
 
+  /*
+   * Sorting stays inside the month: either order scattered across months would lose
+   * the orientation the headings are built around. Rating is restated rather than
+   * inherited from the feed's own order — the cache and the network answer can be
+   * merged in either order, so the control has to guarantee what it names.
+   */
   for (const group of months) {
-    /*
-     * The month's best, as a highlight rail above the full list. Only rated releases
-     * qualify — one with no score has nothing to rank on — and the rail is independent
-     * of the sort toggle, so it stays "best of the month" whatever the current order.
-     */
-    group.top = group.releases
-      .filter((release) => typeof release.rating === "number")
-      .sort((a, b) => (b.rating as number) - (a.rating as number) || a.name.localeCompare(b.name))
-      .slice(0, TOP_SHOWN);
-
-    // "Highest rated" stays inside the month: scattering it across months would lose
-    // the chronological orientation the feed is built around.
-    if (sortRating) {
-      group.releases.sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1) || a.name.localeCompare(b.name));
-    }
+    group.releases.sort(
+      sort === "artist"
+        ? (a, b): number => COLLATOR.compare(a.artistName, b.artistName) || COLLATOR.compare(a.name, b.name)
+        : (a, b): number => (b.rating ?? -1) - (a.rating ?? -1) || COLLATOR.compare(a.name, b.name),
+    );
   }
 
   return months;
+}
+
+/**
+ * The flat facet list arranged as families and their micro-genres.
+ *
+ * Both levels stay filterable and both were already terms — this only decides where
+ * each one is rendered. "black metal" is filed under "metal" because a release
+ * carrying it also carries the family (see `genreTerms`), so picking the parent is
+ * genuinely "this genre and everything under it" rather than a second query.
+ *
+ * A micro-genre naming two families — "folk metal" — is listed under both. Choosing
+ * an owner would need a rule the vocabulary does not have, and hiding it under one
+ * of them is how a genre becomes unfindable.
+ *
+ * Incoming order is preserved rather than re-sorted: it is frequency across the whole
+ * feed, which never moves, and re-ranking on the live counts would reshuffle the list
+ * under the pointer on every tick.
+ * @param genres - The facets, already ordered as the sidebar wants them
+ */
+export function groupGenres(genres: GenreFacet[]): GenreGroup[] {
+  /*
+   * Every family present is built before anything is filed under it. Built inline, a
+   * micro-genre sorting ahead of its own family — "black metal" against a "metal" of
+   * the same count — would find no parent yet and vanish from the list entirely.
+   */
+  const groups = new Map<string, GenreGroup>(
+    genres
+      .filter((genre) => isGenreFamily(genre.name))
+      .map((genre) => [genre.name, { children: [], count: genre.count, name: genre.name }]),
+  );
+
+  const tree: GenreGroup[] = [];
+  for (const genre of genres) {
+    const group = groups.get(genre.name);
+    if (group) {
+      tree.push(group);
+      continue;
+    }
+
+    const parents = genreFamilies(genre.name).filter((family) => groups.has(family));
+    if (!parents.length) tree.push({ children: [], count: genre.count, name: genre.name });
+    for (const parent of parents) groups.get(parent)?.children.push({ count: genre.count, name: genre.name });
+  }
+
+  return tree;
 }
 
 /*
@@ -111,6 +229,23 @@ export function groupByMonth(
  * do not offer renditions, so this only tells the layout what shape to expect.
  */
 const COVER_SIZE = 200;
+
+/**
+ * Whether a release survives the score gates.
+ *
+ * The two gates answer different questions and are deliberately independent: a row
+ * the sources never scored has nothing to compare against a range, so narrowing the
+ * range must not quietly delete it — only its own switch does that. Roughly a third
+ * of the feed is unrated, so the mistake would hide a third of the page.
+ * @param release - The row under test
+ * @param hideUnrated - Drop the rows no source scored
+ * @param range - Lowest and highest score kept, inclusive
+ */
+export function matchesRating(release: Release, hideUnrated: boolean, range: [number, number]): boolean {
+  if (typeof release.rating !== "number") return !hideUnrated;
+
+  return release.rating >= range[0] && release.rating <= range[1];
+}
 
 /**
  * Deduplicate the feed and put it newest first.
@@ -175,6 +310,15 @@ export const CHECK_TTL_MS = 90 * 24 * 60 * 60 * 1000;
  * the glow stays a signal instead of decoration.
  */
 export const HOT_RATING = 90;
+
+/**
+ * The score scale the sources publish on, and so both ends of the range control.
+ *
+ * Here rather than in the store or the sidebar because all three read it: the gate
+ * that applies the range, the control that sets it, and the reset that clears it had
+ * three copies of the same two numbers between them.
+ */
+export const RATING_BOUNDS: [number, number] = [0, 100];
 
 /**
  * The ticks worth keeping: everything ticked within the retention window.

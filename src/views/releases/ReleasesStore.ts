@@ -1,10 +1,22 @@
 import { useDebounceFn } from "@vueuse/core";
 import { defineStore } from "pinia";
 
-import { MonthGroup, Release, ReleasesPage } from "@/@types/Releases";
+import { GenreFacet, GenreGroup, MonthGroup, Release, ReleasesPage } from "@/@types/Releases";
 import { getRemoteChecks, putRemoteChecks } from "@/helpers/releaseChecks";
 import { getFeedReleases } from "@/helpers/releaseFeed";
-import { groupByMonth, mergeReleases, monthLabel, pruneChecks, toReleaseFromFeed } from "@/helpers/releases";
+import {
+  COLLATOR,
+  genreTerms,
+  groupByMonth,
+  groupGenres,
+  isGenreFamily,
+  matchesRating,
+  mergeReleases,
+  monthLabel,
+  pruneChecks,
+  RATING_BOUNDS,
+  toReleaseFromFeed,
+} from "@/helpers/releases";
 import { useCheckLiveAlbum, useCheckReissueAlbum } from "@/helpers/useCleanAlbums";
 import { useAuth } from "@/views/auth/AuthStore";
 
@@ -18,6 +30,9 @@ const STALE_AFTER_MS = 6 * 60 * 60 * 1000;
  */
 const PUSH_DEBOUNCE_MS = 2000;
 
+/** How many releases a tag has to cover before the sidebar offers it as a filter. */
+const GENRE_MIN_ROWS = 2;
+
 /*
  * Shape version of a persisted `Release`. Bump it whenever a field is added or its
  * meaning changes.
@@ -28,10 +43,23 @@ const PUSH_DEBOUNCE_MS = 2000;
  * guarding every field is whack-a-mole; discarding a cache the current code cannot
  * read costs one refetch and nothing else.
  */
-const FEED_VERSION = 7;
+const FEED_VERSION = 8;
 
 // Built outside the store so the timer survives across calls.
 let debouncedPush: null | ReturnType<typeof useDebounceFn> = null;
+
+/**
+ * The listened gate, applied to whichever base the caller composes it onto.
+ *
+ * One copy rather than one per getter: the facet counts and the rendered list have to
+ * hide the same rows, and two spellings of the same condition is how they stop.
+ * @param list - The rows the gates above this one left
+ * @param checks - Release key to the moment it was ticked off
+ * @param hide - Whether the gate is on at all
+ */
+function unchecked(list: Release[], checks: Record<string, number>, hide: boolean): Release[] {
+  return hide ? list.filter((release) => !checks[release.key]) : list;
+}
 
 export const useReleases = defineStore("releases", {
   actions: {
@@ -39,6 +67,34 @@ export const useReleases = defineStore("releases", {
     clearFilters() {
       this.genres = [];
       this.hideChecked = false;
+      this.hideUnrated = false;
+      this.resetScore();
+    },
+
+    /**
+     * Fill in the genres of a row the scrapers filed without any, from what Spotify
+     * knows about its artist — two thirds of the feed arrives bare, and a row with no
+     * chips is a row no sidebar filter can ever reach.
+     *
+     * Written onto the row rather than kept beside it so the terms are rebuilt with
+     * it: the chips, the facet counts and the filter all read `terms`, and a chip the
+     * filter did not know about would hide its own row when clicked. A row that
+     * already has genres keeps them — the scrapers name the record, Spotify only ever
+     * names the artist.
+     * @param key - The release key the hover lookup answered for
+     * @param genres - The artist genres Spotify returned, possibly none
+     */
+    enrichGenres(key: string, genres: string[]) {
+      const release = this.releases.find((item) => item.key === key);
+      if (!release || release.genres.length || !genres.length) return;
+
+      /*
+       * Lowercased on the way in. The scrapers file tags lowercase and Spotify does
+       * not, so "Country alternative" would sit beside "country alternative" as a
+       * separate facet — and match none of the family probes, which are lowercase.
+       */
+      release.genres = genres.map((genre) => genre.toLowerCase());
+      release.terms = genreTerms(release.genres);
     },
 
     /**
@@ -61,21 +117,17 @@ export const useReleases = defineStore("releases", {
       this.loading = true;
 
       try {
-        const rows = await fetchFeed();
-
         /*
-         * An empty answer is a failure here, not a quiet result. With a single source
-         * there is nothing left to thin the feed with, so a network error, a missing
-         * Supabase configuration or an RLS refusal all arrive as zero rows — and
-         * rendering that as "no releases this month" would hide a broken page.
+         * The feed raises on failure, so a broken request is caught here and zero rows
+         * stays what it says: a window with nothing new in it. Counting rows to decide
+         * which of the two happened is what made a quiet month render as an error with
+         * a Try again button that could not fix it.
          */
-        if (!rows.length) {
-          this.error = true;
-          return;
-        }
-
-        this.releases = mergeReleases(rows);
+        this.releases = mergeReleases(await fetchFeed());
         this.fetchedAt = Date.now();
+      } catch (error: unknown) {
+        if (import.meta.env.DEV) console.error("Error fetching release feed:", error);
+        this.error = true;
       } finally {
         this.loading = false;
       }
@@ -83,13 +135,21 @@ export const useReleases = defineStore("releases", {
       await checks;
     },
 
-    /** Mark a batch of releases as listened, leaving the already-checked ones alone. */
-    markHeard(keys: string[]) {
-      for (const key of keys) {
-        if (!this.checks[key]) this.checks[key] = Date.now();
-      }
+    /**
+     * Mark a batch of releases as listened, leaving the already-checked ones alone.
+     *
+     * Returns the keys it actually ticked, which is what an undo needs: unticking
+     * everything the click covered would also erase the rows that were already done
+     * before it — the one gesture that can silently lose work here.
+     * @param keys - Every release the click covers, ticked or not
+     */
+    markHeard(keys: string[]): string[] {
+      const marked = keys.filter((key) => !this.checks[key]);
+      for (const key of marked) this.checks[key] = Date.now();
 
       this.pushChecks();
+
+      return marked;
     },
 
     /**
@@ -107,6 +167,11 @@ export const useReleases = defineStore("releases", {
       }
 
       debouncedPush();
+    },
+
+    /** Back to the full scale, leaving every other gate alone. */
+    resetScore() {
+      this.ratingRange = [...RATING_BOUNDS];
     },
 
     /**
@@ -152,8 +217,14 @@ export const useReleases = defineStore("releases", {
         : [...this.genres, genre];
     },
 
-    toggleSortRating() {
-      this.sortRating = !this.sortRating;
+    /**
+     * Take back a batch tick. The counterpart of `markHeard`, fed its return value.
+     * @param keys - Exactly the keys that tick actually set
+     */
+    unmarkHeard(keys: string[]) {
+      for (const key of keys) delete this.checks[key];
+
+      this.pushChecks();
     },
   },
 
@@ -168,7 +239,7 @@ export const useReleases = defineStore("releases", {
      * it rendered one line above.
      */
     checkedCount(): number {
-      return this.genreFiltered.filter((release) => this.checks[release.key]).length;
+      return this.genreFiltered.reduce((count, release) => count + (this.checks[release.key] ? 1 : 0), 0);
     },
 
     /**
@@ -180,10 +251,10 @@ export const useReleases = defineStore("releases", {
      * rows being counted.
      */
     genreFiltered(state): Release[] {
-      if (!state.genres.length) return state.releases;
+      if (!state.genres.length) return this.ratingFiltered;
 
       // Any of them, not all: two genres selected reads as "either".
-      return state.releases.filter((release) => state.genres.some((genre) => release.terms.includes(genre)));
+      return this.ratingFiltered.filter((release) => state.genres.some((genre) => release.terms.includes(genre)));
     },
 
     /**
@@ -201,27 +272,55 @@ export const useReleases = defineStore("releases", {
      * Not over `visibleReleases` either: the genre gate would have pre-answered
      * the very question the facet count exists to ask.
      */
-    genreList(state): { count: number; name: string }[] {
-      const total = new Map<string, number>();
-      for (const release of state.releases) {
-        for (const term of release.terms) total.set(term, (total.get(term) ?? 0) + 1);
-      }
-
+    genreList(): GenreFacet[] {
       const remaining = new Map<string, number>();
       for (const release of this.listenFiltered) {
         for (const term of release.terms) remaining.set(term, (remaining.get(term) ?? 0) + 1);
       }
 
+      return this.genreVocabulary.map((name) => ({ count: remaining.get(name) ?? 0, name }));
+    },
+
+    /**
+     * The same facets as `genreList`, arranged as families and their micro-genres.
+     *
+     * A derivation of that list, not a second count: both levels are terms the feed
+     * already carries, so the numbers are the ones the flat list showed and picking a
+     * family still means "this genre and everything under it".
+     */
+    genreTree(): GenreGroup[] {
+      return groupGenres(this.genreList);
+    },
+
+    /**
+     * The terms the sidebar offers, in the order it offers them.
+     *
+     * Split from the counts because the two answer to different things: the order is
+     * a property of the feed and moves once every six hours, while the counts move on
+     * every tick and every filter. Kept together, narrowing the range recounted and
+     * re-sorted the whole vocabulary to arrive at the same list in the same order.
+     *
+     * The long tail is dropped here: a tag carried by a single release cannot narrow
+     * anything, and the feed carries hundreds of them — one-off scraper tags plus
+     * every localized spelling Spotify hands back. They stay on the row that owns
+     * them, where clicking one still filters; they just no longer bury the terms that
+     * do the work. Families are exempt, being the headings.
+     */
+    genreVocabulary(state): string[] {
+      const total = new Map<string, number>();
+      for (const release of state.releases) {
+        for (const term of release.terms) total.set(term, (total.get(term) ?? 0) + 1);
+      }
+
       return [...total.entries()]
-        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-        .map(([name]) => ({ count: remaining.get(name) ?? 0, name }));
+        .filter(([name, count]) => count >= GENRE_MIN_ROWS || isGenreFamily(name))
+        .sort((a, b) => b[1] - a[1] || COLLATOR.compare(a[0], b[0]))
+        .map(([name]) => name);
     },
 
     /** The feed with the listened gate applied and nothing else — what the facet counts are measured on. */
     listenFiltered(state): Release[] {
-      if (!state.hideChecked) return state.releases;
-
-      return state.releases.filter((release) => !state.checks[release.key]);
+      return unchecked(this.ratingFiltered, state.checks, state.hideChecked);
     },
 
     /**
@@ -231,11 +330,11 @@ export const useReleases = defineStore("releases", {
      * is noise.
      *
      * A getter rather than a computed in each: the grouping also sorts every
-     * month, and the rail exists precisely to jump between the headings the
+     * month, and the sidebar exists precisely to jump between the headings the
      * list renders — two passes could disagree about what months there are.
      */
     monthGroups(): MonthGroup[] {
-      return groupByMonth(this.visibleReleases, this.checks, this.sortRating);
+      return groupByMonth(this.visibleReleases, this.checks, this.sort);
     },
 
     /**
@@ -264,11 +363,44 @@ export const useReleases = defineStore("releases", {
       return [...months.values()].map((label) => ({ count: shown.get(label) ?? 0, label }));
     },
 
+    /** Whether the range is narrower than the full scale — what the sidebar's Reset hangs off. */
+    rangeNarrowed(state): boolean {
+      const [low, high] = state.ratingRange;
+
+      return low > RATING_BOUNDS[0] || high < RATING_BOUNDS[1];
+    },
+
+    /**
+     * The feed with the score gates applied — the base every other gate composes on.
+     *
+     * Underneath the genre and listened gates rather than beside them, so the facet
+     * counts and the progress denominator are both measured on rows the score filter
+     * has already kept. A sidebar promising 23 rows that the range then withholds is
+     * the bug this ordering prevents.
+     */
+    ratingFiltered(state): Release[] {
+      if (!this.scoreGated) return state.releases;
+
+      const [low, high] = state.ratingRange;
+
+      return state.releases.filter((release) => matchesRating(release, state.hideUnrated, [low, high]));
+    },
+
+    /**
+     * Whether a score gate is holding anything back.
+     *
+     * The one question "caught up" has to ask before it congratulates: a feed the
+     * range or the unrated switch emptied is a filter too tight, not a month
+     * finished, and the two must never show the same screen. The sidebar used to
+     * carry its own half of this — same idea, one gate short.
+     */
+    scoreGated(state): boolean {
+      return state.hideUnrated || this.rangeNarrowed;
+    },
+
     /** The feed as the list renders it: both gates, composed rather than re-tested. */
     visibleReleases(state): Release[] {
-      if (!state.hideChecked) return this.genreFiltered;
-
-      return this.genreFiltered.filter((release) => !state.checks[release.key]);
+      return unchecked(this.genreFiltered, state.checks, state.hideChecked);
     },
   },
 
@@ -296,7 +428,16 @@ export const useReleases = defineStore("releases", {
       releases.feedVersion = FEED_VERSION;
     },
     key: "beardify-releases",
-    pick: ["feedVersion", "fetchedAt", "genres", "hideChecked", "releases", "sortRating"],
+    pick: [
+      "feedVersion",
+      "fetchedAt",
+      "genres",
+      "hideChecked",
+      "hideUnrated",
+      "ratingRange",
+      "releases",
+      "sort",
+    ],
   },
 
   state: (): ReleasesPage => ({
@@ -315,9 +456,11 @@ export const useReleases = defineStore("releases", {
     fetchedAt: null,
     genres: [],
     hideChecked: false,
+    hideUnrated: false,
     loading: false,
+    ratingRange: [...RATING_BOUNDS],
     releases: [],
-    sortRating: false,
+    sort: "rating",
   }),
 });
 

@@ -4,6 +4,8 @@ import { Release } from "@/@types/Releases";
 import {
   genreTerms,
   groupByMonth,
+  groupGenres,
+  matchesRating,
   mergeReleases,
   monthLabel,
   normalizeTag,
@@ -72,11 +74,81 @@ describe("genreTerms", () => {
   });
 
   it("adds every family a genre spans", () => {
-    expect(genreTerms(["rap metal"])).toEqual(["rap metal", "metal", "rap"]);
+    // Order-free on purpose: a tag belongs to every family that probes it, and which
+    // one is listed first is not something any reader of `terms` is entitled to.
+    expect(genreTerms(["rap metal"]).sort()).toEqual(["hip hop", "metal", "rap metal"]);
   });
 
   it("leaves a genre outside the families alone", () => {
-    expect(genreTerms(["djent"])).toEqual(["djent"]);
+    expect(genreTerms(["klezmer"])).toEqual(["klezmer"]);
+  });
+
+  /* Spotify answers in the account's language, so the same music arrives spelled twice. */
+  it("folds a localized spelling onto the same family as its English one", () => {
+    expect(genreTerms(["musique expérimentale"])).toContain("experimental");
+    expect(genreTerms(["experimental hip hop"])).toContain("experimental");
+    expect(genreTerms(["néo-classique"])).toContain("classical");
+  });
+
+  it("pulls a micro-genre that never names its family into it", () => {
+    expect(genreTerms(["shoegaze"])).toContain("rock");
+    expect(genreTerms(["deathcore"])).toContain("metal");
+    expect(genreTerms(["boom bap"])).toContain("hip hop");
+  });
+});
+
+describe("groupGenres", () => {
+  function facets(): { count: number; name: string }[] {
+    return [
+      { count: 40, name: "metal" },
+      { count: 20, name: "rock" },
+      { count: 12, name: "black metal" },
+      { count: 8, name: "folk metal" },
+      { count: 5, name: "klezmer" },
+    ];
+  }
+
+  it("files micro-genres under their family and leaves them out of the top level", () => {
+    const tree = groupGenres(facets());
+
+    // klezmer names no family, so it keeps a row of its own.
+    expect(tree.map((group) => group.name)).toEqual(["metal", "rock", "klezmer"]);
+    expect(tree[0].children.map((child) => child.name)).toEqual(["black metal", "folk metal"]);
+  });
+
+  /* The probes are what fold a tag that never names its family into it. */
+  it("files a micro-genre under a family its name does not contain", () => {
+    const tree = groupGenres([
+      { count: 20, name: "rock" },
+      { count: 5, name: "shoegaze" },
+    ]);
+
+    expect(tree.map((group) => group.name)).toEqual(["rock"]);
+    expect(tree[0].children.map((child) => child.name)).toEqual(["shoegaze"]);
+  });
+
+  it("lists a genre naming two families under both", () => {
+    const tree = groupGenres([...facets(), { count: 3, name: "folk" }]);
+    const folk = tree.find((group) => group.name === "folk");
+
+    expect(folk?.children.map((child) => child.name)).toEqual(["folk metal"]);
+  });
+
+  /* Frequency order is stable across ticks, so the list must never re-rank itself. */
+  it("keeps the order it was given", () => {
+    const reversed = [...facets()].reverse();
+
+    expect(groupGenres(reversed).map((group) => group.name)).toEqual(["klezmer", "rock", "metal"]);
+  });
+
+  it("files a micro-genre listed ahead of its own family", () => {
+    const tree = groupGenres([
+      { count: 12, name: "black metal" },
+      { count: 12, name: "metal" },
+    ]);
+
+    expect(tree.map((group) => group.name)).toEqual(["metal"]);
+    expect(tree[0].children.map((child) => child.name)).toEqual(["black metal"]);
   });
 });
 
@@ -171,35 +243,41 @@ describe("groupByMonth", () => {
   }
 
   it("splits an already-sorted feed into one labelled group per month", () => {
-    const groups = groupByMonth(feed(), {}, false);
+    const groups = groupByMonth(feed(), {}, "rating");
 
     expect(groups.map((group) => group.label)).toEqual(["August 2026", "July 2026"]);
     expect(groups[0].releases).toHaveLength(3);
   });
 
   it("counts the releases still to hear, and only those", () => {
-    expect(groupByMonth(feed(), { a: Date.now(), b: Date.now() }, false)[0].unheard).toBe(1);
+    expect(groupByMonth(feed(), { a: Date.now(), b: Date.now() }, "rating")[0].unheard).toBe(1);
   });
 
-  it("ranks the top of the month by score, leaving the unrated out", () => {
-    const [augustGroup] = groupByMonth(feed(), {}, false);
+  it("restates the rating order rather than trusting the feed to arrive in it", () => {
+    // Handed in deliberately backwards: the cache and the network answer merge in
+    // either order, so the sort the control names has to be the one it performs.
+    const shuffled = [feed()[2], feed()[1], feed()[0], feed()[3]];
+    const [augustGroup] = groupByMonth(shuffled, {}, "rating");
 
-    expect(augustGroup.top.map((r) => r.name)).toEqual(["Aug high", "Aug low"]);
+    // Unrated sinks below the rated ones rather than being dropped.
+    expect(augustGroup.releases.map((r) => r.name)).toEqual(["Aug high", "Aug low", "Aug unrated"]);
   });
 
-  it("keeps the top rail on score even when the list is sorted by score", () => {
-    const [unsorted] = groupByMonth(feed(), {}, false);
-    const [sorted] = groupByMonth(feed(), {}, true);
+  it("orders a month by artist, then by album, when asked to", () => {
+    const byArtist = [
+      release({ artistName: "Zu", key: "z", name: "Carboniferous", rating: 1, timestamp: august }),
+      release({ artistName: "Alcest", key: "y", name: "Shelter", rating: 2, timestamp: august }),
+      release({ artistName: "Alcest", key: "x", name: "Kodama", rating: 3, timestamp: august }),
+    ];
+    const [augustGroup] = groupByMonth(byArtist, {}, "artist");
 
-    expect(sorted.top.map((r) => r.name)).toEqual(unsorted.top.map((r) => r.name));
+    expect(augustGroup.releases.map((r) => r.name)).toEqual(["Kodama", "Shelter", "Carboniferous"]);
   });
 
   it("sorts inside the month only, so the months stay chronological", () => {
-    const groups = groupByMonth(feed(), {}, true);
+    const groups = groupByMonth(feed(), {}, "artist");
 
     expect(groups.map((group) => group.label)).toEqual(["August 2026", "July 2026"]);
-    // Unrated sinks below the rated ones rather than being dropped.
-    expect(groups[0].releases.map((r) => r.name)).toEqual(["Aug high", "Aug low", "Aug unrated"]);
   });
 });
 
@@ -211,5 +289,24 @@ describe("pruneChecks", () => {
     expect(
       pruneChecks({ fresh: now - day, old: now - 91 * day, yesterday: now - 89 * day }, now),
     ).toEqual({ fresh: now - day, yesterday: now - 89 * day });
+  });
+});
+
+describe("matchesRating", () => {
+  it("keeps a score inside the range, at either end", () => {
+    expect(matchesRating(release({ rating: 70 }), false, [70, 90])).toBe(true);
+    expect(matchesRating(release({ rating: 90 }), false, [70, 90])).toBe(true);
+  });
+
+  it("drops a score outside the range", () => {
+    expect(matchesRating(release({ rating: 69 }), false, [70, 90])).toBe(false);
+    expect(matchesRating(release({ rating: 91 }), false, [70, 90])).toBe(false);
+  });
+
+  /* The gates are independent on purpose: narrowing the range must not delete the
+     third of the feed that has no score to compare against it. */
+  it("leaves an unrated row to its own switch, whatever the range", () => {
+    expect(matchesRating(release({ rating: null }), false, [70, 90])).toBe(true);
+    expect(matchesRating(release({ rating: null }), true, [0, 100])).toBe(false);
   });
 });

@@ -1,33 +1,50 @@
 <template>
   <div class="filters">
     <BdCheckbox v-model="releasesStore.hideChecked" full-width label="Hide listened" />
-  </div>
+    <BdCheckbox v-model="releasesStore.hideUnrated" full-width label="Hide unrated" />
 
-  <!--
-    One denominator. This used to read "N shown · M listened", two numbers off
-    two different sets, and the second was pinned to 0 for as long as "Hide
-    listened" was on — the toggle one line above appeared to erase the progress
-    it was measuring.
-  -->
-  <div class="counts">{{ releasesStore.checkedCount }} of {{ releasesStore.genreFiltered.length }} listened</div>
+    <!--
+      The range and the checkbox above are two questions, not one: a row nobody
+      scored has nothing to compare against a range, so it answers only to the
+      checkbox. Dragging the low end up therefore never silently swallows the
+      third of the feed that arrives unscored.
+    -->
+    <div class="score">
+      <div class="score-head">
+        <span id="score-range-label">Score</span>
+        <span class="score-value">{{ scoreLabel }}</span>
+        <button v-if="releasesStore.rangeNarrowed" class="clear" type="button" @click="releasesStore.resetScore()">
+          Reset
+        </button>
+      </div>
+      <Slider
+        v-model="releasesStore.ratingRange"
+        :max="SCORE_MAX"
+        :min="SCORE_MIN"
+        :tooltips="false"
+        aria-labelledby="score-range-label"
+        class="score-slider"
+        @end="dragRange = null"
+        @slide="dragRange = $event"
+      />
+    </div>
+  </div>
 
   <h2 class="title bd-font-bold"><span>Months</span></h2>
   <nav aria-label="Jump to a month" class="months">
-    <div class="jump-row">
-      <button class="jump jump-edge" type="button" @click="scrollFeed(0)">
-        <span class="jump-label">Top of feed</span>
-        <ArrowUpToLine :size="13" />
-      </button>
-      <span class="jump-slot" />
-    </div>
     <!--
       Two controls, so a row cannot be one: the label goes to the month's first
       release, the arrow to its last.
     -->
     <div v-for="month in releasesStore.monthNav" :key="month.label" class="jump-row">
-      <button :disabled="!month.count" class="jump" type="button" @click="scrollToMonth(month.label, 'start')">
-        <span class="jump-label">{{ month.label }}</span>
-        <span class="jump-count">{{ month.count }}</span>
+      <button
+        :disabled="!month.count"
+        class="row-button"
+        type="button"
+        @click="scrollToMonth(month.label, 'start')"
+      >
+        <span class="name">{{ month.label }}</span>
+        <span class="count">{{ month.count }}</span>
       </button>
       <BdTooltip :content="`End of ${month.label}`" bare>
         <button
@@ -40,13 +57,6 @@
           <ArrowDownToLine :size="12" />
         </button>
       </BdTooltip>
-    </div>
-    <div class="jump-row">
-      <button class="jump jump-edge" type="button" @click="scrollFeed(Number.MAX_SAFE_INTEGER)">
-        <span class="jump-label">End of feed</span>
-        <ArrowDownToLine :size="13" />
-      </button>
-      <span class="jump-slot" />
     </div>
   </nav>
 
@@ -83,20 +93,42 @@
     @keydown.down.prevent="moveGenreFocus(1)"
     @keydown.up.prevent="moveGenreFocus(-1)"
   >
-    <button
-      v-for="(genre, index) in shownGenres"
-      :key="genre.name"
-      :aria-pressed="isSelected(genre.name)"
-      :tabindex="index === activeGenre ? 0 : -1"
-      class="genre"
-      type="button"
-      @click="releasesStore.toggleGenre(genre.name)"
-      @focus="genreFocus = index"
-    >
-      <span class="name">{{ genre.name }}</span>
-      <span class="count">{{ genre.count }}</span>
-    </button>
-    <span v-if="!shownGenres.length" class="no-match">No genre matches “{{ query }}”.</span>
+    <!--
+      One flat loop over a tree the script has already flattened, so the roving
+      tabindex stays a single index and arrow keys walk families and their
+      micro-genres as one list — which is what they look like on screen.
+    -->
+    <div v-for="(genre, index) in shownGenres" :key="`${genre.depth}-${genre.name}`" class="genre-row">
+      <button
+        :aria-pressed="isSelected(genre.name)"
+        :class="{ child: genre.depth > 0 }"
+        :tabindex="index === activeGenre ? 0 : -1"
+        class="row-button genre"
+        type="button"
+        @click="releasesStore.toggleGenre(genre.name)"
+        @focus="genreFocus = index"
+      >
+        <span class="name">{{ genre.name }}</span>
+        <span class="count">{{ genre.count }}</span>
+      </button>
+      <BdTooltip
+        v-if="genre.expandable"
+        :content="expanded.has(genre.name) ? 'Hide sub-genres' : 'Show sub-genres'"
+        bare
+      >
+        <button
+          :aria-expanded="expanded.has(genre.name)"
+          :aria-label="`Sub-genres of ${genre.name}`"
+          class="genre-expand"
+          type="button"
+          @click="toggleFamily(genre.name)"
+        >
+          <ChevronDown :class="{ open: expanded.has(genre.name) }" :size="14" />
+        </button>
+      </BdTooltip>
+      <span v-else class="genre-slot" />
+    </div>
+    <span v-if="!shownGenres.length" class="no-match">{{ noMatch }}</span>
     <button v-if="hasMore" class="show-more" type="button" @click="showMore()">Show more</button>
     <button v-if="visible > GENRES_STEP" class="show-more" type="button" @click="visible = GENRES_STEP">
       Show less
@@ -105,12 +137,15 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowDownToLine, ArrowUpToLine } from "@lucide/vue";
+import { ArrowDownToLine, ChevronDown } from "@lucide/vue";
+import Slider from "@vueform/slider";
 import { BdCheckbox, BdInput, BdTooltip } from "bearded-ui";
 import { computed, ref, watch } from "vue";
+import "@vueform/slider/themes/default.css";
 
+import { GenreGroup } from "@/@types/Releases";
 import { useDialog } from "@/components/dialog/DialogStore";
-import { normalizeTag } from "@/helpers/releases";
+import { normalizeTag, RATING_BOUNDS } from "@/helpers/releases";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 /*
@@ -120,19 +155,36 @@ import { useReleases } from "@/views/releases/ReleasesStore";
  */
 const GENRES_STEP = 12;
 const releasesStore = useReleases();
+const [SCORE_MIN, SCORE_MAX] = RATING_BOUNDS;
 
+/** A row as the list renders it: a family, or one of the micro-genres under it. */
+interface GenreRow {
+  count: number;
+  depth: number;
+  expandable: boolean;
+  name: string;
+}
+
+const expanded = ref(new Set<string>());
 const genreFocus = ref(0);
 const genresRef = ref<HTMLElement | null>(null);
 const query = ref("");
 const visible = ref(GENRES_STEP);
 
 /* The query narrows the frequency-sorted list; the cap keeps it from becoming a wall of options. */
-const matches = computed(() => {
+const matches = computed<GenreGroup[]>(() => {
   // Normalized the way a genre is stored, so "black  metal" matches here too.
   const needle = normalizeTag(query.value);
-  if (!needle) return releasesStore.genreList;
+  if (!needle) return releasesStore.genreTree;
 
-  return releasesStore.genreList.filter((genre) => genre.name.toLowerCase().includes(needle));
+  /*
+   * A family is kept when it matches itself or when anything under it does, and its
+   * children are narrowed to the matches. Searching "black" has to reach "black
+   * metal" even though the family above it says nothing about black.
+   */
+  return releasesStore.genreTree
+    .map((family) => ({ ...family, children: family.children.filter((child) => child.name.includes(needle)) }))
+    .filter((family) => family.name.includes(needle) || family.children.length);
 });
 
 /*
@@ -148,20 +200,58 @@ const matches = computed(() => {
  * appears the moment anything is selected and rides in the sticky header, so it
  * is on screen whatever the list is doing.
  */
-const shownGenres = computed(() => matches.value.slice(0, visible.value));
+const shownGenres = computed<GenreRow[]>(() => {
+  const rows: GenreRow[] = [];
 
+  for (const family of matches.value.slice(0, visible.value)) {
+    rows.push({ count: family.count, depth: 0, expandable: family.children.length > 0, name: family.name });
+    if (!expanded.value.has(family.name)) continue;
+
+    for (const child of family.children) {
+      rows.push({ count: child.count, depth: 1, expandable: false, name: child.name });
+    }
+  }
+
+  return rows;
+});
+
+/* The cap counts families, not rows: an expanded one is a deliberate request to see all of it. */
 const hasMore = computed(() => matches.value.length > visible.value);
 
 /*
- * Clamped, because toggling a genre re-partitions picked/rest without touching
- * the query: left raw, the index could point past the end and no row would hold
- * `tabindex="0"`, which takes the whole list out of the tab order.
+ * Clamped, because folding a family or narrowing the query shortens the list under
+ * the index: left raw it could point past the end, no row would hold `tabindex="0"`,
+ * and the whole list would drop out of the tab order.
  */
 const activeGenre = computed(() => Math.min(genreFocus.value, Math.max(shownGenres.value.length - 1, 0)));
 
-/** What the live region reads out after a keystroke — the only evidence filtering happened. */
+/*
+ * The handles under the pointer, or the committed range when nothing is being
+ * dragged.
+ *
+ * The slider is left in its lazy mode on purpose — it commits to the store on
+ * release, not on every mousemove — because the store is persisted whole, and a
+ * write per pixel would re-serialize the entire feed into localStorage for the
+ * length of a drag. This ref is what a drag moves instead, so the readout tracks
+ * the handle while the feed below stays still.
+ */
+const dragRange = ref<null | number[]>(null);
+
+/** The range in words, so the two handles have a readout the panel can show at a glance. */
+const scoreLabel = computed(() => {
+  const [low, high] = dragRange.value ?? releasesStore.ratingRange;
+
+  return low === SCORE_MIN && high === SCORE_MAX ? "Any" : `${low}–${high}`;
+});
+
+/*
+ * What the live region reads out after a keystroke — the only evidence filtering
+ * happened. The empty case is rendered in the list too, from this same string: two
+ * copies of one sentence is how the announcement and the visible text drift apart.
+ */
+const noMatch = computed(() => `No genre matches “${query.value}”.`);
 const genreStatus = computed(() =>
-  shownGenres.value.length ? `${shownGenres.value.length} genres shown` : `No genre matches ${query.value}`,
+  shownGenres.value.length ? `${shownGenres.value.length} genres shown` : noMatch.value,
 );
 
 /*
@@ -187,10 +277,11 @@ function isSelected(name: string): boolean {
  * @param delta - How far to move, in rows
  */
 function moveGenreFocus(delta: number): void {
-  const buttons = [...(genresRef.value?.querySelectorAll<HTMLButtonElement>(".genre") ?? [])];
-  if (!buttons.length) return;
-  genreFocus.value = (activeGenre.value + delta + buttons.length) % buttons.length;
-  buttons[genreFocus.value].focus();
+  const total = shownGenres.value.length;
+  if (!total) return;
+
+  genreFocus.value = (activeGenre.value + delta + total) % total;
+  genresRef.value?.querySelectorAll<HTMLButtonElement>(".genre")[genreFocus.value]?.focus();
 }
 
 /*
@@ -201,15 +292,6 @@ function moveGenreFocus(delta: number): void {
  */
 function scrollBehavior(): "auto" | "smooth" {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-}
-
-/**
- * Jumps to an absolute offset in the feed. Clamped by the browser, so
- * `MAX_SAFE_INTEGER` is simply "the end" without having to read scrollHeight.
- * @param top - Target scroll offset
- */
-function scrollFeed(top: number): void {
-  feedElement()?.scrollTo({ behavior: scrollBehavior(), top });
 }
 
 /**
@@ -241,6 +323,15 @@ function showMore(): void {
   visible.value += GENRES_STEP;
 }
 
+/**
+ * Opens or closes a family's micro-genres. Purely a display state — the family
+ * filters on its own whether it is open or not.
+ * @param name - The family row that was clicked
+ */
+function toggleFamily(name: string): void {
+  if (!expanded.value.delete(name)) expanded.value.add(name);
+}
+
 /*
  * A cap raised to 36 and then left there silently applies to the next search
  * too, so a two-word query can still return a wall. The focus index is reset
@@ -249,6 +340,12 @@ function showMore(): void {
 watch(query, () => {
   visible.value = GENRES_STEP;
   genreFocus.value = 0;
+
+  /*
+   * A search that only matched micro-genres would otherwise return families that look
+   * empty, so a query opens what it found and clearing it folds everything back.
+   */
+  expanded.value = new Set(query.value ? matches.value.filter((f) => f.children.length).map((f) => f.name) : []);
 });
 </script>
 
@@ -307,10 +404,42 @@ watch(query, () => {
   padding: var(--bd-space-4) var(--bd-space-4) 0;
 }
 
-.counts {
+.score {
+  padding: var(--bd-space-3) var(--bd-space-1) var(--bd-space-1);
+}
+
+.score-head {
+  align-items: center;
   color: var(--bd-font-color-dark);
-  font-size: var(--bd-font-size-xs);
-  padding: var(--bd-space-2) var(--bd-space-4) var(--bd-space-1);
+  display: flex;
+  font-size: var(--bd-font-size-sm);
+  gap: var(--bd-space-2);
+  margin-bottom: var(--bd-space-4);
+}
+
+.score-value {
+  color: var(--bd-font-color);
+  margin-inline-start: auto;
+}
+
+/*
+ * The library ships its own theme as custom properties, so the whole control is
+ * re-skinned by redefining them on the root it inherits from — no ::v-deep into
+ * its internals, which is what would break the day it renames a class.
+ */
+.score-slider {
+  --slider-bg: var(--bd-bg-lighter);
+  --slider-connect-bg: var(--bd-primary);
+  --slider-handle-bg: var(--bd-font-color-light);
+  --slider-handle-border: 0;
+  --slider-handle-height: 0.9rem;
+  --slider-handle-ring-color: color-mix(in oklab, var(--bd-primary) 40%, transparent);
+  --slider-handle-ring-width: 0.2rem;
+  --slider-handle-shadow: none;
+  --slider-handle-shadow-active: none;
+  --slider-handle-width: 0.9rem;
+  --slider-height: 0.25rem;
+  --slider-radius: var(--bd-radius-full);
 }
 
 /*
@@ -332,90 +461,54 @@ watch(query, () => {
   margin: 0 var(--bd-space-2);
 }
 
-.genre {
-  align-items: center;
-  background-color: transparent;
-  border: none;
-  border-radius: var(--bd-radius-sm);
-  color: inherit;
-  cursor: pointer;
-  display: flex;
-  font-size: var(--bd-font-size-sm);
-  gap: var(--bd-space-2);
-  justify-content: space-between;
-  padding: var(--bd-space-1) var(--bd-space-2);
-  text-align: left;
-
-  &:hover {
-    background-color: var(--bd-bg);
-  }
-
-  &[aria-pressed="true"] {
-    background-color: var(--bd-primary);
-    color: var(--bd-on-primary);
-  }
-
-  .name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-transform: capitalize;
-    white-space: nowrap;
-  }
-
-  .count {
-    color: var(--bd-font-color-dark);
-    font-size: var(--bd-font-size-xs);
-  }
-
-  &[aria-pressed="true"] .count {
-    color: inherit;
-  }
-}
-
-.no-match {
-  color: var(--bd-font-color-dark);
-  font-size: var(--bd-font-size-xs);
-  padding: var(--bd-space-1) var(--bd-space-2);
-}
-
-.show-more {
-  align-self: flex-start;
-  background: none;
-  border: none;
-  color: var(--bd-primary);
-  cursor: pointer;
-  font-size: var(--bd-font-size-xs);
-  margin: var(--bd-space-1) 0;
-  padding: var(--bd-space-1) var(--bd-space-2);
-  text-align: left;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-.months {
-  /* Shared by the per-month arrow and by the empty slot the edge rows hold in
-     its place, so one value keeps the trailing column straight. */
-  --jump-end-size: 1.9rem;
+/* Shared by the chevron and by the empty slot a childless row holds in its
+   place, so the trailing column stays straight down the list. */
+.genre-row {
+  --genre-expand-size: 1.6rem;
 
   display: flex;
-  flex-direction: column;
   gap: var(--bd-space-1);
 }
 
-.jump-row {
-  align-items: center;
-  display: flex;
-  margin: 0 var(--bd-space-2);
+.genre-expand {
+  background: none;
+  border: none;
+  border-radius: var(--bd-radius-sm);
+  color: var(--bd-font-color-dark);
+  cursor: pointer;
+  display: grid;
+  flex-shrink: 0;
+  padding: 0;
+  place-items: center;
+  width: var(--genre-expand-size);
+
+  &:hover {
+    background-color: var(--bd-bg);
+    color: var(--bd-font-color);
+  }
+
+  /* Points at what it will reveal, and at what it will fold away once open. */
+  svg {
+    transition: rotate var(--bd-transition-fast);
+  }
+
+  .open {
+    rotate: 180deg;
+  }
+}
+
+.genre-slot {
+  flex-shrink: 0;
+  width: var(--genre-expand-size);
 }
 
 /*
- * Deliberately the genre row's box, not a new one: both are "narrow the feed to
- * this" and a second visual language for the same gesture in the same column
- * would be a second thing to learn.
+ * The box both row buttons wear. A genre and a month are both "take me to this",
+ * one tab column wide, and a second visual language for the same gesture in the
+ * same panel would be a second thing to learn — so it is one rule rather than two
+ * copies kept in step by hand.
  */
-.jump {
+.row-button {
   align-items: center;
   background-color: transparent;
   border: none;
@@ -437,38 +530,82 @@ watch(query, () => {
 }
 
 /*
- * A month the current filter emptied. It stays in place, dimmed and inert,
- * because a navigation list that drops rows rearranges itself under the pointer
- * — and the 0 beside it is itself the answer to "anything in August?".
+ * A row the current filter emptied — a month with nothing left in it. It stays in
+ * place, dimmed and inert, because a navigation list that drops rows rearranges
+ * itself under the pointer, and the 0 beside it is itself the answer to "anything
+ * in August?".
  */
-.jump:disabled {
+.row-button:disabled {
   background-color: transparent;
   cursor: default;
   opacity: 0.35;
 }
 
-.jump-edge {
-  color: var(--bd-font-color-dark);
-
-  &:hover {
-    color: var(--bd-font-color);
-  }
-}
-
-.jump-slot {
-  flex-shrink: 0;
-  width: var(--jump-end-size);
-}
-
-.jump-label {
+.row-button .name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.jump-count {
+.row-button .count {
   color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
+}
+
+.genre {
+  /* Indented and quieter: the family above it is the heading this belongs to. */
+  &.child {
+    color: var(--bd-font-color-dark);
+    font-size: var(--bd-font-size-sm);
+    margin-inline-start: var(--bd-space-4);
+  }
+
+  &[aria-pressed="true"] {
+    background-color: var(--bd-primary);
+    color: var(--bd-on-primary);
+  }
+
+  .name {
+    text-transform: capitalize;
+  }
+
+  &[aria-pressed="true"] .count {
+    color: inherit;
+  }
+}
+
+.no-match {
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
+  padding: var(--bd-space-1) var(--bd-space-2);
+}
+
+.show-more {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--bd-primary);
+  cursor: pointer;
   font-size: var(--bd-font-size-xs);
+  margin: var(--bd-space-1) 0;
+  padding: var(--bd-space-1) var(--bd-space-2);
+  text-align: left;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.months {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bd-space-1);
+}
+
+.jump-row {
+  align-items: center;
+  display: flex;
+  margin: 0 var(--bd-space-2);
 }
 
 /*
@@ -479,6 +616,8 @@ watch(query, () => {
  * dimmed foreground well under any usable contrast.
  */
 .jump-end {
+  --jump-end-size: 1.9rem;
+
   align-items: center;
   background-color: transparent;
   border: none;
