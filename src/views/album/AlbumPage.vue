@@ -123,7 +123,7 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   position: relative;
 
   &:hover {
-    background-color: var(--bd-bg-dark);
+    background-color: var(--bd-hover-overlay);
 
     .add {
       opacity: 0.3;

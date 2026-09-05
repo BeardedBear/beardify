@@ -110,7 +110,7 @@ const frameStore = useFrame();
     color var(--bd-transition);
 
   &:hover {
-    background-color: var(--bd-bg);
+    background-color: var(--bd-hover-overlay);
     color: var(--bd-font-color);
   }
 

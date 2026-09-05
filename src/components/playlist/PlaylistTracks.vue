@@ -240,7 +240,7 @@ async function deleteSong(songId: string): Promise<void> {
   }
 
   &:hover {
-    background-color: var(--bd-bg-dark);
+    background-color: var(--bd-hover-overlay);
   }
 
   &:active {

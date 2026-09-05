@@ -53,7 +53,7 @@ function playSingle(albumUri: string): void {
   padding-right: var(--bd-space-4);
 
   &:hover {
-    background-color: var(--bd-bg);
+    background-color: var(--bd-hover-overlay);
   }
 
   &:active {
