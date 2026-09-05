@@ -483,7 +483,7 @@ watch(query, () => {
   width: var(--genre-expand-size);
 
   &:hover {
-    background-color: var(--bd-bg);
+    background-color: var(--bd-hover-overlay);
     color: var(--bd-font-color);
   }
 
@@ -525,7 +525,7 @@ watch(query, () => {
   text-align: left;
 
   &:hover {
-    background-color: var(--bd-bg);
+    background-color: var(--bd-hover-overlay);
   }
 }
 
@@ -636,7 +636,7 @@ watch(query, () => {
   width: var(--jump-end-size);
 
   &:hover {
-    background-color: var(--bd-bg);
+    background-color: var(--bd-hover-overlay);
     color: var(--bd-font-color);
   }
 }

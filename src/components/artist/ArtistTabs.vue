@@ -119,7 +119,7 @@ function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
   }
 
   &:hover {
-    background-color: var(--bd-bg-dark);
+    background-color: var(--bd-hover-overlay);
     opacity: 0.8;
   }
 

@@ -305,7 +305,7 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   }
 
   &:hover {
-    background-color: var(--bd-bg);
+    background-color: var(--bd-hover-overlay);
 
     .edit {
       opacity: 1;

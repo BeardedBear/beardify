@@ -83,7 +83,7 @@ const dialogStore = useDialog();
   padding-right: var(--bd-space-3);
 
   &:hover {
-    background-color: var(--bd-bg);
+    background-color: var(--bd-hover-overlay);
   }
 
   &:active {
