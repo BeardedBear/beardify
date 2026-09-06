@@ -12,6 +12,11 @@ export const useConfig = defineStore("config", {
       this.show = true;
     },
 
+    /** Reading language for artist biographies, kept across artists and sessions. */
+    setWikipediaLanguage(code: string) {
+      this.wikipediaLanguage = code;
+    },
+
     toggleTierListSideLabels(value: boolean) {
       this.tierListSideLabels = value;
     },
@@ -25,5 +30,6 @@ export const useConfig = defineStore("config", {
   state: (): Config => ({
     show: false,
     tierListSideLabels: true,
+    wikipediaLanguage: "",
   }),
 });

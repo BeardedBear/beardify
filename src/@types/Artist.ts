@@ -52,6 +52,8 @@ export interface ArtistPage {
   wikidataArtist: null | WikidataArtist;
   wikidataId: null | string;
   wikipediaExtract: null | string;
+  /** True only when the fetch failed — an artist with no article is not a failure */
+  wikipediaFailed: boolean;
   wikipediaLanguage: string;
   wikiTimeline: null | WikiTimeline;
 }
