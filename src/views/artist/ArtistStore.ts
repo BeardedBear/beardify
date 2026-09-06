@@ -6,6 +6,7 @@ import { defaultArtist } from "@/@types/Defaults";
 import { NotificationType } from "@/@types/Notification";
 import { Paging } from "@/@types/Paging";
 import { instance } from "@/api";
+import { useConfig } from "@/components/config/ConfigStore";
 import {
   getDiscogsArtist,
   getDiscogsArtistReleases,
@@ -166,7 +167,8 @@ export const useArtist = defineStore("artist", {
       this.timelineLoading = true;
       this.wikidataArtist = null;
       this.wikipediaExtract = null;
-      this.wikipediaLanguage = "en";
+      this.wikipediaFailed = false;
+      this.wikipediaLanguage = useConfig().wikipediaLanguage;
       this.wikiTimeline = null;
       this.topTracks = { tracks: [] };
       this.topAlbumRanks = new Map();
@@ -222,6 +224,26 @@ export const useArtist = defineStore("artist", {
         this.reclassifyReleases();
       } catch {
         // silent fail
+      }
+    },
+
+    /**
+     * Single point where a Wikipedia fetch failure becomes state. `getWikipediaExtract`
+     * returns null only for an artist with no article; anything else throws, and the
+     * difference is what the Info tab shows the reader.
+     * @param url - The Wikipedia article URL for the chosen language
+     * @param signal - Abort signal for the current artist navigation
+     * @returns The article HTML, or null when there is no article or the fetch failed
+     */
+    async fetchWikipediaExtract(url: string, signal: AbortSignal): Promise<null | string> {
+      try {
+        const extract = await getWikipediaExtract(url, signal);
+        if (!signal.aborted) this.wikipediaFailed = false;
+        return extract;
+      } catch {
+        // An abort is this app changing its mind, not Wikipedia failing
+        if (!signal.aborted) this.wikipediaFailed = true;
+        return null;
       }
     },
 
@@ -513,8 +535,15 @@ export const useArtist = defineStore("artist", {
         const wikipediaUrl = this.wikidataArtist?.wikipediaUrl;
         const languages = this.wikidataArtist?.wikipediaLanguages ?? [];
         const browserLang = navigator.language.split("-")[0];
+        /*
+         * A reading language chosen once is a preference, not a per-page
+         * decision: without this it reset to English on every artist, and the
+         * only way back was an unsearchable list of every edition that exists.
+         */
+        const preferredLang = useConfig().wikipediaLanguage;
         const selectedLang
-          = languages.find((l) => l.code === browserLang)
+          = languages.find((l) => l.code === preferredLang)
+            || languages.find((l) => l.code === browserLang)
             || languages.find((l) => l.code === "en")
             || languages[0];
 
@@ -525,7 +554,7 @@ export const useArtist = defineStore("artist", {
             )
           : Promise.resolve(null);
         const extractPromise = selectedLang
-          ? getWikipediaExtract(selectedLang.url, signal)
+          ? this.fetchWikipediaExtract(selectedLang.url, signal)
           : Promise.resolve(null);
 
         const [newTimeline, extract] = await Promise.all([timelinePromise, extractPromise]);
@@ -647,6 +676,16 @@ export const useArtist = defineStore("artist", {
       }
     },
 
+    /** Re-fetch the biography after a transport failure, in the language already chosen. */
+    async retryWikipediaExtract(): Promise<void> {
+      const url = this.wikipediaSourceUrl;
+      if (!url) return;
+
+      const { signal } = navigationController;
+      const extract = await this.fetchWikipediaExtract(url, signal);
+      if (!signal.aborted) this.wikipediaExtract = extract;
+    },
+
     saveDiscographyCache(artistId: string): void {
       if (discographyCache.size >= CACHE_MAX_ENTRIES) {
         let oldestKey = "";
@@ -690,7 +729,9 @@ export const useArtist = defineStore("artist", {
     async switchWikipediaLanguage(url: string, languageCode: string) {
       const { signal } = navigationController;
       this.wikipediaLanguage = languageCode;
-      const extract = await getWikipediaExtract(url, signal);
+      // Remembered across artists: the choice is a reading preference, not a per-page one
+      useConfig().setWikipediaLanguage(languageCode);
+      const extract = await this.fetchWikipediaExtract(url, signal);
       if (!signal.aborted) this.wikipediaExtract = extract;
     },
 
@@ -709,6 +750,17 @@ export const useArtist = defineStore("artist", {
         || state.bandMembers.length
         || state.discogsArtist?.profile
         || state.discogsArtist?.members?.length,
+      );
+    },
+
+    /** The article currently being read — the reader's way back to the source, and CC BY-SA attribution. */
+    wikipediaSourceUrl(state): null | string {
+      const languages = state.wikidataArtist?.wikipediaLanguages ?? [];
+
+      return (
+        languages.find((language) => language.code === state.wikipediaLanguage)?.url
+        ?? state.wikidataArtist?.wikipediaUrl
+        ?? null
       );
     },
   },
@@ -739,6 +791,7 @@ export const useArtist = defineStore("artist", {
     wikidataArtist: null,
     wikidataId: null,
     wikipediaExtract: null,
+    wikipediaFailed: false,
     wikipediaLanguage: "en",
     wikiTimeline: null,
   }),

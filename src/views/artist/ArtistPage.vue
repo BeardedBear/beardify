@@ -44,7 +44,7 @@
 <script lang="ts" setup>
 import { useMediaQuery } from "@vueuse/core";
 import { BdLoader } from "bearded-ui";
-import { nextTick, ref, watch } from "vue";
+import { nextTick, onUnmounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
@@ -62,6 +62,12 @@ import { useArtist } from "@/views/artist/ArtistStore";
 const VALID_TABS = ["discography", "info"] as const;
 type TabId = (typeof VALID_TABS)[number];
 
+/**
+ * How long to keep re-applying a tab's offset while the swap completes. Covers
+ * the 120ms tab-fade plus the incoming mount, and any user input cuts it short.
+ */
+const TAB_SCROLL_PIN_MS = 350;
+
 const props = defineProps<{ id: string }>();
 const artistStore = useArtist();
 const route = useRoute();
@@ -71,11 +77,27 @@ const { onScroll, restoreScroll } = useScrollRestore(`scroll-${route.path}`, pag
 
 let lastChangeTime = 0;
 
+/*
+ * Both tabs share one scroll container, so without this a reader deep in a
+ * 12,000-word biography who checks the discography came back to the middle of
+ * the albums — and lost their place in the article. Each tab keeps its own
+ * offset instead.
+ */
+// Keyed by string, not TabId: the store types activeTab as string, and narrowing
+// it would ripple into ArtistTabs, whose v-model emits a plain string
+const tabScroll: Record<string, number> = { discography: 0, info: 0 };
+// The swap clamps scrollTop against the outgoing tab's height; ignore those
+// events so a short tab cannot overwrite the position of the tall one.
+let switchingTab = false;
+let tabScrollRaf = 0;
+let detachTabAbort: (() => void) | null = null;
+
 // 767px mirrors the mobile breakpoint used in the stylesheets (drives the collapse CSS).
 const isMobile = useMediaQuery("(max-width: 767px)");
 
 function handleScroll() {
   onScroll();
+  if (!switchingTab) tabScroll[artistStore.activeTab] = pageRef.value?.scrollTop ?? 0;
   if (!isMobile.value) return;
   const now = Date.now();
   if (now - lastChangeTime < 300) return;
@@ -88,6 +110,46 @@ function handleScroll() {
     artistStore.scrolledDown = false;
     lastChangeTime = now;
   }
+}
+
+/**
+ * Pin the incoming tab's offset across the swap.
+ *
+ * Deliberately not driven by the Transition's `@after-enter`: `mode="out-in"`
+ * mounts the new content only once the old one has left, and if that transition
+ * is interrupted the hook never runs — leaving the tab permanently unable to
+ * record its position. A frame loop needs no such promise.
+ *
+ * It also runs for the whole window rather than stopping as soon as the offset
+ * takes: for most of the swap the outgoing content is still mounted, so an
+ * early exit would have restored against the wrong scroll height and let the
+ * incoming content clamp the offset away.
+ * @param target - Offset the incoming tab was last left at
+ */
+function restoreTabScroll(target: number): void {
+  detachTabAbort?.();
+  cancelAnimationFrame(tabScrollRaf);
+  const start = performance.now();
+
+  function finish(): void {
+    cancelAnimationFrame(tabScrollRaf);
+    detachTabAbort?.();
+    detachTabAbort = null;
+    switchingTab = false;
+  }
+
+  // Whatever the restore intended, the reader reaching for the page wins
+  const events = ["wheel", "touchstart", "keydown"] as const;
+  events.forEach((event) => window.addEventListener(event, finish, { passive: true }));
+  detachTabAbort = (): void => events.forEach((event) => window.removeEventListener(event, finish));
+
+  const apply = (): void => {
+    if (pageRef.value) pageRef.value.scrollTop = target;
+    if (performance.now() - start < TAB_SCROLL_PIN_MS) tabScrollRaf = requestAnimationFrame(apply);
+    else finish();
+  };
+
+  tabScrollRaf = requestAnimationFrame(apply);
 }
 
 artistStore.clean().finally(async () => {
@@ -142,8 +204,17 @@ watch(
   () => artistStore.activeTab,
   (tab) => {
     history.replaceState(history.state, "", `${location.pathname}#${tab}`);
+    // The outgoing tab's offset is already in tabScroll, recorded by the last
+    // real scroll event; nothing may overwrite it while the swap settles
+    switchingTab = true;
+    restoreTabScroll(tabScroll[tab] ?? 0);
   },
 );
+
+onUnmounted(() => {
+  cancelAnimationFrame(tabScrollRaf);
+  detachTabAbort?.();
+});
 
 </script>
 

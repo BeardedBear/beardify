@@ -7,49 +7,70 @@
       :class="{ stuck: isStuck }"
       :style="{ top: headerHeight + 'px' }"
     >
-      <BdDropdown v-if="hasSections" label="Go to section..." match-width size="small">
-        <BdDropdownItem v-for="section in sections" :key="section.id" @click="onSectionChange(section.id)">
+      <BdDropdown v-if="hasSections" :label="activeSectionTitle" match-width size="small">
+        <BdDropdownItem
+          v-for="section in sections"
+          :key="section.id"
+          :active="section.id === activeSectionId"
+          :style="{ paddingInlineStart: `calc(var(--bd-space-3) * ${section.level - 1})` }"
+          @click="onSectionChange(section.id)"
+        >
           {{ section.title }}
         </BdDropdownItem>
       </BdDropdown>
 
-      <BdDropdown v-if="hasMultipleLanguages" :label="currentLanguageName" placement="bottom-end" size="small">
-        <BdDropdownItem
-          v-for="language in languages"
-          :key="language.code"
-          :active="language.code === currentLanguage"
-          @click="emit('languageChange', language)"
-        >
-          {{ language.name }}
-        </BdDropdownItem>
-      </BdDropdown>
+      <div class="nav-end">
+        <BdDropdown v-if="hasMultipleLanguages" :label="currentLanguageName" placement="bottom-end" size="small">
+          <BdDropdownItem
+            v-for="language in languages"
+            :key="language.code"
+            :active="language.code === currentLanguage"
+            @click="emit('languageChange', language)"
+          >
+            {{ language.name }}
+          </BdDropdownItem>
+        </BdDropdown>
+
+        <!-- The reader's way out to the full article, and the CC BY-SA attribution -->
+        <a v-if="sourceUrl" class="source-link" :href="sourceUrl" rel="noopener noreferrer" target="_blank">
+          Wikipedia
+          <ExternalLink :size="14" />
+        </a>
+      </div>
     </nav>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { ExternalLink } from "@lucide/vue";
 import { BdDropdown, BdDropdownItem } from "bearded-ui";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import { LanguageOption } from "@/@types/Wikipedia";
 
 interface Props {
+  activeSectionId?: null | string;
   currentLanguage?: string;
   headerHeight?: number;
   languages?: LanguageOption[];
   sections?: WikipediaSection[];
+  sourceUrl?: null | string;
 }
 
 interface WikipediaSection {
   id: string;
+  /** 2, 3 or 4 — indents the entry so the flat menu reads as an outline */
+  level: number;
   title: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  activeSectionId: null,
   currentLanguage: "",
   headerHeight: 0,
   languages: () => [],
   sections: () => [],
+  sourceUrl: null,
 });
 
 const emit = defineEmits<{
@@ -65,6 +86,15 @@ const hasMultipleLanguages = computed(() => props.languages.length > 1);
 
 const currentLanguageName = computed(
   () => props.languages.find((language) => language.code === props.currentLanguage)?.name ?? props.currentLanguage,
+);
+
+/*
+ * The label says where the reader is, not what the menu does. On a 12,000-word
+ * article a static "Go to section..." is the one question the control could
+ * have answered and didn't.
+ */
+const activeSectionTitle = computed(
+  () => props.sections.find((section) => section.id === props.activeSectionId)?.title ?? "Go to section...",
 );
 
 // Observer to detect when nav is stuck
@@ -96,6 +126,10 @@ function scrollToSection(sectionId: string): void {
       behavior: "smooth",
       top: offsetPosition,
     });
+
+    // Focus follows the viewport, or the next Tab resumes back at the dropdown
+    element.setAttribute("tabindex", "-1");
+    element.focus({ preventScroll: true });
   }
 }
 
@@ -191,6 +225,28 @@ onBeforeUnmount(() => {
   @media (--mobile) {
     position: relative;
     top: 0 !important;
+  }
+}
+
+.nav-end {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--bd-space-2);
+}
+
+.source-link {
+  align-items: center;
+  color: var(--bd-font-color-dark);
+  display: flex;
+  font-size: var(--bd-font-size-sm);
+  gap: var(--bd-space-1);
+  text-decoration: none;
+  transition: color var(--bd-transition);
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--bd-font-color);
   }
 }
 </style>
