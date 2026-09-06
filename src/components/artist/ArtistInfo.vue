@@ -30,8 +30,14 @@
           v-html="sanitizedWikipediaExtract"
         />
         <!-- eslint-enable vue/no-v-html -->
-        <!-- eslint-disable-next-line vue/no-v-html -->
-        <div v-else-if="artistStore.discogsArtist?.profile" class="biography" v-html="formattedDiscogsProfile" />
+        <!-- eslint-disable vue/no-v-html -->
+        <div
+          v-else-if="artistStore.discogsArtist?.profile"
+          class="biography"
+          @click="onContentClick"
+          v-html="formattedDiscogsProfile"
+        />
+        <!-- eslint-enable vue/no-v-html -->
       </div>
 
       <!-- A failed fetch is not an absent article: say which one happened, and offer the way out -->
@@ -62,6 +68,8 @@ import WikipediaTimeline from "@/components/artist/WikipediaTimeline.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { useSearch } from "@/components/search/SearchStore";
 import { parseDiscogsMarkup } from "@/helpers/discogs";
+import { openLink } from "@/helpers/openLink";
+import { isTauri } from "@/helpers/platform";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 interface WikipediaSection {
@@ -89,12 +97,17 @@ const sanitizedWikipediaExtract = computed(() => {
   if (!artistStore.wikipediaExtract) return "";
 
   /*
-   * DOMPurify's default profile allows `style` on any element and `<style>`
-   * itself, and Wikipedia ships both — arbitrary inline colours and widths that
-   * ignore this app's themes. `data-wiki-title`, set by the cleaner, survives:
-   * data attributes are allowed by default.
+   * `target` is NOT in DOMPurify's default allowlist, so without ADD_ATTR every
+   * outbound link would quietly load Wikipedia over the app. `rel` is allowed by
+   * default and the cleaner already pairs `noopener noreferrer` with it.
+   *
+   * The two FORBID entries close the opposite hole: the default profile allows
+   * `style` on any element and `<style>` itself, and Wikipedia ships both —
+   * arbitrary inline colours and widths that ignore this app's themes.
+   * `data-wiki-title` and `data-music` survive: data attributes are allowed.
    */
   return DOMPurify.sanitize(artistStore.wikipediaExtract, {
+    ADD_ATTR: ["target"],
     FORBID_ATTR: ["style"],
     FORBID_TAGS: ["style"],
   });
@@ -103,7 +116,10 @@ const sanitizedWikipediaExtract = computed(() => {
 const formattedDiscogsProfile = computed(() => {
   if (!artistStore.discogsArtist?.profile) return "";
   const parsed = parseDiscogsMarkup(artistStore.discogsArtist.profile);
-  return DOMPurify.sanitize(parsed);
+
+  // Same reason as above: parseDiscogsMarkup writes target="_blank" on every
+  // link it builds, and the default profile would strip all of them
+  return DOMPurify.sanitize(parsed, { ADD_ATTR: ["target"] });
 });
 
 const hasBiography = computed(() => {
@@ -166,18 +182,39 @@ function observeSections(headings: Element[]): void {
 }
 
 /**
- * The cleaner strips Wikipedia's own hrefs and leaves the subject behind in
- * `data-wiki-title`. A biography is mostly names this app has pages for, so a
- * click opens the same search a band-member click does.
+ * Two kinds of link live in a biography. Wikidata marked the ones that are
+ * artists or albums with `data-music`: those open the in-app search, the same
+ * one a band-member click opens. Everything else — places, genres, events —
+ * is worth nothing to a music search, so it stays an ordinary outbound link to
+ * Wikipedia and is left to the browser (or Tauri's opener on desktop).
+ *
+ * Modified clicks are never intercepted: ctrl/cmd/middle-click opens the
+ * Wikipedia article in a new tab, for music links too.
  */
 function onContentClick(event: MouseEvent): void {
-  const link = (event.target as HTMLElement | null)?.closest<HTMLElement>("[data-wiki-title]");
-  const title = link?.dataset.wikiTitle;
-  if (!title) return;
+  if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
 
-  event.preventDefault();
-  useSearch().updateQuery(title);
-  useDialog().open({ type: "search" });
+  const link = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>("a[href]");
+  if (!link) return;
+
+  const title = link.dataset.wikiTitle;
+  if (title && link.hasAttribute("data-music")) {
+    event.preventDefault();
+    useSearch().updateQuery(title);
+    useDialog().open({ type: "search" });
+    return;
+  }
+
+  /*
+   * Everything else leaves the app. On the web the anchor's own target="_blank"
+   * does it — which only works because the sanitizer is told to keep `target`.
+   * Tauri has no tab to hand it to, so the native opener takes over and the
+   * article opens in the user's real browser instead of replacing the app.
+   */
+  if (isTauri()) {
+    event.preventDefault();
+    openLink(link.href);
+  }
 }
 
 function onLanguageChange(option: LanguageOption): void {
@@ -242,6 +279,15 @@ onBeforeUnmount(() => {
 
 .info-section {
   margin-bottom: var(--bd-space-6);
+
+  /*
+   * The measure cap lives on the section, not on the text, so the sticky nav
+   * lines up with the column it controls — capped on the text alone, the bar
+   * ran the full 1444px above a 551px ribbon. Not whitespace either: the
+   * reading column ran ~170 characters at 1080p and ~200 on a wide monitor,
+   * and this spends slack the layout already had. The sidebar does not move.
+   */
+  max-width: 72ch;
   position: relative;
 }
 
@@ -249,14 +295,12 @@ onBeforeUnmount(() => {
   color: var(--bd-font-color-light);
   hyphens: auto;
   line-height: 1.7;
-
-  /*
-   * Not whitespace: the reading column ran to ~170 characters at 1080p and ~200
-   * on a wide monitor. Capping the measure spends the slack the layout already
-   * had, and leaves the sidebar and every padding exactly where they were.
-   */
-  max-width: 68ch;
   text-wrap: pretty;
+
+  &::selection {
+    background: var(--bd-primary);
+    color: var(--bd-font-color-light);
+  }
 }
 
 /*
@@ -278,6 +322,23 @@ onBeforeUnmount(() => {
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
 .wikipedia-content :deep(p) {
   margin-bottom: var(--bd-space-4);
+}
+
+/*
+ * The lead answers most visits — who they are, where they formed, what they
+ * made. Styled like paragraph 86 it reads as filler before the article starts.
+ */
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(p):first-of-type {
+  font-size: var(--bd-font-size-lg);
+  line-height: 1.55;
+  margin-bottom: var(--bd-space-5);
+}
+
+/* An article opening on a heading must not push it down by a section gap */
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(.mw-heading):first-child h2 {
+  margin-top: 0;
 }
 
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -340,19 +401,50 @@ onBeforeUnmount(() => {
  * an href is a plain anchor the cleaner deliberately left alone.
  */
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-.wikipedia-content :deep([data-wiki-title]),
-/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
 .wikipedia-content :deep(a) {
+  /*
+   * Body colour, not primary: a rendered article carries 500-800 links, almost
+   * all of them proper nouns in running prose. Colouring each one turns the
+   * paragraph into confetti and costs more reading than the affordance buys,
+   * so the underline carries it and colour arrives on hover.
+   */
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.30em;
+  transition:
+    color var(--bd-transition),
+    text-decoration-color var(--bd-transition);
+}
+
+/*
+ * Two destinations, two weights. A marked link is an artist or an album Spotify
+ * actually has, and it stays inside the app — it carries the primary colour and
+ * reads as the offer. Colouring was confetti when all 538 links were tinted;
+ * Wikidata cuts that to about a fifth, which the paragraph can carry.
+ */
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep([data-music]) {
   color: var(--bd-primary-light);
   cursor: pointer;
-  text-decoration: none;
+  text-decoration-color: color-mix(in oklab, var(--bd-primary) 40%, transparent);
+  text-decoration-thickness: 1px;
 }
 
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-.wikipedia-content :deep([data-wiki-title]):hover,
+.wikipedia-content :deep([data-music]):hover {
+  text-decoration-color: var(--bd-primary-light);
+}
+
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
-.wikipedia-content :deep(a):hover {
-  text-decoration: underline;
+.wikipedia-content :deep(a):not([data-music]) {
+  text-decoration-color: color-mix(in oklab, var(--bd-font-color-dark) 60%, transparent);
+  text-decoration-style: dotted;
+}
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+.wikipedia-content :deep(a):not([data-music]):hover {
+  color: var(--bd-font-color);
+  text-decoration-color: var(--bd-font-color-dark);
 }
 
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
@@ -460,7 +552,6 @@ onBeforeUnmount(() => {
 .biography {
   color: var(--bd-font-color-light);
   line-height: 1.7;
-  max-width: 68ch;
   text-wrap: pretty;
 }
 

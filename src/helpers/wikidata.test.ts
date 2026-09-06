@@ -15,7 +15,7 @@ describe("cleanWikipediaHtml", () => {
       ${heading(2, "Legacy")}<p>also kept</p>
     </div>`;
 
-    const result = cleanWikipediaHtml(html);
+    const result = cleanWikipediaHtml(html, "en");
 
     expect(result).toContain("kept");
     expect(result).toContain("also kept");
@@ -29,7 +29,7 @@ describe("cleanWikipediaHtml", () => {
       ${heading(2, "Style")}<p>survives</p>
     </div>`;
 
-    const result = cleanWikipediaHtml(html);
+    const result = cleanWikipediaHtml(html, "en");
 
     expect(result).not.toContain("gone");
     expect(result).toContain("survives");
@@ -38,17 +38,23 @@ describe("cleanWikipediaHtml", () => {
   it("matches the prefix patterns, not just exact titles", () => {
     const html = `<div class="mw-parser-output">${heading(2, "Discographie studio")}<p>gone</p></div>`;
 
-    expect(cleanWikipediaHtml(html)).not.toContain("gone");
+    expect(cleanWikipediaHtml(html, "en")).not.toContain("gone");
   });
 
-  it("turns article links into data-wiki-title and keeps their text", () => {
+  it("gives article links an absolute href and the subject in data-wiki-title", () => {
     const html = `<div class="mw-parser-output"><p>Produced by <a href="/wiki/Nigel_Godrich">Nigel Godrich</a>.</p></div>`;
 
-    const result = cleanWikipediaHtml(html);
+    const result = cleanWikipediaHtml(html, "en");
 
     expect(result).toContain("data-wiki-title=\"Nigel Godrich\"");
+    expect(result).toContain("href=\"https://en.wikipedia.org/wiki/Nigel_Godrich\"");
     expect(result).toContain("Nigel Godrich");
-    expect(result).not.toContain("href");
+  });
+
+  it("builds the href against the article's own language edition", () => {
+    const html = `<div class="mw-parser-output"><p><a href="/wiki/Alain_Bashung">Bashung</a></p></div>`;
+
+    expect(cleanWikipediaHtml(html, "fr")).toContain("href=\"https://fr.wikipedia.org/wiki/Alain_Bashung\"");
   });
 
   it("unwraps links that do not point at an article subject", () => {
@@ -58,7 +64,7 @@ describe("cleanWikipediaHtml", () => {
       + `<a href="https://example.com">external</a>`
       + `</p></div>`;
 
-    const result = cleanWikipediaHtml(html);
+    const result = cleanWikipediaHtml(html, "en");
 
     expect(result).not.toContain("<a");
     expect(result).toContain("file");
@@ -75,7 +81,7 @@ describe("cleanWikipediaHtml", () => {
       + `<p style="color:#ff0000">body</p>`
       + `</div>`;
 
-    const result = cleanWikipediaHtml(html);
+    const result = cleanWikipediaHtml(html, "en");
 
     expect(result).not.toContain("infobox");
     expect(result).not.toContain("hatnote");

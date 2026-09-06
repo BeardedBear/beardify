@@ -6,6 +6,7 @@ import { BEARDIFY_USER_AGENT, http } from "@/helpers/http";
 
 const WIKIDATA_ENTITY_URL = "https://www.wikidata.org/wiki/Special:EntityData/";
 const WIKIDATA_API_URL = "https://www.wikidata.org/w/api.php";
+const WIKIDATA_SPARQL_URL = "https://query.wikidata.org/sparql";
 
 /**
  * Wikidata property/item IDs used to extract band members from "has part(s)" (P527)
@@ -492,8 +493,14 @@ export async function getWikipediaExtract(
       return null;
     }
 
-    // Clean the HTML to remove unwanted sections
-    return cleanWikipediaHtml(data.parse.text);
+    const cleaned = cleanWikipediaHtml(data.parse.text, lang);
+
+    try {
+      return await markMusicLinks(cleaned, lang, signal);
+    } catch {
+      // Wikidata being unavailable costs the in-app search shortcut, not the article
+      return cleaned;
+    }
   } catch (error) {
     // MediaWiki answers an unknown page with 404 — that is an absent article,
     // not a broken request, and the reader should not be offered a retry for it
@@ -550,15 +557,16 @@ const WIKI_NAMESPACED_TITLE = /^[^:]+:/;
 /**
  * Reduce a rendered Wikipedia article to the biography this app wants to show
  * @param html - The rendered article HTML from `action=parse`
+ * @param lang - Wikipedia edition the article came from, for absolute link hrefs
  * @returns Cleaned HTML: no chrome, no excluded sections, links rewritten
  */
-export function cleanWikipediaHtml(html: string): string {
+export function cleanWikipediaHtml(html: string, lang: string): string {
   const body = new DOMParser().parseFromString(html, "text/html").body;
   const root = body.querySelector(".mw-parser-output") ?? body;
 
   for (const element of Array.from(root.querySelectorAll(WIKIPEDIA_CRUFT_SELECTOR))) element.remove();
   removeExcludedSections(root);
-  rewriteLinks(root);
+  rewriteLinks(root, lang);
 
   // A wide table has to scroll inside itself rather than widen the page
   for (const table of Array.from(root.querySelectorAll("table"))) {
@@ -623,6 +631,45 @@ function getClaimStringValue(claims: Record<string, WikidataClaim[]>, propertyId
   }
 
   return null;
+}
+
+/**
+ * Ask Wikidata which of these article titles are things Spotify actually has:
+ * a Spotify artist id (P1902) or a Spotify album id (P2205).
+ *
+ * A MusicBrainz id (P434) looks tempting as a third criterion and is not used
+ * on purpose — it marks anyone MusicBrainz credits, including cover artists,
+ * poets and, through a stray statement, the French article for the *profession*
+ * "Scénariste". None of them are findable on Spotify, so the search would open
+ * on nothing. A Spotify id is the only property that promises a result.
+ * @param titles - Linked article titles from the biography
+ * @param lang - Wikipedia edition the titles belong to
+ * @param signal - Aborts when the reader navigates away
+ * @returns The subset of titles worth searching for inside a music app
+ */
+async function getMusicLinkTitles(titles: string[], lang: string, signal?: AbortSignal): Promise<Set<string>> {
+  if (titles.length === 0) return new Set();
+
+  const query = `SELECT DISTINCT ?article WHERE {
+  VALUES ?article { ${titles.map((title) => sitelinkIri(lang, title)).join(" ")} }
+  ?article schema:about ?item .
+  { ?item wdt:P1902 [] } UNION { ?item wdt:P2205 [] }
+}`;
+
+  const response = await wikidataClient.post(WIKIDATA_SPARQL_URL, {
+    body: new URLSearchParams({ format: "json", query }),
+    headers: { Accept: "application/sparql-results+json" },
+    signal,
+  });
+  const data = (await response.json()) as {
+    results: { bindings: { article: { value: string } }[] };
+  };
+
+  return new Set(
+    data.results.bindings.map((binding) =>
+      safeDecodeTitle(binding.article.value.split("/wiki/")[1] ?? "").replace(/_/g, " "),
+    ),
+  );
 }
 
 /**
@@ -756,6 +803,32 @@ function isHumanOrUnknown(entity: WikidataEntity): boolean {
 }
 
 /**
+ * Mark the links a music app can do something with. A biography links mostly to
+ * places, genres and events; searching Spotify for "Abingdon, Oxfordshire" is
+ * noise. Marked links open the in-app search, the rest stay ordinary outbound
+ * links to Wikipedia.
+ *
+ * A Wikidata failure leaves every link unmarked, which degrades to "everything
+ * opens Wikipedia" rather than losing the biography.
+ * @param html - Cleaned article HTML
+ * @param lang - Wikipedia edition the article came from
+ * @param signal - Aborts when the reader navigates away
+ * @returns The HTML with `data-music` set on links to artists and albums
+ */
+async function markMusicLinks(html: string, lang: string, signal?: AbortSignal): Promise<string> {
+  const body = new DOMParser().parseFromString(html, "text/html").body;
+  const links = Array.from(body.querySelectorAll<HTMLElement>("[data-wiki-title]"));
+  const titles = [...new Set(links.map((link) => link.dataset.wikiTitle ?? ""))].filter(Boolean);
+
+  const musicTitles = await getMusicLinkTitles(titles, lang, signal);
+  for (const link of links) {
+    if (musicTitles.has(link.dataset.wikiTitle ?? "")) link.setAttribute("data-music", "");
+  }
+
+  return body.innerHTML;
+}
+
+/**
  * Normalize a Wikidata time value (e.g. "+1981-10-28T00:00:00Z") to a partial
  * date string (YYYY, YYYY-MM or YYYY-MM-DD), dropping unknown month/day "00".
  */
@@ -851,18 +924,24 @@ function removeExcludedSections(root: Element): void {
 
 /**
  * Wikipedia's own links are the reason for fetching rendered HTML at all, but
- * they point at wikipedia.org. Article links keep their text and carry the
- * subject in `data-wiki-title`, which the biography turns into a Spotify search
- * on click; files, categories, red links and citations unwrap to plain text.
+ * they point at wikipedia.org with a root-relative href. Article links keep
+ * their text, get an absolute href — so they stay focusable, ctrl-clickable and
+ * meaningful without JavaScript — and carry the subject in `data-wiki-title`
+ * for the click handler. Files, categories, red links and citations unwrap to
+ * plain text.
  * @param root - The parsed article container, mutated in place
+ * @param lang - Wikipedia edition the article came from, for the absolute href
  */
-function rewriteLinks(root: Element): void {
+function rewriteLinks(root: Element, lang: string): void {
   for (const link of Array.from(root.querySelectorAll("a"))) {
-    const match = WIKI_ARTICLE_HREF.exec(link.getAttribute("href") ?? "");
+    const href = link.getAttribute("href") ?? "";
+    const match = WIKI_ARTICLE_HREF.exec(href);
     const title = match ? safeDecodeTitle(match[1]).replace(/_/g, " ") : null;
 
     if (title && !WIKI_NAMESPACED_TITLE.test(title) && !link.classList.contains("new")) {
-      link.removeAttribute("href");
+      link.setAttribute("href", `https://${lang}.wikipedia.org${href}`);
+      link.setAttribute("rel", "noopener noreferrer");
+      link.setAttribute("target", "_blank");
       link.setAttribute("data-wiki-title", title);
       continue;
     }
@@ -883,4 +962,22 @@ function safeDecodeTitle(value: string): string {
   } catch {
     return value;
   }
+}
+
+/**
+ * Wikidata stores sitelinks as percent-encoded IRIs, but only just: it encodes
+ * the apostrophe, which `encodeURIComponent` leaves alone, and leaves
+ * parentheses, `!` and `*` alone, which `encodeURIComponent` also leaves alone.
+ * Verified against the live endpoint — encoding the apostrophe wins "Ed
+ * O'Brien", and encoding the parens loses every "(band)" disambiguation.
+ * @param lang - Wikipedia edition
+ * @param title - Article title, spaces or underscores
+ * @returns The sitelink wrapped as a SPARQL IRI
+ */
+function sitelinkIri(lang: string, title: string): string {
+  const encoded = encodeURIComponent(title.replace(/ /g, "_"))
+    .replace(/%2F/g, "/")
+    .replace(/'/g, "%27");
+
+  return `<https://${lang}.wikipedia.org/wiki/${encoded}>`;
 }
