@@ -11,7 +11,7 @@
             <BdLoader />
           </div>
           <template v-else>
-            <div
+            <BdEmptyState
               v-if="
                 !artistStore.albums.length &&
                 !artistStore.eps.length &&
@@ -19,9 +19,11 @@
                 !artistStore.albumsLive.length &&
                 !artistStore.albumsCompilation.length
               "
+              :message="`${artistStore.artist.name} didn't release anything on Spotify yet.`"
+              title="No releases yet"
             >
-              {{ artistStore.artist.name }} didn't release anything, it's a bit sad.
-            </div>
+              <template #icon><i class="icon-album" /></template>
+            </BdEmptyState>
             <BlockAlbums />
             <BlockEps />
             <BlockAlbumsLive />
@@ -43,7 +45,7 @@
 
 <script lang="ts" setup>
 import { useMediaQuery } from "@vueuse/core";
-import { BdLoader } from "bearded-ui";
+import { BdEmptyState, BdLoader } from "bearded-ui";
 import { nextTick, onUnmounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 

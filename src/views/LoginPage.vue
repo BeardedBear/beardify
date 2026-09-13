@@ -20,7 +20,6 @@
           <li>
             Manage
             <b>album collections</b>
-            >
           </li>
           <li>Easier ergonomics</li>
           <li>Clear separation between studio albums, live albums (beta), EPs, and singles</li>

@@ -12,13 +12,19 @@
           :artist="artist"
         />
       </div>
-      <div v-else class="empty">No artist found for this genre</div>
+      <BdEmptyState
+        v-else
+        message="Spotify didn't return any artist tagged with this genre."
+        title="No artist found"
+      >
+        <template #icon><i class="icon-warning" /></template>
+      </BdEmptyState>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdLoader } from "bearded-ui";
+import { BdEmptyState, BdLoader } from "bearded-ui";
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
@@ -76,8 +82,4 @@ watch(
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
 }
 
-.empty {
-  opacity: 0.6;
-  padding: var(--bd-space-6) var(--bd-space-8);
-}
 </style>
