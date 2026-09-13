@@ -1,17 +1,23 @@
 // https://date-fns.org/v2.27.0/docs/format
 import { parseISO } from "date-fns";
-import { format } from "date-fns/format";
 import { formatDuration } from "date-fns/formatDuration";
 import { enUS } from "date-fns/locale";
 
 const options = { locale: enUS };
 
 /**
- * Format a timestamp or date string as "d MMM y" (e.g. "17 May 2026").
+ * Format a timestamp or date string as "17 May 2026", in the browser's own
+ * locale (matches `formatDate` below — month names shouldn't stay English-only
+ * for non-English readers).
  * @param date - Unix timestamp (ms) or any date string accepted by `new Date()`
  */
 export function date(date: number | string): string {
-  return format(new Date(date), "d MMM y", options);
+  const locale
+    = typeof navigator !== "undefined" && (navigator as unknown as { language?: string }).language
+      ? (navigator as unknown as { language?: string }).language
+      : "en-US";
+
+  return new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(new Date(date));
 }
 
 /**

@@ -1,8 +1,8 @@
 <template>
   <Dialog title="Create a playlist" with-title>
     <div class="wrap">
-      <BdInput v-model="playlistName" placeholder="Playlist's name" />
-      <BdButton variant="primary" @click="create()">Create</BdButton>
+      <BdInput v-model="playlistName" :disabled="creating" label="Playlist's name" @keyup.enter="create()" />
+      <BdButton :disabled="creating" variant="primary" @click="create()">Create</BdButton>
     </div>
   </Dialog>
 </template>
@@ -20,14 +20,19 @@ import { notification } from "@/helpers/notifications";
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const playlistName = ref("");
+const creating = ref(false);
 
 async function create(): Promise<void> {
+  if (!playlistName.value.trim() || creating.value) return;
+  creating.value = true;
   try {
     await sidebarStore.addPlaylist(playlistName.value);
     dialogStore.close();
     notification({ msg: `Playlist ${playlistName.value} created`, type: NotificationType.Success });
   } catch {
     // notification handled in store
+  } finally {
+    creating.value = false;
   }
 }
 </script>

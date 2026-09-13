@@ -3,9 +3,23 @@
     <ArtistLinks :artist-name="artistStore.artist.name" />
     <ShareContent :beardify-url="$route.fullPath" :spotify-url="artistStore.artist.external_urls.spotify" />
     <BdTooltip v-if="artistStore.followStatus" :content="`${artistStore.artist.followers.total} followers`" bare>
-      <BdButton class="follow" variant="primary" @click="switchFollow(artistStore.artist.id)">Followed</BdButton>
+      <BdButton
+        class="follow"
+        :disabled="artistStore.followBusy"
+        variant="primary"
+        @click="switchFollow(artistStore.artist.id)"
+      >
+        Followed
+      </BdButton>
     </BdTooltip>
-    <BdButton v-else class="follow" @click="switchFollow(artistStore.artist.id)">Follow</BdButton>
+    <BdButton
+      v-else
+      class="follow"
+      :disabled="artistStore.followBusy"
+      @click="switchFollow(artistStore.artist.id)"
+    >
+      Follow
+    </BdButton>
   </div>
 </template>
 

@@ -50,6 +50,14 @@ const artistStore = useArtist();
   }
 }
 
+.name {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
 .list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
