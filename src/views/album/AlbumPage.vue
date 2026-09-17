@@ -221,11 +221,6 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   }
 }
 
-.loader {
-  display: grid;
-  place-content: center;
-}
-
 .duration {
   font-variant-numeric: tabular-nums;
 }

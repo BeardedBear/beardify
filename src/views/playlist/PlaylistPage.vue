@@ -126,9 +126,4 @@ playlistStore.clean().finally(() => {
   padding: var(--bd-space-6);
   width: 100%;
 }
-
-.loader {
-  display: grid;
-  place-content: center;
-}
 </style>

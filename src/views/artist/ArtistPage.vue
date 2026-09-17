@@ -324,11 +324,6 @@ onUnmounted(() => {
   }
 }
 
-.loader {
-  display: grid;
-  place-content: center;
-}
-
 .discography-loader {
   display: grid;
   padding: var(--bd-space-8) 0;

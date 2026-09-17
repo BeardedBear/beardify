@@ -14,6 +14,20 @@
   }
 }
 
+/*
+ * The page-level loading state, centred in the space the main column leaves it.
+ *
+ * Eleven views each carried an identical `display: grid; place-content: center`
+ * and none of them had a height to centre inside: `.main-content` is a flex
+ * column, so a loader sized itself to the spinner and the centring only ever
+ * worked horizontally. `flex: 1` gives it the box the rule always assumed.
+ */
+.loader {
+  display: grid;
+  flex: 1;
+  place-content: center;
+}
+
 .active {
   background-color: var(--bd-bg);
   color: var(--bd-primary) !important;

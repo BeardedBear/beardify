@@ -109,9 +109,4 @@ watch(
   overflow-y: auto;
   padding: var(--bd-space-4) var(--page-inset);
 }
-
-.loader {
-  display: grid;
-  place-content: center;
-}
 </style>

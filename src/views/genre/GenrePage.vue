@@ -46,11 +46,6 @@ watch(
 
 <style scoped>
 
-.loader {
-  display: grid;
-  place-content: center;
-}
-
 .genre {
   animation: pop-content 1s ease both;
   overflow-y: scroll;

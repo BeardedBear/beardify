@@ -268,9 +268,4 @@ releasesStore.getReleases();
     display: none;
   }
 }
-
-.loader {
-  display: grid;
-  place-content: center;
-}
 </style>

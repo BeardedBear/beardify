@@ -358,11 +358,6 @@ playlistStore.clean().finally(() => {
   }
 }
 
-.loader {
-  display: grid;
-  place-content: center;
-}
-
 .tier-section {
   /* .content is display: contents, so .tier-section is a direct grid item of */
 

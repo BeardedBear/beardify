@@ -181,9 +181,4 @@ userStore.clean().finally(() => {
   animation: pop-content 1s ease both;
   overflow-y: scroll;
 }
-
-.loader {
-  display: grid;
-  place-content: center;
-}
 </style>
