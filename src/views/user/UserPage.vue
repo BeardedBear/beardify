@@ -152,6 +152,11 @@ userStore.clean().finally(() => {
   .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+
+    /* 10rem de minimum ne tiennent qu'une fois dans la largeur d'un téléphone. */
+    @media (--mobile) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   .playlist-cover {
