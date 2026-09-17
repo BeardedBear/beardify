@@ -5,7 +5,9 @@ import { Album } from "@/@types/Album";
 import { NotificationType } from "@/@types/Notification";
 import { Search, SearchFromAPI } from "@/@types/Search";
 import { instance } from "@/api";
+import { useConfig } from "@/components/config/ConfigStore";
 import { useDialog } from "@/components/dialog/DialogStore";
+import { searchTypeParam } from "@/components/search/searchCategories";
 import { notification } from "@/helpers/notifications";
 import { isSingle } from "@/helpers/useCleanAlbums";
 import router from "@/router";
@@ -72,6 +74,28 @@ export const useSearch = defineStore("search", {
        */
       const issuedFor = this.query;
 
+      /*
+       * Nothing networked is switched on — collections only, or nothing at all.
+       * The local strip still answers; sending a search with no `type` would
+       * make Spotify pick its own set and fill columns that are turned off.
+       */
+      const chosen = useConfig().searchCategories;
+      /*
+       * A release-row click is resolving one album, not running the query the
+       * user typed: it needs the album type whether or not they kept that
+       * column switched on, or the row spins and lands on an empty modal.
+       */
+      const types = searchTypeParam(this.navigateAlbumIfSingle ? { ...chosen, albums: true } : chosen);
+      if (!types) {
+        this.artists = [];
+        this.albums = [];
+        this.tracks = [];
+        this.podcasts = [];
+        this.failed = false;
+        this.loading = false;
+        return;
+      }
+
       try {
         const searchResults = await instance().get<SearchFromAPI>(
           /*
@@ -79,18 +103,18 @@ export const useSearch = defineStore("search", {
            * actually play. Without it Spotify happily returns tracks that are
            * unavailable here, which then fail at play time with nothing said.
            */
-          `search?q=${encodeURIComponent(issuedFor)}&type=artist%2Calbum%2Ctrack%2Cshow`
+          `search?q=${encodeURIComponent(issuedFor)}&type=${encodeURIComponent(types)}`
           + `&limit=${API_LIMIT}&market=from_token`,
         );
         if (issuedFor !== this.query) return;
 
-        this.artists = searchResults.data.artists.items.slice(0, SHOWN.artists);
+        this.artists = searchResults.data.artists?.items.slice(0, SHOWN.artists) ?? [];
         // Spotify floods an artist search with singles; a collection is albums.
-        this.albums = searchResults.data.albums.items
+        this.albums = searchResults.data.albums?.items
           .filter((album: Album) => !isSingle(album))
-          .slice(0, SHOWN.albums);
-        this.tracks = searchResults.data.tracks.items.slice(0, SHOWN.tracks);
-        this.podcasts = searchResults.data.shows?.items.slice(0, SHOWN.podcasts) || [];
+          .slice(0, SHOWN.albums) ?? [];
+        this.tracks = searchResults.data.tracks?.items.slice(0, SHOWN.tracks) ?? [];
+        this.podcasts = searchResults.data.shows?.items.slice(0, SHOWN.podcasts) ?? [];
         this.failed = false;
 
         /*

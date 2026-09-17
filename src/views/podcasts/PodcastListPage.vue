@@ -47,11 +47,6 @@ podcastsStore.clean().finally(() => {
 </script>
 <style scoped>
 
-.loader {
-  display: grid;
-  place-content: center;
-}
-
 .podcasts {
   animation: pop-content 1s ease both;
   overflow-y: auto;
@@ -65,6 +60,11 @@ podcastsStore.clean().finally(() => {
   /* Was repeat(4, 1fr) with no breakpoint: four 55px columns at 390px wide. */
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   margin-bottom: var(--bd-space-6);
+
+  /* Deux colonnes au minimum : 10rem plus le gap de 1.5rem n'en tiennent qu'une. */
+  @media (--mobile) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .title {

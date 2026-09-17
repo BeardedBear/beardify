@@ -204,21 +204,12 @@ export function groupAlbumVariants(albums: AlbumSimplified[]): AlbumGroup[] {
       });
     } else {
       // Multiple albums - find the base version
+      // The base is the earliest non-variant; when every edition is a variant,
+      // the earliest of those stands in for it.
       const nonVariants = albumList.filter((a) => !isVariant(a));
-
-      let baseAlbum: AlbumSimplified;
-      let variants: AlbumSimplified[];
-
-      if (nonVariants.length > 0) {
-        // Use non-variant as base, earliest if multiple
-        baseAlbum = nonVariants.sort((a, b) => a.release_date.localeCompare(b.release_date))[0];
-        variants = albumList.filter((a) => a.id !== baseAlbum.id);
-      } else {
-        // All are variants, use earliest
-        const sorted = [...albumList].sort((a, b) => a.release_date.localeCompare(b.release_date));
-        baseAlbum = sorted[0];
-        variants = sorted.slice(1);
-      }
+      const candidates = nonVariants.length > 0 ? nonVariants : albumList;
+      const baseAlbum = [...candidates].sort((a, b) => a.release_date.localeCompare(b.release_date))[0];
+      const variants = albumList.filter((a) => a.id !== baseAlbum.id);
 
       // Sort variants by release date (newest first for deluxe/remastered)
       variants.sort((a, b) => b.release_date.localeCompare(a.release_date));

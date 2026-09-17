@@ -66,17 +66,11 @@ watchEffect(() => {
   }
 });
 
-// Timers and the SDK socket both freeze while the machine sleeps, so the player can
-// wake up still showing "playing" long after the API moved to paused. Refetch the
-// real state every time the app comes back to the foreground.
-function syncOnVisible(): void {
-  if (document.visibilityState === "visible") playerStore.getExternalPlayerState().catch(() => {});
-}
-
 onMounted(() => {
   watchExternalPlayerState();
-  syncOnVisible();
-  document.addEventListener("visibilitychange", syncOnVisible);
+  // Foreground recovery after sleep is owned by App.vue's visibilitychange
+  // handler (resyncPlayback); this is only the initial read on mount.
+  if (document.visibilityState === "visible") playerStore.getExternalPlayerState().catch(() => {});
 });
 
 watch(
@@ -86,7 +80,6 @@ watch(
 
 // Cleanup interval when component is unmounted
 onBeforeUnmount(() => {
-  document.removeEventListener("visibilitychange", syncOnVisible);
   if (interval.value !== undefined) {
     window.clearInterval(interval.value);
     interval.value = undefined;

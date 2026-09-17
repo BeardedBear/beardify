@@ -27,12 +27,12 @@
       <template #icon><i class="icon-warning" /></template>
     </BdEmptyState>
     <div v-else class="results">
-      <SearchArtists class="col-artists" />
-      <SearchAlbums class="col-albums" />
-      <!-- Wrapped: two components cannot share one grid area without overlapping. -->
-      <div class="col-tail">
-        <SearchSongs />
-        <SearchPodcasts />
+      <SearchArtists v-if="categories.artists" class="col-artists" />
+      <SearchAlbums v-if="categories.albums" class="col-albums" />
+      <!-- Wrapped: songs and podcasts share the tail rail. -->
+      <div v-if="categories.tracks || categories.podcasts" class="col-tail">
+        <SearchSongs v-if="categories.tracks" />
+        <SearchPodcasts v-if="categories.podcasts" />
       </div>
     </div>
   </div>
@@ -42,8 +42,10 @@
 import { BdEmptyState } from "bearded-ui";
 import { computed, ref } from "vue";
 
+import { useConfig } from "@/components/config/ConfigStore";
 import SearchAlbums from "@/components/search/SearchAlbums.vue";
 import SearchArtists from "@/components/search/SearchArtists.vue";
+import { SEARCH_CATEGORY_LABELS, SearchCategory } from "@/components/search/searchCategories";
 import SearchCollections from "@/components/search/SearchCollections.vue";
 import SearchInput from "@/components/search/SearchInput.vue";
 import { nextPosition } from "@/components/search/searchNavigation";
@@ -59,6 +61,7 @@ import { useSearch } from "@/components/search/SearchStore";
  */
 const searchStore = useSearch();
 const panelRef = ref<HTMLElement | null>(null);
+const categories = computed(() => useConfig().searchCategories);
 
 /*
  * Arrow navigation reads the DOM rather than mirroring it in state.
@@ -125,12 +128,19 @@ const resultSummary = computed(() => {
   if (searchStore.loading) return "Searching";
   if (searchStore.failed) return "Search failed";
 
-  const { albums, artists, podcasts, tracks } = searchStore;
-  const total = artists.length + albums.length + tracks.length + podcasts.length;
-  if (!total) return "No results";
+  // Only what is on screen: announcing counts for a column that is switched off
+  // reads as results the reader then cannot find.
+  const counted: [SearchCategory, number][] = [
+    ["artists", searchStore.artists.length],
+    ["albums", searchStore.albums.length],
+    ["tracks", searchStore.tracks.length],
+    ["podcasts", searchStore.podcasts.length],
+  ];
+  const shown = counted.filter(([category]) => categories.value[category]);
+  if (!shown.length) return "No categories selected";
+  if (!shown.reduce((total, [, count]) => total + count, 0)) return "No results";
 
-  return `${artists.length} artists, ${albums.length} albums, ${tracks.length} songs, `
-    + `${podcasts.length} podcasts`;
+  return shown.map(([category, count]) => `${count} ${SEARCH_CATEGORY_LABELS[category].toLowerCase()}`).join(", ");
 });
 </script>
 
@@ -162,13 +172,6 @@ const resultSummary = computed(() => {
 }
 
 /*
- * Two tiers, not four equal columns. This app is navigated by album, so Albums
- * takes the width; Songs and Podcasts are the tail and sit on a narrow rail.
- * The old `0.9fr 1fr 0.8fr 0.8fr` gave four types the same weight and read as
- * "nothing here is the answer".
- */
-
-/*
  * Three independent scrollers rather than one on `.results`.
  *
  * Stacked in a shared scroller, the tail rail (six songs plus four podcasts) is
@@ -181,50 +184,83 @@ const resultSummary = computed(() => {
 .col-albums,
 .col-tail {
   min-height: 0;
+  min-width: 0;
   overflow-y: auto;
   scrollbar-width: thin;
 }
 
+/*
+ * Two tiers, not four equal columns. This app is navigated by album, so Albums
+ * takes the width; Songs and Podcasts are the tail and sit on a narrow rail.
+ * The old `0.9fr 1fr 0.8fr 0.8fr` gave four types the same weight and read as
+ * "nothing here is the answer".
+ *
+ * Flex rather than named grid areas: a column can now be switched off in the
+ * settings, and a grid track keeps its width whether or not anything is placed
+ * in it — turning off Songs left a rail of empty space where they had been.
+ * The weights below are the fr values the tracks used to carry.
+ */
 .col-artists {
-  grid-area: artists;
+  flex: 1;
 }
 
 .col-albums {
-  grid-area: albums;
+  flex: 1.6;
 }
 
 .col-tail {
   display: flex;
+  flex: 0.9;
   flex-direction: column;
   gap: var(--bd-space-5);
-  grid-area: tail;
-  min-width: 0;
 }
 
 .results {
-  display: grid;
+  display: flex;
   flex: 1;
   font-size: var(--bd-font-size-sm);
   gap: var(--bd-space-5);
-  grid-template-areas: "artists albums tail";
-  grid-template-columns: 1fr 1.6fr 0.9fr;
   min-height: 0;
   overflow: hidden;
 
+  /* Artists beside Albums, the tail on its own row underneath. */
   @media (--tablet-down) {
-    grid-template-areas:
-      "artists albums"
-      "tail tail";
-    grid-template-columns: 1fr 1.4fr;
+    flex-wrap: wrap;
+
+    .col-artists {
+      flex: 1 1 0;
+    }
+
+    .col-albums {
+      flex: 1.4 1 0;
+    }
+
+    .col-tail {
+      flex: 1 0 100%;
+      flex-direction: row;
+    }
   }
 
+  /*
+   * One scroller here, not three, and `nowrap` is load-bearing: --mobile sits
+   * inside --tablet-down, so the wrap above still applies, and `wrap` on a
+   * column flex breaks the overflow into a second column off to the side
+   * instead of scrolling — clipped by `overflow: hidden`, with no way to reach
+   * it. Stacked, the columns are already in reading order, and giving each a
+   * third of a phone screen plus its own scrollbar made three postage stamps.
+   */
   @media (--mobile) {
-    gap: var(--bd-space-5);
-    grid-template-areas:
-      "artists"
-      "albums"
-      "tail";
-    grid-template-columns: 1fr;
+    flex-flow: column nowrap;
+    overflow-y: auto;
+
+    .col-artists,
+    .col-albums,
+    .col-tail {
+      flex: 0 0 auto;
+      flex-direction: column;
+      min-height: auto;
+      overflow-y: visible;
+    }
   }
 }
 </style>

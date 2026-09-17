@@ -358,11 +358,6 @@ playlistStore.clean().finally(() => {
   }
 }
 
-.loader {
-  display: grid;
-  place-content: center;
-}
-
 .tier-section {
   /* .content is display: contents, so .tier-section is a direct grid item of */
 
@@ -404,6 +399,23 @@ playlistStore.clean().finally(() => {
 .tier-grid-dynamic {
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   min-height: 6rem;
+}
+
+/*
+ * Jamais moins de deux colonnes sur un téléphone.
+ *
+ * auto-fill ne sait pas les obtenir : la largeur utile ne tient qu'un seul
+ * minimum de 10 ou 14rem, alors ces paliers passaient à un album par rangée
+ * pendant que la liste d'albums juste à côté en montrait deux. .tier-grid-2
+ * part de 7rem et en place déjà trois — le ramener à deux lui coûterait la
+ * densité qui distingue les paliers.
+ */
+@media (--mobile) {
+  .tier-grid-0,
+  .tier-grid-1,
+  .tier-grid-dynamic {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .tier-grid-side {

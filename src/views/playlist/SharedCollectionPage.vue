@@ -277,7 +277,22 @@ onMounted(async () => {
   width: 8rem;
 }
 
+/*
+ * Jamais moins de deux colonnes sur un téléphone.
+ *
+ * auto-fill ne sait pas les obtenir : la largeur utile ne tient qu'un seul
+ * minimum de 10 ou 14rem, alors ces paliers passaient à un album par rangée
+ * pendant que la liste d'albums juste à côté en montrait deux. .tier-grid-2
+ * part de 7rem et en place déjà trois — le ramener à deux lui coûterait la
+ * densité qui distingue les paliers.
+ */
 @media (--mobile) {
+  .tier-grid-0,
+  .tier-grid-1,
+  .tier-grid-dynamic {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   .tier-grid-side :deep(.album) {
     width: 6rem;

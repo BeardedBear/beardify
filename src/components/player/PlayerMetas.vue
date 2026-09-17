@@ -145,13 +145,6 @@ const truncatedTrackName = computed(() => {
   }
 }
 
-.artistname {
-  color: currentcolor;
-  font-variation-settings: var(--bd-font-variation-settings-bold);
-  font-weight: var(--bd-weight-bold-fallback);
-  text-decoration: none;
-}
-
 .album {
   color: var(--bd-font-color-dark);
   font-size: var(--bd-font-size-sm);

@@ -1,8 +1,7 @@
 <template>
   <div ref="domHeader" class="header" :class="{ scrolled: artistStore.scrolledDown }">
     <div class="image-container">
-      <img v-if="artistStore.artist.images.length" :src="artistStore.artist.images[0].url" alt="" class="img" />
-      <img v-else alt="" class="img" src="/img/default.png" />
+      <img :src="coverUrl(artistStore.artist.images, 'large')" alt="" class="img" />
     </div>
     <div class="inner">
       <div class="title">
@@ -39,6 +38,7 @@ import Options from "@/components/artist/ArtistOptions.vue";
 import ArtistProfile from "@/components/artist/ArtistProfile.vue";
 import ArtistTabs, { Tab } from "@/components/artist/ArtistTabs.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
+import { coverUrl } from "@/helpers/cover";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const domHeader = ref<HTMLDivElement | null>(null);

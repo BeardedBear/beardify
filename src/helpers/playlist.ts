@@ -1,7 +1,7 @@
 import { Paging } from "@/@types/Paging";
 import { PlaylistTrack } from "@/@types/Playlist";
 import { PublicUser } from "@/@types/PublicUser";
-import { TrackToRemove } from "@/@types/Track";
+import { TrackSimplified, TrackToRemove } from "@/@types/Track";
 import { instance } from "@/api";
 import { cleanUrl } from "@/helpers/urls";
 import { useAuth } from "@/views/auth/AuthStore";
@@ -27,6 +27,19 @@ export async function addPlaylistItems(playlistId: string, uris: string[], posit
  */
 export async function albumAllreadyExist(url: string, albumId: string): Promise<boolean> {
   return playlistHas(url, (e) => e.item.album.id === albumId);
+}
+
+/**
+ * Every usable track URI of an album, in tracklist order.
+ *
+ * A collection stores one track as the album's marker and deletion targets them
+ * all, so both paths went straight to the API from their component and rebuilt
+ * the same list — including the same missing-`uri` guard.
+ * @param albumId - The Spotify album ID
+ */
+export async function albumTrackUris(albumId: string): Promise<string[]> {
+  const { data } = await instance().get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`);
+  return (data.items ?? []).map((track) => track.uri).filter((uri): uri is string => !!uri);
 }
 
 /**

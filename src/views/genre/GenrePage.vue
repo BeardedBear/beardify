@@ -46,11 +46,6 @@ watch(
 
 <style scoped>
 
-.loader {
-  display: grid;
-  place-content: center;
-}
-
 .genre {
   animation: pop-content 1s ease both;
   overflow-y: scroll;
@@ -80,6 +75,11 @@ watch(
   display: grid;
   gap: var(--bd-space-2);
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+
+  /* 10rem de minimum ne tiennent qu'une fois dans la largeur d'un téléphone. */
+  @media (--mobile) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 </style>

@@ -33,9 +33,10 @@ export interface Search {
   tracks: TrackSimplified[];
 }
 
+/** Every key is optional: Spotify leaves out the ones whose type was not asked for. */
 export interface SearchFromAPI {
-  albums: Paging<Album>;
-  artists: Paging<Artist>;
-  shows: Paging<Podcast>;
-  tracks: Paging<TrackSimplified>;
+  albums?: Paging<Album>;
+  artists?: Paging<Artist>;
+  shows?: Paging<Podcast>;
+  tracks?: Paging<TrackSimplified>;
 }

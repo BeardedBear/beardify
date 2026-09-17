@@ -50,7 +50,7 @@
           <img :src="getContributorAvatar(track.added_by.id)" alt="" />
         </BdTooltip>
       </div>
-      <div class="date">
+      <div class="date bd-font-italic">
         {{ date(track.added_at) }}
       </div>
       <div class="duration bd-font-bold">
@@ -199,14 +199,15 @@ async function deleteSong(songId: string): Promise<void> {
     }
   }
 
-  .link,
-  .date,
-  .owner {
+  .date {
     color: var(--bd-font-color-dark);
     font-size: var(--bd-font-size-sm);
-    font-style: var(--bd-style-italic-fallback);
-    font-variation-settings: var(--bd-font-variation-settings-italic);
+    text-align: right;
     text-decoration: none;
+
+    @media (--mobile) {
+      display: none;
+    }
   }
 
   .contributor {
@@ -218,14 +219,6 @@ async function deleteSong(songId: string): Promise<void> {
       height: var(--contributor-size);
       width: var(--contributor-size);
     }
-
-    @media (--mobile) {
-      display: none;
-    }
-  }
-
-  .date {
-    text-align: right;
 
     @media (--mobile) {
       display: none;

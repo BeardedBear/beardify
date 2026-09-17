@@ -15,7 +15,7 @@
     >
       <div class="window-content" @click="frameStore.restore()">
         <i class="icon-external-link" />
-        <span>{{ frameStore.siteName || "Frame" }}</span>
+        <span class="bd-font-bold">{{ frameStore.siteName || "Frame" }}</span>
       </div>
       <button
         class="close-btn"
@@ -84,8 +84,6 @@ const frameStore = useFrame();
   span {
     color: var(--bd-font-color);
     font-size: var(--bd-font-size-sm);
-    font-variation-settings: var(--bd-font-variation-settings-bold);
-    font-weight: var(--bd-weight-bold-fallback);
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;

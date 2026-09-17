@@ -119,6 +119,104 @@ export const usePlayer = defineStore("player", {
       });
     },
 
+    /** Count consecutive heartbeat failures and notify/retry after threshold. */
+    async _heartbeatFailed(e: unknown): Promise<void> {
+      this.heartbeatFailureCount = (this.heartbeatFailureCount ?? 0) + 1;
+
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.debug("Heartbeat keepalive failed for device", this.devices.activeDevice?.id, e);
+      }
+
+      if (this.heartbeatFailureCount < HEARTBEAT_FAILURE_THRESHOLD || this.heartbeatFailureNotified) return;
+
+      this.heartbeatFailureNotified = true;
+      notification({
+        msg: "Device keepalive failing repeatedly. Attempting to reconnect the SDK and refresh device list.",
+        type: NotificationType.Warning,
+      });
+
+      // Try to reconnect the SDK player and refresh device list
+      try {
+        const player = createSpotifyPlayer();
+        await player.connect();
+      } catch {
+        // ignore
+      }
+      try {
+        await this.getDeviceList();
+      } catch {
+        // ignore
+      }
+
+      // Reset notification flag after cooldown so user can be notified again later if problem persists
+      setTimeout(() => {
+        this.heartbeatFailureNotified = false;
+      }, HEARTBEAT_FAILURE_NOTIFY_COOLDOWN_MS);
+    },
+
+    /**
+     * Ping the SDK player instance to keep its session alive and detect
+     * disconnects early. Never throws: a dead SDK must not fail the whole pass.
+     */
+    async _heartbeatPingSdk(): Promise<void> {
+      try {
+        const player = createSpotifyPlayer();
+        if (await player.getCurrentState()) return;
+
+        if (!(await player.connect())) return;
+
+        const volPercent = this.devices.activeDevice?.volume_percent;
+        if (typeof volPercent !== "number") return;
+        try {
+          await player.setVolume(Math.max(0, Math.min(1, volPercent / 100)));
+        } catch {
+          // ignore
+        }
+      } catch (e) {
+        if (import.meta.env.DEV) {
+          // eslint-disable-next-line no-console
+          console.debug("SDK ping/connect failed during heartbeat", e);
+        }
+      }
+    },
+
+    /**
+     * One heartbeat pass: re-assert the tracked device, follow an external
+     * takeover, keep the SDK session alive.
+     */
+    async _heartbeatTick(): Promise<void> {
+      try {
+        // Keepalive, verify-first: refresh the list BEFORE re-asserting the
+        // tracked device, and only while it is still genuinely the active one.
+        // Transferring blindly used to yank playback back to this machine when
+        // the user had moved it elsewhere since the last poll.
+        const trackedId = this.devices.activeDevice?.id;
+        const { data } = await instance().get<DevicesResponse>("me/player/devices");
+        const tracked = trackedId ? data.devices.find((device): boolean => device.id === trackedId) : undefined;
+
+        if (tracked?.is_active && this.playerState.paused) {
+          await instance().put("me/player", { device_ids: [tracked.id] });
+        }
+
+        // Follow an external takeover instead of fighting it: if another device
+        // is now really active, adopt it so the UI matches reality. A vanished
+        // tracked device is left to getDeviceList's "still listed" check.
+        const reallyActive = data.devices.find((device): boolean => device.is_active);
+        if (!this.isSettingDevice && reallyActive && reallyActive.id !== trackedId) {
+          this.devices.activeDevice = reallyActive;
+        }
+
+        await this._heartbeatPingSdk();
+
+        // Success: reset failure counters
+        this.heartbeatFailureCount = 0;
+        this.heartbeatFailureNotified = false;
+      } catch (e) {
+        await this._heartbeatFailed(e);
+      }
+    },
+
     _isDeviceAlreadyActive(deviceId: string): boolean {
       return this.devices.activeDevice?.id === deviceId;
     },
@@ -169,7 +267,6 @@ export const usePlayer = defineStore("player", {
         return null;
       }
     },
-
     /**
      * Run a transport command against the active device, waking it first if
      * Spotify has forgotten it. Without this the play button reports success
@@ -218,6 +315,7 @@ export const usePlayer = defineStore("player", {
       }
       return false;
     },
+
     async addTrackToQueue(trackUri: string): Promise<void> {
       try {
         await instance().post(`me/player/queue?uri=${trackUri}`);
@@ -458,99 +556,10 @@ export const usePlayer = defineStore("player", {
       if (this.heartbeatInterval !== null) return;
 
       this.heartbeatInterval = window.setInterval((): void => {
-        // If we have an active device, attempt to KEEP it active by sending a lightweight PUT
-        // (transfer playback to the same device without altering playback state). Then refresh
-        // the device list to detect changes and re-activate if necessary.
-        if (this.devices.activeDevice?.id) {
-          (async (): Promise<void> => {
-            try {
-              // Keepalive, verify-first: refresh the list BEFORE re-asserting the
-              // tracked device, and only while it is still genuinely the active one.
-              // Transferring blindly used to yank playback back to this machine when
-              // the user had moved it elsewhere since the last poll.
-              const trackedId = this.devices.activeDevice?.id;
-              const { data } = await instance().get<DevicesResponse>("me/player/devices");
-              const tracked = trackedId ? data.devices.find((device): boolean => device.id === trackedId) : undefined;
-
-              if (tracked?.is_active && this.playerState.paused) {
-                await instance().put("me/player", { device_ids: [tracked.id] });
-              }
-
-              // Follow an external takeover instead of fighting it: if another device
-              // is now really active, adopt it so the UI matches reality. A vanished
-              // tracked device is left to getDeviceList's "still listed" check.
-              const reallyActive = data.devices.find((device): boolean => device.is_active);
-              if (!this.isSettingDevice && reallyActive && reallyActive.id !== trackedId) {
-                this.devices.activeDevice = reallyActive;
-              }
-
-              // Ping the SDK player instance to keep its session alive and detect disconnects early
-              try {
-                const player = createSpotifyPlayer();
-                const sdkState = await player.getCurrentState();
-                if (!sdkState) {
-                  const connected = await player.connect();
-                  if (connected) {
-                    const volPercent = this.devices.activeDevice?.volume_percent;
-                    if (typeof volPercent === "number") {
-                      try {
-                        await player.setVolume(Math.max(0, Math.min(1, volPercent / 100)));
-                      } catch {
-                        // ignore
-                      }
-                    }
-                  }
-                }
-              } catch (e) {
-                if (import.meta.env.DEV) {
-                  // eslint-disable-next-line no-console
-                  console.debug("SDK ping/connect failed during heartbeat", e);
-                }
-              }
-
-              // Success: reset failure counters
-              this.heartbeatFailureCount = 0;
-              this.heartbeatFailureNotified = false;
-            } catch (e) {
-              // Count consecutive heartbeat failures and notify/retry after threshold
-              this.heartbeatFailureCount = (this.heartbeatFailureCount ?? 0) + 1;
-
-              if (import.meta.env.DEV) {
-                // eslint-disable-next-line no-console
-                console.debug("Heartbeat keepalive failed for device", this.devices.activeDevice?.id, e);
-              }
-
-              if (this.heartbeatFailureCount >= HEARTBEAT_FAILURE_THRESHOLD && !this.heartbeatFailureNotified) {
-                this.heartbeatFailureNotified = true;
-
-                notification({
-                  msg: "Device keepalive failing repeatedly. Attempting to reconnect the SDK and refresh device list.",
-                  type: NotificationType.Warning,
-                });
-
-                // Try to reconnect the SDK player and refresh device list
-                try {
-                  const player = createSpotifyPlayer();
-                  await player.connect();
-                } catch {
-                  // ignore
-                }
-                try {
-                  await this.getDeviceList();
-                } catch {
-                  // ignore
-                }
-
-                // Reset notification flag after cooldown so user can be notified again later if problem persists
-                setTimeout(() => {
-                  this.heartbeatFailureNotified = false;
-                }, HEARTBEAT_FAILURE_NOTIFY_COOLDOWN_MS);
-              }
-            }
-          })();
-        }
+        if (this.devices.activeDevice?.id) void this._heartbeatTick();
       }, HEARTBEAT_INTERVAL);
     },
+
     // Stop the heartbeat
     stopDeviceHeartbeat(): void {
       if (this.heartbeatInterval) {

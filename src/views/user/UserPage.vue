@@ -30,7 +30,7 @@
             class="playlist bd-font-bold"
           >
             <Cover :images="collection.images" :size="'large'" class="playlist-cover" />
-            <div>{{ collection.name.replaceAll("#Collection ", "") }}</div>
+            <div>{{ collectionDisplayName(collection.name) }}</div>
           </router-link>
         </div>
       </div>
@@ -61,6 +61,7 @@ import Cover from "@/components/ui/AlbumCover.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { coverUrl } from "@/helpers/cover";
+import { collectionDisplayName } from "@/helpers/isCollection";
 import { useUserStore } from "@/views/user/UserStore";
 
 const userStore = useUserStore();
@@ -151,6 +152,11 @@ userStore.clean().finally(() => {
   .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+
+    /* 10rem de minimum ne tiennent qu'une fois dans la largeur d'un téléphone. */
+    @media (--mobile) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   .playlist-cover {
@@ -179,10 +185,5 @@ userStore.clean().finally(() => {
 .user-page {
   animation: pop-content 1s ease both;
   overflow-y: scroll;
-}
-
-.loader {
-  display: grid;
-  place-content: center;
 }
 </style>

@@ -44,11 +44,6 @@ podcastsStore.clean().finally(() => {
 
 <style scoped>
 
-.loader {
-  display: grid;
-  place-content: center;
-}
-
 .podcast {
   animation: pop-content 1s ease both;
   overflow-y: scroll;

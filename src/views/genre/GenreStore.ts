@@ -36,6 +36,7 @@ async function fetchPages(query: string): Promise<Artist[]> {
   let url = `search?q=${encodeURIComponent(query)}&type=artist&limit=50`;
   for (let page = 0; page < MAX_PAGES / 2 && url; page++) {
     const { data } = await instance().get<SearchFromAPI>(url);
+    if (!data.artists) break;
     items.push(...data.artists.items);
     url = data.artists.next ? cleanUrl(data.artists.next) : "";
   }

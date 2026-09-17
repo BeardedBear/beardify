@@ -46,9 +46,8 @@ export async function resolveArtistByName(name: string): Promise<null | Resolved
       const { data } = await instance().get<SearchFromAPI>(
         `search?q=${encodeURIComponent(name)}&type=artist&limit=3`,
       );
-      const match = data.artists.items.find((artist) => normalizeString(artist.name) === key)
-        ?? data.artists.items[0]
-        ?? null;
+      const found = data.artists?.items ?? [];
+      const match = found.find((artist) => normalizeString(artist.name) === key) ?? found[0] ?? null;
       if (!match) return null;
 
       const resolved = toResolvedArtist(match);
