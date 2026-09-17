@@ -66,7 +66,7 @@
         Oh well, you don't have a collection ! To create one, you just have to create one with + button or add
         "#Collection" to a classic playlist's description. Magical, isn't it?
       </div>
-      <div v-for="(playlist, index) in filteredCollections" v-else :key="index">
+      <div v-for="playlist in filteredCollections" v-else :key="playlist.id">
         <router-link
           v-if="playlist.id"
           :class="{ active: $route.params.id === playlist.id }"
@@ -127,7 +127,7 @@
           type="search"
         />
       </div>
-      <div v-for="(playlist, index) in filteredPlaylists" :key="index">
+      <div v-for="playlist in filteredPlaylists" :key="playlist.id">
         <router-link
           v-if="playlist.id && playlist.name !== ''"
           :class="{ active: $route.params.id === playlist.id }"

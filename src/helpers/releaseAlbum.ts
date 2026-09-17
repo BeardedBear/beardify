@@ -5,6 +5,7 @@ import { Artist } from "@/@types/Artist";
 import { Paging } from "@/@types/Paging";
 import { Release } from "@/@types/Releases";
 import { instance } from "@/api";
+import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
 import { useReleases } from "@/views/releases/ReleasesStore";
 
 /** What a release row has learnt about the Spotify album behind it. */
@@ -84,9 +85,7 @@ export function matchReleaseAlbum(
  * @param value - Any album or artist name
  */
 export function normalizeTitle(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+  return normalizeDiacritics(value)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim();

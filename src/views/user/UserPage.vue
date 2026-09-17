@@ -30,7 +30,7 @@
             class="playlist bd-font-bold"
           >
             <Cover :images="collection.images" :size="'large'" class="playlist-cover" />
-            <div>{{ collection.name.replaceAll("#Collection ", "") }}</div>
+            <div>{{ collectionDisplayName(collection.name) }}</div>
           </router-link>
         </div>
       </div>
@@ -61,6 +61,7 @@ import Cover from "@/components/ui/AlbumCover.vue";
 import ShareContent from "@/components/ui/ShareContent.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { coverUrl } from "@/helpers/cover";
+import { collectionDisplayName } from "@/helpers/isCollection";
 import { useUserStore } from "@/views/user/UserStore";
 
 const userStore = useUserStore();

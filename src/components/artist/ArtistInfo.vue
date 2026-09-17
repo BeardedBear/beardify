@@ -68,6 +68,7 @@ import WikipediaTimeline from "@/components/artist/WikipediaTimeline.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { useSearch } from "@/components/search/SearchStore";
 import { parseDiscogsMarkup } from "@/helpers/discogs";
+import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
 import { openLink } from "@/helpers/openLink";
 import { isTauri } from "@/helpers/platform";
 import { useArtist } from "@/views/artist/ArtistStore";
@@ -231,10 +232,7 @@ function onSectionChange(sectionId: string): void {
  * language switch, which breaks any fragment a reader saved.
  */
 function slugifySection(title: string, index: number): string {
-  const slug = title
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+  const slug = normalizeDiacritics(title.toLowerCase())
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 

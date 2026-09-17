@@ -66,15 +66,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { onClickOutside } from "@vueuse/core";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import { Album, AlbumSimplified } from "@/@types/Album";
 import { ImageSize } from "@/@types/Image";
 import { NotificationType } from "@/@types/Notification";
-import { Paging } from "@/@types/Paging";
-import { TrackSimplified, TrackToRemove } from "@/@types/Track";
-import { instance } from "@/api";
+import { TrackToRemove } from "@/@types/Track";
 import ArtistList from "@/components/artist/ArtistList.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { usePlayer } from "@/components/player/PlayerStore";
@@ -83,7 +82,7 @@ import IconButton from "@/components/ui/IconButton.vue";
 import { isTouchDevice } from "@/helpers/isTouchDevice";
 import { notification, notifyUndoable } from "@/helpers/notifications";
 import { playAlbum } from "@/helpers/playAlbum";
-import { addPlaylistItems, removePlaylistItems } from "@/helpers/playlist";
+import { addPlaylistItems, albumTrackUris, removePlaylistItems } from "@/helpers/playlist";
 import router from "@/router";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
 
@@ -127,32 +126,16 @@ function handleCoverClick(): void {
   }
 }
 
-function onDocumentClick(e: MouseEvent): void {
-  if (!actionsOpen.value || !albumRef.value) return;
-  const target = e.target as Node;
-  if (!albumRef.value.contains(target)) {
-    actionsOpen.value = false;
-  }
-}
-
-onMounted(() => document.addEventListener("click", onDocumentClick));
-onBeforeUnmount(() => document.removeEventListener("click", onDocumentClick));
+onClickOutside(albumRef, () => (actionsOpen.value = false));
 
 async function deleteAlbum(albumId: string): Promise<void> {
   try {
-    const e = await instance().get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`);
-    if (!e.data.items || e.data.items.length === 0) {
+    const albumUris = await albumTrackUris(albumId);
+    if (!albumUris.length) {
       notification({ msg: "No tracks found in this album", type: NotificationType.Warning });
       return;
     }
-    const tracks: TrackToRemove[] = [];
-    e.data.items.forEach((track: TrackSimplified) => {
-      if (track.uri) tracks.push({ uri: track.uri });
-    });
-    if (tracks.length === 0) {
-      notification({ msg: "No valid track URIs found", type: NotificationType.Error });
-      return;
-    }
+    const tracks: TrackToRemove[] = albumUris.map((uri) => ({ uri }));
 
     /*
      * Read what to put back, and where, before removing anything.

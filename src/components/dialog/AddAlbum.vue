@@ -43,8 +43,6 @@ import { BdEmptyState, BdInput, BdLoader } from "bearded-ui";
 import { computed, ref } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
-import { Paging } from "@/@types/Paging";
-import { TrackSimplified } from "@/@types/Track";
 import { instance } from "@/api";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Dialog from "@/components/dialog/DialogWrap.vue";
@@ -53,7 +51,7 @@ import { useSidebar } from "@/components/sidebar/SidebarStore";
 import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
 import { collectionDisplayName } from "@/helpers/isCollection";
 import { notification } from "@/helpers/notifications";
-import { albumAllreadyExist, isPlaylistOwner } from "@/helpers/playlist";
+import { albumAllreadyExist, albumTrackUris, isPlaylistOwner } from "@/helpers/playlist";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -91,12 +89,12 @@ async function add(albumId: string, playlistId: string): Promise<void> {
       });
       return;
     }
-    const albumTracksResponse = await instance().get<Paging<TrackSimplified>>(`albums/${albumId}/tracks`);
-    if (!albumTracksResponse.data.items.length) {
+    const uris = await albumTrackUris(albumId);
+    if (!uris.length) {
       notification({ msg: "Album has no tracks", type: NotificationType.Error });
       return;
     }
-    await instance().post(`playlists/${playlistId}/items?uris=${albumTracksResponse.data.items[0].uri}`);
+    await instance().post(`playlists/${playlistId}/items?uris=${uris[0]}`);
     dialogStore.close();
     notification({ msg: "Album added", type: NotificationType.Success });
   } catch (error: unknown) {

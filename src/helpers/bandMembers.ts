@@ -1,6 +1,7 @@
 import type { BandMember, DiscogsMember } from "@/@types/Artist";
 
 import { cleanDiscogsName } from "@/helpers/discogs";
+import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
 
 /**
  * Adapt Discogs members to the timeline shape. Discogs carries no membership
@@ -93,10 +94,7 @@ function isNameVariant(a: string, b: string): boolean {
  * Normalize a member name for cross-source matching (case/accent/punctuation-insensitive).
  */
 function normalizeName(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "") // strip combining diacritics
+  return normalizeDiacritics(name.toLowerCase())
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 }

@@ -70,15 +70,13 @@ import TrackHistory from "@/components/player/history/TrackHistory.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import { coverUrl } from "@/helpers/cover";
 import { playSongs } from "@/helpers/play";
+import { isPodcastTrack } from "@/helpers/player";
 
 const SCROLL_DURATION_MS = 420;
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
-const isPlayingPodcast = computed(() => {
-  const track = currentTrack.value;
-  return track?.type === "episode" || track?.uri?.includes("spotify:episode:");
-});
+const isPlayingPodcast = computed(() => isPodcastTrack(currentTrack.value));
 /*
  * Recently-played comes back most-recent-first; the timeline reads top to
  * bottom, so the oldest track has to end up at the top.

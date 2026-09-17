@@ -12,7 +12,7 @@
         <div class="content-tracks">
           <BdTooltip
             v-for="(track, index) in albumStore.album.tracks.items"
-            :key="index"
+            :key="track.id"
             bare
             :content="track.available_markets.length ? undefined : 'Not available in your region'"
           >
@@ -36,7 +36,7 @@
                 <div>{{ track.name }}</div>
                 <div v-if="albumStore.album.artists.length">
                   <ArtistList
-                    :artist-list="track.artists.filter((e) => e.name !== albumStore.album.artists[0].name)"
+                    :artist-list="featuringByTrack.get(track.id) ?? []"
                     feat
                   />
                 </div>
@@ -78,6 +78,15 @@ const dialogStore = useDialog();
 const route = useRoute();
 
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
+
+// Per-track guests, minus the album's own artist. Built once per album instead of
+// reallocating one array per track on every re-render.
+const featuringByTrack = computed(() => {
+  const mainArtist = albumStore.album.artists[0]?.name;
+  return new Map(
+    albumStore.album.tracks.items.map((track) => [track.id, track.artists.filter((a) => a.name !== mainArtist)]),
+  );
+});
 
 const pageRef = ref<HTMLElement | null>(null);
 const { onScroll, restoreScroll } = useScrollRestore(`scroll-${route.path}`, pageRef);
