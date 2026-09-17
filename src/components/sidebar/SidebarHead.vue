@@ -125,18 +125,4 @@ const configOpen = computed<boolean>({
   }
 }
 
-#nav {
-  align-items: center;
-  display: flex;
-
-  a {
-    color: var(--bd-bg-light);
-    font-variation-settings: var(--bd-font-variation-settings-bold);
-    font-weight: var(--bd-weight-bold-fallback);
-
-    &.router-link-exact-active {
-      color: var(--bd-primary);
-    }
-  }
-}
 </style>

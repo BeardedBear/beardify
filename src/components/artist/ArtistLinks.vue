@@ -3,19 +3,19 @@
     <BdTooltip content="Sputnik" side="bottom">
       <BdButton variant="nude" @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')">
         <i aria-hidden="true" class="icon-sputnik" />
-        <span class="link-name">Sputnik</span>
+        <span class="link-name bd-font-bold">Sputnik</span>
       </BdButton>
     </BdTooltip>
     <BdTooltip content="Discogs" side="bottom">
       <BdButton aria-label="Discogs" icon-only variant="nude" @click.stop.prevent="openLink(link.discogs)">
         <i aria-hidden="true" class="icon-discogs" />
-        <span class="link-name">Discogs</span>
+        <span class="link-name bd-font-bold">Discogs</span>
       </BdButton>
     </BdTooltip>
     <BdTooltip content="RateYourMusic" side="bottom">
       <BdButton aria-label="RateYourMusic" icon-only variant="nude" @click.stop.prevent="openLink(link.rym)">
         <i aria-hidden="true" class="icon-rym" />
-        <span class="link-name">RateYourMusic</span>
+        <span class="link-name bd-font-bold">RateYourMusic</span>
       </BdButton>
     </BdTooltip>
     <template v-if="!floating">
@@ -23,7 +23,7 @@
       <BdTooltip v-for="socialLink in socialLinks" :key="socialLink.url" :content="socialLink.name" side="bottom">
         <BdButton :aria-label="socialLink.name" icon-only variant="nude" @click.stop.prevent="openLink(socialLink.url)">
           <i :class="socialLink.icon" aria-hidden="true" />
-          <span class="link-name">{{ socialLink.name }}</span>
+          <span class="link-name bd-font-bold">{{ socialLink.name }}</span>
         </BdButton>
       </BdTooltip>
     </template>
@@ -152,8 +152,6 @@ onUpdated(() => updateLinks());
   .link-name {
     color: var(--bd-font-color);
     display: none; /* hidden on desktop */
-    font-variation-settings: var(--bd-font-variation-settings-bold);
-    font-weight: var(--bd-weight-bold-fallback);
     white-space: nowrap;
   }
 }

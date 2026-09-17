@@ -18,7 +18,7 @@
             v-if="isEditable"
             id="description"
             v-model="values.description"
-            class="textarea"
+            class="textarea bd-font-bold"
             placeholder="Add description"
           />
           <div v-else>
@@ -64,7 +64,7 @@
         @confirm="remove()"
       />
       <div v-if="isTouchDevice()" class="bottom">
-        <p>Share content</p>
+        <p class="bd-font-bold">Share content</p>
         <ShareContent :beardify-url="$route.fullPath" :spotify-url="playlistStore.playlist.external_urls.spotify" />
       </div>
     </div>
@@ -184,8 +184,6 @@ function remove(): void {
   margin-top: var(--bd-space-4);
 
   p {
-    font-variation-settings: var(--bd-font-variation-settings-bold);
-    font-weight: var(--bd-weight-bold-fallback);
     margin-bottom: var(--bd-space-2);
   }
 }
@@ -227,8 +225,6 @@ label {
   border: none;
   border-radius: var(--bd-radius-sm);
   color: var(--bd-font-color);
-  font-variation-settings: var(--bd-font-variation-settings-bold);
-  font-weight: var(--bd-weight-bold-fallback);
   min-height: 5rem;
   outline: 0;
   padding: var(--bd-space-3) var(--bd-space-4);

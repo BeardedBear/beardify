@@ -26,17 +26,17 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
           <RefreshCw v-else-if="status === 'ready'" :size="18" />
         </span>
 
-        <span class="toast-content">
+        <span class="toast-content bd-font-bold">
           <template v-if="status === 'available'">Update {{ updateVersion }} available</template>
           <template v-else-if="status === 'downloading'">Downloading... {{ downloadProgress }}%</template>
           <template v-else-if="status === 'ready'">Restart to apply update</template>
         </span>
 
-        <button v-if="status === 'available'" class="toast-action" @click="downloadAndInstall">
+        <button v-if="status === 'available'" class="toast-action bd-font-bold" @click="downloadAndInstall">
           Install
         </button>
 
-        <button v-if="status === 'ready'" class="toast-action" @click="restart">
+        <button v-if="status === 'ready'" class="toast-action bd-font-bold" @click="restart">
           Restart
         </button>
 
@@ -126,8 +126,6 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
 .toast-content {
   color: var(--bd-on-primary);
   flex: 1;
-  font-variation-settings: var(--bd-font-variation-settings-bold);
-  font-weight: var(--bd-weight-bold-fallback);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -141,8 +139,6 @@ const { dismissed, downloadAndInstall, downloadProgress, restart, status, update
   color: var(--bd-primary-dark);
   cursor: pointer;
   flex-shrink: 0;
-  font-variation-settings: var(--bd-font-variation-settings-bold);
-  font-weight: var(--bd-weight-bold-fallback);
   padding: var(--bd-space-1) var(--bd-space-3);
   transition: opacity var(--bd-transition-fast);
   white-space: nowrap;
