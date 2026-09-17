@@ -27,6 +27,19 @@
         label="Previous track"
         @click="playerStore.previous()"
       />
+      <!--
+        An episode used to lose four controls and gain none, leaving play/pause
+        alone: the one gesture a 90-minute listen actually needs — "back up, I
+        missed that" — had to be aimed at the seek bar with a mouse.
+      -->
+      <IconButton
+        v-if="isEpisode"
+        :class="{ big: props.forceMobile }"
+        class="control-button rewind bd-squircle"
+        icon="rewind"
+        label="Back 15 seconds"
+        @click="skip(-SKIP_BACK_MS)"
+      />
       <IconButton
         v-if="playerStore.playerState?.paused"
         :class="{ big: props.forceMobile }"
@@ -42,6 +55,14 @@
         icon="pause"
         label="Pause"
         @click="playerStore.pause()"
+      />
+      <IconButton
+        v-if="isEpisode"
+        :class="{ big: props.forceMobile }"
+        class="control-button forward bd-squircle"
+        icon="fast-forward"
+        label="Forward 30 seconds"
+        @click="skip(SKIP_FORWARD_MS)"
       />
       <IconButton
         v-if="!isEpisode"
@@ -68,9 +89,18 @@ import { usePlaybackClock } from "@/composables/usePlaybackClock";
 import { timecode } from "@/helpers/date";
 import { isPodcastTrack } from "@/helpers/player";
 
+// The asymmetry is the podcast convention: a short step back, a longer skip forward.
+const SKIP_BACK_MS = 15000;
+const SKIP_FORWARD_MS = 30000;
+
 const props = defineProps<{ forceMobile?: boolean }>();
 const playerStore = usePlayer();
 const isEpisode = computed(() => isPodcastTrack(playerStore.playerState?.track_window?.current_track));
+
+function skip(deltaMs: number): void {
+  const target = (playerStore.playerState?.position ?? 0) + deltaMs;
+  playerStore.seek(Math.min(Math.max(0, target), duration.value ?? target));
+}
 /*
  * Shared with the seek bar. These two used to count on their own — 1s here,
  * 200ms there — so the number could sit up to 1.5s away from the bar it

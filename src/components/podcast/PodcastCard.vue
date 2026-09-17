@@ -4,6 +4,11 @@
     <div v-if="name" class="name bd-font-bold">
       {{ name }}
     </div>
+    <div v-if="publisher || episodes" class="metas">
+      <span v-if="publisher">{{ publisher }}</span>
+      <span v-if="publisher && episodes">&nbsp;·&nbsp;</span>
+      <span v-if="episodes">{{ episodes }} episodes</span>
+    </div>
   </router-link>
 </template>
 
@@ -15,8 +20,10 @@ import Cover from "@/components/ui/AlbumCover.vue";
 
 defineProps<{
   covers: Image[];
+  episodes?: number;
   id: string;
   name?: string;
+  publisher?: string;
 }>();
 </script>
 
@@ -36,6 +43,14 @@ defineProps<{
   &:hover {
     transform: scale(1.03);
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: background-color var(--bd-transition);
+
+    &:hover {
+      transform: none;
+    }
+  }
 }
 
 .cover {
@@ -47,5 +62,14 @@ defineProps<{
 
 .name {
   margin-top: var(--bd-space-4);
+}
+
+.metas {
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-xs);
+  margin-top: var(--bd-space-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

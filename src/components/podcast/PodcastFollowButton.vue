@@ -1,12 +1,17 @@
 <template>
+  <!--
+    `success` for the followed state, not `primary`: the artist page already
+    uses the solid accent for "followed", so podcast's inverted mapping made
+    the same fill mean opposite things two routes apart.
+  -->
   <BdButton
-    :variant="!podcastsStore.isFollowing ? 'primary' : 'default'"
-    :class="{ followed: podcastsStore.isFollowing }"
+    :loading="podcastsStore.followBusy"
+    :variant="podcastsStore.isFollowing ? 'success' : 'primary'"
     class="follow-button"
-    :disabled="loading"
-    @click="toggleFollow"
+    @click="podcastsStore.switchFollow(props.podcastId)"
   >
     <i
+      aria-hidden="true"
       :class="{
         'icon-follow': !podcastsStore.isFollowing,
         'icon-followed': podcastsStore.isFollowing,
@@ -19,7 +24,6 @@
 
 <script lang="ts" setup>
 import { BdButton } from "bearded-ui";
-import { ref } from "vue";
 
 import { usePodcasts } from "@/views/podcasts/PodcastsStore";
 
@@ -28,25 +32,6 @@ const props = defineProps<{
 }>();
 
 const podcastsStore = usePodcasts();
-const loading = ref(false);
-
-async function toggleFollow(): Promise<void> {
-  if (loading.value) return;
-
-  loading.value = true;
-
-  try {
-    if (podcastsStore.isFollowing) {
-      await podcastsStore.unfollowPodcast(props.podcastId);
-    } else {
-      await podcastsStore.followPodcast(props.podcastId);
-    }
-  } catch (error) {
-    if (import.meta.env.DEV) console.error("Error toggling podcast follow status:", error);
-  } finally {
-    loading.value = false;
-  }
-}
 </script>
 
 <style scoped>
@@ -55,15 +40,6 @@ async function toggleFollow(): Promise<void> {
   display: flex;
   gap: var(--bd-space-2);
   white-space: nowrap;
-
-  &.followed {
-    color: var(--bd-primary);
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
 
   i {
     font-size: var(--bd-font-size-lg);

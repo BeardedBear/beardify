@@ -1,7 +1,8 @@
 <template>
-  <div class="episode-wrap">
+  <div :class="{ active: isCurrentEpisode }" class="episode-wrap">
     <div v-if="episode.resume_point?.fully_played" class="played">
-      <i class="icon icon-check" />
+      <i aria-hidden="true" class="icon icon-check" />
+      <span class="bd-sr-only">Fully played</span>
     </div>
     <div class="episode">
       <Cover :images="episode.images" class="cover" size="medium" />
@@ -15,67 +16,49 @@
       </div>
     </div>
     <div
-      v-if="!episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0"
+      v-if="isResumable || isCurrentEpisode"
+      :aria-valuenow="Math.round(progressPercent)"
+      :aria-valuetext="`${timecodeWithUnits(remainingMs)} left`"
+      aria-valuemax="100"
+      aria-valuemin="0"
       class="progress"
+      role="progressbar"
     >
-      <div
-        v-if="isPlayingThisEpisode"
-        :style="{
-          width: `${((playerStore.playerState?.position ?? 0) / episode.duration_ms) * 100}%`,
-        }"
-        class="bar"
-      />
-      <div
-        v-else
-        :style="{
-          width: `${((episode.resume_point?.resume_position_ms || 0) / episode.duration_ms) * 100}%`,
-        }"
-        class="bar"
-      />
+      <div :style="{ width: `${progressPercent}%` }" class="bar" />
     </div>
     <div class="infos">
-      <div class="metas bd-font-bold">
+      <div class="metas bd-font-italic">
         <div>{{ date(episode.release_date) }}</div>
         /
         <div>{{ timecodeWithUnits(episode.duration_ms) }}</div>
       </div>
       <div class="actions">
-        <BdLoader
-          v-if="isPlayingThisEpisode"
-          :size="'small'"
-        />
-        <div v-else>
-          <BdButton
-            :variant="
-              !episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0
-                ? 'primary'
-                : 'default'
-            "
-            :size="
-              !episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0
-                ? 'default'
-                : 'small'
-            "
-            @click="
-              !episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0
-                ? playSong(episode.uri)
-                : playSong(episode.uri, 0)
-            "
-          >
-            {{
-              !episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms || 0) > 0
-                ? "Resume"
-                : "Play episode"
-            }}
-          </BdButton>
-        </div>
+        <!--
+          The current episode used to render a BdLoader here instead of a
+          button: a permanent spinner claiming "loading" over something that
+          is playing, and the one row in the app you could not pause. The
+          `paused` test also used to live in the match itself, so pausing made
+          the episode indistinguishable again in a list of fifty.
+        -->
+        <BdButton
+          v-if="isCurrentEpisode"
+          active
+          size="small"
+          variant="primary"
+          @click="isPaused ? playerStore.play() : playerStore.pause()"
+        >
+          {{ isPaused ? "Resume" : "Pause" }}
+        </BdButton>
+        <BdButton v-else size="small" @click="playSong(episode.uri)">
+          {{ isResumable ? "Resume" : "Play episode" }}
+        </BdButton>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BdButton, BdLoader } from "bearded-ui";
+import { BdButton } from "bearded-ui";
 import { computed } from "vue";
 
 import { Episode } from "@/@types/Podcast";
@@ -90,10 +73,24 @@ const props = defineProps<{
   episode: Episode;
 }>();
 
-const isPlayingThisEpisode = computed(() => {
-  const currentTrack = playerStore.playerState?.track_window?.current_track;
-  return currentTrack?.id === props.episode.id && !playerStore.playerState?.paused;
+const isCurrentEpisode = computed(
+  () => playerStore.playerState?.track_window?.current_track?.id === props.episode.id,
+);
+const isPaused = computed(() => !!playerStore.playerState?.paused);
+const isResumable = computed(
+  () => !props.episode.resume_point?.fully_played && (props.episode.resume_point?.resume_position_ms ?? 0) > 0,
+);
+const positionMs = computed(() =>
+  isCurrentEpisode.value
+    ? (playerStore.playerState?.position ?? 0)
+    : (props.episode.resume_point?.resume_position_ms ?? 0),
+);
+// A zero or missing duration used to reach the template as `width: Infinity%`.
+const progressPercent = computed(() => {
+  if (!props.episode.duration_ms) return 0;
+  return Math.min(100, Math.max(0, (positionMs.value / props.episode.duration_ms) * 100));
 });
+const remainingMs = computed(() => Math.max(0, props.episode.duration_ms - positionMs.value));
 </script>
 
 <style scoped>
@@ -132,6 +129,8 @@ const isPlayingThisEpisode = computed(() => {
   align-items: center;
   border-radius: 0 0 var(--bd-radius-lg) var(--bd-radius-lg);
   display: flex;
+  flex-wrap: wrap;
+  gap: var(--bd-space-2);
   justify-content: space-between;
   padding: var(--bd-space-3) var(--bd-space-4);
 
@@ -151,7 +150,11 @@ const isPlayingThisEpisode = computed(() => {
   position: relative;
   text-decoration: none;
   transition: background-color var(--bd-transition);
-  will-change: transform;
+
+  /* The playing row is marked on the card, the way a playing track is. */
+  &.active {
+    box-shadow: inset 0 0 0 2px var(--bd-primary);
+  }
 }
 
 .played {
@@ -177,7 +180,9 @@ const isPlayingThisEpisode = computed(() => {
 
 .cover {
   border-radius: var(--bd-radius-md);
+  flex-shrink: 0;
   height: 5rem;
+  width: 5rem;
 }
 
 /*
@@ -200,5 +205,6 @@ const isPlayingThisEpisode = computed(() => {
 
 .content {
   flex: 1;
+  min-width: 0;
 }
 </style>

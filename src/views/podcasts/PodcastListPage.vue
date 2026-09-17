@@ -1,56 +1,71 @@
 <template>
-  <div v-if="!podcastsStore.list && !podcastsStore.myPodcasts.length" class="loader">
+  <div v-if="podcastsStore.loading" class="loader">
     <BdLoader />
   </div>
-  <div v-else ref="scrollRef" class="podcasts" @scroll="onScroll">
-    <PageFit>
+  <BdEmptyState
+    v-else-if="podcastsStore.error"
+    action-label="Try again"
+    message="Spotify did not answer for your followed shows."
+    title="Could not load podcasts"
+    @action="load()"
+  >
+    <template #icon><TriangleAlert :size="32" /></template>
+  </BdEmptyState>
+  <!--
+    A failed request and a genuinely empty library used to render the same
+    spinner, because the loader was gated on an unrelated hardcoded show
+    instead of on this page's own fetch.
+  -->
+  <BdEmptyState
+    v-else-if="!podcastsStore.myPodcasts.length"
+    message="Follow a show on Spotify and it will show up here."
+    title="You do not follow any podcast"
+  >
+    <template #icon><i class="icon-podcast" /></template>
+  </BdEmptyState>
+  <PageScroller v-else>
+    <div class="podcasts">
       <div class="title">
         <h1 class="name bd-font-bold">Podcasts</h1>
+        <div class="counts">{{ podcastsStore.myPodcasts.length }} followed</div>
       </div>
-      <BdEmptyState
-        v-if="!podcastsStore.myPodcasts.length"
-        message="Follow a show on Spotify and it will show up here."
-        title="You do not follow any podcast"
-      >
-        <template #icon><i class="icon-podcast" /></template>
-      </BdEmptyState>
-      <div v-else class="podcast-list">
+      <div class="podcast-list">
         <PodcastCard
-          v-for="(podcast, index) in podcastsStore.myPodcasts"
+          v-for="podcast in podcastsStore.myPodcasts"
           :id="podcast.show.id"
-          :key="index"
-          :covers="podcast?.show.images"
+          :key="podcast.show.id"
+          :covers="podcast.show.images"
+          :episodes="podcast.show.total_episodes"
           :name="podcast.show.name"
+          :publisher="podcast.show.publisher"
         />
       </div>
-    </PageFit>
-  </div>
+    </div>
+  </PageScroller>
 </template>
 
 <script lang="ts" setup>
+import { TriangleAlert } from "@lucide/vue";
 import { BdEmptyState, BdLoader } from "bearded-ui";
-import { ref } from "vue";
-import { useRoute } from "vue-router";
 
 import PodcastCard from "@/components/podcast/PodcastCard.vue";
-import PageFit from "@/components/ui/PageFit.vue";
-import { useScrollRestore } from "@/composables/useScrollRestore";
+import PageScroller from "@/components/ui/PageScroller.vue";
 import { usePodcasts } from "@/views/podcasts/PodcastsStore";
 
 const podcastsStore = usePodcasts();
-const scrollRef = ref<HTMLElement | null>(null);
-const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, scrollRef);
-podcastsStore.clean().finally(() => {
-  podcastsStore.getPodcasts();
-  podcastsStore.getMyPodcasts("me/shows?limit=50");
-});
+
+function load(): void {
+  podcastsStore.clean().finally(() => podcastsStore.getMyPodcasts());
+}
+
+load();
 </script>
 <style scoped>
 
 .podcasts {
-  animation: pop-content 1s ease both;
-  overflow-y: auto;
+  margin: 0 auto;
   padding: var(--bd-space-6);
+  width: 100%;
 }
 
 .podcast-list {
@@ -68,14 +83,18 @@ podcastsStore.clean().finally(() => {
 }
 
 .title {
-  align-items: center;
+  align-items: baseline;
   display: flex;
-  justify-content: space-between;
+  gap: var(--bd-space-4);
   margin-bottom: var(--bd-space-6);
 
   .name {
-    flex: 1;
     font-size: var(--bd-font-size-xl);
+  }
+
+  .counts {
+    color: var(--bd-font-color-dark);
+    font-size: var(--bd-font-size-sm);
   }
 }
 </style>
