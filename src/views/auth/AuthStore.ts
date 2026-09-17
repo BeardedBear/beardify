@@ -12,8 +12,26 @@ import { clearAuthData } from "@/helpers/authUtils";
 import { http } from "@/helpers/http";
 import router, { RouteName } from "@/router";
 
-// Store the refresh interval ID outside of the store state to prevent persistence issues
+// Refresh plumbing lives outside the store state: an in-flight request and a
+// failure count must not be persisted or survive a reload.
 let refreshIntervalId: null | number = null;
+let inFlightRefresh: null | Promise<void> = null;
+let consecutiveFailures = 0;
+
+const MAX_REFRESH_ATTEMPTS = 3;
+/** Spotify tokens last an hour; anything renewed more recently than this is still good. */
+const REFRESH_THRESHOLD_MS = 15 * 60 * 1000;
+
+/**
+ * True while a refresh is in flight.
+ *
+ * The API layer needs this: `refresh()` calls `getMe()` through the intercepted
+ * instance, so a 401 there would re-enter the response hook and, if the hook
+ * awaited the refresh already running, deadlock on it.
+ */
+export function isRefreshing(): boolean {
+  return inFlightRefresh !== null;
+}
 
 export const useAuth = defineStore("auth", {
   actions: {
@@ -62,6 +80,52 @@ export const useAuth = defineStore("auth", {
       } catch {
         router.push(RouteName.Login);
         throw new Error("Authentication failed");
+      }
+    },
+
+    /**
+     * The single way to renew the access token.
+     *
+     * Three triggers wanted a fresh one — the 20-minute timer, a 401 from the
+     * API layer and the tab returning to the foreground — and each carried its
+     * own attempt counter and backoff. Two could refresh at once, and only the
+     * 401 path ever gave up and sent the user back to login. They share one
+     * in-flight request and one failure count here, so giving up happens once.
+     * @param force - Renew even when the last refresh is recent; a 401 means the token is dead whatever its age
+     */
+    async ensureFreshToken(force = false): Promise<void> {
+      if (inFlightRefresh) return inFlightRefresh;
+
+      if (!force) {
+        const lastRefresh = Number(localStorage.getItem("spotify_token_last_refresh") ?? 0);
+        if (lastRefresh && Date.now() - lastRefresh < REFRESH_THRESHOLD_MS) return;
+      }
+
+      inFlightRefresh = (async (): Promise<void> => {
+        try {
+          await this.refresh();
+          consecutiveFailures = 0;
+        } catch (e) {
+          consecutiveFailures++;
+          if (consecutiveFailures >= MAX_REFRESH_ATTEMPTS) {
+            consecutiveFailures = 0;
+            this.forceReauthentication();
+          }
+          throw e;
+        } finally {
+          inFlightRefresh = null;
+        }
+      })();
+
+      return inFlightRefresh;
+    },
+
+    /** Give up on the session: wipe the credentials and send the user back to login. */
+    forceReauthentication(): void {
+      clearAuthData();
+      const currentPath = window.location.pathname;
+      if (currentPath !== "/login/") {
+        window.location.href = `/login/?ref=${encodeURIComponent(currentPath)}`;
       }
     },
 
@@ -149,12 +213,9 @@ export const useAuth = defineStore("auth", {
       // Spotify access tokens expire after 1 hour, so 20 min refresh keeps us safe
       refreshIntervalId = window.setInterval(
         async () => {
-          try {
-            await this.refresh();
-          } catch {
-            // Don't logout immediately on auto-refresh failure
-            // The API layer will handle auth errors on the next request
-          }
+          // Scheduled renewal, so force it; ensureFreshToken owns what happens
+          // once the failures add up.
+          await this.ensureFreshToken(true).catch(() => {});
         },
         20 * 60 * 1000,
       );

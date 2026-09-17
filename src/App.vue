@@ -34,7 +34,6 @@ import { usePlayer } from "@/components/player/PlayerStore";
 import UpdateToast from "@/components/ui/UpdateToast.vue";
 import { useUpdater } from "@/composables/useUpdater";
 import { isTauri } from "@/helpers/platform";
-import { sleep } from "@/helpers/sleep";
 import { useKeyboardEvents } from "@/helpers/useKeyboardEvents";
 import { useAuth } from "@/views/auth/AuthStore";
 
@@ -108,24 +107,9 @@ const deviceRefreshInterval = setInterval(async () => {
 // This handles cases where the user closes the laptop, switches tabs for a long time, etc.
 const handleVisibilityChange = async (): Promise<void> => {
   if (!document.hidden && !hasNoSession()) {
-    const lastRefresh = localStorage.getItem("spotify_token_last_refresh");
-    const now = Date.now();
-    const REFRESH_THRESHOLD = 15 * 60 * 1000; // 15 minutes
-
-    if (!lastRefresh || now - parseInt(lastRefresh) > REFRESH_THRESHOLD) {
-      let retries = 3;
-      while (retries > 0) {
-        try {
-          await authStore.refresh();
-          break;
-        } catch {
-          retries--;
-          if (retries > 0) {
-            await sleep(2000 * (4 - retries));
-          }
-        }
-      }
-    }
+    // Not forced: a token renewed minutes ago is still good, and the staleness
+    // check lives in ensureFreshToken now.
+    await authStore.ensureFreshToken().catch(() => {});
 
     // Reconnects the SDK, refreshes the device list and re-reads playback:
     // after a long sleep all three are stale (the SDK still says "playing").

@@ -1,10 +1,9 @@
 import ky, { AfterResponseState, Options } from "ky";
 
 import { ApiResponse, SpotifyOptions } from "@/@types/Api";
-import { clearAuthData } from "@/helpers/authUtils";
 import { http } from "@/helpers/http";
 import { isTauri } from "@/helpers/platform";
-import { useAuth } from "@/views/auth/AuthStore";
+import { isRefreshing, useAuth } from "@/views/auth/AuthStore";
 
 // Resolved at call-time (getter):
 //   Tauri (dev or prod) → desktop deep-link (beardify://)
@@ -111,11 +110,6 @@ export function instance(): ApiInstance {
   };
 }
 
-// Module-level state shared across all instance() calls to prevent concurrent refresh attempts
-let isRefreshing = false;
-let refreshAttempts = 0;
-const MAX_REFRESH_ATTEMPTS = 3;
-
 /**
  * Creates a base ky instance with authentication and common configuration
  * @returns Configured ky instance
@@ -131,26 +125,14 @@ function createKyInstance(): typeof ky {
     hooks: {
       afterResponse: [
         async ({ response }: AfterResponseState): Promise<void> => {
-          if (response.status === 401 && !isRefreshing && refreshAttempts < MAX_REFRESH_ATTEMPTS) {
-            isRefreshing = true;
-            refreshAttempts++;
-            try {
-              await authStore.refresh();
-              isRefreshing = false;
-              refreshAttempts = 0;
-              // No page reload — future instance() calls read the updated token from the store
-            } catch {
-              isRefreshing = false;
-              if (refreshAttempts >= MAX_REFRESH_ATTEMPTS) {
-                refreshAttempts = 0;
-                clearAuthData();
-                const currentPath = window.location.pathname;
-                if (currentPath !== "/login/") {
-                  window.location.href = `/login/?ref=${encodeURIComponent(currentPath)}`;
-                }
-              }
-            }
-          }
+          if (response.status !== 401) return;
+          // A refresh already running owns this one: it reaches here through its
+          // own `getMe` call, and joining it would be waiting on ourselves.
+          if (isRefreshing()) return;
+
+          // No page reload — future instance() calls read the updated token from
+          // the store, and ensureFreshToken handles giving up.
+          await authStore.ensureFreshToken(true).catch(() => {});
         },
       ],
     },
