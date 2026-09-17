@@ -2,9 +2,7 @@ import { CurrentlyPlaying } from "./CurrentlyPlaying";
 import { Device } from "./Device";
 
 export interface Player {
-  currentFromSDK: null | Spotify.Track;
   currentlyPlaying: CurrentlyPlaying;
-  currentPositionFromSDK: number;
   devices: {
     activeDevice: Device;
     list: Device[];
