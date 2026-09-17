@@ -1,27 +1,30 @@
 <template>
   <div class="search">
-    <!--
-      `autofocus` is what actually wins the focus here. The dialog's close
-      button sits in BdDialog's <header>, so it is the first focusable
-      descendant, and `showModal()` hands it the focus as part of opening —
-      overriding any focus() called from a child's onMounted, which runs first.
-      The attribute makes the browser's own focusing steps pick this field.
-    -->
-    <BdInput
-      ref="input"
-      v-model="query"
-      aria-label="Search Spotify"
-      autofocus
-      placeholder="Search"
-      size="big"
-      type="search"
-      @input="searchStore.updateQuery(query)"
-    />
-    <BdTooltip v-if="query" bare content="Clear search">
-      <BdButton aria-label="Clear search" class="reset" icon-only size="small" @click="clearQuery()">
-        <i aria-hidden="true" class="icon-x" />
-      </BdButton>
-    </BdTooltip>
+    <div class="field">
+      <!--
+        `autofocus` is what actually wins the focus here. The dialog's close
+        button sits in BdDialog's <header>, so it is the first focusable
+        descendant, and `showModal()` hands it the focus as part of opening —
+        overriding any focus() called from a child's onMounted, which runs first.
+        The attribute makes the browser's own focusing steps pick this field.
+      -->
+      <BdInput
+        ref="input"
+        v-model="query"
+        aria-label="Search Spotify"
+        autofocus
+        placeholder="Search"
+        size="big"
+        type="search"
+        @input="searchStore.updateQuery(query)"
+      />
+      <BdTooltip v-if="query" bare content="Clear search">
+        <BdButton aria-label="Clear search" class="reset" icon-only size="small" @click="clearQuery()">
+          <i aria-hidden="true" class="icon-x" />
+        </BdButton>
+      </BdTooltip>
+    </div>
+    <SearchSettings />
   </div>
 </template>
 
@@ -30,6 +33,7 @@ import { BdButton, BdInput, BdTooltip } from "bearded-ui";
 import { nextTick, onMounted, ref, watch } from "vue";
 
 import { useDialog } from "@/components/dialog/DialogStore";
+import SearchSettings from "@/components/search/SearchSettings.vue";
 import { useSearch } from "@/components/search/SearchStore";
 
 const searchStore = useSearch();
@@ -92,13 +96,26 @@ onMounted(adoptStoreQuery);
 .search {
   --search-radius: 1rem;
 
+  align-items: center;
+  display: flex;
+  gap: var(--bd-space-2);
   padding: var(--bd-space-4);
+}
+
+/*
+ * The field owns the clear button's positioning context, not `.search`: the
+ * settings button now sits beside it, and an offset measured from the panel
+ * edge would have put the cross on top of the gear.
+ */
+.field {
+  flex: 1;
+  min-width: 0;
   position: relative;
 }
 
 .reset {
   position: absolute;
-  right: 1.8rem;
+  right: 0.8rem;
   top: 50%;
   transform: translateY(-50%);
 }

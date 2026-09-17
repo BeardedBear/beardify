@@ -1,5 +1,5 @@
 <template>
-  <div v-if="searchStore.query.length" class="collection-strip">
+  <div v-if="searchStore.query.length && configStore.searchCategories.collections" class="collection-strip">
     <SearchTitle :count="matches.length" title="Your collections" />
     <div v-if="matches.length" class="row">
       <router-link
@@ -20,6 +20,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
+import { useConfig } from "@/components/config/ConfigStore";
 import { useSearch } from "@/components/search/SearchStore";
 import SearchTitle from "@/components/search/SearchTitle.vue";
 import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
@@ -38,6 +39,7 @@ import { collectionDisplayName } from "@/helpers/isCollection";
  * filter instead.
  */
 const searchStore = useSearch();
+const configStore = useConfig();
 const sidebarStore = useSidebar();
 
 /** Enough to be useful in one strip, few enough not to push the columns down. */
