@@ -257,7 +257,10 @@ export const usePlayer = defineStore("player", {
     },
 
     async getExternalPlayerState(): Promise<void> {
-      const { data } = await instance().get<CurrentlyPlaying>("me/player");
+      // Without additional_types, Spotify returns item: null for an episode
+      // (currently_playing_type: "unknown") — tracks are the only type it
+      // reports by default.
+      const { data } = await instance().get<CurrentlyPlaying>("me/player?additional_types=episode");
 
       // `me/player` names the device that is REALLY active — adopt it, otherwise the
       // store keeps tracking a stale device and the heartbeat later yanks playback
@@ -277,8 +280,13 @@ export const usePlayer = defineStore("player", {
       const current = this.playerState.track_window.current_track;
       const playerState = this.playerState;
       const activeDevice = this.devices.activeDevice;
-      current.album = data.item.album;
-      current.artists = item.artists;
+      // Episodes have no album/artists — fall back to the show's own artwork/name.
+      current.album = item.album ?? {
+        images: item.images ?? item.show?.images ?? [],
+        name: item.show?.name ?? item.name,
+        uri: item.show?.uri ?? item.uri,
+      };
+      current.artists = item.artists ?? [];
       current.duration_ms = item.duration_ms;
       current.id = item.id;
       current.name = item.name;
@@ -600,10 +608,6 @@ export const usePlayer = defineStore("player", {
       }
     },
 
-    updateFromSDK(args: Spotify.Track, position: number): void {
-      this.currentFromSDK = args;
-      this.currentPositionFromSDK = position;
-    },
   },
 
   getters: {
@@ -613,9 +617,7 @@ export const usePlayer = defineStore("player", {
   },
 
   state: (): Player => ({
-    currentFromSDK: null,
     currentlyPlaying: defaultCurrentlyPlaying,
-    currentPositionFromSDK: 0,
     devices: {
       activeDevice: defaultDevice,
       list: [],

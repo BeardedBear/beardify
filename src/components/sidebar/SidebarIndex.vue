@@ -75,7 +75,7 @@
         >
           <PlaylistIcon :playlist="playlist" />
           <div class="name">
-            {{ playlist.displayName }}
+            <span class="name-text">{{ playlist.displayName }}</span>
             <BdTooltip v-if="playlist.isTop" bare content="Top ranking enabled">
               <span class="top-badge">TOP</span>
             </BdTooltip>
@@ -136,7 +136,7 @@
         >
           <PlaylistIcon :playlist="playlist" />
           <div class="name">
-            {{ playlist.name }}
+            <span class="name-text">{{ playlist.name }}</span>
           </div>
           <VisibilityIcon :playlist="playlist" />
           <IconButton
@@ -280,9 +280,20 @@ if ((authStore.me && !sidebarStore.collections.length) || !sidebarStore.playlist
   }
 
   .name {
+    align-items: center;
+    display: flex;
     flex: 1;
+    gap: var(--bd-space-1);
+    min-width: 0;
     text-align: left;
     transition: transform var(--bd-transition);
+  }
+
+  .name-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .tier-badge,

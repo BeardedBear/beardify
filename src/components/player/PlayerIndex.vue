@@ -4,7 +4,7 @@
       v-if="coverImageUrl" class="player-bg" aria-hidden="true"
       :style="{ backgroundImage: `url(${coverImageUrl})` }"
     />
-    <template v-if="playerStore.currentlyPlaying?.currently_playing_type === 'episode'">
+    <template v-if="isEpisode">
       <PlayerEpisode />
     </template>
     <template v-else>
@@ -19,6 +19,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from "v
 import PlayerEpisode from "@/components/player/PlayerEpisode.vue";
 import PlayerSong from "@/components/player/PlayerSong.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
+import { isPodcastTrack } from "@/helpers/player";
 
 const LOADING_WATCHDOG_MS = 5000;
 
@@ -28,6 +29,7 @@ const coverImageUrl = computed(() => {
   const track = playerStore.playerState?.track_window?.current_track;
   return track?.album?.images?.[1]?.url ?? null;
 });
+const isEpisode = computed(() => isPodcastTrack(playerStore.playerState?.track_window?.current_track));
 const interval = ref<number | undefined>(undefined);
 let loadingWatchdog: null | number = null;
 

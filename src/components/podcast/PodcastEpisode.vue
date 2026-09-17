@@ -19,9 +19,9 @@
       class="progress"
     >
       <div
-        v-if="playerStore.currentFromSDK?.id === episode.id && playerStore.currentlyPlaying.is_playing"
+        v-if="isPlayingThisEpisode"
         :style="{
-          width: `${(playerStore.currentlyPlaying.progress_ms / episode.duration_ms) * 100}%`,
+          width: `${((playerStore.playerState?.position ?? 0) / episode.duration_ms) * 100}%`,
         }"
         class="bar"
       />
@@ -41,7 +41,7 @@
       </div>
       <div class="actions">
         <BdLoader
-          v-if="playerStore.currentFromSDK?.id === episode.id && playerStore.currentlyPlaying.is_playing"
+          v-if="isPlayingThisEpisode"
           :size="'small'"
         />
         <div v-else>
@@ -76,6 +76,7 @@
 
 <script lang="ts" setup>
 import { BdButton, BdLoader } from "bearded-ui";
+import { computed } from "vue";
 
 import { Episode } from "@/@types/Podcast";
 import { usePlayer } from "@/components/player/PlayerStore";
@@ -85,9 +86,14 @@ import { playSong } from "@/helpers/play";
 
 const playerStore = usePlayer();
 
-defineProps<{
+const props = defineProps<{
   episode: Episode;
 }>();
+
+const isPlayingThisEpisode = computed(() => {
+  const currentTrack = playerStore.playerState?.track_window?.current_track;
+  return currentTrack?.id === props.episode.id && !playerStore.playerState?.paused;
+});
 </script>
 
 <style scoped>

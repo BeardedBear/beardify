@@ -712,6 +712,9 @@ export const useArtist = defineStore("artist", {
     },
 
     async switchFollow(artistId: string) {
+      // Guards against a double-click firing two opposite calls before the first resolves
+      if (this.followBusy) return;
+      this.followBusy = true;
       // Optimistic update, reverted if the API call fails
       const previousStatus = this.followStatus;
       this.followStatus = !previousStatus;
@@ -723,6 +726,9 @@ export const useArtist = defineStore("artist", {
         }
       } catch {
         this.followStatus = previousStatus;
+        notification({ msg: "Unable to update follow status", type: NotificationType.Error });
+      } finally {
+        this.followBusy = false;
       }
     },
 
@@ -776,6 +782,7 @@ export const useArtist = defineStore("artist", {
     discogsArtist: null,
     discogsId: null,
     eps: [],
+    followBusy: false,
     followStatus: false,
     headerHeight: 0,
     musicbrainzArtist: null,

@@ -36,6 +36,7 @@ export interface ArtistPage {
   discogsArtist: DiscogsArtist | null;
   discogsId: null | string;
   eps: AlbumSimplified[];
+  followBusy: boolean;
   followStatus: boolean | undefined;
   headerHeight: number;
   musicbrainzArtist: MusicBrainzArtist | null;

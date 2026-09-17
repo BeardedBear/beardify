@@ -2,7 +2,7 @@
   <div class="controls" :class="{ 'force-mobile': props.forceMobile }">
     <div class="btns">
       <IconButton
-        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
+        v-if="!isEpisode"
         :class="{ active: playerStore.currentlyPlaying?.shuffle_state, big: props.forceMobile }"
         :pressed="!!playerStore.currentlyPlaying?.shuffle_state"
         class="control-button shuffle bd-squircle"
@@ -11,7 +11,7 @@
         @click="playerStore.toggleShuffle()"
       />
       <IconButton
-        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
+        v-if="!isEpisode"
         :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
         :pressed="playerStore.currentlyPlaying?.repeat_state !== 'off'"
         class="control-button repeat bd-squircle"
@@ -20,7 +20,7 @@
         @click="playerStore.toggleRepeat()"
       />
       <IconButton
-        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
+        v-if="!isEpisode"
         :class="{ big: props.forceMobile }"
         class="control-button previous bd-squircle"
         icon="skip-back"
@@ -44,7 +44,7 @@
         @click="playerStore.pause()"
       />
       <IconButton
-        v-if="playerStore.currentlyPlaying?.currently_playing_type !== 'episode'"
+        v-if="!isEpisode"
         :class="{ big: props.forceMobile }"
         class="control-button next bd-squircle"
         icon="skip-forward"
@@ -66,9 +66,11 @@ import { usePlayer } from "@/components/player/PlayerStore";
 import IconButton from "@/components/ui/IconButton.vue";
 import { usePlaybackClock } from "@/composables/usePlaybackClock";
 import { timecode } from "@/helpers/date";
+import { isPodcastTrack } from "@/helpers/player";
 
 const props = defineProps<{ forceMobile?: boolean }>();
 const playerStore = usePlayer();
+const isEpisode = computed(() => isPodcastTrack(playerStore.playerState?.track_window?.current_track));
 /*
  * Shared with the seek bar. These two used to count on their own — 1s here,
  * 200ms there — so the number could sit up to 1.5s away from the bar it

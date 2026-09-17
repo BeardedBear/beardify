@@ -10,36 +10,42 @@
           <Album :album="albumStore.album" :cover-size="'large'" can-save without-metas />
         </div>
         <div class="content-tracks">
-          <div
+          <BdTooltip
             v-for="(track, index) in albumStore.album.tracks.items"
             :key="index"
-            :class="{
-              active: isCurrentTrack(track, currentTrack),
-              unavailable: !track.available_markets.length,
-            }"
-            class="track bd-font-bold"
-            @click="playSongs(index, albumStore.album.tracks.items)"
+            bare
+            :content="track.available_markets.length ? undefined : 'Not available in your region'"
           >
-            <IconButton
-              class="add"
-              icon="plus"
-              :label="`Add ${track.name} to a playlist`"
-              @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })"
-            />
-            <span class="track-number bd-font-italic">{{ track.track_number }}.</span>
-            <div>
-              <div>{{ track.name }}</div>
-              <div v-if="albumStore.album.artists.length">
-                <ArtistList
-                  :artist-list="track.artists.filter((e) => e.name !== albumStore.album.artists[0].name)"
-                  feat
-                />
+            <div
+              :aria-disabled="!track.available_markets.length"
+              :class="{
+                active: isCurrentTrack(track, currentTrack),
+                unavailable: !track.available_markets.length,
+              }"
+              class="track bd-font-bold"
+              @click="track.available_markets.length && playSongs(index, albumStore.album.tracks.items)"
+            >
+              <IconButton
+                class="add"
+                icon="plus"
+                :label="`Add ${track.name} to a playlist`"
+                @click.prevent.stop="dialogStore.open({ type: 'addSong', track: track })"
+              />
+              <span class="track-number bd-font-italic">{{ track.track_number }}.</span>
+              <div>
+                <div>{{ track.name }}</div>
+                <div v-if="albumStore.album.artists.length">
+                  <ArtistList
+                    :artist-list="track.artists.filter((e) => e.name !== albumStore.album.artists[0].name)"
+                    feat
+                  />
+                </div>
+              </div>
+              <div class="duration">
+                {{ timecode(track.duration_ms) }}
               </div>
             </div>
-            <div class="duration">
-              {{ timecode(track.duration_ms) }}
-            </div>
-          </div>
+          </BdTooltip>
         </div>
       </div>
       <Foot :album="albumStore.album" />
@@ -48,7 +54,7 @@
 </template>
 
 <script lang="ts" setup>
-import { BdLoader } from "bearded-ui";
+import { BdLoader, BdTooltip } from "bearded-ui";
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 
@@ -133,7 +139,10 @@ albumStore.clean().finally(() => albumStore.getAlbum(props.id).finally(() => res
   &.unavailable {
     cursor: default;
     opacity: 0.2;
-    pointer-events: none;
+
+    .add {
+      pointer-events: none;
+    }
   }
 
   .add:hover {

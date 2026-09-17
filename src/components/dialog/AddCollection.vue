@@ -1,9 +1,9 @@
 <template>
   <Dialog title="Create a collection" with-title>
     <form class="wrap" @submit.prevent="create()">
-      <BdInput v-model="collectionName" placeholder="Collection's name" />
+      <BdInput v-model="collectionName" :disabled="creating" label="Collection's name" />
       <RankingModeEditor v-model="rankingMode" />
-      <BdButton type="submit" variant="primary">Create</BdButton>
+      <BdButton :disabled="creating" type="submit" variant="primary">Create</BdButton>
     </form>
   </Dialog>
 </template>
@@ -24,15 +24,19 @@ const dialogStore = useDialog();
 const sidebarStore = useSidebar();
 const collectionName = ref("");
 const rankingMode = ref<CollectionRankingMode>({ type: "off" });
+const creating = ref(false);
 
 async function create(): Promise<void> {
-  if (!collectionName.value.trim()) return;
+  if (!collectionName.value.trim() || creating.value) return;
+  creating.value = true;
   try {
     await sidebarStore.addCollection(collectionName.value, rankingMode.value);
     dialogStore.close();
     notification({ msg: `Collection ${collectionName.value} created`, type: NotificationType.Success });
   } catch {
     // handled upstream
+  } finally {
+    creating.value = false;
   }
 }
 </script>
