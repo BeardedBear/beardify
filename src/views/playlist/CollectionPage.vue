@@ -212,7 +212,10 @@ const dragOptions = computed(() => ({
 
 function applyReorder(nextOrder: AlbumSimplified[]): void {
   const move = findMove(albumList.value, nextOrder);
-  if (move) playlistStore.updateCollectionPosition(move.oldIndex, move.newIndex);
+  if (move) {
+    const beforeAlbum = nextOrder[move.newIndex + 1] ?? null;
+    playlistStore.updateCollectionPosition(nextOrder[move.newIndex].id, beforeAlbum?.id ?? null);
+  }
   albumList.value = nextOrder;
 }
 
@@ -230,7 +233,8 @@ function handleTopTierEnd(): void {
 function syncNewPositions(event: { newIndex?: number; oldIndex?: number }): void {
   isDragging.value = false;
   if (event.oldIndex === undefined || event.newIndex === undefined) return;
-  playlistStore.updateCollectionPosition(event.oldIndex, event.newIndex);
+  const beforeAlbum = albumList.value[event.newIndex + 1] ?? null;
+  playlistStore.updateCollectionPosition(albumList.value[event.newIndex].id, beforeAlbum?.id ?? null);
 }
 
 /**
