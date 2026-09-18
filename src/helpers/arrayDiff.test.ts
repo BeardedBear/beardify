@@ -5,9 +5,11 @@ import { findMove } from "./arrayDiff";
 const list = (ids: string): { id: string }[] => [...ids].map((id) => ({ id }));
 
 /**
- * Replays what Spotify does with the indices we hand it, so the test asserts on
- * the order the server ends up with rather than on the shape of the return
- * value. The index maths lives in PlaylistStore.updateCollectionPosition.
+ * Replays what Spotify does with the indices findMove hands back, so the test
+ * asserts on the order the server ends up with rather than on the shape of
+ * the return value. PlaylistStore.updateCollectionPosition resolves these
+ * indices to album ids against the raw track list before calling the API;
+ * this helper only exercises findMove's own index math.
  */
 function applyOnServer(previous: { id: string }[], move: { newIndex: number; oldIndex: number } | null): string {
   if (!move) return previous.map((item) => item.id).join("");

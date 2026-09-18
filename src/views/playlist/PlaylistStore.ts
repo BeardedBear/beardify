@@ -116,11 +116,27 @@ export const usePlaylist = defineStore("playlist", {
       this.tracks = [];
     },
 
-    async updateCollectionPosition(oldIndex: number, newIndex: number) {
+    /**
+     * Takes album ids, not positions. The drag UI reorders a deduplicated
+     * `albumList` (see removeDuplicatesAlbums), which is shorter than
+     * `this.tracks` whenever a collection has more than one track for the
+     * same album — most likely in a large, loosely curated tail. A position
+     * in that deduped list doesn't line up with the same position in the raw
+     * track list, so sending it straight through as range_start/insert_before
+     * silently reordered the wrong track. Resolving both ids against
+     * `this.tracks` right before the call is immune to that drift.
+     */
+    async updateCollectionPosition(movedAlbumId: string, beforeAlbumId: null | string) {
+      const rangeStart = this.tracks.findIndex((t) => t.item.album.id === movedAlbumId);
+      const insertBefore = beforeAlbumId
+        ? this.tracks.findIndex((t) => t.item.album.id === beforeAlbumId)
+        : this.tracks.length;
+      if (rangeStart === -1 || insertBefore === -1) return;
+
       try {
         await instance().put(`playlists/${this.playlist.id}/items`, {
-          insert_before: oldIndex < newIndex ? newIndex + 1 : newIndex,
-          range_start: oldIndex,
+          insert_before: insertBefore,
+          range_start: rangeStart,
         });
       } catch {
         notification({
