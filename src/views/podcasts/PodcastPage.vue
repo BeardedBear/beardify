@@ -1,64 +1,76 @@
 <template>
-  <div v-if="!podcastsStore.podcast" class="loader">
+  <div v-if="podcastsStore.loading" class="loader">
     <BdLoader />
   </div>
-  <div v-else ref="scrollRef" class="podcast" @scroll="onScroll">
-    <PageFit>
-      <div class="title">
-        <h1 class="name bd-font-bold">
-          {{ podcastsStore.podcast?.name }}
-        </h1>
-        <PodcastFollowButton v-if="podcastsStore.podcast" :podcast-id="props.id" />
+  <!--
+    Every read used to swallow its error into a DEV-only console line, so a
+    failed request left this page on the spinner above, forever and silently.
+  -->
+  <BdEmptyState
+    v-else-if="podcastsStore.error || !podcastsStore.podcast"
+    action-label="Try again"
+    message="Spotify did not answer for this show."
+    title="Could not load this podcast"
+    @action="load()"
+  >
+    <template #icon><TriangleAlert :size="32" /></template>
+  </BdEmptyState>
+  <PageScroller v-else>
+    <div class="podcast">
+      <PodcastHeader />
+      <div v-if="podcastsStore.episodesLoading && !podcastsStore.episodes.length" class="loader">
+        <BdLoader />
       </div>
-      <div>
-        <div v-for="(episode, index) in podcastsStore.episodes" :key="index">
+      <BdEmptyState
+        v-else-if="!podcastsStore.episodes.length"
+        message="This show has not published anything yet."
+        title="No episode"
+      >
+        <template #icon><i class="icon-podcast" /></template>
+      </BdEmptyState>
+      <ul v-else class="episodes">
+        <li v-for="episode in podcastsStore.episodes" :key="episode.id">
           <PodcastEpisode :episode="episode" />
-        </div>
-      </div>
-    </PageFit>
-  </div>
+        </li>
+      </ul>
+    </div>
+  </PageScroller>
 </template>
 
 <script lang="ts" setup>
-import { BdLoader } from "bearded-ui";
-import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { TriangleAlert } from "@lucide/vue";
+import { BdEmptyState, BdLoader } from "bearded-ui";
 
 import PodcastEpisode from "@/components/podcast/PodcastEpisode.vue";
-import PodcastFollowButton from "@/components/podcast/PodcastFollowButton.vue";
-import PageFit from "@/components/ui/PageFit.vue";
-import { useScrollRestore } from "@/composables/useScrollRestore";
+import PodcastHeader from "@/components/podcast/PodcastHeader.vue";
+import PageScroller from "@/components/ui/PageScroller.vue";
 import { usePodcasts } from "@/views/podcasts/PodcastsStore";
 
 const props = defineProps<{ id: string }>();
 const podcastsStore = usePodcasts();
-const scrollRef = ref<HTMLElement | null>(null);
-const { onScroll } = useScrollRestore(`scroll-${useRoute().path}`, scrollRef);
 
-podcastsStore.clean().finally(() => {
-  podcastsStore.getPodcast(props.id);
-  podcastsStore.getPodcastEpisodes(`shows/${props.id}/episodes?limit=50`);
-  podcastsStore.getFollowStatus(props.id);
-});
+function load(): void {
+  podcastsStore.clean().finally(() => {
+    podcastsStore.getPodcast(props.id);
+    podcastsStore.getPodcastEpisodes(props.id);
+    podcastsStore.getFollowStatus(props.id);
+  });
+}
+
+load();
 </script>
 
 <style scoped>
 
 .podcast {
-  animation: pop-content 1s ease both;
-  overflow-y: scroll;
+  margin: 0 auto;
   padding: var(--bd-space-6);
+  width: 100%;
 }
 
-.title {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: var(--bd-space-6);
-
-  .name {
-    flex: 1;
-    font-size: var(--bd-font-size-xl);
-  }
+.episodes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 </style>
