@@ -115,6 +115,20 @@ const routes: Array<RouteRecordRaw> = [
     path: RouteName.Podcasts,
   },
   {
+    // Static, so it wins over the dynamic `:id` route below for this exact segment.
+    component: (): Promise<unknown> => import("@/views/podcasts/PodcastDiscoverIndexPage.vue"),
+    name: "PodcastDiscover",
+    path: `${RouteName.Podcasts}discover`,
+  },
+  {
+    component: (): Promise<unknown> => import("@/views/podcasts/PodcastDiscoverPage.vue"),
+    name: "PodcastDiscoverCategory",
+    path: `${RouteName.Podcasts}discover/:category`,
+    props: (route: RouteLocation): Record<string, string | string[]> => ({
+      category: route.params.category,
+    }),
+  },
+  {
     component: (): Promise<unknown> => import("@/views/podcasts/PodcastPage.vue"),
     name: "Podcast",
     path: `${RouteName.Podcasts}:id`,

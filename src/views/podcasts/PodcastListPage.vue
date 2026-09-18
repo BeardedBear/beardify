@@ -22,12 +22,17 @@
     title="You do not follow any podcast"
   >
     <template #icon><i class="icon-podcast" /></template>
+    <router-link class="discover-link" to="/podcasts/discover">Browse categories to discover shows</router-link>
   </BdEmptyState>
   <PageScroller v-else>
     <div class="podcasts">
       <div class="title">
         <h1 class="name bd-font-bold">Podcasts</h1>
         <div class="counts">{{ podcastsStore.myPodcasts.length }} followed</div>
+        <router-link class="discover-link" to="/podcasts/discover">
+          <Compass :size="14" />
+          Discover
+        </router-link>
       </div>
       <div class="podcast-list">
         <PodcastCard
@@ -45,7 +50,7 @@
 </template>
 
 <script lang="ts" setup>
-import { TriangleAlert } from "@lucide/vue";
+import { Compass, TriangleAlert } from "@lucide/vue";
 import { BdEmptyState, BdLoader } from "bearded-ui";
 
 import PodcastCard from "@/components/podcast/PodcastCard.vue";
@@ -94,7 +99,21 @@ load();
 
   .counts {
     color: var(--bd-font-color-dark);
+    flex: 1;
     font-size: var(--bd-font-size-sm);
+  }
+}
+
+.discover-link {
+  align-items: center;
+  color: var(--bd-primary);
+  display: inline-flex;
+  font-size: var(--bd-font-size-sm);
+  gap: var(--bd-space-1);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
   }
 }
 </style>
