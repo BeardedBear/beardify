@@ -47,9 +47,11 @@ export interface Podcast {
   type: ContextType;
   uri: string;
 }
-export interface PodcastItem {
-  shows: Podcast[];
+export interface PodcastFreshness {
+  hasNewEpisode: boolean;
+  resumableEpisode: Episode | null;
 }
+
 export interface PodcastSaved {
   added_at: string;
   show: Podcast;
@@ -57,8 +59,12 @@ export interface PodcastSaved {
 
 export interface PodcastsPage {
   episodes: Episode[];
+  episodesLoading: boolean;
+  error: boolean;
+  followBusy: boolean;
+  freshness: Record<string, PodcastFreshness>;
   isFollowing: boolean;
-  list: null | PodcastItem;
+  loading: boolean;
   myPodcasts: PodcastSaved[];
   podcast: null | Podcast;
 }

@@ -4,22 +4,20 @@
       v-if="coverImageUrl" class="player-bg" aria-hidden="true"
       :style="{ backgroundImage: `url(${coverImageUrl})` }"
     />
-    <template v-if="isEpisode">
-      <PlayerEpisode />
-    </template>
-    <template v-else>
-      <PlayerSong />
-    </template>
+    <!--
+      One surface for both. PlayerEpisode rendered the same four children as
+      PlayerSong, carried none of the real podcast differences (those live in
+      PlayerControls and PlayerMetas) and dropped the mobile grid on the way.
+    -->
+    <PlayerSong />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from "vue";
 
-import PlayerEpisode from "@/components/player/PlayerEpisode.vue";
 import PlayerSong from "@/components/player/PlayerSong.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
-import { isPodcastTrack } from "@/helpers/player";
 
 const LOADING_WATCHDOG_MS = 5000;
 
@@ -29,7 +27,6 @@ const coverImageUrl = computed(() => {
   const track = playerStore.playerState?.track_window?.current_track;
   return track?.album?.images?.[1]?.url ?? null;
 });
-const isEpisode = computed(() => isPodcastTrack(playerStore.playerState?.track_window?.current_track));
 const interval = ref<number | undefined>(undefined);
 let loadingWatchdog: null | number = null;
 
