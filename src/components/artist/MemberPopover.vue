@@ -105,6 +105,7 @@ import type { MemberInfo } from "@/@types/Artist";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { useSearch } from "@/components/search/SearchStore";
 import { getDiscogsMemberInfo } from "@/helpers/discogs";
+import { clamp } from "@/helpers/volume";
 
 const props = defineProps<{
   discogsId?: null | number;
@@ -179,11 +180,6 @@ function cancelLoad(): void {
   if (loadTimer) clearTimeout(loadTimer);
 }
 
-// Keeps the panel inside the viewport even when it is bigger than the space left
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), Math.max(min, max));
-}
-
 async function loadInfo(): Promise<void> {
   if (loaded.value) return;
   loaded.value = true;
@@ -237,11 +233,11 @@ function updatePosition(): void {
   // Prefer the right side; flip left when there is not enough room
   const spaceRight = vpW - wrap.right - GAP;
   const preferredLeft = spaceRight >= width + MARGIN ? wrap.right + GAP : wrap.left - width - GAP;
-  const left = clamp(preferredLeft, MARGIN, vpW - width - MARGIN);
+  const left = clamp(preferredLeft, MARGIN, Math.max(MARGIN, vpW - width - MARGIN));
 
   const maxHeight = vpH - MARGIN * 2;
   const panelH = Math.min(panelRef.value?.getBoundingClientRect().height || 0, maxHeight);
-  const top = clamp(wrap.top + wrap.height / 2 - panelH / 2, MARGIN, vpH - panelH - MARGIN);
+  const top = clamp(wrap.top + wrap.height / 2 - panelH / 2, MARGIN, Math.max(MARGIN, vpH - panelH - MARGIN));
 
   panelStyle.value = {
     left: `${left}px`,

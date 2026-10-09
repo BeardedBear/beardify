@@ -5,6 +5,13 @@ import { enUS } from "date-fns/locale";
 
 const options = { locale: enUS };
 
+// Browser locale when available, so month names aren't English-only
+const dateFormatter = new Intl.DateTimeFormat((typeof navigator !== "undefined" && navigator.language) || "en-US", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+
 /**
  * Format a timestamp or date string as "17 May 2026", in the browser's own
  * locale (matches `formatDate` below — month names shouldn't stay English-only
@@ -12,12 +19,7 @@ const options = { locale: enUS };
  * @param date - Unix timestamp (ms) or any date string accepted by `new Date()`
  */
 export function date(date: number | string): string {
-  const locale
-    = typeof navigator !== "undefined" && (navigator as unknown as { language?: string }).language
-      ? (navigator as unknown as { language?: string }).language
-      : "en-US";
-
-  return new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(new Date(date));
+  return dateFormatter.format(new Date(date));
 }
 
 /**
@@ -36,19 +38,7 @@ export function formatDate(date?: null | string): string {
     const d = !isNaN(parsed.getTime()) ? parsed : new Date(date as string);
     if (isNaN(d.getTime())) return date as string;
 
-    // Use browser locale when available, fallback to en-US
-    const locale
-      = typeof navigator !== "undefined" && (navigator as unknown as { language?: string }).language
-        ? (navigator as unknown as { language?: string }).language
-        : "en-US";
-
-    const formatter = new Intl.DateTimeFormat(locale, {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-
-    return formatter.format(d);
+    return dateFormatter.format(d);
   } catch {
     return date as string;
   }

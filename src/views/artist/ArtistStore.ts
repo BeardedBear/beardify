@@ -27,7 +27,6 @@ import {
 } from "@/helpers/musicbrainz";
 import { notification } from "@/helpers/notifications";
 import { removeDuplicatesAlbums } from "@/helpers/removeDuplicate";
-import { cleanUrl } from "@/helpers/urls";
 import { isEP, useCheckCompilationAlbum, useCheckLiveAlbum } from "@/helpers/useCleanAlbums";
 import { getWikidataArtist, getWikidataBandMembers, getWikipediaExtract } from "@/helpers/wikidata";
 
@@ -190,9 +189,7 @@ export const useArtist = defineStore("artist", {
     async fetchReleasePage(url: string, fallback: "albums" | "albumsCompilation") {
       const { signal } = navigationController;
       try {
-        const cleanedUrl = cleanUrl(url);
-        const { data }
-          = await instance().get<Paging<AlbumSimplified>>(cleanedUrl, { signal });
+        const { data } = await instance().get<Paging<AlbumSimplified>>(url, { signal });
         if (signal.aborted) return;
 
         const buckets: Record<"albums" | "albumsCompilation" | "albumsLive", AlbumSimplified[]> = {
@@ -217,11 +214,8 @@ export const useArtist = defineStore("artist", {
           if (buckets[bucket].length) this[bucket] = removeDuplicatesAlbums([...this[bucket], ...buckets[bucket]]);
         });
 
+        // Reclassified once by ArtistPage after every group lands, not per page
         if (data.next) await this.fetchReleasePage(data.next, fallback);
-
-        // Spotify mis-files EPs and live records under the "album" group.
-        // Reclassify with external data (no-op until release types arrive).
-        this.reclassifyReleases();
       } catch {
         // silent fail
       }
@@ -245,10 +239,6 @@ export const useArtist = defineStore("artist", {
         if (!signal.aborted) this.wikipediaFailed = true;
         return null;
       }
-    },
-
-    async getAlbums(url: string) {
-      await this.fetchReleasePage(url, "albums");
     },
 
     async getArtist(artistId: string) {
@@ -282,10 +272,6 @@ export const useArtist = defineStore("artist", {
         this.timelineLoading = false;
         notification({ msg: "Unable to load this artist", type: NotificationType.Error });
       }
-    },
-
-    async getCompilations(url: string) {
-      await this.fetchReleasePage(url, "albumsCompilation");
     },
 
     async getDiscogsArtist(discogsId: string) {

@@ -14,10 +14,9 @@ import {
   mapQueueToSpotifyTracks,
   notifyQueueError,
   saveDeviceVolume,
-  setRepeatState,
-  setShuffleState,
 } from "@/helpers/player";
 import { sleep } from "@/helpers/sleep";
+import { clamp } from "@/helpers/volume";
 import { createSpotifyPlayer } from "@/spotify";
 
 const HEARTBEAT_INTERVAL = 4 * 60 * 1000;
@@ -43,6 +42,13 @@ const SEEK_LOCK_DURATION_MS = 2000;
  * @param deviceId - Device to target, or undefined to let Spotify pick
  */
 const deviceQuery = (deviceId?: string): string => (deviceId ? `?device_id=${deviceId}` : "");
+
+/*
+ * Hover, click, Refresh, the heartbeat and the SDK all ask for the device list,
+ * often within milliseconds. Sharing the in-flight request keeps a slower, older
+ * response from landing last and overwriting a fresher list.
+ */
+let deviceListRequest: null | Promise<void> = null;
 
 export const usePlayer = defineStore("player", {
   actions: {
@@ -75,6 +81,25 @@ export const usePlayer = defineStore("player", {
 
       await this._attemptDeviceActivation(targetDeviceId, maxAttempts, hasTimedOut);
       await this._finalizeDeviceSwitch(targetDeviceId, retries, hasTimedOut);
+    },
+
+    async _fetchDeviceList(): Promise<void> {
+      // no-store: a device list served from the HTTP cache is exactly the stale list we're refreshing away
+      const { data } = await instance().get<DevicesResponse>("me/player/devices", { cache: "no-store" });
+      const activeDevice = data.devices.find((device): boolean => device.is_active);
+      const previousDeviceStillListed = data.devices.some((device) => device.id === this.devices.activeDevice?.id);
+      this.devices.list = data.devices;
+      if (!data.devices.length) createSpotifyPlayer().connect();
+      if (activeDevice) {
+        this.devices.activeDevice = activeDevice;
+      } else if (!previousDeviceStillListed && this.thisDeviceId) {
+        // No device reports is_active AND the previously active device is gone from the
+        // list entirely — genuinely disconnected, fall back to this device. If it's merely
+        // missing the is_active flag (Spotify Connect propagation lag on reconnect), keep
+        // the current activeDevice instead of stealing playback onto this device.
+        this.setDevice(this.thisDeviceId);
+      }
+      this.startDeviceHeartbeat();
     },
 
     async _finalizeDeviceSwitch(targetDeviceId: string, retries: number, hasTimedOut: () => boolean): Promise<void> {
@@ -169,7 +194,7 @@ export const usePlayer = defineStore("player", {
         const volPercent = this.devices.activeDevice?.volume_percent;
         if (typeof volPercent !== "number") return;
         try {
-          await player.setVolume(Math.max(0, Math.min(1, volPercent / 100)));
+          await player.setVolume(clamp(volPercent) / 100);
         } catch {
           // ignore
         }
@@ -242,7 +267,6 @@ export const usePlayer = defineStore("player", {
         return false;
       }
     },
-
     /**
      * Re-activate a device after Spotify has dropped them all — what happens
      * when the machine sleeps: the SDK socket dies, no device reports
@@ -267,6 +291,7 @@ export const usePlayer = defineStore("player", {
         return null;
       }
     },
+
     /**
      * Run a transport command against the active device, waking it first if
      * Spotify has forgotten it. Without this the play button reports success
@@ -336,22 +361,11 @@ export const usePlayer = defineStore("player", {
       this.panelOpened = false;
     },
 
-    async getDeviceList(): Promise<void> {
-      const { data } = await instance().get<DevicesResponse>("me/player/devices");
-      const activeDevice = data.devices.find((device): boolean => device.is_active);
-      const previousDeviceStillListed = data.devices.some((device) => device.id === this.devices.activeDevice?.id);
-      this.devices.list = data.devices;
-      if (!data.devices.length) createSpotifyPlayer().connect();
-      if (activeDevice) {
-        this.devices.activeDevice = activeDevice;
-      } else if (!previousDeviceStillListed && this.thisDeviceId) {
-        // No device reports is_active AND the previously active device is gone from the
-        // list entirely — genuinely disconnected, fall back to this device. If it's merely
-        // missing the is_active flag (Spotify Connect propagation lag on reconnect), keep
-        // the current activeDevice instead of stealing playback onto this device.
-        this.setDevice(this.thisDeviceId);
-      }
-      this.startDeviceHeartbeat();
+    getDeviceList(): Promise<void> {
+      deviceListRequest ??= this._fetchDeviceList().finally(() => {
+        deviceListRequest = null;
+      });
+      return deviceListRequest;
     },
 
     async getExternalPlayerState(): Promise<void> {
@@ -378,17 +392,21 @@ export const usePlayer = defineStore("player", {
       const current = this.playerState.track_window.current_track;
       const playerState = this.playerState;
       const activeDevice = this.devices.activeDevice;
-      // Episodes have no album/artists — fall back to the show's own artwork/name.
-      current.album = item.album ?? {
-        images: item.images ?? item.show?.images ?? [],
-        name: item.show?.name ?? item.name,
-        uri: item.show?.uri ?? item.uri,
-      };
-      current.artists = item.artists ?? [];
-      current.duration_ms = item.duration_ms;
-      current.id = item.id;
-      current.name = item.name;
-      current.uri = item.uri;
+      // Polled every 2s: only swap track objects on a real change, or every list
+      // reading current_track re-renders on each poll.
+      if (current.id !== item.id) {
+        // Episodes have no album/artists — fall back to the show's own artwork/name.
+        current.album = item.album ?? {
+          images: item.images ?? item.show?.images ?? [],
+          name: item.show?.name ?? item.name,
+          uri: item.show?.uri ?? item.uri,
+        };
+        current.artists = item.artists ?? [];
+        current.duration_ms = item.duration_ms;
+        current.id = item.id;
+        current.name = item.name;
+        current.uri = item.uri;
+      }
       if (Date.now() >= (this.seekLockUntil ?? 0)) playerState.position = data.progress_ms;
       playerState.paused = !data.is_playing;
       playerState.shuffle = data.shuffle_state;
@@ -545,11 +563,7 @@ export const usePlayer = defineStore("player", {
       }
       await instance().put(`me/player/volume?volume_percent=${rounded}`);
       // Persist the volume for the current device so we can restore it later
-      try {
-        saveDeviceVolume(this.devices.activeDevice?.id, rounded);
-      } catch {
-        // ignore
-      }
+      saveDeviceVolume(this.devices.activeDevice?.id, rounded);
     },
 
     startDeviceHeartbeat(): void {
@@ -558,14 +572,6 @@ export const usePlayer = defineStore("player", {
       this.heartbeatInterval = window.setInterval((): void => {
         if (this.devices.activeDevice?.id) void this._heartbeatTick();
       }, HEARTBEAT_INTERVAL);
-    },
-
-    // Stop the heartbeat
-    stopDeviceHeartbeat(): void {
-      if (this.heartbeatInterval) {
-        window.clearInterval(this.heartbeatInterval);
-        this.heartbeatInterval = null;
-      }
     },
 
     syncPlayerState(state: Spotify.PlaybackState): void {
@@ -577,15 +583,9 @@ export const usePlayer = defineStore("player", {
       this.playerState = state;
     },
 
-    thisDevice(deviceId: string): void {
+    thisDevice(deviceId: string): Promise<void> {
       this.thisDeviceId = deviceId;
-      this.getDeviceList();
-    },
-
-    togglePanel(): void {
-      // Prevent toggling open on non-touch devices; allow closing always
-      if (!this.panelOpened && !isTouchDevice()) return;
-      this.panelOpened = !this.panelOpened;
+      return this.getDeviceList();
     },
 
     async toggleRepeat(): Promise<void> {
@@ -593,8 +593,7 @@ export const usePlayer = defineStore("player", {
       const prevState = this.currentlyPlaying.repeat_state;
       this.currentlyPlaying.repeat_state = nextState;
       try {
-        const ok = await setRepeatState(nextState);
-        if (!ok) this.currentlyPlaying.repeat_state = prevState;
+        await instance().put(`me/player/repeat?state=${nextState}`);
       } catch {
         this.currentlyPlaying.repeat_state = prevState;
       }
@@ -606,11 +605,7 @@ export const usePlayer = defineStore("player", {
       this.currentlyPlaying.shuffle_state = nextState;
       this.playerState.shuffle = nextState;
       try {
-        const ok = await setShuffleState(nextState);
-        if (!ok) {
-          this.currentlyPlaying.shuffle_state = prevState;
-          this.playerState.shuffle = prevState;
-        }
+        await instance().put(`me/player/shuffle?state=${nextState}`);
       } catch {
         this.currentlyPlaying.shuffle_state = prevState;
         this.playerState.shuffle = prevState;

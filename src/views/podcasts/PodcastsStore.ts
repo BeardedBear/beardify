@@ -7,7 +7,6 @@ import { NotificationType } from "@/@types/Notification";
 import { instance } from "@/api";
 import { isInLibrary, removeFromLibrary, saveToLibrary } from "@/helpers/library";
 import { notification } from "@/helpers/notifications";
-import { cleanUrl } from "@/helpers/urls";
 
 // Which episode a podcast was last opened at, so the list page can tell a new
 // release apart from one the user has already seen. Per-show, not per-episode:
@@ -63,8 +62,10 @@ export const usePodcasts = defineStore("podcasts", {
       try {
         let url = "me/shows?limit=50";
         while (url) {
-          const { data } = await instance().get<Paging<PodcastSaved>>(cleanUrl(url));
-          this.myPodcasts = this.myPodcasts.concat(data.items.filter((podcast) => podcast !== null));
+          const { data } = await instance().get<Paging<PodcastSaved>>(url);
+          this.myPodcasts = this.myPodcasts.concat(
+            data.items.filter((podcast): podcast is PodcastSaved => podcast !== null),
+          );
           url = data.next;
         }
       } catch (error) {
@@ -99,8 +100,8 @@ export const usePodcasts = defineStore("podcasts", {
       try {
         let url = `shows/${podcastId}/episodes?limit=50`;
         while (url) {
-          const { data } = await instance().get<Paging<Episode>>(cleanUrl(url));
-          this.episodes = this.episodes.concat(data.items.filter((episode) => episode !== null));
+          const { data } = await instance().get<Paging<Episode>>(url);
+          this.episodes = this.episodes.concat(data.items.filter((episode): episode is Episode => episode !== null));
           url = data.next;
         }
         if (this.episodes.length) {

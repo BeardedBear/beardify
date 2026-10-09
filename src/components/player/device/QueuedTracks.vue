@@ -176,7 +176,7 @@ watch(queueOpen, (open) => {
   centerOnCurrent();
 });
 
-watch(currentTrack, refresh);
+watch(() => currentTrack.value?.id, refresh);
 
 onUnmounted(() => cancelAnimationFrame(scrollRaf));
 watch(past, centerOnCurrent);

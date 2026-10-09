@@ -117,15 +117,14 @@ there is nothing to import at the top of a `<style>` block.
 
 Conventions that replace the former Sass mixins:
 
-- **Font weights/styles**: instead of `@include font-bold`, add the `font-bold`
-  utility class (see `src/assets/css/utilities.css`) in the template — it bundles
-  `font-variation-settings: var(--font-variation-settings-bold);` with
-  `font-weight: var(--font-weight-bold);`, including the
-  `@supports not font-tech(variations)` fallback. Matching `font-italic` and
-  `font-bold-italic` classes exist too. Only write the raw declarations directly
+- **Font weights/styles**: instead of `@include font-bold`, add the `bd-font-bold`
+  utility class from bearded-ui (`../bearded-ui/src/styles/utilities.css`) in the
+  template — it bundles the bold `font-variation-settings` and `font-weight`,
+  including the `@supports not font-tech(variations)` fallback. Matching
+  `bd-font-italic` and `bd-font-bold-italic` classes exist too. Only write the raw declarations directly
   in a component's `<style>` when the styling is conditional (inside `:hover`,
   `::before`/`::after`, or a media query) — a static class can't express that, so
-  those cases stay local. Same pattern for `squircle` (`corner-shape: squircle;`).
+  those cases stay local. Same pattern for `bd-squircle` (`corner-shape: squircle;`).
 - **Breakpoints**: reference the shared custom media queries defined once in
   `src/assets/css/breakpoints.css` — `@media (--mobile) { ... }`,
   `(--tablet-up)`, `(--tablet-down)`, `(--tablet)`, `(--narrow-desktop-down)`,

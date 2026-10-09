@@ -29,12 +29,7 @@ export const useSearch = defineStore("search", {
   actions: {
     clear() {
       this.query = "";
-      this.artists = [];
-      this.albums = [];
-      this.tracks = [];
-      this.podcasts = [];
-      this.failed = false;
-      this.loading = false;
+      this.resetResults();
       this.exactArtist = null;
       this.exactAlbum = null;
     },
@@ -65,6 +60,16 @@ export const useSearch = defineStore("search", {
       this.exactAlbum = album?.toLowerCase() ?? null;
     },
 
+    /** Empties every result column and its status flags, keeping the query. */
+    resetResults() {
+      this.artists = [];
+      this.albums = [];
+      this.tracks = [];
+      this.podcasts = [];
+      this.failed = false;
+      this.loading = false;
+    },
+
     async search() {
       /*
        * The query as it stands when the request leaves. Responses are not
@@ -87,12 +92,7 @@ export const useSearch = defineStore("search", {
        */
       const types = searchTypeParam(this.navigateAlbumIfSingle ? { ...chosen, albums: true } : chosen);
       if (!types) {
-        this.artists = [];
-        this.albums = [];
-        this.tracks = [];
-        this.podcasts = [];
-        this.failed = false;
-        this.loading = false;
+        this.resetResults();
         return;
       }
 
@@ -167,12 +167,7 @@ export const useSearch = defineStore("search", {
       // Emptying the field must empty the results too, or the last search sits
       // there under a blank input looking current.
       if (!this.query.length) {
-        this.artists = [];
-        this.albums = [];
-        this.tracks = [];
-        this.podcasts = [];
-        this.failed = false;
-        this.loading = false;
+        this.resetResults();
         return;
       }
 

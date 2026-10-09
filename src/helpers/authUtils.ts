@@ -6,9 +6,6 @@ export function clearAuthData(): void {
   const authKeys = [
     "Beardify",
     "beardify-auth",
-    // "beardify-config",
-    // "beardify-sidebar",
-    // "beardify-player",
     "spotify_token_last_refresh",
   ];
 
@@ -17,12 +14,4 @@ export function clearAuthData(): void {
   });
 
   sessionStorage.removeItem("spotify_token_last_refresh");
-}
-
-/**
- * Clear all auth data and redirect the user to the login page.
- */
-export function logoutAndRedirect(): void {
-  clearAuthData();
-  window.location.href = "/login";
 }

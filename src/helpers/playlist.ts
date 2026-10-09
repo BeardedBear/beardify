@@ -3,7 +3,6 @@ import { PlaylistTrack } from "@/@types/Playlist";
 import { PublicUser } from "@/@types/PublicUser";
 import { TrackSimplified, TrackToRemove } from "@/@types/Track";
 import { instance } from "@/api";
-import { cleanUrl } from "@/helpers/urls";
 import { useAuth } from "@/views/auth/AuthStore";
 
 /**
@@ -87,12 +86,12 @@ export async function trackAllreadyExist(url: string, trackId: string): Promise<
  * @param match - Predicate run on each track
  */
 async function playlistHas(url: string, match: (track: PlaylistTrack) => boolean): Promise<boolean> {
-  let next: null | string = cleanUrl(url);
+  let next: null | string = url;
 
   while (next) {
     const { data }: { data: Paging<PlaylistTrack> } = await instance().get<Paging<PlaylistTrack>>(next);
     if (data.items.some(match)) return true;
-    next = data.next ? cleanUrl(data.next) : null;
+    next = data.next;
   }
 
   return false;

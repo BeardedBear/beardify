@@ -1,8 +1,9 @@
 import ky, { AfterResponseState, Options } from "ky";
 
-import { ApiResponse, SpotifyOptions } from "@/@types/Api";
+import { SpotifyOptions } from "@/@types/Api";
 import { http } from "@/helpers/http";
 import { isTauri } from "@/helpers/platform";
+import { cleanUrl } from "@/helpers/urls";
 import { isRefreshing, useAuth } from "@/views/auth/AuthStore";
 
 // Resolved at call-time (getter):
@@ -32,18 +33,16 @@ export const api = {
  * Interface for API instance methods
  */
 interface ApiInstance {
-  delete: <T = unknown>(url: string, options?: SpotifyOptions) => ApiResponse<{ data: T }>;
-  get: <T = unknown>(url: string, options?: SpotifyOptions) => ApiResponse<{ data: T }>;
-  patch: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => ApiResponse<{ data: T }>;
-  post: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => ApiResponse<{ data: T }>;
-  put: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => ApiResponse<{ data: T }>;
-  raw: typeof ky;
+  delete: <T = unknown>(url: string, options?: SpotifyOptions) => Promise<{ data: T }>;
+  get: <T = unknown>(url: string, options?: SpotifyOptions) => Promise<{ data: T }>;
+  post: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => Promise<{ data: T }>;
+  put: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions) => Promise<{ data: T }>;
 }
 
 /**
  * Type definition for HTTP methods in alphabetical order
  */
-type HttpMethod = "delete" | "get" | "patch" | "post" | "put";
+type HttpMethod = "delete" | "get" | "post" | "put";
 
 /**
  * Interface for request options with method type
@@ -68,7 +67,7 @@ export function instance(): ApiInstance {
    * @param requestOptions - Options for the request
    * @returns Promise resolving to the response data
    */
-  const handleRequest = async <T = unknown>(requestOptions: RequestOptions): ApiResponse<{ data: T }> => {
+  const handleRequest = async <T = unknown>(requestOptions: RequestOptions): Promise<{ data: T }> => {
     const { body, method, options, url } = requestOptions;
     const opts: Options = { ...options };
 
@@ -77,8 +76,8 @@ export function instance(): ApiInstance {
       opts.json = method === "delete" ? options?.data : body;
     }
 
-    // Make the request using the appropriate method
-    const response = await kyInstance[method](url, opts);
+    // Absolute `next` cursors would otherwise be double-prefixed by ky's `prefix`
+    const response = await kyInstance[method](cleanUrl(url), opts);
     let data: T;
     try {
       data = await response.json<T>();
@@ -90,23 +89,17 @@ export function instance(): ApiInstance {
   };
 
   return {
-    delete: <T = unknown>(url: string, options?: SpotifyOptions): ApiResponse<{ data: T }> =>
+    delete: <T = unknown>(url: string, options?: SpotifyOptions): Promise<{ data: T }> =>
       handleRequest<T>({ method: "delete", options, url }),
 
-    get: <T = unknown>(url: string, options?: SpotifyOptions): ApiResponse<{ data: T }> =>
+    get: <T = unknown>(url: string, options?: SpotifyOptions): Promise<{ data: T }> =>
       handleRequest<T>({ method: "get", options, url }),
 
-    patch: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): ApiResponse<{ data: T }> =>
-      handleRequest<T>({ body, method: "patch", options, url }),
-
-    post: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): ApiResponse<{ data: T }> =>
+    post: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> =>
       handleRequest<T>({ body, method: "post", options, url }),
 
-    put: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): ApiResponse<{ data: T }> =>
+    put: <T = unknown>(url: string, body?: unknown, options?: SpotifyOptions): Promise<{ data: T }> =>
       handleRequest<T>({ body, method: "put", options, url }),
-
-    // Direct access to the underlying ky instance
-    raw: kyInstance,
   };
 }
 

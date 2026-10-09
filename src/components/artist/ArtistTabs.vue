@@ -57,7 +57,7 @@ defineEmits<{
 function tabClass(tab: Tab): (Record<string, boolean | undefined> | string)[] {
   return [
     "tab",
-    "font-bold",
+    "bd-font-bold",
     {
       active: props.modelValue === tab.id,
       disabled: tab.disabled,
