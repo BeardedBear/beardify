@@ -32,7 +32,7 @@ export function useKeyboardEvents(): void {
 
       if (keyboardEvent.key === " " && keyboardEvent.target === document.body) {
         keyboardEvent.preventDefault();
-        if (playerStore.currentlyPlaying.is_playing) {
+        if (!playerStore.playerState.paused) {
           playerStore.pause();
         } else {
           playerStore.play();

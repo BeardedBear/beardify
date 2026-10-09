@@ -23,10 +23,10 @@
 </template>
 
 <script lang="ts" setup>
+import { HTTPError } from "ky";
 import { computed } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
-import { instance } from "@/api";
 import { useDialog } from "@/components/dialog/DialogStore";
 import Dialog from "@/components/dialog/DialogWrap.vue";
 import PreContentTrack from "@/components/dialog/PreContentTrack.vue";
@@ -34,7 +34,7 @@ import PlaylistIcon from "@/components/sidebar/PlaylistIcon.vue";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
 import VisibilityIcon from "@/components/sidebar/VisibilityIcon.vue";
 import { notification } from "@/helpers/notifications";
-import { trackAllreadyExist } from "@/helpers/playlist";
+import { addPlaylistItems, trackAllreadyExist } from "@/helpers/playlist";
 
 const dialogStore = useDialog();
 const sidebarStore = useSidebar();
@@ -43,25 +43,25 @@ const sidebarStore = useSidebar();
 const filteredPlaylists = computed(() => sidebarStore.playlists.filter((playlist) => playlist.owner.id !== "spotify"));
 
 async function add(songUri: string, playlistId: string): Promise<void> {
-  if (await trackAllreadyExist(`playlists/${playlistId}/items?limit=100`, songUri)) {
-    notification({
-      msg: "This track already exists in this playlist",
-      type: NotificationType.Error,
-    });
-  } else {
-    try {
-      await instance().post(`playlists/${playlistId}/items?uris=${songUri}`);
-      dialogStore.close();
-      notification({ msg: "Track added", type: NotificationType.Success });
-    } catch (error: unknown) {
+  try {
+    if (await trackAllreadyExist(`playlists/${playlistId}/items?limit=100`, songUri)) {
       notification({
-        msg: (error as { message?: string })?.message?.includes("403")
-          ? "Can't add to this playlist (no permission)."
-          : "Failed to add track.",
+        msg: "This track already exists in this playlist",
         type: NotificationType.Error,
       });
-      if (import.meta.env.DEV) console.error("Add track error:", error);
+      return;
     }
+    await addPlaylistItems(playlistId, [songUri]);
+    dialogStore.close();
+    notification({ msg: "Track added", type: NotificationType.Success });
+  } catch (error: unknown) {
+    notification({
+      msg: error instanceof HTTPError && error.response.status === 403
+        ? "Can't add to this playlist (no permission)."
+        : "Failed to add track.",
+      type: NotificationType.Error,
+    });
+    if (import.meta.env.DEV) console.error("Add track error:", error);
   }
 }
 </script>
