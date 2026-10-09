@@ -317,7 +317,8 @@ fn refresh_thumbar(hwnd: HWND) {
 }
 
 pub fn install(window: &WebviewWindow, app: AppHandle) -> windows::core::Result<()> {
-    let hwnd = window.hwnd().map_err(|_| windows::core::Error::from_win32())?;
+    // Rewrap the raw pointer: tauri may depend on a different `windows` version than ours.
+    let hwnd = HWND(window.hwnd().map_err(|_| windows::core::Error::from_win32())?.0);
     store_app_handle(app);
     store_hwnd(hwnd);
 
