@@ -7,11 +7,34 @@ import { usePlayer } from "@/components/player/PlayerStore";
 /** How far one arrow press moves the playhead. Matches what podcast apps use for a skip button. */
 const SEEK_DELTA_MS = 10_000;
 
+/* Elements where space already means something: typing, pressing, ticking, sliding. */
+const SPACE_OWNERS = [
+  "input",
+  "textarea",
+  "select",
+  "button",
+  "[contenteditable='']",
+  "[contenteditable='true']",
+  ...["button", "checkbox", "menuitem", "option", "radio", "slider", "switch", "tab", "textbox"].map(
+    (role) => `[role='${role}']`,
+  ),
+].join(",");
+
+/**
+ * True when the focused element handles space itself, so the global play/pause
+ * shortcut must stay out of its way. Anything else — body, but also `<main tabindex="-1">`
+ * or a link focused by a click — leaves space to the player.
+ * @param target - The keyboard event's target
+ */
+export function ownsSpaceKey(target: EventTarget | null): boolean {
+  return target instanceof Element && target.closest(SPACE_OWNERS) !== null;
+}
+
 /**
  * Register global keyboard shortcuts for the player:
  * - Shift+Up / Shift+Down: adjust volume by 2%
  * - Shift+Left / Shift+Right: seek by 10 seconds
- * - Space (on body): toggle play/pause
+ * - Space (unless a field or control has focus): toggle play/pause
  * - Ctrl/Cmd+K: open search
  */
 export function useKeyboardEvents(): void {
@@ -30,7 +53,7 @@ export function useKeyboardEvents(): void {
         return;
       }
 
-      if (keyboardEvent.key === " " && keyboardEvent.target === document.body) {
+      if (keyboardEvent.key === " " && !ownsSpaceKey(keyboardEvent.target)) {
         keyboardEvent.preventDefault();
         // Fired on keyup too, and repeats while held: toggle once per press
         if (keyboardEvent.type !== "keydown" || keyboardEvent.repeat) return;
