@@ -7,8 +7,8 @@
         class="active-device"
         :disabled="playerStore.isSettingDevice"
         variant="primary"
-        @click="playerStore.getDeviceList()"
-        @mouseenter="playerStore.getDeviceList()"
+        @click="refreshDevices(false)"
+        @mouseenter="refreshDevices(false)"
       >
         <BdTooltip
           :content="playerStore.devices.activeDevice ? `Device ID: ${playerStore.devices.activeDevice.id}` : ''"
@@ -43,8 +43,9 @@
         size="xx-small"
       />
     </BdDropdownItem>
-    <BdDropdownItem keep-open @click="playerStore.getDeviceList()">
-      <i class="icon-refresh" />
+    <BdDropdownItem :disabled="refreshing" keep-open @click="refreshDevices(true)">
+      <BdLoader v-if="refreshing" size="xx-small" />
+      <i v-else class="icon-refresh" />
       Refresh
     </BdDropdownItem>
   </BdDropdown>
@@ -57,9 +58,11 @@ import { computed, ref } from "vue";
 
 import type { Device } from "@/@types/Device";
 
+import { NotificationType } from "@/@types/Notification";
 import DeviceTypeIcon from "@/components/player/device/DeviceType.vue";
 import QueuedTracks from "@/components/player/device/QueuedTracks.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
+import { notification } from "@/helpers/notifications";
 
 const playerStore = usePlayer();
 const deviceListFiltered = computed(() => [...playerStore.devices.list].sort((a, b) => a.name.localeCompare(b.name)));
@@ -99,6 +102,24 @@ function truncate(str: string, max: number) {
 }
 
 const showList = ref(false);
+const refreshing = ref(false);
+
+/**
+ * Fetch the device list. Hover/open refreshes stay silent; the explicit Refresh
+ * shows progress and says so when it fails, instead of leaving the old list up.
+ * @param explicit - True for the Refresh item
+ */
+async function refreshDevices(explicit: boolean): Promise<void> {
+  if (explicit) refreshing.value = true;
+  try {
+    await playerStore.getDeviceList();
+  } catch (error) {
+    if (import.meta.env.DEV) console.error("Failed to fetch devices:", error);
+    if (explicit) notification({ msg: "Unable to refresh devices", type: NotificationType.Error });
+  } finally {
+    if (explicit) refreshing.value = false;
+  }
+}
 
 function selectDevice(device: Device): void {
   if (playerStore.isSettingDevice || device.id === playerStore.devices.activeDevice.id) return;

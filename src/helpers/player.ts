@@ -1,7 +1,7 @@
 import { NotificationType } from "@/@types/Notification";
 import { Track } from "@/@types/Track";
-import { instance } from "@/api";
 import { notification } from "@/helpers/notifications";
+import { clamp } from "@/helpers/volume";
 
 /**
  * Returns true if the given track is a podcast episode (type "episode" or episode URI).
@@ -45,70 +45,25 @@ export function notifyQueueError(): void {
   notification({ msg: "Unable to load the queue", type: NotificationType.Error });
 }
 
-/**
- * Set the repeat mode on the active Spotify device.
- * @param state - "context" to repeat the current context, "off" to disable repeat
- * @returns true on success, false if the API call fails
- */
-export async function setRepeatState(state: "context" | "off"): Promise<boolean> {
-  try {
-    await instance().put(`me/player/repeat?state=${state}`);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Enable or disable shuffle on the active Spotify device.
- * @param state - true to enable shuffle, false to disable
- * @returns true on success, false if the API call fails
- */
-export async function setShuffleState(state: boolean): Promise<boolean> {
-  try {
-    await instance().put(`me/player/shuffle?state=${state ? "true" : "false"}`);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 // Persist device volume in localStorage so we can restore when the API reports a default 100
 const STORAGE_PREFIX = "beardify.deviceVolume.";
 const LAST_VOLUME_KEY = `${STORAGE_PREFIX}last`;
 
-// Get the last used volume (fallback when device ID is not yet known)
 /**
- * Retrieve the last volume used across all devices from localStorage.
- * Used as a fallback when the current device ID is not yet known (e.g. on page load).
- * @returns Volume percentage (0-100) or null if not stored
+ * Volume to hand the SDK (0-1): this device's stored volume, else the API-reported
+ * one, else the last volume used on any device (device id unknown on page load).
+ * Stored values come first because the API reports a default 100 after a refresh.
+ * @param deviceId - Spotify device ID, if known
+ * @param apiVolumePercent - Volume reported by `me/player/devices`
+ * @returns SDK volume, or undefined when nothing is known
  */
-export function getLastStoredVolume(): null | number {
-  try {
-    const v = localStorage.getItem(LAST_VOLUME_KEY);
-    if (!v) return null;
-    const n = Number(v);
-    return Number.isFinite(n) ? n : null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Retrieve the last known volume for a specific device from localStorage.
- * @param deviceId - Spotify device ID
- * @returns Volume percentage (0-100) or null if not stored or deviceId is falsy
- */
-export function getStoredDeviceVolume(deviceId: null | string | undefined): null | number {
-  if (!deviceId) return null;
-  try {
-    const v = localStorage.getItem(`${STORAGE_PREFIX}${deviceId}`);
-    if (!v) return null;
-    const n = Number(v);
-    return Number.isFinite(n) ? n : null;
-  } catch {
-    return null;
-  }
+export function resolveSdkVolume(
+  deviceId: null | string | undefined,
+  apiVolumePercent: null | number | undefined,
+): number | undefined {
+  const stored = deviceId ? readVolume(`${STORAGE_PREFIX}${deviceId}`) : null;
+  const percent = stored ?? apiVolumePercent ?? readVolume(LAST_VOLUME_KEY);
+  return typeof percent === "number" && !Number.isNaN(percent) ? clamp(percent) / 100 : undefined;
 }
 
 /**
@@ -125,5 +80,16 @@ export function saveDeviceVolume(deviceId: null | string | undefined, volumePerc
     localStorage.setItem(LAST_VOLUME_KEY, String(Math.round(volumePercent)));
   } catch {
     // ignore storage errors
+  }
+}
+
+function readVolume(key: string): null | number {
+  try {
+    const v = localStorage.getItem(key);
+    if (!v) return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  } catch {
+    return null;
   }
 }

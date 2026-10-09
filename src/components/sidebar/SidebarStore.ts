@@ -9,9 +9,9 @@ import { buildCollectionDescription, CollectionRankingMode, MAX_DESCRIPTION_LENG
 import { isACollection } from "@/helpers/isCollection";
 import { removeFromLibrary } from "@/helpers/library";
 import { notification } from "@/helpers/notifications";
+import { fetchAllPages } from "@/helpers/pagination";
 import { isPlaylistOwner } from "@/helpers/playlist";
 import { sleep } from "@/helpers/sleep";
-import { cleanUrl } from "@/helpers/urls";
 import router from "@/router";
 import { useAuth } from "@/views/auth/AuthStore";
 import { usePlaylist } from "@/views/playlist/PlaylistStore";
@@ -65,7 +65,6 @@ export const useSidebar = defineStore("sidebar", {
       for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
         if (attempt > 0) await sleep(1000 * attempt);
 
-        let url = initialUrl;
         const allPlaylistIds = new Set<string>();
         const allCollectionIds = new Set<string>();
         const tempPlaylists: SimplifiedPlaylist[] = [];
@@ -75,26 +74,22 @@ export const useSidebar = defineStore("sidebar", {
         this.collections.forEach((c) => allCollectionIds.add(c.id));
 
         try {
-          while (url) {
-            const cleanedUrl = cleanUrl(url);
-            const { data } = await instance().get<Paging<SimplifiedPlaylist>>(cleanedUrl);
+          const items = await fetchAllPages(
+            (url) => instance().get<Paging<SimplifiedPlaylist>>(url).then((r) => r.data),
+            initialUrl,
+          );
 
-            data.items.forEach((item) => {
-              if (isACollection(item)) {
-                if (!allCollectionIds.has(item.id)) {
-                  allCollectionIds.add(item.id);
-                  tempCollections.push(item);
-                }
-              } else {
-                if (!allPlaylistIds.has(item.id)) {
-                  allPlaylistIds.add(item.id);
-                  tempPlaylists.push(item);
-                }
+          items.forEach((item) => {
+            if (isACollection(item)) {
+              if (!allCollectionIds.has(item.id)) {
+                allCollectionIds.add(item.id);
+                tempCollections.push(item);
               }
-            });
-
-            url = data.next || "";
-          }
+            } else if (!allPlaylistIds.has(item.id)) {
+              allPlaylistIds.add(item.id);
+              tempPlaylists.push(item);
+            }
+          });
 
           this.playlists = [...this.playlists, ...tempPlaylists];
           this.collections = [...this.collections, ...tempCollections];

@@ -9,17 +9,39 @@ import { sleep } from "@/helpers/sleep";
 import { createSpotifyPlayer } from "@/spotify";
 
 // Define a type for API errors
-export interface ApiError {
+interface ApiError {
   response?: {
     status: number;
   };
 }
 
 /**
+ * Start playback of `payload` on the active device, activating one first if
+ * needed, with retries for device-related errors.
+ * @param payload - Body for `me/player/play` (uris, context_uri, position_ms)
+ */
+export async function startPlayback(payload: Record<string, unknown>): Promise<void> {
+  const deviceId = await ensureActiveDevice();
+  if (!deviceId) {
+    notifyNoDevice();
+    return;
+  }
+
+  const play = (id: string): Promise<unknown> => instance().put(`me/player/play?device_id=${id}`, payload);
+  try {
+    await play(deviceId);
+  } catch (error: unknown) {
+    await handlePlaybackApiError(error, async (newDeviceId) => {
+      await play(newDeviceId);
+    });
+  }
+}
+
+/**
  * Ensures a device is active and ready before attempting playback
  * @returns Promise resolving to a valid device ID or null if unavailable
  */
-export async function ensureActiveDevice(): Promise<null | string> {
+async function ensureActiveDevice(): Promise<null | string> {
   const playerStore = usePlayer();
   let deviceId = playerStore.devices.activeDevice?.id;
 
@@ -64,31 +86,11 @@ export async function ensureActiveDevice(): Promise<null | string> {
 }
 
 /**
- * Execute a Spotify API call with proper error handling
- * @param deviceId - The device ID to use for playback
- * @param payload - The payload to send to the API
- * @param endpoint - The API endpoint to call (e.g., 'me/player/play')
- */
-export async function executePlaybackApiCall(
-  deviceId: string,
-  payload: Record<string, unknown>,
-  endpoint: string = "me/player/play",
-): Promise<void> {
-  try {
-    await instance().put(`${endpoint}?device_id=${deviceId}`, payload);
-  } catch (error: unknown) {
-    await handlePlaybackApiError(error, async (newDeviceId) => {
-      await instance().put(`${endpoint}?device_id=${newDeviceId}`, payload);
-    });
-  }
-}
-
-/**
  * Handle playback API errors with retries for device-related errors
  * @param error - The error that occurred during the API call
  * @param retry - Function to call for retrying the operation
  */
-export async function handlePlaybackApiError(
+async function handlePlaybackApiError(
   error: unknown,
   retry: (deviceId: string) => Promise<void>,
 ): Promise<void> {
@@ -154,7 +156,7 @@ export async function handlePlaybackApiError(
  * @param error - The error to check
  * @returns True if the error is an API error, false otherwise
  */
-export function isApiError(error: unknown): error is ApiError {
+function isApiError(error: unknown): error is ApiError {
   return (
     typeof error === "object"
     && error !== null
@@ -168,11 +170,9 @@ export function isApiError(error: unknown): error is ApiError {
 
 /**
  * Tells the user no device could be activated. `ensureActiveDevice()` stays
- * silent on purpose (it is also used as an internal retry step), so every
- * playback entry point that gives up needs this exact message — hence one
- * function instead of the same notification copy-pasted per entry point.
+ * silent on purpose: it is also used as an internal retry step.
  */
-export function notifyNoDevice(): void {
+function notifyNoDevice(): void {
   notification({
     msg: "No active device found. Please select a device.",
     type: NotificationType.Warning,
