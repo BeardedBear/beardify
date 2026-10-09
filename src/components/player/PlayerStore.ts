@@ -43,6 +43,13 @@ const SEEK_LOCK_DURATION_MS = 2000;
  */
 const deviceQuery = (deviceId?: string): string => (deviceId ? `?device_id=${deviceId}` : "");
 
+/*
+ * Hover, click, Refresh, the heartbeat and the SDK all ask for the device list,
+ * often within milliseconds. Sharing the in-flight request keeps a slower, older
+ * response from landing last and overwriting a fresher list.
+ */
+let deviceListRequest: null | Promise<void> = null;
+
 export const usePlayer = defineStore("player", {
   actions: {
     async _attemptDeviceActivation(
@@ -74,6 +81,25 @@ export const usePlayer = defineStore("player", {
 
       await this._attemptDeviceActivation(targetDeviceId, maxAttempts, hasTimedOut);
       await this._finalizeDeviceSwitch(targetDeviceId, retries, hasTimedOut);
+    },
+
+    async _fetchDeviceList(): Promise<void> {
+      // no-store: a device list served from the HTTP cache is exactly the stale list we're refreshing away
+      const { data } = await instance().get<DevicesResponse>("me/player/devices", { cache: "no-store" });
+      const activeDevice = data.devices.find((device): boolean => device.is_active);
+      const previousDeviceStillListed = data.devices.some((device) => device.id === this.devices.activeDevice?.id);
+      this.devices.list = data.devices;
+      if (!data.devices.length) createSpotifyPlayer().connect();
+      if (activeDevice) {
+        this.devices.activeDevice = activeDevice;
+      } else if (!previousDeviceStillListed && this.thisDeviceId) {
+        // No device reports is_active AND the previously active device is gone from the
+        // list entirely — genuinely disconnected, fall back to this device. If it's merely
+        // missing the is_active flag (Spotify Connect propagation lag on reconnect), keep
+        // the current activeDevice instead of stealing playback onto this device.
+        this.setDevice(this.thisDeviceId);
+      }
+      this.startDeviceHeartbeat();
     },
 
     async _finalizeDeviceSwitch(targetDeviceId: string, retries: number, hasTimedOut: () => boolean): Promise<void> {
@@ -241,7 +267,6 @@ export const usePlayer = defineStore("player", {
         return false;
       }
     },
-
     /**
      * Re-activate a device after Spotify has dropped them all — what happens
      * when the machine sleeps: the SDK socket dies, no device reports
@@ -266,6 +291,7 @@ export const usePlayer = defineStore("player", {
         return null;
       }
     },
+
     /**
      * Run a transport command against the active device, waking it first if
      * Spotify has forgotten it. Without this the play button reports success
@@ -335,22 +361,11 @@ export const usePlayer = defineStore("player", {
       this.panelOpened = false;
     },
 
-    async getDeviceList(): Promise<void> {
-      const { data } = await instance().get<DevicesResponse>("me/player/devices");
-      const activeDevice = data.devices.find((device): boolean => device.is_active);
-      const previousDeviceStillListed = data.devices.some((device) => device.id === this.devices.activeDevice?.id);
-      this.devices.list = data.devices;
-      if (!data.devices.length) createSpotifyPlayer().connect();
-      if (activeDevice) {
-        this.devices.activeDevice = activeDevice;
-      } else if (!previousDeviceStillListed && this.thisDeviceId) {
-        // No device reports is_active AND the previously active device is gone from the
-        // list entirely — genuinely disconnected, fall back to this device. If it's merely
-        // missing the is_active flag (Spotify Connect propagation lag on reconnect), keep
-        // the current activeDevice instead of stealing playback onto this device.
-        this.setDevice(this.thisDeviceId);
-      }
-      this.startDeviceHeartbeat();
+    getDeviceList(): Promise<void> {
+      deviceListRequest ??= this._fetchDeviceList().finally(() => {
+        deviceListRequest = null;
+      });
+      return deviceListRequest;
     },
 
     async getExternalPlayerState(): Promise<void> {
