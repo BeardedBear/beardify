@@ -47,6 +47,11 @@ export interface Podcast {
   type: ContextType;
   uri: string;
 }
+export interface PodcastFreshness {
+  hasNewEpisode: boolean;
+  resumableEpisode: Episode | null;
+}
+
 export interface PodcastSaved {
   added_at: string;
   show: Podcast;
@@ -57,6 +62,7 @@ export interface PodcastsPage {
   episodesLoading: boolean;
   error: boolean;
   followBusy: boolean;
+  freshness: Record<string, PodcastFreshness>;
   isFollowing: boolean;
   loading: boolean;
   myPodcasts: PodcastSaved[];

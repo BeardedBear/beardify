@@ -149,7 +149,9 @@ const remainingMs = computed(() => Math.max(0, props.episode.duration_ms - posit
   margin-bottom: var(--bd-space-4);
   position: relative;
   text-decoration: none;
-  transition: background-color var(--bd-transition);
+  transition:
+    background-color var(--bd-transition),
+    box-shadow var(--bd-transition);
 
   /* The playing row is marked on the card, the way a playing track is. */
   &.active {

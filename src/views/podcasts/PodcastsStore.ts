@@ -9,12 +9,34 @@ import { isInLibrary, removeFromLibrary, saveToLibrary } from "@/helpers/library
 import { notification } from "@/helpers/notifications";
 import { cleanUrl } from "@/helpers/urls";
 
+// Which episode a podcast was last opened at, so the list page can tell a new
+// release apart from one the user has already seen. Per-show, not per-episode:
+// visiting the show page marks its current latest episode as seen.
+const SEEN_EPISODE_PREFIX = "beardify.podcastLastSeenEpisode.";
+
+function getLastSeenEpisodeId(podcastId: string): null | string {
+  try {
+    return localStorage.getItem(`${SEEN_EPISODE_PREFIX}${podcastId}`);
+  } catch {
+    return null;
+  }
+}
+
+function setLastSeenEpisodeId(podcastId: string, episodeId: string): void {
+  try {
+    localStorage.setItem(`${SEEN_EPISODE_PREFIX}${podcastId}`, episodeId);
+  } catch {
+    // ignore storage errors
+  }
+}
+
 export const usePodcasts = defineStore("podcasts", {
   actions: {
     async clean() {
       this.podcast = null;
       this.myPodcasts = [];
       this.episodes = [];
+      this.freshness = {};
       this.isFollowing = false;
       this.error = false;
       this.loading = true;
@@ -81,12 +103,49 @@ export const usePodcasts = defineStore("podcasts", {
           this.episodes = this.episodes.concat(data.items.filter((episode) => episode !== null));
           url = data.next;
         }
+        if (this.episodes.length) {
+          setLastSeenEpisodeId(podcastId, this.episodes[0].id);
+          if (this.freshness[podcastId]) this.freshness[podcastId].hasNewEpisode = false;
+        }
       } catch (error) {
         if (import.meta.env.DEV) console.error("Error fetching podcast episodes:", error);
         this.error = true;
       } finally {
         this.episodesLoading = false;
       }
+    },
+
+    /*
+     * Spotify has no bulk "new episodes / in progress" endpoint for followed
+     * shows, so each show's own episode list is checked directly. Limited to
+     * the 10 most recent episodes per show: enough to catch a fresh release
+     * or a still-in-progress one without paging through a whole back catalogue.
+     */
+    async getPodcastsFreshness() {
+      await Promise.all(
+        this.myPodcasts.map(async ({ show }) => {
+          try {
+            const { data } = await instance().get<Paging<Episode>>(`shows/${show.id}/episodes?limit=10`);
+            const episodes = data.items.filter((episode) => episode !== null);
+            const latest = episodes[0] as Episode | undefined;
+            const lastSeenId = getLastSeenEpisodeId(show.id);
+
+            // First time we see this show: seed it as seen instead of flagging everything "new".
+            if (latest && lastSeenId === null) setLastSeenEpisodeId(show.id, latest.id);
+
+            this.freshness[show.id] = {
+              hasNewEpisode: !!latest && lastSeenId !== null && lastSeenId !== latest.id,
+              resumableEpisode:
+                episodes.find(
+                  (episode) =>
+                    !episode.resume_point?.fully_played && (episode.resume_point?.resume_position_ms ?? 0) > 0,
+                ) ?? null,
+            };
+          } catch (error) {
+            if (import.meta.env.DEV) console.error(`Error fetching episodes freshness for ${show.id}:`, error);
+          }
+        }),
+      );
     },
 
     /*
@@ -129,6 +188,7 @@ export const usePodcasts = defineStore("podcasts", {
     episodesLoading: true,
     error: false,
     followBusy: false,
+    freshness: {},
     isFollowing: false,
     loading: true,
     myPodcasts: [],

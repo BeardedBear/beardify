@@ -41,8 +41,10 @@
           :key="podcast.show.id"
           :covers="podcast.show.images"
           :episodes="podcast.show.total_episodes"
+          :has-new-episode="podcastsStore.freshness[podcast.show.id]?.hasNewEpisode"
           :name="podcast.show.name"
           :publisher="podcast.show.publisher"
+          :resumable-episode="podcastsStore.freshness[podcast.show.id]?.resumableEpisode"
         />
       </div>
     </div>
@@ -60,7 +62,10 @@ import { usePodcasts } from "@/views/podcasts/PodcastsStore";
 const podcastsStore = usePodcasts();
 
 function load(): void {
-  podcastsStore.clean().finally(() => podcastsStore.getMyPodcasts());
+  podcastsStore.clean().finally(async () => {
+    await podcastsStore.getMyPodcasts();
+    podcastsStore.getPodcastsFreshness();
+  });
 }
 
 load();
