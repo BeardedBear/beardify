@@ -7,7 +7,6 @@ import { NotificationType } from "@/@types/Notification";
 import { instance } from "@/api";
 import { isInLibrary, removeFromLibrary, saveToLibrary } from "@/helpers/library";
 import { notification } from "@/helpers/notifications";
-import { cleanUrl } from "@/helpers/urls";
 
 export const usePodcasts = defineStore("podcasts", {
   actions: {
@@ -50,8 +49,7 @@ export const usePodcasts = defineStore("podcasts", {
 
     async getMyPodcasts(url: string) {
       try {
-        const cleanedUrl = cleanUrl(url);
-        const e = await instance().get<Paging<PodcastSaved>>(cleanedUrl);
+        const e = await instance().get<Paging<PodcastSaved>>(url);
         const validPodcasts = e.data.items.filter((podcast): podcast is PodcastSaved => podcast !== null);
         this.myPodcasts = this.myPodcasts.concat(validPodcasts);
         if (e.data.next) await this.getMyPodcasts(e.data.next);
@@ -71,8 +69,7 @@ export const usePodcasts = defineStore("podcasts", {
 
     async getPodcastEpisodes(url: string) {
       try {
-        const cleanedUrl = cleanUrl(url);
-        const e = await instance().get<Paging<Episode>>(cleanedUrl);
+        const e = await instance().get<Paging<Episode>>(url);
         const validEpisodes = e.data.items.filter((episode): episode is Episode => episode !== null);
         this.episodes = this.episodes.concat(validEpisodes);
         if (e.data.next) await this.getPodcastEpisodes(e.data.next);

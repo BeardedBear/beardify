@@ -127,7 +127,9 @@ const visibility = computed<string>({
 watchEffect(async () => {
   if (dialogStore.show && dialogStore.type === "editPlaylist") {
     try {
-      const { data } = await instance().get<Playlist>(`playlists/${dialogStore.playlistId}`);
+      const { data } = await instance().get<Playlist>(
+        `playlists/${dialogStore.playlistId}?fields=name,description,public,collaborative,owner(id)`,
+      );
       isEditable.value = isPlaylistOwner(data.owner);
       isCollection.value = isACollection(data);
       values.name = data.name;

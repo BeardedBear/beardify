@@ -164,13 +164,12 @@ const syncAlbumList = (): void => {
 
 onMounted(syncAlbumList);
 
-const albumListFiltered = computed<AlbumSimplified[]>(() =>
-  albumList.value.filter((album) => {
-    const matchedArtistName = album.artists[0].name.toLowerCase().includes(playlistStore.filter.toLowerCase());
-    const matchedAlbumName = album.name.toLowerCase().includes(playlistStore.filter.toLowerCase());
-    return matchedArtistName || matchedAlbumName;
-  }),
-);
+const albumListFiltered = computed<AlbumSimplified[]>(() => {
+  const q = playlistStore.filter.toLowerCase();
+  return albumList.value.filter(
+    (album) => album.artists[0].name.toLowerCase().includes(q) || album.name.toLowerCase().includes(q),
+  );
+});
 
 const description = computed(() => playlistStore.playlist.description);
 const { rankOf, tierList, topTiers } = useCollectionRanking(description, albumList);

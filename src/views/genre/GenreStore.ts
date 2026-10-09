@@ -6,7 +6,6 @@ import { SearchFromAPI } from "@/@types/Search";
 import { instance } from "@/api";
 import { getTopArtistsByTag } from "@/helpers/lastfm";
 import { resolveArtistByName } from "@/helpers/spotify";
-import { cleanUrl } from "@/helpers/urls";
 
 // Spotify id is unknown until the card is clicked: Last.fm gives names only,
 // resolving all of them to Spotify artists up front would fire one search
@@ -38,7 +37,7 @@ async function fetchPages(query: string): Promise<Artist[]> {
     const { data } = await instance().get<SearchFromAPI>(url);
     if (!data.artists) break;
     items.push(...data.artists.items);
-    url = data.artists.next ? cleanUrl(data.artists.next) : "";
+    url = data.artists.next ?? "";
   }
   return items;
 }

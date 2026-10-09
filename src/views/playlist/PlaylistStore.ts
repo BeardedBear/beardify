@@ -10,7 +10,6 @@ import { useSidebar } from "@/components/sidebar/SidebarStore";
 import { buildCollectionDescription, parseCollectionRankingMode, stripCollectionTags } from "@/helpers/collectionOptions";
 import { isInLibrary, saveToLibrary } from "@/helpers/library";
 import { notification } from "@/helpers/notifications";
-import { cleanUrl } from "@/helpers/urls";
 import router from "@/router";
 
 export const usePlaylist = defineStore("playlist", {
@@ -34,8 +33,7 @@ export const usePlaylist = defineStore("playlist", {
 
     async getPlaylist(url: string) {
       try {
-        const cleanedUrl = cleanUrl(url);
-        this.playlist = (await instance().get<Playlist>(cleanedUrl)).data;
+        this.playlist = (await instance().get<Playlist>(url)).data;
         this.followed = await isInLibrary("playlist", this.playlist.id);
       } catch (error: unknown) {
         if (import.meta.env.DEV) console.error("Error fetching playlist:", error);
@@ -48,24 +46,13 @@ export const usePlaylist = defineStore("playlist", {
     async getTracks(url: string, version?: number) {
       const v = version ?? this.tracksVersion;
       try {
-        const cleanedUrl = cleanUrl(url);
-        const e = await instance().get<Paging<PlaylistTrack>>(cleanedUrl);
+        const e = await instance().get<Paging<PlaylistTrack>>(url);
         // If tracks were reset by a newer navigation, abandon this pagination chain
         if (this.tracksVersion !== v) return;
         this.tracks = this.tracks.concat(e.data.items.filter((item: PlaylistTrack) => item.item));
         if (e.data.next) await this.getTracks(e.data.next, v);
       } catch (error: unknown) {
         if (import.meta.env.DEV) console.error("Error fetching playlist tracks:", error);
-        if (typeof error === "object" && error && "message" in error) {
-          const msg = (error as { message?: string }).message; // retain minimal structural narrowing
-          if (msg && msg.includes("404") && url.includes("https://api.spotify.com/v1/https://api.spotify.com/v1/")) {
-            const fixedUrl = url.replace(
-              "https://api.spotify.com/v1/https://api.spotify.com/v1/",
-              "https://api.spotify.com/v1/",
-            );
-            await this.getTracks(fixedUrl);
-          }
-        }
       }
     },
 
@@ -108,12 +95,6 @@ export const usePlaylist = defineStore("playlist", {
       // Use Set for O(1) lookup instead of array.includes() which is O(n)
       const urisToRemove = new Set(tracks.map((track) => track.uri));
       this.tracks = this.tracks.filter((track) => !urisToRemove.has(track.item.uri));
-    },
-
-    async resetTracks() {
-      this.tracksVersion++;
-      this.filter = "";
-      this.tracks = [];
     },
 
     /**

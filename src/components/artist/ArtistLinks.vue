@@ -32,7 +32,7 @@
 
 <script lang="ts" setup>
 import { BdButton, BdTooltip } from "bearded-ui";
-import { computed, onMounted, onUpdated, ref } from "vue";
+import { computed } from "vue";
 
 import type { SocialLink } from "@/helpers/socialLinks";
 
@@ -49,8 +49,7 @@ const props = defineProps<{
 
 const frameStore = useFrame();
 const artistStore = useArtist();
-const link = ref<Record<string, string>>({});
-const artistNameNormalized = ref<string>("");
+const artistNameNormalized = computed(() => normalizeDiacritics(props.artistName).replaceAll("&", "and"));
 
 /**
  * Merge and deduplicate social links from Wikidata, Musicbrainz and Discogs
@@ -67,14 +66,6 @@ const socialLinks = computed<SocialLink[]>(() => {
   for (const l of musicbrainzLinks) if (!linkMap.has(l.name)) linkMap.set(l.name, l);
 
   return Array.from(linkMap.values());
-});
-
-// Use Wikidata Wikipedia URL if available, otherwise fallback to constructed URL
-const wikipediaUrl = computed(() => {
-  if (props.floating) {
-    return `https://en.wikipedia.org/wiki/${artistNameNormalized.value}`;
-  }
-  return artistStore.wikidataArtist?.wikipediaUrl || `https://en.wikipedia.org/wiki/${artistNameNormalized.value}`;
 });
 
 // Use Wikidata Discogs ID if available, otherwise use constructed URL
@@ -104,21 +95,11 @@ const rymUrl = computed(() => {
   return `https://rateyourmusic.com/search?searchtype=a&searchterm=${artistNameNormalized.value}`;
 });
 
-function updateLinks(): void {
-  artistNameNormalized.value = normalizeDiacritics(props.artistName).replaceAll("&", "and");
-  link.value = {
-    discogs: discogsUrl.value,
-    google: `https://www.google.com/search?q=${artistNameNormalized.value}&igu=1`,
-    lastfm: `https://www.last.fm/music/${artistNameNormalized.value}`,
-    rym: rymUrl.value,
-    sputnik: `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${artistNameNormalized.value}&amp;x=0&amp;y=0`,
-    wikipedia: wikipediaUrl.value,
-    youtube: `https://www.youtube.com/results?search_query=${artistNameNormalized.value}`,
-  };
-}
-
-onMounted(() => updateLinks());
-onUpdated(() => updateLinks());
+const link = computed(() => ({
+  discogs: discogsUrl.value,
+  rym: rymUrl.value,
+  sputnik: `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${artistNameNormalized.value}&amp;x=0&amp;y=0`,
+}));
 </script>
 
 <style>

@@ -25,9 +25,9 @@
               <template #icon><i class="icon-album" /></template>
             </BdEmptyState>
             <BlockAlbums />
-            <BlockEps />
-            <BlockAlbumsLive />
-            <BlockAlbumsCompilation />
+            <BlockAlbumGroups :albums="artistStore.eps" icon="icon-ep" title="EP's" />
+            <BlockAlbumGroups :albums="artistStore.albumsLive" icon="icon-album" title="Live albums" />
+            <BlockAlbumGroups :albums="artistStore.albumsCompilation" icon="icon-album" title="Compilations" />
             <BlockSingles />
           </template>
         </div>
@@ -51,10 +51,8 @@ import { useRoute } from "vue-router";
 
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
 import ArtistInfo from "@/components/artist/ArtistInfo.vue";
+import BlockAlbumGroups from "@/components/artist/BlockAlbumGroups.vue";
 import BlockAlbums from "@/components/artist/BlockAlbums.vue";
-import BlockAlbumsCompilation from "@/components/artist/BlockAlbumsCompilation.vue";
-import BlockAlbumsLive from "@/components/artist/BlockAlbumsLive.vue";
-import BlockEps from "@/components/artist/BlockEps.vue";
 import BlockSingles from "@/components/artist/BlockSingles.vue";
 import RelatedArtists from "@/components/artist/RelatedArtists.vue";
 import TopTracks from "@/components/artist/TopTracks.vue";
@@ -177,8 +175,8 @@ artistStore.clean().finally(async () => {
   // reclassifyReleases is called internally each time a classification source resolves.
   const currentId = props.id;
   const albumsPromise = Promise.all([
-    artistStore.getAlbums(`artists/${currentId}/albums?include_groups=album&limit=50`),
-    artistStore.getCompilations(`artists/${currentId}/albums?include_groups=compilation&limit=50`),
+    artistStore.fetchReleasePage(`artists/${currentId}/albums?include_groups=album&limit=50`, "albums"),
+    artistStore.fetchReleasePage(`artists/${currentId}/albums?include_groups=compilation&limit=50`, "albumsCompilation"),
     artistStore.getSingles(currentId),
   ]);
 

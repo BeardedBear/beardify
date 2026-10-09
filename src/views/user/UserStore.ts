@@ -21,12 +21,9 @@ export const useUserStore = defineStore("user", {
     async getUserPlaylists(url: string) {
       const { data } = await instance().get<Paging<SimplifiedPlaylist>>(url);
 
-      this.playlists = this.playlists
-        .concat(data.items)
-        .filter((p) => !isACollection(p) && p.public && p.owner.id === this.user?.id);
-      this.collections = this.collections
-        .concat(data.items)
-        .filter((p) => isACollection(p) && p.public && p.owner.id === this.user?.id);
+      const owned = data.items.filter((p) => p.public && p.owner.id === this.user?.id);
+      this.playlists = this.playlists.concat(owned.filter((p) => !isACollection(p)));
+      this.collections = this.collections.concat(owned.filter((p) => isACollection(p)));
 
       if (data.next) await this.getUserPlaylists(data.next);
     },
