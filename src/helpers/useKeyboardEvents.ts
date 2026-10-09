@@ -32,6 +32,8 @@ export function useKeyboardEvents(): void {
 
       if (keyboardEvent.key === " " && keyboardEvent.target === document.body) {
         keyboardEvent.preventDefault();
+        // Fired on keyup too, and repeats while held: toggle once per press
+        if (keyboardEvent.type !== "keydown" || keyboardEvent.repeat) return;
         if (!playerStore.playerState.paused) {
           playerStore.pause();
         } else {
