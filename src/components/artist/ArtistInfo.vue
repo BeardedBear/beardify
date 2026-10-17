@@ -1,43 +1,82 @@
 <template>
   <div class="artist-info">
-    <div class="main-content">
+    <div class="info-main">
       <div v-if="artistStore.timelineLoading" class="timeline-loader">
         <BdLoader size="small" />
       </div>
       <WikipediaTimeline v-else-if="artistStore.wikiTimeline && !isSoloArtist" />
       <MemberTimeline v-else-if="artistStore.bandMembers.length > 0 && !isSoloArtist" />
 
-      <div v-if="hasBiography" class="info-section">
-        <ArtistNavigation
-          :active-section-id="activeSectionId"
-          :current-language="artistStore.wikipediaLanguage"
-          :header-height="artistStore.headerHeight"
-          :languages="artistStore.wikidataArtist?.wikipediaLanguages ?? []"
-          :sections="wikipediaSections"
-          :source-url="artistStore.wikipediaSourceUrl"
-          @language-change="onLanguageChange"
-          @section-change="onSectionChange"
-        />
+      <div v-if="hasBiography" class="info-section wiki-layout" :class="{ 'has-sidebar': hasWikiSidebar }">
+        <aside
+          v-if="hasWikiSidebar"
+          class="wiki-sidebar"
+          :style="{
+            maxHeight: `calc(${scrollerHeight - artistStore.headerHeight}px - var(--bd-space-4) * 2)`,
+            top: `calc(${artistStore.headerHeight}px + var(--bd-space-4))`,
+          }"
+        >
+          <div v-if="languages.length > 1 || artistStore.wikipediaSourceUrl" class="wiki-meta">
+            <BdDropdown v-if="languages.length > 1" :label="currentLanguageName" size="small">
+              <BdDropdownItem
+                v-for="language in languages"
+                :key="language.code"
+                :active="language.code === artistStore.wikipediaLanguage"
+                @click="onLanguageChange(language)"
+              >
+                {{ language.name }}
+              </BdDropdownItem>
+            </BdDropdown>
 
-        <!-- eslint-disable vue/no-v-html -->
-        <div
-          v-if="artistStore.wikipediaExtract"
-          ref="wikipediaContentRef"
-          class="wikipedia-content"
-          :dir="textDirection"
-          :lang="artistStore.wikipediaLanguage"
-          @click="onContentClick"
-          v-html="sanitizedWikipediaExtract"
-        />
-        <!-- eslint-enable vue/no-v-html -->
-        <!-- eslint-disable vue/no-v-html -->
-        <div
-          v-else-if="artistStore.discogsArtist?.profile"
-          class="biography"
-          @click="onContentClick"
-          v-html="formattedDiscogsProfile"
-        />
-        <!-- eslint-enable vue/no-v-html -->
+            <!-- The reader's way out to the full article, and the CC BY-SA attribution -->
+            <a
+              v-if="artistStore.wikipediaSourceUrl"
+              class="source-link"
+              :href="artistStore.wikipediaSourceUrl"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Wikipedia
+              <ExternalLink :size="14" />
+            </a>
+          </div>
+
+          <nav v-if="wikipediaSections.length > 0" aria-label="Sections" class="wiki-toc">
+            <a
+              v-for="section in wikipediaSections"
+              :key="section.id"
+              :aria-current="section.id === activeSectionId ? 'location' : undefined"
+              class="toc-link"
+              :class="{ active: section.id === activeSectionId, sub: section.level > 2 }"
+              :href="`#${section.id}`"
+              @click.prevent="scrollToSection(section.id)"
+            >
+              {{ section.title }}
+            </a>
+          </nav>
+        </aside>
+
+        <div class="info-body">
+          <!-- eslint-disable vue/no-v-html -->
+          <div
+            v-if="artistStore.wikipediaExtract"
+            ref="wikipediaContentRef"
+            class="wikipedia-content"
+            :dir="textDirection"
+            :lang="artistStore.wikipediaLanguage"
+            @click="onContentClick"
+            v-html="sanitizedWikipediaExtract"
+          />
+          <!-- eslint-enable vue/no-v-html -->
+          <!-- eslint-disable vue/no-v-html -->
+          <div
+            v-else-if="artistStore.discogsArtist?.profile"
+            class="biography"
+            @click="onContentClick"
+            v-html="formattedDiscogsProfile"
+          />
+          <!-- eslint-enable vue/no-v-html -->
+        </div>
       </div>
 
       <!-- A failed fetch is not an absent article: say which one happened, and offer the way out -->
@@ -56,12 +95,13 @@
 </template>
 
 <script lang="ts" setup>
-import { BdButton, BdLoader } from "bearded-ui";
+import { ExternalLink } from "@lucide/vue";
+import { useElementSize } from "@vueuse/core";
+import { BdButton, BdDropdown, BdDropdownItem, BdLoader } from "bearded-ui";
 import DOMPurify from "dompurify";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import { type LanguageOption } from "@/@types/Wikipedia";
-import ArtistNavigation from "@/components/artist/ArtistNavigation.vue";
 import ArtistSidebar from "@/components/artist/ArtistSidebar.vue";
 import MemberTimeline from "@/components/artist/MemberTimeline.vue";
 import WikipediaTimeline from "@/components/artist/WikipediaTimeline.vue";
@@ -75,7 +115,7 @@ import { useArtist } from "@/views/artist/ArtistStore";
 
 interface WikipediaSection {
   id: string;
-  /** 2, 3 or 4 — the dropdown indents on it, so a flat list reads as an outline */
+  /** 2 or 3 — the sidebar indents on it, so a flat list reads as an outline */
   level: number;
   title: string;
 }
@@ -84,6 +124,14 @@ interface WikipediaSection {
 const RTL_LANGUAGES = new Set(["ar", "arc", "arz", "ckb", "dv", "fa", "he", "ks", "pnb", "ps", "sd", "ug", "ur", "yi"]);
 
 const artistStore = useArtist();
+
+/*
+ * The section list must fit what the scroller actually shows — the title bar
+ * and the player eat into the viewport, so a vh cap left the last entries
+ * below the fold.
+ */
+const scrollerRef = ref<HTMLElement | null>(null);
+const { height: scrollerHeight } = useElementSize(scrollerRef);
 const wikipediaContentRef = ref<HTMLElement | null>(null);
 const wikipediaSections = ref<WikipediaSection[]>([]);
 const activeSectionId = ref<null | string>(null);
@@ -91,6 +139,17 @@ const activeSectionId = ref<null | string>(null);
 let sectionObserver: IntersectionObserver | null = null;
 
 const isSoloArtist = computed(() => artistStore.musicbrainzArtist?.type === "Person");
+
+const languages = computed(() => artistStore.wikidataArtist?.wikipediaLanguages ?? []);
+
+const currentLanguageName = computed(
+  () => languages.value.find((language) => language.code === artistStore.wikipediaLanguage)?.name
+    ?? artistStore.wikipediaLanguage,
+);
+
+const hasWikiSidebar = computed(
+  () => wikipediaSections.value.length > 0 || languages.value.length > 1 || !!artistStore.wikipediaSourceUrl,
+);
 
 const textDirection = computed(() => (RTL_LANGUAGES.has(artistStore.wikipediaLanguage) ? "rtl" : "ltr"));
 
@@ -168,13 +227,20 @@ function observeSections(headings: Element[]): void {
 
   sectionObserver = new IntersectionObserver(
     (entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting);
-      if (visible.length > 0) activeSectionId.value = visible[0].target.id;
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          activeSectionId.value = entry.target.id;
+        } else if (entry.rootBounds && entry.boundingClientRect.top > entry.rootBounds.bottom) {
+          // Scrolling up: the heading dropped below the band, so the reader is back in the section before it
+          const index = wikipediaSections.value.findIndex((section) => section.id === entry.target.id);
+          if (index > 0) activeSectionId.value = wikipediaSections.value[index - 1].id;
+        }
+      }
     },
     {
       root: scrollContainer,
-      // Only the band just under the sticky nav counts as "where you are"
-      rootMargin: `-${artistStore.headerHeight + 60}px 0px -75% 0px`,
+      // Only the band just under the sticky header counts as "where you are"
+      rootMargin: `-${artistStore.headerHeight}px 0px -75% 0px`,
       threshold: 0,
     },
   );
@@ -222,9 +288,22 @@ function onLanguageChange(option: LanguageOption): void {
   artistStore.switchWikipediaLanguage(option.url, option.code);
 }
 
-function onSectionChange(sectionId: string): void {
-  // The scroll is handled by the ArtistNavigation component
+function scrollToSection(sectionId: string): void {
+  const element = document.getElementById(sectionId);
+  const scrollContainer = document.querySelector(".artist-page");
+  if (!element || !scrollContainer) return;
+
+  // Header + breathing room
+  const offset = artistStore.headerHeight + 16;
+  const containerTop = scrollContainer.getBoundingClientRect().top;
+  const top = element.getBoundingClientRect().top - containerTop + scrollContainer.scrollTop;
+
+  scrollContainer.scrollTo({ behavior: "smooth", top: top - offset });
   activeSectionId.value = sectionId;
+
+  // Focus follows the viewport, or the next Tab resumes back at the sidebar
+  element.setAttribute("tabindex", "-1");
+  element.focus({ preventScroll: true });
 }
 
 /**
@@ -249,6 +328,7 @@ watch(
 );
 
 onMounted(() => {
+  scrollerRef.value = document.querySelector<HTMLElement>(".artist-page");
   nextTick(() => {
     extractSections();
   });
@@ -271,22 +351,109 @@ onBeforeUnmount(() => {
   }
 }
 
-.main-content {
+.info-main {
   min-width: 0;
 }
 
+/*
+ * The 72ch measure caps the reading column: it ran ~170 characters at 1080p
+ * and ~200 on a wide monitor. Language, source link and section table sit in
+ * their own sticky column to the left, and the pair is centred.
+ */
 .info-section {
   margin-bottom: var(--bd-space-6);
-
-  /*
-   * The measure cap lives on the section, not on the text, so the sticky nav
-   * lines up with the column it controls — capped on the text alone, the bar
-   * ran the full 1444px above a 551px ribbon. Not whitespace either: the
-   * reading column ran ~170 characters at 1080p and ~200 on a wide monitor,
-   * and this spends slack the layout already had. The sidebar does not move.
-   */
-  max-width: 72ch;
   position: relative;
+}
+
+.wiki-layout {
+  display: grid;
+  gap: var(--bd-space-6);
+  grid-template-columns: minmax(0, 72ch);
+  justify-content: center;
+
+  &.has-sidebar {
+    grid-template-columns: 14rem minmax(0, 72ch);
+
+    @media (--tablet-down) {
+      grid-template-columns: minmax(0, 72ch);
+    }
+  }
+}
+
+.wiki-sidebar {
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bd-space-4);
+  position: sticky;
+
+  /* No room for a column: language and source stay reachable above the text */
+  @media (--tablet-down) {
+    position: static;
+  }
+}
+
+.wiki-meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bd-space-2);
+  justify-content: space-between;
+}
+
+.source-link {
+  align-items: center;
+  color: var(--bd-font-color-dark);
+  display: flex;
+  font-size: var(--bd-font-size-sm);
+  gap: var(--bd-space-1);
+  text-decoration: none;
+  transition: color var(--bd-transition);
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--bd-font-color);
+  }
+}
+
+/* Only the section list scrolls; the language and source stay pinned above it */
+.wiki-toc {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+
+  @media (--tablet-down) {
+    display: none;
+  }
+}
+
+.toc-link {
+  border-inline-start: 2px solid var(--bd-bg-light);
+  color: var(--bd-font-color-dark);
+  font-size: var(--bd-font-size-sm);
+  padding: var(--bd-space-1) var(--bd-space-3);
+  text-decoration: none;
+  transition:
+    border-color var(--bd-transition),
+    color var(--bd-transition);
+
+  &.sub {
+    padding-inline-start: var(--bd-space-6);
+  }
+
+  &:hover {
+    color: var(--bd-font-color);
+  }
+
+  &.active {
+    border-inline-start-color: var(--bd-primary);
+    color: var(--bd-font-color-light);
+  }
+}
+
+.info-body {
+  min-width: 0;
 }
 
 .wikipedia-content {
