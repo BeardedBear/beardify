@@ -87,18 +87,14 @@ export const usePlayer = defineStore("player", {
       // no-store: a device list served from the HTTP cache is exactly the stale list we're refreshing away
       const { data } = await instance().get<DevicesResponse>("me/player/devices", { cache: "no-store" });
       const activeDevice = data.devices.find((device): boolean => device.is_active);
-      const previousDeviceStillListed = data.devices.some((device) => device.id === this.devices.activeDevice?.id);
       this.devices.list = data.devices;
       if (!data.devices.length) createSpotifyPlayer().connect();
-      if (activeDevice) {
-        this.devices.activeDevice = activeDevice;
-      } else if (!previousDeviceStillListed && this.thisDeviceId) {
-        // No device reports is_active AND the previously active device is gone from the
-        // list entirely — genuinely disconnected, fall back to this device. If it's merely
-        // missing the is_active flag (Spotify Connect propagation lag on reconnect), keep
-        // the current activeDevice instead of stealing playback onto this device.
-        this.setDevice(this.thisDeviceId);
-      }
+      // Never transfer from here: this runs on timers, tab focus and SDK reconnects,
+      // and Spotify routinely drops Connect/Cast speakers from this list for a few
+      // seconds. Falling back to this device used to yank playback off a playing
+      // soundbar. A genuinely dead device is revived on the user's next transport
+      // command (_sendPlaybackCommand → _reviveDevice).
+      if (activeDevice) this.devices.activeDevice = activeDevice;
       this.startDeviceHeartbeat();
     },
 
@@ -220,7 +216,10 @@ export const usePlayer = defineStore("player", {
         const { data } = await instance().get<DevicesResponse>("me/player/devices");
         const tracked = trackedId ? data.devices.find((device): boolean => device.id === trackedId) : undefined;
 
-        if (tracked?.is_active && this.playerState.paused) {
+        // Only this browser needs keeping alive. An external device is never
+        // re-asserted: `paused` is stale there (polling stops while the tab is
+        // hidden), and a transfer onto a playing Cast speaker restarts its session.
+        if (tracked?.is_active && tracked.id === this.thisDeviceId && this.playerState.paused) {
           await instance().put("me/player", { device_ids: [tracked.id] });
         }
 
