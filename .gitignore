@@ -33,3 +33,7 @@ src-tauri/Cargo.lock
 
 # graphify knowledge graph output (local, machine-specific paths)
 graphify-out/
+
+# Impeccable - fichiers locaux et spécifiques à la machine
+impeccable/config.local.json
+.claude/settings.local.json
