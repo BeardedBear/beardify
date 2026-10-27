@@ -1,5 +1,5 @@
 <template>
-  <BdDropdown v-model="queueOpen" class="wrap" placement="top-end" size="small">
+  <BdDropdown v-model="queueOpen" :class="['wrap', { 'force-visible': forceMobile }]" placement="top-end" size="small">
     <template #trigger>
       <BdTooltip bare content="Queue">
         <BdButton icon-only label="Queue">
@@ -73,6 +73,8 @@ import { playSongs } from "@/helpers/play";
 import { isPodcastTrack } from "@/helpers/player";
 
 const SCROLL_DURATION_MS = 420;
+
+defineProps<{ forceMobile?: boolean }>();
 
 const playerStore = usePlayer();
 const currentTrack = computed(() => playerStore.playerState?.track_window.current_track);
@@ -184,9 +186,12 @@ watch(past, centerOnCurrent);
 
 <style scoped>
 
+/* Hidden in the crowded phone bar, shown in the slide-up — same rule as the volume. */
 .wrap {
   @media (--mobile) {
-    display: none;
+    &:not(.force-visible) {
+      display: none;
+    }
   }
 }
 
@@ -206,10 +211,10 @@ watch(past, centerOnCurrent);
   --rail-x: 0.45rem;
 
   font-size: var(--bd-font-size-sm);
-  height: 300px;
+  height: min(300px, 50dvh);
   overflow: auto;
   white-space: nowrap;
-  width: 268px;
+  width: min(268px, calc(100vw - 2rem));
 }
 
 /*
@@ -297,7 +302,7 @@ watch(past, centerOnCurrent);
 .recenter-leave-active {
   transition:
     opacity 0.18s ease,
-    translate 0.18s cubic-bezier(0.2, 1.4, 0.4, 1);
+    translate 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .recenter-enter-from,

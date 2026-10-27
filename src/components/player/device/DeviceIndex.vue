@@ -2,7 +2,7 @@
   <div v-if="playerStore.devices.activeDevice.id" class="wrap">
     <div class="device">
       <DeviceVolume :force-mobile />
-      <DevicesList />
+      <DevicesList :force-mobile />
     </div>
   </div>
   <BdEmptyState
@@ -74,5 +74,11 @@ onUnmounted(() => window.clearTimeout(hintTimer));
   align-items: center;
   display: flex;
   gap: var(--bd-space-4);
+
+  /* In the slide-up, a long device name drops the volume onto its own line rather than squeezing it. */
+  @media (--mobile) {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
 </style>

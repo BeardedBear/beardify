@@ -219,6 +219,14 @@ body {
   line-height: 1.4;
   min-height: 100dvh;
   overflow: hidden;
+
+  /*
+   * viewport-fit=cover hands the notch and home indicator to the page so the
+   * player sheet can clear them; the shell clears them here. All zero on
+   * desktop and in Tauri.
+   */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
   text-rendering: optimizelegibility;
 }
 

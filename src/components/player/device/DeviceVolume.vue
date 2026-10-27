@@ -26,6 +26,8 @@
         @input="onScrub"
       />
     </div>
+    <!-- The wedge's own % only shows on hover, which touch never produces. -->
+    <span v-if="forceMobile" class="value bd-font-bold" aria-hidden="true">{{ announcedVolume }}%</span>
     <IconButton
       v-if="!forceMobile"
       class="mute"
@@ -185,6 +187,10 @@ async function toggleMute(): Promise<void> {
   display: flex;
   gap: var(--bd-space-4);
 
+  &.force-visible {
+    gap: var(--bd-space-2);
+  }
+
   @media (--mobile) {
     display: none;
 
@@ -192,6 +198,12 @@ async function toggleMute(): Promise<void> {
       display: flex;
     }
   }
+}
+
+.value {
+  font-size: var(--bd-font-size-sm);
+  font-variant-numeric: tabular-nums;
+  min-width: 4ch;
 }
 
 .volume {
@@ -254,6 +266,12 @@ async function toggleMute(): Promise<void> {
     position: absolute;
     width: 100%;
     z-index: 10;
+
+    /* The wedge is 1.7rem tall; a finger gets 44px, centred on it, without growing the drawing. */
+    @media (pointer: coarse) {
+      height: auto;
+      inset: calc(50% - 22px) 0;
+    }
   }
 
   /*
