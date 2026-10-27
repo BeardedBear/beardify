@@ -177,7 +177,7 @@ describe("toReleaseFromFeed", () => {
   const row = {
     album: "Marrow Deep",
     artist: "Mastodon",
-    cover_url: "https://www.sputnikmusic.com/images/albums/551990.jpg",
+    cover_url: "https://example.com/images/albums/551990.jpg",
     genres: ["metal", "sludge metal"],
     month: "2026-08-01",
     rating: 84,

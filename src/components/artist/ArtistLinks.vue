@@ -1,11 +1,5 @@
 <template>
   <div :class="{ floating }" class="links">
-    <BdTooltip content="Sputnik" side="bottom">
-      <BdButton variant="nude" @click.stop.prevent="frameStore.open(link.sputnik, 'Sputnik')">
-        <i aria-hidden="true" class="icon-sputnik" />
-        <span class="link-name bd-font-bold">Sputnik</span>
-      </BdButton>
-    </BdTooltip>
     <BdTooltip content="Discogs" side="bottom">
       <BdButton aria-label="Discogs" icon-only variant="nude" @click.stop.prevent="openLink(link.discogs)">
         <i aria-hidden="true" class="icon-discogs" />
@@ -36,7 +30,6 @@ import { computed } from "vue";
 
 import type { SocialLink } from "@/helpers/socialLinks";
 
-import { useFrame } from "@/components/frame/FrameStore";
 import { normalizeDiacritics } from "@/helpers/normalizeDiacritics";
 import { openLink } from "@/helpers/openLink";
 import { socialLinksFromDiscogs, socialLinksFromMusicBrainz, socialLinksFromWikidata } from "@/helpers/socialLinks";
@@ -47,7 +40,6 @@ const props = defineProps<{
   floating?: boolean;
 }>();
 
-const frameStore = useFrame();
 const artistStore = useArtist();
 const artistNameNormalized = computed(() => normalizeDiacritics(props.artistName).replaceAll("&", "and"));
 
@@ -98,7 +90,6 @@ const rymUrl = computed(() => {
 const link = computed(() => ({
   discogs: discogsUrl.value,
   rym: rymUrl.value,
-  sputnik: `https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text=${artistNameNormalized.value}&amp;x=0&amp;y=0`,
 }));
 </script>
 
