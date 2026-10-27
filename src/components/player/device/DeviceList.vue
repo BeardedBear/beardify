@@ -1,5 +1,5 @@
 <template>
-  <QueuedTracks />
+  <QueuedTracks :force-mobile />
   <BdDropdown v-model="showList" class="devices" match-width placement="top-end" size="small">
     <template #trigger>
       <BdButton
@@ -64,6 +64,7 @@ import QueuedTracks from "@/components/player/device/QueuedTracks.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
 import { notification } from "@/helpers/notifications";
 
+const props = defineProps<{ forceMobile?: boolean }>();
 const playerStore = usePlayer();
 const deviceListFiltered = computed(() => [...playerStore.devices.list].sort((a, b) => a.name.localeCompare(b.name)));
 
@@ -93,7 +94,8 @@ function formatName(device?: Device | null, shortenable = false): string {
      */
     name = `${device.name} (${device.type.toLowerCase()})`;
   }
-  if (isMobile.value && shortenable) return truncate(name, 10);
+  // The phone bar is crowded; the slide-up has room and lets CSS ellipsis cut instead.
+  if (isMobile.value && shortenable && !props.forceMobile) return truncate(name, 10);
   return name;
 }
 

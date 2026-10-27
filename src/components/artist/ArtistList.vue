@@ -1,6 +1,17 @@
 <template>
   <span v-for="(artist, index) in artistList" :key="index">
-    <span :class="{ feat }" class="artist" @click.stop="goArtist(`/artist/${artist.uri.split(':').pop()}`)">
+    <!--
+      Not a <router-link>: the hover card nests ArtistLinks' anchors, and an
+      anchor cannot contain anchors. Role and Enter make it reachable anyway.
+    -->
+    <span
+      :class="{ feat }"
+      class="artist"
+      role="link"
+      tabindex="0"
+      @click.stop="goArtist(`/artist/${artist.uri.split(':').pop()}`)"
+      @keydown.enter.self="goArtist(`/artist/${artist.uri.split(':').pop()}`)"
+    >
       <span>{{ artist.name }}</span>
       <span class="options">
         <ArtistLinks :artist-name="artist.name" floating />
@@ -97,7 +108,8 @@ function goArtist(artistUri: string): void {
     font-variation-settings: var(--bd-font-variation-settings-italic);
   }
 
-  &:hover {
+  &:hover,
+  &:focus-within {
     color: var(--bd-primary);
     opacity: 1;
 

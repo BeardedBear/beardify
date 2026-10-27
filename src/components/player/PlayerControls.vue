@@ -12,7 +12,7 @@
       />
       <IconButton
         v-if="!isEpisode"
-        :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off' }"
+        :class="{ active: playerStore.currentlyPlaying?.repeat_state !== 'off', big: props.forceMobile }"
         :pressed="playerStore.currentlyPlaying?.repeat_state !== 'off'"
         class="control-button repeat bd-squircle"
         icon="repeat"
@@ -125,6 +125,11 @@ const duration = computed(() => playerStore.playerState?.duration);
   @media (--mobile) {
     display: none;
   }
+
+  /* The slide-up shows its times under the seek bar instead. */
+  .force-mobile & {
+    display: none;
+  }
 }
 
 .controls {
@@ -160,7 +165,6 @@ const duration = computed(() => playerStore.playerState?.duration);
 
   &.big {
     font-size: var(--bd-font-size-xl);
-    padding: var(--bd-space-2);
   }
 
   &.play {
@@ -178,6 +182,24 @@ const duration = computed(() => playerStore.playerState?.duration);
     &.big {
       font-size: var(--bd-font-size-xl);
       padding: var(--bd-space-2) var(--bd-space-3);
+    }
+
+    /*
+     * In the slide-up, play is the one action the sheet exists for, so it is
+     * the one filled shape. --bd-primary-bg is a tint, not the raw accent:
+     * the theme's own text stays legible on it whatever accent the user picked.
+     */
+    .force-mobile & {
+      background-color: var(--bd-primary-bg);
+      padding: var(--bd-space-3) var(--bd-space-4);
+
+      &:hover {
+        background-color: var(--bd-primary-bg-hover);
+      }
+
+      &:active {
+        background-color: var(--bd-primary-bg-active);
+      }
     }
   }
 
