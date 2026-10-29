@@ -1,5 +1,14 @@
 <template>
   <div :class="{ floating }" class="links">
+    <template v-if="!floating">
+      <BdTooltip v-for="socialLink in socialLinks" :key="socialLink.url" :content="socialLink.name" side="bottom">
+        <BdButton :aria-label="socialLink.name" icon-only variant="nude" @click.stop.prevent="openLink(socialLink.url)">
+          <i :class="socialLink.icon" aria-hidden="true" />
+          <span class="link-name bd-font-bold">{{ socialLink.name }}</span>
+        </BdButton>
+      </BdTooltip>
+      <span class="separator">·</span>
+    </template>
     <BdTooltip content="Discogs" side="bottom">
       <BdButton aria-label="Discogs" icon-only variant="nude" @click.stop.prevent="openLink(link.discogs)">
         <i aria-hidden="true" class="icon-discogs" />
@@ -18,16 +27,7 @@
         <span class="link-name bd-font-bold">Album of the Year</span>
       </BdButton>
     </BdTooltip>
-    <template v-if="!floating">
-      <span class="separator">·</span>
-      <BdTooltip v-for="socialLink in socialLinks" :key="socialLink.url" :content="socialLink.name" side="bottom">
-        <BdButton :aria-label="socialLink.name" icon-only variant="nude" @click.stop.prevent="openLink(socialLink.url)">
-          <i :class="socialLink.icon" aria-hidden="true" />
-          <span class="link-name bd-font-bold">{{ socialLink.name }}</span>
-        </BdButton>
-      </BdTooltip>
-    </template>
-  </div>
+</div>
 </template>
 
 <script lang="ts" setup>
