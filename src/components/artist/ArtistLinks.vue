@@ -7,7 +7,7 @@
           <span class="link-name bd-font-bold">{{ socialLink.name }}</span>
         </BdButton>
       </BdTooltip>
-      <span class="separator">·</span>
+      <span v-if="socialLinks.length" class="separator">·</span>
     </template>
     <BdTooltip content="Discogs" side="bottom">
       <BdButton
