@@ -28,3 +28,25 @@ export function getCountryName(countryCode: string | undefined): string {
     return countryCode;
   }
 }
+
+// CLDR regions that aren't ISO 3166-1 countries: groupings, historic codes, pseudo-locales.
+const NOT_COUNTRIES = new Set(
+  "AC AN BU CP CQ CS DD DG DY EA EU EZ FX HV IC NH QO RH SU TA TP UK UN VD XA XB YD YU ZR ZZ".split(" "),
+);
+
+/**
+ * Every country the browser can name, as ISO alpha-2 codes with English names, sorted by name.
+ * Built from Intl rather than a bundled list, so it costs no bytes.
+ */
+export function countries(): { code: string; name: string }[] {
+  const regionNames = new Intl.DisplayNames(["en"], { fallback: "none", type: "region" });
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  return [...letters]
+    .flatMap((a) => [...letters].map((b) => a + b))
+    .filter((code) => !NOT_COUNTRIES.has(code))
+    .flatMap((code) => {
+      const name = regionNames.of(code);
+      return name ? [{ code, name }] : [];
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+}

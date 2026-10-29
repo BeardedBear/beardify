@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-import { CircleOff, Disc3, Info, Loader2, MoreHorizontal } from "@lucide/vue";
+import { CircleOff, Disc3, Info, Loader2, MicVocal, MoreHorizontal } from "@lucide/vue";
 import { useElementBounding } from "@vueuse/core";
 import { BdButton, BdTooltip } from "bearded-ui";
 import { computed, ref, watch } from "vue";
@@ -51,6 +51,7 @@ const loading = computed(() => {
 });
 
 const infoAvailable = computed(() => artistStore.hasInfo);
+const concertsAvailable = computed(() => Boolean(artistStore.musicbrainzArtist?.id));
 
 const tabs = computed<Tab[]>(() => [
   {
@@ -67,6 +68,14 @@ const tabs = computed<Tab[]>(() => [
     label: "Info",
     loading: artistStore.timelineLoading,
     tooltip: !infoAvailable.value ? "No additional information available" : undefined,
+  },
+  {
+    // setlist.fm keys artists by MusicBrainz ID only
+    disabled: !concertsAvailable.value,
+    icon: concertsAvailable.value ? MicVocal : CircleOff,
+    id: "concerts",
+    label: "Concerts",
+    tooltip: !concertsAvailable.value ? "Artist not found on MusicBrainz" : undefined,
   },
 ]);
 

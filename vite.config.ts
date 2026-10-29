@@ -2,9 +2,12 @@ import vue from "@vitejs/plugin-vue";
 import { copyFileSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { fileURLToPath, URL } from "node:url";
+import { loadEnv } from "vite";
 import { defineConfig } from "vitest/config";
 
 const pkg = JSON.parse(readFileSync("package.json", "utf-8")) as { version: string };
+// Server-only key for the dev setlist.fm proxy; the deployed function reads it from Netlify.
+const { SETLISTFM_API_KEY = "" } = loadEnv("", process.cwd(), "SETLISTFM_");
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -82,10 +85,17 @@ export default defineConfig({
         rewrite: (path): string => path.replace("/.netlify/functions/musicbrainz", "/ws/2"),
         target: "https://musicbrainz.org",
       },
+      // Same for setlist.fm: no CORS upstream, and the key must not reach the browser.
+      "/.netlify/functions/setlistfm": {
+        changeOrigin: true,
+        headers: { Accept: "application/json", "x-api-key": SETLISTFM_API_KEY },
+        rewrite: (path): string => path.replace("/.netlify/functions/setlistfm", "/rest/1.0"),
+        target: "https://api.setlist.fm",
+      },
       // Regex, not a plain prefix: Vite tries every proxy context and this one would
       // swallow the MusicBrainz path whatever the key order, sending it to a function
       // host that plain `bun run dev` never starts (ECONNREFUSED -> 502).
-      "^/[.]netlify/functions/(?!musicbrainz)": {
+      "^/[.]netlify/functions/(?!musicbrainz|setlistfm)": {
         changeOrigin: true,
         target: "http://localhost:9999",
       },

@@ -39,6 +39,9 @@
       <div v-else-if="artistStore.activeTab === 'info'" key="info" class="content content-info">
         <ArtistInfo />
       </div>
+      <div v-else-if="artistStore.activeTab === 'concerts'" key="concerts" class="content content-info">
+        <ArtistConcerts />
+      </div>
     </Transition>
   </div>
 </template>
@@ -49,6 +52,7 @@ import { BdEmptyState, BdLoader } from "bearded-ui";
 import { nextTick, onUnmounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
+import ArtistConcerts from "@/components/artist/ArtistConcerts.vue";
 import ArtistHeader from "@/components/artist/ArtistHeader.vue";
 import ArtistInfo from "@/components/artist/ArtistInfo.vue";
 import BlockAlbumGroups from "@/components/artist/BlockAlbumGroups.vue";
@@ -59,7 +63,7 @@ import TopTracks from "@/components/artist/TopTracks.vue";
 import { useScrollRestore } from "@/composables/useScrollRestore";
 import { useArtist } from "@/views/artist/ArtistStore";
 
-const VALID_TABS = ["discography", "info"] as const;
+const VALID_TABS = ["concerts", "discography", "info"] as const;
 type TabId = (typeof VALID_TABS)[number];
 
 /**
@@ -85,7 +89,7 @@ let lastChangeTime = 0;
  */
 // Keyed by string, not TabId: the store types activeTab as string, and narrowing
 // it would ripple into ArtistTabs, whose v-model emits a plain string
-const tabScroll: Record<string, number> = { discography: 0, info: 0 };
+const tabScroll: Record<string, number> = { concerts: 0, discography: 0, info: 0 };
 // The swap clamps scrollTop against the outgoing tab's height; ignore those
 // events so a short tab cannot overwrite the position of the tall one.
 let switchingTab = false;

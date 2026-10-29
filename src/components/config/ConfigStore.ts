@@ -40,6 +40,8 @@ export const useConfig = defineStore("config", {
   state: (): Config => ({
     // Everything on: the modal has always searched all five, and a first-run
     // user should not have to discover a setting to get what they had.
+    concertCountry: "",
+    homeLocation: null,
     searchCategories: { albums: true, artists: true, collections: true, podcasts: true, tracks: true },
     show: false,
     tierListSideLabels: true,
