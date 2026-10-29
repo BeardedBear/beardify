@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-import { CircleOff, Disc3, Info, Loader2, MoreHorizontal } from "@lucide/vue";
+import { CircleOff, Disc3, Info, Loader2, MicVocal, MoreHorizontal } from "@lucide/vue";
 import { useElementBounding } from "@vueuse/core";
 import { BdButton, BdTooltip } from "bearded-ui";
 import { computed, ref, watch } from "vue";
@@ -39,6 +39,7 @@ import ArtistProfile from "@/components/artist/ArtistProfile.vue";
 import ArtistTabs, { Tab } from "@/components/artist/ArtistTabs.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { coverUrl } from "@/helpers/cover";
+import { hasTicketmaster } from "@/helpers/ticketmaster";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const domHeader = ref<HTMLDivElement | null>(null);
@@ -51,6 +52,8 @@ const loading = computed(() => {
 });
 
 const infoAvailable = computed(() => artistStore.hasInfo);
+const concertsAvailable = computed(() => hasTicketmaster || Boolean(artistStore.musicbrainzArtist?.id));
+const concertsLoading = computed(() => !concertsAvailable.value && artistStore.musicbrainzLoading);
 
 const tabs = computed<Tab[]>(() => [
   {
@@ -68,11 +71,27 @@ const tabs = computed<Tab[]>(() => [
     loading: artistStore.timelineLoading,
     tooltip: !infoAvailable.value ? "No additional information available" : undefined,
   },
+  {
+    // setlist.fm keys artists by MusicBrainz ID only; Ticketmaster searches by name
+    disabled: !concertsAvailable.value,
+    icon: concertsLoading.value ? Loader2 : concertsAvailable.value ? MicVocal : CircleOff,
+    id: "concerts",
+    label: "Concerts",
+    loading: concertsLoading.value,
+    tooltip: !concertsAvailable.value && !concertsLoading.value ? "Artist not found on MusicBrainz" : undefined,
+  },
 ]);
 
 watch(height, (newHeight) => {
   if (newHeight > 0) {
     artistStore.updateHeaderHeight(newHeight);
+  }
+});
+
+// Same for Concerts once the MusicBrainz lookup has settled without a match
+watch([concertsAvailable, concertsLoading], ([available, pending]) => {
+  if (!available && !pending && artistStore.activeTab === "concerts") {
+    artistStore.activeTab = "discography";
   }
 });
 

@@ -1,27 +1,51 @@
 <template>
   <div :class="{ floating }" class="links">
-    <BdTooltip content="Discogs" side="bottom">
-      <BdButton aria-label="Discogs" icon-only variant="nude" @click.stop.prevent="openLink(link.discogs)">
-        <i aria-hidden="true" class="icon-discogs" />
-        <span class="link-name bd-font-bold">Discogs</span>
-      </BdButton>
-    </BdTooltip>
-    <BdTooltip content="RateYourMusic" side="bottom">
-      <BdButton aria-label="RateYourMusic" icon-only variant="nude" @click.stop.prevent="openLink(link.rym)">
-        <i aria-hidden="true" class="icon-rym" />
-        <span class="link-name bd-font-bold">RateYourMusic</span>
-      </BdButton>
-    </BdTooltip>
     <template v-if="!floating">
-      <span class="separator">·</span>
       <BdTooltip v-for="socialLink in socialLinks" :key="socialLink.url" :content="socialLink.name" side="bottom">
         <BdButton :aria-label="socialLink.name" icon-only variant="nude" @click.stop.prevent="openLink(socialLink.url)">
           <i :class="socialLink.icon" aria-hidden="true" />
           <span class="link-name bd-font-bold">{{ socialLink.name }}</span>
         </BdButton>
       </BdTooltip>
+      <span v-if="socialLinks.length" class="separator">·</span>
     </template>
-  </div>
+    <BdTooltip content="Discogs" side="bottom">
+      <BdButton
+        aria-label="Discogs"
+        icon-only
+        :size="buttonSize"
+        variant="nude"
+        @click.stop.prevent="openLink(link.discogs)"
+      >
+        <i aria-hidden="true" class="icon-discogs" />
+        <span class="link-name bd-font-bold">Discogs</span>
+      </BdButton>
+    </BdTooltip>
+    <BdTooltip content="RateYourMusic" side="bottom">
+      <BdButton
+        aria-label="RateYourMusic"
+        icon-only
+        :size="buttonSize"
+        variant="nude"
+        @click.stop.prevent="openLink(link.rym)"
+      >
+        <i aria-hidden="true" class="icon-rym" />
+        <span class="link-name bd-font-bold">RateYourMusic</span>
+      </BdButton>
+    </BdTooltip>
+    <BdTooltip content="Album of the Year" side="bottom">
+      <BdButton
+        aria-label="Album of the Year"
+        icon-only
+        :size="buttonSize"
+        variant="nude"
+        @click.stop.prevent="openLink(link.aoty)"
+      >
+        <i aria-hidden="true" class="icon-album" />
+        <span class="link-name bd-font-bold">Album of the Year</span>
+      </BdButton>
+    </BdTooltip>
+</div>
 </template>
 
 <script lang="ts" setup>
@@ -41,6 +65,8 @@ const props = defineProps<{
 }>();
 
 const artistStore = useArtist();
+// Smaller inside the hover card, where they sit in a tooltip panel
+const buttonSize = computed(() => (props.floating ? "small" : undefined));
 const artistNameNormalized = computed(() => normalizeDiacritics(props.artistName).replaceAll("&", "and"));
 
 /**
@@ -87,7 +113,13 @@ const rymUrl = computed(() => {
   return `https://rateyourmusic.com/search?searchtype=a&searchterm=${artistNameNormalized.value}`;
 });
 
+// Search only: AOTY has no Wikidata property to resolve a direct artist page from.
+const aotyUrl = computed(
+  () => `https://www.albumoftheyear.org/search/artists/?q=${encodeURIComponent(props.artistName)}`,
+);
+
 const link = computed(() => ({
+  aoty: aotyUrl.value,
   discogs: discogsUrl.value,
   rym: rymUrl.value,
 }));
@@ -112,8 +144,12 @@ const link = computed(() => ({
   position: relative;
   width: 100%;
 
+  /* Inside the tooltip panel: tighter buttons, and eat most of the panel's own padding */
   &.floating {
+    gap: 0;
     justify-content: center;
+    margin: calc(var(--bd-space-1) * -1) calc(var(--bd-space-2) * -1);
+    width: auto;
   }
 
   .separator {

@@ -23,6 +23,8 @@ export interface TicketmasterSearchResponse {
 export interface TicketmasterVenue {
   city?: { name: string };
   country?: { countryCode: string; name: string };
+  /** Degrees, sent as strings */
+  location?: { latitude: string; longitude: string };
   name: string;
   state?: { name: string };
 }

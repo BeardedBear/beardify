@@ -178,12 +178,4 @@ const getCountry = computed(() => {
     display: block;
   }
 }
-
-.country-flag {
-  border-radius: 0.1rem;
-  display: inline-block;
-  height: 0.8em;
-  margin: 0 var(--bd-space-1) 0 0;
-  width: auto;
-}
 </style>

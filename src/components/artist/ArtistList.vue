@@ -1,22 +1,23 @@
 <template>
   <span v-for="(artist, index) in artistList" :key="index">
     <!--
-      Not a <router-link>: the hover card nests ArtistLinks' anchors, and an
-      anchor cannot contain anchors. Role and Enter make it reachable anyway.
+      Top layer, not an absolute card: the ellipsis' overflow: hidden of album
+      cards clipped it. `bare` keeps the name inline so that ellipsis still works.
     -->
-    <span
-      :class="{ feat }"
-      class="artist"
-      role="link"
-      tabindex="0"
-      @click.stop="goArtist(`/artist/${artist.uri.split(':').pop()}`)"
-      @keydown.enter.self="goArtist(`/artist/${artist.uri.split(':').pop()}`)"
-    >
-      <span>{{ artist.name }}</span>
-      <span class="options">
-        <ArtistLinks :artist-name="artist.name" floating />
+    <BdTooltip bare :delay="750" interactive>
+      <!-- Not a <router-link>: role and Enter make it reachable anyway -->
+      <span
+        :class="{ feat }"
+        class="artist"
+        role="link"
+        tabindex="0"
+        @click.stop="goArtist(`/artist/${artist.uri.split(':').pop()}`)"
+        @keydown.enter.self="goArtist(`/artist/${artist.uri.split(':').pop()}`)"
+      >
+        {{ artist.name }}
       </span>
-    </span>
+      <template #content><ArtistLinks :artist-name="artist.name" floating /></template>
+    </BdTooltip>
     <span v-if="artistList && artistList.length - 1 !== index" class="separator">
       /
       <span v-if="!feat">&nbsp;</span>
@@ -25,6 +26,8 @@
 </template>
 
 <script lang="ts" setup>
+import { BdTooltip } from "bearded-ui";
+
 import { Artist, ArtistSimplified } from "@/@types/Artist";
 import ArtistLinks from "@/components/artist/ArtistLinks.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
@@ -58,47 +61,9 @@ function goArtist(artistUri: string): void {
   color: var(--bd-font-color-dark);
 }
 
-@keyframes pop-options {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-1rem);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-.options {
-  --options-gap: 0.5rem;
-
-  animation: pop-options 0.2s ease 0.75s both;
-  background-color: var(--bd-bg-light);
-  border-radius: var(--bd-radius-sm);
-  bottom: calc(100% + var(--options-gap));
-  box-shadow: var(--bd-shadow-md);
-  display: none;
-  left: 50%;
-  padding: var(--bd-space-1);
-  position: absolute;
-  transform: translateX(-50%);
-  z-index: 99;
-
-  &::after {
-    content: "";
-    height: var(--options-gap);
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 100%;
-  }
-}
-
 .artist {
   color: currentcolor;
   cursor: pointer;
-  position: relative;
   text-decoration: none;
 
   &.feat {
@@ -112,10 +77,6 @@ function goArtist(artistUri: string): void {
   &:focus-within {
     color: var(--bd-primary);
     opacity: 1;
-
-    .options {
-      display: block;
-    }
   }
 }
 </style>
