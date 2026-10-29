@@ -12,6 +12,12 @@
         <span class="link-name bd-font-bold">RateYourMusic</span>
       </BdButton>
     </BdTooltip>
+    <BdTooltip content="Album of the Year" side="bottom">
+      <BdButton aria-label="Album of the Year" icon-only variant="nude" @click.stop.prevent="openLink(link.aoty)">
+        <i aria-hidden="true" class="icon-album" />
+        <span class="link-name bd-font-bold">Album of the Year</span>
+      </BdButton>
+    </BdTooltip>
     <template v-if="!floating">
       <span class="separator">·</span>
       <BdTooltip v-for="socialLink in socialLinks" :key="socialLink.url" :content="socialLink.name" side="bottom">
@@ -87,7 +93,13 @@ const rymUrl = computed(() => {
   return `https://rateyourmusic.com/search?searchtype=a&searchterm=${artistNameNormalized.value}`;
 });
 
+// Search only: AOTY has no Wikidata property to resolve a direct artist page from.
+const aotyUrl = computed(
+  () => `https://www.albumoftheyear.org/search/artists/?q=${encodeURIComponent(props.artistName)}`,
+);
+
 const link = computed(() => ({
+  aoty: aotyUrl.value,
   discogs: discogsUrl.value,
   rym: rymUrl.value,
 }));
