@@ -39,6 +39,7 @@ import ArtistProfile from "@/components/artist/ArtistProfile.vue";
 import ArtistTabs, { Tab } from "@/components/artist/ArtistTabs.vue";
 import { useDialog } from "@/components/dialog/DialogStore";
 import { coverUrl } from "@/helpers/cover";
+import { hasTicketmaster } from "@/helpers/ticketmaster";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const domHeader = ref<HTMLDivElement | null>(null);
@@ -51,7 +52,7 @@ const loading = computed(() => {
 });
 
 const infoAvailable = computed(() => artistStore.hasInfo);
-const concertsAvailable = computed(() => Boolean(artistStore.musicbrainzArtist?.id));
+const concertsAvailable = computed(() => hasTicketmaster || Boolean(artistStore.musicbrainzArtist?.id));
 
 const tabs = computed<Tab[]>(() => [
   {
@@ -70,7 +71,7 @@ const tabs = computed<Tab[]>(() => [
     tooltip: !infoAvailable.value ? "No additional information available" : undefined,
   },
   {
-    // setlist.fm keys artists by MusicBrainz ID only
+    // setlist.fm keys artists by MusicBrainz ID only; Ticketmaster searches by name
     disabled: !concertsAvailable.value,
     icon: concertsAvailable.value ? MicVocal : CircleOff,
     id: "concerts",
