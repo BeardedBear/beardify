@@ -1,3 +1,6 @@
+// One instance for every lookup; `fallback: "none"` makes unknown codes come back undefined.
+const regionNames = new Intl.DisplayNames(["en"], { fallback: "none", type: "region" });
+
 /**
  * Get flag image URL from ISO country code
  * @param countryCode - ISO 3166-1 alpha-2 country code (e.g., "GB", "US", "FR")
@@ -21,7 +24,6 @@ export function getCountryName(countryCode: string | undefined): string {
     return "";
   }
 
-  const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
   try {
     return regionNames.of(countryCode) || countryCode;
   } catch {
@@ -46,7 +48,6 @@ export function countries(): { code: string; name: string }[] {
 }
 
 function buildCountries(): { code: string; name: string }[] {
-  const regionNames = new Intl.DisplayNames(["en"], { fallback: "none", type: "region" });
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   return [...letters]
     .flatMap((a) => [...letters].map((b) => a + b))

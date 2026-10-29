@@ -164,6 +164,7 @@ export const useArtist = defineStore("artist", {
       this.releaseTypes = new Map();
       this.scrolledDown = false;
       this.timelineLoading = true;
+      this.musicbrainzLoading = true;
       this.wikidataArtist = null;
       this.wikipediaExtract = null;
       this.wikipediaFailed = false;
@@ -270,6 +271,7 @@ export const useArtist = defineStore("artist", {
         if (signal.aborted) return;
         this.artist = defaultArtist;
         this.timelineLoading = false;
+        this.musicbrainzLoading = false;
         notification({ msg: "Unable to load this artist", type: NotificationType.Error });
       }
     },
@@ -336,6 +338,7 @@ export const useArtist = defineStore("artist", {
     async getIds(artistName: string, spotifyId?: string) {
       const { signal } = navigationController;
       this.musicbrainzArtist = null;
+      this.musicbrainzLoading = true;
       this.bandMembers = [];
       this.discogsId = null;
       this.wikidataId = null;
@@ -361,6 +364,7 @@ export const useArtist = defineStore("artist", {
         // the URL-lookup stub carries only country and disambiguation, and the lookup fills
         // the rest in.
         this.musicbrainzArtist = artist;
+        this.musicbrainzLoading = false;
 
         const artistFull = await getIdsFromMusicBrainz(artist.id, signal);
         if (!artistFull || signal.aborted) return;
@@ -404,7 +408,11 @@ export const useArtist = defineStore("artist", {
         this.discogsId = null;
         this.wikidataId = null;
       } finally {
-        if (!signal.aborted) this.reclassifying = false;
+        if (!signal.aborted) {
+          this.reclassifying = false;
+          // Also covers the no-match and failure paths, which return before the line above
+          this.musicbrainzLoading = false;
+        }
       }
     },
 
@@ -772,6 +780,7 @@ export const useArtist = defineStore("artist", {
     followStatus: false,
     headerHeight: 0,
     musicbrainzArtist: null,
+    musicbrainzLoading: false,
     reclassifying: false,
     relatedArtists: { artists: [] },
     releaseBaseTitles: new Map(),

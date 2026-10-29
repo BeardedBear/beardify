@@ -53,8 +53,7 @@ const loading = computed(() => {
 
 const infoAvailable = computed(() => artistStore.hasInfo);
 const concertsAvailable = computed(() => hasTicketmaster || Boolean(artistStore.musicbrainzArtist?.id));
-// `timelineLoading` covers the MusicBrainz lookup: it is cleared once `getIds` settles
-const concertsLoading = computed(() => !concertsAvailable.value && artistStore.timelineLoading);
+const concertsLoading = computed(() => !concertsAvailable.value && artistStore.musicbrainzLoading);
 
 const tabs = computed<Tab[]>(() => [
   {

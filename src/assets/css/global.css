@@ -40,3 +40,12 @@
     opacity: 1 !important;
   }
 }
+
+/* Inline flag before a country name (ArtistProfile, ArtistConcerts) */
+.country-flag {
+  border-radius: 0.1rem;
+  display: inline-block;
+  height: 0.8em;
+  margin-right: var(--bd-space-1);
+  width: auto;
+}

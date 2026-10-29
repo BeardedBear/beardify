@@ -23,7 +23,10 @@
           :active="configStore.concertCountry === country.code"
           @click="configStore.concertCountry = country.code"
         >
-          <template #icon><img :src="getCountryFlagUrl(country.code)" alt="" class="country-flag" /></template>
+          <template #icon>
+            <!-- lazy: the closed panel still mounts every item, ~250 flags would load on tab open -->
+            <img :src="getCountryFlagUrl(country.code)" alt="" class="country-flag" loading="lazy" />
+          </template>
           {{ country.name }}
         </BdDropdownItem>
       </BdDropdown>
@@ -32,11 +35,7 @@
         {{ configStore.homeLocation ? "Update my location" : "Use my location" }}
       </BdButton>
     </div>
-    <p
-      v-if="configStore.homeLocation && !loading && !eventsLoading"
-      class="concerts-nearby"
-      :class="{ found: nearbyCount }"
-    >
+    <p v-if="configStore.homeLocation && !busy" class="concerts-nearby" :class="{ found: nearbyCount }">
       <MapPin class="concerts-nearby-icon" />
       {{
         nearbyCount
@@ -44,133 +43,84 @@
           : `No upcoming concert within ${NEAR_RADIUS_KM} km of you`
       }}
     </p>
-    <div v-if="(loading || eventsLoading) && !setlists.length && !events.length" class="concerts-loader">
+    <div v-if="busy && !sections.length" class="concerts-loader">
       <BdLoader size="small" />
     </div>
-    <p v-else-if="!setlists.length && !events.length" class="no-concerts">
-      No concerts found{{ configStore.concertCountry ? ` in ${getCountryName(configStore.concertCountry)}` : "" }}.
-    </p>
-    <template v-else>
-      <section v-if="upcomingCount" class="concerts-section upcoming">
-        <h3 class="concerts-heading bd-font-bold">
-          Upcoming concerts <span class="concerts-heading-count">{{ upcomingCount }}</span>
-        </h3>
-        <div class="concerts-list">
-          <a
-            v-for="event in events"
-            :key="event.id"
-            class="concert-item concert-summary upcoming"
-            :href="event.url"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <div class="concert-date bd-font-bold">{{ formatDate(event.dates.start.localDate) }}</div>
+    <BdEmptyState v-else-if="!sections.length" :title="emptyTitle" />
+    <section
+      v-for="section in sections"
+      v-else
+      :key="section.title"
+      class="concerts-section"
+      :class="{ upcoming: section.upcoming }"
+    >
+      <h3 class="concerts-heading bd-font-bold">
+        {{ section.title }} <span class="concerts-heading-count">{{ section.count }}</span>
+      </h3>
+      <div class="concerts-list">
+        <details v-for="concert in section.concerts" :key="concert.id" class="concert-item">
+          <summary class="concert-summary">
+            <div class="concert-date bd-font-bold">{{ formatDate(concert.date) }}</div>
             <div class="concert-info">
-              <div class="concert-venue bd-font-bold">{{ venue(event).name }}</div>
+              <div class="concert-venue bd-font-bold">{{ concert.venue }}</div>
               <div class="concert-location">
                 <img
-                  v-if="venue(event).country?.countryCode"
-                  :src="getCountryFlagUrl(venue(event).country!.countryCode)"
+                  v-if="concert.countryCode"
+                  :src="getCountryFlagUrl(concert.countryCode)"
                   alt=""
                   class="country-flag"
                 />
-                {{ eventLocation(event) }}
+                {{ concert.location }}
               </div>
             </div>
-            <BdBadge v-if="isNear(eventCoords(event))" variant="success">
-              Near you · {{ distance(eventCoords(event)) }} km
-            </BdBadge>
-            <BdBadge variant="primary">Tickets <ExternalLink class="concert-link-icon" /></BdBadge>
+            <div v-if="concert.tour" class="concert-tour">{{ concert.tour }}</div>
+            <BdBadge v-if="concert.nearKm !== null" variant="success">Near you · {{ concert.nearKm }} km</BdBadge>
+            <a
+              v-if="concert.source === 'ticketmaster'"
+              class="concert-tickets"
+              :href="concert.url"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <BdBadge variant="primary">Tickets <ExternalLink class="concert-link-icon" /></BdBadge>
+            </a>
+            <div v-else-if="!section.upcoming" class="concert-count">{{ concert.songs.length || "No" }} songs</div>
+          </summary>
+          <ol v-if="concert.songs.length" class="concert-songs">
+            <li v-for="(song, index) in concert.songs" :key="index">{{ song }}</li>
+          </ol>
+          <a class="concert-link" :href="concert.url" target="_blank" rel="noopener noreferrer">
+            {{ concert.source === "ticketmaster" ? "Buy tickets on Ticketmaster" : "View on setlist.fm" }}
+            <ExternalLink class="concert-link-icon" />
           </a>
-          <details
-            v-for="setlist in upcomingSetlists"
-            :key="setlist.id"
-            class="concert-item upcoming"
-          >
-            <summary class="concert-summary">
-              <div class="concert-date bd-font-bold">{{ formatDate(setlistDate(setlist.eventDate)) }}</div>
-              <div class="concert-info">
-                <div class="concert-venue bd-font-bold">{{ setlist.venue.name }}</div>
-                <div class="concert-location">
-                  <img
-                    v-if="setlist.venue.city?.country?.code"
-                    :src="getCountryFlagUrl(setlist.venue.city.country.code)"
-                    alt=""
-                    class="country-flag"
-                  />
-                  {{ location(setlist) }}
-                </div>
-              </div>
-              <div v-if="setlist.tour" class="concert-tour">{{ setlist.tour.name }}</div>
-              <BdBadge v-if="isNear(setlistCoords(setlist))" variant="success">
-                Near you · {{ distance(setlistCoords(setlist)) }} km
-              </BdBadge>
-            </summary>
-            <ol v-if="songs(setlist).length" class="concert-songs">
-              <li v-for="(song, index) in songs(setlist)" :key="index">{{ song }}</li>
-            </ol>
-            <a class="concert-link" :href="setlist.url" target="_blank" rel="noopener noreferrer">
-              View on setlist.fm <ExternalLink class="concert-link-icon" />
-            </a>
-          </details>
-        </div>
-      </section>
-      <section v-if="pastCount" class="concerts-section">
-        <h3 class="concerts-heading bd-font-bold">
-          Past concerts <span class="concerts-heading-count">{{ pastCount }}</span>
-        </h3>
-        <div class="concerts-list">
-          <details
-            v-for="setlist in pastSetlists"
-            :key="setlist.id"
-            class="concert-item"
-          >
-            <summary class="concert-summary">
-              <div class="concert-date bd-font-bold">{{ formatDate(setlistDate(setlist.eventDate)) }}</div>
-              <div class="concert-info">
-                <div class="concert-venue bd-font-bold">{{ setlist.venue.name }}</div>
-                <div class="concert-location">
-                  <img
-                    v-if="setlist.venue.city?.country?.code"
-                    :src="getCountryFlagUrl(setlist.venue.city.country.code)"
-                    alt=""
-                    class="country-flag"
-                  />
-                  {{ location(setlist) }}
-                </div>
-              </div>
-              <div v-if="setlist.tour" class="concert-tour">{{ setlist.tour.name }}</div>
-              <div class="concert-count">{{ songs(setlist).length || "No" }} songs</div>
-            </summary>
-            <ol v-if="songs(setlist).length" class="concert-songs">
-              <li v-for="(song, index) in songs(setlist)" :key="index">{{ song }}</li>
-            </ol>
-            <a class="concert-link" :href="setlist.url" target="_blank" rel="noopener noreferrer">
-              View on setlist.fm <ExternalLink class="concert-link-icon" />
-            </a>
-          </details>
-        </div>
-        <BdButton v-if="setlists.length < total" class="concerts-more" :disabled="loading" @click="loadPage(page + 1)">
-          Load more
-        </BdButton>
-      </section>
-    </template>
+        </details>
+      </div>
+      <BdButton
+        v-if="!section.upcoming && setlists.length < total"
+        class="concerts-more"
+        :disabled="setlistsLoading"
+        @click="loadPage(page + 1)"
+      >
+        Load more
+      </BdButton>
+    </section>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ChevronDown, ExternalLink, MapPin } from "@lucide/vue";
-import { BdBadge, BdButton, BdDropdown, BdDropdownItem, BdLoader } from "bearded-ui";
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { BdBadge, BdButton, BdDropdown, BdDropdownItem, BdEmptyState, BdLoader } from "bearded-ui";
+import { computed, onBeforeUnmount, ref, shallowRef, watch } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
-import { Coords, Setlist } from "@/@types/Setlistfm";
-import { TicketmasterEvent, TicketmasterVenue } from "@/@types/Ticketmaster";
+import { Setlist } from "@/@types/Setlistfm";
+import { TicketmasterEvent } from "@/@types/Ticketmaster";
 import { useConfig } from "@/components/config/ConfigStore";
+import { Concert, splitConcerts } from "@/helpers/concerts";
 import { countries, getCountryFlagUrl, getCountryName } from "@/helpers/country";
 import { formatDate } from "@/helpers/date";
 import { notification } from "@/helpers/notifications";
-import { distanceKm, getSetlists, isUpcoming, setlistDate } from "@/helpers/setlistfm";
+import { distanceKm, getSetlists } from "@/helpers/setlistfm";
 import { getTicketmasterEvents } from "@/helpers/ticketmaster";
 import { useArtist } from "@/views/artist/ArtistStore";
 
@@ -179,9 +129,10 @@ const NEAR_RADIUS_KM = 150;
 
 const artistStore = useArtist();
 const configStore = useConfig();
-const setlists = ref<Setlist[]>([]);
-const events = ref<TicketmasterEvent[]>([]);
-const loading = ref(true);
+// Shallow: the lists are only ever replaced, never mutated in place
+const setlists = shallowRef<Setlist[]>([]);
+const events = shallowRef<TicketmasterEvent[]>([]);
+const setlistsLoading = ref(true);
 const eventsLoading = ref(true);
 const locating = ref(false);
 const page = ref(0);
@@ -191,51 +142,33 @@ let eventsController = new AbortController();
 
 const countryList = countries();
 
-// Ticketmaster has the ticket link, so its show wins over setlist.fm's announcement of the same date.
-// ponytail: matched on date alone — an artist rarely plays twice the same day
-const upcomingSetlists = computed(() => {
-  const ticketed = new Set(events.value.map((event) => event.dates.start.localDate));
-  return setlists.value
-    .filter((setlist) => isUpcoming(setlist.eventDate) && !ticketed.has(setlistDate(setlist.eventDate)))
-    .reverse(); // setlist.fm sends newest first; the next show should come first
-});
+const busy = computed(() => setlistsLoading.value || eventsLoading.value);
+const split = computed(() => splitConcerts(events.value, setlists.value));
 
-const pastSetlists = computed(() => setlists.value.filter((setlist) => !isUpcoming(setlist.eventDate)));
-
-// ponytail: Ticketmaster rows then setlist.fm rows, each sorted, not interleaved by date
-const upcomingCount = computed(() => events.value.length + upcomingSetlists.value.length);
-
-// setlist.fm's total spans upcoming shows too; every upcoming one sits in the loaded first page
-const pastCount = computed(() => total.value - (setlists.value.length - pastSetlists.value.length));
+// Distance computed once per row, not per render
+const upcoming = computed(() => split.value.upcoming.map((concert) => ({ ...concert, nearKm: nearKm(concert) })));
 
 // ponytail: counts loaded pages only — upcoming shows sit on page 1, newest first
-const nearbyCount = computed(
-  () =>
-    events.value.filter((event) => isNear(eventCoords(event))).length
-    + upcomingSetlists.value.filter((setlist) => isNear(setlistCoords(setlist))).length,
+const nearbyCount = computed(() => upcoming.value.filter((concert) => concert.nearKm !== null).length);
+
+const sections = computed(() =>
+  [
+    { concerts: upcoming.value, count: upcoming.value.length, title: "Upcoming concerts", upcoming: true },
+    {
+      concerts: split.value.past.map((concert) => ({ ...concert, nearKm: null })),
+      // setlist.fm's total spans upcoming shows too; every upcoming one sits in the loaded first page
+      count: total.value - (setlists.value.length - split.value.past.length),
+      title: "Past concerts",
+      upcoming: false,
+    },
+  ].filter((section) => section.count),
 );
 
-/** Distance from home to the venue in km, or null when either point is unknown. */
-function distance(coords: Coords | null): null | number {
-  const home = configStore.homeLocation;
-  if (!coords || !home) return null;
-  return Math.round(distanceKm(home, coords));
-}
-
-function eventCoords(event: TicketmasterEvent): Coords | null {
-  const loc = venue(event).location;
-  return loc ? { lat: Number(loc.latitude), lon: Number(loc.longitude) } : null;
-}
-
-function eventLocation(event: TicketmasterEvent): string {
-  const v = venue(event);
-  return [v.city?.name, v.state?.name, v.country?.name].filter(Boolean).join(", ");
-}
-
-function isNear(coords: Coords | null): boolean {
-  const km = distance(coords);
-  return km !== null && km <= NEAR_RADIUS_KM;
-}
+const emptyTitle = computed(() =>
+  configStore.concertCountry
+    ? `No concerts found in ${getCountryName(configStore.concertCountry)}`
+    : "No concerts found",
+);
 
 async function loadEvents(): Promise<void> {
   eventsController.abort();
@@ -254,19 +187,19 @@ async function loadPage(next: number): Promise<void> {
   setlistsController.abort();
   const { signal } = (setlistsController = new AbortController());
   if (!mbid) {
-    loading.value = false;
+    setlistsLoading.value = false;
     return;
   }
-  loading.value = true;
+  setlistsLoading.value = true;
   const data = await getSetlists(mbid, next, configStore.concertCountry, signal);
   // Artist or country changed while the request was in flight
   if (signal.aborted) return;
   if (data) {
-    setlists.value.push(...(data.setlist ?? []));
+    setlists.value = [...setlists.value, ...(data.setlist ?? [])];
     page.value = data.page;
     total.value = data.total;
   }
-  loading.value = false;
+  setlistsLoading.value = false;
 }
 
 function locate(): void {
@@ -290,22 +223,12 @@ function locate(): void {
   );
 }
 
-function location(setlist: Setlist): string {
-  const city = setlist.venue.city;
-  return [city?.name, city?.state, city?.country?.name].filter(Boolean).join(", ");
-}
-
-function setlistCoords(setlist: Setlist): Coords | null {
-  const coords = setlist.venue.city?.coords;
-  return coords ? { lat: coords.lat, lon: coords.long } : null;
-}
-
-function songs(setlist: Setlist): string[] {
-  return setlist.sets.set.flatMap((set) => set.song.filter((song) => song.name).map((song) => song.name));
-}
-
-function venue(event: TicketmasterEvent): TicketmasterVenue {
-  return event._embedded?.venues?.[0] ?? { name: "Unknown venue" };
+/** Distance from home in km when within the radius; null when farther or either point is unknown. */
+function nearKm(concert: Concert): null | number {
+  const home = configStore.homeLocation;
+  if (!concert.coords || !home) return null;
+  const km = Math.round(distanceKm(home, concert.coords));
+  return km <= NEAR_RADIUS_KM ? km : null;
 }
 
 watch(
@@ -371,11 +294,6 @@ onBeforeUnmount(() => {
   padding: var(--bd-space-6) 0;
 }
 
-.no-concerts {
-  color: var(--bd-font-color-light);
-  opacity: 0.6;
-}
-
 .concerts-section + .concerts-section {
   border-top: 1px solid var(--bd-border-color);
   margin-top: var(--bd-space-6);
@@ -411,7 +329,7 @@ onBeforeUnmount(() => {
   border-left: 3px solid transparent;
   border-radius: var(--bd-radius-sm);
 
-  &.upcoming {
+  .upcoming & {
     border-left-color: var(--bd-primary);
   }
 }
@@ -419,13 +337,11 @@ onBeforeUnmount(() => {
 .concert-summary {
   align-items: center;
   border-radius: var(--bd-radius-sm);
-  color: currentcolor;
   cursor: pointer;
   display: flex;
   gap: var(--bd-space-4);
   list-style: none;
   padding: var(--bd-space-3) var(--bd-space-4);
-  text-decoration: none;
   transition: background-color var(--bd-transition-fast);
 
   &::-webkit-details-marker {
@@ -456,14 +372,6 @@ onBeforeUnmount(() => {
   min-width: 0;
 }
 
-.country-flag {
-  border-radius: 0.1rem;
-  height: 0.8em;
-  margin-right: var(--bd-space-1);
-  vertical-align: baseline;
-  width: auto;
-}
-
 .concert-location,
 .concert-tour,
 .concert-count {
@@ -478,6 +386,10 @@ onBeforeUnmount(() => {
 
 .concert-count {
   flex: 0 0 auto;
+}
+
+.concert-tickets {
+  display: inline-flex;
 }
 
 .concert-songs {

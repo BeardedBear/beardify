@@ -40,6 +40,8 @@ export interface ArtistPage {
   followStatus: boolean | undefined;
   headerHeight: number;
   musicbrainzArtist: MusicBrainzArtist | null;
+  /** The MusicBrainz match is still being looked up; `musicbrainzArtist` null then means "not yet" */
+  musicbrainzLoading: boolean;
   reclassifying: boolean;
   relatedArtists: RelatedArtists;
   releaseBaseTitles: Map<string, string>;

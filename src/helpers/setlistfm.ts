@@ -3,7 +3,13 @@ import { http } from "@/helpers/http";
 
 // Relayed: setlist.fm has no CORS and the key stays server-side (netlify/functions/setlistfm.mts).
 // ponytail: no Tauri path — the desktop build has no function host, so the tab stays empty there.
-const SETLISTFM_URL = `${location.origin}/.netlify/functions/setlistfm/`;
+// No retry: the shared key allows 2 req/s and 1440 a day, a replayed 429 only burns more.
+// Timeout above the relay's own 10 s, so its 504 comes back instead of a client abort.
+const setlistfmClient = http.extend({
+  baseUrl: `${location.origin}/.netlify/functions/setlistfm/`,
+  retry: 0,
+  timeout: 12_000,
+});
 
 /**
  * Great-circle distance (haversine), good to a few km — plenty for "is it near me".
@@ -36,27 +42,10 @@ export async function getSetlists(
   const searchParams: Record<string, number | string> = { artistMbid: musicbrainzId, p: page };
   if (countryCode) searchParams.countryCode = countryCode;
   try {
-    // No retry: the shared key allows 2 req/s and 1440 a day, a replayed 429 only burns more.
-    // Timeout above the relay's own 10 s, so its 504 comes back instead of a client abort.
-    return await http
-      .get(`${SETLISTFM_URL}search/setlists`, { retry: 0, searchParams, signal, timeout: 12_000 })
-      .json<SetlistPage>();
+    return await setlistfmClient.get("search/setlists", { searchParams, signal }).json<SetlistPage>();
   } catch {
     return null;
   }
-}
-
-/**
- * Whether a concert hasn't happened yet. Today counts as upcoming: the show is still ahead.
- * @param eventDate - Date as returned by setlist.fm ("dd-MM-yyyy")
- * @param now - Reference date, local time
- */
-export function isUpcoming(eventDate: string, now = new Date()): boolean {
-  const today = [now.getFullYear(), now.getMonth() + 1, now.getDate()]
-    .map((part) => String(part).padStart(2, "0"))
-    .join("-");
-  // ISO strings compare in date order
-  return setlistDate(eventDate) >= today;
 }
 
 /**

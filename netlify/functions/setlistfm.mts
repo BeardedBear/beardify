@@ -49,12 +49,9 @@ export default async (request: Request): Promise<Response> => {
   // Only cache what came back clean: caching a 429 would pin the failure for hours.
   // A 404 is clean too (no setlist for that artist/country) and common, so it gets a
   // shorter cache rather than costing a quota call on every visit.
-  if (upstream.ok) {
+  if (upstream.ok || upstream.status === 404) {
     headers["Cache-Control"] = "public, max-age=3600";
-    headers["Netlify-CDN-Cache-Control"] = "public, durable, max-age=43200";
-  } else if (upstream.status === 404) {
-    headers["Cache-Control"] = "public, max-age=3600";
-    headers["Netlify-CDN-Cache-Control"] = "public, durable, max-age=3600";
+    headers["Netlify-CDN-Cache-Control"] = `public, durable, max-age=${upstream.ok ? 43200 : 3600}`;
   } else {
     headers["Cache-Control"] = "no-store";
   }
