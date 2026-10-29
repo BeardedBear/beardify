@@ -10,19 +10,37 @@
       <span class="separator">·</span>
     </template>
     <BdTooltip content="Discogs" side="bottom">
-      <BdButton aria-label="Discogs" icon-only variant="nude" @click.stop.prevent="openLink(link.discogs)">
+      <BdButton
+        aria-label="Discogs"
+        icon-only
+        :size="buttonSize"
+        variant="nude"
+        @click.stop.prevent="openLink(link.discogs)"
+      >
         <i aria-hidden="true" class="icon-discogs" />
         <span class="link-name bd-font-bold">Discogs</span>
       </BdButton>
     </BdTooltip>
     <BdTooltip content="RateYourMusic" side="bottom">
-      <BdButton aria-label="RateYourMusic" icon-only variant="nude" @click.stop.prevent="openLink(link.rym)">
+      <BdButton
+        aria-label="RateYourMusic"
+        icon-only
+        :size="buttonSize"
+        variant="nude"
+        @click.stop.prevent="openLink(link.rym)"
+      >
         <i aria-hidden="true" class="icon-rym" />
         <span class="link-name bd-font-bold">RateYourMusic</span>
       </BdButton>
     </BdTooltip>
     <BdTooltip content="Album of the Year" side="bottom">
-      <BdButton aria-label="Album of the Year" icon-only variant="nude" @click.stop.prevent="openLink(link.aoty)">
+      <BdButton
+        aria-label="Album of the Year"
+        icon-only
+        :size="buttonSize"
+        variant="nude"
+        @click.stop.prevent="openLink(link.aoty)"
+      >
         <i aria-hidden="true" class="icon-album" />
         <span class="link-name bd-font-bold">Album of the Year</span>
       </BdButton>
@@ -47,6 +65,8 @@ const props = defineProps<{
 }>();
 
 const artistStore = useArtist();
+// Smaller inside the hover card, where they sit in a tooltip panel
+const buttonSize = computed(() => (props.floating ? "small" : undefined));
 const artistNameNormalized = computed(() => normalizeDiacritics(props.artistName).replaceAll("&", "and"));
 
 /**
@@ -124,8 +144,12 @@ const link = computed(() => ({
   position: relative;
   width: 100%;
 
+  /* Inside the tooltip panel: tighter buttons, and eat most of the panel's own padding */
   &.floating {
+    gap: 0;
     justify-content: center;
+    margin: calc(var(--bd-space-1) * -1) calc(var(--bd-space-2) * -1);
+    width: auto;
   }
 
   .separator {
