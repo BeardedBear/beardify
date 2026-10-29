@@ -24,13 +24,23 @@ export function distanceKm(from: Coords, to: Coords): number {
  * @param musicbrainzId - setlist.fm keys artists by MusicBrainz ID
  * @param page - 1-based page number
  * @param countryCode - ISO 3166-1 alpha-2 code to filter on, empty for every country
+ * @param signal - Cancels the request when the artist or country changes
  * @returns The page, or null on error (404 = no setlist matching)
  */
-export async function getSetlists(musicbrainzId: string, page = 1, countryCode = ""): Promise<null | SetlistPage> {
+export async function getSetlists(
+  musicbrainzId: string,
+  page = 1,
+  countryCode = "",
+  signal?: AbortSignal,
+): Promise<null | SetlistPage> {
   const searchParams: Record<string, number | string> = { artistMbid: musicbrainzId, p: page };
   if (countryCode) searchParams.countryCode = countryCode;
   try {
-    return await http.get(`${SETLISTFM_URL}search/setlists`, { searchParams }).json<SetlistPage>();
+    // No retry: the shared key allows 2 req/s and 1440 a day, a replayed 429 only burns more.
+    // Timeout above the relay's own 10 s, so its 504 comes back instead of a client abort.
+    return await http
+      .get(`${SETLISTFM_URL}search/setlists`, { retry: 0, searchParams, signal, timeout: 12_000 })
+      .json<SetlistPage>();
   } catch {
     return null;
   }

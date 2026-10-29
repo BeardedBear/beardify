@@ -34,11 +34,18 @@ const NOT_COUNTRIES = new Set(
   "AC AN BU CP CQ CS DD DG DY EA EU EZ FX HV IC NH QO RH SU TA TP UK UN VD XA XB YD YU ZR ZZ".split(" "),
 );
 
+let countryList: { code: string; name: string }[] | undefined;
+
 /**
  * Every country the browser can name, as ISO alpha-2 codes with English names, sorted by name.
- * Built from Intl rather than a bundled list, so it costs no bytes.
+ * Built from Intl rather than a bundled list, so it costs no bytes; computed once.
  */
 export function countries(): { code: string; name: string }[] {
+  countryList ??= buildCountries();
+  return countryList;
+}
+
+function buildCountries(): { code: string; name: string }[] {
   const regionNames = new Intl.DisplayNames(["en"], { fallback: "none", type: "region" });
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   return [...letters]

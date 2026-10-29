@@ -26,7 +26,8 @@ export default async (request: Request): Promise<Response> => {
 
   const params = new URLSearchParams();
   for (const [key, value] of url.searchParams) {
-    if (!ALLOWED_PARAMS[key]?.test(value)) return new Response(`Invalid param: ${key}`, { status: 400 });
+    // hasOwn: a key like "constructor" would otherwise resolve on the prototype and throw
+    if (!Object.hasOwn(ALLOWED_PARAMS, key) || !ALLOWED_PARAMS[key].test(value)) return new Response(`Invalid param: ${key}`, { status: 400 });
     params.set(key, value);
   }
   if (!params.has("artistMbid")) return new Response("artistMbid required", { status: 400 });
@@ -46,9 +47,14 @@ export default async (request: Request): Promise<Response> => {
   };
 
   // Only cache what came back clean: caching a 429 would pin the failure for hours.
+  // A 404 is clean too (no setlist for that artist/country) and common, so it gets a
+  // shorter cache rather than costing a quota call on every visit.
   if (upstream.ok) {
     headers["Cache-Control"] = "public, max-age=3600";
     headers["Netlify-CDN-Cache-Control"] = "public, durable, max-age=43200";
+  } else if (upstream.status === 404) {
+    headers["Cache-Control"] = "public, max-age=3600";
+    headers["Netlify-CDN-Cache-Control"] = "public, durable, max-age=3600";
   } else {
     headers["Cache-Control"] = "no-store";
   }

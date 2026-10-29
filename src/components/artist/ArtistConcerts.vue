@@ -51,45 +51,41 @@
       No concerts found{{ configStore.concertCountry ? ` in ${getCountryName(configStore.concertCountry)}` : "" }}.
     </p>
     <template v-else>
-      <section v-for="group in groups" :key="group.id" class="concerts-section" :class="group.id">
+      <section v-if="upcomingCount" class="concerts-section upcoming">
         <h3 class="concerts-heading bd-font-bold">
-          {{ group.title }}
-          <span class="concerts-heading-count">{{ group.count }}</span>
+          Upcoming concerts <span class="concerts-heading-count">{{ upcomingCount }}</span>
         </h3>
         <div class="concerts-list">
-          <template v-if="group.id === 'upcoming'">
-            <a
-              v-for="event in events"
-              :key="event.id"
-              class="concert-item concert-summary upcoming"
-              :href="event.url"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <div class="concert-date bd-font-bold">{{ formatDate(event.dates.start.localDate) }}</div>
-              <div class="concert-info">
-                <div class="concert-venue bd-font-bold">{{ venue(event).name }}</div>
-                <div class="concert-location">
-                  <img
-                    v-if="venue(event).country?.countryCode"
-                    :src="getCountryFlagUrl(venue(event).country!.countryCode)"
-                    alt=""
-                    class="country-flag"
-                  />
-                  {{ eventLocation(event) }}
-                </div>
+          <a
+            v-for="event in events"
+            :key="event.id"
+            class="concert-item concert-summary upcoming"
+            :href="event.url"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div class="concert-date bd-font-bold">{{ formatDate(event.dates.start.localDate) }}</div>
+            <div class="concert-info">
+              <div class="concert-venue bd-font-bold">{{ venue(event).name }}</div>
+              <div class="concert-location">
+                <img
+                  v-if="venue(event).country?.countryCode"
+                  :src="getCountryFlagUrl(venue(event).country!.countryCode)"
+                  alt=""
+                  class="country-flag"
+                />
+                {{ eventLocation(event) }}
               </div>
-              <BdBadge v-if="isNear(eventCoords(event))" variant="success">
-                Near you · {{ distance(eventCoords(event)) }} km
-              </BdBadge>
-              <BdBadge variant="primary">Tickets <ExternalLink class="concert-link-icon" /></BdBadge>
-            </a>
-          </template>
+            </div>
+            <BdBadge v-if="isNear(eventCoords(event))" variant="success">
+              Near you · {{ distance(eventCoords(event)) }} km
+            </BdBadge>
+            <BdBadge variant="primary">Tickets <ExternalLink class="concert-link-icon" /></BdBadge>
+          </a>
           <details
-            v-for="setlist in group.setlists"
+            v-for="setlist in upcomingSetlists"
             :key="setlist.id"
-            class="concert-item"
-            :class="{ upcoming: isUpcoming(setlist.eventDate) }"
+            class="concert-item upcoming"
           >
             <summary class="concert-summary">
               <div class="concert-date bd-font-bold">{{ formatDate(setlistDate(setlist.eventDate)) }}</div>
@@ -106,10 +102,9 @@
                 </div>
               </div>
               <div v-if="setlist.tour" class="concert-tour">{{ setlist.tour.name }}</div>
-              <BdBadge v-if="group.id === 'upcoming' && isNear(setlistCoords(setlist))" variant="success">
+              <BdBadge v-if="isNear(setlistCoords(setlist))" variant="success">
                 Near you · {{ distance(setlistCoords(setlist)) }} km
               </BdBadge>
-              <div v-if="group.id === 'past'" class="concert-count">{{ songs(setlist).length || "No" }} songs</div>
             </summary>
             <ol v-if="songs(setlist).length" class="concert-songs">
               <li v-for="(song, index) in songs(setlist)" :key="index">{{ song }}</li>
@@ -119,12 +114,43 @@
             </a>
           </details>
         </div>
-        <BdButton
-          v-if="group.id === 'past' && setlists.length < total"
-          class="concerts-more"
-          :disabled="loading"
-          @click="loadPage(page + 1)"
-        >
+      </section>
+      <section v-if="pastCount" class="concerts-section">
+        <h3 class="concerts-heading bd-font-bold">
+          Past concerts <span class="concerts-heading-count">{{ pastCount }}</span>
+        </h3>
+        <div class="concerts-list">
+          <details
+            v-for="setlist in pastSetlists"
+            :key="setlist.id"
+            class="concert-item"
+          >
+            <summary class="concert-summary">
+              <div class="concert-date bd-font-bold">{{ formatDate(setlistDate(setlist.eventDate)) }}</div>
+              <div class="concert-info">
+                <div class="concert-venue bd-font-bold">{{ setlist.venue.name }}</div>
+                <div class="concert-location">
+                  <img
+                    v-if="setlist.venue.city?.country?.code"
+                    :src="getCountryFlagUrl(setlist.venue.city.country.code)"
+                    alt=""
+                    class="country-flag"
+                  />
+                  {{ location(setlist) }}
+                </div>
+              </div>
+              <div v-if="setlist.tour" class="concert-tour">{{ setlist.tour.name }}</div>
+              <div class="concert-count">{{ songs(setlist).length || "No" }} songs</div>
+            </summary>
+            <ol v-if="songs(setlist).length" class="concert-songs">
+              <li v-for="(song, index) in songs(setlist)" :key="index">{{ song }}</li>
+            </ol>
+            <a class="concert-link" :href="setlist.url" target="_blank" rel="noopener noreferrer">
+              View on setlist.fm <ExternalLink class="concert-link-icon" />
+            </a>
+          </details>
+        </div>
+        <BdButton v-if="setlists.length < total" class="concerts-more" :disabled="loading" @click="loadPage(page + 1)">
           Load more
         </BdButton>
       </section>
@@ -135,7 +161,7 @@
 <script lang="ts" setup>
 import { ChevronDown, ExternalLink, MapPin } from "@lucide/vue";
 import { BdBadge, BdButton, BdDropdown, BdDropdownItem, BdLoader } from "bearded-ui";
-import { computed, ref, watch } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
 import { Coords, Setlist } from "@/@types/Setlistfm";
@@ -160,8 +186,8 @@ const eventsLoading = ref(true);
 const locating = ref(false);
 const page = ref(0);
 const total = ref(0);
-let request = 0;
-let eventsRequest = 0;
+let setlistsController = new AbortController();
+let eventsController = new AbortController();
 
 const countryList = countries();
 
@@ -177,21 +203,10 @@ const upcomingSetlists = computed(() => {
 const pastSetlists = computed(() => setlists.value.filter((setlist) => !isUpcoming(setlist.eventDate)));
 
 // ponytail: Ticketmaster rows then setlist.fm rows, each sorted, not interleaved by date
-const groups = computed(() =>
-  [
-    {
-      count: events.value.length + upcomingSetlists.value.length,
-      id: "upcoming",
-      setlists: upcomingSetlists.value,
-      title: "Upcoming concerts",
-    },
-    {
-      count: total.value - setlists.value.filter((setlist) => isUpcoming(setlist.eventDate)).length,
-      id: "past", setlists: pastSetlists.value,
-      title: "Past concerts",
-    },
-  ].filter((group) => group.count),
-);
+const upcomingCount = computed(() => events.value.length + upcomingSetlists.value.length);
+
+// setlist.fm's total spans upcoming shows too; every upcoming one sits in the loaded first page
+const pastCount = computed(() => total.value - (setlists.value.length - pastSetlists.value.length));
 
 // ponytail: counts loaded pages only — upcoming shows sit on page 1, newest first
 const nearbyCount = computed(
@@ -223,25 +238,29 @@ function isNear(coords: Coords | null): boolean {
 }
 
 async function loadEvents(): Promise<void> {
-  const id = ++eventsRequest;
+  eventsController.abort();
+  const { signal } = (eventsController = new AbortController());
+  // Cleared up front: the previous filter's shows must not linger, nor hide setlists by date
+  events.value = [];
   eventsLoading.value = true;
-  const data = await getTicketmasterEvents(artistStore.artist.name, configStore.concertCountry);
-  if (id !== eventsRequest) return;
+  const data = await getTicketmasterEvents(artistStore.artist.name, configStore.concertCountry, signal);
+  if (signal.aborted) return;
   events.value = data;
   eventsLoading.value = false;
 }
 
 async function loadPage(next: number): Promise<void> {
   const mbid = artistStore.musicbrainzArtist?.id;
-  const id = ++request;
+  setlistsController.abort();
+  const { signal } = (setlistsController = new AbortController());
   if (!mbid) {
     loading.value = false;
     return;
   }
   loading.value = true;
-  const data = await getSetlists(mbid, next, configStore.concertCountry);
+  const data = await getSetlists(mbid, next, configStore.concertCountry, signal);
   // Artist or country changed while the request was in flight
-  if (id !== request) return;
+  if (signal.aborted) return;
   if (data) {
     setlists.value.push(...(data.setlist ?? []));
     page.value = data.page;
@@ -266,7 +285,8 @@ function locate(): void {
       notification({ msg: "Couldn't get your location", type: NotificationType.Error });
       locating.value = false;
     },
-    { maximumAge: 3_600_000 },
+    // Without a timeout, a dismissed Firefox prompt never calls back and the button stays disabled
+    { maximumAge: 3_600_000, timeout: 10_000 },
   );
 }
 
@@ -299,6 +319,11 @@ watch(
 );
 
 watch([() => artistStore.artist.name, () => configStore.concertCountry], loadEvents, { immediate: true });
+
+onBeforeUnmount(() => {
+  setlistsController.abort();
+  eventsController.abort();
+});
 </script>
 
 <style scoped>

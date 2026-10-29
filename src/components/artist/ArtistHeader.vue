@@ -53,6 +53,8 @@ const loading = computed(() => {
 
 const infoAvailable = computed(() => artistStore.hasInfo);
 const concertsAvailable = computed(() => hasTicketmaster || Boolean(artistStore.musicbrainzArtist?.id));
+// `timelineLoading` covers the MusicBrainz lookup: it is cleared once `getIds` settles
+const concertsLoading = computed(() => !concertsAvailable.value && artistStore.timelineLoading);
 
 const tabs = computed<Tab[]>(() => [
   {
@@ -73,16 +75,24 @@ const tabs = computed<Tab[]>(() => [
   {
     // setlist.fm keys artists by MusicBrainz ID only; Ticketmaster searches by name
     disabled: !concertsAvailable.value,
-    icon: concertsAvailable.value ? MicVocal : CircleOff,
+    icon: concertsLoading.value ? Loader2 : concertsAvailable.value ? MicVocal : CircleOff,
     id: "concerts",
     label: "Concerts",
-    tooltip: !concertsAvailable.value ? "Artist not found on MusicBrainz" : undefined,
+    loading: concertsLoading.value,
+    tooltip: !concertsAvailable.value && !concertsLoading.value ? "Artist not found on MusicBrainz" : undefined,
   },
 ]);
 
 watch(height, (newHeight) => {
   if (newHeight > 0) {
     artistStore.updateHeaderHeight(newHeight);
+  }
+});
+
+// Same for Concerts once the MusicBrainz lookup has settled without a match
+watch([concertsAvailable, concertsLoading], ([available, pending]) => {
+  if (!available && !pending && artistStore.activeTab === "concerts") {
+    artistStore.activeTab = "discography";
   }
 });
 
