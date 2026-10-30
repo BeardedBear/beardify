@@ -3,11 +3,13 @@ import { http } from "@/helpers/http";
 
 // Relayed: setlist.fm has no CORS and the key stays server-side (netlify/functions/setlistfm.mts).
 // ponytail: no Tauri path — the desktop build has no function host, so the tab stays empty there.
-// No retry: the shared key allows 2 req/s and 1440 a day, a replayed 429 only burns more.
+// The shared key allows 2 req/s and 1440 a day, so a replayed 429/503 only burns more. One
+// retry on 502/504 only: api.setlist.fm drops connections now and then (502 from the dev
+// proxy, 504 "unreachable" from the relay), and those usually never reached the quota.
 // Timeout above the relay's own 10 s, so its 504 comes back instead of a client abort.
 const setlistfmClient = http.extend({
   baseUrl: `${location.origin}/.netlify/functions/setlistfm/`,
-  retry: 0,
+  retry: { limit: 1, retryOnTimeout: false, statusCodes: [502, 504] },
   timeout: 12_000,
 });
 
