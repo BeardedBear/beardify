@@ -1,3 +1,4 @@
+import { Device } from "@/@types/Device";
 import { NotificationType } from "@/@types/Notification";
 import { Track } from "@/@types/Track";
 import { notification } from "@/helpers/notifications";
@@ -43,6 +44,30 @@ export function mapQueueToSpotifyTracks(queue: Track[]): Spotify.Track[] {
 /** Show a user-facing error notification when the playback queue cannot be fetched. */
 export function notifyQueueError(): void {
   notification({ msg: "Unable to load the queue", type: NotificationType.Error });
+}
+
+/**
+ * Whether a device-list refresh should move playback back onto this browser.
+ *
+ * Only when nothing is active and the tracked device is one of this browser's
+ * own past ids that has vanished — an SDK reconnect after a long idle or a sleep
+ * re-registers under a new id. An external device that drops off the list is
+ * never reclaimed: Spotify routinely hides Connect/Cast speakers for a few
+ * seconds, and transferring then yanks playback off a playing soundbar.
+ * @param devices - Fresh `me/player/devices` list
+ * @param trackedId - Device the store currently tracks as active
+ * @param thisDeviceId - This browser's current SDK device id
+ * @param localDeviceIds - Every id this browser's SDK has registered under
+ */
+export function shouldReclaimLocalDevice(
+  devices: Device[],
+  trackedId: null | string | undefined,
+  thisDeviceId: string,
+  localDeviceIds: ReadonlySet<string>,
+): boolean {
+  if (!thisDeviceId || !trackedId || !localDeviceIds.has(trackedId)) return false;
+  if (devices.some((device) => device.is_active)) return false;
+  return !devices.some((device) => device.id === trackedId);
 }
 
 // Persist device volume in localStorage so we can restore when the API reports a default 100
