@@ -147,7 +147,8 @@ async function deleteAlbum(albumId: string): Promise<void> {
      * full tracklist. And restoring at the end is not an undo: in a tier list it
      * would silently move the album to a different tier.
      */
-    const present = new Map(playlistStore.tracks.map((entry, index) => [entry.item.uri, index]));
+    // Raw entries: an unavailable one still counts in the position Spotify inserts at.
+    const present = new Map(playlistStore.items.map((entry, index) => [entry.item?.uri, index]));
     const uris = tracks.map((track) => track.uri).filter((uri) => present.has(uri));
     const position = uris.length ? (present.get(uris[0]) ?? -1) : -1;
 

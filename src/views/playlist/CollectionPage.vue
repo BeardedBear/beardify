@@ -320,6 +320,9 @@ playlistStore.clean().finally(() => {
   ]).then(() => {
     // Restore scroll after albums finished loading (height is now stable)
     scrollerRef.value?.restoreScroll();
+    if (playlistStore.playlist.id === props.id && playlistStore.playlist.owner.id === authStore.me?.id) {
+      playlistStore.cleanCollectionDuplicates();
+    }
   });
 });
 </script>

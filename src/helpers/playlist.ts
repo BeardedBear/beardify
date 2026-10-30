@@ -14,9 +14,14 @@ import { useAuth } from "@/views/auth/AuthStore";
  * @param playlistId - The Spotify playlist ID
  * @param uris - Track/episode URIs to insert, in order
  * @param position - Zero-based index to insert at; appends when omitted
+ * @returns The playlist's new snapshot ID
  */
-export async function addPlaylistItems(playlistId: string, uris: string[], position?: number): Promise<void> {
-  await instance().post(`playlists/${playlistId}/items`, position === undefined ? { uris } : { position, uris });
+export async function addPlaylistItems(playlistId: string, uris: string[], position?: number): Promise<string> {
+  const { data } = await instance().post<{ snapshot_id: string }>(
+    `playlists/${playlistId}/items`,
+    position === undefined ? { uris } : { position, uris },
+  );
+  return data.snapshot_id;
 }
 
 /**
@@ -56,15 +61,17 @@ export function isPlaylistOwner(owner: Pick<PublicUser, "id">): boolean {
  * @param playlistId - The Spotify playlist ID
  * @param items - Track/episode URIs to remove
  * @param snapshotId - The playlist's current snapshot ID
+ * @returns The playlist's new snapshot ID
  */
 export async function removePlaylistItems(
   playlistId: string,
   items: TrackToRemove[],
   snapshotId: string,
-): Promise<void> {
-  await instance().delete(`playlists/${playlistId}/items`, {
+): Promise<string> {
+  const { data } = await instance().delete<{ snapshot_id: string }>(`playlists/${playlistId}/items`, {
     data: { items, snapshot_id: snapshotId },
   });
+  return data.snapshot_id;
 }
 
 /**
