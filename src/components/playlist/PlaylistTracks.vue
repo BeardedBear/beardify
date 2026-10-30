@@ -115,8 +115,9 @@ const getContributorDisplayName = (userId: string): string => {
 async function deleteSong(songId: string): Promise<void> {
   // Captured before the removal: restoring at the end of the playlist is not
   // an undo, it is a different playlist.
-  const position = playlistStore.tracks.findIndex((entry) => entry.item.uri === songId);
-  const name = playlistStore.tracks[position]?.item.name;
+  // Raw entries: an unavailable one still counts in the position Spotify inserts at.
+  const position = playlistStore.items.findIndex((entry) => entry.item?.uri === songId);
+  const name = playlistStore.items[position]?.item?.name;
   try {
     await removePlaylistItems(playlist.id, [{ uri: songId }], playlist.snapshot_id);
     removeSong(songId);

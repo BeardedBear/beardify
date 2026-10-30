@@ -22,11 +22,17 @@ export interface Playlist {
   uri: string;
 }
 
+/**
+ * A raw playlist entry: Spotify returns `item: null` for tracks it can no
+ * longer serve, and they still hold a position the write endpoints count.
+ */
+export type PlaylistEntry = { item: null | Track } & Omit<PlaylistTrack, "item">;
+
 export interface PlaylistPage {
   filter: string;
   followed: boolean | undefined;
+  items: PlaylistEntry[];
   playlist: Playlist;
-  tracks: PlaylistTrack[];
   tracksVersion: number;
 }
 

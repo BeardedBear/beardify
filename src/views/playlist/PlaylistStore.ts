@@ -3,14 +3,24 @@ import { defineStore } from "pinia";
 import { defaultPlaylist } from "@/@types/Defaults";
 import { NotificationType } from "@/@types/Notification";
 import { Paging } from "@/@types/Paging";
-import { Playlist, PlaylistPage, PlaylistTrack } from "@/@types/Playlist";
+import { Playlist, PlaylistEntry, PlaylistPage, PlaylistTrack } from "@/@types/Playlist";
 import { TrackToRemove } from "@/@types/Track";
 import { instance } from "@/api";
 import { useSidebar } from "@/components/sidebar/SidebarStore";
+import { planDuplicateCleanup, planRangeMove } from "@/helpers/arrayDiff";
 import { buildCollectionDescription, parseCollectionRankingMode, stripCollectionTags } from "@/helpers/collectionOptions";
 import { isInLibrary, saveToLibrary } from "@/helpers/library";
 import { notification } from "@/helpers/notifications";
+import { addPlaylistItems, removePlaylistItems } from "@/helpers/playlist";
 import router from "@/router";
+
+// Reorder requests are index-based, so they must reach Spotify one at a time, in order.
+let reorderQueue: Promise<void> = Promise.resolve();
+let reorderEpoch = 0;
+
+// Unavailable entries (`item: null`) get no key: they never group with or match an album.
+const albumOf = (entry: PlaylistEntry): null | string => entry.item?.album.id ?? null;
+const urisOf = (entries: PlaylistEntry[]): string[] => entries.flatMap((entry) => (entry.item ? [entry.item.uri] : []));
 
 export const usePlaylist = defineStore("playlist", {
   actions: {
@@ -18,7 +28,34 @@ export const usePlaylist = defineStore("playlist", {
       this.tracksVersion++;
       this.filter = "";
       this.playlist = defaultPlaylist;
-      this.tracks = [];
+      this.items = [];
+    },
+
+    /**
+     * Collapses every album found at several places in the collection down to
+     * its first run (see planDuplicateCleanup). Done once the whole collection
+     * is loaded rather than on drag: every copy is visible then, the drag only
+     * ever has one run to move, and deletion/undo resolve positions on a clean
+     * list. Owner-only — call it after getTracks has finished.
+     */
+    cleanCollectionDuplicates(): Promise<void> {
+      const plan = planDuplicateCleanup(this.items, albumOf);
+      if (!plan) return reorderQueue;
+      this.items = plan.next;
+
+      const playlistId = this.playlist.id;
+      const removed = [...new Set(urisOf(plan.removed))].map((uri) => ({ uri }));
+      const albumCount = plan.inserts.length;
+      return this.queueCollectionWrite("Unable to remove duplicate albums. Please reload.", async () => {
+        this.setSnapshot(playlistId, await removePlaylistItems(playlistId, removed, this.playlist.snapshot_id));
+        for (const { position, run } of plan.inserts) {
+          this.setSnapshot(playlistId, await addPlaylistItems(playlistId, urisOf(run), position));
+        }
+        notification({
+          msg: `Removed duplicate copies of ${albumCount} album${albumCount > 1 ? "s" : ""}`,
+          type: NotificationType.Success,
+        });
+      });
     },
 
     async followPlaylist(playlistId: string) {
@@ -46,10 +83,11 @@ export const usePlaylist = defineStore("playlist", {
     async getTracks(url: string, version?: number) {
       const v = version ?? this.tracksVersion;
       try {
-        const e = await instance().get<Paging<PlaylistTrack>>(url);
+        const e = await instance().get<Paging<PlaylistEntry>>(url);
         // If tracks were reset by a newer navigation, abandon this pagination chain
         if (this.tracksVersion !== v) return;
-        this.tracks = this.tracks.concat(e.data.items.filter((item: PlaylistTrack) => item.item));
+        // Unavailable entries are kept: they hold a position the write endpoints count
+        this.items = this.items.concat(e.data.items);
         if (e.data.next) await this.getTracks(e.data.next, v);
       } catch (error: unknown) {
         if (import.meta.env.DEV) console.error("Error fetching playlist tracks:", error);
@@ -75,6 +113,28 @@ export const usePlaylist = defineStore("playlist", {
       }
     },
 
+    /**
+     * Collection writes are index-based, so they reach Spotify one at a time,
+     * in the order they were planned against `this.items`. A failure reloads
+     * the real order and drops the writes queued behind it, whose indices
+     * assumed it had succeeded.
+     */
+    queueCollectionWrite(errorMsg: string, request: () => Promise<void>): Promise<void> {
+      const playlistId = this.playlist.id;
+      const epoch = reorderEpoch;
+      reorderQueue = reorderQueue.then(async () => {
+        if (epoch !== reorderEpoch) return;
+        try {
+          await request();
+        } catch {
+          reorderEpoch++;
+          notification({ msg: errorMsg, type: NotificationType.Error });
+          if (this.playlist.id === playlistId) await this.reloadTracks(`playlists/${playlistId}/items`);
+        }
+      });
+      return reorderQueue;
+    },
+
     /*
      * getTracks concatenates onto whatever is already loaded, so calling it
      * twice duplicates the list. Undo needs a real reload — reset first, and
@@ -83,56 +143,72 @@ export const usePlaylist = defineStore("playlist", {
      */
     async reloadTracks(url: string) {
       this.tracksVersion++;
-      this.tracks = [];
+      this.items = [];
       await this.getTracks(url, this.tracksVersion);
     },
 
     removeSong(songUri: string) {
-      this.tracks = this.tracks.filter((t) => t.item.uri !== songUri);
+      this.items = this.items.filter((entry) => entry.item?.uri !== songUri);
     },
 
     removeTracks(tracks: TrackToRemove[]) {
       // Use Set for O(1) lookup instead of array.includes() which is O(n)
       const urisToRemove = new Set(tracks.map((track) => track.uri));
-      this.tracks = this.tracks.filter((track) => !urisToRemove.has(track.item.uri));
+      this.items = this.items.filter((entry) => !entry.item || !urisToRemove.has(entry.item.uri));
+    },
+
+    /** Keeps the snapshot current after a write, unless the user has since opened another playlist. */
+    setSnapshot(playlistId: string, snapshotId: string | undefined) {
+      if (snapshotId && this.playlist.id === playlistId) this.playlist.snapshot_id = snapshotId;
     },
 
     /**
      * Takes album ids, not positions. The drag UI reorders a deduplicated
      * `albumList` (see removeDuplicatesAlbums), which is shorter than
-     * `this.tracks` whenever a collection has more than one track for the
+     * `this.items` whenever a collection has more than one track for the
      * same album — most likely in a large, loosely curated tail. A position
      * in that deduped list doesn't line up with the same position in the raw
      * track list, so sending it straight through as range_start/insert_before
      * silently reordered the wrong track. Resolving both ids against
-     * `this.tracks` right before the call is immune to that drift.
+     * `this.items` right before the call is immune to that drift. `this.items`
+     * and not `this.tracks`: unavailable entries still hold a server position.
+     *
+     * `this.items` is reordered right away so it keeps mirroring the server
+     * order the next drag resolves against, and the requests run one at a
+     * time so Spotify applies them in the order they were planned. A failure
+     * reloads the real order and drops the moves queued behind it, whose
+     * indices assumed it had succeeded.
+     *
+     * Only the album's first run moves: stray copies further down are
+     * removed when the collection loads (see cleanCollectionDuplicates).
      */
-    async updateCollectionPosition(movedAlbumId: string, beforeAlbumId: null | string) {
-      const rangeStart = this.tracks.findIndex((t) => t.item.album.id === movedAlbumId);
-      const insertBefore = beforeAlbumId
-        ? this.tracks.findIndex((t) => t.item.album.id === beforeAlbumId)
-        : this.tracks.length;
-      if (rangeStart === -1 || insertBefore === -1) return;
+    updateCollectionPosition(movedAlbumId: string, beforeAlbumId: null | string): Promise<void> {
+      const move = planRangeMove(this.items, albumOf, movedAlbumId, beforeAlbumId);
+      if (!move) return reorderQueue;
+      this.items = move.next;
 
-      try {
-        await instance().put(`playlists/${this.playlist.id}/items`, {
-          insert_before: insertBefore,
-          range_start: rangeStart,
+      const playlistId = this.playlist.id;
+      return this.queueCollectionWrite("Unable to reorder the playlist. Please try again.", async () => {
+        const { data } = await instance().put<{ snapshot_id?: string }>(`playlists/${playlistId}/items`, {
+          insert_before: move.insertBefore,
+          range_length: move.rangeLength,
+          range_start: move.rangeStart,
         });
-      } catch {
-        notification({
-          msg: "Unable to reorder the playlist. Please try again.",
-          type: NotificationType.Error,
-        });
-      }
+        this.setSnapshot(playlistId, data.snapshot_id);
+      });
     },
+  },
+
+  getters: {
+    /** Playable entries only, for display. Positions sent to the API come from `items`. */
+    tracks: (state): PlaylistTrack[] => state.items.filter((entry): entry is PlaylistTrack => entry.item !== null),
   },
 
   state: (): PlaylistPage => ({
     filter: "",
     followed: false,
+    items: [],
     playlist: defaultPlaylist,
-    tracks: [],
     tracksVersion: 0,
   }),
 });
