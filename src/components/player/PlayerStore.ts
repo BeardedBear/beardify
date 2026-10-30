@@ -14,6 +14,7 @@ import {
   mapQueueToSpotifyTracks,
   notifyQueueError,
   saveDeviceVolume,
+  shouldReclaimLocalDevice,
 } from "@/helpers/player";
 import { sleep } from "@/helpers/sleep";
 import { clamp } from "@/helpers/volume";
@@ -49,6 +50,13 @@ const deviceQuery = (deviceId?: string): string => (deviceId ? `?device_id=${dev
  * response from landing last and overwriting a fresher list.
  */
 let deviceListRequest: null | Promise<void> = null;
+
+/*
+ * Every id this browser's SDK has registered under. A reconnect after a long
+ * idle or a sleep comes back with a new device_id, leaving the store tracking
+ * the dead one — which then counts as "external" and mutes the SDK's own state.
+ */
+const localDeviceIds = new Set<string>();
 
 export const usePlayer = defineStore("player", {
   actions: {
@@ -89,12 +97,17 @@ export const usePlayer = defineStore("player", {
       const activeDevice = data.devices.find((device): boolean => device.is_active);
       this.devices.list = data.devices;
       if (!data.devices.length) createSpotifyPlayer().connect();
-      // Never transfer from here: this runs on timers, tab focus and SDK reconnects,
-      // and Spotify routinely drops Connect/Cast speakers from this list for a few
-      // seconds. Falling back to this device used to yank playback off a playing
-      // soundbar. A genuinely dead device is revived on the user's next transport
-      // command (_sendPlaybackCommand → _reviveDevice).
-      if (activeDevice) this.devices.activeDevice = activeDevice;
+      // This runs on timers, tab focus and SDK reconnects, so it never transfers off
+      // an external device — a dead one is revived on the user's next transport
+      // command (_sendPlaybackCommand → _reviveDevice). Only this browser's own
+      // vanished id is followed to its new one (see shouldReclaimLocalDevice).
+      if (activeDevice) {
+        this.devices.activeDevice = activeDevice;
+      } else if (
+        shouldReclaimLocalDevice(data.devices, this.devices.activeDevice?.id, this.thisDeviceId, localDeviceIds)
+      ) {
+        void this.setDevice(this.thisDeviceId);
+      }
       this.startDeviceHeartbeat();
     },
 
@@ -584,6 +597,7 @@ export const usePlayer = defineStore("player", {
 
     thisDevice(deviceId: string): Promise<void> {
       this.thisDeviceId = deviceId;
+      localDeviceIds.add(deviceId);
       return this.getDeviceList();
     },
 
