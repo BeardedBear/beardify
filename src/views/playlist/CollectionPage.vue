@@ -200,10 +200,17 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 
 const dragOptions = computed(() => ({
   animation: prefersReducedMotion ? 0 : 150,
+  // Hold-to-drag on touch only, so a swipe still scrolls; a mouse grabs at once
   delay: 200,
+  delayOnTouchOnly: true,
   disabled: playlistStore.playlist.owner.id !== authStore.me?.id,
+  // A few px of slack so a plain click on the cover still opens the album instead of starting a drag
+  fallbackTolerance: 4,
+  // Card controls stay buttons: no drag from them, and their click still goes through
+  filter: ".play, .button-action, .album-group-stack-indicator",
   forceFallback: true,
   group: "collection-tiers",
+  preventOnFilter: false,
   scrollFn: handleAutoScroll,
   scrollSensitivity: AUTO_SCROLL_SENSITIVITY,
   scrollSpeed: AUTO_SCROLL_MAX_SPEED,
