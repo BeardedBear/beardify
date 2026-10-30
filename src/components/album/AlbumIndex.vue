@@ -252,6 +252,9 @@ function handleAlbumClick(): void {
   left: 0.3rem;
   line-height: 1;
   padding: 0.15rem var(--bd-space-2);
+
+  /* Faded out, not removed: without this it still sat over the play button and ate its clicks */
+  pointer-events: none;
   position: absolute;
   transition: opacity var(--bd-transition-fast);
   z-index: 2;
