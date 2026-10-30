@@ -30,22 +30,80 @@
           {{ country.name }}
         </BdDropdownItem>
       </BdDropdown>
-      <BdButton :disabled="locating" @click="locate">
+      <BdButton v-if="!configStore.homeLocation" :disabled="locating" :loading="locating" @click="locate">
         <MapPin />
-        {{ configStore.homeLocation ? "Update my location" : "Use my location" }}
+        Use my location
       </BdButton>
+      <template v-else>
+        <span class="concerts-radius">
+          <BdInput
+            v-model="radius"
+            aria-label="Distance in km"
+            min="1"
+            type="number"
+            :disabled="wholeCountry"
+            @blur="radius = configStore.nearRadiusKm"
+          />
+          <span class="concerts-radius-unit" :class="{ disabled: wholeCountry }">km</span>
+        </span>
+        <!-- Held in place while the country resolves, so the row doesn't jump when the lookup lands -->
+        <BdButton
+          v-if="configStore.homeCountry || detectingCountry"
+          :active="wholeCountry"
+          :disabled="!configStore.homeCountry"
+          :loading="detectingCountry"
+          @click="configStore.nearWholeCountry = !configStore.nearWholeCountry"
+        >
+          <template v-if="configStore.homeCountry">
+            <img :src="getCountryFlagUrl(configStore.homeCountry)" alt="" class="country-flag" />
+            All of {{ getCountryName(configStore.homeCountry) }}
+          </template>
+          <template v-else>Detecting country…</template>
+        </BdButton>
+        <span class="concerts-location-actions">
+          <BdButton icon-only label="Update my location" :loading="locating" @click="locate">
+            <LocateFixed />
+          </BdButton>
+          <BdButton icon-only label="Forget my location" @click="forgetLocation">
+            <MapPinOff />
+          </BdButton>
+        </span>
+      </template>
     </div>
-    <p v-if="configStore.homeLocation && !busy" class="concerts-nearby" :class="{ found: nearbyCount }">
-      <MapPin class="concerts-nearby-icon" />
-      {{
-        nearbyCount
-          ? `${nearbyCount} upcoming concert${nearbyCount > 1 ? "s" : ""} within ${NEAR_RADIUS_KM} km of you`
-          : `No upcoming concert within ${NEAR_RADIUS_KM} km of you`
-      }}
+    <!-- Announced politely: radius and toggle changes rewrite it with no focus move -->
+    <div
+      v-if="configStore.homeLocation && !(busy && !upcoming.length)"
+      class="concerts-nearby"
+      aria-live="polite"
+    >
+      <BdButton v-if="filterHidesHome" size="small" @click="configStore.concertCountry = ''">
+        <MapPin />
+        Filtered to {{ getCountryName(configStore.concertCountry) }} · show all countries
+      </BdButton>
+      <template v-else>
+        <BdButton v-if="nearbyCount" :active="nearOnly" size="small" variant="primary" @click="nearOnly = !nearOnly">
+          <MapPin />
+          {{ nearbyCount }} near you
+        </BdButton>
+        <span class="concerts-nearby-scope">
+          {{ nearbyCount ? nearScope : `No upcoming concert ${nearScope}` }}
+        </span>
+      </template>
+    </div>
+    <p v-if="failed && sections.length" class="concerts-failed" role="status">
+      Some concerts couldn't be loaded.
+      <BdButton size="small" @click="retry">Try again</BdButton>
     </p>
     <div v-if="busy && !sections.length" class="concerts-loader">
       <BdLoader size="small" />
     </div>
+    <BdEmptyState
+      v-else-if="failed && !sections.length"
+      action-label="Try again"
+      message="Concerts may exist, we just couldn't reach the data sources."
+      title="Couldn't load concerts"
+      @action="retry"
+    />
     <BdEmptyState v-else-if="!sections.length" :title="emptyTitle" />
     <section
       v-for="section in sections"
@@ -58,12 +116,21 @@
         {{ section.title }} <span class="concerts-heading-count">{{ section.count }}</span>
       </h3>
       <div class="concerts-list">
-        <details v-for="concert in section.concerts" :key="concert.id" class="concert-item">
-          <summary class="concert-summary">
-            <div class="concert-date bd-font-bold">{{ formatDate(concert.date) }}</div>
-            <div class="concert-info">
-              <div class="concert-venue bd-font-bold">{{ concert.venue }}</div>
-              <div class="concert-location">
+        <!--
+          A Ticketmaster show has nothing to unfold (no songs, and its ticket link is the row's action), so it is a
+          plain row: the link then sits beside the content instead of inside a <summary>, which is a button.
+        -->
+        <component
+          :is="concert.source === 'ticketmaster' ? 'div' : 'details'"
+          v-for="concert in section.concerts"
+          :key="concert.id"
+          class="concert-item"
+        >
+          <component :is="concert.source === 'ticketmaster' ? 'div' : 'summary'" class="concert-summary">
+            <span class="concert-date bd-font-bold">{{ formatDate(concert.date) }}</span>
+            <span class="concert-info">
+              <span class="concert-venue bd-font-bold">{{ concert.venue }}</span>
+              <span class="concert-location">
                 <img
                   v-if="concert.countryCode"
                   :src="getCountryFlagUrl(concert.countryCode)"
@@ -71,29 +138,38 @@
                   class="country-flag"
                 />
                 {{ concert.location }}
-              </div>
-            </div>
-            <div v-if="concert.tour" class="concert-tour">{{ concert.tour }}</div>
-            <BdBadge v-if="concert.nearKm !== null" variant="success">Near you · {{ concert.nearKm }} km</BdBadge>
+              </span>
+            </span>
+            <span v-if="concert.tour" class="concert-tour">{{ concert.tour }}</span>
+            <BdBadge v-if="concert.nearKm !== null" variant="success">
+              Near you{{ Number.isFinite(concert.nearKm) ? ` · ${concert.nearKm} km` : "" }}
+            </BdBadge>
             <a
               v-if="concert.source === 'ticketmaster'"
               class="concert-tickets"
               :href="concert.url"
-              target="_blank"
               rel="noopener noreferrer"
+              target="_blank"
             >
-              <BdBadge variant="primary">Tickets <ExternalLink class="concert-link-icon" /></BdBadge>
+              <BdBadge variant="primary">
+                Tickets <span class="bd-sr-only">for {{ concert.venue }}, opens in a new tab</span>
+                <ExternalLink class="concert-link-icon" />
+              </BdBadge>
             </a>
-            <div v-else-if="!section.upcoming" class="concert-count">{{ concert.songs.length || "No" }} songs</div>
-          </summary>
-          <ol v-if="concert.songs.length" class="concert-songs">
-            <li v-for="(song, index) in concert.songs" :key="index">{{ song }}</li>
-          </ol>
-          <a class="concert-link" :href="concert.url" target="_blank" rel="noopener noreferrer">
-            {{ concert.source === "ticketmaster" ? "Buy tickets on Ticketmaster" : "View on setlist.fm" }}
-            <ExternalLink class="concert-link-icon" />
-          </a>
-        </details>
+            <span v-else-if="!section.upcoming" class="concert-count">
+              {{ concert.songs.length || "No" }} song{{ concert.songs.length === 1 ? "" : "s" }}
+            </span>
+          </component>
+          <template v-if="concert.source !== 'ticketmaster'">
+            <ol v-if="concert.songs.length" class="concert-songs">
+              <li v-for="(song, index) in concert.songs" :key="index">{{ song }}</li>
+            </ol>
+            <a class="concert-link" :href="concert.url" rel="noopener noreferrer" target="_blank">
+              View on setlist.fm <span class="bd-sr-only">(opens in a new tab)</span>
+              <ExternalLink class="concert-link-icon" />
+            </a>
+          </template>
+        </component>
       </div>
       <BdButton
         v-if="!section.upcoming && setlists.length < total"
@@ -108,8 +184,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ChevronDown, ExternalLink, MapPin } from "@lucide/vue";
-import { BdBadge, BdButton, BdDropdown, BdDropdownItem, BdEmptyState, BdLoader } from "bearded-ui";
+import { ChevronDown, ExternalLink, LocateFixed, MapPin, MapPinOff } from "@lucide/vue";
+import { BdBadge, BdButton, BdDropdown, BdDropdownItem, BdEmptyState, BdInput, BdLoader } from "bearded-ui";
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from "vue";
 
 import { NotificationType } from "@/@types/Notification";
@@ -117,24 +193,35 @@ import { Setlist } from "@/@types/Setlistfm";
 import { TicketmasterEvent } from "@/@types/Ticketmaster";
 import { useConfig } from "@/components/config/ConfigStore";
 import { Concert, splitConcerts } from "@/helpers/concerts";
-import { countries, getCountryFlagUrl, getCountryName } from "@/helpers/country";
+import { countries, countryAt, getCountryFlagUrl, getCountryName } from "@/helpers/country";
 import { formatDate } from "@/helpers/date";
 import { notification } from "@/helpers/notifications";
 import { distanceKm, getSetlists } from "@/helpers/setlistfm";
 import { getTicketmasterEvents } from "@/helpers/ticketmaster";
 import { useArtist } from "@/views/artist/ArtistStore";
 
-// ponytail: fixed radius, make it a setting if people ask for "near" to mean something else
-const NEAR_RADIUS_KM = 150;
-
 const artistStore = useArtist();
 const configStore = useConfig();
+// Local copy: an emptied or zero field keeps the last valid radius instead of matching nothing
+const radius = ref<number | string>(configStore.nearRadiusKm);
+const wholeCountry = computed(() => configStore.nearWholeCountry && !!configStore.homeCountry);
+const nearScope = computed(() =>
+  wholeCountry.value
+    ? `in ${getCountryName(configStore.homeCountry)}`
+    : `within ${configStore.nearRadiusKm} km of you`,
+);
 // Shallow: the lists are only ever replaced, never mutated in place
 const setlists = shallowRef<Setlist[]>([]);
 const events = shallowRef<TicketmasterEvent[]>([]);
 const setlistsLoading = ref(true);
 const eventsLoading = ref(true);
 const locating = ref(false);
+const detectingCountry = ref(false);
+// A failed request is not an empty one: keep them apart so a network error never reads as "no concerts"
+const eventsFailed = ref(false);
+const setlistsFailed = ref(false);
+// ponytail: session-only, the chip is a quick look, not a preference worth persisting
+const nearOnly = ref(false);
 const page = ref(0);
 const total = ref(0);
 let setlistsController = new AbortController();
@@ -143,6 +230,12 @@ let eventsController = new AbortController();
 const countryList = countries();
 
 const busy = computed(() => setlistsLoading.value || eventsLoading.value);
+const failed = computed(() => eventsFailed.value || setlistsFailed.value);
+// The data only holds the filtered country, so a near count for another home country would be a false "none"
+const filterHidesHome = computed(() => {
+  const { concertCountry, homeCountry } = configStore;
+  return !!concertCountry && !!homeCountry && concertCountry !== homeCountry;
+});
 const split = computed(() => splitConcerts(events.value, setlists.value));
 
 // Distance computed once per row, not per render
@@ -151,9 +244,16 @@ const upcoming = computed(() => split.value.upcoming.map((concert) => ({ ...conc
 // ponytail: counts loaded pages only — upcoming shows sit on page 1, newest first
 const nearbyCount = computed(() => upcoming.value.filter((concert) => concert.nearKm !== null).length);
 
+// Chip off when nothing is near (radius shrunk) so the list can't go empty behind an invisible toggle
+const shownUpcoming = computed(() =>
+  nearOnly.value && nearbyCount.value && !filterHidesHome.value
+    ? upcoming.value.filter((concert) => concert.nearKm !== null)
+    : upcoming.value,
+);
+
 const sections = computed(() =>
   [
-    { concerts: upcoming.value, count: upcoming.value.length, title: "Upcoming concerts", upcoming: true },
+    { concerts: shownUpcoming.value, count: shownUpcoming.value.length, title: "Upcoming concerts", upcoming: true },
     {
       concerts: split.value.past.map((concert) => ({ ...concert, nearKm: null })),
       // setlist.fm's total spans upcoming shows too; every upcoming one sits in the loaded first page
@@ -170,15 +270,36 @@ const emptyTitle = computed(() =>
     : "No concerts found",
 );
 
+async function detectHomeCountry(): Promise<void> {
+  const home = configStore.homeLocation;
+  if (!home) return;
+  // Cleared first: a stale country from the previous location must not outlive a move
+  configStore.homeCountry = "";
+  detectingCountry.value = true;
+  const code = await countryAt(home);
+  detectingCountry.value = false;
+  // Forgotten or moved again while the lookup was in flight
+  if (configStore.homeLocation === home) configStore.homeCountry = code;
+}
+
+function forgetLocation(): void {
+  configStore.homeLocation = null;
+  configStore.homeCountry = "";
+  configStore.nearWholeCountry = false;
+  nearOnly.value = false;
+}
+
 async function loadEvents(): Promise<void> {
   eventsController.abort();
   const { signal } = (eventsController = new AbortController());
   // Cleared up front: the previous filter's shows must not linger, nor hide setlists by date
   events.value = [];
+  eventsFailed.value = false;
   eventsLoading.value = true;
   const data = await getTicketmasterEvents(artistStore.artist.name, configStore.concertCountry, signal);
   if (signal.aborted) return;
-  events.value = data;
+  events.value = data ?? [];
+  eventsFailed.value = !data;
   eventsLoading.value = false;
 }
 
@@ -190,6 +311,7 @@ async function loadPage(next: number): Promise<void> {
     setlistsLoading.value = false;
     return;
   }
+  setlistsFailed.value = false;
   setlistsLoading.value = true;
   const data = await getSetlists(mbid, next, configStore.concertCountry, signal);
   // Artist or country changed while the request was in flight
@@ -198,6 +320,8 @@ async function loadPage(next: number): Promise<void> {
     setlists.value = [...setlists.value, ...(data.setlist ?? [])];
     page.value = data.page;
     total.value = data.total;
+  } else {
+    setlistsFailed.value = true;
   }
   setlistsLoading.value = false;
 }
@@ -213,6 +337,7 @@ function locate(): void {
       // Rounded to ~1 km: precise enough for a radius, no need to persist an exact address
       configStore.homeLocation = { lat: +coords.latitude.toFixed(2), lon: +coords.longitude.toFixed(2) };
       locating.value = false;
+      detectHomeCountry();
     },
     () => {
       notification({ msg: "Couldn't get your location", type: NotificationType.Error });
@@ -223,18 +348,36 @@ function locate(): void {
   );
 }
 
-/** Distance from home in km when within the radius; null when farther or either point is unknown. */
+/**
+ * Distance from home in km when the show counts as near; null when it doesn't.
+ * Whole-country mode: any show in the home country, Infinity when its distance is unknown.
+ */
 function nearKm(concert: Concert): null | number {
   const home = configStore.homeLocation;
-  if (!concert.coords || !home) return null;
-  const km = Math.round(distanceKm(home, concert.coords));
-  return km <= NEAR_RADIUS_KM ? km : null;
+  if (!home) return null;
+  const km = concert.coords ? Math.round(distanceKm(home, concert.coords)) : Infinity;
+  if (wholeCountry.value) return concert.countryCode === configStore.homeCountry ? km : null;
+  return km <= configStore.nearRadiusKm ? km : null;
 }
+
+/** Replays only what failed; `page` still points at the last good setlist page, so +1 is the one that never came. */
+function retry(): void {
+  if (eventsFailed.value) loadEvents();
+  if (setlistsFailed.value) loadPage(page.value + 1);
+}
+
+watch(radius, (km) => {
+  if (Number(km) > 0) configStore.nearRadiusKm = Number(km);
+});
+
+// Located before the country was stored
+if (configStore.homeLocation && !configStore.homeCountry) detectHomeCountry();
 
 watch(
   [() => artistStore.musicbrainzArtist?.id, () => configStore.concertCountry],
   () => {
     setlists.value = [];
+    page.value = 0;
     total.value = 0;
     loadPage(1);
   },
@@ -269,23 +412,46 @@ onBeforeUnmount(() => {
   width: 1em;
 }
 
-.concerts-nearby {
+.concerts-radius {
   align-items: center;
-  color: var(--bd-font-color-light);
-  display: flex;
+  display: inline-flex;
   gap: var(--bd-space-2);
-  margin: 0 0 var(--bd-space-4);
-  opacity: 0.7;
+  width: 7rem;
+}
 
-  &.found {
-    color: var(--bd-primary-light);
-    opacity: 1;
+/* The unit follows the number ("150 km"), so it sits beside the field, tight to it */
+.concerts-radius-unit {
+  color: var(--bd-font-color-light);
+
+  &.disabled {
+    opacity: 0.5;
   }
 }
 
-.concerts-nearby-icon {
-  height: 1rem;
-  width: 1rem;
+.concerts-location-actions {
+  display: flex;
+  gap: var(--bd-space-2);
+  margin-left: auto;
+}
+
+.concerts-nearby {
+  align-items: center;
+  display: flex;
+  gap: var(--bd-space-2);
+  margin-bottom: var(--bd-space-4);
+}
+
+/* Full opacity: the answer is what the bar is for, it must not read dimmer than its controls */
+.concerts-nearby-scope {
+  color: var(--bd-font-color-light);
+}
+
+.concerts-failed {
+  align-items: center;
+  color: var(--bd-font-color-light);
+  display: flex;
+  gap: var(--bd-space-3);
+  margin: 0 0 var(--bd-space-4);
 }
 
 .concerts-loader {
@@ -337,7 +503,6 @@ onBeforeUnmount(() => {
 .concert-summary {
   align-items: center;
   border-radius: var(--bd-radius-sm);
-  cursor: pointer;
   display: flex;
   gap: var(--bd-space-4);
   list-style: none;
@@ -348,13 +513,24 @@ onBeforeUnmount(() => {
     display: none;
   }
 
+  @media (--mobile) {
+    flex-wrap: wrap;
+    gap: var(--bd-space-2) var(--bd-space-4);
+  }
+}
+
+/* Only a real <summary> unfolds: a plain Ticketmaster row must not look clickable */
+details > .concert-summary {
+  cursor: pointer;
+
   &:hover {
     background-color: var(--bd-hover-overlay);
   }
 
-  @media (--mobile) {
-    flex-wrap: wrap;
-    gap: var(--bd-space-2) var(--bd-space-4);
+  /* list-style: none and the custom radius drop the browser's own ring */
+  &:focus-visible {
+    outline: 2px solid var(--bd-primary);
+    outline-offset: -2px;
   }
 }
 
@@ -370,6 +546,12 @@ onBeforeUnmount(() => {
 .concert-info {
   flex: 1;
   min-width: 0;
+}
+
+/* Spans now (a <summary> only takes phrasing content), so the stacking is explicit */
+.concert-venue,
+.concert-location {
+  display: block;
 }
 
 .concert-location,

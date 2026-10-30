@@ -17,13 +17,13 @@ const eventsCache = new Map<string, TicketmasterEvent[]>();
  * @param artistName - The artist name to search for
  * @param countryCode - ISO 3166-1 alpha-2 code to filter on, empty for every country
  * @param signal - Cancels the request when the artist or country changes
- * @returns Promise resolving to a list of upcoming events (empty on error, no key, or no data)
+ * @returns Promise resolving to a list of upcoming events (empty on no key or no data), or null when the request failed
  */
 export async function getTicketmasterEvents(
   artistName: string,
   countryCode = "",
   signal?: AbortSignal,
-): Promise<TicketmasterEvent[]> {
+): Promise<null | TicketmasterEvent[]> {
   if (!TICKETMASTER_API_KEY || !artistName) return [];
 
   const cacheKey = `${artistName}|${countryCode}`;
@@ -55,6 +55,6 @@ export async function getTicketmasterEvents(
     eventsCache.set(cacheKey, events);
     return events;
   } catch {
-    return [];
+    return null;
   }
 }

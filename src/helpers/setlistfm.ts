@@ -1,3 +1,5 @@
+import { HTTPError } from "ky";
+
 import { Coords, SetlistPage } from "@/@types/Setlistfm";
 import { http } from "@/helpers/http";
 
@@ -33,7 +35,7 @@ export function distanceKm(from: Coords, to: Coords): number {
  * @param page - 1-based page number
  * @param countryCode - ISO 3166-1 alpha-2 code to filter on, empty for every country
  * @param signal - Cancels the request when the artist or country changes
- * @returns The page, or null on error (404 = no setlist matching)
+ * @returns The page (empty on 404, setlist.fm's "no setlist matching"), or null when the request failed
  */
 export async function getSetlists(
   musicbrainzId: string,
@@ -45,7 +47,10 @@ export async function getSetlists(
   if (countryCode) searchParams.countryCode = countryCode;
   try {
     return await setlistfmClient.get("search/setlists", { searchParams, signal }).json<SetlistPage>();
-  } catch {
+  } catch (error) {
+    if (error instanceof HTTPError && error.response.status === 404) {
+      return { itemsPerPage: 20, page, setlist: [], total: 0 };
+    }
     return null;
   }
 }

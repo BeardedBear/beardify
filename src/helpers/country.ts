@@ -1,3 +1,6 @@
+import { Coords } from "@/@types/Setlistfm";
+import { http } from "@/helpers/http";
+
 // One instance for every lookup; `fallback: "none"` makes unknown codes come back undefined.
 const regionNames = new Intl.DisplayNames(["en"], { fallback: "none", type: "region" });
 
@@ -45,6 +48,25 @@ let countryList: { code: string; name: string }[] | undefined;
 export function countries(): { code: string; name: string }[] {
   countryList ??= buildCountries();
   return countryList;
+}
+
+/**
+ * Country of a point, from OpenStreetMap's reverse geocoder (country-level zoom, one call per locate).
+ * No guess when the lookup fails: the browser locale says what language someone reads, not where they live.
+ * @param coords - Point to look up
+ * @returns ISO alpha-2 code, empty when the lookup failed
+ */
+export async function countryAt(coords: Coords): Promise<string> {
+  try {
+    const data = await http
+      .get("https://nominatim.openstreetmap.org/reverse", {
+        searchParams: { format: "jsonv2", lat: coords.lat, lon: coords.lon, zoom: 3 },
+      })
+      .json<{ address?: { country_code?: string } }>();
+    return data.address?.country_code?.toUpperCase() ?? "";
+  } catch {
+    return "";
+  }
 }
 
 function buildCountries(): { code: string; name: string }[] {
