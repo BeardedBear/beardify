@@ -384,7 +384,14 @@ export const usePlayer = defineStore("player", {
       // Without additional_types, Spotify returns item: null for an episode
       // (currently_playing_type: "unknown") — tracks are the only type it
       // reports by default.
-      const { data } = await instance().get<CurrentlyPlaying>("me/player?additional_types=episode");
+      let data: CurrentlyPlaying;
+      try {
+        ({ data } = await instance().get<CurrentlyPlaying>("me/player?additional_types=episode"));
+      } finally {
+        // Answered or failed, the player is no longer "loading": a 204 (nothing playing anywhere,
+        // the usual state after a long absence) has no track, and without this the loader never ends.
+        this.playbackChecked = true;
+      }
 
       // `me/player` names the device that is REALLY active — adopt it, otherwise the
       // store keeps tracking a stale device and the heartbeat later yanks playback
@@ -592,6 +599,7 @@ export const usePlayer = defineStore("player", {
       // this device is the active one; `me/player` is the truth otherwise.
       const activeId = this.devices.activeDevice?.id;
       if (this.thisDeviceId && activeId && activeId !== this.thisDeviceId) return;
+      this.playbackChecked = true;
       this.playerState = state;
     },
 
@@ -647,6 +655,7 @@ export const usePlayer = defineStore("player", {
     isSettingDevice: false,
     lastRequestedDeviceId: null,
     panelOpened: false,
+    playbackChecked: false,
     playerState: defaultPlaybackState,
     queue: [],
     seekLockUntil: 0,
