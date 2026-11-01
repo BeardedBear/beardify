@@ -7,10 +7,10 @@
   </div>
   <BdEmptyState
     v-else-if="showNoDeviceHint"
-    action-label="Refresh"
-    message="Open Spotify on this computer or another device to control playback here."
+    :action-label="reconnecting ? 'Connecting…' : 'Use this browser'"
+    message="Play in this browser, or open Spotify on another device to control it from here."
     title="No active device"
-    @action="playerStore.getExternalPlayerState()"
+    @action="useThisBrowser"
   >
     <template #icon><i class="icon-speaker" /></template>
   </BdEmptyState>
@@ -23,9 +23,11 @@
 import { BdEmptyState, BdLoader } from "bearded-ui";
 import { onUnmounted, ref, watch } from "vue";
 
+import { NotificationType } from "@/@types/Notification";
 import DevicesList from "@/components/player/device/DeviceList.vue";
 import DeviceVolume from "@/components/player/device/DeviceVolume.vue";
 import { usePlayer } from "@/components/player/PlayerStore";
+import { notification } from "@/helpers/notifications";
 
 // Mirrors PlayerIndex's LOADING_WATCHDOG_MS: give the SDK a chance to report an
 // active device before telling the user nothing is playing anywhere.
@@ -36,7 +38,32 @@ const playerStore = usePlayer();
 const forceMobile = props.forceMobile ?? false;
 
 const showNoDeviceHint = ref(false);
+const reconnecting = ref(false);
 let hintTimer: number | undefined;
+
+/**
+ * Nothing is active anywhere (the usual state after a long absence): `me/player` answers 204, so
+ * re-reading it alone changes nothing. Revive the SDK, then claim this browser's own device —
+ * the one Beardify always has — the way the official client takes over when nothing plays.
+ */
+async function useThisBrowser(): Promise<void> {
+  if (reconnecting.value) return;
+  reconnecting.value = true;
+  try {
+    await playerStore.resyncPlayback();
+    if (!playerStore.devices.activeDevice.id && playerStore.thisDeviceId) {
+      await playerStore.setDevice(playerStore.thisDeviceId);
+    }
+  } finally {
+    reconnecting.value = false;
+  }
+  if (!playerStore.devices.activeDevice.id) {
+    notification({
+      msg: "Couldn't connect this browser to Spotify. Reload the page and try again.",
+      type: NotificationType.Warning,
+    });
+  }
+}
 
 watch(
   () => playerStore.devices.activeDevice.id,

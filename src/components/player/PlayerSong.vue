@@ -15,7 +15,17 @@
       <SeekBar />
     </div>
   </template>
-  <BdLoader v-else />
+  <!-- Loading only until Spotify has answered once (or while a device switch resets the state) -->
+  <BdLoader v-else-if="!playerStore.playbackChecked || playerStore.isSettingDevice" />
+  <!-- Answered, nothing playing: the usual state after a long absence, not an endless load -->
+  <div v-else class="surface">
+    <div class="meta">
+      <p class="area-metas idle">Nothing playing</p>
+      <div class="area-device">
+        <Device />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -72,6 +82,11 @@ function onSurfaceClick(event: MouseEvent): void {
   @media (--mobile) {
     cursor: pointer;
   }
+}
+
+.idle {
+  color: var(--bd-font-color-light);
+  margin: 0;
 }
 
 .area-metas {

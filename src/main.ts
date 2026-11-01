@@ -119,14 +119,14 @@ handleSpotifySDKErrors();
   } else {
     // Normal flow: try to refresh token first
     try {
-      const done = await useAuth().refresh();
-      if (done) {
-        // Start auto-refresh after successful token refresh
-        useAuth().startAutoRefresh();
-        app.mount("#app");
-        syncLS("beardify-config", JSON.stringify(useConfig().$state));
-        syncLS("beardify-auth", JSON.stringify(useAuth().$state));
-      }
+      // Through ensureFreshToken, forced: the persisted token is stale whatever the last-refresh
+      // stamp says, and the SDK's getOAuthToken joins this same request instead of racing it.
+      await useAuth().ensureFreshToken(true);
+      // Start auto-refresh after successful token refresh
+      useAuth().startAutoRefresh();
+      app.mount("#app");
+      syncLS("beardify-config", JSON.stringify(useConfig().$state));
+      syncLS("beardify-auth", JSON.stringify(useAuth().$state));
     } catch {
       app.mount("#app");
       router.push(`${RouteName.Login}?ref=${window.location.pathname}`);

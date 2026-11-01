@@ -49,8 +49,14 @@ const createPlayer = (): Spotify.Player => {
     const playerInit: Spotify.PlayerInit = {
       getOAuthToken: (cb: (token: string) => void): void => {
         try {
-          const token = useAuth().accessToken;
-          cb(token);
+          const auth = useAuth();
+          // The persisted token is an hour old at best after a night off, and the SDK can ask for one
+          // (first connect, reconnect, its own expiry) before the boot refresh has landed. Wait for a
+          // fresh one; if renewing fails, hand over what we have and let authentication_error retry.
+          auth
+            .ensureFreshToken()
+            .catch(() => {})
+            .then(() => cb(auth.accessToken));
         } catch {
           // Notification only, no need for the error variable
           notification({
