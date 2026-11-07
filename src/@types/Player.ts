@@ -16,6 +16,7 @@ export interface Player {
   panelOpened?: boolean;
   /** True once Spotify has answered at least once, even with nothing playing: ends the loader, shows the idle player */
   playbackChecked?: boolean;
+  playbackLockUntil?: number;
   playerState: Spotify.PlaybackState;
   queue: Spotify.Track[];
   seekLockUntil?: number;

@@ -28,6 +28,7 @@ const HEARTBEAT_FAILURE_THRESHOLD = 3;
 const HEARTBEAT_FAILURE_NOTIFY_COOLDOWN_MS = 5 * 60 * 1000;
 const VOLUME_LOCK_DURATION_MS = 2000;
 const HISTORY_LIMIT = 20;
+const END_OF_TRACK_MARGIN_MS = 1000;
 /*
  * A seek on an external device is acknowledged by Spotify long after the PUT
  * returns, and `getExternalPlayerState()` polls every 2s — so a poll already in
@@ -35,6 +36,12 @@ const HISTORY_LIMIT = 20;
  * one poll round-trip.
  */
 const SEEK_LOCK_DURATION_MS = 2000;
+/*
+ * Same race for play/pause/next/previous: a poll landing before Spotify has
+ * applied the command flips `paused` back, then forward again — a flicker.
+ * Re-armed once the command returns, since a wake-up transfer can be slow.
+ */
+const PLAYBACK_LOCK_DURATION_MS = 2500;
 
 /**
  * Spotify takes the target device in the query string. These calls used to pass
@@ -312,8 +319,13 @@ export const usePlayer = defineStore("player", {
      * @returns true when the command went through
      */
     async _sendPlaybackCommand(request: (deviceId?: string) => Promise<unknown>): Promise<boolean> {
+      const lockPlayback = (): void => {
+        this.playbackLockUntil = Date.now() + PLAYBACK_LOCK_DURATION_MS;
+      };
+      lockPlayback();
       try {
         await request(this.devices.activeDevice?.id || undefined);
+        lockPlayback();
         return true;
       } catch {
         const revived = await this._reviveDevice();
@@ -321,12 +333,14 @@ export const usePlayer = defineStore("player", {
         if (revived) {
           try {
             await request(revived);
+            lockPlayback();
             return true;
           } catch {
             // fall through to the notification below
           }
         }
 
+        this.playbackLockUntil = 0;
         notification({
           msg: "No device is available for playback. Pick one from the device list.",
           type: NotificationType.Error,
@@ -427,7 +441,7 @@ export const usePlayer = defineStore("player", {
         current.uri = item.uri;
       }
       if (Date.now() >= (this.seekLockUntil ?? 0)) playerState.position = data.progress_ms;
-      playerState.paused = !data.is_playing;
+      if (Date.now() >= (this.playbackLockUntil ?? 0)) playerState.paused = !data.is_playing;
       playerState.shuffle = data.shuffle_state;
       playerState.duration = item.duration_ms;
       if (Date.now() >= (this.volumeLockUntil ?? 0) && data.device) {
@@ -497,11 +511,25 @@ export const usePlayer = defineStore("player", {
     },
 
     async play(): Promise<void> {
+      // Paused at the very end of a track (device slept mid-transition): resuming
+      // there is a silent no-op on Spotify's side — advance instead.
+      const { duration, position } = this.playerState;
+      const atEnd = duration > 0 && position >= duration - END_OF_TRACK_MARGIN_MS;
+
       const wasPaused = this.playerState.paused;
       this.playerState.paused = false;
-      const ok = await this._sendPlaybackCommand((deviceId) =>
-        instance().put(`me/player/play${deviceQuery(deviceId)}`),
-      );
+      const ok = await this._sendPlaybackCommand(async (deviceId) => {
+        // A dormant Cast/Connect speaker accepts a bare play command (204) and
+        // ignores it. A transfer re-opens its session; harmless here since the
+        // device is paused, so it can't restart a playing session.
+        if (deviceId && deviceId !== this.thisDeviceId) {
+          await instance().put("me/player", { device_ids: [deviceId], play: !atEnd });
+          if (atEnd) await sleep(ACTIVATION_DELAY_MS);
+        } else if (!atEnd) {
+          await instance().put(`me/player/play${deviceQuery(deviceId)}`);
+        }
+        if (atEnd) await instance().post(`me/player/next${deviceQuery(deviceId)}`);
+      });
       if (!ok) this.playerState.paused = wasPaused;
     },
 
@@ -656,6 +684,7 @@ export const usePlayer = defineStore("player", {
     lastRequestedDeviceId: null,
     panelOpened: false,
     playbackChecked: false,
+    playbackLockUntil: 0,
     playerState: defaultPlaybackState,
     queue: [],
     seekLockUntil: 0,
