@@ -12,6 +12,7 @@
         <router-link
           :to="`/artist/${artist.id}`"
           class="item bd-font-bold"
+          @focus="checkTruncated($event, artist.id)"
           @mouseenter="checkTruncated($event, artist.id)"
         >
           <Cover :images="artist.images" class="image" size="small" />
@@ -34,10 +35,10 @@ import { useArtist } from "@/views/artist/ArtistStore";
 
 const artistStore = useArtist();
 
-/** Artist whose name is clamped, measured on hover — before the tooltip delay runs out. */
+/** Artist whose name is clamped, measured on hover or focus — before the tooltip delay runs out. */
 const truncatedId = ref<null | string>(null);
 
-function checkTruncated(event: MouseEvent, id: string): void {
+function checkTruncated(event: Event, id: string): void {
   const name = (event.currentTarget as HTMLElement).querySelector(".name");
   truncatedId.value = name && name.scrollHeight > name.clientHeight ? id : null;
 }
@@ -49,8 +50,10 @@ function checkTruncated(event: MouseEvent, id: string): void {
   --image-size: 3rem;
 
   border-radius: var(--image-size);
+  display: block;
   height: var(--image-size);
-  margin-bottom: var(--bd-space-2);
+  margin: 0 auto var(--bd-space-2);
+  object-fit: cover;
   width: var(--image-size);
 }
 
@@ -65,6 +68,10 @@ function checkTruncated(event: MouseEvent, id: string): void {
   &:hover {
     background-color: var(--bd-hover-overlay);
   }
+
+  &:active {
+    background-color: var(--bd-bg-light);
+  }
 }
 
 .name {
@@ -78,6 +85,8 @@ function checkTruncated(event: MouseEvent, id: string): void {
 
 .list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  /* 3 columns in the 20rem sidebar, more once the column goes full width (--xl, mobile). */
+  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
 }
 </style>
