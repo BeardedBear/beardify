@@ -1,6 +1,6 @@
 <template>
   <div class="profile-container bd-font-bold">
-    <div class="profile-wrapper" :class="{ visible: artistMetas || artistTags.length > 0 }">
+    <div class="profile-wrapper" :class="{ visible: artistMetas || artistTags.length > 0 || noInfo }">
       <template v-if="artistTags && artistTags.length > 0">
         <span class="tag-list">
           <router-link
@@ -59,21 +59,40 @@
           </template>
         </span>
       </template>
+      <!-- The Info tab is disabled when every source came back empty: point to where the gap can be filled -->
+      <template v-if="noInfo">
+        <span v-if="artistMetas || artistTags.length > 0" class="dot desktop-only">·</span>
+        <a class="musicbrainz-link" :href="musicbrainzUrl" @click.prevent="openLink(musicbrainzUrl)">
+          {{ artistMetas ? "Missing info? Edit on MusicBrainz" : "Missing info? Add to MusicBrainz" }}
+          <ExternalLink :size="12" />
+        </a>
+      </template>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { ExternalLink } from "@lucide/vue";
 import { BdTooltip } from "bearded-ui";
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 
 import { getCountryFlagUrl, getCountryName } from "@/helpers/country";
 import { formatDate } from "@/helpers/date";
+import { openLink } from "@/helpers/openLink";
 import { useArtist } from "@/views/artist/ArtistStore";
 
 const artistStore = useArtist();
 const artistMetas = computed(() => artistStore.musicbrainzArtist);
+const noInfo = computed(
+  () => !artistStore.hasInfo && !artistStore.timelineLoading && !artistStore.musicbrainzLoading,
+);
+// Matched artist → its page (Edit tab is there); no match → search, where "Add artist" is offered
+const musicbrainzUrl = computed(() =>
+  artistMetas.value?.id
+    ? `https://musicbrainz.org/artist/${artistMetas.value.id}`
+    : `https://musicbrainz.org/search?type=artist&query=${encodeURIComponent(artistStore.artist.name)}`,
+);
 const artistTags = computed(
   () => (artistMetas.value?.tags || artistStore.artist.genres).map((tag) => (typeof tag === "string" ? tag : tag.name)),
 );
@@ -138,6 +157,19 @@ const getCountry = computed(() => {
 
 .disambiguation {
   opacity: 0.6;
+}
+
+.musicbrainz-link {
+  align-items: center;
+  color: var(--bd-font-color-dark);
+  display: inline-flex;
+  gap: var(--bd-space-1);
+  text-decoration: none;
+  transition: color var(--bd-transition);
+
+  &:hover {
+    color: var(--bd-font-color);
+  }
 }
 
 .dot {
