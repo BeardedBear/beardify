@@ -3,6 +3,7 @@ import { usePlayer } from "@/components/player/PlayerStore";
 import { clearAuthData } from "@/helpers/authUtils";
 import { notification } from "@/helpers/notifications";
 import { resolveSdkVolume } from "@/helpers/player";
+import router from "@/router";
 import { useAuth } from "@/views/auth/AuthStore";
 
 // Global error handler for uncaught SDK errors
@@ -269,4 +270,10 @@ export const createSpotifyPlayer = (): Spotify.Player => createPlayer();
 
 // !! IMPORTANT: Assign the function to window.onSpotifyWebPlaybackSDKReady
 // This is what the Spotify SDK is looking for
-window.onSpotifyWebPlaybackSDKReady = createPlayer;
+// Chromeless routes (public /share page, login) have no Spotify session: a player there
+// would fail getOAuthToken in a loop until ensureFreshToken gives up and redirects to login.
+window.onSpotifyWebPlaybackSDKReady = (): void => {
+  router.isReady().then(() => {
+    if (!router.currentRoute.value.meta.chromeless) createPlayer();
+  });
+};
